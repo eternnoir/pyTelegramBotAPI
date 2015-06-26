@@ -65,10 +65,10 @@ class Message:
         fromUser = User.de_json(json.dumps(obj['from']))
         chat = Message.parse_chat(obj['chat'])
         date = obj['date']
-        text = None
+        opts = {}
         if 'text' in obj:
-            text = obj['text']
-        return Message(message_id, fromUser, date, chat, text=text)
+            opts['text'] = obj['text']
+        return Message(message_id, fromUser, date, chat, opts)
 
     @classmethod
     def parse_chat(cls, chat):
@@ -77,7 +77,7 @@ class Message:
         else:
             return User.de_json(json.dumps(chat))
 
-    def __init__(self, message_id, fromUser, date, chat, **options):
+    def __init__(self, message_id, fromUser, date, chat, options):
         self.chat = chat
         self.date = date
         self.fromUser = fromUser

@@ -43,3 +43,18 @@ tb.polling(3)
 while True:
     time.sleep(20)
 ```
+
+## TODO
+
+- [x] getMe
+- [ ] sendMessage
+- [ ] forwardMessage
+- [ ] sendPhoto
+- [ ] sendAudio
+- [ ] sendDocument
+- [ ] sendSticker
+- [ ] sendVideo
+- [ ] sendLocation
+- [ ] sendChatAction
+- [ ] getUserProfilePhotos
+- [x] getUpdates
