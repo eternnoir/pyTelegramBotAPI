@@ -69,12 +69,12 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     req = requests.post(request_url, params=payload, files=files)
     return req.json()
 
-def send_data(token, chat_id, data, type, reply_to_message_id=None, reply_markup=None):
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     api_url = telebot.API_URL
-    method_url = get_method_by_type(type)
+    method_url = get_method_by_type(data_type)
     request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id}
-    files = {type: data}
+    files = {data_type: data}
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
@@ -82,12 +82,12 @@ def send_data(token, chat_id, data, type, reply_to_message_id=None, reply_markup
     req = requests.post(request_url, params=payload, files=files)
     return req.json()
 
-def get_method_by_type(type):
-    if type == 'audio':
+def get_method_by_type(data_type):
+    if data_type == 'audio':
         return 'sendAudio'
-    if type == 'document':
+    if data_type == 'document':
         return 'sendDocument'
-    if type == 'sticker':
+    if data_type == 'sticker':
         return 'sendSticker'
-    if type == 'video':
+    if data_type == 'video':
         return 'sendVideo'
