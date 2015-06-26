@@ -40,3 +40,11 @@ def get_updates(token):
     request_url = api_url+'bot'+token+'/'+method_url
     req = requests.get(request_url)
     return req.json()
+
+def forward_message(token,chat_id,from_chat_id,message_id):
+    api_url = telebot.API_URL
+    method_url = r'forwardMessage'
+    request_url = api_url+'bot'+token+'/'+method_url
+    payload = {'chat_id':chat_id,'from_chat_id':from_chat_id,'message_id':message_id}
+    req = requests.get(request_url,params=payload)
+    return req.json()

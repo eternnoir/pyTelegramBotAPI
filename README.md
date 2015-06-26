@@ -47,7 +47,7 @@ while True:
 ## TODO
 
 - [x] getMe
-- [ ] sendMessage
+- [x] sendMessage
 - [ ] forwardMessage
 - [ ] sendPhoto
 - [ ] sendAudio
