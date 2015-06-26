@@ -111,4 +111,11 @@ class TeleBot:
                                       reply_markup)
 
     def forward_message(self, chat_id, from_chat_id, message_id):
+        """
+
+        :param chat_id: which chat to forward
+        :param from_chat_id: which chat message from
+        :param message_id: message id
+        :return:
+        """
         return apihelper.forward_message(self.token, chat_id, from_chat_id, message_id)

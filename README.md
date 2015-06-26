@@ -48,7 +48,7 @@ while True:
 
 - [x] getMe
 - [x] sendMessage
-- [ ] forwardMessage
+- [x] forwardMessage
 - [ ] sendPhoto
 - [ ] sendAudio
 - [ ] sendDocument

@@ -3,12 +3,14 @@
 import telebot
 import requests
 
+
 def get_me(token):
-    api_url=telebot.API_URL
+    api_url = telebot.API_URL
     method_url = r'getMe'
-    request_url = api_url+'bot'+token+'/'+method_url
+    request_url = api_url + 'bot' + token + '/' + method_url
     req = requests.get(request_url)
     return req.json()
+
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
     """
@@ -34,17 +36,19 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     req = requests.get(request_url, params=payload)
     return req.json()
 
+
 def get_updates(token):
     api_url = telebot.API_URL
     method_url = r'getUpdates'
-    request_url = api_url+'bot'+token+'/'+method_url
+    request_url = api_url + 'bot' + token + '/' + method_url
     req = requests.get(request_url)
     return req.json()
 
-def forward_message(token,chat_id,from_chat_id,message_id):
+
+def forward_message(token, chat_id, from_chat_id, message_id):
     api_url = telebot.API_URL
     method_url = r'forwardMessage'
-    request_url = api_url+'bot'+token+'/'+method_url
-    payload = {'chat_id':chat_id,'from_chat_id':from_chat_id,'message_id':message_id}
-    req = requests.get(request_url,params=payload)
+    request_url = api_url + 'bot' + token + '/' + method_url
+    payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
+    req = requests.get(request_url, params=payload)
     return req.json()
