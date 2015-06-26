@@ -3,8 +3,24 @@
 import telebot
 import requests
 
+def get_me(token):
+    apiurl=telebot.API_URL
+    method_url = r'getMe'
+    request_url = apiurl+'bot'+token+'/'+method_url
+    req = requests.get(request_url)
+    return req.json()
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
+    """
+    Use this method to send text messages. On success, the sent Message is returned.
+    :param token:
+    :param chat_id:
+    :param text:
+    :param disable_web_page_preview:
+    :param reply_to_message_id:
+    :param reply_markup:
+    :return:
+    """
     api_url = telebot.API_URL
     method_url = r'sendMessage'
     request_url = api_url + 'bot' + token + '/' + method_url
