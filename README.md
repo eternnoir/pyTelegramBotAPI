@@ -1,6 +1,22 @@
 # pyTelegramBotAPI
 Python Telegram bot api.
 
+## How to install
+
+* Install from source
+
+```
+$ git clone https://github.com/eternnoir/pyTelegramBotAPI.git
+$ cd pyTelegramBotAPI
+$ python setup.py install
+```
+
+* Install by pip
+
+```
+$ pip install pyTelegramBotAPI
+```
+
 ## Example
 
 * Send Message
