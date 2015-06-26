@@ -20,7 +20,23 @@ ReplyKeyboardHide
 ForceReply
 """
 
+import json
+
+
 class User:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        id = obj['id']
+        first_name = obj['first_name']
+        last_name = None
+        username = None
+        if 'last_name' in obj:
+            last_name = obj['last_name']
+        if 'username' in obj:
+            username = obj['username']
+        return User(id, first_name, last_name, username)
+
     def __init__(self, id, first_name, last_name=None, username=None):
         self.id = id
         self.first_name = first_name
@@ -98,19 +114,19 @@ class Contact:
 
 
 class Location:
-    def __init__(self, longitude,latitude):
+    def __init__(self, longitude, latitude):
         self.longitude = longitude
         self.latitude = latitude
 
 
 class UserProfilePhotos:
-    def __init__(self,total_count,photos): 
+    def __init__(self, total_count, photos):
         self.total_count = total_count
         self.photos = photos
 
 
 class ReplyKeyboardMarkup:
-    def __init__(self,keyboard,resize_keyboard=None,one_time_keyboard=None,selective=None):
+    def __init__(self, keyboard, resize_keyboard=None, one_time_keyboard=None, selective=None):
         self.keyboard = keyboard
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
