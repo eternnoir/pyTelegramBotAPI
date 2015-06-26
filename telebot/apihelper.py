@@ -4,9 +4,9 @@ import telebot
 import requests
 
 def get_me(token):
-    apiurl=telebot.API_URL
+    api_url=telebot.API_URL
     method_url = r'getMe'
-    request_url = apiurl+'bot'+token+'/'+method_url
+    request_url = api_url+'bot'+token+'/'+method_url
     req = requests.get(request_url)
     return req.json()
 
@@ -32,4 +32,11 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     if reply_markup:
         payload['reply_markup'] = reply_markup
     req = requests.get(request_url, params=payload)
+    return req.json()
+
+def get_updates(token):
+    api_url = telebot.API_URL
+    method_url = r'getUpdates'
+    request_url = api_url+'bot'+token+'/'+method_url
+    req = requests.get(request_url)
     return req.json()

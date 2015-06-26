@@ -45,18 +45,45 @@ class User:
 
 
 class GroupChat:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        id = obj['id']
+        title = obj['title']
+        return GroupChat(id, title)
+
     def __init__(self, id, title):
         self.id = id
         self.title = title
 
 
 class Message:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        message_id = obj['message_id']
+        fromUser = User.de_json(json.dumps(obj['from']))
+        chat = Message.parse_chat(obj['chat'])
+        date = obj['date']
+        text = None
+        if 'text' in obj:
+            text = obj['text']
+        return Message(message_id, fromUser, date, chat, text=text)
+
+    @classmethod
+    def parse_chat(cls, chat):
+        if chat['id'] < 0:
+            return GroupChat.de_json(json.dumps(chat))
+        else:
+            return User.de_json(json.dumps(chat))
+
     def __init__(self, message_id, fromUser, date, chat, **options):
-        # TODO Add options.
         self.chat = chat
         self.date = date
         self.fromUser = fromUser
         self.message_id = message_id
+        for key in options:
+            setattr(self, key, options[key])
 
 
 class PhotoSize:
