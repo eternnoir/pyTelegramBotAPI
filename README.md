@@ -65,11 +65,11 @@ while True:
 - [x] getMe
 - [x] sendMessage
 - [x] forwardMessage
-- [ ] sendPhoto
-- [ ] sendAudio
-- [ ] sendDocument
-- [ ] sendSticker
-- [ ] sendVideo
+- [x] sendPhoto
+- [x] sendAudio
+- [x] sendDocument
+- [x] sendSticker
+- [x] sendVideo
 - [ ] sendLocation
 - [ ] sendChatAction
 - [ ] getUserProfilePhotos

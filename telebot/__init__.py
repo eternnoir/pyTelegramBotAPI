@@ -112,10 +112,25 @@ class TeleBot:
 
     def forward_message(self, chat_id, from_chat_id, message_id):
         """
-
+        Use this method to forward messages of any kind.
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
         :return:
         """
         return apihelper.forward_message(self.token, chat_id, from_chat_id, message_id)
+
+    def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
+        return apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup)
+
+    def send_audio(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+        return apihelper.send_data(self.token, chat_id, data, 'audio', reply_to_message_id, reply_markup)
+
+    def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+        return apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup)
+
+    def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+        return apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup)
+
+    def send_video(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+        return apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup)
