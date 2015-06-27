@@ -52,3 +52,42 @@ def forward_message(token, chat_id, from_chat_id, message_id):
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     req = requests.get(request_url, params=payload)
     return req.json()
+
+
+def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
+    api_url = telebot.API_URL
+    method_url = r'sendPhoto'
+    request_url = api_url + 'bot' + token + '/' + method_url
+    payload = {'chat_id': chat_id}
+    files = {'photo': photo}
+    if caption:
+        payload['caption'] = caption
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = reply_markup
+    req = requests.post(request_url, params=payload, files=files)
+    return req.json()
+
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
+    api_url = telebot.API_URL
+    method_url = get_method_by_type(data_type)
+    request_url = api_url + 'bot' + token + '/' + method_url
+    payload = {'chat_id': chat_id}
+    files = {data_type: data}
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = reply_markup
+    req = requests.post(request_url, params=payload, files=files)
+    return req.json()
+
+def get_method_by_type(data_type):
+    if data_type == 'audio':
+        return 'sendAudio'
+    if data_type == 'document':
+        return 'sendDocument'
+    if data_type == 'sticker':
+        return 'sendSticker'
+    if data_type == 'video':
+        return 'sendVideo'

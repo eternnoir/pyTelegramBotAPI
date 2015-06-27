@@ -60,17 +60,61 @@ while True:
     time.sleep(20)
 ```
 
+## TeleBot API usage
+
+***NOTICE*** : Message type only support text now.
+
+```python
+import telebot
+import time
+
+TOKEN = '<token_string>'
+tb = telebot.TeleBot(TOKEN)	#create new Telegram Bot object
+
+# getMe
+user = tb.get_me()
+
+# sendMessage
+tb.send_message(chatid, text)
+
+# forwardMessage
+# tb.forward_message(10894,926,3)
+tb.forward_message(to_chat_id, from_chat_id, message_id)
+
+# sendPhoto
+photo = open('/tmp/photo.png', 'rb')
+tb.send_photo(chat_id, photo)
+
+# sendAudio
+audio = open('/tmp/audio.ogg', 'rb')
+tb.send_audio(chat_id, audio)
+
+# sendDocument
+doc = open('/tmp/file.txt', 'rb')
+tb.send_document(chat_id, doc)
+
+# sendSticker
+sti = open('/tmp/sti.webp', 'rb')
+tb.send_sticker(chat_id, sti)
+
+# sendVideo
+video = open('/tmp/video.mp4', 'rb')
+tb.send_video(chat_id, video)
+
+```
+
 ## TODO
 
+- [ ] Let message not only support text.
 - [x] getMe
 - [x] sendMessage
 - [x] forwardMessage
-- [ ] sendPhoto
-- [ ] sendAudio
-- [ ] sendDocument
-- [ ] sendSticker
-- [ ] sendVideo
+- [x] sendPhoto
+- [x] sendAudio
+- [x] sendDocument
+- [x] sendSticker
+- [x] sendVideo
 - [ ] sendLocation
 - [ ] sendChatAction
 - [ ] getUserProfilePhotos
-- [x] getUpdates
+- [ ] getUpdates      (Only text message support now.)
