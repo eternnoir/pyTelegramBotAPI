@@ -90,7 +90,10 @@ class TeleBot:
     def __polling(self):
         print 'telegram bot start polling'
         while not self.__stop_polling:
-            self.get_update()
+            try:
+                self.get_update()
+            except Exception as e:
+                print e
             time.sleep(self.interval)
 
         print 'telegram bot stop polling'
