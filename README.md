@@ -117,7 +117,7 @@ tb.send_location(chat_id, lat, lon)
 - [x] sendDocument
 - [x] sendSticker
 - [x] sendVideo
-- [ ] sendLocation
+- [x] sendLocation
 - [ ] sendChatAction
 - [ ] getUserProfilePhotos
 - [ ] getUpdates      (Only text message support now.)
