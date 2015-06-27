@@ -60,9 +60,10 @@ class TeleBot:
         # over buffer size
         if len(self.update_id_list) > self.max_message_size:
             # remove oldest element.
-            upid = self.update_id_list[0]
+            upid = self.update_id_list.pop()
             if upid in self.update_entries:
                 del self.update_entries[upid]
+
         self.update_entries[update_id] = message
         self.update_id_list.append(update_id)
 
@@ -177,3 +178,6 @@ class TeleBot:
         :return:
         """
         return apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup)
+
+
+

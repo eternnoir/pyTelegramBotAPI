@@ -9,7 +9,7 @@ def get_me(token):
     method_url = r'getMe'
     request_url = api_url + 'bot' + token + '/' + method_url
     req = requests.get(request_url)
-    return req.json()
+    return check_result(method_url, req)
 
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
@@ -34,7 +34,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     if reply_markup:
         payload['reply_markup'] = reply_markup
     req = requests.get(request_url, params=payload)
-    return req.json()
+    return check_result(method_url, req)
 
 
 def get_updates(token):
@@ -42,7 +42,7 @@ def get_updates(token):
     method_url = r'getUpdates'
     request_url = api_url + 'bot' + token + '/' + method_url
     req = requests.get(request_url)
-    return req.json()
+    return check_result(method_url,req)
 
 
 def forward_message(token, chat_id, from_chat_id, message_id):
@@ -51,7 +51,7 @@ def forward_message(token, chat_id, from_chat_id, message_id):
     request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     req = requests.get(request_url, params=payload)
-    return req.json()
+    return check_result(method_url, req)
 
 
 def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
@@ -67,7 +67,8 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     if reply_markup:
         payload['reply_markup'] = reply_markup
     req = requests.post(request_url, params=payload, files=files)
-    return req.json()
+    return check_result(method_url, req)
+
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     api_url = telebot.API_URL
@@ -80,7 +81,9 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     if reply_markup:
         payload['reply_markup'] = reply_markup
     req = requests.post(request_url, params=payload, files=files)
-    return req.json()
+    req.status_code
+    return check_result(method_url, req)
+
 
 def get_method_by_type(data_type):
     if data_type == 'audio':
@@ -91,3 +94,21 @@ def get_method_by_type(data_type):
         return 'sendSticker'
     if data_type == 'video':
         return 'sendVideo'
+
+
+def check_result(func_name, result):
+    if result.status_code != 200:
+        raise ApiError(func_name + r' error.', result)
+    try:
+        result_json = result.json()
+        if not result_json['ok']:
+            raise Exception('')
+    except:
+        raise ApiError(func_name + r' error.', result)
+    return result_json
+
+
+class ApiError(Exception):
+    def __init__(self, message, result):
+        super(ApiError, self).__init__(message)
+        self.result = result
