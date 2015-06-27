@@ -83,6 +83,7 @@ class TeleBot:
         time.sleep(interval + 1)
         self.__stop_polling = False
         self.polling_thread = threading.Thread(target=self.__polling, args=())
+        self.polling_thread.daemon = True
         self.polling_thread.start()
 
     def __polling(self):
