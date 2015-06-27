@@ -101,6 +101,9 @@ tb.send_sticker(chat_id, sti)
 video = open('/tmp/video.mp4', 'rb')
 tb.send_video(chat_id, video)
 
+# sendLocation
+tb.send_location(chat_id, lat, lon)
+
 ```
 
 ## TODO

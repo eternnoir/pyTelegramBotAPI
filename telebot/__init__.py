@@ -179,5 +179,5 @@ class TeleBot:
         """
         return apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup)
 
-
-
+    def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
+        return apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup)

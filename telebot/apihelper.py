@@ -42,7 +42,7 @@ def get_updates(token):
     method_url = r'getUpdates'
     request_url = api_url + 'bot' + token + '/' + method_url
     req = requests.get(request_url)
-    return check_result(method_url,req)
+    return check_result(method_url, req)
 
 
 def forward_message(token, chat_id, from_chat_id, message_id):
@@ -67,6 +67,19 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     if reply_markup:
         payload['reply_markup'] = reply_markup
     req = requests.post(request_url, params=payload, files=files)
+    return check_result(method_url, req)
+
+
+def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
+    api_url = telebot.API_URL
+    method_url = r'sendLocation'
+    request_url = api_url + 'bot' + token + '/' + method_url
+    payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = reply_markup
+    req = requests.get(request_url, params=payload)
     return check_result(method_url, req)
 
 
