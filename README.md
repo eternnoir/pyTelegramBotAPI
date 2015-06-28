@@ -105,6 +105,11 @@ tb.send_video(chat_id, video)
 # sendLocation
 tb.send_location(chat_id, lat, lon)
 
+# sendChatAction
+# action_string can be :  typing,upload_photo,record_video,upload_video,record_audio,upload_audio,upload_document,
+#                         find_location.
+tb.send_chat_action(chat_id, action_string)
+
 ```
 
 ## Message notifier

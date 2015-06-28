@@ -82,6 +82,13 @@ def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None,
     req = requests.get(request_url, params=payload)
     return check_result(method_url, req)
 
+def send_chat_action(token,chat_id,action):
+    api_url = telebot.API_URL
+    method_url = r'sendChatAction'
+    request_url = api_url + 'bot' + token + '/' + method_url
+    payload = {'chat_id': chat_id, 'action': action}
+    req = requests.get(request_url, params=payload)
+    return check_result(method_url, req)
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     api_url = telebot.API_URL
