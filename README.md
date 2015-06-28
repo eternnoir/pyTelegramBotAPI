@@ -145,6 +145,6 @@ def listener1(*messages):
 - [x] sendSticker
 - [x] sendVideo
 - [x] sendLocation
-- [ ] sendChatAction
+- [x] sendChatAction
 - [ ] getUserProfilePhotos
 - [ ] getUpdates
