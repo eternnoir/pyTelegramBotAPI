@@ -65,29 +65,68 @@ class Message:
         fromUser = User.de_json(json.dumps(obj['from']))
         chat = Message.parse_chat(obj['chat'])
         date = obj['date']
+        content_type = None
         opts = {}
         if 'text' in obj:
             opts['text'] = obj['text']
-        return Message(message_id, fromUser, date, chat, opts)
+            content_type = 'text'
+        if 'audio' in obj:
+            opts['audio'] = Audio.de_json(json.dumps(obj['audio']))
+            content_type = 'audio'
+        if 'document' in obj:
+            opts['document'] = Document.de_json(json.dumps(obj['document']))
+            content_type = 'document'
+        if 'photo' in obj:
+            opts['photo'] = Message.parse_photo(obj['photo'])
+            content_type = 'photo'
+        if 'sticker' in obj:
+            opts['sticker'] = Sticker.de_json(json.dumps(obj['sticker']))
+            content_type = 'sticker'
+        if 'video' in obj:
+            opts['video'] = Video.de_json(json.dumps(obj['video']))
+            content_type = 'video'
+        if 'location' in obj:
+            opts['location'] = Location.de_json(json.dumps(obj['location']))
+            content_type = 'location'
+        return Message(message_id, fromUser, date, chat, content_type, opts)
 
     @classmethod
     def parse_chat(cls, chat):
-        if chat['id'] < 0:
+        if 'first_name' not in chat:
             return GroupChat.de_json(json.dumps(chat))
         else:
             return User.de_json(json.dumps(chat))
 
-    def __init__(self, message_id, fromUser, date, chat, options):
+    @classmethod
+    def parse_photo(cls, photo_size_array):
+        ret = []
+        for ps in photo_size_array:
+            ret.append(PhotoSize.de_json(json.dumps(ps)))
+        return ret
+
+    def __init__(self, message_id, from_user, date, chat, content_type, options):
         self.chat = chat
         self.date = date
-        self.fromUser = fromUser
+        self.fromUser = from_user
         self.message_id = message_id
+        self.content_type = content_type
         for key in options:
             setattr(self, key, options[key])
 
 
 class PhotoSize:
-    def __init__(self, file_id, width, height, file_size):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        file_id = obj['file_id']
+        width = obj['width']
+        height = obj['height']
+        file_size = None
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        return PhotoSize(file_id, width, height, file_size)
+
+    def __init__(self, file_id, width, height, file_size=None):
         self.file_size = file_size
         self.height = height
         self.width = width
@@ -95,6 +134,19 @@ class PhotoSize:
 
 
 class Audio:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        file_id = obj['file_id']
+        duration = obj['duration']
+        mime_type = None
+        file_size = None
+        if 'mime_type' in obj:
+            mime_type = obj['mime_type']
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        return Audio(file_id, duration, mime_type, file_size)
+
     def __init__(self, file_id, duration, mime_type=None, file_size=None):
         self.file_id = file_id
         self.duration = duration
@@ -103,6 +155,24 @@ class Audio:
 
 
 class Document:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        file_id = obj['file_id']
+        thumb = None
+        if 'file_id' in obj['thumb']:
+            thumb = PhotoSize.de_json(json.dumps(obj['thumb']))
+        file_name = None
+        mime_type = None
+        file_size = None
+        if 'file_name' in obj:
+            file_name = obj['file_name']
+        if 'mine_type' in obj:
+            mime_type = obj['mime_type']
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        return Document(file_id, thumb, file_name, mime_type, file_size)
+
     def __init__(self, file_id, thumb, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
         self.thumb = thumb
@@ -112,6 +182,18 @@ class Document:
 
 
 class Sticker:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        file_id = obj['file_id']
+        width = obj['width']
+        height = obj['height']
+        thumb = PhotoSize.de_json(json.dumps(obj['thumb']))
+        file_size = None
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        return Sticker(file_id, width, height, thumb, file_size)
+
     def __init__(self, file_id, width, height, thumb, file_size=None):
         self.file_id = file_id
         self.width = width
@@ -121,6 +203,26 @@ class Sticker:
 
 
 class Video:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        file_id = obj['file_id']
+        width = obj['width']
+        height = obj['height']
+        duration = obj['duration']
+        if 'file_id' in obj['thumb']:
+            thumb = PhotoSize.de_json(json.dumps(obj['thumb']))
+        caption = None
+        mime_type = None
+        file_size = None
+        if 'caption' in obj:
+            caption = obj['caption']
+        if 'mine_type' in obj:
+            mime_type = obj['mime_type']
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        return Video(file_id, width, height, duration, thumb, mime_type, file_size, caption)
+
     def __init__(self, file_id, width, height, duration, thumb, mime_type=None, file_size=None, caption=None):
         self.file_id = file_id
         self.width = width
@@ -141,6 +243,13 @@ class Contact:
 
 
 class Location:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        longitude = obj['longitude']
+        latitude = obj['latitude']
+        return Location(longitude, latitude)
+
     def __init__(self, longitude, latitude):
         self.longitude = longitude
         self.latitude = latitude
