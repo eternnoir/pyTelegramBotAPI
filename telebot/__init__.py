@@ -202,3 +202,15 @@ class TeleBot:
         :return:
         """
         return apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup)
+
+    def send_chat_action(self, chat_id, action):
+        """
+        Use this method when you need to tell the user that something is happening on the bot's side.
+        The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
+        its typing status).
+        :param chat_id:
+        :param action: string . typing,upload_photo,record_video,upload_video,record_audio,upload_audio,upload_document,
+                                find_location.
+        :return:
+        """
+        return apihelper.send_chat_action(self.token, chat_id, action)
