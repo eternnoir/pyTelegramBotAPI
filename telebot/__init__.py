@@ -112,6 +112,15 @@ class TeleBot:
         return u
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
+        """
+        Use this method to send text messages.
+        :param chat_id:
+        :param text:
+        :param disable_web_page_preview:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return:
+        """
         return apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
                                       reply_markup)
 
@@ -183,4 +192,13 @@ class TeleBot:
         return apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup)
 
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
+        """
+        Use this method to send point on the map.
+        :param chat_id:
+        :param latitude:
+        :param longitude:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return:
+        """
         return apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup)
