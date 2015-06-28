@@ -63,8 +63,6 @@ while True:
 
 ## TeleBot API usage
 
-***NOTICE*** : getUpdates Message type only support text now.
-
 ```python
 import telebot
 import time
