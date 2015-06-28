@@ -107,9 +107,32 @@ tb.send_location(chat_id, lat, lon)
 
 ```
 
+## Message notifier
+
+* Define listener function
+
+```python
+def listener1(*messages):
+    for m in messages:
+        chatid = m.chat.id
+        if m.content_type == 'text'
+            text = m.text
+            tb.send_message(chatid, text)
+```
+
+* Use ***set_update_listener*** method to add listener function to telebot.
+* Start polling or call get_update(). If get new updates, telebot will call listener and pass messages to listener.
+* use Message's content_type attribute to check message type. Now Message support content_type:
+  * text
+  * audio
+  * document
+  * photo
+  * sticker
+  * video
+  * location
+
 ## TODO
 
-- [ ] Let message not only support text.
 - [x] getMe
 - [x] sendMessage
 - [x] forwardMessage
@@ -121,4 +144,4 @@ tb.send_location(chat_id, lat, lon)
 - [x] sendLocation
 - [ ] sendChatAction
 - [ ] getUserProfilePhotos
-- [ ] getUpdates      (Only text message support now.)
+- [ ] getUpdates
