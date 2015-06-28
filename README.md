@@ -1,5 +1,8 @@
 # pyTelegramBotAPI
-Python Telegram bot api.
+
+Python Telegram Bot API.
+
+[https://core.telegram.org/bots/api](https://core.telegram.org/bots/api)
 
 ## How to install
 
