@@ -48,8 +48,9 @@ def listener(*messages):
     """
     for m in messages:
         chatid = m.chat.id
-        text = m.text
-        tb.send_message(chatid, text)
+        if m.content_type == 'text'
+            text = m.text
+            tb.send_message(chatid, text)
 
 
 tb = telebot.TeleBot(TOKEN)
