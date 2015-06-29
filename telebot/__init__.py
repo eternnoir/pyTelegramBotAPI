@@ -42,6 +42,9 @@ class TeleBot:
         self.__stop_polling = False
         self.interval = 3
 
+    def get_last_update_id(self):
+        return self.update_id_list[-1] if len(self.update_id_list) > 0 else None
+
     def get_update(self):
         result = apihelper.get_updates(self.token)
         if result['ok'] is not True:
