@@ -15,7 +15,7 @@ $ cd pyTelegramBotAPI
 $ python setup.py install
 ```
 
-* Install by pip
+* or install by pip
 
 ```
 $ pip install pyTelegramBotAPI
