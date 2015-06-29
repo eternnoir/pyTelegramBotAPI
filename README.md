@@ -6,6 +6,7 @@ Python Telegram Bot API.
 
 ## How to install
 
+* Need python2
 * Install from source
 
 ```
