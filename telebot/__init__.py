@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import apihelper
 import json
-import types
 import time
 import threading
+
+import apihelper
+import types
 
 """
 Module : telebot
@@ -46,7 +47,7 @@ class TeleBot:
         return self.update_id_list[-1] if len(self.update_id_list) > 0 else None
 
     def get_update(self):
-        result = apihelper.get_updates(self.token)
+        result = apihelper.get_updates(self.token, offset=self.get_last_update_id())
         if result['ok'] is not True:
             raise Exception('getMe Error.' + json.dumps(result))
         updates = result['result']
