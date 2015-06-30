@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import telebot
 import requests
+
+import telebot
 
 
 def get_me(token):
@@ -124,7 +125,7 @@ def check_result(func_name, result):
     try:
         result_json = result.json()
         if not result_json['ok']:
-            raise Exception('')
+            raise Exception(func_name, ' failed, result=' + result_json)
     except:
         raise ApiError(func_name + r' error.', result)
     return result_json
