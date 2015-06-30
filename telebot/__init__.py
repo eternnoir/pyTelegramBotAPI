@@ -54,7 +54,7 @@ class TeleBot:
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            t = threading.Thread(target=listener, args=(new_messages))
+            t = threading.Thread(target=listener, args=new_messages)
             t.start()
 
     def polling(self, interval=3):

@@ -34,7 +34,7 @@ def test_json_GroupChat():
 def test_json_Document():
     json_string = r'{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}'
     doc = types.Document.de_json(json_string)
-    assert doc.thumb == None
+    assert doc.thumb is None
     assert doc.file_name == 'Text File'
 
 
