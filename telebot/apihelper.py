@@ -3,6 +3,7 @@
 import requests
 
 import telebot
+from telebot import types
 
 
 def get_me(token):
@@ -33,7 +34,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload['reply_markup'] = convert_markup(reply_markup)
     req = requests.get(request_url, params=payload)
     return check_result(method_url, req)
 
@@ -69,7 +70,7 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload['reply_markup'] = convert_markup(reply_markup)
     req = requests.post(request_url, params=payload, files=files)
     return check_result(method_url, req)
 
@@ -82,7 +83,7 @@ def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None,
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload['reply_markup'] = convert_markup(reply_markup)
     req = requests.get(request_url, params=payload)
     return check_result(method_url, req)
 
@@ -105,7 +106,7 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload['reply_markup'] = convert_markup(reply_markup)
     req = requests.post(request_url, params=payload, files=files)
     return check_result(method_url, req)
 
@@ -132,6 +133,11 @@ def check_result(func_name, result):
         raise ApiError(func_name + r' error.', result)
     return result_json
 
+def convert_markup(markup):
+    if isinstance(markup, types.ReplyKeyboardMarkup):
+        return markup.to_json()
+    else:
+        return markup
 
 class ApiError(Exception):
     def __init__(self, message, result):

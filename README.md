@@ -111,6 +111,18 @@ tb.send_location(chat_id, lat, lon)
 #                         find_location.
 tb.send_chat_action(chat_id, action_string)
 
+# ReplyKeyboardMarkup.
+# Use ReplyKeyboardMarkup class.
+# Thanks pevdh.
+markup = types.ReplyKeyboardMarkup()
+markup.add('a', 'v', 'd')
+tb.send_message(chat_id, message, None, None, markup)
+# or use row method
+markup = types.ReplyKeyboardMarkup()
+markup.row('a', 'v')
+markup.row('c', 'd', 'e')
+tb.send_message(chat_id, message, None, None, markup)
+
 ```
 
 ## Message notifier
