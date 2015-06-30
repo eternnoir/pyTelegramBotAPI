@@ -256,6 +256,13 @@ class Location:
 
 
 class UserProfilePhotos:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        total_count = obj['total_count']
+        photos = [[PhotoSize.de_json(json.dumps(y)) for y in x] for x in obj['photos']]
+        return UserProfilePhotos(total_count, photos)
+
     def __init__(self, total_count, photos):
         self.total_count = total_count
         self.photos = photos

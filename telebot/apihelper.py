@@ -49,6 +49,18 @@ def get_updates(token, offset=None):
     req = requests.get(request_url)
     return check_result(method_url, req)
 
+def get_user_profile_photos(token, user_id, offset=None, limit=None):
+    api_url = telebot.API_URL
+    method_url = r'getUserProfilePhotos'
+    request_url = api_url + 'bot' + token + '/' + method_url
+    payload = {'user_id': user_id}
+    if offset:
+        payload['offset'] = offset
+    if limit:
+        payload['limit'] = limit
+    req = requests.get(request_url, params=payload)
+    return check_result(method_url, req)
+
 
 def forward_message(token, chat_id, from_chat_id, message_id):
     api_url = telebot.API_URL
