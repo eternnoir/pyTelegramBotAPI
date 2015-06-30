@@ -262,8 +262,60 @@ class UserProfilePhotos:
 
 
 class ReplyKeyboardMarkup:
-    def __init__(self, keyboard, resize_keyboard=None, one_time_keyboard=None, selective=None):
-        self.keyboard = keyboard
+    def __init__(self, keyboard=[], resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
+        self.row_width = row_width
+
+        self.keyboard = []
+
+    def add(self, *args):
+        """
+        This function adds strings to the keyboard, while not exceeding row_width.
+        E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
+        when row_width is set to 1.
+        When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
+        See https://core.telegram.org/bots/api#replykeyboardmarkup
+        :param args: strings to append to the keyboard
+        """
+        i = 1
+        row = []
+        for string in args:
+            row.append(string)
+            if i % self.row_width == 0:
+                self.keyboard.append(row)
+                row = []
+            i += 1
+        if len(row) > 0:
+            self.keyboard.append(row)
+
+    def row(self, *args):
+        """
+        Adds a list of strings to the keyboard. This function does not consider row_width.
+        ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
+        See https://core.telegram.org/bots/api#replykeyboardmarkup
+        :param args: strings
+        :return: self, to allow function chaining.
+        """
+        self.keyboard.append(args)
+        return self
+
+    def to_json(self):
+        """
+        Converts this object to its json representation following the Telegram API guidelines described here:
+        https://core.telegram.org/bots/api#replykeyboardmarkup
+        :return:
+        """
+        json_dict = {}
+        json_dict['keyboard'] = self.keyboard
+        if self.one_time_keyboard != False:
+            json_dict['one_time_keyboard'] = True
+
+        if self.resize_keyboard != False:
+            json_dict['resize_keyboard'] = True
+
+        if self.selective != False:
+            json_dict['selective'] = True
+
+        return json.dumps(json_dict)

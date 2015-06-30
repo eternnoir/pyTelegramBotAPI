@@ -37,10 +37,13 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     return check_result(method_url, req)
 
 
-def get_updates(token):
+def get_updates(token, offset=None):
     api_url = telebot.API_URL
     method_url = r'getUpdates'
-    request_url = api_url + 'bot' + token + '/' + method_url
+    if offset is not None:
+        request_url = api_url + 'bot' + token + '/' + method_url + '?offset=' + str(offset)
+    else:
+        request_url = api_url + 'bot' + token + '/' + method_url
     req = requests.get(request_url)
     return check_result(method_url, req)
 
@@ -101,7 +104,6 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     if reply_markup:
         payload['reply_markup'] = reply_markup
     req = requests.post(request_url, params=payload, files=files)
-    req.status_code
     return check_result(method_url, req)
 
 
