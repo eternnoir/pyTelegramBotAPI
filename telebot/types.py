@@ -62,7 +62,7 @@ class Message:
     def de_json(cls, json_string):
         obj = json.loads(json_string)
         message_id = obj['message_id']
-        fromUser = User.de_json(json.dumps(obj['from']))
+        from_user = User.de_json(json.dumps(obj['from']))
         chat = Message.parse_chat(obj['chat'])
         date = obj['date']
         content_type = None
@@ -88,7 +88,7 @@ class Message:
         if 'location' in obj:
             opts['location'] = Location.de_json(json.dumps(obj['location']))
             content_type = 'location'
-        return Message(message_id, fromUser, date, chat, content_type, opts)
+        return Message(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
     def parse_chat(cls, chat):
@@ -262,7 +262,7 @@ class UserProfilePhotos:
 
 
 class ReplyKeyboardMarkup:
-    def __init__(self, keyboard=[], resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
+    def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
@@ -307,15 +307,14 @@ class ReplyKeyboardMarkup:
         https://core.telegram.org/bots/api#replykeyboardmarkup
         :return:
         """
-        json_dict = {}
-        json_dict['keyboard'] = self.keyboard
-        if self.one_time_keyboard != False:
+        json_dict = {'keyboard': self.keyboard}
+        if self.one_time_keyboard:
             json_dict['one_time_keyboard'] = True
 
-        if self.resize_keyboard != False:
+        if self.resize_keyboard:
             json_dict['resize_keyboard'] = True
 
-        if self.selective != False:
+        if self.selective:
             json_dict['selective'] = True
 
         return json.dumps(json_dict)

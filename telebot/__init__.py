@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import apihelper
 import json
-import types
 import time
 import threading
+
+import apihelper
+import types
 
 """
 Module : telebot
@@ -33,46 +34,27 @@ class TeleBot:
 
     def __init__(self, token):
         self.token = token
-        self.update_entries = {}
         self.update_listener = []
-        self.chat_list = {}
-        self.update_id_list = []
-        self.max_message_size = 100000
         self.polling_thread = None
         self.__stop_polling = False
         self.interval = 3
 
-    def get_last_update_id(self):
-        return self.update_id_list[-1] if len(self.update_id_list) > 0 else None
+        self.last_update_id = 0
 
     def get_update(self):
-        result = apihelper.get_updates(self.token)
-        if result['ok'] is not True:
-            raise Exception('getMe Error.' + json.dumps(result))
+        result = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         updates = result['result']
         notify_updates = []
         for update in updates:
-            if update['update_id'] in self.update_entries:
-                continue
+            if update['update_id'] > self.last_update_id:
+                self.last_update_id = update['update_id']
             msg = types.Message.de_json(json.dumps(update['message']))
-            self.__append_message_to_cache(update['update_id'], msg)
             notify_updates.append(msg)
         self.__notify_update(notify_updates)
 
-    def __append_message_to_cache(self, update_id, message):
-        # over buffer size
-        if len(self.update_id_list) > self.max_message_size:
-            # remove oldest element.
-            upid = self.update_id_list.pop()
-            if upid in self.update_entries:
-                del self.update_entries[upid]
-
-        self.update_entries[update_id] = message
-        self.update_id_list.append(update_id)
-
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            t = threading.Thread(target=listener, args=(new_messages))
+            t = threading.Thread(target=listener, args=new_messages)
             t.start()
 
     def polling(self, interval=3):
