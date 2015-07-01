@@ -10,13 +10,13 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     request_url = telebot.API_URL + 'bot' + token + '/' + method_name
     result = requests.request(method, request_url, params=params, files=files)
     if result.status_code != 200:
-        raise ApiError(method_name + r' error.', result)
+        raise ApiException(method_name + r' error.', result)
     try:
         result_json = result.json()
         if not result_json['ok']:
-            raise ApiError(method_name, ' failed, result=' + result_json)
+            raise ApiException(method_name, ' failed, result=' + result_json)
     except:
-        raise ApiError(method_name + r' error.', result)
+        raise ApiException(method_name + r' error.', result)
     return result_json['result']
 
 
@@ -128,7 +128,7 @@ def convert_markup(markup):
     return markup
 
 
-class ApiError(Exception):
+class ApiException(Exception):
     def __init__(self, message, result):
-        super(ApiError, self).__init__(message)
+        super(ApiException, self).__init__(message)
         self.result = result
