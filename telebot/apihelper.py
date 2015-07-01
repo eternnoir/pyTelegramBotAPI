@@ -146,10 +146,9 @@ def check_result(func_name, result):
     return result_json
 
 def convert_markup(markup):
-    if isinstance(markup, types.ReplyKeyboardMarkup):
+    if not isinstance(markup, types.Jsonable):
         return markup.to_json()
-    else:
-        return markup
+    return markup
 
 class ApiError(Exception):
     def __init__(self, message, result):

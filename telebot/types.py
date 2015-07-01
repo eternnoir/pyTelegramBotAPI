@@ -22,6 +22,19 @@ ForceReply
 
 import json
 
+class Jsonable:
+    """
+    Subclasses of this class are guaranteed to be able to be converted to JSON format.
+    All subclasses of this class must override to_json.
+    """
+    def to_json(self):
+        """
+        Returns a JSON string representation of this class.
+
+        This function must be overridden by subclasses.
+        :return: a JSON formatted string.
+        """
+        raise NotImplementedError
 
 class User:
     @classmethod
@@ -268,7 +281,29 @@ class UserProfilePhotos:
         self.photos = photos
 
 
-class ReplyKeyboardMarkup:
+class ForceReply(Jsonable):
+    def __init__(self, selective=None):
+        self.selective = selective
+
+    def to_json(self):
+        json_dict = {'force_reply': True}
+        if self.selective:
+            json_dict['selective'] = True
+        return json.dumps(json_dict)
+
+
+class ReplyKeyboardHide(Jsonable):
+    def __init__(self, selective=None):
+        self.selective = selective
+
+    def to_json(self):
+        json_dict = {'hide_keyboard': True}
+        if self.selective:
+            json_dict['selective'] = True
+        return json.dumps(json_dict)
+
+
+class ReplyKeyboardMarkup(Jsonable):
     def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
