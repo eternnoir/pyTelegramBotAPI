@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import json
 import time
 import threading
 
@@ -209,4 +208,3 @@ class TeleBot:
         :return:
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
-

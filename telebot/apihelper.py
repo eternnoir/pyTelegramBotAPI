@@ -54,6 +54,7 @@ def get_updates(token, offset=None):
     else:
         return _make_request(token, method_url)
 
+
 def get_user_profile_photos(token, user_id, offset=None, limit=None):
     method_url = r'getUserProfilePhotos'
     payload = {'user_id': user_id}
