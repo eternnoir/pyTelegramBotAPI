@@ -114,6 +114,9 @@ tb.send_chat_action(chat_id, action_string)
 # ReplyKeyboardMarkup.
 # Use ReplyKeyboardMarkup class.
 # Thanks pevdh.
+
+from telebot import types
+
 markup = types.ReplyKeyboardMarkup()
 markup.add('a', 'v', 'd')
 tb.send_message(chat_id, message, None, None, markup)
