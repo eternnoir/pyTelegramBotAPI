@@ -147,7 +147,7 @@ def check_result(func_name, result):
 
 
 def convert_markup(markup):
-    if not isinstance(markup, types.Jsonable):
+    if isinstance(markup, types.Jsonable):
         return markup.to_json()
     return markup
 
