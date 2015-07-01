@@ -145,10 +145,12 @@ def check_result(func_name, result):
         raise ApiError(func_name + r' error.', result)
     return result_json
 
+
 def convert_markup(markup):
     if not isinstance(markup, types.Jsonable):
         return markup.to_json()
     return markup
+
 
 class ApiError(Exception):
     def __init__(self, message, result):
