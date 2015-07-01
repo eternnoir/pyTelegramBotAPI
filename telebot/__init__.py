@@ -42,13 +42,12 @@ class TeleBot:
         self.last_update_id = 0
 
     def get_update(self):
-        result = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
-        updates = result['result']
+        updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         new_messages = []
         for update in updates:
             if update['update_id'] > self.last_update_id:
                 self.last_update_id = update['update_id']
-            msg = types.Message.de_json(json.dumps(update['message']))
+            msg = types.Message.de_json(update['message'])
             new_messages.append(msg)
 
         if len(new_messages) > 0:
@@ -93,7 +92,7 @@ class TeleBot:
 
     def get_me(self):
         result = apihelper.get_me(self.token)
-        return types.User.de_json(json.dumps(result['result']))
+        return types.User.de_json(result)
 
     def get_user_profile_photos(self, user_id, offset=None, limit=None):
         """
@@ -105,7 +104,7 @@ class TeleBot:
         :return:
         """
         result = apihelper.get_user_profile_photos(self.token, user_id, offset, limit)
-        return types.UserProfilePhotos.de_json(json.dumps(result['result']))
+        return types.UserProfilePhotos.de_json(result)
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
         """

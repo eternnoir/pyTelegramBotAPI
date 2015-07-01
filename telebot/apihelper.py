@@ -6,12 +6,23 @@ import telebot
 from telebot import types
 
 
+def _make_request(token, method_name, method='get', params=None, files=None):
+    request_url = telebot.API_URL + 'bot' + token + '/' + method_name
+    result = requests.request(method, request_url, params=params, files=files)
+    if result.status_code != 200:
+        raise ApiError(method_name + r' error.', result)
+    try:
+        result_json = result.json()
+        if not result_json['ok']:
+            raise ApiError(method_name, ' failed, result=' + result_json)
+    except:
+        raise ApiError(method_name + r' error.', result)
+    return result_json['result']
+
+
 def get_me(token):
-    api_url = telebot.API_URL
-    method_url = r'getMe'
-    request_url = api_url + 'bot' + token + '/' + method_url
-    req = requests.get(request_url)
-    return check_result(method_url, req)
+    method_url = 'getMe'
+    return _make_request(token, method_url)
 
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
@@ -25,9 +36,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     :param reply_markup:
     :return:
     """
-    api_url = telebot.API_URL
     method_url = r'sendMessage'
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': str(chat_id), 'text': text}
     if disable_web_page_preview:
         payload['disable_web_page_preview'] = disable_web_page_preview
@@ -35,46 +44,34 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = convert_markup(reply_markup)
-    req = requests.get(request_url, params=payload)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload)
 
 
 def get_updates(token, offset=None):
-    api_url = telebot.API_URL
     method_url = r'getUpdates'
     if offset is not None:
-        request_url = api_url + 'bot' + token + '/' + method_url + '?offset=' + str(offset)
+        return _make_request(token, method_url, params={'offset': offset})
     else:
-        request_url = api_url + 'bot' + token + '/' + method_url
-    req = requests.get(request_url)
-    return check_result(method_url, req)
+        return _make_request(token, method_url)
 
 def get_user_profile_photos(token, user_id, offset=None, limit=None):
-    api_url = telebot.API_URL
     method_url = r'getUserProfilePhotos'
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'user_id': user_id}
     if offset:
         payload['offset'] = offset
     if limit:
         payload['limit'] = limit
-    req = requests.get(request_url, params=payload)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload)
 
 
 def forward_message(token, chat_id, from_chat_id, message_id):
-    api_url = telebot.API_URL
     method_url = r'forwardMessage'
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
-    req = requests.get(request_url, params=payload)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload)
 
 
 def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
-    api_url = telebot.API_URL
     method_url = r'sendPhoto'
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id}
     files = {'photo': photo}
     if caption:
@@ -83,44 +80,34 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = convert_markup(reply_markup)
-    req = requests.post(request_url, params=payload, files=files)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
-    api_url = telebot.API_URL
     method_url = r'sendLocation'
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = convert_markup(reply_markup)
-    req = requests.get(request_url, params=payload)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload)
 
 
 def send_chat_action(token, chat_id, action):
-    api_url = telebot.API_URL
     method_url = r'sendChatAction'
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id, 'action': action}
-    req = requests.get(request_url, params=payload)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload)
 
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
-    api_url = telebot.API_URL
     method_url = get_method_by_type(data_type)
-    request_url = api_url + 'bot' + token + '/' + method_url
     payload = {'chat_id': chat_id}
     files = {data_type: data}
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = convert_markup(reply_markup)
-    req = requests.post(request_url, params=payload, files=files)
-    return check_result(method_url, req)
+    return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def get_method_by_type(data_type):
@@ -134,20 +121,8 @@ def get_method_by_type(data_type):
         return 'sendVideo'
 
 
-def check_result(func_name, result):
-    if result.status_code != 200:
-        raise ApiError(func_name + r' error.', result)
-    try:
-        result_json = result.json()
-        if not result_json['ok']:
-            raise Exception(func_name, ' failed, result=' + result_json)
-    except:
-        raise ApiError(func_name + r' error.', result)
-    return result_json
-
-
 def convert_markup(markup):
-    if isinstance(markup, types.Jsonable):
+    if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
 
