@@ -164,5 +164,5 @@ def listener1(*messages):
 - [x] sendVideo
 - [x] sendLocation
 - [x] sendChatAction
-- [ ] getUserProfilePhotos
+- [x] getUserProfilePhotos
 - [ ] getUpdat(contact and chat message not yet)
