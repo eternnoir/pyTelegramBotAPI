@@ -44,13 +44,15 @@ class TeleBot:
     def get_update(self):
         result = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         updates = result['result']
-        notify_updates = []
+        new_messages = []
         for update in updates:
             if update['update_id'] > self.last_update_id:
                 self.last_update_id = update['update_id']
             msg = types.Message.de_json(json.dumps(update['message']))
-            notify_updates.append(msg)
-        self.__notify_update(notify_updates)
+            new_messages.append(msg)
+
+        if len(new_messages) > 0:
+            self.__notify_update(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
