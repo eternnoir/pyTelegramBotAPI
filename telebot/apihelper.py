@@ -133,11 +133,13 @@ def check_result(func_name, result):
         raise ApiError(func_name + r' error.', result)
     return result_json
 
+
 def convert_markup(markup):
     if isinstance(markup, types.ReplyKeyboardMarkup):
         return markup.to_json()
     else:
         return markup
+
 
 class ApiError(Exception):
     def __init__(self, message, result):

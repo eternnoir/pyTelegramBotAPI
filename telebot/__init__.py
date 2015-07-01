@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import json
 import time
 import threading
 
-import apihelper
-import types
+from telebot import apihelper, types
 
 """
 Module : telebot
@@ -73,15 +73,15 @@ class TeleBot:
         self.polling_thread.start()
 
     def __polling(self):
-        print 'telegram bot start polling'
+        print('telegram bot start polling')
         while not self.__stop_polling:
             try:
                 self.get_update()
             except Exception as e:
-                print e
+                print(e)
             time.sleep(self.interval)
 
-        print 'telegram bot stop polling'
+        print('telegram bot stop polling')
 
     def stop_polling(self):
         self.__stop_polling = True
