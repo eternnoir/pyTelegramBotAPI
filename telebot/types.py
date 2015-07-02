@@ -23,7 +23,7 @@ ForceReply
 import json
 
 
-class Jsonable:
+class JsonSerializable:
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
@@ -39,10 +39,41 @@ class Jsonable:
         raise NotImplementedError
 
 
-class User:
+class JsonDeserializable:
+    """
+    Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
+    All subclasses of this class must override de_json.
+    """
+    @classmethod
+    def de_json(cls, json_type):
+        """
+        Returns an instance of this class from the given json dict or string.
+
+        This function must be overridden by subclasses.
+        :return: an instance of this class created from the given json dict or string.
+        """
+        raise NotImplementedError
+
+    @staticmethod
+    def check_json(json_type):
+        """
+        Checks whether json_type is a dict or a string. If it is already a dict, it is returned as-is.
+        If it is not, it is converted to a dict by means of json.loads(json_type)
+        :param json_type:
+        :return:
+        """
+        if type(json_type) == dict:
+            return json_type
+        elif type(json_type) == str:
+            return json.loads(json_type)
+        else:
+            raise ValueError("json_type should be a json dict or string.")
+
+
+class User(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         id = obj['id']
         first_name = obj['first_name']
         last_name = None
@@ -60,10 +91,10 @@ class User:
         self.last_name = last_name
 
 
-class GroupChat:
+class GroupChat(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         id = obj['id']
         title = obj['title']
         return GroupChat(id, title)
@@ -73,12 +104,12 @@ class GroupChat:
         self.title = title
 
 
-class Message:
+class Message(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         message_id = obj['message_id']
-        from_user = User.de_json(json.dumps(obj['from']))
+        from_user = User.de_json(obj['from'])
         chat = Message.parse_chat(obj['chat'])
         date = obj['date']
         content_type = None
@@ -87,22 +118,22 @@ class Message:
             opts['text'] = obj['text']
             content_type = 'text'
         if 'audio' in obj:
-            opts['audio'] = Audio.de_json(json.dumps(obj['audio']))
+            opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
         if 'document' in obj:
-            opts['document'] = Document.de_json(json.dumps(obj['document']))
+            opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
         if 'photo' in obj:
             opts['photo'] = Message.parse_photo(obj['photo'])
             content_type = 'photo'
         if 'sticker' in obj:
-            opts['sticker'] = Sticker.de_json(json.dumps(obj['sticker']))
+            opts['sticker'] = Sticker.de_json(obj['sticker'])
             content_type = 'sticker'
         if 'video' in obj:
-            opts['video'] = Video.de_json(json.dumps(obj['video']))
+            opts['video'] = Video.de_json(obj['video'])
             content_type = 'video'
         if 'location' in obj:
-            opts['location'] = Location.de_json(json.dumps(obj['location']))
+            opts['location'] = Location.de_json(obj['location'])
             content_type = 'location'
         if 'contact' in obj:
             opts['contact'] = Contact.de_json(json.dumps(obj['contact']))
@@ -112,15 +143,15 @@ class Message:
     @classmethod
     def parse_chat(cls, chat):
         if 'first_name' not in chat:
-            return GroupChat.de_json(json.dumps(chat))
+            return GroupChat.de_json(chat)
         else:
-            return User.de_json(json.dumps(chat))
+            return User.de_json(chat)
 
     @classmethod
     def parse_photo(cls, photo_size_array):
         ret = []
         for ps in photo_size_array:
-            ret.append(PhotoSize.de_json(json.dumps(ps)))
+            ret.append(PhotoSize.de_json(ps))
         return ret
 
     def __init__(self, message_id, from_user, date, chat, content_type, options):
@@ -133,10 +164,10 @@ class Message:
             setattr(self, key, options[key])
 
 
-class PhotoSize:
+class PhotoSize(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
@@ -152,10 +183,10 @@ class PhotoSize:
         self.file_id = file_id
 
 
-class Audio:
+class Audio(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
         mime_type = None
@@ -173,14 +204,14 @@ class Audio:
         self.file_size = file_size
 
 
-class Document:
+class Document(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         thumb = None
         if 'file_id' in obj['thumb']:
-            thumb = PhotoSize.de_json(json.dumps(obj['thumb']))
+            thumb = PhotoSize.de_json(obj['thumb'])
         file_name = None
         mime_type = None
         file_size = None
@@ -200,14 +231,14 @@ class Document:
         self.file_size = file_size
 
 
-class Sticker:
+class Sticker(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
-        thumb = PhotoSize.de_json(json.dumps(obj['thumb']))
+        thumb = PhotoSize.de_json(obj['thumb'])
         file_size = None
         if 'file_size' in obj:
             file_size = obj['file_size']
@@ -221,16 +252,15 @@ class Sticker:
         self.file_size = file_size
 
 
-class Video:
+class Video(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        if 'file_id' in obj['thumb']:
-            thumb = PhotoSize.de_json(json.dumps(obj['thumb']))
+        thumb = PhotoSize.de_json(obj['thumb'])
         caption = None
         mime_type = None
         file_size = None
@@ -253,10 +283,10 @@ class Video:
         self.caption = caption
 
 
-class Contact:
+class Contact(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
         last_name = None
@@ -273,10 +303,10 @@ class Contact:
         self.user_id = user_id
 
 
-class Location:
+class Location(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         longitude = obj['longitude']
         latitude = obj['latitude']
         return Location(longitude, latitude)
@@ -286,12 +316,12 @@ class Location:
         self.latitude = latitude
 
 
-class UserProfilePhotos:
+class UserProfilePhotos(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         total_count = obj['total_count']
-        photos = [[PhotoSize.de_json(json.dumps(y)) for y in x] for x in obj['photos']]
+        photos = [[PhotoSize.de_json(y) for y in x] for x in obj['photos']]
         return UserProfilePhotos(total_count, photos)
 
     def __init__(self, total_count, photos):
@@ -299,7 +329,7 @@ class UserProfilePhotos:
         self.photos = photos
 
 
-class ForceReply(Jsonable):
+class ForceReply(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
@@ -310,7 +340,7 @@ class ForceReply(Jsonable):
         return json.dumps(json_dict)
 
 
-class ReplyKeyboardHide(Jsonable):
+class ReplyKeyboardHide(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
@@ -321,7 +351,7 @@ class ReplyKeyboardHide(Jsonable):
         return json.dumps(json_dict)
 
 
-class ReplyKeyboardMarkup(Jsonable):
+class ReplyKeyboardMarkup(JsonSerializable):
     def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard

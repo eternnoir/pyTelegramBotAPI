@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import json
 import time
 import threading
+import re
 
 from telebot import apihelper, types
 
@@ -41,18 +41,25 @@ class TeleBot:
 
         self.last_update_id = 0
 
+        self.commands = []
+
     def get_update(self):
-        result = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
-        updates = result['result']
+        """
+        Retrieves any updates from the Telegram API.
+        Registered listeners and applicable message handlers will be notified when a new message arrives.
+        :raises ApiException when a call has failed.
+        """
+        updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         new_messages = []
         for update in updates:
             if update['update_id'] > self.last_update_id:
                 self.last_update_id = update['update_id']
-            msg = types.Message.de_json(json.dumps(update['message']))
+            msg = types.Message.de_json(update['message'])
             new_messages.append(msg)
 
         if len(new_messages) > 0:
             self.__notify_update(new_messages)
+            self._notify_command_handlers(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -93,7 +100,7 @@ class TeleBot:
 
     def get_me(self):
         result = apihelper.get_me(self.token)
-        return types.User.de_json(json.dumps(result['result']))
+        return types.User.de_json(result)
 
     def get_user_profile_photos(self, user_id, offset=None, limit=None):
         """
@@ -105,7 +112,7 @@ class TeleBot:
         :return:
         """
         result = apihelper.get_user_profile_photos(self.token, user_id, offset, limit)
-        return types.UserProfilePhotos.de_json(json.dumps(result['result']))
+        return types.UserProfilePhotos.de_json(result)
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
         """
@@ -211,3 +218,55 @@ class TeleBot:
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
 
+    def message_handler(self, regexp=None, func=None, content_types=['text']):
+        """
+        Message handler decorator.
+        This decorator can be used to decorate functions that must handle certain types of messages.
+        All message handlers are tested in the order they were added.
+
+        Example:
+
+        bot = TeleBot('TOKEN')
+
+        # Handles all messages which text matches regexp.
+        @bot.message_handler(regexp='someregexp')
+        def command_help(message):
+            bot.send_message(message.chat.id, 'Did someone call for help?')
+
+        # Handle all sent documents of type 'text/plain'.
+        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
+        def command_handle_document(message):
+            bot.send_message(message.chat.id, 'Document received, sir!')
+
+        # Handle all other commands.
+        @bot.message_handler(func=lambda message: True, content_types=['audio', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+        def default_command(message):
+            bot.send_message(message.chat.id, "This is the default command handler.")
+
+        :param regexp: Optional regular expression.
+        :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
+        :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
+        :return:
+        """
+        def decorator(fn):
+            self.commands.append([fn, regexp, func, content_types])
+            return fn
+        return decorator
+
+    @staticmethod
+    def _test_command(command, message):
+        if message.content_type not in command[3]:
+            return False
+        if command[1] is not None and message.content_type == 'text' and re.search(command[1], message.text):
+            return True
+        if command[2] is not None:
+            return command[2](message)
+        return False
+
+    def _notify_command_handlers(self, new_messages):
+        for message in new_messages:
+            for command in self.commands:
+                if self._test_command(command, message):
+                    t = threading.Thread(target=command[0], args=(message,))
+                    t.start()
+                    break
