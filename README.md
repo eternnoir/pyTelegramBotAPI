@@ -1,12 +1,13 @@
 # pyTelegramBotAPI
 
-Python Telegram Bot API.
+A Python implementation for the Telegram Bot API.
 
-[https://core.telegram.org/bots/api](https://core.telegram.org/bots/api)
+See [https://core.telegram.org/bots/api](https://core.telegram.org/bots/api)
 
 ## How to install
 
-* Need python2 or python3
+Python 2 or Python 3 is required.
+
 * Install from source
 
 ```
@@ -15,7 +16,7 @@ $ cd pyTelegramBotAPI
 $ python setup.py install
 ```
 
-* or install by pip
+* or install with pip
 
 ```
 $ pip install pyTelegramBotAPI
@@ -23,7 +24,7 @@ $ pip install pyTelegramBotAPI
 
 ## Example
 
-* Send Message
+* Sending a message.
 
 ```python
 import telebot
@@ -31,8 +32,8 @@ import telebot
 TOKEN = '<token string>'
 
 tb = telebot.TeleBot(TOKEN)
-# tb.send_message(chatid,message)
-print tb.send_message(281281, 'gogo power ranger')
+# tb.send_message(chatid, message)
+tb.send_message(281281, 'gogo power ranger')
 ```
 
 * Echo Bot
@@ -45,9 +46,7 @@ TOKEN = '<token_string>'
 
 def listener(*messages):
     """
-    When new message get will call this function.
-    :param messages:
-    :return:
+    When new messages arrive TeleBot will call this function.
     """
     for m in messages:
         chatid = m.chat.id
@@ -57,11 +56,11 @@ def listener(*messages):
 
 
 tb = telebot.TeleBot(TOKEN)
-tb.get_update()  # cache exist message
 tb.set_update_listener(listener) #register listener
-tb.polling(3)
-while True:
-    time.sleep(20)
+tb.polling()
+
+while True: # Don't let the main Thread end.
+    pass
 ```
 
 ## TeleBot API usage
@@ -71,7 +70,7 @@ import telebot
 import time
 
 TOKEN = '<token_string>'
-tb = telebot.TeleBot(TOKEN)	#create new Telegram Bot object
+tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 
 # getMe
 user = tb.get_me()
@@ -107,43 +106,59 @@ tb.send_video(chat_id, video)
 tb.send_location(chat_id, lat, lon)
 
 # sendChatAction
-# action_string can be :  typing,upload_photo,record_video,upload_video,record_audio,upload_audio,upload_document,
-#                         find_location.
+# action_string can be one of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
+# 'record_audio', 'upload_audio', 'upload_document' or 'find_location'.
 tb.send_chat_action(chat_id, action_string)
 
-# ReplyKeyboardMarkup.
-# Use ReplyKeyboardMarkup class.
+# Use the ReplyKeyboardMarkup class.
 # Thanks pevdh.
 
 from telebot import types
 
 markup = types.ReplyKeyboardMarkup()
 markup.add('a', 'v', 'd')
-tb.send_message(chat_id, message, None, None, markup)
-# or use row method
+tb.send_message(chat_id, message, reply_markup=markup)
+
+# or add strings one row at a time:
 markup = types.ReplyKeyboardMarkup()
 markup.row('a', 'v')
 markup.row('c', 'd', 'e')
-tb.send_message(chat_id, message, None, None, markup)
+tb.send_message(chat_id, message, reply_markup=markup)
 
 ```
 
-## Message notifier
-
-* Define listener function
-
+## Creating a Telegram bot with the pyTelegramBotAPI
+There are two ways to define a Telegram Bot with the pyTelegramBotAPI.
+### The listener mechanism
+* First, create a TeleBot instance.
 ```python
-def listener1(*messages):
+import telebot
+
+TOKEN = '<token string>'
+
+bot = telebot.TeleBot(TOKEN)
+```
+* Then, define a listener function.
+```python
+def echo_messages(*messages):
+	"""
+	Echoes all incoming messages of content_type 'text'.
+	"""
     for m in messages:
         chatid = m.chat.id
         if m.content_type == 'text'
             text = m.text
-            tb.send_message(chatid, text)
+            bot.send_message(chatid, text)
 ```
+* Now, register your listener with the TeleBot instance and call TeleBot#polling()
+```python
+bot.set_update_listener(echo_messages)
+bot.polling()
 
-* Use ***set_update_listener*** method to add listener function to telebot.
-* Start polling or call get_update(). If get new updates, telebot will call listener and pass messages to listener.
-* use Message's content_type attribute to check message type. Now Message support content_type:
+while True: # Don't let the main Thread end.
+    pass
+```
+* use Message's content_type attribute to check the type of Message. Now Message supports content types:
   * text
   * audio
   * document
@@ -151,6 +166,49 @@ def listener1(*messages):
   * sticker
   * video
   * location
+* That's it!
+
+### The decorator mechanism
+* First, create a TeleBot instance.
+```python
+import telebot
+
+TOKEN = '<token string>'
+
+bot = telebot.TeleBot(TOKEN)
+```
+* Next, define all of your so-called message handlers and decorate them with @bot.message_handler
+```python
+# Handle /start and /help
+@bot.message_handler(commands=['start', 'help'])
+def command_help(message):
+    bot.send_message(message.chat.id, "Hello, did someone call for help?")
+    
+# Handles all messages which text matches the regex regexp.
+# See https://en.wikipedia.org/wiki/Regular_expression
+# This regex matches all sent url's.
+@bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+def command_url(message):
+    bot.send_message(message.chat.id, "I shouldn't open that url, should I?")
+
+# Handle all sent documents of type 'text/plain'.
+@bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
+def command_handle_document(message):
+    bot.send_message(message.chat.id, "Document received, sir!")
+
+# Default command handler. A lambda expression which always returns True is used for this purpose.
+@bot.message_handler(func=lambda message: True, content_types=['audio', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+def default_command(message):
+    bot.send_message(message.chat.id, "This is the default command handler.")
+```
+* And finally, call bot.polling()
+```python
+bot.polling()
+
+while True: # Don't end the main thread.
+    pass
+```
+Use whichever mechanism fits your purpose! It is even possible to mix and match.
 
 ## TODO
 
@@ -165,4 +223,4 @@ def listener1(*messages):
 - [x] sendLocation
 - [x] sendChatAction
 - [x] getUserProfilePhotos
-- [ ] getUpdat(chat message not yet)
+- [ ] getUpdate(chat message not yet)
