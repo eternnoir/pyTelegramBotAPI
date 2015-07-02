@@ -22,11 +22,13 @@ ForceReply
 
 import json
 
+
 class Jsonable:
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
     """
+
     def to_json(self):
         """
         Returns a JSON string representation of this class.
@@ -35,6 +37,7 @@ class Jsonable:
         :return: a JSON formatted string.
         """
         raise NotImplementedError
+
 
 class User:
     @classmethod
@@ -101,6 +104,9 @@ class Message:
         if 'location' in obj:
             opts['location'] = Location.de_json(json.dumps(obj['location']))
             content_type = 'location'
+        if 'contact' in obj:
+            opts['contact'] = Contact.de_json(json.dumps(obj['contact']))
+            content_type = 'contact'
         return Message(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
@@ -248,6 +254,18 @@ class Video:
 
 
 class Contact:
+    @classmethod
+    def de_json(cls, json_string):
+        obj = json.loads(json_string)
+        phone_number = obj['phone_number']
+        first_name = obj['first_name']
+        last_name = None
+        if 'last_name' in obj:
+            last_name = obj['last_name']
+        if 'user_id' in obj:
+            user_id = obj['user_id']
+        return Contact(phone_number, first_name, last_name, user_id)
+
     def __init__(self, phone_number, first_name, last_name=None, user_id=None):
         self.phone_number = phone_number
         self.first_name = first_name
