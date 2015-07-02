@@ -44,6 +44,11 @@ class TeleBot:
         self.commands = []
 
     def get_update(self):
+        """
+        Retrieves any updates from the Telegram API.
+        Registered listeners and applicable message handlers will be notified when a new message arrives.
+        :raises ApiException when a call has failed.
+        """
         updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         new_messages = []
         for update in updates:
