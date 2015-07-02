@@ -56,12 +56,16 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     return _make_request(token, method_url, params=payload)
 
 
-def get_updates(token, offset=None):
+def get_updates(token, offset=None, limit=None, timeout=None):
     method_url = r'getUpdates'
-    if offset is not None:
-        return _make_request(token, method_url, params={'offset': offset})
-    else:
-        return _make_request(token, method_url)
+    payload = {}
+    if offset:
+        payload['offset'] = offset
+    if limit:
+        payload['limit'] = limit
+    if timeout:
+        payload['timeout'] = timeout
+    return _make_request(token, method_url, params=payload)
 
 
 def get_user_profile_photos(token, user_id, offset=None, limit=None):
