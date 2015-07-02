@@ -14,7 +14,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     try:
         result_json = result.json()
         if not result_json['ok']:
-            raise ApiException(method_name, ' failed, result=' + result_json)
+            raise Exception()
     except:
         raise ApiException(method_name + r' error.', result)
     return result_json['result']

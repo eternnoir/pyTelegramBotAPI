@@ -256,8 +256,7 @@ class Video(JsonDeserializable):
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        if 'file_id' in obj['thumb']:
-            thumb = PhotoSize.de_json(obj['thumb'])
+        thumb = PhotoSize.de_json(obj['thumb'])
         caption = None
         mime_type = None
         file_size = None

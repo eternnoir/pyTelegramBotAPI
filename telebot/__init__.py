@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import time
 import threading
+import re
 
 from telebot import apihelper, types
 
@@ -40,6 +41,8 @@ class TeleBot:
 
         self.last_update_id = 0
 
+        self.commands = []
+
     def get_update(self):
         updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         new_messages = []
@@ -51,6 +54,7 @@ class TeleBot:
 
         if len(new_messages) > 0:
             self.__notify_update(new_messages)
+            self._notify_command_handlers(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -208,3 +212,56 @@ class TeleBot:
         :return:
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
+
+    def message_handler(self, regexp=None, func=None, content_types=['text']):
+        """
+        Message handler decorator.
+        This decorator can be used to decorate functions that must handle certain types of messages.
+        All message handlers are tested in the order they were added.
+
+        Example:
+
+        bot = TeleBot('TOKEN')
+
+        # Handles all messages which text matches regexp.
+        @bot.message_handler(regexp='someregexp')
+        def command_help(message):
+            bot.send_message(message.chat.id, 'Did someone call for help?')
+
+        # Handle all sent documents of type 'text/plain'.
+        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
+        def command_handle_document(message):
+            bot.send_message(message.chat.id, 'Document received, sir!')
+
+        # Handle all other commands.
+        @bot.message_handler(func=lambda message: True, content_types=['audio', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+        def default_command(message):
+            bot.send_message(message.chat.id, "This is the default command handler.")
+
+        :param regexp: Optional regular expression.
+        :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
+        :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
+        :return:
+        """
+        def decorator(fn):
+            self.commands.append([fn, regexp, func, content_types])
+            return fn
+        return decorator
+
+    @staticmethod
+    def _test_command(command, message):
+        if message.content_type not in command[3]:
+            return False
+        if command[1] is not None and message.content_type == 'text' and re.search(command[1], message.text):
+            return True
+        if command[2] is not None:
+            return command[2](message)
+        return False
+
+    def _notify_command_handlers(self, new_messages):
+        for message in new_messages:
+            for command in self.commands:
+                if self._test_command(command, message):
+                    t = threading.Thread(target=command[0], args=(message,))
+                    t.start()
+                    break
