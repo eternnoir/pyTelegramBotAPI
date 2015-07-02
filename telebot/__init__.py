@@ -74,7 +74,6 @@ class TeleBot:
         Do not call this function more than once!
 
         Always get updates.
-        :param interval: interval secs.
         :return:
         """
         self.__stop_polling = False
@@ -126,8 +125,9 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
-                                      reply_markup)
+        return types.Message.de_json(
+            apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
+                                   reply_markup))
 
     def forward_message(self, chat_id, from_chat_id, message_id):
         """
@@ -137,7 +137,7 @@ class TeleBot:
         :param message_id: message id
         :return: API reply.
         """
-        return apihelper.forward_message(self.token, chat_id, from_chat_id, message_id)
+        return types.Message.de_json(apihelper.forward_message(self.token, chat_id, from_chat_id, message_id))
 
     def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
         """
@@ -149,7 +149,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup)
+        return types.Message.de_json(
+            apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup))
 
     def send_audio(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
@@ -161,7 +162,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_data(self.token, chat_id, data, 'audio', reply_to_message_id, reply_markup)
+        return types.Message.de_json(
+            apihelper.send_data(self.token, chat_id, data, 'audio', reply_to_message_id, reply_markup))
 
     def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
@@ -172,7 +174,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup)
+        return types.Message.de_json(
+            apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup))
 
     def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
@@ -183,7 +186,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup)
+        return types.Message.de_json(
+            apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup))
 
     def send_video(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
@@ -194,7 +198,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup)
+        return types.Message.de_json(
+            apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup))
 
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
         """
@@ -206,7 +211,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
-        return apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup)
+        return types.Message.de_json(
+            apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup))
 
     def send_chat_action(self, chat_id, action):
         """
@@ -218,7 +224,7 @@ class TeleBot:
                         'record_audio', 'upload_audio', 'upload_document', 'find_location'.
         :return: API reply.
         """
-        return apihelper.send_chat_action(self.token, chat_id, action)
+        return types.Message.de_json(apihelper.send_chat_action(self.token, chat_id, action))
 
     def reply_to(self, message, text, **kwargs):
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
@@ -252,6 +258,7 @@ class TeleBot:
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
         :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
         """
+
         def decorator(fn):
             func_dict = {'function': fn, 'content_types': content_types}
             if regexp:
@@ -262,6 +269,7 @@ class TeleBot:
                 func_dict['commands'] = commands if 'text' in content_types else None
             self.message_handlers.append(func_dict)
             return fn
+
         return decorator
 
     @staticmethod
@@ -295,7 +303,8 @@ class TeleBot:
             return False
         if 'commands' in message_handler and message.content_type == 'text':
             return TeleBot.extract_command(message.text) in message_handler['commands']
-        if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'], message.text):
+        if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
+                                                                                        message.text):
             return False
         if 'lambda' in message_handler:
             return message_handler['lambda'](message)
@@ -308,3 +317,88 @@ class TeleBot:
                     t = threading.Thread(target=message_handler['function'], args=(message,))
                     t.start()
                     break
+
+
+class AsyncTask:
+    def __init__(self, target, *args, **kwargs):
+        self.target = target
+        self.args = args
+        self.kwargs = kwargs
+
+        self.done = False
+        self.thread = threading.Thread(target=self._run)
+        self.thread.start()
+
+    def _run(self):
+        try:
+            self.result = self.target(*self.args, **self.kwargs)
+        except Exception as e:
+            self.result = e
+        self.done = True
+
+    def wait(self):
+        if not self.done:
+            self.thread.join()
+        if isinstance(self.result, Exception):
+            raise self.result
+        else:
+            return self.result
+
+
+def async():
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            return AsyncTask(fn, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+class AsyncTeleBot(TeleBot):
+    def __init__(self, *args, **kwargs):
+        TeleBot.__init__(self, *args, **kwargs)
+
+    @async()
+    def get_me(self):
+        return TeleBot.get_me(self)
+
+    @async()
+    def get_user_profile_photos(self, *args, **kwargs):
+        return TeleBot.get_user_profile_photos(self, *args, **kwargs)
+
+    @async()
+    def send_message(self, *args, **kwargs):
+        return TeleBot.send_message(self, *args, **kwargs)
+
+    @async()
+    def forward_message(self, *args, **kwargs):
+        return TeleBot.forward_message(self, *args, **kwargs)
+
+    @async()
+    def send_photo(self, *args, **kwargs):
+        return TeleBot.send_photo(self, *args, **kwargs)
+
+    @async()
+    def send_audio(self, *args, **kwargs):
+        return TeleBot.send_audio(self, *args, **kwargs)
+
+    @async()
+    def send_document(self, *args, **kwargs):
+        return TeleBot.send_document(self, *args, **kwargs)
+
+    @async()
+    def send_sticker(self, *args, **kwargs):
+        return TeleBot.send_sticker(self, *args, **kwargs)
+
+    @async()
+    def send_video(self, *args, **kwargs):
+        return TeleBot.send_video(self, *args, **kwargs)
+
+    @async()
+    def send_location(self, *args, **kwargs):
+        return TeleBot.send_location(self, *args, **kwargs)
+
+    @async()
+    def send_chat_action(self, *args, **kwargs):
+        return TeleBot.send_chat_action(self, *args, **kwargs)
