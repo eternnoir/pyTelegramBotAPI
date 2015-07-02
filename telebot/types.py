@@ -283,10 +283,10 @@ class Video(JsonDeserializable):
         self.caption = caption
 
 
-class Contact:
+class Contact(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        obj = json.loads(json_string)
+        obj = cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
         last_name = None
