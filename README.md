@@ -114,6 +114,9 @@ tb.send_chat_action(chat_id, action_string)
 # ReplyKeyboardMarkup.
 # Use ReplyKeyboardMarkup class.
 # Thanks pevdh.
+
+from telebot import types
+
 markup = types.ReplyKeyboardMarkup()
 markup.add('a', 'v', 'd')
 tb.send_message(chat_id, message, None, None, markup)
@@ -161,5 +164,5 @@ def listener1(*messages):
 - [x] sendVideo
 - [x] sendLocation
 - [x] sendChatAction
-- [ ] getUserProfilePhotos
+- [x] getUserProfilePhotos
 - [ ] getUpdat(contact and chat message not yet)

@@ -44,13 +44,15 @@ class TeleBot:
     def get_update(self):
         result = apihelper.get_updates(self.token, offset=(self.last_update_id + 1))
         updates = result['result']
-        notify_updates = []
+        new_messages = []
         for update in updates:
             if update['update_id'] > self.last_update_id:
                 self.last_update_id = update['update_id']
             msg = types.Message.de_json(json.dumps(update['message']))
-            notify_updates.append(msg)
-        self.__notify_update(notify_updates)
+            new_messages.append(msg)
+
+        if len(new_messages) > 0:
+            self.__notify_update(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -60,7 +62,7 @@ class TeleBot:
     def polling(self, interval=3):
         """
         Always get updates.
-        :param interval: iterval secs.
+        :param interval: interval secs.
         :return:
         """
         self.interval = interval
@@ -91,10 +93,19 @@ class TeleBot:
 
     def get_me(self):
         result = apihelper.get_me(self.token)
-        if result['ok'] is not True:
-            raise Exception('getMe Error.' + json.dumps(result))
-        u = types.User.de_json(json.dumps(result['result']))
-        return u
+        return types.User.de_json(json.dumps(result['result']))
+
+    def get_user_profile_photos(self, user_id, offset=None, limit=None):
+        """
+        Retrieves the user profile photos of the person with 'user_id'
+        See https://core.telegram.org/bots/api#getuserprofilephotos
+        :param user_id:
+        :param offset:
+        :param limit:
+        :return:
+        """
+        result = apihelper.get_user_profile_photos(self.token, user_id, offset, limit)
+        return types.UserProfilePhotos.de_json(json.dumps(result['result']))
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
         """
@@ -199,3 +210,4 @@ class TeleBot:
         :return:
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
+

@@ -81,3 +81,9 @@ def test_json_Message_Location():
     msg = types.Message.de_json(json_string)
     assert msg.location.latitude == 26.090577
     assert msg.content_type == 'location'
+
+def test_json_UserProfilePhotos():
+    json_string = r'{"total_count":1,"photos":[[{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAATZH_SpyZjzIwdVAAIC","file_size":6150,"width":160,"height":160},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAATOiTNi_YoJMghVAAIC","file_size":13363,"width":320,"height":320},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAAQW4DyFv0-lhglVAAIC","file_size":28347,"width":640,"height":640},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAAT50RvJCg0GQApVAAIC","file_size":33953,"width":800,"height":800}]]}'
+    upp = types.UserProfilePhotos.de_json(json_string)
+    assert upp.photos[0][0].width == 160
+    assert upp.photos[0][-1].height == 800
