@@ -220,6 +220,9 @@ class TeleBot:
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
 
+    def reply_to(self, message, text, **kwargs):
+        return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
+
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         """
         Message handler decorator.
