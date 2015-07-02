@@ -39,6 +39,7 @@ print tb.send_message(281281, 'gogo power ranger')
 
 ```python
 import telebot
+import time
 
 TOKEN = '<token_string>'
 
@@ -51,7 +52,7 @@ def listener(*messages):
     """
     for m in messages:
         chatid = m.chat.id
-        if m.content_type == 'text'
+        if m.content_type == 'text':
             text = m.text
             tb.send_message(chatid, text)
 
