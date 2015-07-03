@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import time
 import threading
-import re
 
+import re
 from telebot import apihelper, types
 
 """
@@ -29,7 +28,6 @@ class TeleBot:
         sendChatAction
         getUserProfilePhotos
         getUpdates
-        setWebhook
     """
 
     def __init__(self, token):
