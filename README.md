@@ -112,7 +112,6 @@ tb.send_chat_action(chat_id, action_string)
 
 # Use the ReplyKeyboardMarkup class.
 # Thanks pevdh.
-
 from telebot import types
 
 markup = types.ReplyKeyboardMarkup()
@@ -166,6 +165,13 @@ while True: # Don't let the main Thread end.
   * sticker
   * video
   * location
+  * contact
+  * new_chat_participant
+  * left_chat_participant
+  * new_chat_title
+  * new_chat_photo
+  * delete_chat_photo
+  * group_chat_created
 * That's it!
 
 ### The decorator mechanism
@@ -223,4 +229,4 @@ Use whichever mechanism fits your purpose! It is even possible to mix and match.
 - [x] sendLocation
 - [x] sendChatAction
 - [x] getUserProfilePhotos
-- [ ] getUpdate(chat message not yet)
+- [x] getUpdate
