@@ -152,8 +152,10 @@ class Message(JsonDeserializable):
             content_type = 'new_chat_photo'
         if 'delete_chat_photo' in obj:
             opts['delete_chat_photo'] = obj['delete_chat_photo']
+            content_type = 'delete_chat_photo'
         if 'group_chat_created' in obj:
             opts['group_chat_created'] = obj['group_chat_created']
+            content_type = 'group_chat_created'
         return Message(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
