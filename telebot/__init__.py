@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import threading
+import Queue
+import time
 
 import re
 from telebot import apihelper, types
@@ -11,6 +13,49 @@ Module : telebot
 """
 
 API_URL = r"https://api.telegram.org/"
+
+class ThreadPool:
+
+    class WorkerThread(threading.Thread):
+        count = 0
+
+        def __init__(self, queue):
+            threading.Thread.__init__(self, name="WorkerThread{0}".format(self.__class__.count + 1))
+            self.__class__.count += 1
+            self.queue = queue
+            self.daemon = True
+
+            self._running = True
+            self.start()
+
+        def run(self):
+            while self._running:
+                try:
+                    task, args, kwargs = self.queue.get(False)
+                    task(*args, **kwargs)
+                except Queue.Empty:
+                    time.sleep(0)
+                    pass
+
+        def stop(self):
+            self._running = False
+
+    def __init__(self, num_threads=4):
+        self.tasks = Queue.Queue()
+        self.workers = [self.WorkerThread(self.tasks) for _ in range(num_threads)]
+
+        self.num_threads = num_threads
+
+    def put(self, func, *args, **kwargs):
+        self.tasks.put((func, args, kwargs))
+
+    def close(self):
+        for worker in self.workers:
+            worker.stop()
+        for worker in self.workers:
+            worker.join()
+
+
 
 
 class TeleBot:
@@ -40,6 +85,8 @@ class TeleBot:
         self.last_update_id = 0
 
         self.message_handlers = []
+        self.worker_pool = ThreadPool()
+
 
     def get_update(self):
         """
@@ -61,8 +108,9 @@ class TeleBot:
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            t = threading.Thread(target=listener, args=new_messages)
-            t.start()
+            self.worker_pool.put(listener, new_messages)
+            # t = threading.Thread(target=listener, args=new_messages)
+            # t.start()
 
     def polling(self):
         """
@@ -312,8 +360,9 @@ class TeleBot:
         for message in new_messages:
             for message_handler in self.message_handlers:
                 if self._test_message_handler(message_handler, message):
-                    t = threading.Thread(target=message_handler['function'], args=(message,))
-                    t.start()
+                    self.worker_pool.put(message_handler['function'], message)
+                    # t = threading.Thread(target=message_handler['function'], args=(message,))
+                    # t.start()
                     break
 
 
