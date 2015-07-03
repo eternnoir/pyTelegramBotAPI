@@ -287,13 +287,14 @@ class TeleBot:
 
         Examples:
         extract_command('/help'): 'help'
+        extract_command('/help@BotName'): 'help'
         extract_command('/search black eyed peas'): 'search'
         extract_command('Good day to you'): None
 
         :param text: String to extract the command from
         :return: the command if `text` is a command, else None.
         """
-        return text.split()[0][1:] if TeleBot.is_command(text) else None
+        return text.split()[0].split('@')[0][1:] if TeleBot.is_command(text) else None
 
     @staticmethod
     def _test_message_handler(message_handler, message):
