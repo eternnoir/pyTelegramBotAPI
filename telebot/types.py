@@ -175,7 +175,7 @@ class Message(JsonDeserializable):
     def __init__(self, message_id, from_user, date, chat, content_type, options):
         self.chat = chat
         self.date = date
-        self.fromUser = from_user
+        self.from_user = from_user
         self.message_id = message_id
         self.content_type = content_type
         for key in options:
