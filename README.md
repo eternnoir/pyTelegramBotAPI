@@ -40,6 +40,7 @@ tb.send_message(281281, 'gogo power ranger')
 
 ```python
 import telebot
+import time
 
 TOKEN = '<token_string>'
 
