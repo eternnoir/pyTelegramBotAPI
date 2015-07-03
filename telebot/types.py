@@ -138,6 +138,18 @@ class Message(JsonDeserializable):
         if 'contact' in obj:
             opts['contact'] = Contact.de_json(json.dumps(obj['contact']))
             content_type = 'contact'
+        if 'new_chat_participant' in obj:
+            opts['new_chat_participant'] = User.de_json(obj['new_chat_participant'])
+            content_type = 'new_chat_participant'
+        if 'left_chat_participant' in obj:
+            opts['left_chat_participant'] = User.de_json(obj['left_chat_participant'])
+            content_type = 'left_chat_participant'
+        if 'new_chat_title' in obj:
+            opts['new_chat_title'] = obj['new_chat_title']
+            content_type = 'new_chat_title'
+        if 'new_chat_photo' in obj:
+            opts['new_chat_photo'] = obj['new_chat_photo']
+            content_type = 'new_chat_photo'
         return Message(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
