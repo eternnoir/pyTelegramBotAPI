@@ -220,9 +220,9 @@ class TeleBot:
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
                         'record_audio', 'upload_audio', 'upload_document', 'find_location'.
-        :return: API reply.
+        :return: API reply. :type: boolean
         """
-        return types.Message.de_json(apihelper.send_chat_action(self.token, chat_id, action))
+        return apihelper.send_chat_action(self.token, chat_id, action)
 
     def reply_to(self, message, text, **kwargs):
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
