@@ -290,6 +290,7 @@ class Contact(JsonDeserializable):
         phone_number = obj['phone_number']
         first_name = obj['first_name']
         last_name = None
+        user_id = None
         if 'last_name' in obj:
             last_name = obj['last_name']
         if 'user_id' in obj:
