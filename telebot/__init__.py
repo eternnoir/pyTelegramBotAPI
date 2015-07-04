@@ -14,8 +14,8 @@ Module : telebot
 
 API_URL = r"https://api.telegram.org/"
 
-class ThreadPool:
 
+class ThreadPool:
     class WorkerThread(threading.Thread):
         count = 0
 
@@ -73,18 +73,24 @@ class TeleBot:
         getUpdates
     """
 
-    def __init__(self, token):
+    def __init__(self, token, create_threads=True, num_threads=4):
+        """
+
+        :param token: bot API token
+        :param create_threads: Create thread for message handler
+        :param num_threads: Number of worker in thread pool.
+        :return:
+        """
         self.token = token
         self.update_listener = []
         self.polling_thread = None
         self.__stop_polling = False
-        self.interval = 3
-
         self.last_update_id = 0
+        self.num_threads = num_threads
+        self.create_threads = create_threads
 
         self.message_handlers = []
-        self.worker_pool = ThreadPool()
-
+        self.worker_pool = ThreadPool(num_threads)
 
     def get_update(self):
         """
@@ -106,9 +112,10 @@ class TeleBot:
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            self.worker_pool.put(listener, new_messages)
-            # t = threading.Thread(target=listener, args=new_messages)
-            # t.start()
+            if self.create_threads:
+                self.worker_pool.put(listener, new_messages)
+            else:
+                listener(new_messages)
 
     def polling(self):
         """
@@ -128,6 +135,7 @@ class TeleBot:
     def __polling(self):
         print('TeleBot: Started polling.')
         while not self.__stop_polling:
+            print('Get new')
             try:
                 self.get_update()
             except Exception as e:
