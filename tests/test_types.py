@@ -22,7 +22,7 @@ def test_json_message_group():
     msg = types.Message.de_json(json_string)
     assert msg.text == 'HIHI'
     assert len(msg.chat.title) != 0
-    assert msg.fromUser.username == 'GG'
+    assert msg.from_user.username == 'GG'
 
 
 def test_json_GroupChat():
