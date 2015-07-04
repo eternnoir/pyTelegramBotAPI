@@ -2,7 +2,11 @@
 from __future__ import print_function
 
 import threading
-import Queue
+# Python3 queue support.
+try:
+    import Queue
+except ImportError:
+    import queue as Queue
 import time
 
 import re
