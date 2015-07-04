@@ -87,10 +87,11 @@ class TeleBot:
         self.__stop_polling = False
         self.last_update_id = 0
         self.num_threads = num_threads
-        self.create_threads = create_threads
+        self.__create_threads = create_threads
 
         self.message_handlers = []
-        self.worker_pool = ThreadPool(num_threads)
+        if self.__create_threads:
+            self.worker_pool = ThreadPool(num_threads)
 
     def get_update(self):
         """
@@ -112,7 +113,7 @@ class TeleBot:
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            if self.create_threads:
+            if self.__create_threads:
                 self.worker_pool.put(listener, new_messages)
             else:
                 listener(new_messages)
@@ -366,7 +367,7 @@ class TeleBot:
         for message in new_messages:
             for message_handler in self.message_handlers:
                 if self._test_message_handler(message_handler, message):
-                    if self.create_threads:
+                    if self.__create_threads:
                         self.worker_pool.put(message_handler['function'], message)
                         # t = threading.Thread(target=message_handler['function'], args=(message,))
                         # t.start()
