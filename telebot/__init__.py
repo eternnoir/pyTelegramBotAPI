@@ -135,7 +135,6 @@ class TeleBot:
     def __polling(self):
         print('TeleBot: Started polling.')
         while not self.__stop_polling:
-            print('Get new')
             try:
                 self.get_update()
             except Exception as e:
@@ -367,9 +366,12 @@ class TeleBot:
         for message in new_messages:
             for message_handler in self.message_handlers:
                 if self._test_message_handler(message_handler, message):
-                    self.worker_pool.put(message_handler['function'], message)
-                    # t = threading.Thread(target=message_handler['function'], args=(message,))
-                    # t.start()
+                    if self.create_threads:
+                        self.worker_pool.put(message_handler['function'], message)
+                        # t = threading.Thread(target=message_handler['function'], args=(message,))
+                        # t.start()
+                    else:
+                        message_handler['function'](message)
                     break
 
 
