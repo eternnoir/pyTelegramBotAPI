@@ -73,6 +73,12 @@ import time
 TOKEN = '<token_string>'
 tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 
+# TeleBot will not create thread for message listener. Default is True.
+tb = telebot.TeleBot(TOKEN, False)
+
+# 4 Thread worker for message listener.
+tb = telebot.TeleBot(TOKEN, True, 4)
+
 # getMe
 user = tb.get_me()
 
