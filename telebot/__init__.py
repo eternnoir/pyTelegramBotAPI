@@ -35,7 +35,7 @@ class ThreadPool:
         def run(self):
             while self._running:
                 try:
-                    task, args, kwargs = self.queue.get(False)
+                    task, args, kwargs = self.queue.get()
                     task(*args, **kwargs)
                 except Queue.Empty:
                     time.sleep(0)
