@@ -223,17 +223,9 @@ while True: # Don't end the main thread.
 ```
 Use whichever mechanism fits your purpose! It is even possible to mix and match.
 
-## TODO
+## Examples
 
-- [x] getMe
-- [x] sendMessage
-- [x] forwardMessage
-- [x] sendPhoto
-- [x] sendAudio
-- [x] sendDocument
-- [x] sendSticker
-- [x] sendVideo
-- [x] sendLocation
-- [x] sendChatAction
-- [x] getUserProfilePhotos
-- [x] getUpdate
+* [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
+* [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
+
+
