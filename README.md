@@ -45,7 +45,7 @@ import time
 TOKEN = '<token_string>'
 
 
-def listener(*messages):
+def listener(messages):
     """
     When new messages arrive TeleBot will call this function.
     """
