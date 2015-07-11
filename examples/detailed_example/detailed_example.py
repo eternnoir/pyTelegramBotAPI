@@ -4,8 +4,9 @@ import time
 
 TOKEN = '<token_string>'
 
-knownUsers = []
-userStep = {}
+knownUsers = [] #todo: save these in a file, 
+userStep = {}   #      so they won't reset every time the bot restarts
+
 commands={ #command description used in the "help" command
 'start': 'Get used to the bot', 
 'help': 'Gives you information about the available commands', 
