@@ -1,3 +1,7 @@
+"""
+This is a detailed example using almost every command of the API
+"""
+
 import telebot
 from telebot import types
 import time
