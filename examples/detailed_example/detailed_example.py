@@ -23,9 +23,20 @@ imageSelect.add('cock', 'pussy')
 
 hideBoard = types.ReplyKeyboardHide()	#if sent as reply_markup, will hide the keyboard
 
-def printUser(msg): #debug function (will print every message sent by any user to the console)
-	print str(msg.chat.first_name) + " [" + str(msg.chat.id) + "]: " + msg.text
+#error handling if user isn't known yet 
+#(obsolete once known users are saved to file, because all users 
+#   had to use the /start command and are therefore known to the bot)
+def getUserStep(uid): 
+	if uid in userStep:
+		return userStep[uid]
+	else: 
+		knownUsers.append(uid)
+		userStep[uid] = 0
+		print "New user detected, who hasn't used \"/start\" yet"
+		return 0
 
+
+#only used for console output now
 def listener(messages):
 	"""
 	When new messages arrive TeleBot will call this function.
@@ -33,29 +44,8 @@ def listener(messages):
 	for m in messages:
 		cid = m.chat.id
 		if m.content_type == 'text':
-			text = m.text
-			printUser(m) #print the sent message to the console
-			
-			if text[0] != '/': #filter out commands
-				try: #don't quit, when the user hasn't used the "/start" command yet
-					if userStep[cid]==1: #when the user has issued the "/getImage" command
-						bot.send_chat_action(cid, 'typing') #for some reason the 'upload_photo' status isn't quite working (doesn't show at all)
-						if text == "cock":                                  #send the appropriate image based on the reply to the "/getImage" command
-							bot.send_photo(cid, open('rooster.jpg', 'rb'), reply_markup=hideBoard) #send file and hide keyboard, after image is sent
-							userStep[cid]=0   #reset the users step back to 0
-						elif text == "pussy":
-							bot.send_photo(cid, open('kitten.jpg', 'rb'), reply_markup=hideBoard)
-							userStep[cid]=0
-						else:
-							bot.send_message(cid, "Don't type bullsh*t, if I give you a predefined keyboard!")
-							bot.send_message(cid, "Please try again")
-					else:
-						bot.send_message(cid, "I don't understand \""+text+"\"\nMaybe try the help page at /help") #this is the standard reply to a normal message
-
-				except KeyError:
-					bot.send_message(cid, "I don't know you yet... Please use the \'/start\' command!")
-			
-
+			#print the sent message to the console
+			print str(m.chat.first_name) + " [" + str(m.chat.id) + "]: " + m.text 
 
 bot = telebot.TeleBot(TOKEN)
 bot.set_update_listener(listener) #register listener
@@ -64,6 +54,8 @@ try:
 except Exception:
 	pass
 
+	
+#handle the "/start" command
 @bot.message_handler(commands=['start'])
 def command_start(m):
 	cid = m.chat.id
@@ -77,7 +69,8 @@ def command_start(m):
 		bot.send_message(cid, "I already know you, no need for me to scan you again!")
 		
 
-@bot.message_handler(commands=['help']) #help page
+#help page
+@bot.message_handler(commands=['help']) 
 def command_help(m):
 	cid = m.chat.id
 	helpText = "The following commands are available: \n"
@@ -85,8 +78,10 @@ def command_help(m):
 		helpText += "/" + key + ": "
 		helpText += commands[key] + "\n"
 	bot.send_message(cid, helpText)       #send the generated help page
-	
-@bot.message_handler(commands=['sendLongText'])  #chat_action example (not a good one... sleep is bad, if this bot is used by multiple users)
+
+
+#chat_action example (not a good one...)	
+@bot.message_handler(commands=['sendLongText'])  
 def command_longText(m):
 	cid = m.chat.id
 	bot.send_message(cid, "If you think so...")
@@ -94,14 +89,46 @@ def command_longText(m):
 	time.sleep(3)
 	bot.send_message(cid,".")
 
-@bot.message_handler(commands=['getImage']) #user can chose an image
+
+#user can chose an image (multi-stage command example)
+@bot.message_handler(commands=['getImage']) 
 def command_image(m):
 	cid = m.chat.id
 	bot.send_message(cid, "Please choose your image now", reply_markup=imageSelect) #show the keyboard
 	userStep[cid] = 1 #set the user to the next step (expecting a reply in the listener now)
 
+	
+#if the user has issued the "/getImage" command, process the answer
+@bot.message_handler(func=lambda message: getUserStep(message.chat.id) == 1) 
+def msg_imageSelect(m):
+	cid = m.chat.id
+	text = m.text
+	bot.send_chat_action(cid, 'typing') #for some reason the 'upload_photo' status isn't quite working (doesn't show at all)
+	
+	if text == "cock":                                  #send the appropriate image based on the reply to the "/getImage" command
+		bot.send_photo(cid, open('rooster.jpg', 'rb'), reply_markup=hideBoard) #send file and hide keyboard, after image is sent
+		userStep[cid]=0   #reset the users step back to 0
+	elif text == "pussy":
+		bot.send_photo(cid, open('kitten.jpg', 'rb'), reply_markup=hideBoard)
+		userStep[cid]=0
+	else:
+		bot.send_message(cid, "Don't type bullsh*t, if I give you a predefined keyboard!")
+		bot.send_message(cid, "Please try again")
+
+		
+#filter on a specific message		
+@bot.message_handler(func=lambda message: message.text=="hi") 
+def command_textHi(m):
+	bot.send_message(m.chat.id, "I love you too!")
+
+#default handler for every other text	
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def command_default(m):
+	bot.send_message(m.chat.id, "I don't understand \""+m.text+"\"\nMaybe try the help page at /help") #this is the standard reply to a normal message
+	
+	
 while True: # Don't let the main Thread end.
 	try:
-		pass
+		time.sleep(1)
 	except KeyboardInterrupt:
 		break
