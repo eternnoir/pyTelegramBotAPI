@@ -122,7 +122,7 @@ class TeleBot:
             else:
                 listener(new_messages)
 
-    def polling(self):
+    def polling(self, none_stop=False):
         """
         This function creates a new Thread that calls an internal __polling function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -130,21 +130,23 @@ class TeleBot:
         Do not call this function more than once!
 
         Always get updates.
+        :param none_stop: Do not stop polling when Exception occur.
         :return:
         """
         self.__stop_polling = False
-        self.polling_thread = threading.Thread(target=self.__polling, args=())
+        self.polling_thread = threading.Thread(target=self.__polling, args=([none_stop]))
         self.polling_thread.daemon = True
         self.polling_thread.start()
 
-    def __polling(self):
+    def __polling(self, none_stop):
         print('TeleBot: Started polling.')
         while not self.__stop_polling:
             try:
                 self.get_update()
             except Exception as e:
                 print("TeleBot: Exception occurred. Stopping.")
-                self.__stop_polling = True
+                if not none_stop:
+                    self.__stop_polling = True
                 print(e)
 
         print('TeleBot: Stopped polling.')
