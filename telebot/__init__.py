@@ -144,9 +144,9 @@ class TeleBot:
             try:
                 self.get_update()
             except Exception as e:
-                print("TeleBot: Exception occurred. Stopping.")
                 if not none_stop:
                     self.__stop_polling = True
+                    print("TeleBot: Exception occurred. Stopping.")
                 print(e)
 
         print('TeleBot: Stopped polling.')
