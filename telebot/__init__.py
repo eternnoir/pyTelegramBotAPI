@@ -112,8 +112,11 @@ class TeleBot:
             new_messages.append(msg)
 
         if len(new_messages) > 0:
-            self.__notify_update(new_messages)
-            self._notify_command_handlers(new_messages)
+            self.process_new_messages(new_messages)
+
+    def process_new_messages(self, new_messages):
+        self.__notify_update(new_messages)
+        self._notify_command_handlers(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
