@@ -87,7 +87,11 @@ def forward_message(token, chat_id, from_chat_id, message_id):
 def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
-    files = {'photo': photo}
+    files = None
+    if isinstance(photo, file):
+        files = {'photo': photo}
+    else:
+        payload['photo'] = photo
     if caption:
         payload['caption'] = caption
     if reply_to_message_id:
@@ -116,7 +120,11 @@ def send_chat_action(token, chat_id, action):
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
-    files = {data_type: data}
+    files = None
+    if isinstance(data, file):
+        files = {data_type: data}
+    else:
+        payload[data_type] = data
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
