@@ -228,8 +228,9 @@ class Document(JsonDeserializable):
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         thumb = None
-        if 'file_id' in obj['thumb']:
-            thumb = PhotoSize.de_json(obj['thumb'])
+        if 'thumb' in obj:
+            if 'file_id' in obj['thumb']:
+                thumb = PhotoSize.de_json(obj['thumb'])
         file_name = None
         mime_type = None
         file_size = None
