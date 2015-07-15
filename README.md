@@ -59,10 +59,10 @@ def listener(messages):
 tb = telebot.TeleBot(TOKEN)
 tb.set_update_listener(listener) #register listener
 tb.polling()
-# polling will not stop when get new message
-tb.polling(True)
+#Use none_stop flag let polling will not stop when get new message occur error.
+tb.polling(none_stop=True)
 # Interval setup. Sleep 3 secs between request new message.
-tb.polling(True, 3)
+tb.polling(interval=3)
 
 while True: # Don't let the main Thread end.
     pass
@@ -96,22 +96,32 @@ tb.forward_message(to_chat_id, from_chat_id, message_id)
 # sendPhoto
 photo = open('/tmp/photo.png', 'rb')
 tb.send_photo(chat_id, photo)
+file_id = 'AAAaaaZZZzzz'
+tb.send_photo(chat_id, file_id)
 
 # sendAudio
 audio = open('/tmp/audio.ogg', 'rb')
 tb.send_audio(chat_id, audio)
+file_id = 'AAAaaaZZZzzz'
+tb.send_audio(chat_id, file_id)
 
 # sendDocument
 doc = open('/tmp/file.txt', 'rb')
 tb.send_document(chat_id, doc)
+file_id = 'AAAaaaZZZzzz'
+tb.send_document(chat_id, file_id)
 
 # sendSticker
 sti = open('/tmp/sti.webp', 'rb')
 tb.send_sticker(chat_id, sti)
+file_id = 'AAAaaaZZZzzz'
+tb.send_sticker(chat_id, file_id)
 
 # sendVideo
 video = open('/tmp/video.mp4', 'rb')
 tb.send_video(chat_id, video)
+file_id = 'AAAaaaZZZzzz'
+tb.send_video(chat_id, file_id)
 
 # sendLocation
 tb.send_location(chat_id, lat, lon)
