@@ -59,6 +59,10 @@ def listener(messages):
 tb = telebot.TeleBot(TOKEN)
 tb.set_update_listener(listener) #register listener
 tb.polling()
+# polling will not stop when get new message
+tb.polling(True)
+# Interval setup. Sleep 3 secs between request new message.
+tb.polling(True, 3)
 
 while True: # Don't let the main Thread end.
     pass
