@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-
+from six import string_types
 import telebot
 from telebot import types
 
@@ -88,7 +88,7 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
-    if isinstance(photo, file):
+    if not is_string(photo):
         files = {'photo': photo}
     else:
         payload['photo'] = photo
@@ -121,7 +121,7 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
-    if isinstance(data, file):
+    if not is_string(data):
         files = {data_type: data}
     else:
         payload[data_type] = data
@@ -149,10 +149,15 @@ def _convert_markup(markup):
     return markup
 
 
+def is_string(var):
+    return isinstance(var, string_types)
+
+
 class ApiException(Exception):
     """
     This class represents an Exception thrown when a call to the Telegram API fails.
     """
+
     def __init__(self, function_name, result):
         super(ApiException, self).__init__('{0} failed. Returned result: {1}'.format(function_name, result))
         self.function_name = function_name

@@ -4,6 +4,7 @@ import time
 
 sys.path.append('../')
 from telebot import types
+from telebot import apihelper
 import telebot
 
 
@@ -37,3 +38,17 @@ def create_text_message(text):
     params['text'] = text
     return types.Message(1, None, None, 1, 'text', params)
 
+
+def test_is_string_unicode():
+    s1 = u'string'
+    assert apihelper.is_string(s1)
+
+
+def test_is_string_string():
+    s1 = 'string'
+    assert apihelper.is_string(s1)
+
+
+def test_not_string():
+    i1 = 10
+    assert not apihelper.is_string(i1)
