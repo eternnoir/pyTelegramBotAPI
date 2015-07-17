@@ -237,6 +237,12 @@ while True: # Don't end the main thread.
 ```
 Use whichever mechanism fits your purpose! It is even possible to mix and match.
 
+## Telegram Chat Group
+
+Get help. Discuss. Chat.
+
+Join [pyTelegramBotAPI Chat Group](https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b).
+
 ## Examples
 
 * [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
