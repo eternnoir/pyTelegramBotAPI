@@ -10,7 +10,7 @@ setup(name='pyTelegramBotAPI',
       packages=['telebot'],
       license='GPL2',
       keywords='tools',
-      install_requires=['pytest', 'requests'],
+      install_requires=['pytest', 'requests', 'six'],
       classifiers=[
           'Development Status :: 4 - Beta',
           'Programming Language :: Python :: 2',
