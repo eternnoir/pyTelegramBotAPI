@@ -45,7 +45,7 @@ def test_send_file_by_id():
 
 
 def test_send_file():
-    file_data = open('../examples/detailed_example/kitten.jpg')
+    file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
     tb = telebot.TeleBot(TOKEN)
     ret_msg = tb.send_document(CHAT_ID, file_data)
     assert ret_msg.message_id
@@ -59,7 +59,7 @@ def test_send_photo_by_id():
 
 
 def test_send_photo():
-    file_data = open('../examples/detailed_example/kitten.jpg')
+    file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
     tb = telebot.TeleBot(TOKEN)
     ret_msg = tb.send_photo(CHAT_ID, file_data)
     assert ret_msg.message_id
