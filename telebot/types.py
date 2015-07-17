@@ -114,6 +114,12 @@ class Message(JsonDeserializable):
         date = obj['date']
         content_type = None
         opts = {}
+        if 'forward_from' in obj:
+            opts['forward_from'] = User.de_json(obj['forward_from'])
+        if 'forward_date' in obj:
+            opts['forward_date'] = obj['forward_date']
+        if 'reply_to_message' in obj:
+            opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
