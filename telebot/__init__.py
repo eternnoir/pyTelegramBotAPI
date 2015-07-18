@@ -88,7 +88,7 @@ class TeleBot:
         self.token = token
         self.update_listener = []
         self.polling_thread = None
-        self.__stop_polling = False
+        self.__stop_polling = threading.Event()
         self.last_update_id = 0
         self.num_threads = num_threads
         self.__create_threads = create_threads
@@ -136,30 +136,29 @@ class TeleBot:
         :param none_stop: Do not stop polling when Exception occur.
         :return:
         """
-        self.__stop_polling = True
+        self.__stop_polling.set()
         if self.polling_thread:
             self.polling_thread.join()  # wait thread stop.
-        self.__stop_polling = False
+        self.__stop_polling.clear()
         self.polling_thread = threading.Thread(target=self.__polling, args=([none_stop, interval]))
         self.polling_thread.daemon = True
         self.polling_thread.start()
 
     def __polling(self, none_stop, interval):
         print('TeleBot: Started polling.')
-        while not self.__stop_polling:
+        while not self.__stop_polling.wait(interval):
             try:
                 self.get_update()
             except Exception as e:
                 if not none_stop:
-                    self.__stop_polling = True
+                    self.__stop_polling.set()
                     print("TeleBot: Exception occurred. Stopping.")
                 print(e)
-            time.sleep(interval)
 
         print('TeleBot: Stopped polling.')
 
     def stop_polling(self):
-        self.__stop_polling = True
+        self.__stop_polling.set()
 
     def set_update_listener(self, listener):
         self.update_listener.append(listener)
