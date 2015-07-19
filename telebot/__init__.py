@@ -105,9 +105,8 @@ class TeleBot:
         """
         updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1), timeout=20)
         new_messages = []
+        self.last_update_id = updates[-1]['update_id']
         for update in updates:
-            if update['update_id'] > self.last_update_id:
-                self.last_update_id = update['update_id']
             msg = types.Message.de_json(update['message'])
             new_messages.append(msg)
 
