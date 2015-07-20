@@ -237,6 +237,21 @@ while True: # Don't end the main thread.
 ```
 Use whichever mechanism fits your purpose! It is even possible to mix and match.
 
+## Logging
+
+Now you can use Telebot module logger to log some information in Telebot. Use `telebot.logger` to get
+Telebot module logger.
+
+```python
+logger = telebot.logger
+formatter = logging.Formatter('[%(asctime)s] %(thread)d {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
+                                  '%m-%d %H:%M:%S')
+ch = logging.StreamHandler(sys.stdout)
+logger.addHandler(ch)
+logger.setLevel(logging.DEBUG)  # or use logging.INFO
+ch.setFormatter(formatter)
+```
+
 ## Telegram Chat Group
 
 Get help. Discuss. Chat.
