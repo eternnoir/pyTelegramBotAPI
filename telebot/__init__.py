@@ -9,6 +9,8 @@ except ImportError:
     import queue as Queue
 import time
 
+import logging
+logger = logging.getLogger('Telebot')
 import re
 from telebot import apihelper, types
 
@@ -83,7 +85,7 @@ class TeleBot:
         :param token: bot API token
         :param create_threads: Create thread for message handler
         :param num_threads: Number of worker in thread pool.
-        :return:
+        :return: Telebot object.
         """
         self.token = token
         self.update_listener = []
@@ -110,7 +112,7 @@ class TeleBot:
                 self.last_update_id = update['update_id']
             msg = types.Message.de_json(update['message'])
             new_messages.append(msg)
-
+        logger.debug('GET %d new messages' % len(new_messages))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
 
@@ -145,17 +147,17 @@ class TeleBot:
         self.polling_thread.start()
 
     def __polling(self, none_stop, interval):
-        print('TeleBot: Started polling.')
+        logger.info('TeleBot: Started polling.')
         while not self.__stop_polling.wait(interval):
             try:
                 self.get_update()
             except Exception as e:
                 if not none_stop:
                     self.__stop_polling.set()
-                    print("TeleBot: Exception occurred. Stopping.")
-                print(e)
+                    logger.info("TeleBot: Exception occurred. Stopping.")
+                logger.error(e.message)
 
-        print('TeleBot: Stopped polling.')
+        logger.info('TeleBot: Stopped polling.')
 
     def stop_polling(self):
         self.__stop_polling.set()
@@ -471,3 +473,4 @@ class AsyncTeleBot(TeleBot):
     @async()
     def send_chat_action(self, *args, **kwargs):
         return TeleBot.send_chat_action(self, *args, **kwargs)
+

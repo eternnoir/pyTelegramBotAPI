@@ -5,6 +5,8 @@ from six import string_types
 import telebot
 from telebot import types
 
+logger = telebot.logger
+
 
 def _make_request(token, method_name, method='get', params=None, files=None):
     """
@@ -18,6 +20,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     """
     request_url = telebot.API_URL + 'bot' + token + '/' + method_name
     result = requests.request(method, request_url, params=params, files=files)
+    logger.debug(result.text)
     if result.status_code != 200:
         raise ApiException(method_name, result)
     try:
