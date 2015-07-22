@@ -372,7 +372,7 @@ class TeleBot:
             return TeleBot.extract_command(message.text) in message_handler['commands']
         if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
                                                                                         message.text):
-            return False
+            return True
         if 'lambda' in message_handler:
             return message_handler['lambda'](message)
         return False

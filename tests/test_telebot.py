@@ -36,6 +36,27 @@ def test_message_handler():
     time.sleep(1)
     assert msg.text == 'got'
 
+def test_message_handler_reg():
+    bot = telebot.TeleBot('')
+    msg = create_text_message(r'https://web.telegram.org/')
+    @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+    def command_url(message):
+        msg.text = 'got'
+    bot.process_new_messages([msg])
+    time.sleep(1)
+    assert msg.text == 'got'
+
+
+def test_message_handler_reg_fail():
+    bot = telebot.TeleBot('')
+    msg = create_text_message(r'web.telegram.org/')
+    @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+    def command_url(message):
+        msg.text = 'got'
+    bot.process_new_messages([msg])
+    time.sleep(1)
+    assert not msg.text == 'got'
+
 
 def test_send_file_by_id():
     file_id = 'BQADBQADjAIAAsYifgbvqwq1he9REAI'
@@ -115,3 +136,4 @@ def test_is_string_string():
 def test_not_string():
     i1 = 10
     assert not apihelper.is_string(i1)
+
