@@ -77,6 +77,16 @@ def test_send_file():
     assert ret_msg.message_id
 
 
+def test_send_file_exception():
+    tb = telebot.TeleBot(TOKEN)
+    try:
+        ret_msg = tb.send_document(CHAT_ID, None)
+        assert False
+    except Exception as e:
+        print(e)
+        assert True
+
+
 def test_send_photo_by_id():
     photo_id = 'AgADBQADTKgxG8YifgbcWQAB7Da9yYIx1rEyAAT-HYJ3CrJEqdA2AQABAg'
     tb = telebot.TeleBot(TOKEN)
