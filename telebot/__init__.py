@@ -155,7 +155,7 @@ class TeleBot:
                 if not none_stop:
                     self.__stop_polling.set()
                     logger.info("TeleBot: Exception occurred. Stopping.")
-                logger.error(e.message)
+                logger.error(e)
 
         logger.info('TeleBot: Stopped polling.')
 
