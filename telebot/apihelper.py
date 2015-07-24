@@ -5,8 +5,12 @@ import requests
 import telebot
 from telebot import types
 
+import json
+import urllib
+import urllib2
 
-def _make_request(token, method_name, method='get', params=None, files=None):
+
+def _make_request(token, method_name, method='get', params=None, files=None, use_urllib=False):
     """
     Makes a request to the Telegram API.
     :param token: The bot's API token. (Created with @BotFather)
@@ -17,16 +21,31 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     :return:
     """
     request_url = telebot.API_URL + 'bot' + token + '/' + method_name
-    result = requests.request(method, request_url, params=params, files=files)
-    if result.status_code != 200:
-        raise ApiException(method_name, result)
-    try:
-        result_json = result.json()
-        if not result_json['ok']:
-            raise Exception()
-    except:
-        raise ApiException(method_name, result)
-    return result_json['result']
+    
+    if not use_urllib:
+        result = requests.request(method, request_url, params=params, files=files)
+        if result.status_code != 200:
+            raise ApiException(method_name, result)
+        try:
+            result_json = result.json()
+            if not result_json['ok']:
+                raise Exception()
+        except:
+            raise ApiException(method_name, result)
+        return result_json['result']
+    
+    else:
+        result = urllib2.urlopen(request_url, urllib.urlencode(params))
+        if result.getcode() != 200:
+            raise ApiException(method_name, result)
+        try:
+            result_json = json.loads(result.read())
+            if not result_json['ok']:
+                raise Exception()
+        except:
+            raise ApiException(method_name, result)
+        return result_json['result']
+    
 
 
 def get_me(token):
@@ -87,7 +106,11 @@ def forward_message(token, chat_id, from_chat_id, message_id):
 def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
-    files = {'photo': photo}
+    files = None
+    if isinstance(photo, file):
+        files = {'photo': photo}
+    else:
+        payload['photo'] = photo
     if caption:
         payload['caption'] = caption
     if reply_to_message_id:
@@ -116,7 +139,11 @@ def send_chat_action(token, chat_id, action):
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
-    files = {data_type: data}
+    files = None
+    if isinstance(data, file):
+        files = {data_type: data}
+    else:
+        payload[data_type] = data
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
