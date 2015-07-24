@@ -83,6 +83,12 @@ tb = telebot.TeleBot(TOKEN, False)
 # 4 Thread worker for message listener.
 tb = telebot.TeleBot(TOKEN, True, 4)
 
+# Setup telebot handler to telebot logger. If you want to get some information from telebot.
+# More information at Logging section
+handler = logging.StreamHandler(sys.stdout)
+telebot.logger.addHandler(handler)
+telebot.logger.setLevel(logging.INFO)
+
 # getMe
 user = tb.get_me()
 
