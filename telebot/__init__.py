@@ -338,38 +338,14 @@ class TeleBot:
 
         return decorator
 
-    @staticmethod
-    def is_command(text):
-        """
-        Checks if `text` is a command. Telegram chat commands start with the '/' character.
-        :param text: Text to check.
-        :return: True if `text` is a command, else False.
-        """
-        return text.startswith('/')
 
-    @staticmethod
-    def extract_command(text):
-        """
-        Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
-        If `text` is not a command, this function returns None.
-
-        Examples:
-        extract_command('/help'): 'help'
-        extract_command('/help@BotName'): 'help'
-        extract_command('/search black eyed peas'): 'search'
-        extract_command('Good day to you'): None
-
-        :param text: String to extract the command from
-        :return: the command if `text` is a command, else None.
-        """
-        return text.split()[0].split('@')[0][1:] if TeleBot.is_command(text) else None
 
     @staticmethod
     def _test_message_handler(message_handler, message):
         if message.content_type not in message_handler['content_types']:
             return False
         if 'commands' in message_handler and message.content_type == 'text':
-            return TeleBot.extract_command(message.text) in message_handler['commands']
+            return apihelper.extract_command(message.text) in message_handler['commands']
         if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
                                                                                         message.text):
             return True
