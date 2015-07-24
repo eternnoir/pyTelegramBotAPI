@@ -10,7 +10,7 @@ import urllib
 import urllib2
 
 
-def _make_request(token, method_name, method='get', params=None, files=None, use_urllib=False):
+def _make_request(token, method_name, method='get', params=None, files=None, use_urllib=True):
     """
     Makes a request to the Telegram API.
     :param token: The bot's API token. (Created with @BotFather)
@@ -35,6 +35,9 @@ def _make_request(token, method_name, method='get', params=None, files=None, use
         return result_json['result']
     
     else:
+        for key in params:
+            if type(params[key]) == unicode:
+                params[key] = params[key].encode('utf8')
         result = urllib2.urlopen(request_url, urllib.urlencode(params))
         if result.getcode() != 200:
             raise ApiException(method_name, result)
