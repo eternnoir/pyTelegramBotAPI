@@ -238,7 +238,7 @@ class TeleBot:
     def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
         Use this method to send general files.
-        :param c.append()hat_id:
+        :param chat_id:
         :param data:
         :param reply_to_message_id:
         :param reply_markup:
