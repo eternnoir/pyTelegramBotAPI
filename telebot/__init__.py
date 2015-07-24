@@ -95,6 +95,9 @@ class TeleBot:
         self.num_threads = num_threads
         self.__create_threads = create_threads
 
+        self.message_subscribers_messages = []
+        self.message_subscribers_callbacks = []
+
         self.message_handlers = []
         if self.__create_threads:
             self.worker_pool = ThreadPool(num_threads)
@@ -119,6 +122,7 @@ class TeleBot:
     def process_new_messages(self, new_messages):
         self.__notify_update(new_messages)
         self._notify_command_handlers(new_messages)
+        self._notify_message_subscribers(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -293,7 +297,40 @@ class TeleBot:
         return apihelper.send_chat_action(self.token, chat_id, action)
 
     def reply_to(self, message, text, **kwargs):
+        """
+        Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
+        """
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
+
+    def register_for_reply(self, message, callback):
+        """
+        Registers a callback function to be notified when a reply to `message` arrives.
+
+        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
+        the difference between a reply to `message` and an ordinary message.
+
+        :param message:     The message for which we are awaiting a reply.
+        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
+                            parameter, which will contain the replied message.
+        """
+        self.message_subscribers_messages.insert(0, message.message_id)
+        self.message_subscribers_callbacks.insert(0, callback)
+        if len(self.message_subscribers_messages) > 10000:
+            self.message_subscribers_messages.pop()
+            self.message_subscribers_callbacks.pop()
+
+    def _notify_message_subscribers(self, new_messages):
+        for message in new_messages:
+            if not hasattr(message, 'reply_to_message'):
+                continue
+
+            reply_msg_id = message.reply_to_message.message_id
+            if reply_msg_id in self.message_subscribers_messages:
+                index = self.message_subscribers_messages.index(reply_msg_id)
+                self.message_subscribers_callbacks[index](message)
+
+                del self.message_subscribers_messages[index]
+                del self.message_subscribers_callbacks[index]
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         """
@@ -338,38 +375,14 @@ class TeleBot:
 
         return decorator
 
-    @staticmethod
-    def is_command(text):
-        """
-        Checks if `text` is a command. Telegram chat commands start with the '/' character.
-        :param text: Text to check.
-        :return: True if `text` is a command, else False.
-        """
-        return text.startswith('/')
 
-    @staticmethod
-    def extract_command(text):
-        """
-        Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
-        If `text` is not a command, this function returns None.
-
-        Examples:
-        extract_command('/help'): 'help'
-        extract_command('/help@BotName'): 'help'
-        extract_command('/search black eyed peas'): 'search'
-        extract_command('Good day to you'): None
-
-        :param text: String to extract the command from
-        :return: the command if `text` is a command, else None.
-        """
-        return text.split()[0].split('@')[0][1:] if TeleBot.is_command(text) else None
 
     @staticmethod
     def _test_message_handler(message_handler, message):
         if message.content_type not in message_handler['content_types']:
             return False
         if 'commands' in message_handler and message.content_type == 'text':
-            return TeleBot.extract_command(message.text) in message_handler['commands']
+            return apihelper.extract_command(message.text) in message_handler['commands']
         if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
                                                                                         message.text):
             return True
