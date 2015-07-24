@@ -123,6 +123,18 @@ def test_reply_to():
     ret_msg = tb.reply_to(msg, text + ' REPLY')
     assert ret_msg.reply_to_message.message_id == msg.message_id
 
+def test_register_for_reply():
+    text = 'CI reply_to Test Message'
+    tb = telebot.TeleBot(TOKEN)
+    msg = tb.send_message(CHAT_ID, text, reply_markup=types.ForceReply())
+    reply_msg = tb.reply_to(msg, text + ' REPLY')
+
+    def process_reply(message):
+        assert msg.message_id == message.reply_to_message.message_id
+
+    tb.register_for_reply(msg, process_reply)
+
+    tb.process_new_messages([reply_msg])
 
 def test_send_location():
     tb = telebot.TeleBot(TOKEN)
