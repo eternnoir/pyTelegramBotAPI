@@ -188,6 +188,10 @@ class TeleBot:
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
         """
         Use this method to send text messages.
+
+        Warning: Do not send more than about 5000 characters each message, otherwise you'll risk an HTTP 414 error.
+        If you must send more than 5000 characters, use the split_string function in apihelper.py.
+
         :param chat_id:
         :param text:
         :param disable_web_page_preview:

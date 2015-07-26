@@ -56,7 +56,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 def get_updates(token, offset=None, limit=None, timeout=None):
@@ -178,6 +178,18 @@ def extract_command(text):
     :return: the command if `text` is a command (according to is_command), else None.
     """
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
+
+
+def split_string(text, chars_per_string):
+    """
+    Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
+    This is very useful for splitting one giant message into multiples.
+
+    :param text: The text to split
+    :param chars_per_string: The number of characters per line the text is split into.
+    :return: The splitted text as a list of strings.
+    """
+    return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
 
 class ApiException(Exception):
     """

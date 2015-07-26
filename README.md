@@ -4,6 +4,8 @@ A Python implementation for the Telegram Bot API.
 
 See [https://core.telegram.org/bots/api](https://core.telegram.org/bots/api)
 
+[![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
+
 ## How to install
 
 Python 2 or Python 3 is required.
