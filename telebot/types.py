@@ -162,6 +162,8 @@ class Message(JsonDeserializable):
         if 'group_chat_created' in obj:
             opts['group_chat_created'] = obj['group_chat_created']
             content_type = 'group_chat_created'
+        if 'caption' in obj:
+            opts['caption'] = obj['caption']
         return Message(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
@@ -285,19 +287,18 @@ class Video(JsonDeserializable):
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        thumb = PhotoSize.de_json(obj['thumb'])
-        caption = None
+        thumb = None
         mime_type = None
         file_size = None
-        if 'caption' in obj:
-            caption = obj['caption']
-        if 'mine_type' in obj:
+        if 'thumb' in obj:
+            thumb = PhotoSize.de_json(obj['thumb'])
+        if 'mime_type' in obj:
             mime_type = obj['mime_type']
         if 'file_size' in obj:
             file_size = obj['file_size']
-        return Video(file_id, width, height, duration, thumb, mime_type, file_size, caption)
+        return Video(file_id, width, height, duration, thumb, mime_type, file_size)
 
-    def __init__(self, file_id, width, height, duration, thumb, mime_type=None, file_size=None, caption=None):
+    def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
         self.file_id = file_id
         self.width = width
         self.height = height
@@ -305,7 +306,6 @@ class Video(JsonDeserializable):
         self.thumb = thumb
         self.mime_type = mime_type
         self.file_size = file_size
-        self.caption = caption
 
 
 class Contact(JsonDeserializable):
