@@ -99,6 +99,9 @@ class TeleBot:
         self.message_subscribers_messages = []
         self.message_subscribers_callbacks = []
 
+        # key: chat_id, value: handler list
+        self.message_subscribers_next_step = {}
+
         self.message_handlers = []
         if self.__create_threads:
             self.worker_pool = ThreadPool(num_threads)
@@ -124,6 +127,7 @@ class TeleBot:
         self.__notify_update(new_messages)
         self._notify_command_handlers(new_messages)
         self._notify_message_subscribers(new_messages)
+        self._notify_message_next_handler(new_messages)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -324,13 +328,6 @@ class TeleBot:
             self.message_subscribers_messages.pop()
             self.message_subscribers_callbacks.pop()
 
-    def next_step_handler(self, message):
-        """
-
-        :param message:
-        """
-        pass
-
     def _notify_message_subscribers(self, new_messages):
         for message in new_messages:
             if not hasattr(message, 'reply_to_message'):
@@ -344,6 +341,27 @@ class TeleBot:
                 del self.message_subscribers_messages[index]
                 del self.message_subscribers_callbacks[index]
 
+    def register_next_step_handler(self, message, callback):
+        """
+        Registers a callback function to be notified when new message arrives after `message`.
+
+        :param message:     The message for which we want to handle new message after that in same chat.
+        :param callback:    The callback function which next new message arrives.
+        """
+        chat_id = message.chat.id
+        if chat_id in self.message_subscribers_next_step:
+            self.message_subscribers_next_step.append(callback)
+        else:
+            self.message_subscribers_next_step[chat_id] = [callback]
+
+    def _notify_message_next_handler(self, new_messages):
+        for message in new_messages:
+            chat_id = message.chat.id
+            if chat_id in self.message_subscribers_next_step:
+                handlers = self.message_subscribers_next_step[chat_id]
+                for handler in handlers:
+                    self.worker_pool.put(handler, message)
+                self.message_subscribers_next_step.pop(chat_id, None)
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         """
