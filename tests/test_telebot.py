@@ -149,7 +149,8 @@ def test_send_location():
 
 def create_text_message(text):
     params = {'text': text}
-    return types.Message(1, None, None, 1, 'text', params)
+    chat = types.User(11,'test')
+    return types.Message(1, None, None, chat, 'text', params)
 
 
 def test_is_string_unicode():
