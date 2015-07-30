@@ -10,6 +10,7 @@ except ImportError:
 import time
 
 import logging
+
 logger = logging.getLogger('Telebot')
 import re
 from telebot import apihelper, types
@@ -323,6 +324,13 @@ class TeleBot:
             self.message_subscribers_messages.pop()
             self.message_subscribers_callbacks.pop()
 
+    def next_step_handler(self, message):
+        """
+
+        :param message:
+        """
+        pass
+
     def _notify_message_subscribers(self, new_messages):
         for message in new_messages:
             if not hasattr(message, 'reply_to_message'):
@@ -335,6 +343,7 @@ class TeleBot:
 
                 del self.message_subscribers_messages[index]
                 del self.message_subscribers_callbacks[index]
+
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         """
@@ -378,8 +387,6 @@ class TeleBot:
             return fn
 
         return decorator
-
-
 
     @staticmethod
     def _test_message_handler(message_handler, message):
@@ -490,4 +497,3 @@ class AsyncTeleBot(TeleBot):
     @async()
     def send_chat_action(self, *args, **kwargs):
         return TeleBot.send_chat_action(self, *args, **kwargs)
-
