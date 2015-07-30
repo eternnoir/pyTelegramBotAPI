@@ -55,7 +55,7 @@ def process_age_step(message):
         user.age = age
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         markup.add('Male', 'Female')
-        msg = bot.reply_to(message, 'What is your sex', reply_markup=markup)
+        msg = bot.reply_to(message, 'What is your gender', reply_markup=markup)
         bot.register_next_step_handler(msg, process_sex_step)
     except Exception as e:
         bot.reply_to(message, 'oooops')
