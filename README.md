@@ -270,5 +270,5 @@ Join [pyTelegramBotAPI Chat Group](https://telegram.me/joinchat/067e22c60035523f
 
 * [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
 * [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
-
+* [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
 
