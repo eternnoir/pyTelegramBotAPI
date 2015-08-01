@@ -156,9 +156,12 @@ tb.send_message(chat_id, message, reply_markup=markup)
 ```
 
 ## Creating a Telegram bot with the pyTelegramBotAPI
+
 There are two ways to define a Telegram Bot with the pyTelegramBotAPI.
 ### The listener mechanism
+
 * First, create a TeleBot instance.
+
 ```python
 import telebot
 
@@ -166,7 +169,9 @@ TOKEN = '<token string>'
 
 bot = telebot.TeleBot(TOKEN)
 ```
+
 * Then, define a listener function.
+
 ```python
 def echo_messages(*messages):
 	"""
@@ -178,7 +183,9 @@ def echo_messages(*messages):
             text = m.text
             bot.send_message(chatid, text)
 ```
+
 * Now, register your listener with the TeleBot instance and call TeleBot#polling()
+
 ```python
 bot.set_update_listener(echo_messages)
 bot.polling()
@@ -186,6 +193,7 @@ bot.polling()
 while True: # Don't let the main Thread end.
     pass
 ```
+
 * use Message's content_type attribute to check the type of Message. Now Message supports content types:
   * text
   * audio
@@ -204,7 +212,9 @@ while True: # Don't let the main Thread end.
 * That's it!
 
 ### The decorator mechanism
+
 * First, create a TeleBot instance.
+
 ```python
 import telebot
 
@@ -212,7 +222,9 @@ TOKEN = '<token string>'
 
 bot = telebot.TeleBot(TOKEN)
 ```
+
 * Next, define all of your so-called message handlers and decorate them with @bot.message_handler
+
 ```python
 # Handle /start and /help
 @bot.message_handler(commands=['start', 'help'])
@@ -236,7 +248,9 @@ def command_handle_document(message):
 def default_command(message):
     bot.reply_to(message, "This is the default command handler.")
 ```
+
 * And finally, call bot.polling()
+
 ```python
 bot.polling()
 
