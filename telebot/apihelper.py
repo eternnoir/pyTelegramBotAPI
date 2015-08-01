@@ -120,6 +120,25 @@ def send_chat_action(token, chat_id, action):
     return _make_request(token, method_url, params=payload)
 
 
+def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendVideo'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not is_string(data):
+        files = {'video': data}
+    else:
+        payload['video'] = data
+    if duration:
+        payload['duration'] = duration
+    if caption:
+        payload['caption'] = caption
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
@@ -142,8 +161,6 @@ def get_method_by_type(data_type):
         return 'sendDocument'
     if data_type == 'sticker':
         return 'sendSticker'
-    if data_type == 'video':
-        return 'sendVideo'
 
 
 def _convert_markup(markup):
@@ -155,6 +172,7 @@ def _convert_markup(markup):
 def is_string(var):
     return isinstance(var, string_types)
 
+
 def is_command(text):
     """
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
@@ -162,6 +180,7 @@ def is_command(text):
     :return: True if `text` is a command, else False.
     """
     return text.startswith('/')
+
 
 def extract_command(text):
     """
@@ -190,6 +209,7 @@ def split_string(text, chars_per_string):
     :return: The splitted text as a list of strings.
     """
     return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
+
 
 class ApiException(Exception):
     """

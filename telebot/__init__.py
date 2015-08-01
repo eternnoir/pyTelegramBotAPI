@@ -268,17 +268,19 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup))
 
-    def send_video(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+    def send_video(self, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
         """
         Use this method to send video files, Telegram clients support mp4 videos.
-        :param chat_id:
-        :param data:
+        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
+        :param data: InputFile or String : Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram server
+        :param duration: Integer : Duration of sent video in seconds
+        :param caption: String : Video caption (may also be used when resending videos by file_id).
         :param reply_to_message_id:
         :param reply_markup:
-        :return: API reply.
+        :return:
         """
         return types.Message.de_json(
-            apihelper.send_data(self.token, chat_id, data, 'video', reply_to_message_id, reply_markup))
+            apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup))
 
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
         """

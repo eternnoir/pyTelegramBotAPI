@@ -77,6 +77,20 @@ def test_send_file():
     assert ret_msg.message_id
 
 
+def test_send_video():
+    file_data = open('./test_data/test_video.mp4', 'rb')
+    tb = telebot.TeleBot(TOKEN)
+    ret_msg = tb.send_video(CHAT_ID, file_data)
+    assert ret_msg.message_id
+
+
+def test_send_video_more_params():
+    file_data = open('./test_data/test_video.mp4', 'rb')
+    tb = telebot.TeleBot(TOKEN)
+    ret_msg = tb.send_video(CHAT_ID, file_data, 1)
+    assert ret_msg.message_id
+
+
 def test_send_file_exception():
     tb = telebot.TeleBot(TOKEN)
     try:
@@ -149,7 +163,7 @@ def test_send_location():
 
 def create_text_message(text):
     params = {'text': text}
-    chat = types.User(11,'test')
+    chat = types.User(11, 'test')
     return types.Message(1, None, None, chat, 'text', params)
 
 
