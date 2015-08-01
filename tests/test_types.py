@@ -52,6 +52,12 @@ def test_json_Message_Sticker():
     assert msg.sticker.thumb.height == 60
     assert msg.content_type == 'sticker'
 
+def test_json_Message_Sticker_without_thumb():
+    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    msg = types.Message.de_json(json_string)
+    assert msg.sticker.height == 368
+    assert msg.sticker.thumb == None
+    assert msg.content_type == 'sticker'
 
 def test_json_Message_Document():
     json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}}'
@@ -95,3 +101,4 @@ def test_json_contact():
     contact = types.Contact.de_json(json_string)
     assert contact.first_name == 'dd'
     assert contact.last_name == 'ddl'
+

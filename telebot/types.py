@@ -265,7 +265,9 @@ class Sticker(JsonDeserializable):
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
-        thumb = PhotoSize.de_json(obj['thumb'])
+        thumb = None
+        if 'thumb' in obj:
+            thumb = PhotoSize.de_json(obj['thumb'])
         file_size = None
         if 'file_size' in obj:
             file_size = obj['file_size']
