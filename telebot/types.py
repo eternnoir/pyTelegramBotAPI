@@ -244,7 +244,7 @@ class Document(JsonDeserializable):
         file_size = None
         if 'file_name' in obj:
             file_name = obj['file_name']
-        if 'mine_type' in obj:
+        if 'mime_type' in obj:
             mime_type = obj['mime_type']
         if 'file_size' in obj:
             file_size = obj['file_size']
