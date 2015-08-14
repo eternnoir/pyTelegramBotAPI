@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name='pyTelegramBotAPI',
-      version='0.2.9',
+      version='0.3.0',
       description='Python Telegram bot api. ',
       author='eternnoir',
       author_email='eternnoir@gmail.com',
@@ -12,7 +12,7 @@ setup(name='pyTelegramBotAPI',
       keywords='tools',
       install_requires=['pytest', 'requests', 'six'],
       classifiers=[
-          'Development Status :: 4 - Beta',
+          'Development Status :: 5 - Production/Stable',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',
