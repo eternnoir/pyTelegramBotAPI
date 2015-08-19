@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
+sys.path.append('../')
+
 import time
 import pytest
 import os
@@ -8,13 +10,12 @@ import telebot
 from telebot import types
 from telebot import apihelper
 
-sys.path.append('../')
-
 should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
 
 if not should_skip:
     TOKEN = os.environ['TOKEN']
     CHAT_ID = os.environ['CHAT_ID']
+
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
