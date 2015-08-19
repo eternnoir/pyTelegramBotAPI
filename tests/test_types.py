@@ -110,5 +110,5 @@ def test_json_contact():
 def test_json_voice():
     json_string = r'{"duration": 0,"mime_type": "audio/ogg","file_id": "AwcccccccDH1JaB7w_gyFjYQxVAg","file_size": 10481}'
     voice = types.Voice.de_json(json_string)
-    assert voice.duration == 0;
+    assert voice.duration == 0
     assert voice.file_size == 10481
