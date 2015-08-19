@@ -115,6 +115,22 @@ def test_send_photo():
     assert ret_msg.message_id
 
 
+def test_send_audio():
+    file_data = open('./test_data/record.mp3', 'rb')
+    tb = telebot.TeleBot(TOKEN)
+    ret_msg = tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
+    assert ret_msg.content_type == 'audio'
+    assert ret_msg.audio.performer == 'eternnoir'
+    assert ret_msg.audio.title == 'pyTelegram'
+
+
+def test_send_voice():
+    file_data = open('./test_data/record.ogg', 'rb')
+    tb = telebot.TeleBot(TOKEN)
+    ret_msg = tb.send_voice(CHAT_ID, file_data)
+    assert ret_msg.voice.mime_type == 'audio/ogg'
+
+
 def test_send_message():
     text = 'CI Test Message'
     tb = telebot.TeleBot(TOKEN)
@@ -180,3 +196,7 @@ def test_is_string_string():
 def test_not_string():
     i1 = 10
     assert not apihelper.is_string(i1)
+
+
+test_send_voice()
+test_send_audio()

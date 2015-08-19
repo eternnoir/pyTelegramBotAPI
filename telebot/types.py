@@ -44,6 +44,7 @@ class JsonDeserializable:
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
     All subclasses of this class must override de_json.
     """
+
     @classmethod
     def de_json(cls, json_type):
         """
@@ -126,6 +127,9 @@ class Message(JsonDeserializable):
         if 'audio' in obj:
             opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
+        if 'voice' in obj:
+            opts['voice'] = Audio.de_json(obj['voice'])
+            content_type = 'voice'
         if 'document' in obj:
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
@@ -210,6 +214,35 @@ class PhotoSize(JsonDeserializable):
 
 
 class Audio(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        file_id = obj['file_id']
+        duration = obj['duration']
+        performer = None
+        title = None
+        mime_type = None
+        file_size = None
+        if 'mime_type' in obj:
+            mime_type = obj['mime_type']
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        if 'performer' in obj:
+            performer = obj['performer']
+        if 'title' in obj:
+            title = obj['title']
+        return Audio(file_id, duration, performer, title, mime_type, file_size)
+
+    def __init__(self, file_id, duration, performer=None, title=None, mime_type=None, file_size=None):
+        self.file_id = file_id
+        self.duration = duration
+        self.performer = performer
+        self.title = title
+        self.mime_type = mime_type
+        self.file_size = file_size
+
+
+class Voice(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         obj = cls.check_json(json_string)

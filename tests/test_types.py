@@ -39,10 +39,12 @@ def test_json_Document():
 
 
 def test_json_Message_Audio():
-    json_string = r'{"message_id":100,"from":{"id":10734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":10734,"first_name":"dd","last_name":"dd","username":"dd"},"date":1435481343,"audio":{"duration":3,"mime_type":"audio\/ogg","file_id":"ddg","file_size":8249}}'
+    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd","username":"dd"},"chat":{"id":10834,"first_name":"dd","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_size":20096}}'
     msg = types.Message.de_json(json_string)
-    assert msg.audio.duration == 3
+    assert msg.audio.duration == 1
     assert msg.content_type == 'audio'
+    assert msg.audio.performer == 'eternnoir'
+    assert msg.audio.title == 'pyTelegram'
 
 
 def test_json_Message_Sticker():
@@ -52,12 +54,14 @@ def test_json_Message_Sticker():
     assert msg.sticker.thumb.height == 60
     assert msg.content_type == 'sticker'
 
+
 def test_json_Message_Sticker_without_thumb():
     json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb == None
     assert msg.content_type == 'sticker'
+
 
 def test_json_Message_Document():
     json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}}'
@@ -102,3 +106,9 @@ def test_json_contact():
     assert contact.first_name == 'dd'
     assert contact.last_name == 'ddl'
 
+
+def test_json_voice():
+    json_string = r'{"duration": 0,"mime_type": "audio/ogg","file_id": "AwcccccccDH1JaB7w_gyFjYQxVAg","file_size": 10481}'
+    voice = types.Voice.de_json(json_string)
+    assert voice.duration == 0;
+    assert voice.file_size == 10481
