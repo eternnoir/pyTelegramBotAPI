@@ -231,18 +231,33 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup))
 
-    def send_audio(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+    def send_audio(self, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None, reply_markup=None):
         """
-        Use this method to send audio files, if you want Telegram clients to display the file as a playable
-        voice message. For this to work, your audio must be in an .ogg file encoded with OPUS
-        :param chat_id:
-        :param data:
-        :param reply_to_message_id:
+        Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
+        :param chat_id:Unique identifier for the message recipient
+        :param audio:Audio file to send.
+        :param duration:Duration of the audio in seconds
+        :param performer:Performer
+        :param title:Track name
+        :param reply_to_message_id:If the message is a reply, ID of the original messag
         :param reply_markup:
-        :return: API reply.
+        :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_data(self.token, chat_id, data, 'audio', reply_to_message_id, reply_markup))
+            apihelper.send_audio(self.token, chat_id, audio,duration,performer,title, reply_to_message_id, reply_markup))
+
+    def send_voice(self, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
+        """
+        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+        :param chat_id:Unique identifier for the message recipient.
+        :param voice:
+        :param duration:Duration of sent audio in seconds
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return: Message
+        """
+        return types.Message.de_json(
+            apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id,reply_markup))
 
     def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """

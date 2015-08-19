@@ -139,6 +139,45 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
+def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendVoice'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not is_string(voice):
+        files = {'voice': voice}
+    else:
+        payload['voice'] = voice
+    if duration:
+        payload['duration'] = duration
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def send_audio(token, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
+               reply_markup=None):
+    method_url = r'sendAudio'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not is_string(audio):
+        files = {'audio': audio}
+    else:
+        payload['audio'] = audio
+    if duration:
+        payload['duration'] = duration
+    if performer:
+        payload['performer'] = performer
+    if title:
+        payload['title'] = title
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
@@ -155,8 +194,6 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
 
 
 def get_method_by_type(data_type):
-    if data_type == 'audio':
-        return 'sendAudio'
     if data_type == 'document':
         return 'sendDocument'
     if data_type == 'sticker':
