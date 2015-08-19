@@ -197,6 +197,4 @@ def test_not_string():
     i1 = 10
     assert not apihelper.is_string(i1)
 
-
 test_send_voice()
-test_send_audio()

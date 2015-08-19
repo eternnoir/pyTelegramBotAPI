@@ -112,3 +112,5 @@ def test_json_voice():
     voice = types.Voice.de_json(json_string)
     assert voice.duration == 0
     assert voice.file_size == 10481
+
+test_json_voice()

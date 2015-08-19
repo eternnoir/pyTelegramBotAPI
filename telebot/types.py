@@ -254,7 +254,7 @@ class Voice(JsonDeserializable):
             mime_type = obj['mime_type']
         if 'file_size' in obj:
             file_size = obj['file_size']
-        return Audio(file_id, duration, mime_type, file_size)
+        return Voice(file_id, duration, mime_type, file_size)
 
     def __init__(self, file_id, duration, mime_type=None, file_size=None):
         self.file_id = file_id
