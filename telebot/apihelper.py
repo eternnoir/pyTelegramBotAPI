@@ -16,20 +16,44 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     :param method: HTTP method to be used. Defaults to 'get'.
     :param params: Optional parameters. Should be a dictionary with key-value pairs.
     :param files: Optional files.
-    :return:
+    :return: The result parsed to a JSON dictionary.
     """
     request_url = telebot.API_URL + 'bot' + token + '/' + method_name
     result = requests.request(method, request_url, params=params, files=files)
     logger.debug(result.text)
+    return _check_result(method_name, result)['result']
+
+
+def _check_result(method_name, result):
+    """
+    Checks whether `result` is a valid API response.
+    A result is considered invalid if:
+        - The server returned an HTTP response code other than 200
+        - The content of the result is invalid JSON.
+        - The method call was unsuccessful (The JSON 'ok' field equals False)
+
+    :raises ApiException: if one of the above listed cases is applicable
+    :param method_name: The name of the method called
+    :param result: The returned result of the method request
+    :return: The result parsed to a JSON dictionary.
+    """
     if result.status_code != 200:
-        raise ApiException(method_name, result)
+        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]'\
+            .format(result.status_code, result.reason, result.text)
+        raise ApiException(msg, method_name, result)
+
     try:
         result_json = result.json()
-        if not result_json['ok']:
-            raise Exception()
     except:
-        raise ApiException(method_name, result)
-    return result_json['result']
+        msg = 'The server returned an invalid JSON response. Response body:\n[{0}]'\
+            .format(result.text)
+        raise ApiException(msg, method_name, result)
+
+    if not result_json['ok']:
+        msg = 'Error code: {0} Description: {1}'\
+            .format(result_json['error_code'], result_json['description'])
+        raise ApiException(msg, method_name, result)
+    return result_json
 
 
 def get_me(token):
@@ -251,9 +275,12 @@ def split_string(text, chars_per_string):
 class ApiException(Exception):
     """
     This class represents an Exception thrown when a call to the Telegram API fails.
+    In addition to an informative message, it has a `function_name` and a `result` attribute, which respectively
+    contain the name of the failed function and the returned result that made the function to be considered  as
+    failed.
     """
 
-    def __init__(self, function_name, result):
-        super(ApiException, self).__init__('{0} failed. Returned result: {1}'.format(function_name, result))
+    def __init__(self, msg, function_name, result):
+        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
