@@ -367,7 +367,7 @@ class TeleBot:
         """
         chat_id = message.chat.id
         if chat_id in self.message_subscribers_next_step:
-            self.message_subscribers_next_step.append(callback)
+            self.message_subscribers_next_step[chat_id].append(callback)
         else:
             self.message_subscribers_next_step[chat_id] = [callback]
 
