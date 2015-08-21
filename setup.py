@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 from setuptools import setup
 
+def readme():
+    with open('README.rst') as f:
+        return f.read()
+
 setup(name='pyTelegramBotAPI',
-      version='0.3.1',
+      version='0.3.2',
       description='Python Telegram bot api. ',
+      long_description=readme(),
       author='eternnoir',
       author_email='eternnoir@gmail.com',
       url='https://github.com/eternnoir/pyTelegramBotAPI',
