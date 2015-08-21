@@ -108,10 +108,18 @@ file_id = 'AAAaaaZZZzzz'
 tb.send_photo(chat_id, file_id)
 
 # sendAudio
-audio = open('/tmp/audio.ogg', 'rb')
+audio = open('/tmp/audio.mp3', 'rb')
 tb.send_audio(chat_id, audio)
+## sendAudio with duration, performer and title.
+tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
 file_id = 'AAAaaaZZZzzz'
 tb.send_audio(chat_id, file_id)
+
+# sendVoice
+voice = open('/tmp/voice.ogg', 'rb')
+tb.send_voice(chat_id, voice)
+file_id = 'AAAaaaZZZzzz'
+tb.send_voice(chat_id, file_id)
 
 # sendDocument
 doc = open('/tmp/file.txt', 'rb')
