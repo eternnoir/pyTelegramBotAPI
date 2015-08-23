@@ -67,7 +67,7 @@ Then, open the file and create an instance of the TeleBot class.
 ```python
 import telebot
 
-bot = TeleBot("TOKEN")
+bot = telebot.TeleBot("TOKEN")
 ```
 *Note: Make sure to actually replace TOKEN with your own API token.*
 
@@ -87,7 +87,7 @@ Let's add another handler:
 def echo_all(message):
 	bot.reply_to(message, message.text)
 ```
-This one echoes all incoming text messages back to the sender.
+This one echoes all incoming text messages back to the sender. It uses a lambda function to test a message. If the lambda returns True, the message is handled by the decorated function. Since we want all messages to be handled by this function, we simply always return True.
 
 *Note: all handlers are tested in the order in which they were declared*
 
@@ -105,13 +105,13 @@ Alright, that's it! Our source file now looks like this:
 ```python
 import telebot
 
-bot = TeleBot("TOKEN")
+bot = telebot.TeleBot("TOKEN")
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
 	bot.reply_to(message, "Howdy, how are you doing?")
 
-@bot.message.handler(func=lambda m: True)
+@bot.message.handler(func=lambda message: True)
 def echo_all(message):
 	bot.reply_to(message, message.text)
 
