@@ -83,7 +83,7 @@ A function which is decorated by a message handler __can have an arbitrary name,
 
 Let's add another handler:
 ```python
-@bot.message.handler(func=lambda m: True)
+@bot.message_handler(func=lambda m: True)
 def echo_all(message):
 	bot.reply_to(message, message.text)
 ```
@@ -91,7 +91,7 @@ This one echoes all incoming text messages back to the sender. It uses a lambda 
 
 *Note: all handlers are tested in the order in which they were declared*
 
-We now have a basic bot which replies a static message to "/start" and "/help" commands and echoes the rest of the sent messages back. To start the bot, add the following to our source file:
+We now have a basic bot which replies a static message to "/start" and "/help" commands and which echoes the rest of the sent messages. To start the bot, add the following to our source file:
 ```python
 bot.polling()
 
@@ -111,7 +111,7 @@ bot = telebot.TeleBot("TOKEN")
 def send_welcome(message):
 	bot.reply_to(message, "Howdy, how are you doing?")
 
-@bot.message.handler(func=lambda message: True)
+@bot.message_handler(func=lambda message: True)
 def echo_all(message):
 	bot.reply_to(message, message.text)
 
@@ -259,6 +259,7 @@ markup.row('c', 'd', 'e')
 tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 ```
 The last example yields this result:
+
 ![ReplyKeyboardMarkup](https://pp.vk.me/c624430/v624430512/473e5/_mxxW7FPe4U.jpg "ReplyKeyboardMarkup")
 
 ```python
@@ -274,6 +275,7 @@ tb.send_message(chat_id, message, reply_markup=markup)
 markup = types.ForceReply(selective=False)
 tb.send_message(chat_id, "Send me another word:", reply_markup=markup)
 ```
+ForceReply:
 
 ![ForceReply](https://pp.vk.me/c624430/v624430512/473ec/602byyWUHcs.jpg "ForceReply")
 
@@ -289,7 +291,7 @@ Now, every function that calls the Telegram API is executed in a separate Thread
 ```python
 import telebot
 
-tb = AsyncTeleBot("TOKEN")
+tb = telebot.AsyncTeleBot("TOKEN")
 task = tb.get_me() # Execute an API call
 # Do some other operations...
 a = 0
@@ -301,17 +303,22 @@ result = task.wait() # Get the result of the execution
 *Note: if you execute send_xyz functions after eachother without calling wait(), the order in which messages are delivered might be wrong.*
 
 ### Sending large text messages
-Sometimes you must send messages that exceeds 5000 characters. The Telegram API can not handle that many characters at a time, so we need to split the message in multiples. Here is how to do that using the API:
+Sometimes you must send messages that exceed 5000 characters. The Telegram API can not handle that many characters in one request, so we need to split the message in multiples. Here is how to do that using the API:
 ```python
 from telebot import apihelper
 large_text = open("large_text.txt", "rb").read()
+
+# Split the text each 3000 characters.
+# split_string returns a list with the splitted text.
 splitted_text = apihelper.split_string(large_text, 3000)
 for text in splitted_text:
 	tb.send_message(chat_id, text)
 ```
 ### Controlling the amount of Threads used by TeleBot
 The TeleBot constructor takes the following optional arguments:
- - create_threads: True/False (default True). A flag to indicate whether TeleBot should execute message handlers on it's polling Thread.
+
+ - create_threads: True/False (default True). A flag to indicate whether
+   TeleBot should execute message handlers on it's polling Thread.
  - num_threads: integer (default 4). Controls the amount of WorkerThreads created for the internal thread pool that TeleBot uses to execute message handlers. Is not used when create_threads is False.
 
 ### Don't stop when receiving an error
@@ -337,8 +344,7 @@ If you prefer using web hooks to the getUpdates method, you can use the `process
 
 ### Logging
 
-Now you can use Telebot module logger to log some information in Telebot. Use `telebot.logger` to get the
-Telebot module logger.
+You can use the Telebot module logger to log debug info about Telebot. Use `telebot.logger` to get the logger of the TeleBot module.
 
 ```python
 logger = telebot.logger
