@@ -304,10 +304,10 @@ Example: `tb.polling(none_stop=True)`
 ### The listener mechanism
 As an alternative to the message handlers, one can also register a function as a listener to TeleBot. Example:
 ```python
-def handle_messages(message):
+def handle_messages(messages):
 	for message in messsages:
 		# Do something with the message
-		bot.reply_to(message, 'hi')
+		bot.reply_to(message, 'Hi')
 
 bot.set_update_listener(handle_messages)
 bot.polling()
