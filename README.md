@@ -1,9 +1,9 @@
-#<center>pyTelegramBotAPI</center>
+# <p align="center">pyTelegramBotAPI
 
-<center>A simple, but extensible Python implementation for the [Telegram Bot API](https://core.telegram.org/bots/api).</center>
+<p align="center">A simple, but extensible Python implementation for the [Telegram Bot API](https://core.telegram.org/bots/api).
 
 
-<center>[![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)</center>
+<p align="center">[![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
 
   * [Getting started.](#getting-started)
   * [Writing your first bot](#writing-your-first-bot)
@@ -24,6 +24,8 @@
     * [The listener mechanism](#the-listener-mechanism)
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
+  * [F.A.Q.](#faq)
+    * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [More examples](#more-examples)
 
@@ -32,7 +34,7 @@
 This API is tested with Python 2.6, Python 2.7, Python 3.4, Pypy and Pypy 3.
 There are two ways to install the library:
 
-* Installation using pip (a Python package manager):
+* Installation using pip (a Python package manager)*:
 
 ```
 $ pip install pyTelegramBotAPI
@@ -46,6 +48,8 @@ $ python setup.py install
 ```
 
 It is generally recommended to use the first option.
+
+**While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling `pip install pytelegrambotapi --upgrade`*
 
 ## Writing your first bot
 
@@ -65,7 +69,7 @@ import telebot
 
 bot = TeleBot("TOKEN")
 ```
-*Note: Make sure to actually replace TOKEN with our own API token.*
+*Note: Make sure to actually replace TOKEN with your own API token.*
 
 After that declaration, we need to register some so-called message handlers. Message handlers define filters which a message must pass. If a message passes the filter, the decorated function is called and the incoming message is passed as an argument.
 
@@ -84,6 +88,8 @@ def echo_all(message):
 	bot.reply_to(message, message.text)
 ```
 This one echoes all incoming text messages back to the sender.
+
+*Note: all handlers are tested in the order in which they were declared*
 
 We now have a basic bot which replies a static message to "/start" and "/help" commands and echoes the rest of the sent messages back. To start the bot, add the following to our source file:
 ```python
@@ -293,6 +299,8 @@ The TeleBot constructor takes the following optional arguments:
 TeleBot's `polling()` function takes an optional none_stop argument. When none_stop equals True, the bot will not exit when it receives an invalid response from the Telegram API servers. none_stop defaults to False.
 Example: `tb.polling(none_stop=True)`
 
+*Note: You should take caution when using this, because some errors (e.g. if the Telegram servers fail to return data) can not be ignored and the bot would malfunction.*
+
 ### The listener mechanism
 As an alternative to the message handlers, one can also register a function as a listener to TeleBot. Example:
 ```python
@@ -323,11 +331,31 @@ logger.setLevel(logging.DEBUG)  # or use logging.INFO
 ch.setFormatter(formatter)
 ```
 
+## F.A.Q.
+
+### How can I distinguish a User and a GroupChat in message.chat?
+There are two ways to do this:
+
+ - Checking the instance of message.chat with `isinstance`:
+```python
+def is_user(chat):
+	return isinstance(chat, types.User)
+
+print is_user(message.chat) # True or False
+```
+ - Checking whether the chat id is negative or positive. If the chat id is negative, the chat is a GroupChat, if it is positive, it is a User. Example:
+```python
+def is_user(chat):
+	return chat.id > 0
+
+print is_user(message.chat) # True or False
+```
+
 ## The Telegram Chat Group
 
 Get help. Discuss. Chat.
 
-Join [pyTelegramBotAPI Chat Group](https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b).
+Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b).
 
 ## More examples
 
