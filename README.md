@@ -127,7 +127,10 @@ To start the bot, simply open up a terminal and enter `python echo_bot.py` to ru
 
 ### Types
 
-All types are defined in types.py. They are all completely in line with the [Telegram API's definition of the types](https://core.telegram.org/bots/api#available-types), except for the Message's `from` field, which is renamed to `from_user` (because `from` is a Python reserved token). Thus, attributes such as `message_id` can be accessed directly with `message.message_id`. Note that `chat` can be either an instance of `User` or `GroupChat`.
+All types are defined in types.py. They are all completely in line with the [Telegram API's definition of the types](https://core.telegram.org/bots/api#available-types), except for the Message's `from` field, which is renamed to `from_user` (because `from` is a Python reserved token). Thus, attributes such as `message_id` can be accessed directly with `message.message_id`. Note that `message.chat` can be either an instance of `User` or `GroupChat` (see [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)).
+
+The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings: 
+'text', 'audio', 'document', 'photo', 'sticker', 'video', 'location', 'contact', 'new_chat_participant', 'left_chat_participant', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created'.
 
 ### Methods
 
@@ -182,19 +185,23 @@ tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 # getMe
 user = tb.get_me()
 
+
 # sendMessage
 tb.send_message(chatid, text)
 
 # forwardMessage
 tb.forward_message(to_chat_id, from_chat_id, message_id)
 
-# sendPhoto with a File
+# All send_xyz functions which can take a file as an argument, can also take a file_id instead of a file.
+# sendPhoto
 photo = open('/tmp/photo.png', 'rb')
 tb.send_photo(chat_id, photo)
+tb.send_photo(chat_id, "FILEID")
 
 # sendAudio
 audio = open('/tmp/audio.mp3', 'rb')
 tb.send_audio(chat_id, audio)
+tb.send_audio(chat_id, "FILEID")
 
 ## sendAudio with duration, performer and title.
 tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
@@ -202,18 +209,22 @@ tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
 # sendVoice
 voice = open('/tmp/voice.ogg', 'rb')
 tb.send_voice(chat_id, voice)
+tb.send_voice(chat_id, "FILEID")
 
 # sendDocument
 doc = open('/tmp/file.txt', 'rb')
 tb.send_document(chat_id, doc)
+tb.send_document(chat_id, "FILEID")
 
 # sendSticker
 sti = open('/tmp/sti.webp', 'rb')
 tb.send_sticker(chat_id, sti)
+tb.send_sticker(chat_id, "FILEID")
 
 # sendVideo
 video = open('/tmp/video.mp4', 'rb')
 tb.send_video(chat_id, video)
+tb.send_video(chat_id, "FILEID")
 
 # sendLocation
 tb.send_location(chat_id, lat, lon)
@@ -229,7 +240,7 @@ All `send_xyz` functions of TeleBot take an optional `reply_markup` argument. Th
 ```python
 from telebot import types
 
-# Use the ReplyKeyboardMarkup class.
+# Using the ReplyKeyboardMarkup class
 # It's constructor can take the following optional arguments:
 # - resize_keyboard: True/False (default False)
 # - one_time_keyboard: True/False (default False)
@@ -239,24 +250,32 @@ from telebot import types
 # It defines how many buttons are fit on each row before continuing on the next row.
 markup = types.ReplyKeyboardMarkup(row_width=2)
 markup.add('a', 'v', 'd')
-tb.send_message(chat_id, message, reply_markup=markup)
+tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
 # or add strings one row at a time:
 markup = types.ReplyKeyboardMarkup()
 markup.row('a', 'v')
 markup.row('c', 'd', 'e')
-tb.send_message(chat_id, message, reply_markup=markup)
+tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
+```
+The last example yields this result:
+![ReplyKeyboardMarkup](https://pp.vk.me/c624430/v624430512/473e5/_mxxW7FPe4U.jpg "ReplyKeyboardMarkup")
 
-# Using ReplyKeyboardHide
+```python
+# ReplyKeyboardHide: hides a previously sent ReplyKeyboardMarkup
 # Takes an optional selective argument (True/False, default False)
 markup = types.ReplyKeyboardHide(selective=False)
 tb.send_message(chat_id, message, reply_markup=markup)
+```
 
-# Using ForceReply
+```python
+# ForceReply: forces a user to reply to a message
 # Takes an optional selective argument (True/False, default False)
 markup = types.ForceReply(selective=False)
-tb.send_message(chat_id, message, reply_markup=markup)
+tb.send_message(chat_id, "Send me another word:", reply_markup=markup)
 ```
+
+![ForceReply](https://pp.vk.me/c624430/v624430512/473ec/602byyWUHcs.jpg "ForceReply")
 
 ## Advanced use of the API
 
