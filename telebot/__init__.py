@@ -10,7 +10,7 @@ except ImportError:
 import time
 
 import logging
-
+logging.basicConfig()
 logger = logging.getLogger('Telebot')
 import re
 from telebot import apihelper, types
