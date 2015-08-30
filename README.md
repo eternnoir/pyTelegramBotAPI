@@ -20,7 +20,6 @@
     * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
     * [Sending large text messages](#sending-large-text-messages)
     * [Controlling the amount of Threads used by TeleBot](#controlling-the-amount-of-threads-used-by-telebot)
-    * [Don't stop when receiving an error](#dont-stop-when-receiving-an-error)
     * [The listener mechanism](#the-listener-mechanism)
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
@@ -94,13 +93,7 @@ This one echoes all incoming text messages back to the sender. It uses a lambda 
 We now have a basic bot which replies a static message to "/start" and "/help" commands and which echoes the rest of the sent messages. To start the bot, add the following to our source file:
 ```python
 bot.polling()
-
-import time
-while True:
-	time.sleep(100)
 ```
-The last three lines are necessary to keep the process alive. If they were to be omitted, the program would terminate as soon as bot.polling() is called. They have no impact on the bot's functioning.
-
 Alright, that's it! Our source file now looks like this:
 ```python
 import telebot
@@ -116,10 +109,6 @@ def echo_all(message):
 	bot.reply_to(message, message.text)
 
 bot.polling()
-
-import time
-while True:
-	time.sleep(100)
 ```
 To start the bot, simply open up a terminal and enter `python echo_bot.py` to run the bot! Test it by sending commands ('/start' and '/help') and arbitrary text messages.
 
@@ -182,9 +171,15 @@ import telebot
 TOKEN = '<token_string>'
 tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 
+# Upon calling this function, TeleBot starts polling the Telegram servers for new messages.
+# - none_stop: True/False (default False) - Don't stop polling when receiving an error from the Telegram servers
+# - interval: True/False (default False) - The interval between polling requests
+#           Note: Editing this parameter harms the bot's response time
+# - block: True/False (default True) - Blocks upon calling this function
+tb.polling(none_stop=False, interval=0, block=True)
+
 # getMe
 user = tb.get_me()
-
 
 # sendMessage
 tb.send_message(chatid, text)
@@ -321,12 +316,6 @@ The TeleBot constructor takes the following optional arguments:
    TeleBot should execute message handlers on it's polling Thread.
  - num_threads: integer (default 4). Controls the amount of WorkerThreads created for the internal thread pool that TeleBot uses to execute message handlers. Is not used when create_threads is False.
 
-### Don't stop when receiving an error
-TeleBot's `polling()` function takes an optional none_stop argument. When none_stop equals True, the bot will not exit when it receives an invalid response from the Telegram API servers. none_stop defaults to False.
-Example: `tb.polling(none_stop=True)`
-
-*Note: You should take caution when using this, because some errors (e.g. if the Telegram servers fail to return data) can not be ignored and the bot would malfunction.*
-
 ### The listener mechanism
 As an alternative to the message handlers, one can also register a function as a listener to TeleBot. Example:
 ```python
@@ -340,7 +329,7 @@ bot.polling()
 ```
 
 ### Using web hooks
-If you prefer using web hooks to the getUpdates method, you can use the `process_new_messages(messages)` function in TeleBot to make it process the messages that you supply. It takes a list of Message objects.
+If you prefer using web hooks to the getUpdates method, you can use the `process_new_messages(messages)` function in TeleBot to make it process the messages that you supply. It takes a list of Message objects. This function is still incubating.
 
 ### Logging
 

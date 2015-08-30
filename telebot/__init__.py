@@ -136,7 +136,7 @@ class TeleBot:
             else:
                 listener(new_messages)
 
-    def polling(self, none_stop=False, interval=0):
+    def polling(self, none_stop=False, interval=0, block=True):
         """
         This function creates a new Thread that calls an internal __polling function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -154,6 +154,10 @@ class TeleBot:
         self.polling_thread = threading.Thread(target=self.__polling, args=([none_stop, interval]))
         self.polling_thread.daemon = True
         self.polling_thread.start()
+
+        if block:
+            self.__stop_polling.wait()
+
 
     def __polling(self, none_stop, interval):
         logger.info('TeleBot: Started polling.')
