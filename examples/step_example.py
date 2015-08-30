@@ -76,7 +76,3 @@ def process_sex_step(message):
 
 
 bot.polling()
-
-while True:
-    time.sleep(1)
-    pass

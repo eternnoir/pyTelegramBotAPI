@@ -7,7 +7,6 @@ API_TOKEN = '<api_token>'
 
 bot = telebot.TeleBot(API_TOKEN)
 
-
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
@@ -23,6 +22,3 @@ def echo_message(message):
     bot.reply_to(message, message.text)
 
 bot.polling()
-
-while True:
-    pass
