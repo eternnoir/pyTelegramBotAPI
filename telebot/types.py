@@ -28,7 +28,6 @@ class JsonSerializable:
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
     """
-
     def to_json(self):
         """
         Returns a JSON string representation of this class.
@@ -44,7 +43,6 @@ class JsonDeserializable:
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
     All subclasses of this class must override de_json.
     """
-
     @classmethod
     def de_json(cls, json_type):
         """

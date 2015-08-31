@@ -282,7 +282,7 @@ To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
 tb = telebot.AsyncTeleBot("TOKEN")
 ```
-Now, every function that calls the Telegram API is executed in a separate Thread. The functions are modified to return an AsyncTask instance (defined in \__init__.py). Using AsyncTeleBot allows you to do the following:
+Now, every function that calls the Telegram API is executed in a separate Thread. The functions are modified to return an AsyncTask instance (defined in util.py). Using AsyncTeleBot allows you to do the following:
 ```python
 import telebot
 
@@ -300,12 +300,12 @@ result = task.wait() # Get the result of the execution
 ### Sending large text messages
 Sometimes you must send messages that exceed 5000 characters. The Telegram API can not handle that many characters in one request, so we need to split the message in multiples. Here is how to do that using the API:
 ```python
-from telebot import apihelper
+from telebot import util
 large_text = open("large_text.txt", "rb").read()
 
 # Split the text each 3000 characters.
 # split_string returns a list with the splitted text.
-splitted_text = apihelper.split_string(large_text, 3000)
+splitted_text = util.split_string(large_text, 3000)
 for text in splitted_text:
 	tb.send_message(chat_id, text)
 ```

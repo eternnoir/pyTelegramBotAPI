@@ -2,66 +2,20 @@
 from __future__ import print_function
 
 import threading
-# Python3 queue support.
-try:
-    import Queue
-except ImportError:
-    import queue as Queue
 import time
 
 import logging
 logging.basicConfig()
 logger = logging.getLogger('Telebot')
 import re
-from telebot import apihelper, types
+
+from telebot import apihelper, types, util
 
 """
 Module : telebot
 """
 
 API_URL = r"https://api.telegram.org/"
-
-
-class ThreadPool:
-    class WorkerThread(threading.Thread):
-        count = 0
-
-        def __init__(self, queue):
-            threading.Thread.__init__(self, name="WorkerThread{0}".format(self.__class__.count + 1))
-            self.__class__.count += 1
-            self.queue = queue
-            self.daemon = True
-
-            self._running = True
-            self.start()
-
-        def run(self):
-            while self._running:
-                try:
-                    task, args, kwargs = self.queue.get()
-                    task(*args, **kwargs)
-                except Queue.Empty:
-                    time.sleep(0)
-                    pass
-
-        def stop(self):
-            self._running = False
-
-    def __init__(self, num_threads=4):
-        self.tasks = Queue.Queue()
-        self.workers = [self.WorkerThread(self.tasks) for _ in range(num_threads)]
-
-        self.num_threads = num_threads
-
-    def put(self, func, *args, **kwargs):
-        self.tasks.put((func, args, kwargs))
-
-    def close(self):
-        for worker in self.workers:
-            worker.stop()
-        for worker in self.workers:
-            worker.join()
-
 
 class TeleBot:
     """ This is TeleBot Class
@@ -82,7 +36,6 @@ class TeleBot:
 
     def __init__(self, token, create_threads=True, num_threads=4):
         """
-
         :param token: bot API token
         :param create_threads: Create thread for message handler
         :param num_threads: Number of worker in thread pool.
@@ -104,7 +57,7 @@ class TeleBot:
 
         self.message_handlers = []
         if self.__create_threads:
-            self.worker_pool = ThreadPool(num_threads)
+            self.worker_pool = util.ThreadPool(num_threads)
 
     def get_update(self):
         """
@@ -157,7 +110,6 @@ class TeleBot:
 
         if block:
             self.__stop_polling.wait()
-
 
     def __polling(self, none_stop, interval):
         logger.info('TeleBot: Started polling.')
@@ -249,7 +201,7 @@ class TeleBot:
         :param duration:Duration of the audio in seconds
         :param performer:Performer
         :param title:Track name
-        :param reply_to_message_id:If the message is a reply, ID of the original messag
+        :param reply_to_message_id:If the message is a reply, ID of the original message
         :param reply_markup:
         :return: Message
         """
@@ -438,7 +390,7 @@ class TeleBot:
         if message.content_type not in message_handler['content_types']:
             return False
         if 'commands' in message_handler and message.content_type == 'text':
-            return apihelper.extract_command(message.text) in message_handler['commands']
+            return util.extract_command(message.text) in message_handler['commands']
         if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
                                                                                         message.text):
             return True
@@ -452,93 +404,55 @@ class TeleBot:
                 if self._test_message_handler(message_handler, message):
                     if self.__create_threads:
                         self.worker_pool.put(message_handler['function'], message)
-                        # t = threading.Thread(target=message_handler['function'], args=(message,))
-                        # t.start()
                     else:
                         message_handler['function'](message)
                     break
-
-
-class AsyncTask:
-    def __init__(self, target, *args, **kwargs):
-        self.target = target
-        self.args = args
-        self.kwargs = kwargs
-
-        self.done = False
-        self.thread = threading.Thread(target=self._run)
-        self.thread.start()
-
-    def _run(self):
-        try:
-            self.result = self.target(*self.args, **self.kwargs)
-        except Exception as e:
-            self.result = e
-        self.done = True
-
-    def wait(self):
-        if not self.done:
-            self.thread.join()
-        if isinstance(self.result, Exception):
-            raise self.result
-        else:
-            return self.result
-
-
-def async():
-    def decorator(fn):
-        def wrapper(*args, **kwargs):
-            return AsyncTask(fn, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
         TeleBot.__init__(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def get_me(self):
         return TeleBot.get_me(self)
 
-    @async()
+    @util.async()
     def get_user_profile_photos(self, *args, **kwargs):
         return TeleBot.get_user_profile_photos(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_message(self, *args, **kwargs):
         return TeleBot.send_message(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def forward_message(self, *args, **kwargs):
         return TeleBot.forward_message(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_photo(self, *args, **kwargs):
         return TeleBot.send_photo(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_audio(self, *args, **kwargs):
         return TeleBot.send_audio(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_document(self, *args, **kwargs):
         return TeleBot.send_document(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_sticker(self, *args, **kwargs):
         return TeleBot.send_sticker(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_video(self, *args, **kwargs):
         return TeleBot.send_video(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_location(self, *args, **kwargs):
         return TeleBot.send_location(self, *args, **kwargs)
 
-    @async()
+    @util.async()
     def send_chat_action(self, *args, **kwargs):
         return TeleBot.send_chat_action(self, *args, **kwargs)

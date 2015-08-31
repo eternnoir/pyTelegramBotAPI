@@ -9,6 +9,7 @@ import os
 import telebot
 from telebot import types
 from telebot import apihelper
+from telebot import util
 
 should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
 
@@ -67,16 +68,13 @@ class TestTeleBot:
         time.sleep(1)
         assert not msg.text == 'got'
 
-    def test_send_file_by_id(self):
-        file_id = 'BQADBQADjAIAAsYifgbvqwq1he9REAI'
-        tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_document(CHAT_ID, file_id)
-        assert ret_msg.message_id
-
     def test_send_file(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data)
+        assert ret_msg.message_id
+
+        ret_msg = tb.send_document(CHAT_ID, ret_msg.document.file_id)
         assert ret_msg.message_id
 
     def test_send_video(self):
@@ -100,16 +98,13 @@ class TestTeleBot:
             print(e)
             assert True
 
-    def test_send_photo_by_id(self):
-        photo_id = 'AgADBQADTKgxG8YifgbcWQAB7Da9yYIx1rEyAAT-HYJ3CrJEqdA2AQABAg'
-        tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_photo(CHAT_ID, photo_id)
-        assert ret_msg.message_id
-
     def test_send_photo(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_photo(CHAT_ID, file_data)
+        assert ret_msg.message_id
+
+        ret_msg = tb.send_photo(CHAT_ID, ret_msg.photo[0].file_id)
         assert ret_msg.message_id
 
     def test_send_audio(self):
@@ -174,12 +169,12 @@ class TestTeleBot:
 
     def test_is_string_unicode(self):
         s1 = u'string'
-        assert apihelper.is_string(s1)
+        assert util.is_string(s1)
 
     def test_is_string_string(self):
         s1 = 'string'
-        assert apihelper.is_string(s1)
+        assert util.is_string(s1)
 
     def test_not_string(self):
         i1 = 10
-        assert not apihelper.is_string(i1)
+        assert not util.is_string(i1)

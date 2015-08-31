@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import requests
-from six import string_types
 import telebot
 from telebot import types
+from telebot import util
 
 logger = telebot.logger
 
@@ -115,7 +115,7 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
-    if not is_string(photo):
+    if not util.is_string(photo):
         files = {'photo': photo}
     else:
         payload['photo'] = photo
@@ -148,7 +148,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
-    if not is_string(data):
+    if not util.is_string(data):
         files = {'video': data}
     else:
         payload['video'] = data
@@ -167,7 +167,7 @@ def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, r
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
-    if not is_string(voice):
+    if not util.is_string(voice):
         files = {'voice': voice}
     else:
         payload['voice'] = voice
@@ -185,7 +185,7 @@ def send_audio(token, chat_id, audio, duration=None, performer=None, title=None,
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
-    if not is_string(audio):
+    if not util.is_string(audio):
         files = {'audio': audio}
     else:
         payload['audio'] = audio
@@ -206,7 +206,7 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
-    if not is_string(data):
+    if not util.is_string(data):
         files = {data_type: data}
     else:
         payload[data_type] = data
@@ -228,49 +228,6 @@ def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
-
-
-def is_string(var):
-    return isinstance(var, string_types)
-
-
-def is_command(text):
-    """
-    Checks if `text` is a command. Telegram chat commands start with the '/' character.
-    :param text: Text to check.
-    :return: True if `text` is a command, else False.
-    """
-    return text.startswith('/')
-
-
-def extract_command(text):
-    """
-    Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
-    If `text` is not a command, this function returns None.
-
-    Examples:
-    extract_command('/help'): 'help'
-    extract_command('/help@BotName'): 'help'
-    extract_command('/search black eyed peas'): 'search'
-    extract_command('Good day to you'): None
-
-    :param text: String to extract the command from
-    :return: the command if `text` is a command (according to is_command), else None.
-    """
-    return text.split()[0].split('@')[0][1:] if is_command(text) else None
-
-
-def split_string(text, chars_per_string):
-    """
-    Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
-    This is very useful for splitting one giant message into multiples.
-
-    :param text: The text to split
-    :param chars_per_string: The number of characters per line the text is split into.
-    :return: The splitted text as a list of strings.
-    """
-    return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
-
 
 class ApiException(Exception):
     """
