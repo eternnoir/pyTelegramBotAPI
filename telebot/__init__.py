@@ -161,13 +161,19 @@ class TeleBot:
 
     def __polling(self, none_stop, interval):
         logger.info('TeleBot: Started polling.')
+
+        error_interval = .25
         while not self.__stop_polling.wait(interval):
             try:
                 self.get_update()
-            except Exception as e:
+                error_interval = .25
+            except apihelper.ApiException as e:
                 if not none_stop:
                     self.__stop_polling.set()
                     logger.info("TeleBot: Exception occurred. Stopping.")
+                else:
+                    time.sleep(error_interval)
+                    error_interval *= 2
                 logger.error(e)
 
         logger.info('TeleBot: Stopped polling.')
