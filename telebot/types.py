@@ -68,6 +68,16 @@ class JsonDeserializable:
         else:
             raise ValueError("json_type should be a json dict or string.")
 
+    def __str__(self):
+        d = {}
+        for x, y in self.__dict__.iteritems():
+            if hasattr(y, '__dict__'):
+                d[x] = y.__dict__
+            else:
+                d[x] = y
+
+        return unicode(d)
+
 
 class User(JsonDeserializable):
     @classmethod
