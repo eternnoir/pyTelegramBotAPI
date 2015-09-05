@@ -5,6 +5,7 @@ import threading
 import time
 
 import logging
+
 logging.basicConfig()
 logger = logging.getLogger('Telebot')
 import re
@@ -16,6 +17,7 @@ Module : telebot
 """
 
 API_URL = r"https://api.telegram.org/"
+
 
 class TeleBot:
     """ This is TeleBot Class
@@ -58,6 +60,20 @@ class TeleBot:
         self.message_handlers = []
         if self.__create_threads:
             self.worker_pool = util.ThreadPool(num_threads)
+
+    def get_updates(self, offset=None, limit=None, timeout=20):
+        """
+        Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+        :param offset: Integer. Identifier of the first update to be returned.
+        :param limit: Integer. Limits the number of updates to be retrieved.
+        :param timeout: Integer. Timeout in seconds for long polling.
+        :return: array of Updates
+        """
+        json_updates = apihelper.get_updates(self.token, offset, limit, timeout)
+        ret = []
+        for ju in json_updates:
+            ret.append(types.Update.de_json(ju))
+        return ret
 
     def get_update(self):
         """
@@ -193,7 +209,8 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup))
 
-    def send_audio(self, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None, reply_markup=None):
+    def send_audio(self, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
+                   reply_markup=None):
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
         :param chat_id:Unique identifier for the message recipient
@@ -206,7 +223,8 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_audio(self.token, chat_id, audio,duration,performer,title, reply_to_message_id, reply_markup))
+            apihelper.send_audio(self.token, chat_id, audio, duration, performer, title, reply_to_message_id,
+                                 reply_markup))
 
     def send_voice(self, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
         """
@@ -219,7 +237,7 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id,reply_markup))
+            apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup))
 
     def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """

@@ -113,4 +113,10 @@ def test_json_voice():
     assert voice.duration == 0
     assert voice.file_size == 10481
 
-test_json_voice()
+def test_json_update():
+    json_string = r'{"update_id":938203,"message":{"message_id":241,"from":{"id":9734,"first_name":"Fk","last_name":"Wg","username":"nir"},"chat":{"id":1111,"first_name":"Fk","last_name":"Wg","username":"oir"},"date":1441447009,"text":"HIHI"}}'
+    update = types.Update.de_json(json_string)
+    assert update.update_id == 938203
+    assert update.message.message_id == 241
+    assert update.message.from_user.id == 9734
+
