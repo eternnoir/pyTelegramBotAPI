@@ -78,6 +78,17 @@ class JsonDeserializable:
 
         return unicode(d)
 
+class Update(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        update_id = obj['update_id']
+        message = Message.de_json(obj['message'])
+        return Update(update_id, message)
+
+    def __init__(self, update_id, message):
+        self.update_id = update_id
+        self.message = message
 
 class User(JsonDeserializable):
     @classmethod
