@@ -59,6 +59,20 @@ class TeleBot:
         if self.__create_threads:
             self.worker_pool = util.ThreadPool(num_threads)
 
+    def get_Updates(self, offset=None,limit=None, timeout=20):
+        """
+        Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+        :param offset: Integer. Identifier of the first update to be returned.
+        :param limit: Integer. Limits the number of updates to be retrieved.
+        :param timeout: Integer. Timeout in seconds for long polling.
+        :return: array of Updates
+        """
+        json_updates = apihelper.get_updates(self.token, offset, limit, timeout)
+        ret = []
+        for ju in json_updates:
+            ret.append(types.Update.de_json(ju))
+        return ret
+
     def get_update(self):
         """
         Retrieves any updates from the Telegram API.
