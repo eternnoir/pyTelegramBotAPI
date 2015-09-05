@@ -181,6 +181,10 @@ tb.polling(none_stop=False, interval=0, block=True)
 # getMe
 user = tb.get_me()
 
+# getUpdates
+updates = tb.get_updates()
+updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
+
 # sendMessage
 tb.send_message(chatid, text)
 
