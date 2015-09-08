@@ -19,8 +19,9 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     :return: The result parsed to a JSON dictionary.
     """
     request_url = telebot.API_URL + 'bot' + token + '/' + method_name
+    logger.debug("Request: method={} url={} params={} files={}".format(method, request_url, params, files))
     result = requests.request(method, request_url, params=params, files=files)
-    logger.debug(result.text)
+    logger.debug("The server returned: '{}'".format(result.text))
     return _check_result(method_name, result)['result']
 
 

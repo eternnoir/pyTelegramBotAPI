@@ -4,10 +4,17 @@ from __future__ import print_function
 import threading
 import time
 import re
+import sys
 
 import logging
-logging.basicConfig()
-logger = logging.getLogger('Telebot')
+logger = logging.getLogger('TeleBot')
+formatter = logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d) %(levelname)s - %(name)s: "%(message)s"')
+
+ch = logging.StreamHandler(sys.stderr)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, types, util
 
@@ -72,7 +79,7 @@ class TeleBot:
                 self.last_update_id = update['update_id']
             msg = types.Message.de_json(update['message'])
             new_messages.append(msg)
-        logger.debug('GET %d new messages' % len(new_messages))
+        logger.debug('Received {} new messages'.format(len(new_messages)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
 
@@ -113,13 +120,13 @@ class TeleBot:
                 try:
                     time.sleep(.1)
                 except KeyboardInterrupt:
-                    logger.info("TeleBot: Received KeyboardInterrupt: Stopping")
+                    logger.info("Received KeyboardInterrupt. Stopping.")
                     self.stop_polling()
                     self.polling_thread.join()
                     break
 
     def __polling(self, none_stop, interval):
-        logger.info('TeleBot: Started polling.')
+        logger.info('Started polling.')
 
         error_interval = .25
         while not self.__stop_polling.wait(interval):
@@ -129,13 +136,13 @@ class TeleBot:
             except apihelper.ApiException as e:
                 if not none_stop:
                     self.__stop_polling.set()
-                    logger.info("TeleBot: Exception occurred. Stopping.")
+                    logger.info("Exception occurred. Stopping.")
                 else:
                     time.sleep(error_interval)
                     error_interval *= 2
                 logger.error(e)
 
-        logger.info('TeleBot: Stopped polling.')
+        logger.info('Stopped polling.')
 
     def stop_polling(self):
         self.__stop_polling.set()
