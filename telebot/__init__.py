@@ -3,12 +3,18 @@ from __future__ import print_function
 
 import threading
 import time
+import re
+import sys
 
 import logging
+logger = logging.getLogger('TeleBot')
+formatter = logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d) %(levelname)s - %(name)s: "%(message)s"')
 
-logging.basicConfig()
-logger = logging.getLogger('Telebot')
-import re
+console_output_handler = logging.StreamHandler(sys.stderr)
+console_output_handler.setFormatter(formatter)
+logger.addHandler(console_output_handler)
+
+logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, types, util
 
@@ -87,7 +93,7 @@ class TeleBot:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
             new_messages.append(update.message)
-        logger.debug('GET %d new messages' % len(new_messages))
+        logger.debug('Received {} new messages'.format(len(new_messages)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
 
@@ -124,10 +130,17 @@ class TeleBot:
         self.polling_thread.start()
 
         if block:
-            self.__stop_polling.wait()
+            while self.polling_thread.is_alive:
+                try:
+                    time.sleep(.1)
+                except KeyboardInterrupt:
+                    logger.info("Received KeyboardInterrupt. Stopping.")
+                    self.stop_polling()
+                    self.polling_thread.join()
+                    break
 
     def __polling(self, none_stop, interval):
-        logger.info('TeleBot: Started polling.')
+        logger.info('Started polling.')
 
         error_interval = .25
         while not self.__stop_polling.wait(interval):
@@ -137,13 +150,13 @@ class TeleBot:
             except apihelper.ApiException as e:
                 if not none_stop:
                     self.__stop_polling.set()
-                    logger.info("TeleBot: Exception occurred. Stopping.")
+                    logger.info("Exception occurred. Stopping.")
                 else:
                     time.sleep(error_interval)
                     error_interval *= 2
                 logger.error(e)
 
-        logger.info('TeleBot: Stopped polling.')
+        logger.info('Stopped polling.')
 
     def stop_polling(self):
         self.__stop_polling.set()
@@ -388,31 +401,38 @@ class TeleBot:
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
         :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
         """
-
         def decorator(fn):
-            func_dict = {'function': fn, 'content_types': content_types}
+            handler_dict = {'function': fn}
+            filters = {'content_types': content_types}
             if regexp:
-                func_dict['regexp'] = regexp if 'text' in content_types else None
+                filters['regexp'] = regexp
             if func:
-                func_dict['lambda'] = func
+                filters['lambda'] = func
             if commands:
-                func_dict['commands'] = commands if 'text' in content_types else None
-            self.message_handlers.append(func_dict)
+                filters['commands'] = commands
+            handler_dict['filters'] = filters
+            self.message_handlers.append(handler_dict)
             return fn
 
         return decorator
 
     @staticmethod
     def _test_message_handler(message_handler, message):
-        if message.content_type not in message_handler['content_types']:
-            return False
-        if 'commands' in message_handler and message.content_type == 'text':
-            return util.extract_command(message.text) in message_handler['commands']
-        if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
-                                                                                        message.text):
-            return True
-        if 'lambda' in message_handler:
-            return message_handler['lambda'](message)
+        for filter, filter_value in message_handler['filters'].iteritems():
+            if not TeleBot._test_filter(filter, filter_value, message):
+                return False
+        return True
+
+    @staticmethod
+    def _test_filter(filter, filter_value, message):
+        if filter == 'content_types':
+            return message.content_type in filter_value
+        if filter == 'regexp':
+            return message.content_type == 'text' and re.search(filter_value, message.text)
+        if filter == 'commands':
+            return message.content_type == 'text' and util.extract_command(message.text) in filter_value
+        if filter == 'func':
+            return filter_value(message)
         return False
 
     def _notify_command_handlers(self, new_messages):

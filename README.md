@@ -130,7 +130,26 @@ All [API methods](https://core.telegram.org/bots/api#available-methods) are loca
 Outlined below are some general use cases of the API.
 
 #### Message handlers
-A message handler is a function which is decorated with the `message_handler` decorator of a TeleBot instance. The following examples illustrate the possibilities of message handlers:
+A message handler is a function that is decorated with the `message_handler` decorator of a TeleBot instance. Message handlers consist of one or multiple filters.
+Each filter much return True for a certain message in order for a message handler to become eligible to handle that message. A message handler is declared in the following way (provided `bot` is an instance of TeleBot):
+```python
+@bot.message_handler(filters)
+def function_name(message):
+	bot.reply_to(message, "This is a message handler")
+```
+`function_name` is not bound to any restrictions. Any function name is permitted with message handlers. The function must accept at most one argument, which will be the message that the function must handle.
+`filters` is a list of keyword arguments.
+A filter is declared in the following manner: `name=argument`. One handler may have multiple filters.
+TeleBot supports the following filters:
+
+|name|argument(s)|Condition|
+|:---:|---| ---|
+|content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
+|regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions](https://docs.python.org/2/library/re.html)|
+|commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
+|func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
+
+Here are some examples of using the filters and message handlers:
 ```python
 import telebot
 bot = telebot.TeleBot("TOKEN")
@@ -163,7 +182,7 @@ def test_message(message):
 def handle_text_doc(message)
 	pass
 ```
-*Note: all handlers are tested in the order in which they were declared*
+**Important: all handlers are tested in the order in which they were declared**
 #### TeleBot
 ```python
 import telebot
@@ -338,15 +357,13 @@ If you prefer using web hooks to the getUpdates method, you can use the `process
 ### Logging
 
 You can use the Telebot module logger to log debug info about Telebot. Use `telebot.logger` to get the logger of the TeleBot module.
+It is possible to add custom logging Handlers to the logger. Refer to the [Python logging module page](https://docs.python.org/2/library/logging.html) for more info.
 
 ```python
+import logging
+
 logger = telebot.logger
-formatter = logging.Formatter('[%(asctime)s] %(thread)d {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-                                  '%m-%d %H:%M:%S')
-ch = logging.StreamHandler(sys.stdout)
-logger.addHandler(ch)
-logger.setLevel(logging.DEBUG)  # or use logging.INFO
-ch.setFormatter(formatter)
+telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 ```
 
 ## F.A.Q.
