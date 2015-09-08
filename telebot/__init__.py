@@ -5,6 +5,7 @@ import threading
 import time
 import re
 import sys
+import six
 
 import logging
 logger = logging.getLogger('TeleBot')
@@ -87,7 +88,7 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
-        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=20)
+        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=3)
         new_messages = []
         for update in updates:
             if update.update_id > self.last_update_id:
@@ -418,7 +419,7 @@ class TeleBot:
 
     @staticmethod
     def _test_message_handler(message_handler, message):
-        for filter, filter_value in message_handler['filters'].iteritems():
+        for filter, filter_value in six.iteritems(message_handler['filters']):
             if not TeleBot._test_filter(filter, filter_value, message):
                 return False
         return True
