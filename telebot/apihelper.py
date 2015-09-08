@@ -61,7 +61,8 @@ def get_me(token):
     return _make_request(token, method_url)
 
 
-def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None):
+def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
+                 parse_mode=None):
     """
     Use this method to send text messages. On success, the sent Message is returned.
     :param token:
@@ -80,6 +81,8 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
     return _make_request(token, method_url, params=payload, method='post')
 
 
