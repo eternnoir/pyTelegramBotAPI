@@ -3,13 +3,12 @@ from __future__ import print_function
 
 import threading
 import time
+import re
+from telebot import apihelper, types, util
 
 import logging
 logging.basicConfig()
 logger = logging.getLogger('Telebot')
-import re
-
-from telebot import apihelper, types, util
 
 """
 Module : telebot
@@ -65,7 +64,7 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
-        updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1), timeout=20)
+        updates = apihelper.get_updates(self.token, offset=(self.last_update_id + 1), timeout=3)
         new_messages = []
         for update in updates:
             if update['update_id'] > self.last_update_id:
@@ -109,7 +108,14 @@ class TeleBot:
         self.polling_thread.start()
 
         if block:
-            self.__stop_polling.wait()
+            while self.polling_thread.is_alive:
+                try:
+                    time.sleep(.1)
+                except KeyboardInterrupt:
+                    logger.info("TeleBot: Received KeyboardInterrupt: Stopping")
+                    self.stop_polling()
+                    self.polling_thread.join()
+                    break
 
     def __polling(self, none_stop, interval):
         logger.info('TeleBot: Started polling.')
