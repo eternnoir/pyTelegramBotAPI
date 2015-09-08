@@ -94,7 +94,7 @@ class TeleBot:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
             new_messages.append(update.message)
-        logger.debug('Received {} new messages'.format(len(new_messages)))
+        logger.debug('Received {0} new messages'.format(len(new_messages)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
 
