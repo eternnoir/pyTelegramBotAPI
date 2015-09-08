@@ -202,11 +202,12 @@ class TeleBot:
         :param disable_web_page_preview:
         :param reply_to_message_id:
         :param reply_markup:
+        :param parse_mode: if set to Markdown, tries to parse message as Markdown text
         :return: API reply.
         """
         return types.Message.de_json(
             apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
-                                   reply_markup))
+                                   reply_markup, parse_mode))
 
     def forward_message(self, chat_id, from_chat_id, message_id):
         """
