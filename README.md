@@ -140,6 +140,7 @@ def function_name(message):
 `function_name` is not bound to any restrictions. Any function name is permitted with message handlers. The function must accept at most one argument, which will be the message that the function must handle.
 `filters` is a list of keyword arguments. Each filter must return True for a certain message in order for the message handler to become eligible to handle that message.
 TeleBot supports the following filters:
+
 |name|argument(s)|Condition|
 |:---:|---| ---|
 |content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
