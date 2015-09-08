@@ -130,7 +130,25 @@ All [API methods](https://core.telegram.org/bots/api#available-methods) are loca
 Outlined below are some general use cases of the API.
 
 #### Message handlers
-A message handler is a function which is decorated with the `message_handler` decorator of a TeleBot instance. The following examples illustrate the possibilities of message handlers:
+A message handler is a function that is decorated with the `message_handler` decorator of a TeleBot instance. The following examples illustrate the possibilities of message handlers. Message handlers consists of one or multiple filters. 
+A message handler is declared in the following way (provided `bot` is an instance of TeleBot):
+```python
+@bot.message_handler(filters)
+def function_name(message):
+	bot.reply_to(message, "This is a message handler")
+```
+`function_name` is not bound to any restrictions. Any function name is permitted with message handlers. The function must accept at most one argument, which will be the message that the function must handle.
+`filters` is a list of keyword arguments. Each filter must return True for a certain message in order for the message handler to become eligible to handle that message.
+TeleBot supports the following filters:
+|name|argument(s)|Condition|
+|:---:|---| ---|
+|content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
+|regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'`|
+|commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
+|func|a function (lambda or function reference)|True if the function or lambda reference returns True
+
+A filter is declared in the following manner: `name=argument`.
+Here are some examples of using the filters and message handlers:
 ```python
 import telebot
 bot = telebot.TeleBot("TOKEN")
@@ -163,7 +181,7 @@ def test_message(message):
 def handle_text_doc(message)
 	pass
 ```
-*Note: all handlers are tested in the order in which they were declared*
+**Important: all handlers are tested in the order in which they were declared**
 #### TeleBot
 ```python
 import telebot

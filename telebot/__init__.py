@@ -371,31 +371,38 @@ class TeleBot:
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
         :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
         """
-
         def decorator(fn):
-            func_dict = {'function': fn, 'content_types': content_types}
+            handler_dict = {'function': fn}
+            filters = {'content_types': content_types}
             if regexp:
-                func_dict['regexp'] = regexp if 'text' in content_types else None
+                filters['regexp'] = regexp
             if func:
-                func_dict['lambda'] = func
+                filters['lambda'] = func
             if commands:
-                func_dict['commands'] = commands if 'text' in content_types else None
-            self.message_handlers.append(func_dict)
+                filters['commands'] = commands
+            handler_dict['filters'] = filters
+            self.message_handlers.append(handler_dict)
             return fn
 
         return decorator
 
     @staticmethod
     def _test_message_handler(message_handler, message):
-        if message.content_type not in message_handler['content_types']:
-            return False
-        if 'commands' in message_handler and message.content_type == 'text':
-            return util.extract_command(message.text) in message_handler['commands']
-        if 'regexp' in message_handler and message.content_type == 'text' and re.search(message_handler['regexp'],
-                                                                                        message.text):
-            return True
-        if 'lambda' in message_handler:
-            return message_handler['lambda'](message)
+        for filter, filter_value in message_handler['filters'].iteritems():
+            if not TeleBot._test_filter(filter, filter_value, message):
+                return False
+        return True
+
+    @staticmethod
+    def _test_filter(filter, filter_value, message):
+        if filter == 'content_types':
+            return message.content_type in filter_value
+        if filter == 'regexp':
+            return message.content_type == 'text' and re.search(filter_value, message.text)
+        if filter == 'commands':
+            return message.content_type == 'text' and util.extract_command(message.text) in filter_value
+        if filter == 'func':
+            return filter_value(message)
         return False
 
     def _notify_command_handlers(self, new_messages):
