@@ -4,11 +4,12 @@ from __future__ import print_function
 import threading
 import time
 import re
-from telebot import apihelper, types, util
 
 import logging
 logging.basicConfig()
 logger = logging.getLogger('Telebot')
+
+from telebot import apihelper, types, util
 
 """
 Module : telebot
