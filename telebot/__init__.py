@@ -10,9 +10,9 @@ import logging
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d) %(levelname)s - %(name)s: "%(message)s"')
 
-ch = logging.StreamHandler(sys.stderr)
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+console_output_handler = logging.StreamHandler(sys.stderr)
+console_output_handler.setFormatter(formatter)
+logger.addHandler(console_output_handler)
 
 logger.setLevel(logging.ERROR)
 

@@ -353,15 +353,13 @@ If you prefer using web hooks to the getUpdates method, you can use the `process
 ### Logging
 
 You can use the Telebot module logger to log debug info about Telebot. Use `telebot.logger` to get the logger of the TeleBot module.
+It is possible to add custom logging Handlers to the logger. Refer to the [Python logging module page](https://docs.python.org/2/library/logging.html) for more info.
 
 ```python
+import logging
+
 logger = telebot.logger
-formatter = logging.Formatter('[%(asctime)s] %(thread)d {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-                                  '%m-%d %H:%M:%S')
-ch = logging.StreamHandler(sys.stdout)
-logger.addHandler(ch)
-logger.setLevel(logging.DEBUG)  # or use logging.INFO
-ch.setFormatter(formatter)
+telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 ```
 
 ## F.A.Q.
