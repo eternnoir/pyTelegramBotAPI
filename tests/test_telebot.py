@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+
 sys.path.append('../')
 
 import time
@@ -20,7 +21,6 @@ if not should_skip:
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
-
     def test_message_listener(self):
         msg_list = []
         for x in range(100):
@@ -67,6 +67,17 @@ class TestTeleBot:
         bot.process_new_messages([msg])
         time.sleep(1)
         assert not msg.text == 'got'
+
+    def test_send_message_with_markdown(self):
+        tb = telebot.TeleBot(TOKEN)
+        markdown = """
+        *bold text*
+        _italic text_
+        [text](URL)
+        """
+        ret_msg = tb.send_message(CHAT_ID, markdown, parse_mode="Markdown")
+        assert ret_msg.message_id
+
 
     def test_send_file(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
@@ -178,3 +189,4 @@ class TestTeleBot:
     def test_not_string(self):
         i1 = 10
         assert not util.is_string(i1)
+
