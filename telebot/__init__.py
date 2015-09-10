@@ -434,7 +434,7 @@ class TeleBot:
             return message.content_type == 'text' and re.search(filter_value, message.text)
         if filter == 'commands':
             return message.content_type == 'text' and util.extract_command(message.text) in filter_value
-        if filter == 'func':
+        if filter == 'lambda':
             return filter_value(message)
         return False
 
