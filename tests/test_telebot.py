@@ -9,7 +9,6 @@ import os
 
 import telebot
 from telebot import types
-from telebot import apihelper
 from telebot import util
 
 should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
@@ -68,6 +67,17 @@ class TestTeleBot:
         time.sleep(1)
         assert msg.text == 'got'
 
+    def test_message_handler_lambda_fail(self):
+        bot = telebot.TeleBot('')
+        msg = self.create_text_message(r'text')
+
+        @bot.message_handler(func=lambda message: r'lambda' in message.text)
+        def command_url(message):
+            msg.text = 'got'
+
+        bot.process_new_messages([msg])
+        time.sleep(1)
+        assert not msg.text == 'got'
 
     def test_message_handler_reg_fail(self):
         bot = telebot.TeleBot('')
