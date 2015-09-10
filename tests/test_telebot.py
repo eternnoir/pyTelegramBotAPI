@@ -56,6 +56,19 @@ class TestTeleBot:
         time.sleep(1)
         assert msg.text == 'got'
 
+    def test_message_handler_lambda(self):
+        bot = telebot.TeleBot('')
+        msg = self.create_text_message(r'lambda_text')
+
+        @bot.message_handler(func=lambda message: r'lambda' in message.text)
+        def command_url(message):
+            msg.text = 'got'
+
+        bot.process_new_messages([msg])
+        time.sleep(1)
+        assert msg.text == 'got'
+
+
     def test_message_handler_reg_fail(self):
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'web.telegram.org/')
