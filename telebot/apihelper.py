@@ -61,6 +61,10 @@ def get_me(token):
     method_url = 'getMe'
     return _make_request(token, method_url)
 
+def get_file(token, file_id):
+    method_url = 'getFile'
+    return _make_request(token, method_url, params={'file_id': file_id})
+
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                  parse_mode=None):

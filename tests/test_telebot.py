@@ -155,6 +155,14 @@ class TestTeleBot:
         ret_msg = tb.send_voice(CHAT_ID, file_data)
         assert ret_msg.voice.mime_type == 'audio/ogg'
 
+    def test_get_file(self):
+        file_data = open('./test_data/record.ogg')
+        tb = telebot.TeleBot(TOKEN)
+        ret_msg = tb.send_voice(CHAT_ID, file_data)
+        file_id = ret_msg.voice.file_id
+        file_info = tb.get_file(file_id)
+        assert file_info.file_id == file_id
+
     def test_send_message(self):
         text = 'CI Test Message'
         tb = telebot.TeleBot(TOKEN)

@@ -408,6 +408,26 @@ class UserProfilePhotos(JsonDeserializable):
         self.total_count = total_count
         self.photos = photos
 
+class File(JsonDeserializable):
+
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        file_id = obj['file_id']
+
+        file_size = None
+        file_path = None
+        if 'file_size' in obj:
+            file_size = obj['file_size']
+        if 'file_path' in obj:
+            file_path = obj['file_path']
+        return File(file_id, file_size, file_path)
+
+    def __init__(self, file_id, file_size, file_path):
+        self.file_id = file_id
+        self.file_size = file_size
+        self.file_path = file_path
+
 
 class ForceReply(JsonSerializable):
     def __init__(self, selective=None):

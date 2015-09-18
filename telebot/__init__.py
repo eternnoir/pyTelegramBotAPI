@@ -169,6 +169,9 @@ class TeleBot:
         result = apihelper.get_me(self.token)
         return types.User.de_json(result)
 
+    def get_file(self, file_id):
+        return types.File.de_json(apihelper.get_file(self.token, file_id))
+
     def get_user_profile_photos(self, user_id, offset=None, limit=None):
         """
         Retrieves the user profile photos of the person with 'user_id'
