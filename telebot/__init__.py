@@ -68,6 +68,12 @@ class TeleBot:
         if self.__create_threads:
             self.worker_pool = util.ThreadPool(num_threads)
 
+    def set_webhook(self, url=None, certificate=None):
+        return apihelper.set_webhook(self.token, url, certificate)
+
+    def remove_webhook(self):
+        return self.set_webhook() # No params resets webhook
+
     def get_updates(self, offset=None, limit=None, timeout=20):
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.

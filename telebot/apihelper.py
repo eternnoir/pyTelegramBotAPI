@@ -105,6 +105,18 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def set_webhook(token, url=None, certificate=None):
+    method_url = 'setWebhook'
+    payload = {
+        'url': url if url else "",
+    }
+    files = None
+    if certificate:
+        files = {'certificate': certificate}
+
+    return _make_request(token, method_url, params=payload, files=files)
+
+
 def get_updates(token, offset=None, limit=None, timeout=None):
     method_url = r'getUpdates'
     payload = {}
