@@ -22,10 +22,6 @@ from telebot import apihelper, types, util
 """
 Module : telebot
 """
-
-API_URL = r"https://api.telegram.org/"
-
-
 class TeleBot:
     """ This is TeleBot Class
     Methods:
@@ -168,6 +164,12 @@ class TeleBot:
     def get_me(self):
         result = apihelper.get_me(self.token)
         return types.User.de_json(result)
+
+    def get_file(self, file_id):
+        return types.File.de_json(apihelper.get_file(self.token, file_id))
+
+    def download_file(self, file_path):
+        return apihelper.download_file(self.token, file_path)
 
     def get_user_profile_photos(self, user_id, offset=None, limit=None):
         """

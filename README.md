@@ -251,6 +251,16 @@ tb.send_location(chat_id, lat, lon)
 # action_string can be one of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
 # 'record_audio', 'upload_audio', 'upload_document' or 'find_location'.
 tb.send_chat_action(chat_id, action_string)
+
+# getFile
+# Downloading a file is straightforward
+# Returns a File object
+import requests
+file_info = tb.get_file(file_id)
+
+file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN, file_info.file_path))
+
+
 ```
 #### Reply markup
 All `send_xyz` functions of TeleBot take an optional `reply_markup` argument. This argument must be an instance of `ReplyKeyboardMarkup`, `ReplyKeyboardHide` or `ForceReply`, which are defined in types.py.
