@@ -2,7 +2,6 @@
 
 <p align="center">A simple, but extensible Python implementation for the [Telegram Bot API](https://core.telegram.org/bots/api).
 
-
 <p align="center">[![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
 
   * [Getting started.](#getting-started)
@@ -27,6 +26,7 @@
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [More examples](#more-examples)
+  * [Bots using this API](#bots-using-this-api)
 
 ## Getting started.
 
@@ -181,6 +181,13 @@ def test_message(message):
 @bot.message_handler(func=test_message, content_types=['document'])
 def handle_text_doc(message)
 	pass
+
+# Handlers can be stacked to create a function which will be called if either message_handler is eligible
+# This handler will be called if the message starts with '/hello' OR is some emoji
+@bot.message_handler(commands=['hello'])
+@bot.message_handler(func=lambda msg: msg.text.encode("utf-8") == SOME_FANCY_EMOJI)
+def send_something(message):
+    pass
 ```
 **Important: all handlers are tested in the order in which they were declared**
 #### TeleBot
@@ -401,9 +408,14 @@ print is_user(message.chat) # True or False
 Get help. Discuss. Chat.
 
 Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b).
+We now have a Telegram Channel as well! Keep yourself up to date with API changes, and [join it](https://telegram.me/pytelegrambotapi).
 
 ## More examples
 
 * [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
 * [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
+
+## Bots using this API
+* [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
+Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
