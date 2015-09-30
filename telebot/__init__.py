@@ -8,6 +8,7 @@ import sys
 import six
 
 import logging
+
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d) %(levelname)s - %(name)s: "%(message)s"')
 
@@ -22,6 +23,8 @@ from telebot import apihelper, types, util
 """
 Module : telebot
 """
+
+
 class TeleBot:
     """ This is TeleBot Class
     Methods:
@@ -56,6 +59,7 @@ class TeleBot:
 
         self.message_subscribers_messages = []
         self.message_subscribers_callbacks = []
+        self.message_subscribers_lock = threading.Lock()
 
         # key: chat_id, value: handler list
         self.message_subscribers_next_step = {}
@@ -78,13 +82,13 @@ class TeleBot:
             ret.append(types.Update.de_json(ju))
         return ret
 
-    def get_update(self):
+    def get_update(self, timeout=20):
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
-        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=3)
+        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         new_messages = []
         for update in updates:
             if update.update_id > self.last_update_id:
@@ -107,7 +111,7 @@ class TeleBot:
             else:
                 listener(new_messages)
 
-    def polling(self, none_stop=False, interval=0, block=True):
+    def polling(self, none_stop=False, interval=0, block=True, timeout=20):
         """
         This function creates a new Thread that calls an internal __polling function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -116,13 +120,14 @@ class TeleBot:
 
         Always get updates.
         :param none_stop: Do not stop polling when Exception occur.
+        :param timeout: Timeout in seconds for long polling.
         :return:
         """
         self.__stop_polling.set()
         if self.polling_thread:
             self.polling_thread.join()  # wait thread stop.
         self.__stop_polling.clear()
-        self.polling_thread = threading.Thread(target=self.__polling, args=([none_stop, interval]))
+        self.polling_thread = threading.Thread(target=self.__polling, args=([none_stop, interval, timeout]))
         self.polling_thread.daemon = True
         self.polling_thread.start()
 
@@ -136,13 +141,13 @@ class TeleBot:
                     self.polling_thread.join()
                     break
 
-    def __polling(self, none_stop, interval):
+    def __polling(self, none_stop, interval, timeout):
         logger.info('Started polling.')
 
         error_interval = .25
         while not self.__stop_polling.wait(interval):
             try:
-                self.get_update()
+                self.get_update(timeout)
                 error_interval = .25
             except apihelper.ApiException as e:
                 if not none_stop:
@@ -336,11 +341,12 @@ class TeleBot:
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
-        self.message_subscribers_messages.insert(0, message.message_id)
-        self.message_subscribers_callbacks.insert(0, callback)
-        if len(self.message_subscribers_messages) > 10000:
-            self.message_subscribers_messages.pop()
-            self.message_subscribers_callbacks.pop()
+        with self.message_subscribers_lock:
+            self.message_subscribers_messages.insert(0, message.message_id)
+            self.message_subscribers_callbacks.insert(0, callback)
+            if len(self.message_subscribers_messages) > 10000:
+                self.message_subscribers_messages.pop()
+                self.message_subscribers_callbacks.pop()
 
     def _notify_message_subscribers(self, new_messages):
         for message in new_messages:
@@ -352,8 +358,10 @@ class TeleBot:
                 index = self.message_subscribers_messages.index(reply_msg_id)
                 self.message_subscribers_callbacks[index](message)
 
-                del self.message_subscribers_messages[index]
-                del self.message_subscribers_callbacks[index]
+                with self.message_subscribers_lock:
+                    index = self.message_subscribers_messages.index(reply_msg_id)
+                    del self.message_subscribers_messages[index]
+                    del self.message_subscribers_callbacks[index]
 
     def register_next_step_handler(self, message, callback):
         """
@@ -406,6 +414,7 @@ class TeleBot:
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
         :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
         """
+
         def decorator(fn):
             handler_dict = {'function': fn}
             filters = {'content_types': content_types}
