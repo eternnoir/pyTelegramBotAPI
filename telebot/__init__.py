@@ -56,6 +56,7 @@ class TeleBot:
 
         self.message_subscribers_messages = []
         self.message_subscribers_callbacks = []
+        self.message_subscribers_lock = threading.Lock()
 
         # key: chat_id, value: handler list
         self.message_subscribers_next_step = {}
@@ -336,11 +337,12 @@ class TeleBot:
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
-        self.message_subscribers_messages.insert(0, message.message_id)
-        self.message_subscribers_callbacks.insert(0, callback)
-        if len(self.message_subscribers_messages) > 10000:
-            self.message_subscribers_messages.pop()
-            self.message_subscribers_callbacks.pop()
+        with self.message_subscribers_lock:
+            self.message_subscribers_messages.insert(0, message.message_id)
+            self.message_subscribers_callbacks.insert(0, callback)
+            if len(self.message_subscribers_messages) > 10000:
+                self.message_subscribers_messages.pop()
+                self.message_subscribers_callbacks.pop()
 
     def _notify_message_subscribers(self, new_messages):
         for message in new_messages:
@@ -352,8 +354,10 @@ class TeleBot:
                 index = self.message_subscribers_messages.index(reply_msg_id)
                 self.message_subscribers_callbacks[index](message)
 
-                del self.message_subscribers_messages[index]
-                del self.message_subscribers_callbacks[index]
+                with self.message_subscribers_lock:
+                    index = self.message_subscribers_messages.index(reply_msg_id)
+                    del self.message_subscribers_messages[index]
+                    del self.message_subscribers_callbacks[index]
 
     def register_next_step_handler(self, message, callback):
         """
