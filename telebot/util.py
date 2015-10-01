@@ -43,7 +43,7 @@ class WorkerThread(threading.Thread):
                 self.exception_event.clear()
 
                 try:
-                    task, args, kwargs = self.queue.get(block=True, timeout=.01)
+                    task, args, kwargs = self.queue.get(block=True, timeout=.5)
                     logger.debug("Received task")
                     self.received_task_event.set()
 
