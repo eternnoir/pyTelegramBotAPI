@@ -10,7 +10,9 @@ import six
 import logging
 
 logger = logging.getLogger('TeleBot')
-formatter = logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d) %(levelname)s - %(name)s: "%(message)s"')
+formatter = logging.Formatter(
+    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
+)
 
 console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
@@ -42,20 +44,17 @@ class TeleBot:
         getUpdates
     """
 
-    def __init__(self, token, create_threads=True, num_threads=4):
+    def __init__(self, token):
         """
         :param token: bot API token
-        :param create_threads: Create thread for message handler
-        :param num_threads: Number of worker in thread pool.
         :return: Telebot object.
         """
         self.token = token
         self.update_listener = []
-        self.polling_thread = None
+
         self.__stop_polling = threading.Event()
         self.last_update_id = 0
-        self.num_threads = num_threads
-        self.__create_threads = create_threads
+        self.exc_info = None
 
         self.message_subscribers_messages = []
         self.message_subscribers_callbacks = []
@@ -65,8 +64,7 @@ class TeleBot:
         self.message_subscribers_next_step = {}
 
         self.message_handlers = []
-        if self.__create_threads:
-            self.worker_pool = util.ThreadPool(num_threads)
+        self.worker_pool = util.ThreadPool()
 
     def set_webhook(self, url=None, certificate=None):
         return apihelper.set_webhook(self.token, url, certificate)
@@ -88,12 +86,13 @@ class TeleBot:
             ret.append(types.Update.de_json(ju))
         return ret
 
-    def get_update(self, timeout=20):
+    def __retrieve_updates(self, timeout=20):
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
+        raise apihelper.ApiException("Test2", None, None)
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         new_messages = []
         for update in updates:
@@ -112,57 +111,52 @@ class TeleBot:
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            if self.__create_threads:
-                self.worker_pool.put(listener, new_messages)
-            else:
-                listener(new_messages)
+            self.worker_pool.put(listener, new_messages)
 
-    def polling(self, none_stop=False, interval=0, block=True, timeout=20):
+    def polling(self, none_stop=False, interval=0, timeout=20):
         """
-        This function creates a new Thread that calls an internal __polling function.
+        This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
 
-        Do not call this function more than once!
+        Warning: Do not call this function more than once!
 
         Always get updates.
-        :param none_stop: Do not stop polling when Exception occur.
+        :param none_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Timeout in seconds for long polling.
         :return:
         """
-        self.__stop_polling.set()
-        if self.polling_thread:
-            self.polling_thread.join()  # wait thread stop.
-        self.__stop_polling.clear()
-        self.polling_thread = threading.Thread(target=self.__polling, args=([none_stop, interval, timeout]))
-        self.polling_thread.daemon = True
-        self.polling_thread.start()
-
-        if block:
-            while self.polling_thread.is_alive:
-                try:
-                    time.sleep(.1)
-                except KeyboardInterrupt:
-                    logger.info("Received KeyboardInterrupt. Stopping.")
-                    self.stop_polling()
-                    self.polling_thread.join()
-                    break
-
-    def __polling(self, none_stop, interval, timeout):
         logger.info('Started polling.')
 
         error_interval = .25
+
+        polling_thread = util.WorkerThread(name="PollingThread")
+        or_event = util.OrEvent(
+            polling_thread.done_event,
+            polling_thread.exception_event,
+            self.worker_pool.exception_event
+        )
+
         while not self.__stop_polling.wait(interval):
+            or_event.clear()
             try:
-                self.get_update(timeout)
+                polling_thread.put(self.__retrieve_updates, timeout)
+                or_event.wait()
+
+                polling_thread.raise_exceptions()
+                self.worker_pool.raise_exceptions()
+
                 error_interval = .25
             except apihelper.ApiException as e:
+                logger.error(e)
                 if not none_stop:
                     self.__stop_polling.set()
                     logger.info("Exception occurred. Stopping.")
                 else:
+                    polling_thread.clear_exceptions()
+                    self.worker_pool.clear_exceptions()
+                    logger.info("Waiting for {0} seconds until retry".format(error_interval))
                     time.sleep(error_interval)
                     error_interval *= 2
-                logger.error(e)
 
         logger.info('Stopped polling.')
 
@@ -459,10 +453,7 @@ class TeleBot:
         for message in new_messages:
             for message_handler in self.message_handlers:
                 if self._test_message_handler(message_handler, message):
-                    if self.__create_threads:
-                        self.worker_pool.put(message_handler['function'], message)
-                    else:
-                        message_handler['function'](message)
+                    self.worker_pool.put(message_handler['function'], message)
                     break
 
 
