@@ -92,7 +92,6 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
-        raise apihelper.ApiException("Test2", None, None)
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         new_messages = []
         for update in updates:
