@@ -9,6 +9,9 @@ try:
 except ImportError:
     import queue as Queue
 
+from apihelper import ApiException
+from telebot import logger
+
 
 class ThreadPool:
     class WorkerThread(threading.Thread):
@@ -30,6 +33,8 @@ class ThreadPool:
                     task(*args, **kwargs)
                 except Queue.Empty:
                     pass
+                except ApiException as e:
+                    logger.exception(e)
 
         def stop(self):
             self._running = False
@@ -48,6 +53,7 @@ class ThreadPool:
             worker.stop()
         for worker in self.workers:
             worker.join()
+
 
 class AsyncTask:
     def __init__(self, target, *args, **kwargs):
