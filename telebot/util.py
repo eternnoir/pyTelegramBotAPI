@@ -39,13 +39,12 @@ class WorkerThread(threading.Thread):
 
         def run(self):
             while self._running:
-                self.continue_event.clear()
-                self.received_task_event.clear()
-                self.done_event.clear()
-                self.exception_event.clear()
-
                 try:
                     task, args, kwargs = self.queue.get(block=True, timeout=.5)
+                    self.continue_event.clear()
+                    self.received_task_event.clear()
+                    self.done_event.clear()
+                    self.exception_event.clear()
                     logger.debug("Received task")
                     self.received_task_event.set()
 
