@@ -2,9 +2,11 @@
 
 import threading
 import sys
+import six
 from six import string_types
 
 # Python3 queue support.
+
 try:
     import Queue
 except ImportError:
@@ -66,7 +68,7 @@ class WorkerThread(threading.Thread):
 
         def raise_exceptions(self):
             if self.exception_event.is_set():
-                raise self.exc_info[0], self.exc_info[1], self.exc_info[2]
+                six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
 
         def clear_exceptions(self):
             self.exception_event.clear()
@@ -96,7 +98,7 @@ class ThreadPool:
 
     def raise_exceptions(self):
         if self.exception_event.is_set():
-            raise self.exc_info[0], self.exc_info[1], self.exc_info[2]
+            six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
 
     def clear_exceptions(self):
         self.exception_event.clear()
@@ -129,7 +131,7 @@ class AsyncTask:
         if not self.done:
             self.thread.join()
         if isinstance(self.result, BaseException):
-            raise self.result[0], self.result[1], self.result[2]
+            six.reraise(self.result[0], self.result[1], self.result[2])
         else:
             return self.result
 
