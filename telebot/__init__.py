@@ -115,7 +115,7 @@ class TeleBot:
         for listener in self.update_listener:
             self.__exec_task(listener, new_messages)
 
-    def polling(self, none_stop=False, interval=0, timeout=3):
+    def polling(self, none_stop=False, interval=0, timeout=20):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -149,8 +149,7 @@ class TeleBot:
             try:
                 polling_thread.put(self.__retrieve_updates, timeout)
 
-                while not or_event.is_set():
-                    time.sleep(.05)  # wait for polling thread finish, polling thread error or thread pool error
+                or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
 
                 polling_thread.raise_exceptions()
                 self.worker_pool.raise_exceptions()

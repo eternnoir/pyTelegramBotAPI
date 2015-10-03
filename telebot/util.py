@@ -203,7 +203,6 @@ def orify(e, changed_callback):
     e.set = lambda: or_set(e)
     e.clear = lambda: or_clear(e)
 
-
 def OrEvent(*events):
     or_event = threading.Event()
     def changed():
@@ -212,7 +211,14 @@ def OrEvent(*events):
             or_event.set()
         else:
             or_event.clear()
+
+    def busy_wait():
+        while not or_event.is_set():
+            or_event._wait(3)
+
     for e in events:
         orify(e, changed)
+    or_event._wait = or_event.wait
+    or_event.wait = busy_wait
     changed()
     return or_event
