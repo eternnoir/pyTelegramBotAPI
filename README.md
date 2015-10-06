@@ -118,7 +118,7 @@ To start the bot, simply open up a terminal and enter `python echo_bot.py` to ru
 
 All types are defined in types.py. They are all completely in line with the [Telegram API's definition of the types](https://core.telegram.org/bots/api#available-types), except for the Message's `from` field, which is renamed to `from_user` (because `from` is a Python reserved token). Thus, attributes such as `message_id` can be accessed directly with `message.message_id`. Note that `message.chat` can be either an instance of `User` or `GroupChat` (see [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)).
 
-The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings: 
+The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings:
 'text', 'audio', 'document', 'photo', 'sticker', 'video', 'location', 'contact', 'new_chat_participant', 'left_chat_participant', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created'.
 
 ### Methods
@@ -208,7 +208,7 @@ tb.polling(none_stop=False, interval=0, block=True)
 user = tb.get_me()
 
 # setWebhook
-tb.set_webhook(url="http://example.com", cert=open('mycert.pem'))
+tb.set_webhook(url="http://example.com", certificate=open('mycert.pem'))
 # unset webhook
 tb.remove_webhook()
 
@@ -373,8 +373,10 @@ bot.set_update_listener(handle_messages)
 bot.polling()
 ```
 
-### Using web hooks
-If you prefer using web hooks to the getUpdates method, you can use the `process_new_messages(messages)` function in TeleBot to make it process the messages that you supply. It takes a list of Message objects. This function is still incubating.
+### Using webhooks
+When using webhooks telegram sends one Update per call, for processing it you should call process_new_messages([update.message]) when you recieve it.
+
+There are some examples using webhooks in the *examples/webhook_examples* directory.
 
 ### Logging
 
