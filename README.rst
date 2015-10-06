@@ -52,6 +52,7 @@ API <https://core.telegram.org/bots/api>`__.
 
 -  `The Telegram Chat Group <#the-telegram-chat-group>`__
 -  `More examples <#more-examples>`__
+-  `Bots using this API <#bots-using-this-api>`__
 
 Getting started.
 ================
@@ -213,9 +214,39 @@ Outlined below are some general use cases of the API.
 Message handlers
 ~~~~~~~~~~~~~~~~
 
-A message handler is a function which is decorated with the
-``message_handler`` decorator of a TeleBot instance. The following
-examples illustrate the possibilities of message handlers:
+A message handler is a function that is decorated with the
+``message_handler`` decorator of a TeleBot instance. Message handlers
+consist of one or multiple filters. Each filter much return True for a
+certain message in order for a message handler to become eligible to
+handle that message. A message handler is declared in the following way
+(provided ``bot`` is an instance of TeleBot):
+
+.. code:: python
+
+    @bot.message_handler(filters)
+    def function_name(message):
+        bot.reply_to(message, "This is a message handler")
+
+``function_name`` is not bound to any restrictions. Any function name is
+permitted with message handlers. The function must accept at most one
+argument, which will be the message that the function must handle.
+``filters`` is a list of keyword arguments. A filter is declared in the
+following manner: ``name=argument``. One handler may have multiple
+filters. TeleBot supports the following filters:
+
++------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| name             | argument(s)                                 | Condition                                                                                                                                                                       |
++==================+=============================================+=================================================================================================================================================================================+
+| content\_types   | list of strings (default ``['text']``)      | ``True`` if message.content\_type is in the list of strings.                                                                                                                    |
++------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| regexp           | a regular expression as a string            | ``True`` if ``re.search(regexp_arg)`` returns ``True`` and ``message.content_type == 'text'`` (See `Python Regular Expressions <https://docs.python.org/2/library/re.html>`__   |
++------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| commands         | list of strings                             | ``True`` if ``message.content_type == 'text'`` and ``message.text`` starts with a command that is in the list of strings.                                                       |
++------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| func             | a function (lambda or function reference)   | ``True`` if the lambda or function reference returns ``True``                                                                                                                   |
++------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+Here are some examples of using the filters and message handlers:
 
 .. code:: python
 
@@ -250,8 +281,15 @@ examples illustrate the possibilities of message handlers:
     def handle_text_doc(message)
         pass
 
-*Note: all handlers are tested in the order in which they were declared*
-#### TeleBot
+    # Handlers can be stacked to create a function which will be called if either message_handler is eligible
+    # This handler will be called if the message starts with '/hello' OR is some emoji
+    @bot.message_handler(commands=['hello'])
+    @bot.message_handler(func=lambda msg: msg.text.encode("utf-8") == SOME_FANCY_EMOJI)
+    def send_something(message):
+        pass
+
+**Important: all handlers are tested in the order in which they were
+declared** #### TeleBot
 
 .. code:: python
 
@@ -269,6 +307,11 @@ examples illustrate the possibilities of message handlers:
 
     # getMe
     user = tb.get_me()
+
+    # setWebhook
+    tb.set_webhook(url="http://example.com", certificate=open('mycert.pem'))
+    # unset webhook
+    tb.remove_webhook()
 
     # getUpdates
     updates = tb.get_updates()
@@ -321,6 +364,14 @@ examples illustrate the possibilities of message handlers:
     # action_string can be one of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
     # 'record_audio', 'upload_audio', 'upload_document' or 'find_location'.
     tb.send_chat_action(chat_id, action_string)
+
+    # getFile
+    # Downloading a file is straightforward
+    # Returns a File object
+    import requests
+    file_info = tb.get_file(file_id)
+
+    file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN, file_info.file_path))
 
 Reply markup
 ~~~~~~~~~~~~
@@ -465,29 +516,31 @@ function as a listener to TeleBot. Example:
     bot.set_update_listener(handle_messages)
     bot.polling()
 
-Using web hooks
----------------
+Using webhooks
+--------------
 
-If you prefer using web hooks to the getUpdates method, you can use the
-``process_new_messages(messages)`` function in TeleBot to make it
-process the messages that you supply. It takes a list of Message
-objects. This function is still incubating.
+When using webhooks telegram sends one Update per call, for processing
+it you should call process\_new\_messages([update.message]) when you
+recieve it.
+
+There are some examples using webhooks in the
+*examples/webhook\_examples* directory.
 
 Logging
 -------
 
 You can use the Telebot module logger to log debug info about Telebot.
-Use ``telebot.logger`` to get the logger of the TeleBot module.
+Use ``telebot.logger`` to get the logger of the TeleBot module. It is
+possible to add custom logging Handlers to the logger. Refer to the
+`Python logging module
+page <https://docs.python.org/2/library/logging.html>`__ for more info.
 
 .. code:: python
 
+    import logging
+
     logger = telebot.logger
-    formatter = logging.Formatter('[%(asctime)s] %(thread)d {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s',
-                                      '%m-%d %H:%M:%S')
-    ch = logging.StreamHandler(sys.stdout)
-    logger.addHandler(ch)
-    logger.setLevel(logging.DEBUG)  # or use logging.INFO
-    ch.setFormatter(formatter)
+    telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 F.A.Q.
 ======
@@ -513,6 +566,8 @@ Get help. Discuss. Chat.
 
 Join the `pyTelegramBotAPI Telegram Chat
 Group <https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b>`__.
+We now have a Telegram Channel as well! Keep yourself up to date with
+API changes, and `join it <https://telegram.me/pytelegrambotapi>`__.
 
 More examples
 =============
@@ -523,6 +578,15 @@ More examples
    Linking <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py>`__
 -  `next\_step\_handler
    Example <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py>`__
+
+Bots using this API
+===================
+
+-  `SiteAlert bot <https://telegram.me/SiteAlert_bot>`__
+   (`source <https://github.com/ilteoood/SiteAlert-Python>`__) by
+   *ilteoood* - Monitors websites and sends a notification on changes
+   Want to have your bot listed here? Send a Telegram message to
+   @eternnoir or @pevdh.
 
 .. |Build Status| image:: https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master
    :target: https://travis-ci.org/eternnoir/pyTelegramBotAPI
