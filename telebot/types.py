@@ -21,6 +21,7 @@ ForceReply
 """
 
 import json
+import six
 
 
 class JsonSerializable:
@@ -70,7 +71,7 @@ class JsonDeserializable:
 
     def __str__(self):
         d = {}
-        for x, y in self.__dict__.iteritems():
+        for x, y in six.iteritems(self.__dict__):
             if hasattr(y, '__dict__'):
                 d[x] = y.__dict__
             else:
