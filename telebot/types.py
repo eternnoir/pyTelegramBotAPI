@@ -21,6 +21,7 @@ ForceReply
 """
 
 import json
+import six
 
 
 class JsonSerializable:
@@ -76,7 +77,7 @@ class JsonDeserializable:
             else:
                 d[x] = y
 
-        return unicode(d)
+        return six.text_type(d)
 
 class Update(JsonDeserializable):
     @classmethod
