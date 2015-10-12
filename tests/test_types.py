@@ -12,7 +12,7 @@ def test_json_user():
 
 
 def test_json_message():
-    jsonstring = r'{"message_id":1,"from":{"id":108929734,"first_name":"Frank","last_name":"Wang","username":"eternnoir"},"chat":{"id":1734,"first_name":"F","type":"private",,"last_name":"Wa","username":"oir"},"date":1435296025,"text":"HIHI"}'
+    jsonstring = r'{"message_id":1,"from":{"id":108929734,"first_name":"Frank","last_name":"Wang","username":"eternnoir"},"chat":{"id":1734,"first_name":"F","type":"private","last_name":"Wa","username":"oir"},"date":1435296025,"text":"HIHI"}'
     msg = types.Message.de_json(jsonstring)
     assert msg.text == 'HIHI'
 
@@ -39,7 +39,7 @@ def test_json_Document():
 
 
 def test_json_Message_Audio():
-    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd",""username":"dd"},"chat":{"id":10834,"first_name":"dd","type":"private","type":"private","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_size":20096}}'
+    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd","username":"dd"},"chat":{"id":10834,"first_name":"dd","type":"private","type":"private","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_size":20096}}'
     msg = types.Message.de_json(json_string)
     assert msg.audio.duration == 1
     assert msg.content_type == 'audio'
