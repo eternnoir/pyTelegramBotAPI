@@ -208,7 +208,7 @@ class TestTeleBot:
         me = tb.get_me()
         msg = tb.send_message(CHAT_ID, 'Test')
         assert me.id == msg.from_user.id
-        assert msg.chat.id == CHAT_ID
+        assert msg.chat.id == int(CHAT_ID)
 
     def create_text_message(self, text):
         params = {'text': text}

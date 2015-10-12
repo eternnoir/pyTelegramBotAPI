@@ -39,7 +39,7 @@ def test_json_Document():
 
 
 def test_json_Message_Audio():
-    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd","username":"dd"},"chat":{"id":10834,"first_name":"dd","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_size":20096}}'
+    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd",""username":"dd"},"chat":{"id":10834,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_size":20096}}'
     msg = types.Message.de_json(json_string)
     assert msg.audio.duration == 1
     assert msg.content_type == 'audio'
@@ -48,7 +48,7 @@ def test_json_Message_Audio():
 
 
 def test_json_Message_Sticker():
-    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"thumb":{"file_id":"AAQFABPJLB0sAAQq17w-li3bzoIfAAIC","file_size":1822,"width":90,"height":60},"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"thumb":{"file_id":"AAQFABPJLB0sAAQq17w-li3bzoIfAAIC","file_size":1822,"width":90,"height":60},"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb.height == 60
@@ -56,7 +56,7 @@ def test_json_Message_Sticker():
 
 
 def test_json_Message_Sticker_without_thumb():
-    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb == None
@@ -64,21 +64,21 @@ def test_json_Message_Sticker_without_thumb():
 
 
 def test_json_Message_Document():
-    json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10,"first_name":"Fd","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}}'
+    json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}}'
     msg = types.Message.de_json(json_string)
     assert msg.document.file_name == 'Text File'
     assert msg.content_type == 'document'
 
 
 def test_json_Message_Photo():
-    json_string = r'{"message_id":96,"from":{"id":109734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","last_name":"dd","username":"dd"},"date":1435478191,"photo":[{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_size":615,"width":90,"height":67},{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_size":10174,"width":320,"height":240},{"file_id":"dd-A_LsTIABFNx-FUOaEa_3AABAQABAg","file_size":53013,"width":759,"height":570}]}'
+    json_string = r'{"message_id":96,"from":{"id":109734,"first_name":"Fd","last_name":"Wd","username":"dd"},"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"dd","username":"dd"},"date":1435478191,"photo":[{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_size":615,"width":90,"height":67},{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_size":10174,"width":320,"height":240},{"file_id":"dd-A_LsTIABFNx-FUOaEa_3AABAQABAg","file_size":53013,"width":759,"height":570}]}'
     msg = types.Message.de_json(json_string)
     assert len(msg.photo) == 3
     assert msg.content_type == 'photo'
 
 
 def test_json_Message_Video():
-    json_string = r'{"message_id":101,"from":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd"},"date":1435481960,"video":{"duration":3,"caption":"","width":360,"height":640,"thumb":{"file_id":"AAQFABPiYnBjkDwMAAIC","file_size":1597,"width":50,"height":90},"file_id":"BAADBQADNifgb_TOPEKErGoQI","file_size":260699}}'
+    json_string = r'{"message_id":101,"from":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":109734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1435481960,"video":{"duration":3,"caption":"","width":360,"height":640,"thumb":{"file_id":"AAQFABPiYnBjkDwMAAIC","file_size":1597,"width":50,"height":90},"file_id":"BAADBQADNifgb_TOPEKErGoQI","file_size":260699}}'
     msg = types.Message.de_json(json_string)
     assert msg.video
     assert msg.video.duration == 3
@@ -87,7 +87,7 @@ def test_json_Message_Video():
 
 
 def test_json_Message_Location():
-    json_string = r'{"message_id":102,"from":{"id":108734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":1089734,"first_name":"dd","last_name":"dd","username":"dd"},"date":1535482469,"location":{"longitude":127.479471,"latitude":26.090577}}'
+    json_string = r'{"message_id":102,"from":{"id":108734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":1089734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1535482469,"location":{"longitude":127.479471,"latitude":26.090577}}'
     msg = types.Message.de_json(json_string)
     assert msg.location.latitude == 26.090577
     assert msg.content_type == 'location'
@@ -114,7 +114,7 @@ def test_json_voice():
     assert voice.file_size == 10481
 
 def test_json_update():
-    json_string = r'{"update_id":938203,"message":{"message_id":241,"from":{"id":9734,"first_name":"Fk","last_name":"Wg","username":"nir"},"chat":{"id":1111,"first_name":"Fk","last_name":"Wg","username":"oir"},"date":1441447009,"text":"HIHI"}}'
+    json_string = r'{"update_id":938203,"message":{"message_id":241,"from":{"id":9734,"first_name":"Fk","last_name":"Wg","username":"nir"},"chat":{"id":1111,"first_name":"Fk","type":"private","last_name":"Wg","username":"oir"},"date":1441447009,"text":"HIHI"}}'
     update = types.Update.de_json(json_string)
     assert update.update_id == 938203
     assert update.message.message_id == 241
