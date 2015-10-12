@@ -203,6 +203,13 @@ class TestTeleBot:
         assert int(ret_msg.location.longitude) == int(lon)
         assert int(ret_msg.location.latitude) == int(lat)
 
+    def test_Chat(self):
+        tb = telebot.TeleBot(TOKEN)
+        me = tb.get_me()
+        msg = tb.send_message(CHAT_ID, 'Test')
+        assert me.id == msg.from_user.id
+        assert msg.chat.id == CHAT_ID
+
     def create_text_message(self, text):
         params = {'text': text}
         chat = types.User(11, 'test')
