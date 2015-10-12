@@ -393,21 +393,19 @@ telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 ## F.A.Q.
 
 ### How can I distinguish a User and a GroupChat in message.chat?
-There are two ways to do this:
+Telegram Bot API support new type Chat for message.chat.
 
- - Checking the instance of message.chat with `isinstance`:
+- Check the ```type``` attribute in ```Chat``` object:
 ```python
-def is_user(chat):
-	return isinstance(chat, types.User)
+if message.chat.type == “private”:
+	# private chat message
 
-print is_user(message.chat) # True or False
-```
- - Checking whether the chat id is negative or positive. If the chat id is negative, the chat is a GroupChat, if it is positive, it is a User. Example:
-```python
-def is_user(chat):
-	return chat.id > 0
+if message.chat.type == “group”:
+	# group chat message
 
-print is_user(message.chat) # True or False
+if message.chat.type == “channel”:
+	# channel message
+
 ```
 
 ## The Telegram Chat Group
