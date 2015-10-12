@@ -43,14 +43,14 @@ def _check_result(method_name, result):
     """
     if result.status_code != 200:
         msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]'\
-            .format(result.status_code, result.reason, result.text)
+            .format(result.status_code, result.reason, result.text.encode('utf8'))
         raise ApiException(msg, method_name, result)
 
     try:
         result_json = result.json()
     except:
         msg = 'The server returned an invalid JSON response. Response body:\n[{0}]'\
-            .format(result.text)
+            .format(result.text.encode('utf8'))
         raise ApiException(msg, method_name, result)
 
     if not result_json['ok']:

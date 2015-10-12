@@ -101,7 +101,6 @@ class TestTeleBot:
         ret_msg = tb.send_message(CHAT_ID, markdown, parse_mode="Markdown")
         assert ret_msg.message_id
 
-
     def test_send_file(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
@@ -204,6 +203,13 @@ class TestTeleBot:
         assert int(ret_msg.location.longitude) == int(lon)
         assert int(ret_msg.location.latitude) == int(lat)
 
+    def test_Chat(self):
+        tb = telebot.TeleBot(TOKEN)
+        me = tb.get_me()
+        msg = tb.send_message(CHAT_ID, 'Test')
+        assert me.id == msg.from_user.id
+        assert msg.chat.id == int(CHAT_ID)
+
     def create_text_message(self, text):
         params = {'text': text}
         chat = types.User(11, 'test')
@@ -220,4 +226,3 @@ class TestTeleBot:
     def test_not_string(self):
         i1 = 10
         assert not util.is_string(i1)
-
