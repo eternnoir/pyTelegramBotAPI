@@ -101,7 +101,6 @@ class TestTeleBot:
         ret_msg = tb.send_message(CHAT_ID, markdown, parse_mode="Markdown")
         assert ret_msg.message_id
 
-
     def test_send_file(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
@@ -220,4 +219,3 @@ class TestTeleBot:
     def test_not_string(self):
         i1 = 10
         assert not util.is_string(i1)
-
