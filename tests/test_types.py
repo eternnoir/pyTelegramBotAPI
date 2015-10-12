@@ -120,3 +120,10 @@ def test_json_update():
     assert update.message.message_id == 241
     assert update.message.from_user.id == 9734
 
+def test_json_chat():
+    json_string = r'{"id": -111111,"title": "Test Title","type": "group"}'
+    chat = types.Chat.de_json(json_string)
+    assert chat.id == -111111
+    assert chat.type == 'group'
+    assert chat.title == 'Test Title'
+
