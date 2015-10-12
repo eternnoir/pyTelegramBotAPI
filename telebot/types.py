@@ -29,6 +29,7 @@ class JsonSerializable:
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
     """
+
     def to_json(self):
         """
         Returns a JSON string representation of this class.
@@ -44,6 +45,7 @@ class JsonDeserializable:
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
     All subclasses of this class must override de_json.
     """
+
     @classmethod
     def de_json(cls, json_type):
         """
@@ -79,6 +81,7 @@ class JsonDeserializable:
 
         return unicode(d)
 
+
 class Update(JsonDeserializable):
     @classmethod
     def de_json(cls, json_type):
@@ -90,6 +93,7 @@ class Update(JsonDeserializable):
     def __init__(self, update_id, message):
         self.update_id = update_id
         self.message = message
+
 
 class User(JsonDeserializable):
     @classmethod
@@ -125,13 +129,44 @@ class GroupChat(JsonDeserializable):
         self.title = title
 
 
+class Chat(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        id = obj['id']
+        type = obj['type']
+        title = None
+        username = None
+        first_name = None
+        last_name = None
+        if 'title' in obj:
+            title = obj['title']
+        if 'username' in obj:
+            username = obj['username']
+        if 'first_name'in obj:
+            first_name = obj['first_name']
+        if 'last_name' in obj:
+            last_name = obj['last_name']
+        return Chat(id, type, title, username, first_name, last_name)
+
+    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None):
+        self.type = type
+        self.last_name = last_name
+        self.first_name = first_name
+        self.username = username
+        self.id = id
+        self.title = title
+
+
 class Message(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         obj = cls.check_json(json_string)
         message_id = obj['message_id']
-        from_user = User.de_json(obj['from'])
-        chat = Message.parse_chat(obj['chat'])
+        from_user = None
+        if 'from' in obj:
+            from_user = User.de_json(obj['from'])
+        chat = Chat.de_json(obj['chat'])
         date = obj['date']
         content_type = None
         opts = {}
@@ -409,8 +444,8 @@ class UserProfilePhotos(JsonDeserializable):
         self.total_count = total_count
         self.photos = photos
 
-class File(JsonDeserializable):
 
+class File(JsonDeserializable):
     @classmethod
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
