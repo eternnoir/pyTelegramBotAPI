@@ -18,10 +18,12 @@ from telebot import logger
 class WorkerThread(threading.Thread):
         count = 0
 
-        def __init__(self, exception_callback=None, queue=Queue.Queue(), name=None):
+        def __init__(self, exception_callback=None, queue=None, name=None):
             if not name:
                 name = "WorkerThread{0}".format(self.__class__.count + 1)
                 self.__class__.count += 1
+            if not queue:
+                queue = Queue.Queue()
 
             threading.Thread.__init__(self, name=name)
             self.queue = queue
