@@ -88,7 +88,7 @@ class Update(JsonDeserializable):
         obj = cls.check_json(json_type)
         update_id = obj['update_id']
         message = Message.de_json(obj['message'])
-        return Update(update_id, message)
+        return cls(update_id, message)
 
     def __init__(self, update_id, message):
         self.update_id = update_id
@@ -101,13 +101,9 @@ class User(JsonDeserializable):
         obj = cls.check_json(json_string)
         id = obj['id']
         first_name = obj['first_name']
-        last_name = None
-        username = None
-        if 'last_name' in obj:
-            last_name = obj['last_name']
-        if 'username' in obj:
-            username = obj['username']
-        return User(id, first_name, last_name, username)
+        last_name = obj.get('last_name')
+        username = obj.get('username')
+        return cls(id, first_name, last_name, username)
 
     def __init__(self, id, first_name, last_name=None, username=None):
         self.id = id
@@ -122,7 +118,7 @@ class GroupChat(JsonDeserializable):
         obj = cls.check_json(json_string)
         id = obj['id']
         title = obj['title']
-        return GroupChat(id, title)
+        return cls(id, title)
 
     def __init__(self, id, title):
         self.id = id
@@ -135,19 +131,11 @@ class Chat(JsonDeserializable):
         obj = cls.check_json(json_string)
         id = obj['id']
         type = obj['type']
-        title = None
-        username = None
-        first_name = None
-        last_name = None
-        if 'title' in obj:
-            title = obj['title']
-        if 'username' in obj:
-            username = obj['username']
-        if 'first_name'in obj:
-            first_name = obj['first_name']
-        if 'last_name' in obj:
-            last_name = obj['last_name']
-        return Chat(id, type, title, username, first_name, last_name)
+        title = obj.get('title')
+        username = obj.get('username')
+        first_name = obj.get('first_name')
+        last_name = obj.get('last_name')
+        return cls(id, type, title, username, first_name, last_name)
 
     def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None):
         self.type = type
@@ -223,7 +211,7 @@ class Message(JsonDeserializable):
             content_type = 'group_chat_created'
         if 'caption' in obj:
             opts['caption'] = obj['caption']
-        return Message(message_id, from_user, date, chat, content_type, opts)
+        return cls(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
     def parse_chat(cls, chat):
@@ -256,10 +244,8 @@ class PhotoSize(JsonDeserializable):
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
-        file_size = None
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        return PhotoSize(file_id, width, height, file_size)
+        file_size = obj.get('file_size')
+        return cls(file_id, width, height, file_size)
 
     def __init__(self, file_id, width, height, file_size=None):
         self.file_size = file_size
@@ -274,19 +260,11 @@ class Audio(JsonDeserializable):
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
-        performer = None
-        title = None
-        mime_type = None
-        file_size = None
-        if 'mime_type' in obj:
-            mime_type = obj['mime_type']
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        if 'performer' in obj:
-            performer = obj['performer']
-        if 'title' in obj:
-            title = obj['title']
-        return Audio(file_id, duration, performer, title, mime_type, file_size)
+        performer = obj.get('performer')
+        title = obj.get('title')
+        mime_type = obj.get('mime_type')
+        file_size = obj.get('file_size')
+        return cls(file_id, duration, performer, title, mime_type, file_size)
 
     def __init__(self, file_id, duration, performer=None, title=None, mime_type=None, file_size=None):
         self.file_id = file_id
@@ -303,13 +281,9 @@ class Voice(JsonDeserializable):
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
-        mime_type = None
-        file_size = None
-        if 'mime_type' in obj:
-            mime_type = obj['mime_type']
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        return Voice(file_id, duration, mime_type, file_size)
+        mime_type = obj.get('mime_type')
+        file_size = obj.get('file_size')
+        return cls(file_id, duration, mime_type, file_size)
 
     def __init__(self, file_id, duration, mime_type=None, file_size=None):
         self.file_id = file_id
@@ -324,19 +298,12 @@ class Document(JsonDeserializable):
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         thumb = None
-        if 'thumb' in obj:
-            if 'file_id' in obj['thumb']:
-                thumb = PhotoSize.de_json(obj['thumb'])
-        file_name = None
-        mime_type = None
-        file_size = None
-        if 'file_name' in obj:
-            file_name = obj['file_name']
-        if 'mime_type' in obj:
-            mime_type = obj['mime_type']
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        return Document(file_id, thumb, file_name, mime_type, file_size)
+        if 'thumb' in obj and 'file_id' in obj['thumb']:
+            thumb = PhotoSize.de_json(obj['thumb'])
+        file_name = obj.get('file_name')
+        mime_type = obj.get('mime_type')
+        file_size = obj.get('file_size')
+        return cls(file_id, thumb, file_name, mime_type, file_size)
 
     def __init__(self, file_id, thumb, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
@@ -356,10 +323,8 @@ class Sticker(JsonDeserializable):
         thumb = None
         if 'thumb' in obj:
             thumb = PhotoSize.de_json(obj['thumb'])
-        file_size = None
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        return Sticker(file_id, width, height, thumb, file_size)
+        file_size = obj.get('file_size')
+        return cls(file_id, width, height, thumb, file_size)
 
     def __init__(self, file_id, width, height, thumb, file_size=None):
         self.file_id = file_id
@@ -377,16 +342,10 @@ class Video(JsonDeserializable):
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        thumb = None
-        mime_type = None
-        file_size = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
-        if 'mime_type' in obj:
-            mime_type = obj['mime_type']
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        return Video(file_id, width, height, duration, thumb, mime_type, file_size)
+        thumb = obj.get('thumb')
+        mime_type = obj.get('mime_type')
+        file_size = obj.get('file_size')
+        return cls(file_id, width, height, duration, thumb, mime_type, file_size)
 
     def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
         self.file_id = file_id
@@ -404,13 +363,9 @@ class Contact(JsonDeserializable):
         obj = cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
-        last_name = None
-        user_id = None
-        if 'last_name' in obj:
-            last_name = obj['last_name']
-        if 'user_id' in obj:
-            user_id = obj['user_id']
-        return Contact(phone_number, first_name, last_name, user_id)
+        last_name = obj.get('last_name')
+        user_id = obj.get('user_id')
+        return cls(phone_number, first_name, last_name, user_id)
 
     def __init__(self, phone_number, first_name, last_name=None, user_id=None):
         self.phone_number = phone_number
@@ -425,7 +380,7 @@ class Location(JsonDeserializable):
         obj = cls.check_json(json_string)
         longitude = obj['longitude']
         latitude = obj['latitude']
-        return Location(longitude, latitude)
+        return cls(longitude, latitude)
 
     def __init__(self, longitude, latitude):
         self.longitude = longitude
@@ -438,7 +393,7 @@ class UserProfilePhotos(JsonDeserializable):
         obj = cls.check_json(json_string)
         total_count = obj['total_count']
         photos = [[PhotoSize.de_json(y) for y in x] for x in obj['photos']]
-        return UserProfilePhotos(total_count, photos)
+        return cls(total_count, photos)
 
     def __init__(self, total_count, photos):
         self.total_count = total_count
@@ -450,14 +405,9 @@ class File(JsonDeserializable):
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
         file_id = obj['file_id']
-
-        file_size = None
-        file_path = None
-        if 'file_size' in obj:
-            file_size = obj['file_size']
-        if 'file_path' in obj:
-            file_path = obj['file_path']
-        return File(file_id, file_size, file_path)
+        file_size = obj.get('file_size')
+        file_path = obj.get('file_path')
+        return cls(file_id, file_size, file_path)
 
     def __init__(self, file_id, file_size, file_path):
         self.file_id = file_id
