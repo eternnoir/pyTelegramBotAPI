@@ -342,7 +342,9 @@ class Video(JsonDeserializable):
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        thumb = obj.get('thumb')
+        thumb = None
+        if 'thumb' in obj:
+            thumb = PhotoSize.de_json(obj['thumb'])
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
         return cls(file_id, width, height, duration, thumb, mime_type, file_size)
