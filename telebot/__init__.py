@@ -62,6 +62,7 @@ class TeleBot:
 
         # key: chat_id, value: handler list
         self.message_subscribers_next_step = {}
+        self.pre_message_subscribers_next_step = {}
 
         self.message_handlers = []
 
@@ -106,6 +107,7 @@ class TeleBot:
             self.process_new_messages(new_messages)
 
     def process_new_messages(self, new_messages):
+        self._append_pre_next_step_handler()
         self.__notify_update(new_messages)
         self._notify_command_handlers(new_messages)
         self._notify_message_subscribers(new_messages)
@@ -416,10 +418,10 @@ class TeleBot:
         :param callback:    The callback function which next new message arrives.
         """
         chat_id = message.chat.id
-        if chat_id in self.message_subscribers_next_step:
-            self.message_subscribers_next_step[chat_id].append(callback)
+        if chat_id in self.pre_message_subscribers_next_step:
+            self.pre_message_subscribers_next_step[chat_id].append(callback)
         else:
-            self.message_subscribers_next_step[chat_id] = [callback]
+            self.pre_message_subscribers_next_step[chat_id] = [callback]
 
     def _notify_message_next_handler(self, new_messages):
         for message in new_messages:
@@ -429,6 +431,14 @@ class TeleBot:
                 for handler in handlers:
                     self.__exec_task(handler, message)
                 self.message_subscribers_next_step.pop(chat_id, None)
+
+    def _append_pre_next_step_handler(self):
+        for k in self.pre_message_subscribers_next_step.keys():
+            if k in self.message_subscribers_next_step:
+                self.message_subscribers_next_step[k].extend(self.pre_message_subscribers_next_step[k])
+            else:
+                self.message_subscribers_next_step[k] = self.pre_message_subscribers_next_step[k]
+        self.pre_message_subscribers_next_step = {}
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         """
