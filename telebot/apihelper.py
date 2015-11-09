@@ -61,12 +61,12 @@ def _check_result(method_name, result):
 
 
 def get_me(token):
-    method_url = 'getMe'
+    method_url = r'getMe'
     return _make_request(token, method_url)
 
 
 def get_file(token, file_id):
-    method_url = 'getFile'
+    method_url = r'getFile'
     return _make_request(token, method_url, params={'file_id': file_id})
 
 
@@ -106,7 +106,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
 
 
 def set_webhook(token, url=None, certificate=None):
-    method_url = 'setWebhook'
+    method_url = r'setWebhook'
     payload = {
         'url': url if url else "",
     }
@@ -253,9 +253,9 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
 
 def get_method_by_type(data_type):
     if data_type == 'document':
-        return 'sendDocument'
+        return r'sendDocument'
     if data_type == 'sticker':
-        return 'sendSticker'
+        return r'sendSticker'
 
 
 def _convert_markup(markup):
