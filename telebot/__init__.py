@@ -416,7 +416,7 @@ class TeleBot:
 
     def _notify_message_subscribers(self, new_messages):
         for message in new_messages:
-            if not hasattr(message, 'reply_to_message'):
+            if not message.reply_to_message:
                 continue
 
             reply_msg_id = message.reply_to_message.message_id
