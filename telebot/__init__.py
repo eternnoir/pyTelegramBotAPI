@@ -44,13 +44,14 @@ class TeleBot:
         getUpdates
     """
 
-    def __init__(self, token, threaded=True):
+    def __init__(self, token, threaded=True, skip_pending=False):
         """
         :param token: bot API token
         :return: Telebot object.
         """
         self.token = token
         self.update_listener = []
+        self.skip_pending = skip_pending
 
         self.__stop_polling = threading.Event()
         self.last_update_id = 0
@@ -90,12 +91,30 @@ class TeleBot:
             ret.append(types.Update.de_json(ju))
         return ret
 
+    def __skip_updates(self):
+        """
+        Get and discard all pending updates before first poll of the bot
+        :return: total updates skipped
+        """
+        total = 0
+        updates = self.get_updates(offset=self.last_update_id, timeout=1)
+        while updates:
+            total += len(updates)
+            for update in updates:
+                if update.update_id > self.last_update_id:
+                    self.last_update_id = update.update_id
+            updates = self.get_updates(offset=self.last_update_id+1, timeout=1)
+        return total
+
     def __retrieve_updates(self, timeout=20):
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
+        if self.skip_pending:
+            logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
+            self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         new_messages = []
         for update in updates:
