@@ -233,6 +233,25 @@ class Message(JsonDeserializable):
         self.from_user = from_user
         self.message_id = message_id
         self.content_type = content_type
+        self.forward_from = None
+        self.forward_date = None
+        self.reply_to_message = None
+        self.text = None
+        self.audio = None
+        self.voice = None
+        self.document = None
+        self.photo = None
+        self.sticker = None
+        self.video = None
+        self.location = None
+        self.contact = None
+        self.new_chat_participant = None
+        self.left_chat_participant = None
+        self.new_chat_title = None
+        self.new_chat_photo = None
+        self.delete_chat_photo = None
+        self.group_chat_created = None
+        self.caption = None
         for key in options:
             setattr(self, key, options[key])
 
