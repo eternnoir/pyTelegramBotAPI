@@ -87,12 +87,21 @@ class Update(JsonDeserializable):
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
         update_id = obj['update_id']
-        message = Message.de_json(obj['message'])
-        return cls(update_id, message)
+        message = None
+        inline_query = None
+        # TODO chosen_inline_result
+        chosen_inline_result = None
+        if 'message' in obj:
+            message = Message.de_json(obj['message'])
+        if 'inline_query' in obj:
+            inline_query = InlineQuery.de_json(obj['inline_query'])
+        return cls(update_id, message, inline_query, chosen_inline_result)
 
-    def __init__(self, update_id, message):
+    def __init__(self, update_id, message, inline_query, chosen_inline_result):
         self.update_id = update_id
         self.message = message
+        self.inline_query = inline_query
+        self.chosen_inline_result = chosen_inline_result
 
 
 class User(JsonDeserializable):
