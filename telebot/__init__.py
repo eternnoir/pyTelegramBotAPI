@@ -66,6 +66,7 @@ class TeleBot:
         self.pre_message_subscribers_next_step = {}
 
         self.message_handlers = []
+        self.inline_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -117,13 +118,20 @@ class TeleBot:
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         new_messages = []
+        new_inline_querys = []
         for update in updates:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
-            new_messages.append(update.message)
-        logger.debug('Received {0} new messages'.format(len(new_messages)))
+            if update.message:
+                new_messages.append(update.message)
+            if update.inline_query:
+                new_inline_querys.append(update.inline_query)
+            # TODO Chosen
+        logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
+        if len(new_inline_querys) > 0:
+            self.process_new_inline_query(new_inline_querys)
 
     def process_new_messages(self, new_messages):
         self._append_pre_next_step_handler()
@@ -131,6 +139,9 @@ class TeleBot:
         self._notify_command_handlers(new_messages)
         self._notify_message_subscribers(new_messages)
         self._notify_message_next_handler(new_messages)
+
+    def process_new_inline_query(self, new_inline_querys):
+        self._notify_inline_handlers(new_inline_querys)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -504,6 +515,21 @@ class TeleBot:
 
         return decorator
 
+    def inline_handler(self, regexp=None, func=None):
+
+        def decorator(fn):
+            handler_dict = {'function': fn}
+            filters = {}
+            if regexp:
+                filters['regexp'] = regexp
+            if func:
+                filters['lambda'] = func
+            handler_dict['filters'] = filters
+            self.inline_handlers.append(handler_dict)
+            return fn
+
+        return decorator
+
     @staticmethod
     def _test_message_handler(message_handler, message):
         for filter, filter_value in six.iteritems(message_handler['filters']):
@@ -528,6 +554,13 @@ class TeleBot:
             for message_handler in self.message_handlers:
                 if self._test_message_handler(message_handler, message):
                     self.__exec_task(message_handler['function'], message)
+                    break
+
+    def _notify_inline_handlers(self, inlien_querys):
+        for inline_query in inlien_querys:
+            for inline_handler in self.inline_handlers:
+                if self._test_message_handler(inline_handler, inline_query):
+                    self.__exec_task(inline_handler['function'], inline_query)
                     break
 
 
