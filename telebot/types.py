@@ -89,12 +89,13 @@ class Update(JsonDeserializable):
         update_id = obj['update_id']
         message = None
         inline_query = None
-        # TODO chosen_inline_result
         chosen_inline_result = None
         if 'message' in obj:
             message = Message.de_json(obj['message'])
         if 'inline_query' in obj:
             inline_query = InlineQuery.de_json(obj['inline_query'])
+        if 'chosen_inline_result' in obj:
+            chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
         return cls(update_id, message, inline_query, chosen_inline_result)
 
     def __init__(self, update_id, message, inline_query, chosen_inline_result):
@@ -531,7 +532,7 @@ class InlineQuery(JsonDeserializable):
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
         id = obj['id']
-        from_user = obj['from']
+        from_user = User.de_json(obj['from'])
         query = obj['query']
         offset = obj['offset']
         return cls(id, from_user, query, offset)
@@ -551,3 +552,26 @@ class InlineQuery(JsonDeserializable):
         self.from_user = from_user
         self.query = query
         self.offset = offset
+
+
+class ChosenInlineResult(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        result_id = obj['result_id']
+        from_user = User.de_json(obj['from'])
+        query = obj['query']
+        return cls(result_id, from_user, query)
+
+    def __init__(self, result_id, from_user, query):
+        """
+        This object represents a result of an inline query
+        that was chosen by the user and sent to their chat partner.
+        :param result_id: string The unique identifier for the result that was chosen.
+        :param from_user: User The user that chose the result.
+        :param query: String The query that was used to obtain the result.
+        :return: ChosenInlineResult Object.
+        """
+        self.result_id = result_id
+        self.from_user = from_user
+        self.query = query
