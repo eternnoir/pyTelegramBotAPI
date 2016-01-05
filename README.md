@@ -17,7 +17,7 @@
       * [Message handlers](#message-handlers)
       * [TeleBot](#telebot)
       * [Reply markup](#reply-markup)
-      * [Inline Mode](#inlinemode)
+      * [Inline Mode](#inline-mode)
   * [Advanced use of the API](#advanced-use-of-the-api)
     * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
     * [Sending large text messages](#sending-large-text-messages)
