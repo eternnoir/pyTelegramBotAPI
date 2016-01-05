@@ -17,6 +17,7 @@
       * [Message handlers](#message-handlers)
       * [TeleBot](#telebot)
       * [Reply markup](#reply-markup)
+      * [Inline Mode](#inlinemode)
   * [Advanced use of the API](#advanced-use-of-the-api)
     * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
     * [Sending large text messages](#sending-large-text-messages)
@@ -320,6 +321,33 @@ tb.send_message(chat_id, "Send me another word:", reply_markup=markup)
 ForceReply:
 
 ![ForceReply](https://pp.vk.me/c624430/v624430512/473ec/602byyWUHcs.jpg "ForceReply")
+
+### Inline Mode
+
+More information about [Inline mode](https://core.telegram.org/bots/inline).
+
+#### inline_handler
+Now, you can use inline_handler to get inline_query in telebot.
+```python
+
+@bot.inline_handler(lambda query: query.query == 'text')
+def query_text(inline_query):
+    # Query message is text
+```
+
+#### answer_inline_query
+
+```python
+@bot.inline_handler(lambda query: query.query == 'text')
+def query_text(inline_query):
+    try:
+        r = types.InlineQueryResultArticle('1', 'Result', inline_query.query)
+        r2 = types.InlineQueryResultArticle('2', 'Result2', inline_query.query)
+        bot.answer_inline_query(inline_query.id, [r, r2])
+    except Exception as e:
+        print(e)
+
+```
 
 ## Advanced use of the API
 

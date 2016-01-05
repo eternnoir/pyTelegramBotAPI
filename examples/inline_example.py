@@ -2,18 +2,35 @@
 import telebot
 import time
 import sys
+import logging
 from telebot import types
 
 API_TOKEN = '<api_token>'
 
 bot = telebot.TeleBot(API_TOKEN)
+telebot.logger.setLevel(logging.DEBUG)
 
 
 @bot.inline_handler(lambda query: query.query == 'text')
-def query(inline_query):
+def query_text(inline_query):
     try:
         r = types.InlineQueryResultArticle('1', 'Result', inline_query.query)
-        bot.answer_inline_query(inline_query.id, [r])
+        r2 = types.InlineQueryResultArticle('2', 'Result2', inline_query.query)
+        bot.answer_inline_query(inline_query.id, [r, r2])
+    except Exception as e:
+        print(e)
+
+
+@bot.inline_handler(lambda query: query.query == 'photo')
+def query_photo(inline_query):
+    try:
+        r = types.InlineQueryResultPhoto('1',
+                                         'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg',
+                                         thumb_url='https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg')
+        r2 = types.InlineQueryResultPhoto('2',
+                                          'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg',
+                                          thumb_url='https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg')
+        bot.answer_inline_query(inline_query.id, [r, r2])
     except Exception as e:
         print(e)
 
