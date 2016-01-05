@@ -17,7 +17,7 @@
       * [Message handlers](#message-handlers)
       * [TeleBot](#telebot)
       * [Reply markup](#reply-markup)
-      * [Inline Mode](#inlinemode)
+      * [Inline Mode](#inline-mode)
   * [Advanced use of the API](#advanced-use-of-the-api)
     * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
     * [Sending large text messages](#sending-large-text-messages)
@@ -341,8 +341,8 @@ def query_text(inline_query):
 @bot.inline_handler(lambda query: query.query == 'text')
 def query_text(inline_query):
     try:
-        r = types.InlineQueryResultArticle('1', 'Result', inline_query.query)
-        r2 = types.InlineQueryResultArticle('2', 'Result2', inline_query.query)
+        r = types.InlineQueryResultArticle('1', 'Result', 'Result message.')
+        r2 = types.InlineQueryResultArticle('2', 'Result2', 'Result message2.')
         bot.answer_inline_query(inline_query.id, [r, r2])
     except Exception as e:
         print(e)
