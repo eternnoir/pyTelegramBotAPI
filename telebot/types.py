@@ -1,24 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Available types
 
-User
-GroupChat
-Message
-PhotoSize
-Audio
-Document
-Sticker
-Video
-Contact
-Location
-Update
-InputFile
-UserProfilePhotos
-ReplyKeyboardMarkup
-ReplyKeyboardHide
-ForceReply
-"""
+# TODO InlineQueryResultArticle, InlineQueryResultPhoto, InlineQueryResultGif, InlineQueryResultMpeg4Gif, InlineQueryResultVideo
 
 import json
 import six
@@ -87,12 +69,22 @@ class Update(JsonDeserializable):
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
         update_id = obj['update_id']
-        message = Message.de_json(obj['message'])
-        return cls(update_id, message)
+        message = None
+        inline_query = None
+        chosen_inline_result = None
+        if 'message' in obj:
+            message = Message.de_json(obj['message'])
+        if 'inline_query' in obj:
+            inline_query = InlineQuery.de_json(obj['inline_query'])
+        if 'chosen_inline_result' in obj:
+            chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
+        return cls(update_id, message, inline_query, chosen_inline_result)
 
-    def __init__(self, update_id, message):
+    def __init__(self, update_id, message, inline_query, chosen_inline_result):
         self.update_id = update_id
         self.message = message
+        self.inline_query = inline_query
+        self.chosen_inline_result = chosen_inline_result
 
 
 class User(JsonDeserializable):
@@ -514,4 +506,246 @@ class ReplyKeyboardMarkup(JsonSerializable):
         if self.selective:
             json_dict['selective'] = True
 
+        return json.dumps(json_dict)
+
+
+class InlineQuery(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        id = obj['id']
+        from_user = User.de_json(obj['from'])
+        query = obj['query']
+        offset = obj['offset']
+        return cls(id, from_user, query, offset)
+
+    def __init__(self, id, from_user, query, offset):
+        """
+        This object represents an incoming inline query.
+        When the user sends an empty query, your bot could
+        return some default or trending results.
+        :param id: string Unique identifier for this query
+        :param from_user: User Sender
+        :param query: String Text of the query
+        :param offset: String Offset of the results to be returned, can be controlled by the bot
+        :return: InlineQuery Object
+        """
+        self.id = id
+        self.from_user = from_user
+        self.query = query
+        self.offset = offset
+
+
+class ChosenInlineResult(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        result_id = obj['result_id']
+        from_user = User.de_json(obj['from'])
+        query = obj['query']
+        return cls(result_id, from_user, query)
+
+    def __init__(self, result_id, from_user, query):
+        """
+        This object represents a result of an inline query
+        that was chosen by the user and sent to their chat partner.
+        :param result_id: string The unique identifier for the result that was chosen.
+        :param from_user: User The user that chose the result.
+        :param query: String The query that was used to obtain the result.
+        :return: ChosenInlineResult Object.
+        """
+        self.result_id = result_id
+        self.from_user = from_user
+        self.query = query
+
+
+class InlineQueryResultArticle(JsonSerializable):
+    def __init__(self, id, title, message_text, parse_mode=None, disable_web_page_preview=None, url=None,
+                 hide_url=None, description=None, thumb_url=None, thumb_width=None, thumb_height=None):
+        self.type = 'article'
+        self.id = id
+        self.title = title
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.url = url
+        self.hide_url = hide_url
+        self.description = description
+        self.thumb_url = thumb_url
+        self.thumb_width = thumb_width
+        self.thumb_height = thumb_height
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'message_text': self.message_text}
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        if self.url:
+            json_dict['url'] = self.url
+        if self.hide_url:
+            json_dict['hide_url'] = self.hide_url
+        if self.description:
+            json_dict['description'] = self.description
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.thumb_width:
+            json_dict['thumb_width'] = self.thumb_width
+        if self.thumb_height:
+            json_dict['thumb_height'] = self.thumb_height
+        return json.dumps(json_dict)
+
+
+class InlineQueryResultPhoto(JsonSerializable):
+    def __init__(self, id, photo_url, mime_type=None, photo_width=None, photo_height=None, thumb_url=None, title=None,
+                 description=None, caption=None, message_text=None, parse_mode=None, disable_web_page_preview=None):
+        self.type = 'photo'
+        self.id = id
+        self.photo_url = photo_url
+        self.mime_type = mime_type
+        self.photo_width = photo_width
+        self.photo_height = photo_height
+        self.thumb_url = thumb_url
+        self.title = title
+        self.description = description
+        self.caption = caption
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'photo_url': self.photo_url}
+        if self.mime_type:
+            json_dict['mime_type'] = self.mime_type
+        if self.photo_width:
+            json_dict['photo_width'] = self.photo_width
+        if self.photo_height:
+            json_dict['photo_height'] = self.photo_height
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.description:
+            json_dict['description'] = self.description
+        if self.caption:
+            json_dict['caption'] = self.caption
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        return json.dumps(json_dict)
+
+
+class InlineQueryResultGif(JsonSerializable):
+    def __init__(self, id, gif_url, gif_width=None, gif_height=None, thumb_url=None, title=None, caption=None,
+                 message_text=None, parse_mode=None, disable_web_page_preview=None):
+        self.type = 'gif'
+        self.id = id
+        self.gif_url = gif_url
+        self.gif_width = gif_width
+        self.gif_height = gif_height
+        self.thumb_url = thumb_url
+        self.title = title
+        self.caption = caption
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'gif_url': self.gif_url}
+        if self.gif_height:
+            json_dict['gif_height'] = self.gif_height
+        if self.gif_width:
+            json_dict['gif_width'] = self.gif_width
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.caption:
+            json_dict['caption'] = self.caption
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        return json.dumps(json_dict)
+
+
+class InlineQueryResultMpeg4Gif(JsonSerializable):
+    def __init__(self, id, mpeg4_url, mpeg4_width=None, mpeg4_height=None, thumb_url=None, title=None, caption=None,
+                 message_text=None, parse_mode=None, disable_web_page_preview=None):
+        self.type = 'mpeg4_gif'
+        self.id = id
+        self.mpeg4_url = mpeg4_url
+        self.mpeg4_width = mpeg4_width
+        self.mpeg4_height = mpeg4_height
+        self.thumb_url = thumb_url
+        self.title = title
+        self.caption = caption
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'mpeg4_url': self.mpeg4_url}
+        if self.mpeg4_width:
+            json_dict['mpeg4_width'] = self.mpeg4_width
+        if self.mpeg4_height:
+            json_dict['mpeg4_height'] = self.mpeg4_height
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.caption:
+            json_dict['caption'] = self.caption
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        return json.dumps(json_dict)
+
+
+class InlineQueryResultVideo(JsonSerializable):
+    def __init__(self, id, video_url, mime_type, message_text=None, parse_mode=None, disable_web_page_preview=None,
+                 video_width=None, video_height=None, video_duration=None, thumb_url=None, title=None,
+                 description=None):
+        self.type = 'video'
+        self.id = id
+        self.video_url = video_url
+        self.mime_type = mime_type
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.video_width = video_width
+        self.video_height = video_height
+        self.video_duration = video_duration
+        self.thumb_url = thumb_url
+        self.title = title
+        self.description = description
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'video_url': self.video_url, 'mime_type': self.mime_type}
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        if self.video_width:
+            json_dict['video_width'] = self.video_width
+        if self.video_height:
+            json_dict['video_height'] = self.video_height
+        if self.video_duration:
+            json_dict['video_duration'] = self.video_duration
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.description:
+            json_dict['description'] = self.description
         return json.dumps(json_dict)
