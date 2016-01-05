@@ -415,6 +415,9 @@ class TeleBot:
         """
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
 
+    def answer_inline_query(self, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
+        return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset)
+
     def register_for_reply(self, message, callback):
         """
         Registers a callback function to be notified when a reply to `message` arrives.

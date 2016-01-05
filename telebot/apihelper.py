@@ -42,19 +42,19 @@ def _check_result(method_name, result):
     :return: The result parsed to a JSON dictionary.
     """
     if result.status_code != 200:
-        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]'\
+        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
             .format(result.status_code, result.reason, result.text.encode('utf8'))
         raise ApiException(msg, method_name, result)
 
     try:
         result_json = result.json()
     except:
-        msg = 'The server returned an invalid JSON response. Response body:\n[{0}]'\
+        msg = 'The server returned an invalid JSON response. Response body:\n[{0}]' \
             .format(result.text.encode('utf8'))
         raise ApiException(msg, method_name, result)
 
     if not result_json['ok']:
-        msg = 'Error code: {0} Description: {1}'\
+        msg = 'Error code: {0} Description: {1}' \
             .format(result_json['error_code'], result_json['description'])
         raise ApiException(msg, method_name, result)
     return result_json
@@ -74,7 +74,7 @@ def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)
     result = requests.get(url)
     if result.status_code != 200:
-        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]'\
+        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
             .format(result.status_code, result.reason, result.text)
         raise ApiException(msg, 'Download file', result)
     return result.content
@@ -258,10 +258,33 @@ def get_method_by_type(data_type):
         return r'sendSticker'
 
 
+def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
+    method_url = 'answerInlineQuery'
+    payload = {'inline_query_id': inline_query_id, 'results': _convert_inline_results(results)}
+    if cache_time:
+        payload['cache_time'] = cache_time
+    if is_personal:
+        payload['is_personal'] = is_personal
+    if next_offset:
+        payload['next_offset'] = next_offset
+    return _make_request(token, method_url, params=payload)
+
+
+def _convert_inline_results(results):
+    ret = ''
+    for r in results:
+        if isinstance(r, types.JsonSerializable):
+            ret = ret + r.to_json() + ','
+    if len(ret) > 0:
+        ret = ret[:-1]
+    return '[' + ret + ']'
+
+
 def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
+
 
 class ApiException(Exception):
     """
