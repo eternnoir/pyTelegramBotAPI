@@ -1,24 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-Available types
 
-User
-GroupChat
-Message
-PhotoSize
-Audio
-Document
-Sticker
-Video
-Contact
-Location
-Update
-InputFile
-UserProfilePhotos
-ReplyKeyboardMarkup
-ReplyKeyboardHide
-ForceReply
-"""
+# TODO InlineQueryResultArticle, InlineQueryResultPhoto, InlineQueryResultGif, InlineQueryResultMpeg4Gif, InlineQueryResultVideo
 
 import json
 import six
@@ -575,3 +557,39 @@ class ChosenInlineResult(JsonDeserializable):
         self.result_id = result_id
         self.from_user = from_user
         self.query = query
+
+
+class InlineQueryResultArticle(JsonSerializable):
+    def __init__(self, id, title, message_text, parse_mode=None, disable_web_page_preview=None, url=None,
+                 hide_url=None, description=None, thumb_url=None, thumb_width=None, thumb_height=None):
+        self.type = 'article'
+        self.title = title
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.url = url
+        self.hide_url = hide_url
+        self.description = description
+        self.thumb_url = thumb_url
+        self.thumb_width = thumb_width
+        self.thumb_height = thumb_height
+
+    def to_json(self):
+        json_dict = {'id': self.type, 'title': self.title, 'message_text': self.message_text}
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        if self.url:
+            json_dict['url'] = self.url
+        if self.hide_url:
+            json_dict['hide_url'] = self.hide_url
+        if self.description:
+            json_dict['description'] = self.description
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.thumb_width:
+            json_dict['thumb_width'] = self.thumb_width
+        if self.thumb_height:
+            json_dict['thumb_height'] = self.thumb_height
+        return json.dumps(json_dict)
