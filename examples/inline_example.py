@@ -26,11 +26,25 @@ def query_photo(inline_query):
     try:
         r = types.InlineQueryResultPhoto('1',
                                          'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg',
-                                         thumb_url='https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg')
+                                         'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/kitten.jpg')
         r2 = types.InlineQueryResultPhoto('2',
                                           'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg',
-                                          thumb_url='https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg')
+                                          'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg')
         bot.answer_inline_query(inline_query.id, [r, r2])
+    except Exception as e:
+        print(e)
+
+
+@bot.inline_handler(lambda query: query.query == 'video')
+def query_video(inline_query):
+    try:
+        r = types.InlineQueryResultVideo('1',
+                                         'https://github.com/eternnoir/pyTelegramBotAPI/blob/master/tests/test_data/test_video.mp4?raw=true',
+                                         'video/mp4', 'Video',
+                                         'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg',
+                                         'Title'
+                                         )
+        bot.answer_inline_query(inline_query.id, [r])
     except Exception as e:
         print(e)
 

@@ -597,7 +597,7 @@ class InlineQueryResultArticle(JsonSerializable):
 
 
 class InlineQueryResultPhoto(JsonSerializable):
-    def __init__(self, id, photo_url, mime_type=None, photo_width=None, photo_height=None, thumb_url=None, title=None,
+    def __init__(self, id, photo_url, thumb_url, mime_type=None, photo_width=None, photo_height=None, title=None,
                  description=None, caption=None, message_text=None, parse_mode=None, disable_web_page_preview=None):
         self.type = 'photo'
         self.id = id
@@ -614,15 +614,13 @@ class InlineQueryResultPhoto(JsonSerializable):
         self.disable_web_page_preview = disable_web_page_preview
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'photo_url': self.photo_url}
+        json_dict = {'type': self.type, 'id': self.id, 'photo_url': self.photo_url, 'thumb_url': self.thumb_url}
         if self.mime_type:
             json_dict['mime_type'] = self.mime_type
         if self.photo_width:
             json_dict['photo_width'] = self.photo_width
         if self.photo_height:
             json_dict['photo_height'] = self.photo_height
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
         if self.title:
             json_dict['title'] = self.title
         if self.description:
@@ -639,7 +637,7 @@ class InlineQueryResultPhoto(JsonSerializable):
 
 
 class InlineQueryResultGif(JsonSerializable):
-    def __init__(self, id, gif_url, gif_width=None, gif_height=None, thumb_url=None, title=None, caption=None,
+    def __init__(self, id, gif_url, thumb_url, gif_width=None, gif_height=None, title=None, caption=None,
                  message_text=None, parse_mode=None, disable_web_page_preview=None):
         self.type = 'gif'
         self.id = id
@@ -654,13 +652,11 @@ class InlineQueryResultGif(JsonSerializable):
         self.disable_web_page_preview = disable_web_page_preview
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'gif_url': self.gif_url}
+        json_dict = {'type': self.type, 'id': self.id, 'gif_url': self.gif_url, 'thumb_url': self.thumb_url}
         if self.gif_height:
             json_dict['gif_height'] = self.gif_height
         if self.gif_width:
             json_dict['gif_width'] = self.gif_width
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
         if self.title:
             json_dict['title'] = self.title
         if self.caption:
@@ -675,7 +671,7 @@ class InlineQueryResultGif(JsonSerializable):
 
 
 class InlineQueryResultMpeg4Gif(JsonSerializable):
-    def __init__(self, id, mpeg4_url, mpeg4_width=None, mpeg4_height=None, thumb_url=None, title=None, caption=None,
+    def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None, title=None, caption=None,
                  message_text=None, parse_mode=None, disable_web_page_preview=None):
         self.type = 'mpeg4_gif'
         self.id = id
@@ -690,13 +686,11 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         self.disable_web_page_preview = disable_web_page_preview
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'mpeg4_url': self.mpeg4_url}
+        json_dict = {'type': self.type, 'id': self.id, 'mpeg4_url': self.mpeg4_url, 'thumb_url': self.thumb_url}
         if self.mpeg4_width:
             json_dict['mpeg4_width'] = self.mpeg4_width
         if self.mpeg4_height:
             json_dict['mpeg4_height'] = self.mpeg4_height
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
         if self.title:
             json_dict['title'] = self.title
         if self.caption:
@@ -711,8 +705,9 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
 
 
 class InlineQueryResultVideo(JsonSerializable):
-    def __init__(self, id, video_url, mime_type, message_text=None, parse_mode=None, disable_web_page_preview=None,
-                 video_width=None, video_height=None, video_duration=None, thumb_url=None, title=None,
+    def __init__(self, id, video_url, mime_type, message_text, thumb_url, title, parse_mode=None,
+                 disable_web_page_preview=None,
+                 video_width=None, video_height=None, video_duration=None,
                  description=None):
         self.type = 'video'
         self.id = id
@@ -729,9 +724,8 @@ class InlineQueryResultVideo(JsonSerializable):
         self.description = description
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'video_url': self.video_url, 'mime_type': self.mime_type}
-        if self.message_text:
-            json_dict['message_text'] = self.message_text
+        json_dict = {'type': self.type, 'id': self.id, 'video_url': self.video_url, 'mime_type': self.mime_type,
+                     'message_text': self.message_text, 'thumb_url': self.thumb_url, 'title': self.title}
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.disable_web_page_preview:
@@ -742,10 +736,6 @@ class InlineQueryResultVideo(JsonSerializable):
             json_dict['video_height'] = self.video_height
         if self.video_duration:
             json_dict['video_duration'] = self.video_duration
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
-        if self.title:
-            json_dict['title'] = self.title
         if self.description:
             json_dict['description'] = self.description
         return json.dumps(json_dict)
