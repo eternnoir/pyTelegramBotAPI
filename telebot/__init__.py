@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
-    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
+        '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
 )
 
 console_output_handler = logging.StreamHandler(sys.stderr)
@@ -67,6 +67,7 @@ class TeleBot:
 
         self.message_handlers = []
         self.inline_handlers = []
+        self.chosen_inline_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -104,7 +105,7 @@ class TeleBot:
             for update in updates:
                 if update.update_id > self.last_update_id:
                     self.last_update_id = update.update_id
-            updates = self.get_updates(offset=self.last_update_id+1, timeout=1)
+            updates = self.get_updates(offset=self.last_update_id + 1, timeout=1)
         return total
 
     def __retrieve_updates(self, timeout=20):
@@ -119,6 +120,7 @@ class TeleBot:
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         new_messages = []
         new_inline_querys = []
+        new_chosen_inline_results = []
         for update in updates:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
@@ -126,22 +128,28 @@ class TeleBot:
                 new_messages.append(update.message)
             if update.inline_query:
                 new_inline_querys.append(update.inline_query)
-            # TODO Chosen
+            if update.chosen_inline_result:
+                new_chosen_inline_results.append(update.chosen_inline_result)
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
         if len(new_inline_querys) > 0:
             self.process_new_inline_query(new_inline_querys)
+        if len(new_chosen_inline_results) > 0:
+            self.process_new_chosen_inline_query(new_chosen_inline_results)
 
     def process_new_messages(self, new_messages):
         self._append_pre_next_step_handler()
         self.__notify_update(new_messages)
-        self._notify_command_handlers(new_messages)
+        self._notify_command_handlers(self.message_handlers, new_messages)
         self._notify_message_subscribers(new_messages)
         self._notify_message_next_handler(new_messages)
 
     def process_new_inline_query(self, new_inline_querys):
-        self._notify_inline_handlers(new_inline_querys)
+        self._notify_command_handlers(self.inline_handlers, new_inline_querys)
+
+    def process_new_chosen_inline_query(self, new_chosen_inline_querys):
+        self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_querys)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -171,9 +179,9 @@ class TeleBot:
 
         polling_thread = util.WorkerThread(name="PollingThread")
         or_event = util.OrEvent(
-            polling_thread.done_event,
-            polling_thread.exception_event,
-            self.worker_pool.exception_event
+                polling_thread.done_event,
+                polling_thread.exception_event,
+                self.worker_pool.exception_event
         )
 
         while not self.__stop_polling.wait(interval):
@@ -282,8 +290,8 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
-                                   reply_markup, parse_mode))
+                apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
+                                       reply_markup, parse_mode))
 
     def forward_message(self, chat_id, from_chat_id, message_id):
         """
@@ -306,7 +314,7 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup))
+                apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup))
 
     def send_audio(self, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
                    reply_markup=None):
@@ -322,8 +330,8 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_audio(self.token, chat_id, audio, duration, performer, title, reply_to_message_id,
-                                 reply_markup))
+                apihelper.send_audio(self.token, chat_id, audio, duration, performer, title, reply_to_message_id,
+                                     reply_markup))
 
     def send_voice(self, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
         """
@@ -336,7 +344,7 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup))
+                apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup))
 
     def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
@@ -348,7 +356,7 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup))
+                apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup))
 
     def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
         """
@@ -360,7 +368,7 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup))
+                apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup))
 
     def send_video(self, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
         """
@@ -374,7 +382,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup))
+                apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup))
 
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
         """
@@ -387,7 +395,7 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup))
+                apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup))
 
     def send_chat_action(self, chat_id, action):
         """
@@ -515,17 +523,22 @@ class TeleBot:
 
         return decorator
 
-    def inline_handler(self, regexp=None, func=None):
-
+    def inline_handler(self, func):
         def decorator(fn):
             handler_dict = {'function': fn}
-            filters = {}
-            if regexp:
-                filters['regexp'] = regexp
-            if func:
-                filters['lambda'] = func
+            filters = {'lambda': func}
             handler_dict['filters'] = filters
             self.inline_handlers.append(handler_dict)
+            return fn
+
+        return decorator
+
+    def chosen_inline_handler(self, func):
+        def decorator(fn):
+            handler_dict = {'function': fn}
+            filters = {'lambda': func}
+            handler_dict['filters'] = filters
+            self.chosen_inline_handlers.append(handler_dict)
             return fn
 
         return decorator
@@ -549,18 +562,11 @@ class TeleBot:
             return filter_value(message)
         return False
 
-    def _notify_command_handlers(self, new_messages):
+    def _notify_command_handlers(self, handlers, new_messages):
         for message in new_messages:
-            for message_handler in self.message_handlers:
+            for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
                     self.__exec_task(message_handler['function'], message)
-                    break
-
-    def _notify_inline_handlers(self, inlien_querys):
-        for inline_query in inlien_querys:
-            for inline_handler in self.inline_handlers:
-                if self._test_message_handler(inline_handler, inline_query):
-                    self.__exec_task(inline_handler['function'], inline_query)
                     break
 
 
