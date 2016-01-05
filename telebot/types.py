@@ -593,3 +593,46 @@ class InlineQueryResultArticle(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         return json.dumps(json_dict)
+
+
+class InlineQueryResultPhoto(JsonSerializable):
+    def __init__(self, id, photo_url, mime_type=None, photo_width=None, photo_height=None, thumb_url=None, title=None,
+                 description=None, caption=None, message_text=None, parse_mode=None, disable_web_page_preview=None):
+        self.type = 'photo'
+        self.id = id
+        self.photo_url = photo_url
+        self.mime_type = mime_type
+        self.photo_width = photo_width
+        self.photo_height = photo_height
+        self.thumb_url = thumb_url
+        self.title = title
+        self.description = description
+        self.caption = caption
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+    def to_json(self):
+        json_dict = {'id': self.type, 'photo_url': self.photo_url}
+        if self.mime_type:
+            json_dict['mime_type'] = self.mime_type
+        if self.photo_width:
+            json_dict['photo_width'] = self.photo_width
+        if self.photo_height:
+            json_dict['photo_height'] = self.photo_height
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.description:
+            json_dict['description'] = self.description
+        if self.caption:
+            json_dict['caption'] = self.caption
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        return json.dumps(json_dict)
+
