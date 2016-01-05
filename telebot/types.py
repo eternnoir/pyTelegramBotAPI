@@ -708,3 +708,44 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         if self.disable_web_page_preview:
             json_dict['disable_web_page_preview'] = self.disable_web_page_preview
         return json.dumps(json_dict)
+
+
+class InlineQueryResultVideo(JsonSerializable):
+    def __init__(self, id, video_url, mime_type, message_text=None, parse_mode=None, disable_web_page_preview=None,
+                 video_width=None, video_height=None, video_duration=None, thumb_url=None, title=None,
+                 description=None):
+        self.type = 'video'
+        self.id = id
+        self.video_url = video_url
+        self.mime_type = mime_type
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.video_width = video_width
+        self.video_height = video_height
+        self.video_duration = video_duration
+        self.thumb_url = thumb_url
+        self.title = title
+        self.description = description
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'video_url': self.video_url, 'mime_type': self.mime_type}
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        if self.video_width:
+            json_dict['video_width'] = self.video_width
+        if self.video_height:
+            json_dict['video_height'] = self.video_height
+        if self.video_duration:
+            json_dict['video_duration'] = self.video_duration
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.description:
+            json_dict['description'] = self.description
+        return json.dumps(json_dict)
