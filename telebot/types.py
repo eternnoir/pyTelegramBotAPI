@@ -563,6 +563,7 @@ class InlineQueryResultArticle(JsonSerializable):
     def __init__(self, id, title, message_text, parse_mode=None, disable_web_page_preview=None, url=None,
                  hide_url=None, description=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'article'
+        self.id = id
         self.title = title
         self.message_text = message_text
         self.parse_mode = parse_mode
@@ -575,7 +576,7 @@ class InlineQueryResultArticle(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'id': self.type, 'title': self.title, 'message_text': self.message_text}
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'message_text': self.message_text}
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.disable_web_page_preview:
@@ -613,7 +614,7 @@ class InlineQueryResultPhoto(JsonSerializable):
         self.disable_web_page_preview = disable_web_page_preview
 
     def to_json(self):
-        json_dict = {'id': self.type, 'photo_url': self.photo_url}
+        json_dict = {'type': self.type, 'id': self.id, 'photo_url': self.photo_url}
         if self.mime_type:
             json_dict['mime_type'] = self.mime_type
         if self.photo_width:
@@ -636,3 +637,38 @@ class InlineQueryResultPhoto(JsonSerializable):
             json_dict['disable_web_page_preview'] = self.disable_web_page_preview
         return json.dumps(json_dict)
 
+
+class InlineQueryResultGif(JsonSerializable):
+    def __init__(self, id, gif_url, gif_width=None, gif_height=None, thumb_url=None, title=None, caption=None,
+                 message_text=None, parse_mode=None, disable_web_page_preview=None):
+        self.type = 'gif'
+        self.id = id
+        self.gif_url = gif_url
+        self.gif_width = gif_width
+        self.gif_height = gif_height
+        self.thumb_url = thumb_url
+        self.title = title
+        self.caption = caption
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+    def to_json(self):
+        json_dict = {'type': self.type, 'id': self.id, 'gif_url': self.gif_url}
+        if self.gif_height:
+            json_dict['gif_height'] = self.gif_height
+        if self.gif_width:
+            json_dict['gif_width'] = self.gif_width
+        if self.thumb_url:
+            json_dict['thumb_url'] = self.thumb_url
+        if self.title:
+            json_dict['title'] = self.title
+        if self.caption:
+            json_dict['caption'] = self.caption
+        if self.message_text:
+            json_dict['message_text'] = self.message_text
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        return json.dumps(json_dict)
