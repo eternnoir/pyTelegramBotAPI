@@ -416,6 +416,16 @@ class TeleBot:
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
 
     def answer_inline_query(self, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
+        """
+        Use this method to send answers to an inline query. On success, True is returned.
+        No more than 50 results per query are allowed.
+        :param inline_query_id: Unique identifier for the answered query
+        :param results: Array of results for the inline query
+        :param cache_time: The maximum amount of time in seconds that the result of the inline query may be cached on the server.
+        :param is_personal: Pass True, if results may be cached on the server side only for the user that sent the query.
+        :param next_offset: Pass the offset that a client should send in the next query with the same text to receive more results.
+        :return: True means success.
+        """
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset)
 
     def register_for_reply(self, message, callback):

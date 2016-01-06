@@ -562,6 +562,21 @@ class ChosenInlineResult(JsonDeserializable):
 class InlineQueryResultArticle(JsonSerializable):
     def __init__(self, id, title, message_text, parse_mode=None, disable_web_page_preview=None, url=None,
                  hide_url=None, description=None, thumb_url=None, thumb_width=None, thumb_height=None):
+        """
+        Represents a link to an article or web page.
+        :param id: Unique identifier for this result, 1-64 Bytes.
+        :param title: Title of the result.
+        :param message_text: Text of the message to be sent.
+        :param parse_mode: Send “Markdown”, if you want Telegram apps to show bold, italic and inline URLs in your bot's message.
+        :param disable_web_page_preview: Disables link previews for links in the sent message.
+        :param url: URL of the result.
+        :param hide_url: Pass True, if you don't want the URL to be shown in the message.
+        :param description: Short description of the result.
+        :param thumb_url: Url of the thumbnail for the result.
+        :param thumb_width: Thumbnail width.
+        :param thumb_height: Thumbnail height
+        :return:
+        """
         self.type = 'article'
         self.id = id
         self.title = title
