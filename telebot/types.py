@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# TODO InlineQueryResultArticle, InlineQueryResultPhoto, InlineQueryResultGif, InlineQueryResultMpeg4Gif, InlineQueryResultVideo
-
 import json
 import six
 
@@ -714,6 +712,20 @@ class InlineQueryResultGif(JsonSerializable):
 class InlineQueryResultMpeg4Gif(JsonSerializable):
     def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None, title=None, caption=None,
                  message_text=None, parse_mode=None, disable_web_page_preview=None):
+        """
+        Represents a link to a video animation (H.264/MPEG-4 AVC video without sound).
+        :param id: Unique identifier for this result, 1-64 bytes
+        :param mpeg4_url: A valid URL for the MP4 file. File size must not exceed 1MB
+        :param thumb_url: URL of the static thumbnail (jpeg or gif) for the result
+        :param mpeg4_width: Video width
+        :param mpeg4_height: Video height
+        :param title: Title for the result
+        :param caption: Caption of the MPEG-4 file to be sent, 0-200 characters
+        :param message_text: Text of a message to be sent instead of the animation, 1-512 characters
+        :param parse_mode: end “Markdown”, if you want Telegram apps to show bold, italic and inline URLs in your bot's message.
+        :param disable_web_page_preview: Disables link previews for links in the sent message
+        :return:
+        """
         self.type = 'mpeg4_gif'
         self.id = id
         self.mpeg4_url = mpeg4_url
@@ -750,6 +762,22 @@ class InlineQueryResultVideo(JsonSerializable):
                  disable_web_page_preview=None,
                  video_width=None, video_height=None, video_duration=None,
                  description=None):
+        """
+        Represents link to a page containing an embedded video player or a video file.
+        :param id: Unique identifier for this result, 1-64 bytes
+        :param video_url: A valid URL for the embedded video player or video file
+        :param mime_type: Mime type of the content of video url, “text/html” or “video/mp4”
+        :param message_text: Text of the message to be sent with the video, 1-512 characters
+        :param thumb_url: URL of the thumbnail (jpeg only) for the video
+        :param title: Title for the result
+        :param parse_mode: Send “Markdown”, if you want Telegram apps to show bold, italic and inline URLs in your bot's message.
+        :param disable_web_page_preview: Disables link previews for links in the sent message
+        :param video_width: Video width
+        :param video_height: Video height
+        :param video_duration: Video duration in seconds
+        :param description: Short description of the result
+        :return:
+        """
         self.type = 'video'
         self.id = id
         self.video_url = video_url
