@@ -612,12 +612,26 @@ class InlineQueryResultArticle(JsonSerializable):
 
 
 class InlineQueryResultPhoto(JsonSerializable):
-    def __init__(self, id, photo_url, thumb_url, mime_type=None, photo_width=None, photo_height=None, title=None,
+    def __init__(self, id, photo_url, thumb_url, photo_width=None, photo_height=None, title=None,
                  description=None, caption=None, message_text=None, parse_mode=None, disable_web_page_preview=None):
+        """
+        Represents a link to a photo.
+        :param id: Unique identifier for this result, 1-64 bytes
+        :param photo_url: A valid URL of the photo. Photo must be in jpeg format. Photo size must not exceed 5MB
+        :param thumb_url: URL of the thumbnail for the photo
+        :param photo_width: Width of the photo.
+        :param photo_height: Height of the photo.
+        :param title: Title for the result.
+        :param description: Short description of the result.
+        :param caption: Caption of the photo to be sent, 0-200 characters.
+        :param message_text: Text of a message to be sent instead of the photo, 1-512 characters.
+        :param parse_mode: Send “Markdown”, if you want Telegram apps to show bold, italic and inline URLs in your bot's message.
+        :param disable_web_page_preview: Disables link previews for links in the sent message.
+        :return:
+        """
         self.type = 'photo'
         self.id = id
         self.photo_url = photo_url
-        self.mime_type = mime_type
         self.photo_width = photo_width
         self.photo_height = photo_height
         self.thumb_url = thumb_url
@@ -630,8 +644,6 @@ class InlineQueryResultPhoto(JsonSerializable):
 
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'photo_url': self.photo_url, 'thumb_url': self.thumb_url}
-        if self.mime_type:
-            json_dict['mime_type'] = self.mime_type
         if self.photo_width:
             json_dict['photo_width'] = self.photo_width
         if self.photo_height:
@@ -654,6 +666,20 @@ class InlineQueryResultPhoto(JsonSerializable):
 class InlineQueryResultGif(JsonSerializable):
     def __init__(self, id, gif_url, thumb_url, gif_width=None, gif_height=None, title=None, caption=None,
                  message_text=None, parse_mode=None, disable_web_page_preview=None):
+        """
+        Represents a link to an animated GIF file.
+        :param id: Unique identifier for this result, 1-64 bytes.
+        :param gif_url: A valid URL for the GIF file. File size must not exceed 1MB
+        :param thumb_url: URL of the static thumbnail (jpeg or gif) for the result.
+        :param gif_width: Width of the GIF.
+        :param gif_height: Height of the GIF.
+        :param title: Title for the result.
+        :param caption:  Caption of the GIF file to be sent, 0-200 characters
+        :param message_text: Text of a message to be sent instead of the animation, 1-512 characters.
+        :param parse_mode: Send “Markdown”, if you want Telegram apps to show bold, italic and inline URLs in your bot's message.
+        :param disable_web_page_preview: Disables link previews for links in the sent message.
+        :return:
+        """
         self.type = 'gif'
         self.id = id
         self.gif_url = gif_url
