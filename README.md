@@ -327,12 +327,28 @@ ForceReply:
 More information about [Inline mode](https://core.telegram.org/bots/inline).
 
 #### inline_handler
+
 Now, you can use inline_handler to get inline_query in telebot.
+
 ```python
 
 @bot.inline_handler(lambda query: query.query == 'text')
 def query_text(inline_query):
     # Query message is text
+```
+
+
+#### chosen_inline_handler
+
+Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
+command for @Botfather.
+
+More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
+
+```python
+@bot.chosen_inline_handler(func=lambda chosen_inline_result: True)
+def test_chosen(chosen_inline_result):
+    # Process all chosen_inline_result.
 ```
 
 #### answer_inline_query
