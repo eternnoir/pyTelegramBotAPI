@@ -448,6 +448,9 @@ if message.chat.type == “private”:
 
 if message.chat.type == “group”:
 	# group chat message
+	
+if message.chat.type == “supergroup”:
+	# supergroup chat message
 
 if message.chat.type == “channel”:
 	# channel message
