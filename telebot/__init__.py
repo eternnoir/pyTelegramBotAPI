@@ -118,6 +118,9 @@ class TeleBot:
             logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
+        self.process_new_updates(updates)
+
+    def process_new_updates(self, updates):
         new_messages = []
         new_inline_querys = []
         new_chosen_inline_results = []
