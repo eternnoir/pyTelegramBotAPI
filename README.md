@@ -471,6 +471,8 @@ Get help. Discuss. Chat.
 * [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) - aRandomStranger
+* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) - GabrielRF
+* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) - GabrielRF
 
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
