@@ -470,10 +470,12 @@ Get help. Discuss. Chat.
 * [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
 * [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
-* [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) - aRandomStranger
-* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) - GabrielRF
-* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) - GabrielRF
 
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
+* [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by aRandomStranger
+* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by GabrielRF
+* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) by GabrielRF
+* [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by Tronikart - Multifunctional Telegram Bot RadRetroRobot.
+
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
