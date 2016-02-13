@@ -473,9 +473,10 @@ Get help. Discuss. Chat.
 
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
-* [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by aRandomStranger
-* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by GabrielRF
-* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) by GabrielRF
-* [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by Tronikart - Multifunctional Telegram Bot RadRetroRobot.
+* [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
+* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF*
+* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) by *GabrielRF*
+* [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
+* [SiteAlert bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie* 
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
