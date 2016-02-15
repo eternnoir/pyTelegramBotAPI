@@ -267,7 +267,7 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
         payload['is_personal'] = is_personal
     if next_offset:
         payload['next_offset'] = next_offset
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 def _convert_inline_results(results):
