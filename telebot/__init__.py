@@ -524,40 +524,64 @@ class TeleBot:
         :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
         """
 
-        def decorator(fn):
-            handler_dict = {'function': fn}
-            filters = {'content_types': content_types}
-            if regexp:
-                filters['regexp'] = regexp
-            if func:
-                filters['lambda'] = func
-            if commands:
-                filters['commands'] = commands
-            handler_dict['filters'] = filters
-            self.message_handlers.append(handler_dict)
-            return fn
+        def decorator(handler):
+            self.add_message_handler(handler, commands, regexp, func, content_types)
+            return handler
 
         return decorator
+
+    def add_message_handler(self, handler, commands=None, regexp=None, func=None, content_types=None):
+        if content_types is None:
+            content_types = ['text']
+
+        filters = {'content_types': content_types}
+        if regexp:
+            filters['regexp'] = regexp
+        if func:
+            filters['lambda'] = func
+        if commands:
+            filters['commands'] = commands
+
+        handler_dict = {
+            'function': handler,
+            'filters': filters
+        }
+
+        self.message_handlers.append(handler_dict)
 
     def inline_handler(self, func):
-        def decorator(fn):
-            handler_dict = {'function': fn}
-            filters = {'lambda': func}
-            handler_dict['filters'] = filters
-            self.inline_handlers.append(handler_dict)
-            return fn
+        def decorator(handler):
+            self.add_inline_handler(handler, func)
+            return handler
 
         return decorator
+
+    def add_inline_handler(self, handler, func):
+        filters = {'lambda': func}
+
+        handler_dict = {
+            'function': handler,
+            'filters': filters
+        }
+
+        self.inline_handlers.append(handler_dict)
 
     def chosen_inline_handler(self, func):
-        def decorator(fn):
-            handler_dict = {'function': fn}
-            filters = {'lambda': func}
-            handler_dict['filters'] = filters
-            self.chosen_inline_handlers.append(handler_dict)
-            return fn
+        def decorator(handler):
+            self.add_chosen_inline_handler(handler, func)
+            return handler
 
         return decorator
+
+    def add_chosen_inline_handler(self, handler, func):
+        filters = {'lambda': func}
+
+        handler_dict = {
+            'function': handler,
+            'filters': filters
+        }
+
+        self.chosen_inline_handlers.append(handler_dict)
 
     @staticmethod
     def _test_message_handler(message_handler, message):
