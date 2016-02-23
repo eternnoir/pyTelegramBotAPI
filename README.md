@@ -478,5 +478,6 @@ Get help. Discuss. Chat.
 * [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) by *GabrielRF*
 * [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
 * [League of Legends bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie* 
+* [NeoBot](https://github.com/neoranger/NeoBot) by *neoranger*
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
