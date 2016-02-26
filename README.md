@@ -476,7 +476,7 @@ Get help. Discuss. Chat.
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
 * [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF*
 * [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) by *GabrielRF*
-* [Telegram Proxy Bot](https://bitbucket.org/master_groosha/telegram-proxy-bot) by *GabrielRF* - A simple BITM (bot-in-the-middle) for Telegram acting as some kind of "proxy".
+* [Telegram Proxy Bot](https://bitbucket.org/master_groosha/telegram-proxy-bot) by *Groosha* - A simple BITM (bot-in-the-middle) for Telegram acting as some kind of "proxy".
 * [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
 * [League of Legends bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie* 
 * [NeoBot](https://github.com/neoranger/NeoBot) by *neoranger*
