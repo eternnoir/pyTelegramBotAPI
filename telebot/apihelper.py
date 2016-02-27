@@ -81,7 +81,7 @@ def download_file(token, file_path):
 
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-                 parse_mode=None):
+                 parse_mode=None, disable_notification=None):
     """
     Use this method to send text messages. On success, the sent Message is returned.
     :param token:
@@ -102,6 +102,8 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
         payload['reply_markup'] = _convert_markup(reply_markup)
     if parse_mode:
         payload['parse_mode'] = parse_mode
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -139,13 +141,16 @@ def get_user_profile_photos(token, user_id, offset=None, limit=None):
     return _make_request(token, method_url, params=payload)
 
 
-def forward_message(token, chat_id, from_chat_id, message_id):
+def forward_message(token, chat_id, from_chat_id, message_id, disable_notification=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload)
 
 
-def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
+def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
+               disable_notification=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -159,16 +164,21 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
+def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
+                  disable_notification=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload)
 
 
@@ -178,7 +188,8 @@ def send_chat_action(token, chat_id, action):
     return _make_request(token, method_url, params=payload)
 
 
-def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
+def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+               disable_notification=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -194,10 +205,13 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
+def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None,
+               disable_notification=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -211,11 +225,13 @@ def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, r
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_audio(token, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None):
+               reply_markup=None, disable_notification=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -233,10 +249,12 @@ def send_audio(token, chat_id, audio, duration=None, performer=None, title=None,
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None):
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -248,6 +266,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 

@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
-        '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
+    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
 )
 
 console_output_handler = logging.StreamHandler(sys.stderr)
@@ -182,9 +182,9 @@ class TeleBot:
 
         polling_thread = util.WorkerThread(name="PollingThread")
         or_event = util.OrEvent(
-                polling_thread.done_event,
-                polling_thread.exception_event,
-                self.worker_pool.exception_event
+            polling_thread.done_event,
+            polling_thread.exception_event,
+            self.worker_pool.exception_event
         )
 
         while not self.__stop_polling.wait(interval):
@@ -277,7 +277,7 @@ class TeleBot:
         return types.UserProfilePhotos.de_json(result)
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-                     parse_mode=None):
+                     parse_mode=None, disable_notification=None):
         """
         Use this method to send text messages.
 
@@ -290,23 +290,27 @@ class TeleBot:
         :param reply_to_message_id:
         :param reply_markup:
         :param parse_mode:
+        :param disable_notification: Boolean, Optional. Sends the message silently.
         :return: API reply.
         """
         return types.Message.de_json(
-                apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
-                                       reply_markup, parse_mode))
+            apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
+                                   reply_markup, parse_mode, disable_notification))
 
-    def forward_message(self, chat_id, from_chat_id, message_id):
+    def forward_message(self, chat_id, from_chat_id, message_id, disable_notification=None):
         """
         Use this method to forward messages of any kind.
+        :param disable_notification:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
         :return: API reply.
         """
-        return types.Message.de_json(apihelper.forward_message(self.token, chat_id, from_chat_id, message_id))
+        return types.Message.de_json(
+            apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification))
 
-    def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None):
+    def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
+                   disable_notification=None):
         """
         Use this method to send photos.
         :param chat_id:
@@ -317,10 +321,11 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-                apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup))
+            apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
+                                 disable_notification))
 
     def send_audio(self, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
-                   reply_markup=None):
+                   reply_markup=None, disable_notification=None):
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
         :param chat_id:Unique identifier for the message recipient
@@ -333,10 +338,11 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-                apihelper.send_audio(self.token, chat_id, audio, duration, performer, title, reply_to_message_id,
-                                     reply_markup))
+            apihelper.send_audio(self.token, chat_id, audio, duration, performer, title, reply_to_message_id,
+                                 reply_markup, disable_notification))
 
-    def send_voice(self, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None):
+    def send_voice(self, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None,
+                   disable_notification=None):
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
         :param chat_id:Unique identifier for the message recipient.
@@ -347,9 +353,10 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-                apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup))
+            apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup,
+                                 disable_notification))
 
-    def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+    def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None, disable_notification=None):
         """
         Use this method to send general files.
         :param chat_id:
@@ -359,9 +366,10 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-                apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup))
+            apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
+                                disable_notification))
 
-    def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None):
+    def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None, disable_notification=None):
         """
         Use this method to send .webp stickers.
         :param chat_id:
@@ -371,9 +379,11 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-                apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup))
+            apihelper.send_data(self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup,
+                                disable_notification))
 
-    def send_video(self, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None):
+    def send_video(self, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+                   disable_notification=None):
         """
         Use this method to send video files, Telegram clients support mp4 videos.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
@@ -385,9 +395,11 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-                apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup))
+            apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
+                                 disable_notification))
 
-    def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None):
+    def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
+                      disable_notification=None):
         """
         Use this method to send point on the map.
         :param chat_id:
@@ -398,7 +410,8 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-                apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup))
+            apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup,
+                                    disable_notification))
 
     def send_chat_action(self, chat_id, action):
         """
