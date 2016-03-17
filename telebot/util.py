@@ -239,4 +239,4 @@ def extract_arguments(text):
     """
     regexp = re.("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
     result = regexp.match(text)
-    return result.group(2) if if is_command(text) else None
+    return result.group(2) if is_command(text) else None
