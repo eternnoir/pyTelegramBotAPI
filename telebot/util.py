@@ -224,3 +224,19 @@ def OrEvent(*events):
     or_event.wait = busy_wait
     changed()
     return or_event
+
+def extract_arguments(text):
+    """
+    Returns the argument after the command.
+    
+    Examples:
+    extract_arguments("/get name"): 'name'
+    extract_arguments("/get"): ''
+    extract_arguments("/get@botName name"): 'name'
+    
+    :param text: String to extract the arguments from a command
+    :return: the arguments if `text` is a command (according to is_command), else None.
+    """
+    regexp = re.("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
+    result = regexp.match(text)
+    return result.group(2) if if is_command(text) else None
