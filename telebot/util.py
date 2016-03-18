@@ -237,6 +237,6 @@ def extract_arguments(text):
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
     """
-    regexp = re.("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
+    regexp = re.compile("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
