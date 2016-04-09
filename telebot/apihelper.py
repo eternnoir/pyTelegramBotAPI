@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import time
 import telebot
 from telebot import types
 from telebot import util
@@ -10,8 +11,13 @@ logger = telebot.logger
 API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
+# in seconds
+CONNECT_TIMEOUT = 3.5
+READ_TIMEOUT = 9999
 
-def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
+
+def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL,
+                  timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retry=10):
     """
     Makes a request to the Telegram API.
     :param token: The bot's API token. (Created with @BotFather)
@@ -19,13 +25,47 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     :param method: HTTP method to be used. Defaults to 'get'.
     :param params: Optional parameters. Should be a dictionary with key-value pairs.
     :param files: Optional files.
+    :param base_url:
+    :param timeout: see `_request_with_timeout`.
+    :param max_retry: see `_request_with_timeout`.
     :return: The result parsed to a JSON dictionary.
     """
     request_url = base_url.format(token, method_name)
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
-    result = requests.request(method, request_url, params=params, files=files)
+    result = _request_with_timeout(method, request_url, params=params, files=files,
+                                   timeout=timeout, max_retry=max_retry)
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
+
+
+def _request_with_timeout(method, request_url, params=None, files=None,
+                          timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retry=10):
+    """
+    When network connection unreliable, try at most `max_retry` times until success.
+
+    :param method: see `_make_request`.
+    :param request_url: url to be passed to `requests.request`.
+    :param params: see `_make_request`.
+    :param files: see `_make_request`.
+    :param timeout: see `requests.request(timeout=...)`. Defaults to (3.5, 9999).
+    :param max_retry: number of attempts will be made before giving up. Defaults to 10.
+    :return: result of `requests.request` invocation.
+    :raises Exception: pass through any `requests.request` exception when `max_retry` exhausts.
+    """
+    delay = .25
+    while True:
+        try:
+            return requests.request(method, request_url, params=params,
+                                    files=files, timeout=timeout)
+        except Exception as e:
+            logger.debug("Request: connection failed.", exc_info=1)
+            if max_retry <= 0:
+                raise
+            else:
+                max_retry -= 1
+                logger.debug("Request: Retry in {} seconds".format(delay))
+                time.sleep(delay)
+                delay *= 2
 
 
 def _check_result(method_name, result):
@@ -126,9 +166,10 @@ def get_updates(token, offset=None, limit=None, timeout=None):
         payload['offset'] = offset
     if limit:
         payload['limit'] = limit
-    if timeout:
+    if timeout is not None:
         payload['timeout'] = timeout
-    return _make_request(token, method_url, params=payload)
+        timeout += 10  # for data transfer threshold
+    return _make_request(token, method_url, params=payload, timeout=(CONNECT_TIMEOUT, timeout))
 
 
 def get_user_profile_photos(token, user_id, offset=None, limit=None):
