@@ -315,7 +315,7 @@ class TestTeleBot:
         tb = telebot.TeleBot(TOKEN)
         lat = 26.3875591
         lon = -161.2901042
-        ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address",disable_notification=True)
+        ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address", disable_notification=True)
         assert ret_msg.venue.title == "Test Venue"
 
     def test_Chat(self):
@@ -324,6 +324,12 @@ class TestTeleBot:
         msg = tb.send_message(CHAT_ID, 'Test')
         assert me.id == msg.from_user.id
         assert msg.chat.id == int(CHAT_ID)
+
+    def test_edit_message_text(self):
+        tb = telebot.TeleBot(TOKEN)
+        msg = tb.send_message(CHAT_ID, 'Test')
+        new_msg = tb.edit_message_text(CHAT_ID, 'Edit test', message_id=msg.message_id)
+        assert new_msg.text == 'Edit test'
 
     def create_text_message(self, text):
         params = {'text': text}

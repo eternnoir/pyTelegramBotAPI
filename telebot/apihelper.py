@@ -311,6 +311,27 @@ def unban_chat_member(token, chat_id, user_id):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+# Updating messages
+
+def edit_message_text(token, chat_id, text, message_id=None, inline_message_id=None, parse_mode=None,
+                      disable_web_page_preview=None, reply_markup=None):
+    method_url = r'editMessageText'
+    payload = {'chat_id': chat_id, 'text': text}
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if disable_web_page_preview:
+        payload['disable_web_page_preview'] = disable_web_page_preview
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
+# InlineQuery
+
 def answer_callback_query(token, callback_query_id, text=None, show_alert=None):
     method_url = 'answerCallbackQuery'
     payload = {'callback_query_id': callback_query_id}
