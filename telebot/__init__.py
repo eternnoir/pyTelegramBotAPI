@@ -460,10 +460,11 @@ class TeleBot:
     def answer_callback_query(self, callback_query_id, text=None, show_alert=None):
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert)
 
-    def edit_message_text(self, chat_id, text, message_id=None, inline_message_id=None, parse_mode=None,
+    def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
-        return types.Message.de_json(apihelper.edit_message_text(self.token, chat_id, text, message_id, inline_message_id, parse_mode,
-                                           disable_web_page_preview, reply_markup))
+        return types.Message.de_json(
+            apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
+                                        disable_web_page_preview, reply_markup))
 
     def reply_to(self, message, text, **kwargs):
         """

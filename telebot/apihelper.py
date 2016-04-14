@@ -313,10 +313,12 @@ def unban_chat_member(token, chat_id, user_id):
 
 # Updating messages
 
-def edit_message_text(token, chat_id, text, message_id=None, inline_message_id=None, parse_mode=None,
+def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                       disable_web_page_preview=None, reply_markup=None):
     method_url = r'editMessageText'
-    payload = {'chat_id': chat_id, 'text': text}
+    payload = {'text': text}
+    if chat_id:
+        payload['chat_id'] = chat_id
     if message_id:
         payload['message_id'] = message_id
     if inline_message_id:
