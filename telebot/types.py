@@ -276,9 +276,7 @@ class MessageEntity(JsonDeserializable):
         type = obj['type']
         offset = obj['offset']
         length = obj['length']
-        url = None
-        if 'url' in obj:
-            url = obj['url']
+        url = obj.get('url')
         return cls(type, offset, length, url)
 
     def __init__(self, type, offset, length, url=None):
@@ -356,7 +354,7 @@ class Document(JsonDeserializable):
         file_size = obj.get('file_size')
         return cls(file_id, thumb, file_name, mime_type, file_size)
 
-    def __init__(self, file_id, thumb, file_name=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
         self.thumb = thumb
         self.file_name = file_name
@@ -447,9 +445,7 @@ class Venue(JsonDeserializable):
         location = obj['location']
         title = obj['title']
         address = obj['address']
-        foursquare_id = None
-        if foursquare_id in obj:
-            foursquare_id = obj['foursquare_id']
+        foursquare_id = obj.get('foursquare_id')
         return cls(location, title, address, foursquare_id)
 
     def __init__(self, location, title, address, foursquare_id=None):
@@ -525,12 +521,12 @@ class ReplyKeyboardMarkup(JsonSerializable):
         when row_width is set to 1.
         When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
         See https://core.telegram.org/bots/api#replykeyboardmarkup
-        :param args: strings to append to the keyboard
+        :param args: KeyboardButton to append to the keyboard
         """
         i = 1
         row = []
-        for string in args:
-            row.append(string)
+        for button in args:
+            row.append(button.to_json())
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -540,7 +536,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
 
     def row(self, *args):
         """
-        Adds a list of strings to the keyboard. This function does not consider row_width.
+        Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
         ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
         See https://core.telegram.org/bots/api#replykeyboardmarkup
         :param args: strings
@@ -566,6 +562,108 @@ class ReplyKeyboardMarkup(JsonSerializable):
             json_dict['selective'] = True
 
         return json.dumps(json_dict)
+
+
+class KeyboardButton(JsonSerializable):
+    def __init__(self, text, request_contact=None, request_location=None):
+        self.text = text
+        self.request_contact = request_contact
+        self.request_location = request_location
+
+    def to_json(self):
+        json_dic = {'text': self.text}
+        if self.request_contact:
+            json_dic['request_contact'] = self.request_contact
+        if self.request_location:
+            json_dic['request_location'] = self.request_location
+
+        return json.dump(json_dic)
+
+
+class InlineKeyboardMarkup(JsonSerializable):
+    def __init__(self, row_width=3):
+        self.row_width = row_width
+
+        self.keyboard = []
+
+    def add(self, *args):
+        """
+        This function adds strings to the keyboard, while not exceeding row_width.
+        E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
+        when row_width is set to 1.
+        When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
+        See https://core.telegram.org/bots/api#replykeyboardmarkup
+        :param args: KeyboardButton to append to the keyboard
+        """
+        i = 1
+        row = []
+        for button in args:
+            row.append(button.to_json())
+            if i % self.row_width == 0:
+                self.keyboard.append(row)
+                row = []
+            i += 1
+        if len(row) > 0:
+            self.keyboard.append(row)
+
+    def row(self, *args):
+        """
+        Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
+        ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
+        See https://core.telegram.org/bots/api#inlinekeyboardmarkup
+        :param args: strings
+        :return: self, to allow function chaining.
+        """
+        self.keyboard.append(args)
+        return self
+
+    def to_json(self):
+        """
+        Converts this object to its json representation following the Telegram API guidelines described here:
+        https://core.telegram.org/bots/api#inlinekeyboardmarkup
+        :return:
+        """
+        json_dict = {'inline_keyboard': self.keyboard}
+        return json.dumps(json_dict)
+
+
+class InlineKeyboardButton(JsonSerializable):
+    def __init__(self, text, url=None, callback_data=None, switch_inline_query=None):
+        self.text = text
+        self.url = url
+        self.callback_data = callback_data
+        self.switch_inline_query = switch_inline_query
+
+    def to_json(self):
+        json_dic = {'text': self.text}
+        if self.url:
+            json_dic['url'] = self.url
+        if self.callback_data:
+            json_dic['callback_data'] = self.callback_data
+        if self.switch_inline_query:
+            json_dic['switch_inline_quer'] = self.switch_inline_quer
+        return json.dump(json_dic)
+
+
+class CallbackQuery(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        id = obj['id']
+        from_user = User.de_json(obj['from'])
+        message = None
+        if 'message' in obj:
+            message = Message.de_json(obj['message'])
+        inline_message_id = obj.get('inline_message_id')
+        data = obj['data']
+        return cls(id, from_user, data, message, inline_message_id)
+
+    def __init__(self, id, from_user, data, message=None, inline_message_id=None):
+        self.id = id
+        self.from_user = from_user
+        self.message = message
+        self.data = data
+        self.inline_message_id = inline_message_id
 
 
 # InlineQuery
