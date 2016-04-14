@@ -188,24 +188,28 @@ class Message(JsonDeserializable):
         if 'venue' in obj:
             opts['venue'] = Venue.de_json(obj['venue'])
             content_type = 'venue'
-        if 'new_chat_participant' in obj:
-            opts['new_chat_participant'] = User.de_json(obj['new_chat_participant'])
-            content_type = 'new_chat_participant'
-        if 'left_chat_participant' in obj:
-            opts['left_chat_participant'] = User.de_json(obj['left_chat_participant'])
-            content_type = 'left_chat_participant'
+        if 'new_chat_member' in obj:
+            opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
+        if 'left_chat_member' in obj:
+            opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
         if 'new_chat_title' in obj:
             opts['new_chat_title'] = obj['new_chat_title']
-            content_type = 'new_chat_title'
         if 'new_chat_photo' in obj:
-            opts['new_chat_photo'] = obj['new_chat_photo']
-            content_type = 'new_chat_photo'
+            opts['new_chat_photo'] = Message.parse_photo(obj['new_chat_photo'])
         if 'delete_chat_photo' in obj:
             opts['delete_chat_photo'] = obj['delete_chat_photo']
-            content_type = 'delete_chat_photo'
         if 'group_chat_created' in obj:
             opts['group_chat_created'] = obj['group_chat_created']
-            content_type = 'group_chat_created'
+        if 'supergroup_chat_created' in obj:
+            opts['supergroup_chat_created'] = obj['supergroup_chat_created']
+        if 'channel_chat_created' in obj:
+            opts['channel_chat_created'] = obj['channel_chat_created']
+        if 'migrate_to_chat_id' in obj:
+            opts['migrate_to_chat_id'] = obj['migrate_to_chat_id']
+        if 'migrate_from_chat_id' in obj:
+            opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
+        if 'pinned_message' in obj:
+            opts['pinned_message'] = Message.de_json(obj['pinned_message'])
         return cls(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
@@ -230,30 +234,37 @@ class Message(JsonDeserializable):
         return ret
 
     def __init__(self, message_id, from_user, date, chat, content_type, options):
-        self.chat = chat
-        self.date = date
-        self.from_user = from_user
-        self.message_id = message_id
         self.content_type = content_type
+        self.message_id = message_id
+        self.from_user = from_user
+        self.date = date
+        self.chat = chat
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
         self.text = None
+        self.entities = None
         self.audio = None
-        self.voice = None
         self.document = None
         self.photo = None
         self.sticker = None
         self.video = None
-        self.location = None
+        self.voice = None
+        self.caption = None
         self.contact = None
-        self.new_chat_participant = None
-        self.left_chat_participant = None
+        self.location = None
+        self.venue = None
+        self.new_chat_member = None
+        self.left_chat_member = None
         self.new_chat_title = None
         self.new_chat_photo = None
         self.delete_chat_photo = None
         self.group_chat_created = None
-        self.caption = None
+        self.supergroup_chat_created = None
+        self.channel_chat_created = None
+        self.migrate_to_chat_id = None
+        self.migrate_from_chat_id = None
+        self.pinned_message = None
         for key in options:
             setattr(self, key, options[key])
 
