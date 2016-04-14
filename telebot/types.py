@@ -20,6 +20,22 @@ class JsonSerializable:
         raise NotImplementedError
 
 
+class Dictionaryable:
+    """
+    Subclasses of this class are guaranteed to be able to be converted to dictionary.
+    All subclasses of this class must override to_dic.
+    """
+
+    def to_dic(self):
+        """
+        Returns a JSON string representation of this class.
+
+        This function must be overridden by subclasses.
+        :return: a JSON formatted string.
+        """
+        raise NotImplementedError
+
+
 class JsonDeserializable:
     """
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
@@ -564,14 +580,14 @@ class ReplyKeyboardMarkup(JsonSerializable):
         return json.dumps(json_dict)
 
 
-class KeyboardButton(JsonSerializable):
+class KeyboardButton(Dictionaryable, JsonSerializable):
     def __init__(self, text, request_contact=None, request_location=None):
         self.text = text
         self.request_contact = request_contact
         self.request_location = request_location
 
     def to_json(self):
-       return json.dumps(self.to_dic())
+        return json.dumps(self.to_dic())
 
     def to_dic(self):
         json_dic = {'text': self.text}
@@ -582,8 +598,7 @@ class KeyboardButton(JsonSerializable):
         return json_dic
 
 
-
-class InlineKeyboardMarkup(JsonSerializable):
+class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
     def __init__(self, row_width=3):
         self.row_width = row_width
 
@@ -630,7 +645,6 @@ class InlineKeyboardMarkup(JsonSerializable):
         return json.dumps(json_dict)
 
 
-
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None):
         self.text = text
@@ -650,6 +664,7 @@ class InlineKeyboardButton(JsonSerializable):
         if self.switch_inline_query:
             json_dic['switch_inline_quer'] = self.switch_inline_quer
         return json_dic
+
 
 class CallbackQuery(JsonDeserializable):
     @classmethod
@@ -701,6 +716,60 @@ class InlineQuery(JsonDeserializable):
         self.offset = offset
 
 
+class InputTextMessageContent(Dictionaryable):
+    def __init__(self, message_text, parse_mode=None, disable_web_page_preview=None):
+        self.message_text = message_text
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+
+    def to_dic(self):
+        json_dic = {'message_text': self.message_text}
+        if self.parse_mode:
+            json_dic['parse_mode'] = self.parse_mode
+        if self.disable_web_page_preview:
+            json_dic['disable_web_page_preview'] = self.disable_web_page_preview
+        return json_dic
+
+
+class InputLocationMessageContent(Dictionaryable):
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+
+    def to_dic(self):
+        json_dic = {'latitude': self.latitudet, 'longitude': self.longitude}
+        return json_dic
+
+
+class InputVenueMessageContent(Dictionaryable):
+    def __init__(self, latitude, longitude, title, address, foursquare_id=None):
+        self.latitude = latitude
+        self.longitude = longitude
+        self.title = title
+        self.address = address
+        self.foursquare_id = foursquare_id
+
+    def to_dic(self):
+        json_dic = {'latitude': self.latitude, 'longitude': self.longitude, 'title': self.title,
+                    'address': self.address}
+        if self.foursquare_id:
+            json_dic['foursquare_id'] = self.foursquare_id
+        return json_dic
+
+
+class InputContactMessageContent(Dictionaryable):
+    def __init__(self, phone_number, first_name, last_name=None):
+        self.phone_number = phone_number
+        self.first_name = first_name
+        self.last_name = last_name
+
+    def to_dic(self):
+        json_dic = {'phone_numbe': self.phone_number, 'first_name': self.first_name}
+        if self.last_name:
+            json_dic['last_name'] = self.last_name
+        return json_dic
+
+
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
     def de_json(cls, json_type):
@@ -719,9 +788,6 @@ class ChosenInlineResult(JsonDeserializable):
         :param query: String The query that was used to obtain the result.
         :return: ChosenInlineResult Object.
         """
-        self.result_id = result_id
-        self.from_user = from_user
-        self.query = query
 
 
 class InlineQueryResultArticle(JsonSerializable):
@@ -975,4 +1041,3 @@ class InlineQueryResultVideo(JsonSerializable):
         if self.description:
             json_dict['description'] = self.description
         return json.dumps(json_dict)
-
