@@ -426,6 +426,25 @@ class Location(JsonDeserializable):
         self.latitude = latitude
 
 
+class Venue(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        location = obj['location']
+        title = obj['title']
+        address = obj['address']
+        foursquare_id = None
+        if foursquare_id in obj:
+            foursquare_id = obj['foursquare_id']
+        return cls(location, title, address, foursquare_id)
+
+    def __init__(self, location, title, address, foursquare_id=None):
+        self.location = location
+        self.title = title
+        self.address = address
+        self.foursquare_id = foursquare_id
+
+
 class UserProfilePhotos(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
