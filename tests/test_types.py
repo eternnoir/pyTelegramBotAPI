@@ -153,8 +153,5 @@ def test_InlineQueryResultCachedPhoto_with_markup():
     assert 'Fileid' in json_str
     assert 'Title' in json_str
     assert 'caption' not in json_str
-    assert 'reply_markup' not in json_str
-
-
-test_InlineQueryResultCachedPhoto_with_markup()
+    assert 'reply_markup' in json_str
 
