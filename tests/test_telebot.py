@@ -236,6 +236,24 @@ class TestTeleBot:
         ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True)
         assert ret_msg.message_id
 
+    def test_send_message_with_markup(self):
+        text = 'CI Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        markup = types.ReplyKeyboardMarkup()
+        markup.add(types.KeyboardButton("1"))
+        markup.add(types.KeyboardButton("2"))
+        ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True, reply_markup=markup)
+        assert ret_msg.message_id
+
+    def test_send_message_with_inlinemarkup(self):
+        text = 'CI Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
+        markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
+        ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True, reply_markup=markup)
+        assert ret_msg.message_id
+
     def test_forward_message(self):
         text = 'CI forward_message Test Message'
         tb = telebot.TeleBot(TOKEN)
@@ -309,3 +327,5 @@ class TestTeleBot:
     def test_not_string(self):
         i1 = 10
         assert not util.is_string(i1)
+
+

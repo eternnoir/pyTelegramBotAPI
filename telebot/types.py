@@ -526,7 +526,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         i = 1
         row = []
         for button in args:
-            row.append(button.to_json())
+            row.append(button.to_dic())
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -571,13 +571,16 @@ class KeyboardButton(JsonSerializable):
         self.request_location = request_location
 
     def to_json(self):
+       return json.dumps(self.to_dic())
+
+    def to_dic(self):
         json_dic = {'text': self.text}
         if self.request_contact:
             json_dic['request_contact'] = self.request_contact
         if self.request_location:
             json_dic['request_location'] = self.request_location
+        return json_dic
 
-        return json.dump(json_dic)
 
 
 class InlineKeyboardMarkup(JsonSerializable):
@@ -598,7 +601,7 @@ class InlineKeyboardMarkup(JsonSerializable):
         i = 1
         row = []
         for button in args:
-            row.append(button.to_json())
+            row.append(button.to_dic())
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -627,6 +630,7 @@ class InlineKeyboardMarkup(JsonSerializable):
         return json.dumps(json_dict)
 
 
+
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None):
         self.text = text
@@ -635,6 +639,9 @@ class InlineKeyboardButton(JsonSerializable):
         self.switch_inline_query = switch_inline_query
 
     def to_json(self):
+        return json.dumps(self.to_dic())
+
+    def to_dic(self):
         json_dic = {'text': self.text}
         if self.url:
             json_dic['url'] = self.url
@@ -642,8 +649,7 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['callback_data'] = self.callback_data
         if self.switch_inline_query:
             json_dic['switch_inline_quer'] = self.switch_inline_quer
-        return json.dump(json_dic)
-
+        return json_dic
 
 class CallbackQuery(JsonDeserializable):
     @classmethod
@@ -969,3 +975,4 @@ class InlineQueryResultVideo(JsonSerializable):
         if self.description:
             json_dict['description'] = self.description
         return json.dumps(json_dict)
+
