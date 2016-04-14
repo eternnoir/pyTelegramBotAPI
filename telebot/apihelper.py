@@ -10,6 +10,9 @@ logger = telebot.logger
 API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
+CONNECT_TIMEOUT = 3.5
+READ_TIMEOUT = 9999
+
 
 def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
     """
@@ -23,7 +26,10 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     """
     request_url = base_url.format(token, method_name)
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
-    result = requests.request(method, request_url, params=params, files=files)
+    read_timeout = READ_TIMEOUT
+    if params:
+        if 'timeout' in params: read_timeout = params['timeout'] + 10
+    result = requests.request(method, request_url, params=params, files=files, timeout=(CONNECT_TIMEOUT, read_timeout))
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
 
