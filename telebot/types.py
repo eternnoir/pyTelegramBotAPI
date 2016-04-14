@@ -246,6 +246,25 @@ class Message(JsonDeserializable):
             setattr(self, key, options[key])
 
 
+class MessageEntity(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        type = obj['type']
+        offset = obj['offset']
+        length = obj['length']
+        url = None
+        if 'url' in obj:
+            url = obj['url']
+        return cls(type, offset, length, url)
+
+    def __init__(self, type, offset, length, url=None):
+        self.type = type
+        self.offset = offset
+        self.length = length
+        self.url = url
+
+
 class PhotoSize(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
@@ -506,6 +525,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
 
         return json.dumps(json_dict)
 
+
+# InlineQuery
 
 class InlineQuery(JsonDeserializable):
     @classmethod
