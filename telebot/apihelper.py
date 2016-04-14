@@ -182,6 +182,21 @@ def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None,
     return _make_request(token, method_url, params=payload)
 
 
+def send_venue(token, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
+               reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendVenue'
+    payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
+    if foursquare_id:
+        payload['foursquare_id'] = foursquare_id
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
 def send_chat_action(token, chat_id, action):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}

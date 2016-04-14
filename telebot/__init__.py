@@ -413,6 +413,13 @@ class TeleBot:
             apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup,
                                     disable_notification))
 
+    def send_venue(self, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
+                   reply_to_message_id=None, reply_markup=None):
+        return types.Message.de_json(
+            apihelper.send_venue(self.token, chat_id, latitude, longitude, title, address, foursquare_id,
+                                 disable_notification, reply_to_message_id, reply_markup)
+        )
+
     def send_chat_action(self, chat_id, action):
         """
         Use this method when you need to tell the user that something is happening on the bot's side.

@@ -304,6 +304,20 @@ class TestTeleBot:
         assert int(ret_msg.location.longitude) == int(lon)
         assert int(ret_msg.location.latitude) == int(lat)
 
+    def test_send_venue(self):
+        tb = telebot.TeleBot(TOKEN)
+        lat = 26.3875591
+        lon = -161.2901042
+        ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address")
+        assert ret_msg.venue.title == "Test Venue"
+
+    def test_send_venue_dis_noti(self):
+        tb = telebot.TeleBot(TOKEN)
+        lat = 26.3875591
+        lon = -161.2901042
+        ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address",disable_notification=True)
+        assert ret_msg.venue.title == "Test Venue"
+
     def test_Chat(self):
         tb = telebot.TeleBot(TOKEN)
         me = tb.get_me()
@@ -327,5 +341,3 @@ class TestTeleBot:
     def test_not_string(self):
         i1 = 10
         assert not util.is_string(i1)
-
-
