@@ -415,6 +415,19 @@ class TeleBot:
 
     def send_venue(self, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
                    reply_to_message_id=None, reply_markup=None):
+        """
+        Use this method to send information about a venue.
+        :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
+        :param latitude: Float : Latitude of the venue
+        :param longitude: Float : Longitude of the venue
+        :param title: String : Name of the venue
+        :param address: String : Address of the venue
+        :param foursquare_id: String : Foursquare identifier of the venue
+        :param disable_notification:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return:
+        """
         return types.Message.de_json(
             apihelper.send_venue(self.token, chat_id, latitude, longitude, title, address, foursquare_id,
                                  disable_notification, reply_to_message_id, reply_markup)
@@ -431,6 +444,21 @@ class TeleBot:
         :return: API reply. :type: boolean
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
+
+    def kick_chat_member(self, chat_id, user_id):
+        """
+        Use this method to kick a user from a group or a supergroup.
+        :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
+        :param user_id: Int : Unique identifier of the target user
+        :return: types.Message
+        """
+        return apihelper.kick_chat_member(self.token, chat_id, user_id)
+
+    def unban_chat_member(self, chat_id, user_id):
+        return apihelper.unban_chat_member(self.token, chat_id, user_id)
+
+    def answer_callback_query(self, callback_query_id, text=None, show_alert=None):
+        return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert)
 
     def reply_to(self, message, text, **kwargs):
         """

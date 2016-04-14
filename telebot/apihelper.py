@@ -299,6 +299,28 @@ def get_method_by_type(data_type):
         return r'sendSticker'
 
 
+def kick_chat_member(token, chat_id, user_id):
+    method_url = 'kickChatMember'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def unban_chat_member(token, chat_id, user_id):
+    method_url = 'unbanChatMember'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def answer_callback_query(token, callback_query_id, text=None, show_alert=None):
+    method_url = 'answerCallbackQuery'
+    payload = {'callback_query_id': callback_query_id}
+    if text:
+        payload['text'] = text
+    if show_alert:
+        payload['show_alert'] = show_alert
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
     method_url = 'answerInlineQuery'
     payload = {'inline_query_id': inline_query_id, 'results': _convert_inline_results(results)}
