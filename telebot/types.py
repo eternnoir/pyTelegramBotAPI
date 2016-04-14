@@ -179,12 +179,15 @@ class Message(JsonDeserializable):
             content_type = 'voice'
         if 'caption' in obj:
             opts['caption'] = obj['caption']
-        if 'location' in obj:
-            opts['location'] = Location.de_json(obj['location'])
-            content_type = 'location'
         if 'contact' in obj:
             opts['contact'] = Contact.de_json(json.dumps(obj['contact']))
             content_type = 'contact'
+        if 'location' in obj:
+            opts['location'] = Location.de_json(obj['location'])
+            content_type = 'location'
+        if 'venue' in obj:
+            opts['venue'] = Venue.de_json(obj['venue'])
+            content_type = 'venue'
         if 'new_chat_participant' in obj:
             opts['new_chat_participant'] = User.de_json(obj['new_chat_participant'])
             content_type = 'new_chat_participant'
