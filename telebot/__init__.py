@@ -482,7 +482,8 @@ class TeleBot:
         """
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
 
-    def answer_inline_query(self, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
+    def answer_inline_query(self, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
+                            switch_pm_text=None, switch_pm_parameter=None):
         """
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
@@ -491,9 +492,13 @@ class TeleBot:
         :param cache_time: The maximum amount of time in seconds that the result of the inline query may be cached on the server.
         :param is_personal: Pass True, if results may be cached on the server side only for the user that sent the query.
         :param next_offset: Pass the offset that a client should send in the next query with the same text to receive more results.
+        :param switch_pm_parameter: If passed, clients will display a button with specified text that switches the user
+         to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter
+        :param switch_pm_text: 	Parameter for the start message sent to the bot when user presses the switch button
         :return: True means success.
         """
-        return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset)
+        return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
+                                             switch_pm_text, switch_pm_parameter)
 
     def register_for_reply(self, message, callback):
         """

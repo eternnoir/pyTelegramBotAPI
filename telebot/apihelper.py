@@ -372,7 +372,8 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None):
+def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
+                        switch_pm_text=None, switch_pm_parameter=None):
     method_url = 'answerInlineQuery'
     payload = {'inline_query_id': inline_query_id, 'results': _convert_inline_results(results)}
     if cache_time:
@@ -381,6 +382,10 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
         payload['is_personal'] = is_personal
     if next_offset:
         payload['next_offset'] = next_offset
+    if switch_pm_text:
+        payload['switch_pm_text'] = switch_pm_text
+    if switch_pm_parameter:
+        payload['switch_pm_parameter'] = switch_pm_parameter
     return _make_request(token, method_url, params=payload, method='post')
 
 
