@@ -644,6 +644,10 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         json_dict = {'inline_keyboard': self.keyboard}
         return json.dumps(json_dict)
 
+    def to_dic(self):
+        json_dict = {'inline_keyboard': self.keyboard}
+        return json_dict
+
 
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None):
@@ -1245,6 +1249,7 @@ class BaseInlineQueryResultCached(JsonSerializable):
 class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
     def __init__(self, id, photo_file_id, title=None, description=None, caption=None, reply_markup=None,
                  input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'photo'
         self.id = id
         self.photo_file_id = photo_file_id
@@ -1259,6 +1264,7 @@ class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
 class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
     def __init__(self, id, gif_file_id, title=None, description=None, caption=None, reply_markup=None,
                  input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'gif'
         self.id = id
         self.gif_file_id = gif_file_id
@@ -1270,8 +1276,23 @@ class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
         self.payload_dic['gif_file_id'] = gif_file_id
 
 
+class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
+    def __init__(self, id, mpeg4_file_id, title=None, description=None, caption=None, reply_markup=None,
+                 input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
+        self.type = 'mpeg4_gif'
+        self.id = id
+        self.mpeg4_file_id = mpeg4_file_id
+        self.title = title
+        self.description = description
+        self.caption = caption
+        self.reply_markup = reply_markup
+        self.input_message_content = input_message_content
+        self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
+
 class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
     def __init__(self, id, sticker_file_id, reply_markup=None, input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'sticker'
         self.id = id
         self.sticker_file_id = sticker_file_id
@@ -1283,6 +1304,7 @@ class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
 class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
     def __init__(self, id, document_file_id, title, description=None, caption=None, reply_markup=None,
                  input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'document'
         self.id = id
         self.document_file_id = document_file_id
@@ -1297,6 +1319,7 @@ class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
 class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
     def __init__(self, id, video_file_id, title, description=None, caption=None, reply_markup=None,
                  input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'video'
         self.id = id
         self.video_file_id = video_file_id
@@ -1310,6 +1333,7 @@ class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
 
 class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
     def __init__(self, id, voice_file_id, title, reply_markup=None, input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'voice'
         self.id = id
         self.voice_file_id = voice_file_id
@@ -1321,6 +1345,7 @@ class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
 
 class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
     def __init__(self, id, audio_file_id, reply_markup=None, input_message_content=None):
+        BaseInlineQueryResultCached.__init__(self)
         self.type = 'audio'
         self.id = id
         self.audio_file_id = audio_file_id
