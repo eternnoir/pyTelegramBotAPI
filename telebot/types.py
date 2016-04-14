@@ -144,8 +144,8 @@ class Message(JsonDeserializable):
         from_user = None
         if 'from' in obj:
             from_user = User.de_json(obj['from'])
-        chat = Chat.de_json(obj['chat'])
         date = obj['date']
+        chat = Chat.de_json(obj['chat'])
         content_type = None
         opts = {}
         if 'forward_from' in obj:
@@ -157,12 +157,11 @@ class Message(JsonDeserializable):
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
+        if 'entities' in obj:
+            opts['entities'] = Message.parse_entities(obj['entities'])
         if 'audio' in obj:
             opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
-        if 'voice' in obj:
-            opts['voice'] = Audio.de_json(obj['voice'])
-            content_type = 'voice'
         if 'document' in obj:
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
@@ -175,6 +174,11 @@ class Message(JsonDeserializable):
         if 'video' in obj:
             opts['video'] = Video.de_json(obj['video'])
             content_type = 'video'
+        if 'voice' in obj:
+            opts['voice'] = Audio.de_json(obj['voice'])
+            content_type = 'voice'
+        if 'caption' in obj:
+            opts['caption'] = obj['caption']
         if 'location' in obj:
             opts['location'] = Location.de_json(obj['location'])
             content_type = 'location'
@@ -199,8 +203,6 @@ class Message(JsonDeserializable):
         if 'group_chat_created' in obj:
             opts['group_chat_created'] = obj['group_chat_created']
             content_type = 'group_chat_created'
-        if 'caption' in obj:
-            opts['caption'] = obj['caption']
         return cls(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
@@ -215,6 +217,13 @@ class Message(JsonDeserializable):
         ret = []
         for ps in photo_size_array:
             ret.append(PhotoSize.de_json(ps))
+        return ret
+
+    @classmethod
+    def parse_entities(cls, message_entity_array):
+        ret = []
+        for me in message_entity_array:
+            ret.append(MessageEntity.de_json(me))
         return ret
 
     def __init__(self, message_id, from_user, date, chat, content_type, options):
