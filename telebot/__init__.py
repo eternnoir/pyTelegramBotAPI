@@ -466,6 +466,16 @@ class TeleBot:
             apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                         disable_web_page_preview, reply_markup))
 
+    def edit_message_replay_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+        return types.Message.de_json(
+            apihelper.edit_message_replay_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
+        )
+
+    def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+        return types.Message.de_json(
+            apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id, reply_markup)
+        )
+
     def reply_to(self, message, text, **kwargs):
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`

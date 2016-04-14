@@ -331,6 +331,18 @@ class TestTeleBot:
         new_msg = tb.edit_message_text('Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.text == 'Edit test'
 
+    def test_edit_markup(self):
+        text = 'CI Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
+        markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
+        ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True, reply_markup=markup)
+        markup.add(types.InlineKeyboardButton("Google2", url="http://www.google.com"))
+        markup.add(types.InlineKeyboardButton("Yahoo2", url="http://www.yahoo.com"))
+        new_msg = tb.edit_message_replay_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
+        assert new_msg.message_id
+
     def create_text_message(self, text):
         params = {'text': text}
         chat = types.User(11, 'test')
