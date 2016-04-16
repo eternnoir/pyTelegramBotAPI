@@ -15,6 +15,7 @@
     * [Methods](#methods)
     * [General use of the API](#general-use-of-the-api)
       * [Message handlers](#message-handlers)
+      * [Callback Query handlers](#message-handlers)
       * [TeleBot](#telebot)
       * [Reply markup](#reply-markup)
       * [Inline Mode](#inline-mode)
@@ -26,6 +27,7 @@
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
   * [F.A.Q.](#faq)
+    * [Bot 2.0](#bot-2.0)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [More examples](#more-examples)
@@ -153,6 +155,7 @@ TeleBot supports the following filters:
 |func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
 
 Here are some examples of using the filters and message handlers:
+
 ```python
 import telebot
 bot = telebot.TeleBot("TOKEN")
@@ -193,6 +196,17 @@ def send_something(message):
     pass
 ```
 **Important: all handlers are tested in the order in which they were declared**
+
+#### Callback Query Handler
+
+In bot2.0 update. You can get `callback_query` in update object. In telebot use `callback_query_handler` to process callback_querys.
+
+```python
+@bot.callback_query_handler(func=lambda call: True)
+def  test_callback(call):
+    logger.info(call)
+``` 
+
 #### TeleBot
 ```python
 import telebot
@@ -292,13 +306,21 @@ from telebot import types
 # row_width is used in combination with the add() function.
 # It defines how many buttons are fit on each row before continuing on the next row.
 markup = types.ReplyKeyboardMarkup(row_width=2)
-markup.add('a', 'v', 'd')
+itembtn1 = types.KeyboardButton('a')
+itembtn2 = types.KeyboardButton('v')
+itembtn3 = types.KeyboardButton('d')
+markup.add(itembtn1, itembtn2, itembtn3)
 tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
 # or add strings one row at a time:
 markup = types.ReplyKeyboardMarkup()
-markup.row('a', 'v')
-markup.row('c', 'd', 'e')
+itembtna = types.KeyboardButton('a')
+itembtnv = types.KeyboardButton('v')
+itembtnc = types.KeyboardButton('c')
+itembtnd = types.KeyboardButton('d')
+itembtne = types.KeyboardButton('e')
+markup.row(itembtna, itembtnv)
+markup.row(itembtnc, itembtnd, itembtne)
 tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 ```
 The last example yields this result:
@@ -438,10 +460,17 @@ telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 ## F.A.Q.
 
+### Bot 2.0
+
+April 9,2016 Telegram release new bot 2.0 API, which has a drastic revision especially for the change of method's interface.If you want to update to the latest version, please make sure you've switched bot's code to bot 2.0 method interface.
+
+[More information about pyTelegramBotAPI support bot2.0](https://github.com/eternnoir/pyTelegramBotAPI/issues/130)
+
 ### How can I distinguish a User and a GroupChat in message.chat?
 Telegram Bot API support new type Chat for message.chat.
 
 - Check the ```type``` attribute in ```Chat``` object:
+- 
 ```python
 if message.chat.type == “private”:
 	# private chat message
