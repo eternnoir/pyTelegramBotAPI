@@ -86,19 +86,23 @@ class Update(JsonDeserializable):
         message = None
         inline_query = None
         chosen_inline_result = None
+        callback_query = None
         if 'message' in obj:
             message = Message.de_json(obj['message'])
         if 'inline_query' in obj:
             inline_query = InlineQuery.de_json(obj['inline_query'])
         if 'chosen_inline_result' in obj:
             chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
-        return cls(update_id, message, inline_query, chosen_inline_result)
+        if 'callback_query' in obj:
+            callback_query = CallbackQuery.de_json(obj['callback_query'])
+        return cls(update_id, message, inline_query, chosen_inline_result, callback_query)
 
-    def __init__(self, update_id, message, inline_query, chosen_inline_result):
+    def __init__(self, update_id, message, inline_query, chosen_inline_result, callback_query):
         self.update_id = update_id
         self.message = message
         self.inline_query = inline_query
         self.chosen_inline_result = chosen_inline_result
+        self.callback_query = callback_query
 
 
 class User(JsonDeserializable):

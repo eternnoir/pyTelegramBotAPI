@@ -68,6 +68,7 @@ class TeleBot:
         self.message_handlers = []
         self.inline_handlers = []
         self.chosen_inline_handlers = []
+        self.callback_query_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -124,6 +125,7 @@ class TeleBot:
         new_messages = []
         new_inline_querys = []
         new_chosen_inline_results = []
+        new_callback_querys = []
         for update in updates:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
@@ -133,6 +135,8 @@ class TeleBot:
                 new_inline_querys.append(update.inline_query)
             if update.chosen_inline_result:
                 new_chosen_inline_results.append(update.chosen_inline_result)
+            if update.callback_query:
+                new_callback_querys.append(update.callback_query)
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
@@ -140,6 +144,8 @@ class TeleBot:
             self.process_new_inline_query(new_inline_querys)
         if len(new_chosen_inline_results) > 0:
             self.process_new_chosen_inline_query(new_chosen_inline_results)
+        if len(new_callback_querys) > 0:
+            self.process_new_callback_query(new_callback_querys)
 
     def process_new_messages(self, new_messages):
         self._append_pre_next_step_handler()
@@ -153,6 +159,9 @@ class TeleBot:
 
     def process_new_chosen_inline_query(self, new_chosen_inline_querys):
         self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_querys)
+
+    def process_new_callback_query(self, new_callback_querys):
+        self._notify_command_handlers(self.callback_query_handlers, new_callback_querys)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -651,6 +660,23 @@ class TeleBot:
         }
 
         self.chosen_inline_handlers.append(handler_dict)
+
+    def callback_query_handler(self, func):
+        def decorator(handler):
+            self.add_callback_query_handler(handler, func)
+
+        return decorator
+
+    def add_callback_query_handler(self, handler, func):
+        filters = {'lambda': func}
+
+        handler_dict = {
+            'function': handler,
+            'filters': filters
+        }
+
+        self.callback_query_handlers.append(handler_dict)
+
 
     @staticmethod
     def _test_message_handler(message_handler, message):
