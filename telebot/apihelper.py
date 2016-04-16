@@ -203,6 +203,21 @@ def send_venue(token, chat_id, latitude, longitude, title, address, foursquare_i
     return _make_request(token, method_url, params=payload)
 
 
+def send_contact(token, chat_id, phone_number, first_name, last_name=None, disable_notification=None,
+                 reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendContact'
+    payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
+    if last_name:
+        payload['last_name'] = last_name
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
 def send_chat_action(token, chat_id, action):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}

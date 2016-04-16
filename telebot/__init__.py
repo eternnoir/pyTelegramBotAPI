@@ -442,6 +442,13 @@ class TeleBot:
                                  disable_notification, reply_to_message_id, reply_markup)
         )
 
+    def send_contact(self, chat_id, phone_number, first_name, last_name=None, disable_notification=None,
+                     reply_to_message_id=None, reply_markup=None):
+        return types.Message.de_json(
+            apihelper.send_contact(self.token, chat_id, phone_number, first_name, last_name, disable_notification,
+                                   reply_to_message_id, reply_markup)
+        )
+
     def send_chat_action(self, chat_id, action):
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
@@ -519,7 +526,6 @@ class TeleBot:
         :return:
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert)
-
 
     def register_for_reply(self, message, callback):
         """
@@ -688,7 +694,6 @@ class TeleBot:
         }
 
         self.callback_query_handlers.append(handler_dict)
-
 
     @staticmethod
     def _test_message_handler(message_handler, message):
