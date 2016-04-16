@@ -1052,7 +1052,7 @@ class InlineQueryResultAudio(JsonSerializable):
         self.input_message_content = input_message_content
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'audio_url': self.audio_url, 'title': self.titlee}
+        json_dict = {'type': self.type, 'id': self.id, 'audio_url': self.audio_url, 'title': self.title}
         if self.performer:
             json_dict['performer'] = self.performer
         if self.audio_duration:
