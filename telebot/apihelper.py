@@ -395,7 +395,7 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
         payload['cache_time'] = cache_time
     if is_personal:
         payload['is_personal'] = is_personal
-    if next_offset:
+    if next_offset is not None:
         payload['next_offset'] = next_offset
     if switch_pm_text:
         payload['switch_pm_text'] = switch_pm_text
