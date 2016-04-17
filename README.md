@@ -27,7 +27,7 @@
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
   * [F.A.Q.](#faq)
-    * [Bot 2.0](#bot-2.0)
+    * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [More examples](#more-examples)
