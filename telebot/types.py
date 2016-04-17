@@ -669,8 +669,8 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['url'] = self.url
         if self.callback_data:
             json_dic['callback_data'] = self.callback_data
-        if self.switch_inline_query:
-            json_dic['switch_inline_quer'] = self.switch_inline_query
+        if self.switch_inline_query is not None:
+            json_dic['switch_inline_query'] = self.switch_inline_query
         return json_dic
 
 
