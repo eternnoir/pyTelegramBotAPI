@@ -478,9 +478,11 @@ class TeleBot:
 
     def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
-        return types.Message.de_json(
-            apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                        disable_web_page_preview, reply_markup))
+        result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
+                                        disable_web_page_preview, reply_markup)
+        if type(result) == bool:    # if edit inline message return is bool not Message.
+            return result
+        return types.Message.de_json(result)
 
     def edit_message_replay_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
         return types.Message.de_json(
