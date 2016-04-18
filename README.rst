@@ -13,11 +13,7 @@ pyTelegramBotAPI
 A simple, but extensible Python implementation for the `Telegram Bot
 API <https://core.telegram.org/bots/api>`__.
 
-.. raw:: html
-
-   <p align="center">
-
-|Build Status|
+|Download Month| |Build Status| |Download Month|
 
 -  `Getting started. <#getting-started>`__
 -  `Writing your first bot <#writing-your-first-bot>`__
@@ -31,8 +27,10 @@ API <https://core.telegram.org/bots/api>`__.
    -  `Methods <#methods>`__
    -  `General use of the API <#general-use-of-the-api>`__
    -  `Message handlers <#message-handlers>`__
+   -  `Callback Query handlers <#message-handlers>`__
    -  `TeleBot <#telebot>`__
    -  `Reply markup <#reply-markup>`__
+   -  `Inline Mode <#inline-mode>`__
 
 -  `Advanced use of the API <#advanced-use-of-the-api>`__
 
@@ -47,6 +45,7 @@ API <https://core.telegram.org/bots/api>`__.
 
 -  `F.A.Q. <#faq>`__
 
+   -  `Bot 2.0 <#bot-20>`__
    -  `How can I distinguish a User and a GroupChat in
       message.chat? <#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat>`__
 
@@ -55,7 +54,7 @@ API <https://core.telegram.org/bots/api>`__.
 -  `Bots using this API <#bots-using-this-api>`__
 
 Getting started.
-================
+----------------
 
 This API is tested with Python 2.6, Python 2.7, Python 3.4, Pypy and
 Pypy 3. There are two ways to install the library:
@@ -81,10 +80,10 @@ it has regular updates, do not forget to update it regularly by calling
 ``pip install pytelegrambotapi --upgrade``\ \*
 
 Writing your first bot
-======================
+----------------------
 
 Prerequisites
--------------
+~~~~~~~~~~~~~
 
 It is presumed that you [have obtained an API token with
 @BotFather](https://core.telegram.org/bots#botfather). We will call this
@@ -93,7 +92,7 @@ programming language and more importantly `the Telegram Bot
 API <https://core.telegram.org/bots/api>`__.
 
 A simple echo bot
------------------
+~~~~~~~~~~~~~~~~~
 
 The TeleBot class (defined in \_\_init\_\_.py) encapsulates all API
 calls in a single class. It provides functions such as ``send_xyz``
@@ -175,10 +174,10 @@ To start the bot, simply open up a terminal and enter
 ('/start' and '/help') and arbitrary text messages.
 
 General API Documentation
-=========================
+-------------------------
 
 Types
------
+~~~~~
 
 All types are defined in types.py. They are all completely in line with
 the `Telegram API's definition of the
@@ -190,15 +189,15 @@ Note that ``message.chat`` can be either an instance of ``User`` or
 ``GroupChat`` (see `How can I distinguish a User and a GroupChat in
 message.chat? <#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat>`__).
 
-The Message object also has a ``content_type``\ attribute, which defines
-the type of the Message. ``content_type`` can be one of the following
-strings: 'text', 'audio', 'document', 'photo', 'sticker', 'video',
-'location', 'contact', 'new\_chat\_participant',
+The Message object also has a ``content_types``\ attribute, which
+defines the type of the Message. ``content_types`` can be one of the
+following strings: 'text', 'audio', 'document', 'photo', 'sticker',
+'video', 'voice', 'location', 'contact', 'new\_chat\_participant',
 'left\_chat\_participant', 'new\_chat\_title', 'new\_chat\_photo',
 'delete\_chat\_photo', 'group\_chat\_created'.
 
 Methods
--------
+~~~~~~~
 
 All `API
 methods <https://core.telegram.org/bots/api#available-methods>`__ are
@@ -207,12 +206,12 @@ naming conventions. E.g. ``getMe`` is renamed to ``get_me`` and
 ``sendMessage`` to ``send_message``.
 
 General use of the API
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Outlined below are some general use cases of the API.
 
 Message handlers
-~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^
 
 A message handler is a function that is decorated with the
 ``message_handler`` decorator of a TeleBot instance. Message handlers
@@ -234,17 +233,122 @@ argument, which will be the message that the function must handle.
 following manner: ``name=argument``. One handler may have multiple
 filters. TeleBot supports the following filters:
 
-+------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| name             | argument(s)                                 | Condition                                                                                                                                                                       |
-+==================+=============================================+=================================================================================================================================================================================+
-| content\_types   | list of strings (default ``['text']``)      | ``True`` if message.content\_type is in the list of strings.                                                                                                                    |
-+------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| regexp           | a regular expression as a string            | ``True`` if ``re.search(regexp_arg)`` returns ``True`` and ``message.content_type == 'text'`` (See `Python Regular Expressions <https://docs.python.org/2/library/re.html>`__   |
-+------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| commands         | list of strings                             | ``True`` if ``message.content_type == 'text'`` and ``message.text`` starts with a command that is in the list of strings.                                                       |
-+------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| func             | a function (lambda or function reference)   | ``True`` if the lambda or function reference returns ``True``                                                                                                                   |
-+------------------+---------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++--------+------+------+
+| name   | argu | Cond |
+|        | ment | itio |
+|        | (s)  | n    |
++========+======+======+
+| conten | list | ``Tr |
+| t\_typ | of   | ue`` |
+| es     | stri | if   |
+|        | ngs  | mess |
+|        | (def | age. |
+|        | ault | cont |
+|        | ``[' | ent\ |
+|        | text | _typ |
+|        | ']`` | e    |
+|        | )    | is   |
+|        |      | in   |
+|        |      | the  |
+|        |      | list |
+|        |      | of   |
+|        |      | stri |
+|        |      | ngs. |
++--------+------+------+
+| regexp | a    | ``Tr |
+|        | regu | ue`` |
+|        | lar  | if   |
+|        | expr | ``re |
+|        | essi | .sea |
+|        | on   | rch( |
+|        | as a | rege |
+|        | stri | xp_a |
+|        | ng   | rg)` |
+|        |      | `    |
+|        |      | retu |
+|        |      | rns  |
+|        |      | ``Tr |
+|        |      | ue`` |
+|        |      | and  |
+|        |      | ``me |
+|        |      | ssag |
+|        |      | e.co |
+|        |      | nten |
+|        |      | t_ty |
+|        |      | pe = |
+|        |      | = 't |
+|        |      | ext' |
+|        |      | ``   |
+|        |      | (See |
+|        |      | `Pyt |
+|        |      | hon  |
+|        |      | Regu |
+|        |      | lar  |
+|        |      | Expr |
+|        |      | essi |
+|        |      | ons  |
+|        |      | <htt |
+|        |      | ps:/ |
+|        |      | /doc |
+|        |      | s.py |
+|        |      | thon |
+|        |      | .org |
+|        |      | /2/l |
+|        |      | ibra |
+|        |      | ry/r |
+|        |      | e.ht |
+|        |      | ml>` |
+|        |      | __   |
++--------+------+------+
+| comman | list | ``Tr |
+| ds     | of   | ue`` |
+|        | stri | if   |
+|        | ngs  | ``me |
+|        |      | ssag |
+|        |      | e.co |
+|        |      | nten |
+|        |      | t_ty |
+|        |      | pe = |
+|        |      | = 't |
+|        |      | ext' |
+|        |      | ``   |
+|        |      | and  |
+|        |      | ``me |
+|        |      | ssag |
+|        |      | e.te |
+|        |      | xt`` |
+|        |      | star |
+|        |      | ts   |
+|        |      | with |
+|        |      | a    |
+|        |      | comm |
+|        |      | and  |
+|        |      | that |
+|        |      | is   |
+|        |      | in   |
+|        |      | the  |
+|        |      | list |
+|        |      | of   |
+|        |      | stri |
+|        |      | ngs. |
++--------+------+------+
+| func   | a    | ``Tr |
+|        | func | ue`` |
+|        | tion | if   |
+|        | (lam | the  |
+|        | bda  | lamb |
+|        | or   | da   |
+|        | func | or   |
+|        | tion | func |
+|        | refe | tion |
+|        | renc | refe |
+|        | e)   | renc |
+|        |      | e    |
+|        |      | retu |
+|        |      | rns  |
+|        |      | ``Tr |
+|        |      | ue`` |
++--------+------+------+
 
 Here are some examples of using the filters and message handlers:
 
@@ -289,7 +393,22 @@ Here are some examples of using the filters and message handlers:
         pass
 
 **Important: all handlers are tested in the order in which they were
-declared** #### TeleBot
+declared**
+
+Callback Query Handler
+^^^^^^^^^^^^^^^^^^^^^^
+
+In bot2.0 update. You can get ``callback_query`` in update object. In
+telebot use ``callback_query_handler`` to process callback\_querys.
+
+.. code:: python
+
+    @bot.callback_query_handler(func=lambda call: True)
+    def  test_callback(call):
+        logger.info(call)
+
+TeleBot
+^^^^^^^
 
 .. code:: python
 
@@ -374,7 +493,7 @@ declared** #### TeleBot
     file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN, file_info.file_path))
 
 Reply markup
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 All ``send_xyz`` functions of TeleBot take an optional ``reply_markup``
 argument. This argument must be an instance of ``ReplyKeyboardMarkup``,
@@ -393,13 +512,21 @@ argument. This argument must be an instance of ``ReplyKeyboardMarkup``,
     # row_width is used in combination with the add() function.
     # It defines how many buttons are fit on each row before continuing on the next row.
     markup = types.ReplyKeyboardMarkup(row_width=2)
-    markup.add('a', 'v', 'd')
+    itembtn1 = types.KeyboardButton('a')
+    itembtn2 = types.KeyboardButton('v')
+    itembtn3 = types.KeyboardButton('d')
+    markup.add(itembtn1, itembtn2, itembtn3)
     tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
     # or add strings one row at a time:
     markup = types.ReplyKeyboardMarkup()
-    markup.row('a', 'v')
-    markup.row('c', 'd', 'e')
+    itembtna = types.KeyboardButton('a')
+    itembtnv = types.KeyboardButton('v')
+    itembtnc = types.KeyboardButton('c')
+    itembtnd = types.KeyboardButton('d')
+    itembtne = types.KeyboardButton('e')
+    markup.row(itembtna, itembtnv)
+    markup.row(itembtnc, itembtnd, itembtne)
     tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
 The last example yields this result:
@@ -430,11 +557,58 @@ ForceReply:
 
    ForceReply
 
+Inline Mode
+~~~~~~~~~~~
+
+More information about `Inline
+mode <https://core.telegram.org/bots/inline>`__.
+
+inline\_handler
+^^^^^^^^^^^^^^^
+
+Now, you can use inline\_handler to get inline\_query in telebot.
+
+.. code:: python
+
+
+    @bot.inline_handler(lambda query: query.query == 'text')
+    def query_text(inline_query):
+        # Query message is text
+
+chosen\_inline\_handler
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Use chosen\_inline\_handler to get chosen\_inline\_result in telebot.
+Don't forgot add the /setinlinefeedback command for @Botfather.
+
+More information :
+`collecting-feedback <https://core.telegram.org/bots/inline#collecting-feedback>`__
+
+.. code:: python
+
+    @bot.chosen_inline_handler(func=lambda chosen_inline_result: True)
+    def test_chosen(chosen_inline_result):
+        # Process all chosen_inline_result.
+
+answer\_inline\_query
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: python
+
+    @bot.inline_handler(lambda query: query.query == 'text')
+    def query_text(inline_query):
+        try:
+            r = types.InlineQueryResultArticle('1', 'Result', 'Result message.')
+            r2 = types.InlineQueryResultArticle('2', 'Result2', 'Result message2.')
+            bot.answer_inline_query(inline_query.id, [r, r2])
+        except Exception as e:
+            print(e)
+
 Advanced use of the API
-=======================
+-----------------------
 
 Asynchronous delivery of messages
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There exists an implementation of TeleBot which executes all
 ``send_xyz`` and the ``get_me`` functions asynchronously. This can speed
@@ -469,7 +643,7 @@ calling wait(), the order in which messages are delivered might be
 wrong.*
 
 Sending large text messages
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sometimes you must send messages that exceed 5000 characters. The
 Telegram API can not handle that many characters in one request, so we
@@ -488,7 +662,7 @@ API:
         tb.send_message(chat_id, text)
 
 Controlling the amount of Threads used by TeleBot
--------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The TeleBot constructor takes the following optional arguments:
 
@@ -501,7 +675,7 @@ The TeleBot constructor takes the following optional arguments:
    False.
 
 The listener mechanism
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 As an alternative to the message handlers, one can also register a
 function as a listener to TeleBot. Example:
@@ -517,7 +691,7 @@ function as a listener to TeleBot. Example:
     bot.polling()
 
 Using webhooks
---------------
+~~~~~~~~~~~~~~
 
 When using webhooks telegram sends one Update per call, for processing
 it you should call process\_new\_messages([update.message]) when you
@@ -527,7 +701,7 @@ There are some examples using webhooks in the
 *examples/webhook\_examples* directory.
 
 Logging
--------
+~~~~~~~
 
 You can use the Telebot module logger to log debug info about Telebot.
 Use ``telebot.logger`` to get the logger of the TeleBot module. It is
@@ -543,34 +717,48 @@ page <https://docs.python.org/2/library/logging.html>`__ for more info.
     telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 F.A.Q.
-======
+------
+
+Bot 2.0
+~~~~~~~
+
+April 9,2016 Telegram release new bot 2.0 API, which has a drastic
+revision especially for the change of method's interface.If you want to
+update to the latest version, please make sure you've switched bot's
+code to bot 2.0 method interface.
+
+`More information about pyTelegramBotAPI support
+bot2.0 <https://github.com/eternnoir/pyTelegramBotAPI/issues/130>`__
 
 How can I distinguish a User and a GroupChat in message.chat?
--------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There are two ways to do this:
+Telegram Bot API support new type Chat for message.chat.
 
--  Checking the instance of message.chat with ``isinstance``:
-   \`\`\`python def is\_user(chat): return isinstance(chat, types.User)
+-  Check the ``type`` attribute in ``Chat`` object:
+-  \`\`\`python if message.chat.type == “private”: # private chat
+   message
 
-print is\_user(message.chat) # True or False
-``- Checking whether the chat id is negative or positive. If the chat id is negative, the chat is a GroupChat, if it is positive, it is a User. Example:``\ python
-def is\_user(chat): return chat.id > 0
+if message.chat.type == “group”: # group chat message
 
-print is\_user(message.chat) # True or False \`\`\`
+if message.chat.type == “supergroup”: # supergroup chat message
+
+if message.chat.type == “channel”: # channel message
+
+\`\`\`
 
 The Telegram Chat Group
-=======================
+-----------------------
 
 Get help. Discuss. Chat.
 
-Join the `pyTelegramBotAPI Telegram Chat
-Group <https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b>`__.
-We now have a Telegram Channel as well! Keep yourself up to date with
-API changes, and `join it <https://telegram.me/pytelegrambotapi>`__.
+-  Join the pyTelegramBotAPI Telegram Chat Group
+-  Messge to @eternnoir by telegram for Invitation.
+-  We now have a Telegram Channel as well! Keep yourself up to date with
+   API changes, and `join it <https://telegram.me/pytelegrambotapi>`__.
 
 More examples
-=============
+-------------
 
 -  `Echo
    Bot <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py>`__
@@ -580,13 +768,40 @@ More examples
    Example <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py>`__
 
 Bots using this API
-===================
+-------------------
 
 -  `SiteAlert bot <https://telegram.me/SiteAlert_bot>`__
    (`source <https://github.com/ilteoood/SiteAlert-Python>`__) by
    *ilteoood* - Monitors websites and sends a notification on changes
-   Want to have your bot listed here? Send a Telegram message to
-   @eternnoir or @pevdh.
+-  `TelegramLoggingBot <https://github.com/aRandomStranger/TelegramLoggingBot>`__
+   by *aRandomStranger*
+-  `Telegram
+   LMGTFY\_bot <https://github.com/GabrielRF/telegram-lmgtfy_bot>`__ by
+   *GabrielRF*
+-  `Telegram
+   UrlProBot <https://github.com/GabrielRF/telegram-urlprobot>`__ by
+   *GabrielRF*
+-  `Telegram Proxy
+   Bot <https://bitbucket.org/master_groosha/telegram-proxy-bot>`__ by
+   *Groosha* - A simple BITM (bot-in-the-middle) for Telegram acting as
+   some kind of "proxy".
+-  `Telegram Proxy Bot <https://github.com/mrgigabyte/proxybot>`__ by
+   *mrgigabyte* -
+   ``Credits for the original version of this bot goes to`` **Groosha**
+   ``, simply added certain features which I thought were needed``.
+-  `RadRetroRobot <https://github.com/Tronikart/RadRetroRobot>`__ by
+   *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
+-  `League of Legends bot <https://telegram.me/League_of_Legends_bot>`__
+   (`source <https://github.com/i32ropie/lol>`__) by *i32ropie*
+-  `NeoBot <https://github.com/neoranger/NeoBot>`__ by *neoranger*
+-  `TagAlertBot <https://github.com/pitasi/TagAlertBot>`__ by *pitasi*
 
+Want to have your bot listed here? Send a Telegram message to @eternnoir
+or @pevdh.
+
+.. |Download Month| image:: https://img.shields.io/pypi/v/pyTelegramBotAPI.svg
+   :target: https://pypi.python.org/pypi/pyTelegramBotAPI
 .. |Build Status| image:: https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master
    :target: https://travis-ci.org/eternnoir/pyTelegramBotAPI
+.. |Download Month| image:: https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg
+   :target: https://pypi.python.org/pypi/pyTelegramBotAPI
