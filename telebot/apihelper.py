@@ -404,16 +404,6 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def answer_callback_query(token, callback_query_id, text=None, show_alert=None):
-    method_url = 'answerCallbackQuery'
-    payload = {'callback_query_id': callback_query_id}
-    if text:
-        payload['text'] = text
-    if show_alert:
-        payload['show_alert'] = show_alert
-    return _make_request(token, method_url, params=payload, method='post')
-
-
 def _convert_inline_results(results):
     ret = ''
     for r in results:
