@@ -484,9 +484,9 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
-    def edit_message_replay_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+    def edit_message_reply_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
         return types.Message.de_json(
-            apihelper.edit_message_replay_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
+            apihelper.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
         )
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
