@@ -340,7 +340,7 @@ class TestTeleBot:
         ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True, reply_markup=markup)
         markup.add(types.InlineKeyboardButton("Google2", url="http://www.google.com"))
         markup.add(types.InlineKeyboardButton("Yahoo2", url="http://www.yahoo.com"))
-        new_msg = tb.edit_message_replay_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
+        new_msg = tb.edit_message_reply_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
         assert new_msg.message_id
 
     def create_text_message(self, text):
