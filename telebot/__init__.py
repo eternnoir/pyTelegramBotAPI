@@ -707,9 +707,9 @@ class TeleBot:
     @staticmethod
     def _test_filter(filter, filter_value, message):
         if filter == 'content_types':
-            if 'new_chat_member' in filter_value:
+            if 'new_chat_member' in filter_value or 'new_chat_participant' in filter_value:
                 return message.new_chat_member is not None
-            if 'left_chat_member' in filter_value:
+            if 'left_chat_member' in filter_value or 'left_chat_participant' in filter_value:
                 return message.left_chat_member is not None
             return message.content_type in filter_value
         if filter == 'regexp':
