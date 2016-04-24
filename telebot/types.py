@@ -212,6 +212,14 @@ class Message(JsonDeserializable):
             opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
         if 'left_chat_member' in obj:
             opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
+        
+        # Retrocompatibility fields
+        if 'new_chat_participant' in obj:
+            opts['new_chat_participant'] = User.de_json(obj['new_chat_participant'])
+        if 'left_chat_participant' in obj:
+            opts['left_chat_participant'] = User.de_json(obj['left_chat_participant'])
+        # /end
+            
         if 'new_chat_title' in obj:
             opts['new_chat_title'] = obj['new_chat_title']
         if 'new_chat_photo' in obj:
