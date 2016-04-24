@@ -210,8 +210,10 @@ class Message(JsonDeserializable):
             content_type = 'venue'
         if 'new_chat_member' in obj:
             opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
+            content_type = 'new_chat_member'
         if 'left_chat_member' in obj:
             opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
+            content_type = 'left_chat_member'
         if 'new_chat_title' in obj:
             opts['new_chat_title'] = obj['new_chat_title']
         if 'new_chat_photo' in obj:
