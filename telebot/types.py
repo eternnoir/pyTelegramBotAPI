@@ -564,7 +564,10 @@ class ReplyKeyboardMarkup(JsonSerializable):
         :param args: strings
         :return: self, to allow function chaining.
         """
-        self.keyboard.append(args)
+        btn_array = []
+        for button in args:
+            btn_array.append(button.to_dic())
+        self.keyboard.append(btn_array)
         return self
 
     def to_json(self):
@@ -638,7 +641,10 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         :param args: strings
         :return: self, to allow function chaining.
         """
-        self.keyboard.append(args)
+        btn_array = []
+        for button in args:
+            btn_array.append(button.to_dic())
+        self.keyboard.append(btn_array)
         return self
 
     def to_json(self):
@@ -1295,6 +1301,7 @@ class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
+
 
 class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
     def __init__(self, id, sticker_file_id, reply_markup=None, input_message_content=None):

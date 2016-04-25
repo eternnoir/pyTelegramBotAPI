@@ -312,7 +312,7 @@ itembtn3 = types.KeyboardButton('d')
 markup.add(itembtn1, itembtn2, itembtn3)
 tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
-# or add strings one row at a time:
+# or add KeyboardButton one row at a time:
 markup = types.ReplyKeyboardMarkup()
 itembtna = types.KeyboardButton('a')
 itembtnv = types.KeyboardButton('v')
