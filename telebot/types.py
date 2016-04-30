@@ -1353,7 +1353,7 @@ class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
         self.title = title
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
-        self.payload_dic['voice_file_idd'] = voice_file_id
+        self.payload_dic['voice_file_id'] = voice_file_id
 
 
 class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
