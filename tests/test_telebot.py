@@ -245,6 +245,17 @@ class TestTeleBot:
         ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True, reply_markup=markup)
         assert ret_msg.message_id
 
+    def test_send_message_with_markup_use_string(self):
+        text = 'CI Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        markup = types.ReplyKeyboardMarkup()
+        markup.add("1")
+        markup.add("2")
+        markup.add("3")
+        markup.add("4")
+        ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True, reply_markup=markup)
+        assert ret_msg.message_id
+
     def test_send_message_with_inlinemarkup(self):
         text = 'CI Test Message'
         tb = telebot.TeleBot(TOKEN)
