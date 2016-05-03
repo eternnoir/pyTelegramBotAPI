@@ -548,7 +548,10 @@ class ReplyKeyboardMarkup(JsonSerializable):
         i = 1
         row = []
         for button in args:
-            row.append(button.to_dic())
+            if isinstance(button, str):
+                row.append({'text': button})
+            else:
+                row.append(button.to_dic())
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -566,7 +569,10 @@ class ReplyKeyboardMarkup(JsonSerializable):
         """
         btn_array = []
         for button in args:
-            btn_array.append(button.to_dic())
+            if isinstance(button, str):
+                btn_array.append({'text': button})
+            else:
+                btn_array.append(button.to_dic())
         self.keyboard.append(btn_array)
         return self
 
