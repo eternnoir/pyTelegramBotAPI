@@ -1162,7 +1162,8 @@ class InlineQueryResultLocation(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude}
+        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
+                     'title': self.title}
         if self.thumb_url:
             json_dict['thumb_url'] = self.thumb_url
         if self.thumb_width:
