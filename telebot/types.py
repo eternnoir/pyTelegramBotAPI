@@ -180,7 +180,7 @@ class Message(JsonDeserializable):
             opts['text'] = obj['text']
             content_type = 'text'
         if 'entities' in obj:
-            opts['entities'] = Message.parse_entities(obj['entities'])
+            opts['entities'] = Message.parse_entities(obj['entities'])[0]
         if 'audio' in obj:
             opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
