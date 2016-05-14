@@ -386,6 +386,20 @@ def query_text(inline_query):
         print(e)
 
 ```
+###Working with entities:
+This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc. 
+Attributes:
+* `type`
+* `url`
+* `offset`
+* `length`
+
+
+**Here's an Example:**`message.entities[num].<attribute>`<br>
+Here `num` is the entity number or order of entity in a reply, for if incase there are multiple entities in the reply/message.<br>
+`message.entities` returns a list of entities object. <br>
+`message.entities[0].type` would give the type of the first entity<br>
+Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra details
 
 ## Advanced use of the API
 
