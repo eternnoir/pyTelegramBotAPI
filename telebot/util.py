@@ -241,3 +241,10 @@ def extract_arguments(text):
     regexp = re.compile("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
+
+
+def merge_dicts(*dicts):
+    result = {}
+    for dictionary in dicts:
+        result.update(dictionary)
+    return result
