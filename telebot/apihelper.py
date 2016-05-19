@@ -5,7 +5,6 @@ import telebot
 from telebot import types
 from telebot import util
 
-merge = util.merge_dicts
 logger = telebot.logger
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"
@@ -41,7 +40,35 @@ class ApiInterface:
         self.api_url = api_url
         self.file_url = file_url
 
+    @staticmethod
+    def convert_markup(markup):
+        return markup.to_json() if isinstance(markup, types.JsonSerializable) else markup
+
+    @staticmethod
+    def convert_inline_results(results):
+        """
+        Converts a list of InlineQueryResult objects to a json string.
+        :param results: list of InlineQueryResult objects
+        :rtype: str
+        """
+        converted_results = [r.to_json() for r in results]
+        return '[' + ','.join(converted_results) + ']'
+
+    @staticmethod
+    def __merge(*dicts):
+        """
+        Merges two or more dicts into one, and deletes any keys which' associated values are equal to None.
+        :rtype: dict
+        """
+        d = util.merge_dicts(dicts)
+        for k, v in d:
+            if v is None:
+                del d[k]
+        return d
+
     def make_request(self, method_name, params=None, files=None, method='get'):
+        if 'reply_markup' in params:
+            params['reply_markup'] = self.convert_markup(params['reply_markup'])
         request_url = self.api_url.format(self.token, method_name)
         response = self.request_executor.make_request(request_url, method, params, files)
         return response
@@ -59,7 +86,7 @@ class ApiInterface:
 
     def send_message(self, chat_id, text, **kwargs):
         payload = {'chat_id': str(chat_id), 'text': text}
-        return self.make_request('sendMessage', merge(payload, kwargs), method='post')
+        return self.make_request('sendMessage', self.__merge(payload, kwargs), method='post')
 
     def set_webhook(self, url="", certificate=None):
         files = None
@@ -71,11 +98,11 @@ class ApiInterface:
         return self.make_request('getUpdates', params=kwargs)
 
     def get_user_profile_photos(self, user_id, **kwargs):
-        params = merge({'user_id': user_id}, kwargs)
+        params = self.__merge({'user_id': user_id}, kwargs)
         return self.make_request('getUserProfilePhotos', params=params)
 
     def forward_message(self, chat_id, from_chat_id, message_id, **kwargs):
-        params = merge({
+        params = self.__merge({
             'chat_id': chat_id,
             'from_chat_id': from_chat_id,
             'message_id': message_id
@@ -89,11 +116,11 @@ class ApiInterface:
             files = {'photo': photo}
         else:
             params['photo'] = photo
-        params = merge(params, kwargs)
+        params = self.__merge(params, kwargs)
         return self.make_request('sendPhoto', params=params, files=files)
 
     def send_location(self, chat_id, latitude, longitude, **kwargs):
-        params = merge({'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}, kwargs)
+        params = self.__merge({'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}, kwargs)
         return self.make_request('sendLocation', params=params)
 
     def send_venue(self, chat_id, latitude, longitude, title, address, **kwargs):
@@ -102,7 +129,7 @@ class ApiInterface:
         return self.make_request('sendVenue', params=params)
 
     def send_contact(self, chat_id, phone_number, first_name, **kwargs):
-        params = merge({'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}, kwargs)
+        params = self.__merge({'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}, kwargs)
         return self.make_request('sendContact', params=params)
 
     def send_chat_action(self, chat_id, action):
@@ -130,7 +157,7 @@ class ApiInterface:
             files = {data_type: data}
         else:
             params[data_type] = data
-        params = merge(params, kwargs)
+        params = self.__merge(params, kwargs)
         return self.make_request(self.get_method_by_type(data_type), params=params, files=files, method='post')
 
     @staticmethod
@@ -150,22 +177,25 @@ class ApiInterface:
         return self.make_request('unbanChatMember', params={'chat_id': chat_id, 'user_id': user_id}, method='post')
 
     def edit_message_text(self, text, **kwargs):
-        params = merge({'text': text}, kwargs)
+        params = self.__merge({'text': text}, kwargs)
         return self.make_request('editMessageText', params=params)
 
     def edit_message_caption(self, caption, **kwargs):
-        params = merge({'caption': caption}, kwargs)
+        params = self.__merge({'caption': caption}, kwargs)
         return self.make_request('editMessageCaption', params=params)
 
     def edit_message_reply_markup(self, **kwargs):
         return self.make_request('editMessageReplyMarkup', params=kwargs)
 
     def answer_callback_query(self, callback_query_id, **kwargs):
-        params = merge({'callback_query_id': callback_query_id}, kwargs)
+        params = self.__merge({'callback_query_id': callback_query_id}, kwargs)
         return self.make_request('answerCallbackQuery', params=params)
 
-    def answer_inline_query(self, inline_query_id, results):
-        params = merge({'inline_query_id': inline_query_id, 'results': results})
+    def answer_inline_query(self, inline_query_id, results, **kwargs):
+        params = self.__merge({
+            'inline_query_id': inline_query_id,
+            'results': self.convert_inline_results(results)
+        }, kwargs)
         return self.make_request('answerInlineQuery', params=params, method='post')
 
 def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
