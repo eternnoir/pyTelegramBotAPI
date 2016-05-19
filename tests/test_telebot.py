@@ -144,7 +144,7 @@ class TestTeleBot:
     def test_send_video_more_params(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_video(CHAT_ID, file_data, 1)
+        ret_msg = tb.send_video(CHAT_ID, file_data)
         assert ret_msg.message_id
 
     def test_send_video_more_params_dis_noti(self):
