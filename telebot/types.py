@@ -3,8 +3,7 @@
 import json
 import six
 
-import util
-
+from telebot import util
 
 class JsonSerializable:
     """
