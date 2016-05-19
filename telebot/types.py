@@ -3,6 +3,8 @@
 import json
 import six
 
+import util
+
 
 class JsonSerializable:
     """
@@ -553,7 +555,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         i = 1
         row = []
         for button in args:
-            if isinstance(button, str):
+            if util.is_string(button):
                 row.append({'text': button})
             else:
                 row.append(button.to_dic())
@@ -574,7 +576,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         """
         btn_array = []
         for button in args:
-            if isinstance(button, str):
+            if util.is_string(button):
                 btn_array.append({'text': button})
             else:
                 btn_array.append(button.to_dic())
