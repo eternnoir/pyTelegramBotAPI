@@ -5,6 +5,7 @@ import six
 
 from telebot import util
 
+
 class JsonSerializable:
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
@@ -1195,8 +1196,8 @@ class InlineQueryResultVenue(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
-                     'address': self.address}
+        json_dict = {'type': self.type, 'title': self.title, 'id': self.id, 'latitude': self.latitude,
+                     'longitude': self.longitude, 'address': self.address}
         if self.foursquare_id:
             json_dict['foursquare_id'] = self.foursquare_id
         if self.thumb_url:
