@@ -37,7 +37,6 @@ class TeleBot(apihelper.TelegramApiInterface):
 
         self.__stop_polling = threading.Event()
         self.last_update_id = 0
-        self.exc_info = None
 
         self.message_subscribers_messages = []
         self.message_subscribers_callbacks = []
