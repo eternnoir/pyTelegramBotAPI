@@ -3,6 +3,8 @@
 import json
 import six
 
+from telebot import util
+
 
 class JsonSerializable:
     """
@@ -553,7 +555,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         i = 1
         row = []
         for button in args:
-            if isinstance(button, str):
+            if util.is_string(button):
                 row.append({'text': button})
             else:
                 row.append(button.to_dic())
@@ -574,7 +576,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         """
         btn_array = []
         for button in args:
-            if isinstance(button, str):
+            if util.is_string(button):
                 btn_array.append({'text': button})
             else:
                 btn_array.append(button.to_dic())
@@ -1194,8 +1196,8 @@ class InlineQueryResultVenue(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
-                     'address': self.address}
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'latitude': self.latitude,
+                     'longitude': self.longitude, 'address': self.address}
         if self.foursquare_id:
             json_dict['foursquare_id'] = self.foursquare_id
         if self.thumb_url:
