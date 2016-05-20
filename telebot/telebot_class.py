@@ -4,9 +4,9 @@ import time
 import re
 import six
 
-import apihelper
-import util
-from util import logger
+from telebot import apihelper
+from telebot import util
+from telebot import logger
 
 
 class TeleBot(apihelper.TelegramApiInterface):

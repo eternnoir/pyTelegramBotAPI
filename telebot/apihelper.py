@@ -3,7 +3,8 @@
 import requests
 import six
 import types
-import util
+
+from telebot import util
 from util import logger
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"
