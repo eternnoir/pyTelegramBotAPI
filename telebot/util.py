@@ -4,7 +4,6 @@ import threading
 import re
 import sys
 import six
-from six import string_types
 
 import logging
 
@@ -160,7 +159,7 @@ def async():
 
 
 def is_string(var):
-    return isinstance(var, string_types)
+    return isinstance(var, six.string_types)
 
 
 def is_command(text):

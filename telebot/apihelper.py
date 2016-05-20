@@ -5,7 +5,7 @@ import six
 import types
 
 from telebot import util
-from util import logger
+from telebot import logger
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
