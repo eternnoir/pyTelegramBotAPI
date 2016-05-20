@@ -6,14 +6,25 @@ import sys
 import six
 from six import string_types
 
+import logging
+
+logger = logging.getLogger('TeleBot')
+formatter = logging.Formatter(
+    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
+)
+
+console_output_handler = logging.StreamHandler(sys.stderr)
+console_output_handler.setFormatter(formatter)
+logger.addHandler(console_output_handler)
+
+logger.setLevel(logging.ERROR)
+
 # Python3 queue support.
 
 try:
     import Queue
 except ImportError:
     import queue as Queue
-
-from telebot import logger
 
 
 class WorkerThread(threading.Thread):
@@ -151,6 +162,7 @@ def async():
 def is_string(var):
     return isinstance(var, string_types)
 
+
 def is_command(text):
     """
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
@@ -188,8 +200,13 @@ def split_string(text, chars_per_string):
     """
     return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
 
-# CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
+
 def or_set(self):
+    """
+    Taken and modified from http://stackoverflow.com/questions/12317940#answer-12320352
+    :param self:
+    :return:
+    """
     self._set()
     self.changed()
 
@@ -206,8 +223,10 @@ def orify(e, changed_callback):
     e.set = lambda: or_set(e)
     e.clear = lambda: or_clear(e)
 
+
 def OrEvent(*events):
     or_event = threading.Event()
+
     def changed():
         bools = [e.is_set() for e in events]
         if any(bools):
@@ -226,6 +245,7 @@ def OrEvent(*events):
     changed()
     return or_event
 
+
 def extract_arguments(text):
     """
     Returns the argument after the command.
@@ -238,9 +258,11 @@ def extract_arguments(text):
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
     """
-    regexp = re.compile("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
+    if not is_command(text):
+        return None
+    regexp = re.compile("/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     result = regexp.match(text)
-    return result.group(2) if is_command(text) else None
+    return result.group(2)
 
 
 def merge_dicts(*dicts):

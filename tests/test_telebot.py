@@ -29,7 +29,7 @@ class TestTeleBot:
             assert len(messages) == 100
 
         tb = telebot.TeleBot('')
-        tb.set_update_listener(listener)
+        tb.add_update_listener(listener)
 
     def test_message_handler(self):
         tb = telebot.TeleBot('')
@@ -150,7 +150,7 @@ class TestTeleBot:
     def test_send_video_more_params_dis_noti(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_video(CHAT_ID, file_data, 1, disable_notification=True)
+        ret_msg = tb.send_video(CHAT_ID, file_data, duration=1, disable_notification=True)
         assert ret_msg.message_id
 
     def test_send_file_exception(self):
@@ -183,7 +183,7 @@ class TestTeleBot:
     def test_send_audio(self):
         file_data = open('./test_data/record.mp3', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
+        ret_msg = tb.send_audio(CHAT_ID, file_data, duration=1, performer='eternnoir', title='pyTelegram')
         assert ret_msg.content_type == 'audio'
         assert ret_msg.audio.performer == 'eternnoir'
         assert ret_msg.audio.title == 'pyTelegram'
@@ -191,7 +191,8 @@ class TestTeleBot:
     def test_send_audio_dis_noti(self):
         file_data = open('./test_data/record.mp3', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram', disable_notification=True)
+        opts = {'duration': 1, 'performer': 'eternnoir', 'title': 'pyTelegram', 'disable_notification': True}
+        ret_msg = tb.send_audio(CHAT_ID, file_data, **opts)
         assert ret_msg.content_type == 'audio'
         assert ret_msg.audio.performer == 'eternnoir'
         assert ret_msg.audio.title == 'pyTelegram'
@@ -329,7 +330,7 @@ class TestTeleBot:
         ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address", disable_notification=True)
         assert ret_msg.venue.title == "Test Venue"
 
-    def test_Chat(self):
+    def test_chat(self):
         tb = telebot.TeleBot(TOKEN)
         me = tb.get_me()
         msg = tb.send_message(CHAT_ID, 'Test')
@@ -354,7 +355,8 @@ class TestTeleBot:
         new_msg = tb.edit_message_reply_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
         assert new_msg.message_id
 
-    def create_text_message(self, text):
+    @staticmethod
+    def create_text_message(text):
         params = {'text': text}
         chat = types.User(11, 'test')
         return types.Message(1, None, None, chat, 'text', params)

@@ -3,7 +3,7 @@
 import json
 import six
 
-from telebot import util
+import util
 
 
 class JsonSerializable:
@@ -766,7 +766,7 @@ class InputLocationMessageContent(Dictionaryable):
         self.longitude = longitude
 
     def to_dic(self):
-        json_dic = {'latitude': self.latitudet, 'longitude': self.longitude}
+        json_dic = {'latitude': self.latitude, 'longitude': self.longitude}
         return json_dic
 
 
@@ -1102,7 +1102,7 @@ class InlineQueryResultVoice(JsonSerializable):
         self.input_message_content = input_message_content
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.titlee}
+        json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.title}
         if self.performer:
             json_dict['performer'] = self.performer
         if self.voice_duration:
@@ -1131,7 +1131,7 @@ class InlineQueryResultDocument(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'document_url': self.document_url, 'mime_type': self.titlee}
+        json_dict = {'type': self.type, 'id': self.id, 'document_url': self.document_url, 'mime_type': self.title}
         if self.caption:
             json_dict['caption'] = self.caption
         if self.description:

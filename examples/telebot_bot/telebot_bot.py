@@ -3,6 +3,7 @@
 # and goes by the name 'TeleBot (@pyTeleBot)'. Join our group to talk to him!
 # WARNING: Tested with Python 2.7
 
+from __future__ import print_function
 import telebot
 import os
 
@@ -30,11 +31,13 @@ text_messages = {
 if "TELEBOT_BOT_TOKEN" not in os.environ or "GROUP_CHAT_ID" not in os.environ:
     raise AssertionError("Please configure TELEBOT_BOT_TOKEN and GROUP_CHAT_ID as environment variables")
 
-bot = telebot.AsyncTeleBot(os.environ["TELEBOT_BOT_TOKEN"])
+bot = telebot.TeleBot(os.environ["TELEBOT_BOT_TOKEN"])
 GROUP_CHAT_ID = int(os.environ["GROUP_CHAT_ID"])
+
 
 def is_api_group(chat_id):
     return chat_id== GROUP_CHAT_ID
+
 
 @bot.message_handler(func=lambda m: True, content_types=['new_chat_participant'])
 def on_user_joins(message):
@@ -50,6 +53,7 @@ def on_user_joins(message):
 
     bot.reply_to(message, text_messages['welcome'].format(name=name))
 
+
 @bot.message_handler(commands=['info', 'help'])
 def on_info(message):
     if not is_api_group(message.chat.id):
@@ -57,6 +61,7 @@ def on_info(message):
         return
 
     bot.reply_to(message, text_messages['info'])
+
 
 @bot.message_handler(commands=["ping"])
 def on_ping(message):
@@ -68,11 +73,12 @@ def on_start(message):
         bot.reply_to(message, text_messages['wrong_chat'])
         return
 
+
 def listener(messages):
     for m in messages:
-        print str(m)
+        print(str(m))
 
-bot.set_update_listener(listener)
+bot.add_update_listener(listener)
 bot.polling()
 
 
