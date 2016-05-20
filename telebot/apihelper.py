@@ -11,7 +11,12 @@ API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
 
-class RequestExecutorImpl:
+class RequestExecutor:
+    def make_request(self, url, method='get', params=None, files=None, response_type='text'):
+        raise NotImplementedError()
+
+
+class RequestExecutorImpl(RequestExecutor):
     DEFAULT_CONNECT_TIMEOUT = 3.5
     DEFAULT_READ_TIMEOUT = 9999
 
@@ -33,7 +38,6 @@ class RequestExecutorImpl:
 
 
 class TelegramApiInterface:
-
     def __init__(self, token, request_executor, api_url=API_URL, file_url=FILE_URL):
         self.token = token
         self.request_executor = request_executor
@@ -51,38 +55,25 @@ class TelegramApiInterface:
         :param results: list of InlineQueryResult objects
         :rtype: str
         """
-        converted_results = [r.to_json() for r in results]
+        converted_results = [r.to_json() if isinstance(r, types.JsonSerializable) else r for r in results]
         return '[' + ','.join(converted_results) + ']'
 
-    @staticmethod
-    def __merge(*dicts):
-        """
-        Merges two or more dicts into one, and deletes any keys which' associated values are equal to None.
-        :rtype: dict
-        """
-        d = util.merge_dicts(*dicts)
-        copy = d.copy()
-        for k, v in six.iteritems(d.copy()):
-            if v is None:
-                del copy[k]
-        return copy
-
     def make_request(self, method_name, params=None, files=None, method='get', response_type='json'):
-        if params is not None and 'reply_markup' in params:
-            params['reply_markup'] = self.convert_markup(params['reply_markup'])
         request_url = self.api_url.format(self.token, method_name)
         try:
             response = self.request_executor.make_request(request_url, method, params, files, response_type)
             return response
         except Exception as e:
-            raise ApiException(e.message, method_name)
+            raise ApiException(repr(e), method_name)
 
     def make_json_request(self, method_name, params=None, files=None, method='post', return_type=None):
         if params is not None and 'reply_markup' in params:
             params['reply_markup'] = self.convert_markup(params['reply_markup'])
+
         response = self.make_request(method_name, params, files, method, response_type='json')
         if not response['ok']:
-            raise ApiException('Error code: {error_code} Description: {description}' .format(**response), method)
+            raise ApiException('Error code: {error_code} Description: {description}'.format(**response), method)
+
         if hasattr(return_type, 'de_json'):
             return return_type.de_json(response['result'])
         return response['result']
@@ -95,7 +86,7 @@ class TelegramApiInterface:
         :param timeout: Integer. Timeout in seconds for long polling.
         :return: list of Updates
         """
-        json_updates = self.make_json_request('getUpdates', params=self.__merge(kwargs))
+        json_updates = self.make_json_request('getUpdates', params=util.xmerge(kwargs))
         return [types.Update.de_json(update) for update in json_updates]
 
     def get_me(self):
@@ -126,13 +117,13 @@ class TelegramApiInterface:
         :rtype types.Message
         """
         payload = {'chat_id': str(chat_id), 'text': text}
-        return self.make_json_request('sendMessage', self.__merge(payload, kwargs), return_type=types.Message)
+        return self.make_json_request('sendMessage', params=util.xmerge(payload, kwargs), return_type=types.Message)
 
     def set_webhook(self, certificate=None, **kwargs):
         files = None
         if certificate is not None:
             files = {'certificate': certificate}
-        return self.make_json_request('setWebhook', params=self.__merge(kwargs), files=files)
+        return self.make_json_request('setWebhook', params=util.xmerge(kwargs), files=files)
 
     def get_user_profile_photos(self, user_id, **kwargs):
         """
@@ -143,7 +134,7 @@ class TelegramApiInterface:
         :param limit:
         :return: API reply.
         """
-        params = self.__merge({'user_id': user_id}, kwargs)
+        params = util.xmerge({'user_id': user_id}, kwargs)
         return self.make_json_request('getUserProfilePhotos', params=params, return_type=types.UserProfilePhotos)
 
     def forward_message(self, chat_id, from_chat_id, message_id, **kwargs):
@@ -155,13 +146,12 @@ class TelegramApiInterface:
         :param message_id: message id
         :return: API reply.
         """
-        params = self.__merge({
+        params = util.xmerge({
             'chat_id': chat_id,
             'from_chat_id': from_chat_id,
             'message_id': message_id
         }, kwargs)
         return self.make_json_request('forwardMessage', params=params, return_type=types.Message)
-
 
     def send_location(self, chat_id, latitude, longitude, **kwargs):
         """
@@ -174,7 +164,7 @@ class TelegramApiInterface:
         :param reply_markup:
         :return: API reply.
         """
-        params = self.__merge({'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}, kwargs)
+        params = util.xmerge({'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}, kwargs)
         return self.make_json_request('sendLocation', params=params, return_type=types.Message)
 
     def send_venue(self, chat_id, latitude, longitude, title, address, **kwargs):
@@ -192,11 +182,11 @@ class TelegramApiInterface:
         :return:
         """
         params = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
-        params = self.__merge(params, kwargs)
+        params = util.xmerge(params, kwargs)
         return self.make_json_request('sendVenue', params=params, return_type=types.Message)
 
     def send_contact(self, chat_id, phone_number, first_name, **kwargs):
-        params = self.__merge({'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}, kwargs)
+        params = util.xmerge({'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}, kwargs)
         return self.make_json_request('sendContact', params=params, return_type=types.Message)
 
     def send_chat_action(self, chat_id, action):
@@ -297,7 +287,7 @@ class TelegramApiInterface:
             files = {data_type: data}
         else:
             params[data_type] = data
-        params = self.__merge(params, kwargs)
+        params = util.xmerge(params, kwargs)
         method = self.get_method_by_type(data_type)
         return self.make_json_request(method, params=params, files=files, return_type=types.Message)
 
@@ -325,16 +315,16 @@ class TelegramApiInterface:
         return self.make_json_request('unbanChatMember', params={'chat_id': chat_id, 'user_id': user_id})
 
     def edit_message_text(self, text, **kwargs):
-        params = self.__merge({'text': text}, kwargs)
+        params = util.xmerge({'text': text}, kwargs)
         response = self.make_json_request('editMessageText', params=params)
         return response if type(response) == bool else types.Message.de_json(response)
 
     def edit_message_caption(self, caption, **kwargs):
-        params = self.__merge({'caption': caption}, kwargs)
+        params = util.xmerge({'caption': caption}, kwargs)
         return self.make_json_request('editMessageCaption', params=params, return_type=types.Message)
 
     def edit_message_reply_markup(self, **kwargs):
-        return self.make_json_request('editMessageReplyMarkup', params=self.__merge(kwargs), return_type=types.Message)
+        return self.make_json_request('editMessageReplyMarkup', params=util.xmerge(kwargs), return_type=types.Message)
 
     def answer_callback_query(self, callback_query_id, **kwargs):
         """
@@ -345,7 +335,7 @@ class TelegramApiInterface:
         :param show_alert:
         :return:
         """
-        params = self.__merge({'callback_query_id': callback_query_id}, kwargs)
+        params = util.xmerge({'callback_query_id': callback_query_id}, kwargs)
         return self.make_json_request('answerCallbackQuery', params=params)
 
     def answer_inline_query(self, inline_query_id, results, **kwargs):
@@ -362,7 +352,7 @@ class TelegramApiInterface:
         :param switch_pm_text: 	Parameter for the start message sent to the bot when user presses the switch button
         :return: True means success.
         """
-        params = self.__merge({
+        params = util.xmerge({
             'inline_query_id': inline_query_id,
             'results': self.convert_inline_results(results)
         }, kwargs)
@@ -376,6 +366,7 @@ class ApiException(Exception):
     contain the name of the failed function and the returned result that made the function to be considered  as
     failed.
     """
+
     def __init__(self, msg, function_name=None, result=None):
         super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name

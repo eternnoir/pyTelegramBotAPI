@@ -269,3 +269,16 @@ def merge_dicts(*dicts):
     for dictionary in dicts:
         result.update(dictionary)
     return result
+
+
+def xmerge(*dicts):
+    """
+    Merges two or more dicts into one, and deletes any keys which' associated values are equal to None.
+    :rtype: dict
+    """
+    d = merge_dicts(*dicts)
+    copy = d.copy()
+    for k, v in six.iteritems(d.copy()):
+        if v is None:
+            del copy[k]
+    return copy
