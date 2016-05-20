@@ -2,7 +2,6 @@
 
 import requests
 import six
-import types
 
 from telebot import util
 from telebot import logger
@@ -20,7 +19,7 @@ class RequestExecutorImpl:
         self.timeouts = (connect_timeout, read_timeout)
 
     def make_request(self, url, method='get', params=None, files=None, response_type='text'):
-        logger.debug("{} {} params={} files={}".format(method.upper(), url, params, files))
+        logger.debug("{0} {1} params={2} files={3}".format(method.upper(), url, params, files))
         response = requests.request(method, url, params=params, files=files, timeout=self.timeouts)
         logger.debug("Server: '{0}'".format(response.text.encode('utf8')))
         response.raise_for_status()  # Raise if response status != 200 OK
@@ -30,7 +29,7 @@ class RequestExecutorImpl:
             return response.content
         elif response_type == 'json':
             return response.json()
-        raise ValueError('Invalid response_type "{}"'.format(response_type))
+        raise ValueError('Invalid response_type "{0}"'.format(response_type))
 
 
 class TelegramApiInterface:
