@@ -178,6 +178,8 @@ class Message(JsonDeserializable):
             opts['forward_date'] = obj['forward_date']
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
+        if 'edit_date' in obj:
+            opts['edit_date'] = Message.de_json(obj['edit_date'])
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
@@ -269,6 +271,7 @@ class Message(JsonDeserializable):
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
+        self.edit_date = None
         self.text = None
         self.entities = None
         self.audio = None
