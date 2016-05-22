@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
-import sys
-
-sys.path.append('../')
-
 import pytest
-import os
 import mock
 
-import telebot
 from telebot import types
-from telebot import util
 from telebot import apihelper
 
 
@@ -17,8 +10,8 @@ class TestTelegramApiInterface:
 
     def test_make_request(self):
         api = self.create_mocked_instance()
-        api.request_executor = mock.MagicMock(make_request=mock.MagicMock())
-        api.request_executor.make_request.return_value = 'return value'
+        api.request_executor = mock.MagicMock()
+        api.request_executor.return_value = 'return value'
 
         response = api.make_request(
             'methodName',
@@ -27,19 +20,19 @@ class TestTelegramApiInterface:
             method='method',
             response_type='response_type'
         )
-        api.request_executor.make_request.assert_called_with(
+        api.request_executor.assert_called_with(
             'token=TOKEN&method=methodName',
-            'method',
-            {'param': 'value'},
-            {'file': 'value'},
-            'response_type'
+            method='method',
+            params={'param': 'value'},
+            files={'file': 'value'},
+            response_type='response_type'
         )
         assert response == 'return value'
 
     def test_make_request_exception(self):
         api = self.create_mocked_instance()
-        api.request_executor = mock.MagicMock(make_request=mock.MagicMock())
-        api.request_executor.make_request.side_effect = Exception('abc')
+        api.request_executor = mock.MagicMock()
+        api.request_executor.side_effect = Exception('abc')
 
         with pytest.raises(apihelper.ApiException) as e:
             api.make_request('methodName')

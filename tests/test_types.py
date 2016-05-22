@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-import sys
-
-sys.path.append('../')
 from telebot import types
 
 
 def test_json_user():
     jsonstring = r'{"id":101176298,"first_name":"RDSSBOT","username":"rdss_bot"}'
     u = types.User.de_json(jsonstring)
+
     assert u.id == 101176298
 
 
 def test_json_message():
     jsonstring = r'{"message_id":1,"from":{"id":108929734,"first_name":"Frank","last_name":"Wang","username":"eternnoir"},"chat":{"id":1734,"first_name":"F","type":"private","last_name":"Wa","username":"oir"},"date":1435296025,"text":"HIHI"}'
     msg = types.Message.de_json(jsonstring)
+
     assert msg.text == 'HIHI'
 
 

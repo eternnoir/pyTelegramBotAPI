@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import requests
-import six
 
 from telebot import util
 from telebot import logger
@@ -11,12 +10,7 @@ API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
 
-class RequestExecutor:
-    def make_request(self, url, method='get', params=None, files=None, response_type='text'):
-        raise NotImplementedError()
-
-
-class RequestExecutorImpl(RequestExecutor):
+class RequestExecutorImpl:
     DEFAULT_CONNECT_TIMEOUT = 3.5
     DEFAULT_READ_TIMEOUT = 9999
 
@@ -35,6 +29,9 @@ class RequestExecutorImpl(RequestExecutor):
         elif response_type == 'json':
             return response.json()
         raise ValueError('Invalid response_type "{0}"'.format(response_type))
+
+    def __call__(self, *args, **kwargs):
+        return self.make_request(*args, **kwargs)
 
 
 class TelegramApiInterface:
@@ -61,7 +58,8 @@ class TelegramApiInterface:
     def make_request(self, method_name, params=None, files=None, method='get', response_type='json'):
         request_url = self.api_url.format(self.token, method_name)
         try:
-            response = self.request_executor.make_request(request_url, method, params, files, response_type)
+            response = self.request_executor(request_url,
+                                             method=method, params=params, files=files, response_type=response_type)
             return response
         except Exception as e:
             raise ApiException(repr(e), method_name)

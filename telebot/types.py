@@ -64,7 +64,7 @@ class JsonDeserializable:
         """
         if type(json_type) == dict:
             return json_type
-        elif type(json_type) == str:
+        elif util.is_string(json_type):
             return json.loads(json_type)
         else:
             raise ValueError("json_type should be a json dict or string.")

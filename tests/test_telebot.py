@@ -1,33 +1,15 @@
 # -*- coding: utf-8 -*-
-import sys
-
-sys.path.append('../')
-
-import time
 import pytest
 import os
 
 import telebot
 from telebot import types
-from telebot import util
-from telebot import apihelper
 
 should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
 
 if not should_skip:
     TOKEN = os.environ['TOKEN']
     CHAT_ID = os.environ['CHAT_ID']
-
-
-class RequestReceived(ValueError):
-    def __init__(self, url, method, params, files, response_type):
-        self.url = url
-        self.method = method
-        self.params = params
-        self.files = files
-        self.response_type = response_type
-
-
 
 
 @pytest.mark.skipif(True, reason="No environment variables configured")
@@ -295,19 +277,6 @@ class TestTeleBot:
         ret_msg = tb.reply_to(msg, text + ' REPLY')
         assert ret_msg.reply_to_message.message_id == msg.message_id
 
-    def test_register_for_reply(self):
-        text = 'CI reply_to Test Message'
-        tb = telebot.TeleBot(TOKEN)
-        msg = tb.send_message(CHAT_ID, text, reply_markup=types.ForceReply())
-        reply_msg = tb.reply_to(msg, text + ' REPLY')
-
-        def process_reply(message):
-            assert msg.message_id == message.reply_to_message.message_id
-
-        tb.register_for_reply(msg, process_reply)
-
-        tb.process_new_messages([reply_msg])
-
     def test_send_location(self):
         tb = telebot.TeleBot(TOKEN)
         lat = 26.3875591
@@ -368,18 +337,3 @@ class TestTeleBot:
         params = {'text': text}
         chat = types.User(11, 'test')
         return types.Message(1, None, None, chat, 'text', params)
-
-    def test_is_string_unicode(self):
-        s1 = u'string'
-        assert util.is_string(s1)
-
-    def test_is_string_string(self):
-        s1 = 'string'
-        assert util.is_string(s1)
-
-    def test_not_string(self):
-        i1 = 10
-        assert not util.is_string(i1)
-
-    def create_telebot(self, skip_pending=False):
-        return telebot.TeleBot('TESTING', skip_pending=skip_pending, request_executor=RequestExecutorMock())
