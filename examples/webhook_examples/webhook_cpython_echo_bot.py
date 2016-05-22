@@ -60,7 +60,7 @@ class WebhookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
 
             update = telebot.types.Update.de_json(json_string)
-            bot.process_new_messages([update.message])
+            bot.process_new_updates([update.message])
         else:
             self.send_error(403)
             self.end_headers()

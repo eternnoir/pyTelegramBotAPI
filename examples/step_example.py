@@ -39,7 +39,7 @@ def process_name_step(message):
         user_dict[chat_id] = user
         msg = bot.reply_to(message, 'How old are you?')
         bot.register_next_step_handler(msg, process_age_step)
-    except Exception as e:
+    except Exception:
         bot.reply_to(message, 'oooops')
 
 

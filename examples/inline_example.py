@@ -1,4 +1,5 @@
 # This example show how to write an inline mode telegramt bot use pyTelegramBotAPI.
+from __future__ import print_function
 import telebot
 import time
 import sys
@@ -69,5 +70,5 @@ if __name__ == '__main__':
     try:
         main_loop()
     except KeyboardInterrupt:
-        print >> sys.stderr, '\nExiting by user request.\n'
+        print('\nExiting by user request.\n')
         sys.exit(0)
