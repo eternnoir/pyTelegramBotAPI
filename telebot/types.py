@@ -304,7 +304,7 @@ class MessageEntity(JsonDeserializable):
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        user = obj.get('user')
+        user = User.de_json(obj.get('user'))
         return cls(type, offset, length, url, user)
 
     def __init__(self, type, offset, length, url=None, user=None):
