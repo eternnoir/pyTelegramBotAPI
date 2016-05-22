@@ -27,9 +27,11 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     request_url = base_url.format(token, method_name)
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
+    connect_timeout = CONNECT_TIMEOUT
     if params:
         if 'timeout' in params: read_timeout = params['timeout'] + 10
-    result = requests.request(method, request_url, params=params, files=files, timeout=(CONNECT_TIMEOUT, read_timeout))
+        if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
+    result = requests.request(method, request_url, params=params, files=files, timeout=(connect_timeout, read_timeout))
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
 
@@ -225,7 +227,7 @@ def send_chat_action(token, chat_id, action):
 
 
 def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               disable_notification=None):
+               disable_notification=None, timeout=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -243,11 +245,13 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['reply_markup'] = _convert_markup(reply_markup)
     if disable_notification:
         payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None,
-               disable_notification=None):
+               disable_notification=None, timeout=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -263,11 +267,13 @@ def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, r
         payload['reply_markup'] = _convert_markup(reply_markup)
     if disable_notification:
         payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_audio(token, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None, disable_notification=None):
+               reply_markup=None, disable_notification=None, timeout=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -287,10 +293,12 @@ def send_audio(token, chat_id, audio, duration=None, performer=None, title=None,
         payload['reply_markup'] = _convert_markup(reply_markup)
     if disable_notification:
         payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None):
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None, timeout=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -304,6 +312,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['reply_markup'] = _convert_markup(reply_markup)
     if disable_notification:
         payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
