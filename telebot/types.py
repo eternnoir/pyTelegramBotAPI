@@ -86,6 +86,7 @@ class Update(JsonDeserializable):
         obj = cls.check_json(json_type)
         update_id = obj['update_id']
         message = None
+        edited_message = None
         inline_query = None
         chosen_inline_result = None
         callback_query = None
