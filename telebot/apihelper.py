@@ -311,8 +311,62 @@ class TelegramApiInterface:
         """
         return self.make_json_request('kickChatMember', params={'chat_id': chat_id, 'user_id': user_id})
 
+    def leave_chat(self, chat_id):
+        """
+        Use this method for your bot to leave a group, supergroup or channel
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel
+            (in the format @channelusername)
+        :return: True on success.
+        """
+        return self.make_json_request('leaveChat', params={'chat_id': chat_id})
+
     def unban_chat_member(self, chat_id, user_id):
         return self.make_json_request('unbanChatMember', params={'chat_id': chat_id, 'user_id': user_id})
+
+    def get_chat(self, chat_id):
+        """
+        Use this method to get up to date information about the chat (current name of the user for one-on-one
+        conversations, current username of a user, group or channel, etc.).
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel
+            (in the format @channelusername)
+        :return: a Chat object on success
+        :rtype: types.Chat
+        """
+        return self.make_json_request('getChat', params={'chat_id': chat_id})
+
+    def get_chat_administrators(self, chat_id):
+        """
+        Use this method to get a list of administrators in a chat. On success, returns an Array of ChatMember objects
+        that contains information about all chat administrators except other bots. If the chat is a group or a
+        supergroup and no administrators were appointed, only the creator will be returned.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel
+            (in the format @channelusername)
+        :return: Array of ChatMember objects
+        """
+        response = self.make_json_request('getChatAdministrators', params={'chat_id': chat_id})
+        return [types.ChatMember.de_json(e) for e in response]
+
+    def get_chat_members_count(self, chat_id):
+        """
+        Use this method to get the number of members in a chat
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel
+            (in the format @channelusername)
+        :return: Number of chat members
+        :rtype integer
+        """
+        return self.make_json_request('getChatMembersCount', params={'chat_id': chat_id})
+
+    def get_chat_member(self, chat_id, user_id):
+        """
+        Use this method to get information about a member of a chat.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel
+            (in the format @channelusername)
+        :param user_id: Unique identifier of the target user
+        :return: ChatMember on success
+        :rtype: types.ChatMember
+        """
+        return self.make_json_request('getChatMember', params={'chat_id': chat_id, 'user_id': user_id},
+                                      return_type=types.ChatMember)
 
     def edit_message_text(self, text, **kwargs):
         params = util.xmerge({'text': text}, kwargs)

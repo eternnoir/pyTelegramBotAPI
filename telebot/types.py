@@ -86,6 +86,7 @@ class Update(JsonDeserializable):
         obj = cls.check_json(json_type)
         update_id = obj['update_id']
         message = None
+        edited_message = None
         inline_query = None
         chosen_inline_result = None
         callback_query = None
@@ -97,11 +98,14 @@ class Update(JsonDeserializable):
             chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
         if 'callback_query' in obj:
             callback_query = CallbackQuery.de_json(obj['callback_query'])
-        return cls(update_id, message, inline_query, chosen_inline_result, callback_query)
+        if 'edited_message' in obj:
+            edited_message = Message.de_json(obj['edited_message'])
+        return cls(update_id, message, edited_message, inline_query, chosen_inline_result, callback_query)
 
-    def __init__(self, update_id, message, inline_query, chosen_inline_result, callback_query):
+    def __init__(self, update_id, message, edited_message, inline_query, chosen_inline_result, callback_query):
         self.update_id = update_id
         self.message = message
+        self.edited_message = edited_message
         self.inline_query = inline_query
         self.chosen_inline_result = chosen_inline_result
         self.callback_query = callback_query
@@ -158,6 +162,17 @@ class Chat(JsonDeserializable):
         self.title = title
 
 
+class ChatMember(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        user = User.de_json(obj['user'])
+        status = obj['status']
+
+    def __init__(self, user, status):
+        self.user = user
+        self.status = status
+
 class Message(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
@@ -178,6 +193,8 @@ class Message(JsonDeserializable):
             opts['forward_date'] = obj['forward_date']
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
+        if 'edit_date' in obj:
+            opts['edit_date'] = obj.get('edit_date')
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
@@ -269,6 +286,7 @@ class Message(JsonDeserializable):
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
+        self.edit_date = None
         self.text = None
         self.entities = None
         self.audio = None
@@ -304,13 +322,15 @@ class MessageEntity(JsonDeserializable):
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        return cls(type, offset, length, url)
+        user = User.de_json(obj.get('user'))
+        return cls(type, offset, length, url, user)
 
-    def __init__(self, type, offset, length, url=None):
+    def __init__(self, type, offset, length, url=None, user=None):
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
+        self.user = user
 
 
 class PhotoSize(JsonDeserializable):
