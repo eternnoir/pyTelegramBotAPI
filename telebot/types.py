@@ -99,7 +99,7 @@ class Update(JsonDeserializable):
             chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
         if 'callback_query' in obj:
             callback_query = CallbackQuery.de_json(obj['callback_query'])
-        return cls(update_id, message, inline_query, chosen_inline_result, callback_query)
+        return cls(update_id, message, edited_message, inline_query, chosen_inline_result, callback_query)
 
     def __init__(self, update_id, message, edited_message, inline_query, chosen_inline_result, callback_query):
         self.update_id = update_id
