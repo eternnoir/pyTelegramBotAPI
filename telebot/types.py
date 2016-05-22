@@ -179,7 +179,7 @@ class Message(JsonDeserializable):
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'edit_date' in obj:
-            opts['edit_date'] = Message.de_json(obj['edit_date'])
+            opts['edit_date'] = obj.get('edit_date')
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
