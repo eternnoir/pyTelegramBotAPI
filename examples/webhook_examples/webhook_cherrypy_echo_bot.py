@@ -46,7 +46,7 @@ class WebhookServer(object):
             length = int(cherrypy.request.headers['content-length'])
             json_string = cherrypy.request.body.read(length).decode("utf-8")
             update = telebot.types.Update.de_json(json_string)
-            bot.process_new_messages([update.message])
+            bot.process_new_updates([update])
             return ''
         else:
             raise cherrypy.HTTPError(403)

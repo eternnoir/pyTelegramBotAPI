@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import threading
+import re
 import sys
 import six
 from six import string_types
