@@ -1,20 +1,6 @@
 # -*- coding: utf-8 -*-
 import pytest
-# noinspection PyCompatibility
-import concurrent.futures
 from telebot import util
-
-
-def test_async_returned_type():
-    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-
-    @util.async(executor)
-    def some_async_func():
-        return 42
-
-    f = some_async_func()
-    assert isinstance(f, concurrent.futures.Future)
-    assert f.result() == 42
 
 
 def test_is_string():
