@@ -311,13 +311,17 @@ class MessageEntity(JsonDeserializable):
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        return cls(type, offset, length, url)
+        user = None
+        if 'user' in obj:
+            user = User.de_json(obj['user'])
+        return cls(type, offset, length, url, user)
 
-    def __init__(self, type, offset, length, url=None):
+    def __init__(self, type, offset, length, url=None, user=None):
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
+        self.user = user
 
 
 class PhotoSize(JsonDeserializable):
