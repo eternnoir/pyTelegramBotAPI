@@ -19,7 +19,7 @@ def test_async_returned_type():
 
 def test_is_string():
     assert util.is_string('abc')
-    assert util.is_string('abc'.decode('utf8'))
+    assert util.is_string(u'abc')
     assert not util.is_string(1)
     assert not util.is_string([])
 
