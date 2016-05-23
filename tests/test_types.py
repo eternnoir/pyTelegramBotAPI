@@ -121,16 +121,16 @@ def test_json_chat():
     assert chat.title == 'Test Title'
 
 def test_InlineQueryResultCachedPhoto():
-    iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid')
-    json_str = iq.to_json()
+    iq = types.InlineQueryResultFactory.create_cached_result('photo', 'aaa', 'Fileid')
+    json_str = types.to_json(iq)
     assert 'aa' in json_str
     assert 'Fileid' in json_str
     assert 'caption' not in json_str
 
 
 def test_InlineQueryResultCachedPhoto_with_title():
-    iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid', title='Title')
-    json_str = iq.to_json()
+    iq = types.InlineQueryResultFactory.create_cached_result('photo', 'aaa', 'Fileid', title='Title')
+    json_str = types.to_json(iq)
     assert 'aa' in json_str
     assert 'Fileid' in json_str
     assert 'Title' in json_str
@@ -140,8 +140,10 @@ def test_InlineQueryResultCachedPhoto_with_markup():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
     markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
-    iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid', title='Title', reply_markup=markup)
-    json_str = iq.to_json()
+    iq = types.InlineQueryResultFactory.create_cached_result(
+        'photo', 'aaa', 'Fileid', title='Title', reply_markup=markup
+    )
+    json_str = types.to_json(iq)
     assert 'aa' in json_str
     assert 'Fileid' in json_str
     assert 'Title' in json_str

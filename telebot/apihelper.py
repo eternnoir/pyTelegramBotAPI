@@ -43,7 +43,7 @@ class TelegramApiInterface:
 
     @staticmethod
     def convert_markup(markup):
-        return markup.to_json() if isinstance(markup, types.JsonSerializable) else markup
+        return types.to_json(markup)
 
     @staticmethod
     def convert_inline_results(results):
@@ -52,7 +52,7 @@ class TelegramApiInterface:
         :param results: list of InlineQueryResult objects
         :rtype: str
         """
-        converted_results = [r.to_json() if isinstance(r, types.JsonSerializable) else r for r in results]
+        converted_results = [types.to_json(r) for r in results]
         return '[' + ','.join(converted_results) + ']'
 
     def make_request(self, method_name, params=None, files=None, method='get', response_type='json'):

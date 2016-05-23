@@ -230,10 +230,11 @@ class TestTelegramApiInterface:
         api.answer_inline_query(1, ['a', 'b'], optional=True)
         api.make_json_request.assert_called_with(
             'answerInlineQuery',
-            params={'inline_query_id': 1, 'results': '[a,b]', 'optional': True}
+            params={'inline_query_id': 1, 'results': '["a","b"]', 'optional': True}
         )
 
-    def create_mocked_instance(self):
+    @staticmethod
+    def create_mocked_instance():
         instance = apihelper.TelegramApiInterface('TOKEN', None,
                                                   api_url='token={0}&method={1}', file_url='token={0}&file_path={1}')
         instance.make_json_request = mock.MagicMock()
