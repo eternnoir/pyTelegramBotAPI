@@ -8,7 +8,7 @@ import telebot.listeners as listeners
 from telebot.util import logger
 
 
-class TeleBot(object, apihelper.TelegramApiInterface):
+class TeleBot(apihelper.TelegramApiInterface):
 
     def __init__(self, token, request_executor=None):
         """
@@ -16,7 +16,7 @@ class TeleBot(object, apihelper.TelegramApiInterface):
         :return: Telebot object.
         """
         request_executor = request_executor if request_executor is not None else apihelper.RequestExecutorImpl()
-        super(TeleBot, self).__init__(token, request_executor)
+        apihelper.TelegramApiInterface.__init__(self, token, request_executor)
 
         self.token = token
         self.update_listeners = []

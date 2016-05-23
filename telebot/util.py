@@ -119,6 +119,28 @@ def xmerge(*dicts):
     return copy
 
 
+def required(*params):
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            if not all(p in kwargs for p in params):
+                raise ValueError("Missing required arguments: {0}".format([p for p in params if p not in kwargs]))
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def translate(translate_dict):
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            for k, v in six.iteritems(translate_dict):
+                if k in kwargs:
+                    kwargs[v] = kwargs[k]
+                    del kwargs[k]
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 def async(threadpool):
     """
     Annotate a function with this decorator to ensure that this function is executed asynchronously.

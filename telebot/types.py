@@ -1,9 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import json
-import six
 
-from telebot import util
+import telebot.util as util
+
+
+def de_json(cls, json_type):
+    if not issubclass(cls, JsonDeserializable):
+        raise ValueError("{0} is not a subclass of JsonDeserializable".format(cls))
+    if not json_type:
+        return None
+    if util.is_string(json_type):
+        json_type = json.loads(json_type)
+    return cls(**json_type)
+
+
+def de_json_array(cls, json_array):
+    if not json_array:
+        return None
+    return [de_json(cls, e) for e in json_array]
 
 
 class JsonSerializable:
@@ -40,120 +55,39 @@ class Dictionaryable:
 
 class JsonDeserializable:
     """
-    Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
-    All subclasses of this class must override de_json.
+    Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string
+    using de_json().
     """
-
-    @classmethod
-    def de_json(cls, json_type):
-        """
-        Returns an instance of this class from the given json dict or string.
-
-        This function must be overridden by subclasses.
-        :return: an instance of this class created from the given json dict or string.
-        """
-        raise NotImplementedError
-
-    @staticmethod
-    def check_json(json_type):
-        """
-        Checks whether json_type is a dict or a string. If it is already a dict, it is returned as-is.
-        If it is not, it is converted to a dict by means of json.loads(json_type)
-        :param json_type:
-        :return:
-        """
-        if type(json_type) == dict:
-            return json_type
-        elif util.is_string(json_type):
-            return json.loads(json_type)
-        else:
-            raise ValueError("json_type should be a json dict or string.")
-
-    def __str__(self):
-        d = {}
-        for x, y in six.iteritems(self.__dict__):
-            if hasattr(y, '__dict__'):
-                d[x] = y.__dict__
-            else:
-                d[x] = y
-
-        return six.text_type(d)
+    pass
 
 
 class Update(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
-        update_id = obj['update_id']
-        message = None
-        edited_message = None
-        inline_query = None
-        chosen_inline_result = None
-        callback_query = None
-        if 'message' in obj:
-            message = Message.de_json(obj['message'])
-        if 'inline_query' in obj:
-            inline_query = InlineQuery.de_json(obj['inline_query'])
-        if 'chosen_inline_result' in obj:
-            chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
-        if 'callback_query' in obj:
-            callback_query = CallbackQuery.de_json(obj['callback_query'])
-        if 'edited_message' in obj:
-            edited_message = Message.de_json(obj['edited_message'])
-        return cls(update_id, message, edited_message, inline_query, chosen_inline_result, callback_query)
 
-    def __init__(self, update_id, message, edited_message, inline_query, chosen_inline_result, callback_query):
+    @util.required('update_id')
+    def __init__(self, update_id=None, message=None, edited_message=None, inline_query=None,
+                 chosen_inline_result=None, callback_query=None):
         self.update_id = update_id
-        self.message = message
-        self.edited_message = edited_message
-        self.inline_query = inline_query
-        self.chosen_inline_result = chosen_inline_result
-        self.callback_query = callback_query
+        self.message = de_json(Message, message)
+        self.edited_message = de_json(Message, edited_message)
+        self.inline_query = de_json(InlineQuery, inline_query)
+        self.chosen_inline_result = de_json(ChosenInlineResult, chosen_inline_result)
+        self.callback_query = de_json(CallbackQuery, callback_query)
 
 
 class User(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        id = obj['id']
-        first_name = obj['first_name']
-        last_name = obj.get('last_name')
-        username = obj.get('username')
-        return cls(id, first_name, last_name, username)
 
-    def __init__(self, id, first_name, last_name=None, username=None):
+    @util.required('id', 'first_name')
+    def __init__(self, id=None, first_name=None, last_name=None, username=None):
         self.id = id
         self.first_name = first_name
         self.username = username
         self.last_name = last_name
 
 
-class GroupChat(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        id = obj['id']
-        title = obj['title']
-        return cls(id, title)
-
-    def __init__(self, id, title):
-        self.id = id
-        self.title = title
-
-
 class Chat(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        id = obj['id']
-        type = obj['type']
-        title = obj.get('title')
-        username = obj.get('username')
-        first_name = obj.get('first_name')
-        last_name = obj.get('last_name')
-        return cls(id, type, title, username, first_name, last_name)
 
-    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None):
+    @util.required('id', 'type')
+    def __init__(self, id=None, type=None, title=None, username=None, first_name=None, last_name=None):
         self.type = type
         self.last_name = last_name
         self.first_name = first_name
@@ -163,187 +97,83 @@ class Chat(JsonDeserializable):
 
 
 class ChatMember(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        user = User.de_json(obj['user'])
-        status = obj['status']
 
-    def __init__(self, user, status):
+    @util.required('user', 'status')
+    def __init__(self, user=None, status=None):
         self.user = user
         self.status = status
 
 class Message(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        message_id = obj['message_id']
-        from_user = None
-        if 'from' in obj:
-            from_user = User.de_json(obj['from'])
-        date = obj['date']
-        chat = Chat.de_json(obj['chat'])
-        content_type = None
-        opts = {}
-        if 'forward_from' in obj:
-            opts['forward_from'] = User.de_json(obj['forward_from'])
-        if 'forward_from_chat' in obj:
-            opts['forward_from_chat'] = Chat.de_json(obj['forward_from_chat'])
-        if 'forward_date' in obj:
-            opts['forward_date'] = obj['forward_date']
-        if 'reply_to_message' in obj:
-            opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
-        if 'edit_date' in obj:
-            opts['edit_date'] = obj.get('edit_date')
-        if 'text' in obj:
-            opts['text'] = obj['text']
-            content_type = 'text'
-        if 'entities' in obj:
-            opts['entities'] = Message.parse_entities(obj['entities'])
-        if 'audio' in obj:
-            opts['audio'] = Audio.de_json(obj['audio'])
-            content_type = 'audio'
-        if 'document' in obj:
-            opts['document'] = Document.de_json(obj['document'])
-            content_type = 'document'
-        if 'photo' in obj:
-            opts['photo'] = Message.parse_photo(obj['photo'])
-            content_type = 'photo'
-        if 'sticker' in obj:
-            opts['sticker'] = Sticker.de_json(obj['sticker'])
-            content_type = 'sticker'
-        if 'video' in obj:
-            opts['video'] = Video.de_json(obj['video'])
-            content_type = 'video'
-        if 'voice' in obj:
-            opts['voice'] = Audio.de_json(obj['voice'])
-            content_type = 'voice'
-        if 'caption' in obj:
-            opts['caption'] = obj['caption']
-        if 'contact' in obj:
-            opts['contact'] = Contact.de_json(json.dumps(obj['contact']))
-            content_type = 'contact'
-        if 'location' in obj:
-            opts['location'] = Location.de_json(obj['location'])
-            content_type = 'location'
-        if 'venue' in obj:
-            opts['venue'] = Venue.de_json(obj['venue'])
-            content_type = 'venue'
-        if 'new_chat_member' in obj:
-            opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
-            content_type = 'new_chat_member'
-        if 'left_chat_member' in obj:
-            opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
-            content_type = 'left_chat_member'
-        if 'new_chat_title' in obj:
-            opts['new_chat_title'] = obj['new_chat_title']
-        if 'new_chat_photo' in obj:
-            opts['new_chat_photo'] = Message.parse_photo(obj['new_chat_photo'])
-        if 'delete_chat_photo' in obj:
-            opts['delete_chat_photo'] = obj['delete_chat_photo']
-        if 'group_chat_created' in obj:
-            opts['group_chat_created'] = obj['group_chat_created']
-        if 'supergroup_chat_created' in obj:
-            opts['supergroup_chat_created'] = obj['supergroup_chat_created']
-        if 'channel_chat_created' in obj:
-            opts['channel_chat_created'] = obj['channel_chat_created']
-        if 'migrate_to_chat_id' in obj:
-            opts['migrate_to_chat_id'] = obj['migrate_to_chat_id']
-        if 'migrate_from_chat_id' in obj:
-            opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
-        if 'pinned_message' in obj:
-            opts['pinned_message'] = Message.de_json(obj['pinned_message'])
-        return cls(message_id, from_user, date, chat, content_type, opts)
+    CONTENT_TYPES = ['text', 'audio', 'document', 'photo', 'sticker', 'video', 'voice', 'contact',
+                     'location', 'venue', 'new_chat_member', 'left_chat_member']
 
-    @classmethod
-    def parse_chat(cls, chat):
-        if 'first_name' not in chat:
-            return GroupChat.de_json(chat)
-        else:
-            return User.de_json(chat)
-
-    @classmethod
-    def parse_photo(cls, photo_size_array):
-        ret = []
-        for ps in photo_size_array:
-            ret.append(PhotoSize.de_json(ps))
-        return ret
-
-    @classmethod
-    def parse_entities(cls, message_entity_array):
-        ret = []
-        for me in message_entity_array:
-            ret.append(MessageEntity.de_json(me))
-        return ret
-
-    def __init__(self, message_id, from_user, date, chat, content_type, options):
-        self.content_type = content_type
+    @util.translate({'from': 'from_user'})
+    @util.required('message_id', 'date', 'chat')
+    def __init__(self, message_id=None, from_user=None, date=None, chat=None,
+                 forward_from=None, forward_from_chat=None, forward_date=None, reply_to_message=None, edit_date=None,
+                 text=None, entities=None, audio=None, document=None, photo=None, sticker=None, video=None,
+                 voice=None, caption=None, contact=None, location=None, venue=None, new_chat_member=None,
+                 left_chat_member=None, new_chat_title=None, new_chat_photo=None, delete_chat_photo=None,
+                 group_chat_created=None, supergroup_chat_created=None, channel_chat_created=None,
+                 migrate_to_chat_id=None, migrate_from_chat_id=None, pinned_message=None):
         self.message_id = message_id
-        self.from_user = from_user
+        self.from_user = de_json(User, from_user)
         self.date = date
-        self.chat = chat
-        self.forward_from_chat = None
-        self.forward_from = None
-        self.forward_date = None
-        self.reply_to_message = None
-        self.edit_date = None
-        self.text = None
-        self.entities = None
-        self.audio = None
-        self.document = None
-        self.photo = None
-        self.sticker = None
-        self.video = None
-        self.voice = None
-        self.caption = None
-        self.contact = None
-        self.location = None
-        self.venue = None
-        self.new_chat_member = None
-        self.left_chat_member = None
-        self.new_chat_title = None
-        self.new_chat_photo = None
-        self.delete_chat_photo = None
-        self.group_chat_created = None
-        self.supergroup_chat_created = None
-        self.channel_chat_created = None
-        self.migrate_to_chat_id = None
-        self.migrate_from_chat_id = None
-        self.pinned_message = None
-        for key in options:
-            setattr(self, key, options[key])
+        self.chat = de_json(Chat, chat)
+        self.forward_from = de_json(User, forward_from)
+        self.forward_from_chat = de_json(Chat, forward_from_chat)
+        self.forward_date = forward_date
+        self.reply_to_message = de_json(Message, reply_to_message)
+        self.edit_date = edit_date
+        self.text = text
+        self.entities = de_json_array(MessageEntity, entities)
+        self.audio = de_json(Audio, audio)
+        self.document = de_json(Document, document)
+        self.photo = de_json_array(PhotoSize, photo)
+        self.sticker = de_json(Sticker, sticker)
+        self.video = de_json(Video, video)
+        self.voice = de_json(Voice, voice)
+        self.caption = caption
+        self.contact = de_json(Contact, contact)
+        self.location = de_json(Location, location)
+        self.venue = de_json(Venue, venue)
+        self.new_chat_member = de_json(User, new_chat_member)
+        self.left_chat_member = de_json(User, left_chat_member)
+        self.new_chat_title = new_chat_title
+        self.new_chat_photo = de_json_array(PhotoSize, new_chat_photo)
+        self.delete_chat_photo = delete_chat_photo
+        self.group_chat_created = group_chat_created
+        self.supergroup_chat_created = supergroup_chat_created
+        self.channel_chat_created = channel_chat_created
+        self.migrate_to_chat_id = migrate_to_chat_id
+        self.migrate_from_chat_id = migrate_from_chat_id
+        self.pinned_message = de_json(Message, pinned_message)
+
+        self.content_type = self.determine_content_type()
+
+    def determine_content_type(self):
+        for content_type in self.CONTENT_TYPES:
+            if getattr(self, content_type) is not None:
+                return content_type
 
 
 class MessageEntity(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        type = obj['type']
-        offset = obj['offset']
-        length = obj['length']
-        url = obj.get('url')
-        user = User.de_json(obj.get('user'))
-        return cls(type, offset, length, url, user)
+    TYPES = ['mention', 'hashtag', 'bot_command', 'url', 'email', 'bold', 'italic',
+             'code', 'pre', 'text_link', 'text_mention']
 
-    def __init__(self, type, offset, length, url=None, user=None):
+    @util.required('type', 'offset', 'length')
+    def __init__(self, type=None, offset=None, length=None, url=None, user=None):
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
-        self.user = user
+        self.user = de_json(User, user)
 
 
 class PhotoSize(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        width = obj['width']
-        height = obj['height']
-        file_size = obj.get('file_size')
-        return cls(file_id, width, height, file_size)
 
-    def __init__(self, file_id, width, height, file_size=None):
+    @util.required('file_id', 'width', 'height')
+    def __init__(self, file_id=None, width=None, height=None, file_size=None):
         self.file_size = file_size
         self.height = height
         self.width = width
@@ -351,18 +181,9 @@ class PhotoSize(JsonDeserializable):
 
 
 class Audio(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        duration = obj['duration']
-        performer = obj.get('performer')
-        title = obj.get('title')
-        mime_type = obj.get('mime_type')
-        file_size = obj.get('file_size')
-        return cls(file_id, duration, performer, title, mime_type, file_size)
 
-    def __init__(self, file_id, duration, performer=None, title=None, mime_type=None, file_size=None):
+    @util.required('file_id', 'duration')
+    def __init__(self, file_id=None, duration=None, performer=None, title=None, mime_type=None, file_size=None):
         self.file_id = file_id
         self.duration = duration
         self.performer = performer
@@ -371,103 +192,57 @@ class Audio(JsonDeserializable):
         self.file_size = file_size
 
 
-class Voice(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        duration = obj['duration']
-        mime_type = obj.get('mime_type')
-        file_size = obj.get('file_size')
-        return cls(file_id, duration, mime_type, file_size)
-
-    def __init__(self, file_id, duration, mime_type=None, file_size=None):
-        self.file_id = file_id
-        self.duration = duration
-        self.mime_type = mime_type
-        self.file_size = file_size
-
-
 class Document(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        thumb = None
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            thumb = PhotoSize.de_json(obj['thumb'])
-        file_name = obj.get('file_name')
-        mime_type = obj.get('mime_type')
-        file_size = obj.get('file_size')
-        return cls(file_id, thumb, file_name, mime_type, file_size)
 
-    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
+    @util.required('file_id')
+    def __init__(self, file_id=None, thumb=None, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
-        self.thumb = thumb
+        self.thumb = de_json(PhotoSize, thumb)
         self.file_name = file_name
         self.mime_type = mime_type
         self.file_size = file_size
 
 
 class Sticker(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        width = obj['width']
-        height = obj['height']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
-        emoji = obj.get('emoji')
-        file_size = obj.get('file_size')
-        return cls(file_id, width, height, thumb, emoji, file_size)
 
-    def __init__(self, file_id, width, height, thumb, emoji=None, file_size=None):
+    @util.required('file_id', 'width', 'height')
+    def __init__(self, file_id=None, width=None, height=None, thumb=None, emoji=None, file_size=None):
         self.file_id = file_id
         self.width = width
         self.height = height
-        self.thumb = thumb
+        self.thumb = de_json(PhotoSize, thumb)
         self.emoji = emoji
         self.file_size = file_size
 
 
 class Video(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        width = obj['width']
-        height = obj['height']
-        duration = obj['duration']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
-        mime_type = obj.get('mime_type')
-        file_size = obj.get('file_size')
-        return cls(file_id, width, height, duration, thumb, mime_type, file_size)
 
-    def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
+    @util.required('file_id', 'width', 'height', 'duration')
+    def __init__(self, file_id=None, width=None, height=None, duration=None, thumb=None,
+                 mime_type=None, file_size=None):
         self.file_id = file_id
         self.width = width
         self.height = height
         self.duration = duration
-        self.thumb = thumb
+        self.thumb = de_json(PhotoSize, thumb)
+        self.mime_type = mime_type
+        self.file_size = file_size
+
+
+class Voice(JsonDeserializable):
+
+    @util.required('file_id', 'duration')
+    def __init__(self, file_id=None, duration=None, mime_type=None, file_size=None):
+        self.file_id = file_id
+        self.duration = duration
         self.mime_type = mime_type
         self.file_size = file_size
 
 
 class Contact(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        phone_number = obj['phone_number']
-        first_name = obj['first_name']
-        last_name = obj.get('last_name')
-        user_id = obj.get('user_id')
-        return cls(phone_number, first_name, last_name, user_id)
 
-    def __init__(self, phone_number, first_name, last_name=None, user_id=None):
+    @util.required('phone_number', 'first_name')
+    def __init__(self, phone_number=None, first_name=None, last_name=None, user_id=None):
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
@@ -475,58 +250,34 @@ class Contact(JsonDeserializable):
 
 
 class Location(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        longitude = obj['longitude']
-        latitude = obj['latitude']
-        return cls(longitude, latitude)
 
-    def __init__(self, longitude, latitude):
+    @util.required('longitude', 'latitude')
+    def __init__(self, longitude=None, latitude=None):
         self.longitude = longitude
         self.latitude = latitude
 
 
 class Venue(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
-        location = obj['location']
-        title = obj['title']
-        address = obj['address']
-        foursquare_id = obj.get('foursquare_id')
-        return cls(location, title, address, foursquare_id)
 
-    def __init__(self, location, title, address, foursquare_id=None):
-        self.location = location
+    @util.required('location', 'title', 'address')
+    def __init__(self, location=None, title=None, address=None, foursquare_id=None):
+        self.location = de_json(Location, location)
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
 
 
 class UserProfilePhotos(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        total_count = obj['total_count']
-        photos = [[PhotoSize.de_json(y) for y in x] for x in obj['photos']]
-        return cls(total_count, photos)
-
-    def __init__(self, total_count, photos):
+    @util.required('total_count', 'photos')
+    def __init__(self, total_count=None, photos=None):
         self.total_count = total_count
-        self.photos = photos
+        self.photos = [de_json_array(PhotoSize, p) for p in photos]
 
 
 class File(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
-        file_id = obj['file_id']
-        file_size = obj.get('file_size')
-        file_path = obj.get('file_path')
-        return cls(file_id, file_size, file_path)
 
-    def __init__(self, file_id, file_size, file_path):
+    @util.required('file_id')
+    def __init__(self, file_id=None, file_size=None, file_path=None):
         self.file_id = file_id
         self.file_size = file_size
         self.file_path = file_path
@@ -716,39 +467,20 @@ class InlineKeyboardButton(JsonSerializable):
 
 
 class CallbackQuery(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
-        id = obj['id']
-        from_user = User.de_json(obj['from'])
-        message = None
-        if 'message' in obj:
-            message = Message.de_json(obj['message'])
-        inline_message_id = obj.get('inline_message_id')
-        data = obj['data']
-        return cls(id, from_user, data, message, inline_message_id)
 
-    def __init__(self, id, from_user, data, message=None, inline_message_id=None):
+    @util.required('id', 'from_user', 'data')
+    def __init__(self, id=None, from_user=None, data=None, message=None, inline_message_id=None):
         self.id = id
-        self.from_user = from_user
-        self.message = message
+        self.from_user = de_json(User, from_user)
+        self.message = de_json(Message, message)
         self.data = data
         self.inline_message_id = inline_message_id
 
 
-# InlineQuery
-
 class InlineQuery(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
-        id = obj['id']
-        from_user = User.de_json(obj['from'])
-        query = obj['query']
-        offset = obj['offset']
-        return cls(id, from_user, query, offset)
 
-    def __init__(self, id, from_user, query, offset):
+    @util.required('id', 'from_user', 'query', 'offset')
+    def __init__(self, id=None, from_user=None, query=None, offset=None, location=None):
         """
         This object represents an incoming inline query.
         When the user sends an empty query, your bot could
@@ -760,9 +492,10 @@ class InlineQuery(JsonDeserializable):
         :return: InlineQuery Object
         """
         self.id = id
-        self.from_user = from_user
+        self.from_user = de_json(User, from_user)
         self.query = query
         self.offset = offset
+        self.location = de_json(Location, location)
 
 
 class InputTextMessageContent(Dictionaryable):
@@ -813,26 +546,16 @@ class InputContactMessageContent(Dictionaryable):
         self.last_name = last_name
 
     def to_dic(self):
-        json_dic = {'phone_numbe': self.phone_number, 'first_name': self.first_name}
+        json_dic = {'phone_number': self.phone_number, 'first_name': self.first_name}
         if self.last_name:
             json_dic['last_name'] = self.last_name
         return json_dic
 
 
 class ChosenInlineResult(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
-        result_id = obj['result_id']
-        from_user = User.de_json(obj['from'])
-        query = obj['query']
-        location = None
-        if 'location' in obj:
-            location = Location.de_json(obj['location'])
-        inline_message_id = obj.get('inline_message_id')
-        return cls(result_id, from_user, query, location, inline_message_id)
 
-    def __init__(self, result_id, from_user, query, location=None, inline_message_id=None):
+    @util.required('result_id', 'from_user', 'query')
+    def __init__(self, result_id=None, from_user=None, query=None, location=None, inline_message_id=None):
         """
         This object represents a result of an inline query
         that was chosen by the user and sent to their chat partner.
@@ -842,9 +565,9 @@ class ChosenInlineResult(JsonDeserializable):
         :return: ChosenInlineResult Object.
         """
         self.result_id = result_id
-        self.from_user = from_user
+        self.from_user = de_json(User, from_user)
         self.query = query
-        self.location = location
+        self.location = de_json(Location, location)
         self.inline_message_id = inline_message_id
 
 
