@@ -1,6 +1,5 @@
 
 import threading
-import time
 
 from telebot import apihelper
 from telebot import logger
@@ -9,7 +8,7 @@ from telebot import listeners
 
 class TeleBot(apihelper.TelegramApiInterface):
 
-    def __init__(self, token, skip_pending=False, request_executor=None):
+    def __init__(self, token, request_executor=None):
         """
         :param token: bot API token
         :return: Telebot object.
@@ -21,25 +20,23 @@ class TeleBot(apihelper.TelegramApiInterface):
 
         self.token = token
         self.update_listeners = []
-        self.skip_pending = skip_pending
 
         self.__stop_polling = threading.Event()
         self.last_update_id = 0
+
+    def __yield_updates(self, timeout=20):
+        updates = self.get_updates(offset=self.last_update_id, timeout=timeout)
+        while updates:
+            self.last_update_id = max(updates, key=lambda u: u.update_id)
+            updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
+            yield (x for x in updates)
 
     def __skip_updates(self):
         """
         Get and discard all pending updates before first poll of the bot
         :return: total updates skipped
         """
-        total = 0
-        updates = self.get_updates(offset=self.last_update_id)
-        while updates:
-            total += len(updates)
-            for update in updates:
-                if update.update_id > self.last_update_id:
-                    self.last_update_id = update.update_id
-            updates = self.get_updates(offset=self.last_update_id + 1)
-        return total
+        return len(list(self.__yield_updates(timeout=1)))
 
     def __retrieve_updates(self, timeout=20):
         """
@@ -47,16 +44,26 @@ class TeleBot(apihelper.TelegramApiInterface):
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
-        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
-        self.process_new_updates(updates)
+        self.process_new_updates(self.__yield_updates(timeout=timeout))
+
+    @staticmethod
+    def __call_listener(listener, update):
+        r = listener(update)
+        # Assume the listener wants to stay in the list if it does not return anything
+        return r if r is not None else True
 
     def process_new_updates(self, updates):
         logger.debug('Received {0} new updates'.format(len(updates)))
         for update in updates:
-            for listener in self.update_listeners:
-                listener(update)
+            self.update_listeners = filter(lambda l: self.__call_listener(l, update), self.update_listeners)
 
-    def polling(self, continue_on_exception=False, interval=0, timeout=20):
+    @staticmethod
+    def __default_exception_handler(bot, exception):
+        logger.error(exception)
+        logger.info("Exception occurred. Stopping.")
+        bot.stop_polling()
+
+    def polling(self, skip_pending=False, timeout=20, exception_handler=lambda e: True):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -64,35 +71,26 @@ class TeleBot(apihelper.TelegramApiInterface):
         Warning: Do not call this function more than once!
 
         Always get updates.
-        :param interval:
-        :param continue_on_exception: Do not stop polling when an ApiException occurs.
+        :param exception_handler:
+        :param skip_pending: Retrieve and discard pending updates
         :param timeout: Timeout in seconds for long polling.
         :return:
         """
         logger.info('Started polling.')
         self.__stop_polling.clear()
-        error_interval = .25
 
-        if self.skip_pending:
-            logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
+        if skip_pending:
+            logger.info('Skipped {0} pending messages'.format(self.__skip_updates()))
 
-        while not self.__stop_polling.wait(interval):
+        while not self.__stop_polling.wait(0):
             try:
                 self.__retrieve_updates(timeout)
-                error_interval = .25
             except apihelper.ApiException as e:
-                logger.error(e)
-                if not continue_on_exception:
-                    self.__stop_polling.set()
-                    logger.info("Exception occurred. Stopping.")
-                else:
-                    logger.info("Waiting for {0} seconds until retry".format(error_interval))
-                    time.sleep(error_interval)
-                    error_interval *= 2
-            except KeyboardInterrupt:
-                logger.info("KeyboardInterrupt received.")
+                exception_handler(self, e)
+            except KeyboardInterrupt as e:
+                logger.info("KeyboardInterrupt")
                 self.__stop_polling.set()
-                break
+                raise e
 
         logger.info('Stopped polling.')
 

@@ -29,7 +29,9 @@ class MessageHandler:
             return
 
         if self.test_message(update.message):
-            self.handler(update.message)
+            r = self.handler(update.message)
+            return r if r is not None else True
+        return True
 
 
 class NextStepHandler:
@@ -43,7 +45,9 @@ class NextStepHandler:
             return
 
         if update.message.chat.id == self.chat_id:
-            self.handler(update.message)
+            r = self.handler(update.message)
+            return r if r is not None else False
+        return False
 
 
 class InlineHandler:
@@ -57,7 +61,9 @@ class InlineHandler:
             return
 
         if self.func(update.inline_query):
-            self.handler(update.inline_query)
+            r = self.handler(update.inline_query)
+            return r if r is not None else True
+        return True
 
 
 class ChosenInlineResultHandler:
@@ -71,7 +77,9 @@ class ChosenInlineResultHandler:
             return
 
         if self.func(update.chosen_inline_result):
-            self.handler(update.chosen_inline_result)
+            r= self.handler(update.chosen_inline_result)
+            return r if r is not None else True
+        return True
 
 
 class CallbackQueryHandler:
@@ -85,4 +93,6 @@ class CallbackQueryHandler:
             return
 
         if self.func(update.callback_query):
-            self.handler(update.callback_query)
+            r = self.handler(update.callback_query)
+            return r if r is not None else True
+        return True
