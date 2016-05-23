@@ -2,9 +2,9 @@
 
 import requests
 
-from telebot import util
-from telebot import logger
-from telebot import types
+import telebot.util as util
+import telebot.types as types
+from telebot.util import logger
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"

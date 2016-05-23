@@ -4,9 +4,7 @@ import sys
 import six
 import requests
 import json
-
 import logging
-
 
 logger = logging.getLogger('TeleBot')
 
