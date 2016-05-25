@@ -393,6 +393,7 @@ Attributes:
 * `url`
 * `offset`
 * `length`
+* `user`
 
 
 **Here's an Example:**`message.entities[num].<attribute>`<br>
