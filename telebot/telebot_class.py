@@ -54,7 +54,7 @@ class TeleBot(apihelper.TelegramApiInterface):
         return r if r is not None else True
 
     def process_new_updates(self, updates):
-        logger.debug('Received {0} new updates'.format(len(updates)))
+        logger.debug('Received {0} new updates'.format(len(list(updates))))
         for update in updates:
             self.update_listeners = filter(lambda l: self.__call_listener(l, update), self.update_listeners)
 

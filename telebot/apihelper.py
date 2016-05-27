@@ -72,8 +72,8 @@ class TelegramApiInterface:
         if not response['ok']:
             raise ApiException('Error code: {error_code} Description: {description}'.format(**response), method)
 
-        if hasattr(return_type, 'de_json'):
-            return return_type.de_json(response['result'])
+        if issubclass(return_type, types.JsonDeserializable):
+            return types.de_json(return_type, response['result'])
         return response['result']
 
     def get_updates(self, **kwargs):
@@ -85,7 +85,7 @@ class TelegramApiInterface:
         :return: list of Updates
         """
         json_updates = self.make_json_request('getUpdates', params=util.xmerge(kwargs))
-        return [types.Update.de_json(update) for update in json_updates]
+        return [types.de_json(types.Update, update) for update in json_updates]
 
     def get_me(self):
         return self.make_json_request('getMe', return_type=types.User)
@@ -342,7 +342,7 @@ class TelegramApiInterface:
         :return: Array of ChatMember objects
         """
         response = self.make_json_request('getChatAdministrators', params={'chat_id': chat_id})
-        return [types.ChatMember.de_json(e) for e in response]
+        return types.de_json_array(types.ChatMember, response)
 
     def get_chat_members_count(self, chat_id):
         """
@@ -369,7 +369,7 @@ class TelegramApiInterface:
     def edit_message_text(self, text, **kwargs):
         params = util.xmerge({'text': text}, kwargs)
         response = self.make_json_request('editMessageText', params=params)
-        return response if type(response) == bool else types.Message.de_json(response)
+        return response if type(response) == bool else types.de_json(types.Message, response)
 
     def edit_message_caption(self, caption, **kwargs):
         params = util.xmerge({'caption': caption}, kwargs)
