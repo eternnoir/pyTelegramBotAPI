@@ -9,10 +9,17 @@ import telebot.util as util
 def de_json(cls, json_type):
     if not issubclass(cls, JsonDeserializable):
         raise ValueError("{0} is not a subclass of JsonDeserializable".format(cls))
+
     if not json_type:
         return None
+
+    # json_type is already an instance of cls
+    if isinstance(json_type, cls):
+        return json_type
+
     if util.is_string(json_type):
         json_type = json.loads(json_type)
+
     return cls(**json_type)
 
 
@@ -307,7 +314,7 @@ class ReplyKeyboardMarkup(Dictionaryable):
             if util.is_string(button):
                 row.append({'text': button})
             else:
-                row.append(button.to_dic())
+                row.append(to_dict(button))
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -340,6 +347,7 @@ class KeyboardButton(Dictionaryable):
         self.request_location = request_location
 
 
+@util.json_exclude('row_width')
 class InlineKeyboardMarkup(Dictionaryable):
     def __init__(self, row_width=3):
         self.row_width = row_width

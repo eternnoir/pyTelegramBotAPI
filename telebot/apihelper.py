@@ -21,7 +21,7 @@ class RequestExecutorImpl:
         logger.debug("{0} {1} params={2} files={3}".format(method.upper(), url, params, files))
         response = requests.request(method, url, params=params, files=files, timeout=self.timeouts)
         logger.debug("Server: '{0}'".format(response.text.encode('utf8')))
-        response.raise_for_status()  # Raise if response status != 200 OK
+        # response.raise_for_status()  # Raise if response status != 200 OK
         if response_type == 'text':
             return response.text
         elif response_type == 'binary':
@@ -70,9 +70,9 @@ class TelegramApiInterface:
 
         response = self.make_request(method_name, params, files, method, response_type='json')
         if not response['ok']:
-            raise ApiException('Error code: {error_code} Description: {description}'.format(**response), method)
+            raise ApiException('Error code: {error_code}, description: "{description}"'.format(**response), method)
 
-        if issubclass(return_type, types.JsonDeserializable):
+        if return_type is not None and issubclass(return_type, types.JsonDeserializable):
             return types.de_json(return_type, response['result'])
         return response['result']
 

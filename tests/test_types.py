@@ -71,7 +71,7 @@ def test_json_Message_Photo():
 
 
 def test_json_Message_Video():
-    json_string = r'{"message_id":101,"from":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":109734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1435481960,"video":{"duration":3,"caption":"","width":360,"height":640,"thumb":{"file_id":"AAQFABPiYnBjkDwMAAIC","file_size":1597,"width":50,"height":90},"file_id":"BAADBQADNifgb_TOPEKErGoQI","file_size":260699}}'
+    json_string = r'{"message_id":101,"from":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd"},"chat":{"id":109734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1435481960,"video":{"duration":3,"width":360,"height":640,"thumb":{"file_id":"AAQFABPiYnBjkDwMAAIC","file_size":1597,"width":50,"height":90},"file_id":"BAADBQADNifgb_TOPEKErGoQI","file_size":260699}}'
     msg = types.de_json(types.Message, json_string)
     assert msg.video
     assert msg.video.duration == 3

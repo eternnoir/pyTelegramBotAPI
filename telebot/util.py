@@ -85,15 +85,27 @@ def split_string(text, chars_per_string):
 
 
 def obj_to_dict(obj):
-    d = obj.__dict__
-    for k, v in six.iteritems(d):
-        if hasattr(v, '__dict__'):
-            d[k] = obj_to_dict(v)
+    d = obj.__dict__.copy()
+    if hasattr(obj, 'json_exclude'):
+        for key in obj.json_exclude:
+            if key in d:
+                del d[key]
+
+    for key, value in six.iteritems(d):
+        if hasattr(value, '__dict__'):
+            d[key] = obj_to_dict(value)
     return xmerge(d)
 
 
 def obj_to_json(obj):
     return json.dumps(obj, default=lambda o: o.__dict__)
+
+
+def json_exclude(*fields):
+    def decorator(cls):
+        cls.json_exclude = [f for f in fields]
+        return cls
+    return decorator
 
 
 def merge_dicts(*dicts):
@@ -113,17 +125,22 @@ def xmerge(*dicts):
     """
     d = merge_dicts(*dicts)
     copy = d.copy()
-    for k, v in six.iteritems(d.copy()):
+    for k, v in six.iteritems(d):
         if v is None:
             del copy[k]
     return copy
 
 
-def required(*params):
+def required(*required_kwargs):
     def decorator(fn):
         def wrapper(*args, **kwargs):
-            if not all(p in kwargs for p in params):
-                raise ValueError("Missing required arguments: {0}".format([p for p in params if p not in kwargs]))
+            has_all_required_kwargs = all(p in kwargs for p in required_kwargs)
+
+            if len(args) < len(required_kwargs) and not has_all_required_kwargs:
+                # Calculate the missing kwargs
+                diff = [p for p in required_kwargs[len(args):] if p not in kwargs]
+
+                raise ValueError("Missing required arguments: {0}".format(diff))
             return fn(*args, **kwargs)
         return wrapper
     return decorator

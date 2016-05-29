@@ -58,3 +58,29 @@ def test_xmerge():
     assert util.xmerge({'a': 1}, {'b': None}) == {'a': 1}
     assert util.xmerge({'a': None}, {'b': None}) == {}
     assert util.xmerge({'a': None}, {'a': None}) == {}
+
+
+def test_required():
+
+    @util.required('required1', 'required2')
+    def func(required1=None, required2=None, not_required=None):
+        return True
+
+    assert func(required1=1, required2=2)
+    assert func(required1=1, required2=2, not_required=3)
+    assert func(1, 2)
+
+    with pytest.raises(ValueError):
+        assert func()
+        assert func(not_required=3)
+        assert func(required2=2)
+
+
+def test_translate():
+
+    @util.translate({'translated_from': 'translated_to'})
+    def translated_function(translated_to='to', expect=None):
+        return translated_to == expect
+
+    assert translated_function(translated_from='from', expect='from')
+    assert translated_function(translated_to='to', expect='to')
