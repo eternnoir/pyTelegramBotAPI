@@ -379,8 +379,8 @@ def test_chosen(chosen_inline_result):
 @bot.inline_handler(lambda query: query.query == 'text')
 def query_text(inline_query):
     try:
-        r = types.InlineQueryResultArticle('1', 'Result', 'Result message.')
-        r2 = types.InlineQueryResultArticle('2', 'Result2', 'Result message2.')
+        r = types.InlineQueryResultArticle('1', 'Result', types.InputTextMessageContent('Result message.'))
+        r2 = types.InlineQueryResultArticle('2', 'Result2', types.InputTextMessageContent('Result message2.'))
         bot.answer_inline_query(inline_query.id, [r, r2])
     except Exception as e:
         print(e)
