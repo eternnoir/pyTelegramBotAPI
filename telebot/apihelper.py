@@ -3,14 +3,14 @@
 import requests
 
 import telebot.util as util
-import telebot.types as types
+import telebot.telegram_types as types
 from telebot.util import logger
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
 
-class RequestExecutorImpl:
+class DefaultRequestExecutor:
     DEFAULT_CONNECT_TIMEOUT = 3.5
     DEFAULT_READ_TIMEOUT = 9999
 

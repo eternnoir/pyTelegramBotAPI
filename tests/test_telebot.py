@@ -5,14 +5,14 @@ import os
 import telebot
 from telebot import types
 
-should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
+should_run = 'TOKEN' and 'CHAT_ID' not in os.environ
 
-if not should_skip:
+if not should_run:
     TOKEN = os.environ['TOKEN']
     CHAT_ID = os.environ['CHAT_ID']
 
 
-@pytest.mark.skipif(should_skip, reason="No environment variables configured")
+@pytest.mark.skipif(not should_run, reason="No environment variables configured")
 class TestTeleBot:
     def test_message_listener(self):
         msg_list = []
@@ -109,7 +109,7 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_file(self):
-        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        file_data = open('examples/detailed_example/kitten.jpg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data)
         assert ret_msg.message_id
@@ -118,7 +118,7 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_file_dis_noti(self):
-        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        file_data = open('examples/detailed_example/kitten.jpg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data, disable_notification=True)
         assert ret_msg.message_id
@@ -127,25 +127,25 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_video(self):
-        file_data = open('./test_data/test_video.mp4', 'rb')
+        file_data = self.get_test_data('test_video.mp4')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data)
         assert ret_msg.message_id
 
     def test_send_video_dis_noti(self):
-        file_data = open('./test_data/test_video.mp4', 'rb')
+        file_data = self.get_test_data('test_video.mp4')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data, disable_notification=True)
         assert ret_msg.message_id
 
     def test_send_video_more_params(self):
-        file_data = open('./test_data/test_video.mp4', 'rb')
+        file_data = self.get_test_data('test_video.mp4')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data)
         assert ret_msg.message_id
 
     def test_send_video_more_params_dis_noti(self):
-        file_data = open('./test_data/test_video.mp4', 'rb')
+        file_data = self.get_test_data('test_video.mp4')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data, duration=1, disable_notification=True)
         assert ret_msg.message_id
@@ -160,7 +160,7 @@ class TestTeleBot:
             assert True
 
     def test_send_photo(self):
-        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        file_data = open('examples/detailed_example/kitten.jpg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_photo(CHAT_ID, file_data)
         assert ret_msg.message_id
@@ -169,7 +169,7 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_photo_dis_noti(self):
-        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        file_data = open('examples/detailed_example/kitten.jpg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_photo(CHAT_ID, file_data)
         assert ret_msg.message_id
@@ -178,7 +178,7 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_audio(self):
-        file_data = open('./test_data/record.mp3', 'rb')
+        file_data = self.get_test_data('record.mp3')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_audio(CHAT_ID, file_data, duration=1, performer='eternnoir', title='pyTelegram')
         assert ret_msg.content_type == 'audio'
@@ -186,7 +186,7 @@ class TestTeleBot:
         assert ret_msg.audio.title == 'pyTelegram'
 
     def test_send_audio_dis_noti(self):
-        file_data = open('./test_data/record.mp3', 'rb')
+        file_data = self.get_test_data('record.mp3')
         tb = telebot.TeleBot(TOKEN)
         opts = {'duration': 1, 'performer': 'eternnoir', 'title': 'pyTelegram', 'disable_notification': True}
         ret_msg = tb.send_audio(CHAT_ID, file_data, **opts)
@@ -195,19 +195,19 @@ class TestTeleBot:
         assert ret_msg.audio.title == 'pyTelegram'
 
     def test_send_voice(self):
-        file_data = open('./test_data/record.ogg', 'rb')
+        file_data = self.get_test_data('record.ogg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data)
         assert ret_msg.voice.mime_type == 'audio/ogg'
 
     def test_send_voice_dis_noti(self):
-        file_data = open('./test_data/record.ogg', 'rb')
+        file_data = self.get_test_data('record.ogg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data, disable_notification=True)
         assert ret_msg.voice.mime_type == 'audio/ogg'
 
     def test_get_file(self):
-        file_data = open('./test_data/record.ogg', 'rb')
+        file_data = self.get_test_data('record.ogg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data)
         file_id = ret_msg.voice.file_id
@@ -215,7 +215,7 @@ class TestTeleBot:
         assert file_info.file_id == file_id
 
     def test_get_file_dis_noti(self):
-        file_data = open('./test_data/record.ogg', 'rb')
+        file_data = self.get_test_data('record.ogg')
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data, disable_notification=True)
         file_id = ret_msg.voice.file_id
@@ -354,3 +354,7 @@ class TestTeleBot:
     @staticmethod
     def messages_to_updates(messages):
         return [types.Update(1, message=message) for message in messages]
+
+    @staticmethod
+    def get_test_data(filename):
+        return open('./tests/test_data/' + filename, 'rb')

@@ -2,21 +2,35 @@
 import threading
 import six
 import sys
+import time
+import types
 
-import telebot.apihelper as apihelper
 import telebot.listeners as listeners
 from telebot.util import logger
+from telebot.apihelper import TelegramApiInterface, DefaultRequestExecutor, ApiException
 
 
-class TeleBot(apihelper.TelegramApiInterface):
+def stopping_exception_handler(bot, exception):
+    logger.error(exception)
+    logger.info("Exception occurred. Stopping.")
+    bot.stop_polling()
+
+
+def continuing_exception_handler(_, exception):
+    logger.error(exception)
+    logger.info("Exception occurred, waiting 5 seconds.")
+    time.sleep(5)
+
+
+class TeleBot(TelegramApiInterface):
 
     def __init__(self, token, request_executor=None):
         """
         :param token: bot API token
         :return: Telebot object.
         """
-        request_executor = request_executor if request_executor is not None else apihelper.RequestExecutorImpl()
-        apihelper.TelegramApiInterface.__init__(self, token, request_executor)
+        request_executor = request_executor if request_executor is not None else DefaultRequestExecutor()
+        TelegramApiInterface.__init__(self, token, request_executor)
 
         self.token = token
         self.update_listeners = []
@@ -47,24 +61,13 @@ class TeleBot(apihelper.TelegramApiInterface):
         """
         self.process_new_updates(self.__yield_updates(timeout=timeout))
 
-    @staticmethod
-    def __call_listener(listener, update):
-        r = listener(update)
-        # Assume the listener wants to stay in the list if it does not return anything
-        return r if r is not None else True
-
     def process_new_updates(self, updates):
         logger.debug('Received {0} new updates'.format(len(list(updates))))
         for update in updates:
-            self.update_listeners = filter(lambda l: self.__call_listener(l, update), self.update_listeners)
+            for listener in self.update_listeners:
+                listener(update)
 
-    @staticmethod
-    def __default_exception_handler(bot, exception):
-        logger.error(exception)
-        logger.info("Exception occurred. Stopping.")
-        bot.stop_polling()
-
-    def polling(self, skip_pending=False, timeout=20, exception_handler=lambda e: True):
+    def polling(self, skip_pending=False, timeout=20, exception_handler=stopping_exception_handler):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -81,12 +84,12 @@ class TeleBot(apihelper.TelegramApiInterface):
         self.__stop_polling.clear()
 
         if skip_pending:
-            logger.info('Skipped {0} pending messages'.format(self.skip_updates()))
+            logger.info('Skipped {0} pending messages'.format(len(self.skip_updates())))
 
         while not self.__stop_polling.wait(0):
             try:
                 self.retrieve_updates(timeout)
-            except apihelper.ApiException as e:
+            except ApiException as e:
                 exception_handler(self, e)
             except KeyboardInterrupt:
                 logger.info("KeyboardInterrupt")
