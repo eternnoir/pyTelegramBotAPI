@@ -41,9 +41,10 @@ class TeleBot(TelegramApiInterface):
     def __yield_updates(self, timeout=20):
         updates = self.get_updates(offset=self.last_update_id, timeout=timeout)
         while updates:
+            for u in updates:
+                yield u
             self.last_update_id = max(updates, key=lambda u: u.update_id).update_id
             updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
-            yield (x for x in updates)
 
     def skip_updates(self, timeout=1):
         """
@@ -62,8 +63,8 @@ class TeleBot(TelegramApiInterface):
         self.process_new_updates(self.__yield_updates(timeout=timeout))
 
     def process_new_updates(self, updates):
-        logger.debug('Received {0} new updates'.format(len(list(updates))))
         for update in updates:
+            logger.debug('Received new updates: {0}'.format(update))
             for listener in self.update_listeners:
                 listener(update)
 
