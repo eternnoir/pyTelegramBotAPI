@@ -365,7 +365,7 @@ class TeleBot:
             apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup,
                                  disable_notification, timeout))
 
-    def send_document(self, chat_id, data, reply_to_message_id=None, reply_markup=None, disable_notification=None, timeout=None):
+    def send_document(self, chat_id, data, reply_to_message_id=None, caption=None, reply_markup=None, disable_notification=None, timeout=None):
         """
         Use this method to send general files.
         :param chat_id:
@@ -376,7 +376,7 @@ class TeleBot:
         """
         return types.Message.de_json(
             apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
-                                disable_notification, timeout))
+                                disable_notification, timeout, caption=caption))
 
     def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None, disable_notification=None, timeout=None):
         """

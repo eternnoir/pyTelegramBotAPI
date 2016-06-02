@@ -298,7 +298,8 @@ def send_audio(token, chat_id, audio, duration=None, performer=None, title=None,
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None, timeout=None):
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None,
+              timeout=None, caption=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -314,6 +315,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
+    if caption:
+        payload['caption'] = caption
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
