@@ -41,7 +41,7 @@ class TeleBot(TelegramApiInterface):
     def __yield_updates(self, timeout=20):
         updates = self.get_updates(offset=self.last_update_id, timeout=timeout)
         while updates:
-            self.last_update_id = max(updates, key=lambda u: u.update_id)
+            self.last_update_id = max(updates, key=lambda u: u.update_id).update_id
             updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
             yield (x for x in updates)
 
