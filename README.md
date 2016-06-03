@@ -505,8 +505,7 @@ if message.chat.type == “channel”:
 
 Get help. Discuss. Chat.
 
-* Join the pyTelegramBotAPI Telegram Chat Group
- * Messge to @eternnoir by telegram for Invitation.
+* Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/pbtai)
 * We now have a Telegram Channel as well! Keep yourself up to date with API changes, and [join it](https://telegram.me/pytelegrambotapi).
 
 ## More examples
