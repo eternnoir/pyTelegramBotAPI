@@ -379,13 +379,28 @@ def test_chosen(chosen_inline_result):
 @bot.inline_handler(lambda query: query.query == 'text')
 def query_text(inline_query):
     try:
-        r = types.InlineQueryResultArticle('1', 'Result', 'Result message.')
-        r2 = types.InlineQueryResultArticle('2', 'Result2', 'Result message2.')
+        r = types.InlineQueryResultArticle('1', 'Result', types.InputTextMessageContent('Result message.'))
+        r2 = types.InlineQueryResultArticle('2', 'Result2', types.InputTextMessageContent('Result message2.'))
         bot.answer_inline_query(inline_query.id, [r, r2])
     except Exception as e:
         print(e)
 
 ```
+###Working with entities:
+This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc. 
+Attributes:
+* `type`
+* `url`
+* `offset`
+* `length`
+* `user`
+
+
+**Here's an Example:**`message.entities[num].<attribute>`<br>
+Here `num` is the entity number or order of entity in a reply, for if incase there are multiple entities in the reply/message.<br>
+`message.entities` returns a list of entities object. <br>
+`message.entities[0].type` would give the type of the first entity<br>
+Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra details
 
 ## Advanced use of the API
 
@@ -490,8 +505,7 @@ if message.chat.type == “channel”:
 
 Get help. Discuss. Chat.
 
-* Join the pyTelegramBotAPI Telegram Chat Group
- * Messge to @eternnoir by telegram for Invitation.
+* Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A)
 * We now have a Telegram Channel as well! Keep yourself up to date with API changes, and [join it](https://telegram.me/pytelegrambotapi).
 
 ## More examples
@@ -503,8 +517,9 @@ Get help. Discuss. Chat.
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
-* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF*
-* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) by *GabrielRF*
+* [Send to Kindle Bot](https://telegram.me/Send2KindleBot) by *GabrielRF* - Send to Kindle files or links to files.
+* [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) ([source](https://github.com/GabrielRF/telegram-lmgtfy_bot)) by *GabrielRF* - Let me Google that for you.
+* [Telegram UrlProBot](https://github.com/GabrielRF/telegram-urlprobot) ([source](https://github.com/GabrielRF/telegram-urlprobot)) by *GabrielRF* - URL shortener and URL expander.
 * [Telegram Proxy Bot](https://bitbucket.org/master_groosha/telegram-proxy-bot) by *Groosha* - A simple BITM (bot-in-the-middle) for Telegram acting as some kind of "proxy".
 * [Telegram Proxy Bot](https://github.com/mrgigabyte/proxybot) by *mrgigabyte* - `Credits for the original version of this bot goes to` **Groosha** `, simply added certain features which I thought were needed`.
 * [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.

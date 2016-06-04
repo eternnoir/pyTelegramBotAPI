@@ -3,6 +3,8 @@
 import json
 import six
 
+from telebot import util
+
 
 class JsonSerializable:
     """
@@ -60,9 +62,14 @@ class JsonDeserializable:
         :param json_type:
         :return:
         """
+        try:
+            str_types = (str, unicode)
+        except NameError:
+            str_types = (str,)
+
         if type(json_type) == dict:
             return json_type
-        elif type(json_type) == str:
+        elif type(json_type) in str_types:
             return json.loads(json_type)
         else:
             raise ValueError("json_type should be a json dict or string.")
@@ -170,6 +177,8 @@ class Message(JsonDeserializable):
         opts = {}
         if 'forward_from' in obj:
             opts['forward_from'] = User.de_json(obj['forward_from'])
+        if 'forward_from_chat' in obj:
+            opts['forward_from_chat'] = Chat.de_json(obj['forward_from_chat'])
         if 'forward_date' in obj:
             opts['forward_date'] = obj['forward_date']
         if 'reply_to_message' in obj:
@@ -261,6 +270,7 @@ class Message(JsonDeserializable):
         self.from_user = from_user
         self.date = date
         self.chat = chat
+        self.forward_from_chat = None
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
@@ -394,14 +404,16 @@ class Sticker(JsonDeserializable):
         thumb = None
         if 'thumb' in obj:
             thumb = PhotoSize.de_json(obj['thumb'])
+        emoji = obj.get('emoji')
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, thumb, file_size)
+        return cls(file_id, width, height, thumb, emoji, file_size)
 
-    def __init__(self, file_id, width, height, thumb, file_size=None):
+    def __init__(self, file_id, width, height, thumb, emoji=None, file_size=None):
         self.file_id = file_id
         self.width = width
         self.height = height
         self.thumb = thumb
+        self.emoji = emoji
         self.file_size = file_size
 
 
@@ -548,7 +560,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         i = 1
         row = []
         for button in args:
-            if isinstance(button, str):
+            if util.is_string(button):
                 row.append({'text': button})
             else:
                 row.append(button.to_dic())
@@ -569,7 +581,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         """
         btn_array = []
         for button in args:
-            if isinstance(button, str):
+            if util.is_string(button):
                 btn_array.append({'text': button})
             else:
                 btn_array.append(button.to_dic())
@@ -1157,7 +1169,8 @@ class InlineQueryResultLocation(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude}
+        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
+                     'title': self.title}
         if self.thumb_url:
             json_dict['thumb_url'] = self.thumb_url
         if self.thumb_width:
@@ -1188,8 +1201,8 @@ class InlineQueryResultVenue(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
-                     'address': self.address}
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'latitude': self.latitude,
+                     'longitude': self.longitude, 'address': self.address}
         if self.foursquare_id:
             json_dict['foursquare_id'] = self.foursquare_id
         if self.thumb_url:
