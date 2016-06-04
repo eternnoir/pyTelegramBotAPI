@@ -62,9 +62,14 @@ class JsonDeserializable:
         :param json_type:
         :return:
         """
+        try:
+            str_types = (str, unicode)
+        except NameError:
+            str_types = (str,)
+
         if type(json_type) == dict:
             return json_type
-        elif type(json_type) == str:
+        elif type(json_type) in str_types:
             return json.loads(json_type)
         else:
             raise ValueError("json_type should be a json dict or string.")
