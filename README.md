@@ -526,5 +526,6 @@ Get help. Discuss. Chat.
 * [League of Legends bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie* 
 * [NeoBot](https://github.com/neoranger/NeoBot) by *neoranger*
 * [TagAlertBot](https://github.com/pitasi/TagAlertBot) by *pitasi*
+* [ComedoresUGRbot](http://telegram.me/ComedoresUGRbot) ([source](https://github.com/alejandrocq/ComedoresUGRbot)) by [*alejandrocq*](https://github.com/alejandrocq) - Telegram bot to check the menu of Universidad de Granada dining hall.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
