@@ -111,6 +111,7 @@ class Update(JsonDeserializable):
         self.update_id = update_id
         self.edited_message = edited_message
         self.message = message
+        self.edited_message = edited_message
         self.inline_query = inline_query
         self.chosen_inline_result = chosen_inline_result
         self.callback_query = callback_query
@@ -187,6 +188,8 @@ class Message(JsonDeserializable):
             opts['forward_date'] = obj['forward_date']
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
+        if 'edit_date' in obj:
+            opts['edit_date'] = obj.get('edit_date')
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
@@ -278,6 +281,7 @@ class Message(JsonDeserializable):
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
+        self.edit_date = None
         self.text = None
         self.entities = None
         self.audio = None
@@ -313,13 +317,17 @@ class MessageEntity(JsonDeserializable):
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        return cls(type, offset, length, url)
+        user = None
+        if 'user' in obj:
+            user = User.de_json(obj['user'])
+        return cls(type, offset, length, url, user)
 
-    def __init__(self, type, offset, length, url=None):
+    def __init__(self, type, offset, length, url=None, user=None):
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
+        self.user = user
 
 
 class PhotoSize(JsonDeserializable):
