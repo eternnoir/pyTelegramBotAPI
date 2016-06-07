@@ -295,7 +295,10 @@ class TeleBot:
 
     def get_chat_administrators(self, chat_id):
         result = apihelper.get_chat_administrators(self.token, chat_id)
-        return [[types.ChatMember.de_json(y) for y in x] for x in result]
+        ret = []
+        for r in result:
+            ret.append(types.ChatMember.de_json(r))
+        return ret
 
     def get_chat_members_count(self, chat_id):
         result = apihelper.get_chat_members_count(self.token, chat_id)

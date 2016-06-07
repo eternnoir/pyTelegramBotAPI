@@ -727,7 +727,7 @@ class ChatMember(JsonDeserializable):
         obj = cls.check_json(json_type)
         user = User.de_json(obj['user'])
         status = obj['status']
-        return cls(id, user, status)
+        return cls(user, status)
 
     def __init__(self, user, status):
         self.user = user
