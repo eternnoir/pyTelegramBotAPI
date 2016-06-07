@@ -360,7 +360,7 @@ class TestTeleBot:
     def test_get_chat_administrators(self):
         tb = telebot.TeleBot(TOKEN)
         cas = tb.get_chat_administrators(GROUP_ID)
-        assert len(cas) > 1
+        assert len(cas) > 0
 
     def test_get_chat_members_count(self):
         tb = telebot.TeleBot(TOKEN)
