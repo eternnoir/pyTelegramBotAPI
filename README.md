@@ -197,6 +197,10 @@ def send_something(message):
 ```
 **Important: all handlers are tested in the order in which they were declared**
 
+#### Edited Message handlers
+
+Same as Message handlers
+
 #### Callback Query Handler
 
 In bot2.0 update. You can get `callback_query` in update object. In telebot use `callback_query_handler` to process callback_querys.
