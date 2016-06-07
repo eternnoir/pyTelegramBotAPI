@@ -66,6 +66,7 @@ class TeleBot:
         self.pre_message_subscribers_next_step = {}
 
         self.message_handlers = []
+        self.edited_message_handlers = []
         self.inline_handlers = []
         self.chosen_inline_handlers = []
         self.callback_query_handlers = []
@@ -123,6 +124,7 @@ class TeleBot:
 
     def process_new_updates(self, updates):
         new_messages = []
+        edited_new_messages = []
         new_inline_querys = []
         new_chosen_inline_results = []
         new_callback_querys = []
@@ -131,6 +133,8 @@ class TeleBot:
                 self.last_update_id = update.update_id
             if update.message:
                 new_messages.append(update.message)
+            if update.edited_message:
+                edited_new_messages.append(update.edited_message)
             if update.inline_query:
                 new_inline_querys.append(update.inline_query)
             if update.chosen_inline_result:
@@ -140,6 +144,8 @@ class TeleBot:
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
+        if len(edited_new_messages) > 0:
+            self.process_new_edited_messages(edited_new_messages)
         if len(new_inline_querys) > 0:
             self.process_new_inline_query(new_inline_querys)
         if len(new_chosen_inline_results) > 0:
@@ -153,6 +159,9 @@ class TeleBot:
         self._notify_command_handlers(self.message_handlers, new_messages)
         self._notify_message_subscribers(new_messages)
         self._notify_message_next_handler(new_messages)
+
+    def process_new_edited_messages(self, edited_message):
+        self._notify_command_handlers(self.edited_message_handlers, edited_message)
 
     def process_new_inline_query(self, new_inline_querys):
         self._notify_command_handlers(self.inline_handlers, new_inline_querys)
@@ -305,7 +314,7 @@ class TeleBot:
         return result
 
     def get_chat_member(self, chat_id, user_id):
-        result = apihelper.get_chat_member(self.token, chat_id,user_id)
+        result = apihelper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
@@ -388,7 +397,8 @@ class TeleBot:
             apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup,
                                  disable_notification, timeout))
 
-    def send_document(self, chat_id, data, reply_to_message_id=None, caption=None, reply_markup=None, disable_notification=None, timeout=None):
+    def send_document(self, chat_id, data, reply_to_message_id=None, caption=None, reply_markup=None,
+                      disable_notification=None, timeout=None):
         """
         Use this method to send general files.
         :param chat_id:
@@ -401,7 +411,8 @@ class TeleBot:
             apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
                                 disable_notification, timeout, caption=caption))
 
-    def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None, disable_notification=None, timeout=None):
+    def send_sticker(self, chat_id, data, reply_to_message_id=None, reply_markup=None, disable_notification=None,
+                     timeout=None):
         """
         Use this method to send .webp stickers.
         :param chat_id:
@@ -502,8 +513,8 @@ class TeleBot:
     def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                        disable_web_page_preview, reply_markup)
-        if type(result) == bool:    # if edit inline message return is bool not Message.
+                                             disable_web_page_preview, reply_markup)
+        if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -669,6 +680,32 @@ class TeleBot:
         }
 
         self.message_handlers.append(handler_dict)
+
+    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
+        def decorator(handler):
+            self.add_edited_message_handler(handler, commands, regexp, func, content_types)
+            return handler
+
+        return decorator
+
+    def add_edited_message_handler(self, handler, commands=None, regexp=None, func=None, content_types=None):
+        if content_types is None:
+            content_types = ['text']
+
+        filters = {'content_types': content_types}
+        if regexp:
+            filters['regexp'] = regexp
+        if func:
+            filters['lambda'] = func
+        if commands:
+            filters['commands'] = commands
+
+        handler_dict = {
+            'function': handler,
+            'filters': filters
+        }
+
+        self.edited_message_handlers.append(handler_dict)
 
     def inline_handler(self, func):
         def decorator(handler):
