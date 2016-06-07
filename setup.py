@@ -7,7 +7,7 @@ def readme():
         return f.read()
 
 setup(name='pyTelegramBotAPI',
-      version='2.1.2',
+      version='2.1.3',
       description='Python Telegram bot api. ',
       long_description=readme(),
       author='eternnoir',
