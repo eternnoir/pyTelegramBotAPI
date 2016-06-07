@@ -16,6 +16,7 @@ should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
 if not should_skip:
     TOKEN = os.environ['TOKEN']
     CHAT_ID = os.environ['CHAT_ID']
+    GROUP_ID = os.environ['GROUP_ID']
 
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
@@ -350,6 +351,21 @@ class TestTeleBot:
         msg = tb.send_message(CHAT_ID, 'Test')
         new_msg = tb.edit_message_text('Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.text == 'Edit test'
+
+    def test_get_chat(self):
+        tb = telebot.TeleBot(TOKEN)
+        ch = tb.get_chat(GROUP_ID)
+        assert ch.id == GROUP_ID
+
+    def test_get_chat_administrators(self):
+        tb = telebot.TeleBot(TOKEN)
+        cas = tb.get_chat_administrators(GROUP_ID)
+        assert len(cas) > 1
+
+    def test_get_chat_members_count(self):
+        tb = telebot.TeleBot(TOKEN)
+        cn = tb.get_chat_members_count(GROUP_ID)
+        assert cn > 1
 
     def test_edit_markup(self):
         text = 'CI Test Message'
