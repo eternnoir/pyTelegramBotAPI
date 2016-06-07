@@ -721,6 +721,19 @@ class CallbackQuery(JsonDeserializable):
         self.inline_message_id = inline_message_id
 
 
+class ChatMember(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        user = User.de_json(obj['user'])
+        status = obj['status']
+        return cls(id, user, status)
+
+    def __init__(self, user, status):
+        self.user = user
+        self.status = status
+
+
 # InlineQuery
 
 class InlineQuery(JsonDeserializable):

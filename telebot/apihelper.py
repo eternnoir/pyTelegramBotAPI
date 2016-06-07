@@ -149,6 +149,36 @@ def get_user_profile_photos(token, user_id, offset=None, limit=None):
     return _make_request(token, method_url, params=payload)
 
 
+def get_chat(token, chat_id):
+    method_url = r'getChat'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+
+def leave_chat(token, chat_id):
+    method_url = r'leaveChat'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+
+def get_chat_administrators(token, chat_id):
+    method_url = r'getChatAdministrators'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+
+def get_chat_members_count(token, chat_id):
+    method_url = r'getChatMembersCount'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+
+def get_chat_member(token, chat_id, user_id):
+    method_url = r'getChatMember'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    return _make_request(token, method_url, params=payload)
+
+
 def forward_message(token, chat_id, from_chat_id, message_id, disable_notification=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}

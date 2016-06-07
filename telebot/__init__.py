@@ -285,6 +285,26 @@ class TeleBot:
         result = apihelper.get_user_profile_photos(self.token, user_id, offset, limit)
         return types.UserProfilePhotos.de_json(result)
 
+    def get_chat(self, chat_id):
+        result = apihelper.get_chat(self.token, chat_id)
+        return types.Chat.de_json(result)
+
+    def leave_chat(self, chat_id):
+        result = apihelper.leave_chat(self.token, chat_id)
+        return result
+
+    def get_chat_administrators(self, chat_id):
+        result = apihelper.get_chat_administrators(self.token, chat_id)
+        return [[types.ChatMember.de_json(y) for y in x] for x in result]
+
+    def get_chat_members_count(self, chat_id):
+        result = apihelper.get_chat_members_count(self.token, chat_id)
+        return result
+
+    def get_chat_member(self, chat_id, user_id):
+        result = apihelper.get_chat_member(self.token, chat_id,user_id)
+        return types.ChatMember.de_json(result)
+
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                      parse_mode=None, disable_notification=None):
         """
