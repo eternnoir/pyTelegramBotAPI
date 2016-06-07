@@ -355,7 +355,7 @@ class TestTeleBot:
     def test_get_chat(self):
         tb = telebot.TeleBot(TOKEN)
         ch = tb.get_chat(GROUP_ID)
-        assert ch.id == GROUP_ID
+        assert str(ch.id) == GROUP_ID
 
     def test_get_chat_administrators(self):
         tb = telebot.TeleBot(TOKEN)
