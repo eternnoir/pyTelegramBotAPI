@@ -295,14 +295,31 @@ class TeleBot:
         return types.UserProfilePhotos.de_json(result)
 
     def get_chat(self, chat_id):
+        """
+        Use this method to get up to date information about the chat (current name of the user for one-on-one
+        conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
+        :param chat_id:
+        :return:
+        """
         result = apihelper.get_chat(self.token, chat_id)
         return types.Chat.de_json(result)
 
     def leave_chat(self, chat_id):
+        """
+        Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
+        :param chat_id:
+        :return:
+        """
         result = apihelper.leave_chat(self.token, chat_id)
         return result
 
     def get_chat_administrators(self, chat_id):
+        """
+        Use this method to get a list of administrators in a chat. On success, returns an Array of ChatMember objects
+        that contains information about all chat administrators except other bots.
+        :param chat_id:
+        :return:
+        """
         result = apihelper.get_chat_administrators(self.token, chat_id)
         ret = []
         for r in result:
@@ -310,10 +327,21 @@ class TeleBot:
         return ret
 
     def get_chat_members_count(self, chat_id):
+        """
+        Use this method to get the number of members in a chat. Returns Int on success.
+        :param chat_id:
+        :return:
+        """
         result = apihelper.get_chat_members_count(self.token, chat_id)
         return result
 
     def get_chat_member(self, chat_id, user_id):
+        """
+        Use this method to get information about a member of a chat. Returns a ChatMember object on success.
+        :param chat_id:
+        :param user_id:
+        :return:
+        """
         result = apihelper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
 
