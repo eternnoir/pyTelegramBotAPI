@@ -723,52 +723,34 @@ class TeleBot:
 
     def inline_handler(self, func):
         def decorator(handler):
-            self.add_inline_handler(handler, func)
+            handler_dict = self._build_handler_dict(handler, func=func)
+            self.add_inline_handler(handler_dict)
             return handler
 
         return decorator
 
-    def add_inline_handler(self, handler, func):
-        filters = {'lambda': func}
-
-        handler_dict = {
-            'function': handler,
-            'filters': filters
-        }
-
+    def add_inline_handler(self, handler_dict):
         self.inline_handlers.append(handler_dict)
 
     def chosen_inline_handler(self, func):
         def decorator(handler):
-            self.add_chosen_inline_handler(handler, func)
+            handler_dict = self._build_handler_dict(handler, func=func)
+            self.add_chosen_inline_handler(handler_dict)
             return handler
 
         return decorator
 
-    def add_chosen_inline_handler(self, handler, func):
-        filters = {'lambda': func}
-
-        handler_dict = {
-            'function': handler,
-            'filters': filters
-        }
-
+    def add_chosen_inline_handler(self, handler_dict):
         self.chosen_inline_handlers.append(handler_dict)
 
     def callback_query_handler(self, func):
         def decorator(handler):
-            self.add_callback_query_handler(handler, func)
+            handler_dict = self._build_handler_dict(handler, func=func)
+            self.add_callback_query_handler(handler_dict)
 
         return decorator
 
-    def add_callback_query_handler(self, handler, func):
-        filters = {'lambda': func}
-
-        handler_dict = {
-            'function': handler,
-            'filters': filters
-        }
-
+    def add_callback_query_handler(self, handler_dict):
         self.callback_query_handlers.append(handler_dict)
 
     @staticmethod
@@ -786,7 +768,7 @@ class TeleBot:
             return message.content_type == 'text' and re.search(filter_value, message.text)
         if filter == 'commands':
             return message.content_type == 'text' and util.extract_command(message.text) in filter_value
-        if filter == 'lambda':
+        if filter == 'func':
             return filter_value(message)
         return False
 
