@@ -174,7 +174,7 @@ class TeleBot:
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
-            self.__exec_task(listener, new_messages)
+            self._exec_task(listener, new_messages)
 
     def polling(self, none_stop=False, interval=0, timeout=20):
         """
@@ -260,7 +260,7 @@ class TeleBot:
 
         logger.info('Stopped polling.')
 
-    def __exec_task(self, task, *args, **kwargs):
+    def _exec_task(self, task, *args, **kwargs):
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
         else:
@@ -643,7 +643,7 @@ class TeleBot:
             if chat_id in self.message_subscribers_next_step:
                 handlers = self.message_subscribers_next_step[chat_id]
                 for handler in handlers:
-                    self.__exec_task(handler, message)
+                    self._exec_task(handler, message)
                 self.message_subscribers_next_step.pop(chat_id, None)
 
     def _append_pre_next_step_handler(self):
@@ -660,7 +660,7 @@ class TeleBot:
             'filters': filters
         }
 
-    def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
+    def message_handler(self, commands=None, regexp=None, func=None, content_types=['text'], **kwargs):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
@@ -695,7 +695,8 @@ class TeleBot:
                                                     commands=commands,
                                                     regexp=regexp,
                                                     func=func,
-                                                    content_types=content_types)
+                                                    content_types=content_types,
+                                                    **kwargs)
 
             self.add_message_handler(handler_dict)
 
@@ -706,13 +707,14 @@ class TeleBot:
     def add_message_handler(self, handler_dict):
         self.message_handlers.append(handler_dict)
 
-    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
+    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=['text'], **kwargs):
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
                                                     commands=commands,
                                                     regexp=regexp,
                                                     func=func,
-                                                    content_types=content_types)
+                                                    content_types=content_types,
+                                                    **kwargs)
             self.add_edited_message_handler(handler_dict)
             return handler
 
@@ -753,30 +755,31 @@ class TeleBot:
     def add_callback_query_handler(self, handler_dict):
         self.callback_query_handlers.append(handler_dict)
 
-    @staticmethod
-    def _test_message_handler(message_handler, message):
+    def _test_message_handler(self, message_handler, message):
         for filter, filter_value in six.iteritems(message_handler['filters']):
-            if not TeleBot._test_filter(filter, filter_value, message):
+            if filter_value is None:
+                continue
+
+            if not self._test_filter(filter, filter_value, message):
                 return False
+
         return True
 
-    @staticmethod
-    def _test_filter(filter, filter_value, message):
-        if filter == 'content_types':
-            return message.content_type in filter_value
-        if filter == 'regexp':
-            return message.content_type == 'text' and re.search(filter_value, message.text)
-        if filter == 'commands':
-            return message.content_type == 'text' and util.extract_command(message.text) in filter_value
-        if filter == 'func':
-            return filter_value(message)
-        return False
+    def _test_filter(self, filter, filter_value, message):
+        test_cases = {
+            'content_types': lambda msg: msg.content_type in filter_value,
+            'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text),
+            'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
+            'func': lambda msg: filter_value(msg)
+        }
+
+        return test_cases.get(filter, lambda msg: False)(message)
 
     def _notify_command_handlers(self, handlers, new_messages):
         for message in new_messages:
             for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
-                    self.__exec_task(message_handler['function'], message)
+                    self._exec_task(message_handler['function'], message)
                     break
 
 
