@@ -654,6 +654,12 @@ class TeleBot:
                 self.message_subscribers_next_step[k] = self.pre_message_subscribers_next_step[k]
         self.pre_message_subscribers_next_step = {}
 
+    def _build_handler_dict(self, handler, **filters):
+        return {
+            'function': handler,
+            'filters': filters
+        }
+
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         """
         Message handler decorator.
@@ -685,54 +691,34 @@ class TeleBot:
         """
 
         def decorator(handler):
-            self.add_message_handler(handler, commands, regexp, func, content_types)
+            handler_dict = self._build_handler_dict(handler,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    content_types=content_types)
+
+            self.add_message_handler(handler_dict)
+
             return handler
 
         return decorator
 
-    def add_message_handler(self, handler, commands=None, regexp=None, func=None, content_types=None):
-        if content_types is None:
-            content_types = ['text']
-
-        filters = {'content_types': content_types}
-        if regexp:
-            filters['regexp'] = regexp
-        if func:
-            filters['lambda'] = func
-        if commands:
-            filters['commands'] = commands
-
-        handler_dict = {
-            'function': handler,
-            'filters': filters
-        }
-
+    def add_message_handler(self, handler_dict):
         self.message_handlers.append(handler_dict)
 
     def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=['text']):
         def decorator(handler):
-            self.add_edited_message_handler(handler, commands, regexp, func, content_types)
+            handler_dict = self._build_handler_dict(handler,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    content_types=content_types)
+            self.add_edited_message_handler(handler_dict)
             return handler
 
         return decorator
 
-    def add_edited_message_handler(self, handler, commands=None, regexp=None, func=None, content_types=None):
-        if content_types is None:
-            content_types = ['text']
-
-        filters = {'content_types': content_types}
-        if regexp:
-            filters['regexp'] = regexp
-        if func:
-            filters['lambda'] = func
-        if commands:
-            filters['commands'] = commands
-
-        handler_dict = {
-            'function': handler,
-            'filters': filters
-        }
-
+    def add_edited_message_handler(self, handler_dict):
         self.edited_message_handlers.append(handler_dict)
 
     def inline_handler(self, func):
