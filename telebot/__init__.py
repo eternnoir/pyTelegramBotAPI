@@ -535,9 +535,6 @@ class TeleBot:
     def unban_chat_member(self, chat_id, user_id):
         return apihelper.unban_chat_member(self.token, chat_id, user_id)
 
-    def answer_callback_query(self, callback_query_id, text=None, show_alert=None):
-        return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert)
-
     def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
@@ -723,9 +720,9 @@ class TeleBot:
     def add_edited_message_handler(self, handler_dict):
         self.edited_message_handlers.append(handler_dict)
 
-    def inline_handler(self, func):
+    def inline_handler(self, func, **kwargs):
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func)
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_inline_handler(handler_dict)
             return handler
 
@@ -734,9 +731,9 @@ class TeleBot:
     def add_inline_handler(self, handler_dict):
         self.inline_handlers.append(handler_dict)
 
-    def chosen_inline_handler(self, func):
+    def chosen_inline_handler(self, func, **kwargs):
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func)
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_chosen_inline_handler(handler_dict)
             return handler
 
@@ -745,9 +742,9 @@ class TeleBot:
     def add_chosen_inline_handler(self, handler_dict):
         self.chosen_inline_handlers.append(handler_dict)
 
-    def callback_query_handler(self, func):
+    def callback_query_handler(self, func, **kwargs):
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func)
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_callback_query_handler(handler_dict)
 
         return decorator
