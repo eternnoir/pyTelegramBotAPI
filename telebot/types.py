@@ -1132,7 +1132,7 @@ class InlineQueryResultVoice(JsonSerializable):
         self.input_message_content = input_message_content
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.titlee}
+        json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.title}
         if self.performer:
             json_dict['performer'] = self.performer
         if self.voice_duration:
@@ -1161,7 +1161,8 @@ class InlineQueryResultDocument(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'document_url': self.document_url, 'mime_type': self.titlee}
+        json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'document_url': self.document_url,
+                     'mime_type': self.mime_type}
         if self.caption:
             json_dict['caption'] = self.caption
         if self.description:
