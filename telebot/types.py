@@ -754,23 +754,28 @@ class InlineQuery(JsonDeserializable):
         obj = cls.check_json(json_type)
         id = obj['id']
         from_user = User.de_json(obj['from'])
+        location = None
+        if 'location' in obj:
+            location = Location.de_json(obj['location'])
         query = obj['query']
         offset = obj['offset']
-        return cls(id, from_user, query, offset)
+        return cls(id, from_user, location, query, offset)
 
-    def __init__(self, id, from_user, query, offset):
+    def __init__(self, id, from_user, location, query, offset):
         """
         This object represents an incoming inline query.
         When the user sends an empty query, your bot could
         return some default or trending results.
         :param id: string Unique identifier for this query
         :param from_user: User Sender
+        :param location: Sender location, only for bots that request user location
         :param query: String Text of the query
         :param offset: String Offset of the results to be returned, can be controlled by the bot
         :return: InlineQuery Object
         """
         self.id = id
         self.from_user = from_user
+        self.location = location
         self.query = query
         self.offset = offset
 
