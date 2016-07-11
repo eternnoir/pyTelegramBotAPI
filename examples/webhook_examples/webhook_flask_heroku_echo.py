@@ -16,8 +16,7 @@ def echo_message(message):
 
 @server.route("/bot", methods=['POST'])
 def getMessage():
-    bot.process_new_messages(
-        [telebot.types.Update.de_json(request.stream.read().decode("utf-8")).message])
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
 
 @server.route("/")
