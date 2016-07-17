@@ -443,9 +443,9 @@ for text in splitted_text:
 ### Controlling the amount of Threads used by TeleBot
 The TeleBot constructor takes the following optional arguments:
 
- - create_threads: True/False (default True). A flag to indicate whether
+ - threaded: True/False (default True). A flag to indicate whether
    TeleBot should execute message handlers on it's polling Thread.
- - num_threads: integer (default 4). Controls the amount of WorkerThreads created for the internal thread pool that TeleBot uses to execute message handlers. Is not used when create_threads is False.
+ - num_threads: integer (default 4). Controls the amount of WorkerThreads created for the internal thread pool that TeleBot uses to execute message handlers. Is not used when threaded is False.
 
 ### The listener mechanism
 As an alternative to the message handlers, one can also register a function as a listener to TeleBot. Example:
