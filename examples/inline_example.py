@@ -53,7 +53,7 @@ def query_video(inline_query):
 @bot.inline_handler(lambda query: len(query.query) is 0)
 def default_query(inline_query):
     try:
-        r = types.InlineQueryResultArticle('1', 'default', 'default')
+        r = types.InlineQueryResultArticle('1', 'default', types.InputTextMessageContent('default'))
         bot.answer_inline_query(inline_query.id, [r])
     except Exception as e:
         print(e)
