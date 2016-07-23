@@ -123,6 +123,11 @@ class TeleBot:
         self.process_new_updates(updates)
 
     def process_new_updates(self, updates):
+        if updates is None:
+            return
+
+        logger.debug('Received {0} new updates'.format(len(updates)))
+
         new_messages = []
         edited_new_messages = []
         new_inline_querys = []
@@ -141,7 +146,7 @@ class TeleBot:
                 new_chosen_inline_results.append(update.chosen_inline_result)
             if update.callback_query:
                 new_callback_querys.append(update.callback_query)
-        logger.debug('Received {0} new updates'.format(len(updates)))
+
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
         if len(edited_new_messages) > 0:
