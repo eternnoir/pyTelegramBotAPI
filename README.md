@@ -14,7 +14,7 @@
     * [Methods](#methods)
     * [General use of the API](#general-use-of-the-api)
       * [Message handlers](#message-handlers)
-      * [Callback Query handlers](#message-handlers)
+      * [Callback Query handlers](#callback-query-handler)
       * [TeleBot](#telebot)
       * [Reply markup](#reply-markup)
       * [Inline Mode](#inline-mode)

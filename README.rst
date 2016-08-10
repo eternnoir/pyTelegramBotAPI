@@ -27,7 +27,7 @@ API <https://core.telegram.org/bots/api>`__.
    -  `Methods <#methods>`__
    -  `General use of the API <#general-use-of-the-api>`__
    -  `Message handlers <#message-handlers>`__
-   -  `Callback Query handlers <#message-handlers>`__
+   -  `Callback Query handlers <#callback-query-handler>`__
    -  `TeleBot <#telebot>`__
    -  `Reply markup <#reply-markup>`__
    -  `Inline Mode <#inline-mode>`__
