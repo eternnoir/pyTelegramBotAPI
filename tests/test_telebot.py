@@ -352,6 +352,12 @@ class TestTeleBot:
         new_msg = tb.edit_message_text('Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.text == 'Edit test'
 
+    def test_edit_message_text(self):
+        tb = telebot.TeleBot(TOKEN)
+        msg = tb.send_message(CHAT_ID, 'Test')
+        new_msg = tb.edit_message_text(caption='Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
+        assert new_msg.text == 'Test'
+
     def test_get_chat(self):
         tb = telebot.TeleBot(TOKEN)
         ch = tb.get_chat(GROUP_ID)

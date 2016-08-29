@@ -549,9 +549,11 @@ class TeleBot:
         )
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
-        return types.Message.de_json(
-            apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id, reply_markup)
-        )
+        result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id, reply_markup)
+        if isinstance(result, bool):
+            return result
+        else:
+            return types.Message.de_json(result)
 
     def reply_to(self, message, text, **kwargs):
         """
