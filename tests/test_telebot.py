@@ -352,11 +352,12 @@ class TestTeleBot:
         new_msg = tb.edit_message_text('Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.text == 'Edit test'
 
-    def test_edit_message_text(self):
+    def test_edit_message_caption(self):
+        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        msg = tb.send_message(CHAT_ID, 'Test')
-        new_msg = tb.edit_message_text(caption='Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
-        assert new_msg.text == 'Test'
+        msg = tb.send_document(CHAT_ID, file_data, caption="Test")
+        new_msg = tb.edit_message_caption(caption='Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
+        assert new_msg.caption == 'Edit test'
 
     def test_get_chat(self):
         tb = telebot.TeleBot(TOKEN)
