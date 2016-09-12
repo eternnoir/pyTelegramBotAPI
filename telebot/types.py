@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import json
+try:
+    import ujson as json
+except ImportError:
+    import json
+
 import six
 
 from telebot import util

@@ -17,6 +17,9 @@ setup(name='pyTelegramBotAPI',
       license='GPL2',
       keywords='telegram bot api tools',
       install_requires=['requests', 'six'],
+      extras_require={
+          'json': 'ujson',
+      },
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Programming Language :: Python :: 2',
