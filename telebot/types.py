@@ -492,7 +492,7 @@ class Venue(JsonDeserializable):
     @classmethod
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
-        location = obj['location']
+        location = Location.de_json(obj['location'])
         title = obj['title']
         address = obj['address']
         foursquare_id = obj.get('foursquare_id')
