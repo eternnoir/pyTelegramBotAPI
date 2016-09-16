@@ -331,6 +331,7 @@ class TestTeleBot:
         lon = -161.2901042
         ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address")
         assert ret_msg.venue.title == "Test Venue"
+        assert int(lat) == int(ret_msg.venue.location.latitude)
 
     def test_send_venue_dis_noti(self):
         tb = telebot.TeleBot(TOKEN)
