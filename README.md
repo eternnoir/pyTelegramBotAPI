@@ -529,5 +529,6 @@ Get help. Discuss. Chat.
 * [NeoBot](https://github.com/neoranger/NeoBot) by *neoranger*
 * [TagAlertBot](https://github.com/pitasi/TagAlertBot) by *pitasi*
 * [ComedoresUGRbot](http://telegram.me/ComedoresUGRbot) ([source](https://github.com/alejandrocq/ComedoresUGRbot)) by [*alejandrocq*](https://github.com/alejandrocq) - Telegram bot to check the menu of Universidad de Granada dining hall.
+* [picpingbot](https://web.telegram.org/#/im?p=%40picpingbot) - Fun anonymous photo exchange by Boogie Muffin.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
