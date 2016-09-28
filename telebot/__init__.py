@@ -748,6 +748,7 @@ class TeleBot:
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_callback_query_handler(handler_dict)
+            return handler
 
         return decorator
 
