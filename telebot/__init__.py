@@ -684,6 +684,7 @@ class TeleBot:
     def callback_query_handler(self, func):
         def decorator(handler):
             self.add_callback_query_handler(handler, func)
+            return handler
 
         return decorator
 
