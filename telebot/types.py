@@ -205,6 +205,9 @@ class Message(JsonDeserializable):
         if 'document' in obj:
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
+        if 'game' in obj:
+            opts['game'] = Game.de_json(obj['photo'])
+            content_type = 'game'
         if 'photo' in obj:
             opts['photo'] = Message.parse_photo(obj['photo'])
             content_type = 'photo'
@@ -1422,6 +1425,20 @@ class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
 
 
 # Games
+
+class InlineQueryResultGame(JsonSerializable):
+    def __init__(self, type, id, game_short_name, reply_markup=None):
+        self.type = type
+        self.id = id
+        self.game_short_name = game_short_name
+        self.reply_markup = reply_markup
+
+    def to_json(self):
+        json_dic = {'type': self.type, 'id': self.id, 'game_short_name': self.game_short_name}
+        if self.reply_markup:
+            json_dic['reply_markup'] = self.reply_markup
+        return json.dumps(json_dic)
+
 
 class Game(JsonDeserializable):
     @classmethod
