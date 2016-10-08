@@ -552,7 +552,7 @@ class TeleBot:
     def send_game(self, chat_id, game_short_name, disable_notification=None, reply_to_message_id=None,
                   reply_markup=None):
         result = apihelper.send_game(self.token, chat_id, game_short_name, disable_notification, reply_to_message_id,
-                                        reply_markup)
+                                     reply_markup)
         return types.Message.de_json(result)
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
@@ -586,7 +586,7 @@ class TeleBot:
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
                                              switch_pm_text, switch_pm_parameter)
 
-    def answer_callback_query(self, callback_query_id, text=None, show_alert=None):
+    def answer_callback_query(self, callback_query_id, text=None, show_alert=None, url=None):
         """
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
         the user as a notification at the top of the chat screen or as an alert.
@@ -595,7 +595,7 @@ class TeleBot:
         :param show_alert:
         :return:
         """
-        return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert)
+        return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url)
 
     def register_for_reply(self, message, callback):
         """

@@ -434,13 +434,15 @@ def send_game(token, chat_id, game_short_name, disable_notification=None, reply_
 
 # InlineQuery
 
-def answer_callback_query(token, callback_query_id, text=None, show_alert=None):
+def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None):
     method_url = 'answerCallbackQuery'
     payload = {'callback_query_id': callback_query_id}
     if text:
         payload['text'] = text
     if show_alert:
         payload['show_alert'] = show_alert
+    if url:
+        payload['url'] = url
     return _make_request(token, method_url, params=payload, method='post')
 
 
