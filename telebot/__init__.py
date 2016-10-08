@@ -549,8 +549,15 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
+    def send_game(self, chat_id, game_short_name, disable_notification=None, reply_to_message_id=None,
+                  reply_markup=None):
+        result = apihelper.send_game(self.token, chat_id, game_short_name, disable_notification, reply_to_message_id,
+                                        reply_markup)
+        return types.Message.de_json(result)
+
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
-        result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id, reply_markup)
+        result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
+                                                reply_markup)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)

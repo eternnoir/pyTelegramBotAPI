@@ -418,6 +418,20 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
     return _make_request(token, method_url, params=payload)
 
 
+# Game
+
+def send_game(token, chat_id, game_short_name, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendGame'
+    payload = {'chat_id': chat_id, 'game_short_name': game_short_name}
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
 # InlineQuery
 
 def answer_callback_query(token, callback_query_id, text=None, show_alert=None):
