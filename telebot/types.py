@@ -699,11 +699,14 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
 
 
 class InlineKeyboardButton(JsonSerializable):
-    def __init__(self, text, url=None, callback_data=None, switch_inline_query=None):
+    def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
+                 switch_inline_query_current_chat=None, callback_game=None):
         self.text = text
         self.url = url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
+        self.switch_inline_query_current_chat = switch_inline_query_current_chat
+        self.callback_game = callback_game
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -716,6 +719,10 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['callback_data'] = self.callback_data
         if self.switch_inline_query is not None:
             json_dic['switch_inline_query'] = self.switch_inline_query
+        if self.switch_inline_query_current_chat is not None:
+            json_dic['switch_inline_query_current_chat'] = self.switch_inline_query_current_chat
+        if self.callback_game is not None:
+            json_dic['callback_game'] = self.callback_game
         return json_dic
 
 
@@ -729,10 +736,14 @@ class CallbackQuery(JsonDeserializable):
         if 'message' in obj:
             message = Message.de_json(obj['message'])
         inline_message_id = obj.get('inline_message_id')
+        chat_instance = obj['chat_instance']
         data = obj['data']
-        return cls(id, from_user, data, message, inline_message_id)
+        game_short_name = obj.get('game_short_name')
+        return cls(id, from_user, data, chat_instance, message, inline_message_id, game_short_name)
 
-    def __init__(self, id, from_user, data, message=None, inline_message_id=None):
+    def __init__(self, id, from_user, data, chat_instance, message=None, inline_message_id=None, game_short_name=None):
+        self.game_short_name = game_short_name
+        self.chat_instance = chat_instance
         self.id = id
         self.from_user = from_user
         self.message = message
