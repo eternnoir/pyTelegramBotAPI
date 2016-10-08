@@ -1419,3 +1419,80 @@ class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['audio_file_id'] = audio_file_id
+
+
+# Games
+
+class Game(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        title = obj['title']
+        description = obj['description']
+        photo = Game.parse_photo(obj['photo'])
+        text = obj.get('text')
+        text_entities = None
+        if 'text_entities' in obj:
+            text_entities = Game.parse_entities(obj['text_entities'])
+        animation = None
+        if 'animation' in obj:
+            animation = Animation.de_json(obj['animation'])
+        return cls(title, description, photo, text, text_entities, animation)
+
+    @classmethod
+    def parse_photo(cls, photo_size_array):
+        ret = []
+        for ps in photo_size_array:
+            ret.append(PhotoSize.de_json(ps))
+        return ret
+
+    @classmethod
+    def parse_entities(cls, message_entity_array):
+        ret = []
+        for me in message_entity_array:
+            ret.append(MessageEntity.de_json(me))
+        return ret
+
+    def __init__(self, title, description, photo, text=None, text_entities=None, animation=None):
+        self.title = title
+        self.description = description
+        self.photo = photo
+        self.text = text
+        self.text_entities = text_entities
+        self.animation = animation
+
+
+class Animation(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        file_id = obj['file_id']
+        thumb = None
+        if 'thumb' in obj:
+            thumb = PhotoSize.de_json(obj['thumb'])
+        file_name = obj.get('file_name')
+        mime_type = obj.get('mime_type')
+        file_size = obj.get('file_size')
+        return cls(file_id, thumb, file_name, mime_type, file_size)
+
+    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
+        self.file_id = file_id
+        self.thumb = thumb
+        self.file_name = file_name
+        self.mime_type = mime_type
+        self.file_size = file_size
+
+
+class GameHighScore(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        position = obj['position']
+        user = User.de_json(obj['user'])
+        score = obj['score']
+        return cls(position, user, score)
+
+    def __init__(self, position, user, score):
+        self.position = position
+        self.user = user
+        self.score = score
