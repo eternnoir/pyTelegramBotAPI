@@ -1118,12 +1118,13 @@ class InlineQueryResultVideo(JsonSerializable):
 
 
 class InlineQueryResultAudio(JsonSerializable):
-    def __init__(self, id, audio_url, title, performer=None, audio_duration=None, reply_markup=None,
+    def __init__(self, id, audio_url, title, caption=None, performer=None, audio_duration=None, reply_markup=None,
                  input_message_content=None):
         self.type = 'audio'
         self.id = id
         self.audio_url = audio_url
         self.title = title
+        self.caption = caption
         self.performer = performer
         self.audio_duration = audio_duration
         self.reply_markup = reply_markup
@@ -1131,6 +1132,8 @@ class InlineQueryResultAudio(JsonSerializable):
 
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'audio_url': self.audio_url, 'title': self.title}
+        if self.caption:
+            json_dict['caption'] = self.caption
         if self.performer:
             json_dict['performer'] = self.performer
         if self.audio_duration:
@@ -1143,12 +1146,13 @@ class InlineQueryResultAudio(JsonSerializable):
 
 
 class InlineQueryResultVoice(JsonSerializable):
-    def __init__(self, id, voice_url, title, performer=None, voice_duration=None, reply_markup=None,
+    def __init__(self, id, voice_url, title, caption=None, performer=None, voice_duration=None, reply_markup=None,
                  input_message_content=None):
         self.type = 'voice'
         self.id = id
         self.voice_url = voice_url
         self.title = title
+        self.caption = caption
         self.performer = performer
         self.voice_duration = voice_duration
         self.reply_markup = reply_markup
@@ -1156,6 +1160,8 @@ class InlineQueryResultVoice(JsonSerializable):
 
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.title}
+        if self.caption:
+            json_dict['caption'] = self.caption
         if self.performer:
             json_dict['performer'] = self.performer
         if self.voice_duration:
@@ -1413,23 +1419,25 @@ class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
-    def __init__(self, id, voice_file_id, title, reply_markup=None, input_message_content=None):
+    def __init__(self, id, voice_file_id, title, caption=None, reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'voice'
         self.id = id
         self.voice_file_id = voice_file_id
         self.title = title
+        self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['voice_file_id'] = voice_file_id
 
 
 class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
-    def __init__(self, id, audio_file_id, reply_markup=None, input_message_content=None):
+    def __init__(self, id, audio_file_id, caption=None, reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'audio'
         self.id = id
         self.audio_file_id = audio_file_id
+        self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['audio_file_id'] = audio_file_id
