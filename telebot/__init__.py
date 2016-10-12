@@ -393,7 +393,7 @@ class TeleBot:
             apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
                                  disable_notification))
 
-    def send_audio(self, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
+    def send_audio(self, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
                    reply_markup=None, disable_notification=None, timeout=None):
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
@@ -407,10 +407,10 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_audio(self.token, chat_id, audio, duration, performer, title, reply_to_message_id,
+            apihelper.send_audio(self.token, chat_id, audio, caption, duration, performer, title, reply_to_message_id,
                                  reply_markup, disable_notification, timeout))
 
-    def send_voice(self, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None,
+    def send_voice(self, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
                    disable_notification=None, timeout=None):
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
@@ -422,7 +422,7 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_voice(self.token, chat_id, voice, duration, reply_to_message_id, reply_markup,
+            apihelper.send_voice(self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
                                  disable_notification, timeout))
 
     def send_document(self, chat_id, data, reply_to_message_id=None, caption=None, reply_markup=None,
