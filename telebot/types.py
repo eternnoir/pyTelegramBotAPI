@@ -161,15 +161,17 @@ class Chat(JsonDeserializable):
         username = obj.get('username')
         first_name = obj.get('first_name')
         last_name = obj.get('last_name')
-        return cls(id, type, title, username, first_name, last_name)
+        all_members_are_administrators = obj.get('all_members_are_administrators')
+        return cls(id, type, title, username, first_name, last_name, all_members_are_administrators)
 
-    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None):
+    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None, all_members_are_administrators=None):
         self.type = type
         self.last_name = last_name
         self.first_name = first_name
         self.username = username
         self.id = id
         self.title = title
+        self.all_members_are_administrators = all_members_are_administrators
 
 
 class Message(JsonDeserializable):
