@@ -280,7 +280,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, reply_markup=None,
+def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
                disable_notification=None, timeout=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
@@ -289,6 +289,8 @@ def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, r
         files = {'voice': voice}
     else:
         payload['voice'] = voice
+    if caption:
+        payload['caption'] = caption
     if duration:
         payload['duration'] = duration
     if reply_to_message_id:
@@ -302,7 +304,7 @@ def send_voice(token, chat_id, voice, duration=None, reply_to_message_id=None, r
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_audio(token, chat_id, audio, duration=None, performer=None, title=None, reply_to_message_id=None,
+def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
                reply_markup=None, disable_notification=None, timeout=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
@@ -311,6 +313,8 @@ def send_audio(token, chat_id, audio, duration=None, performer=None, title=None,
         files = {'audio': audio}
     else:
         payload['audio'] = audio
+    if caption:
+        payload['caption'] = caption
     if duration:
         payload['duration'] = duration
     if performer:
