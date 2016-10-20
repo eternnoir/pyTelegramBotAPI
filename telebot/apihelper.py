@@ -127,6 +127,12 @@ def set_webhook(token, url=None, certificate=None):
     return _make_request(token, method_url, params=payload, files=files)
 
 
+def get_webhook_info(token):
+    method_url = r'getWebhookInfo'
+    payload = {}
+    return _make_request(token, method_url, params=payload)
+
+
 def get_updates(token, offset=None, limit=None, timeout=None):
     method_url = r'getUpdates'
     payload = {}

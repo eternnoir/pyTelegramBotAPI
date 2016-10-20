@@ -121,6 +121,29 @@ class Update(JsonDeserializable):
         self.callback_query = callback_query
 
 
+class WebhookInfo(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        url = obj['url']
+        has_custom_certificate = obj['has_custom_certificate']
+        pending_update_count = obj['pending_update_count']
+        last_error_date = None
+        last_error_message = None
+        if 'last_error_message' in obj:
+            last_error_date = obj['last_error_date']
+        if 'last_error_message' in obj:
+            last_error_message = obj['last_error_message']
+        return cls(url, has_custom_certificate, pending_update_count, last_error_date, last_error_message)
+
+    def __init__(self, url, has_custom_certificate, pending_update_count, last_error_date, last_error_message):
+        self.url = url
+        self.has_custom_certificate = has_custom_certificate
+        self.pending_update_count = pending_update_count
+        self.last_error_date = last_error_date
+        self.last_error_message = last_error_message
+
+
 class User(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
