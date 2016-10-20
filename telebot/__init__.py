@@ -78,6 +78,10 @@ class TeleBot:
     def set_webhook(self, url=None, certificate=None):
         return apihelper.set_webhook(self.token, url, certificate)
 
+    def get_webhook_info(self):
+        result = apihelper.get_webhook_info(self.token)
+        return types.WebhookInfo.de_json(result)
+
     def remove_webhook(self):
         return self.set_webhook()  # No params resets webhook
 
