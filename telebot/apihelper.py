@@ -442,6 +442,55 @@ def send_game(token, chat_id, game_short_name, disable_notification=None, reply_
     return _make_request(token, method_url, params=payload)
 
 
+# https://core.telegram.org/bots/api#setgamescore
+def set_game_score(token, user_id, score, chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
+    """
+    Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot, returns the edited Message, otherwise returns True. Returns an error, if the new score is not greater than the user's current score in the chat.
+    :param token: Bot's token (you don't need to fill this)
+    :param user_id: User identifier
+    :param score: New score, must be positive
+    :param chat_id: (Optional, required if inline_message_id is not specified) Unique identifier for the target chat (or username of the target channel in the format @channelusername)
+    :param message_id: (Optional, required if inline_message_id is not specified) Unique identifier of the sent message
+    :param inline_message_id: (Optional, required if chat_id and message_id are not specified) Identifier of the inline message
+    :param edit_message: (Optional) Pass True, if the game message should be automatically edited to include the current scoreboard
+    :return:
+    """
+    method_url = r'setGameScore'
+    payload = {'user_id': user_id, 'score': score}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if edit_message:
+        payload['edit_message'] = edit_message
+    return _make_request(token, method_url, params=payload)
+
+
+# https://core.telegram.org/bots/api#getgamehighscores
+def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_message_id=None):
+    """
+    Use this method to get data for high score tables. Will return the score of the specified user and several of his neighbors in a game. On success, returns an Array of GameHighScore objects.
+    This method will currently return scores for the target user, plus two of his closest neighbors on each side. Will also return the top three users if the user and his neighbors are not among them. Please note that this behavior is subject to change.
+    :param token: Bot's token (you don't need to fill this)
+    :param user_id: Target user id
+    :param chat_id: (Optional, required if inline_message_id is not specified) Unique identifier for the target chat (or username of the target channel in the format @channelusername)
+    :param message_id: (Optional, required if inline_message_id is not specified) Unique identifier of the sent message
+    :param inline_message_id: (Optional, required if chat_id and message_id are not specified) Identifier of the inline message
+    :return:
+    """
+    method_url = r'getGameHighScores'
+    payload = {'user_id': user_id}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    return _make_request(token, method_url, params=payload)
+
+
 # InlineQuery
 
 def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None):
