@@ -397,7 +397,8 @@ class TeleBot:
             apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
                                  disable_notification))
 
-    def send_audio(self, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
+    def send_audio(self, chat_id, audio, caption=None, duration=None, performer=None, title=None,
+                   reply_to_message_id=None,
                    reply_markup=None, disable_notification=None, timeout=None):
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
@@ -558,6 +559,20 @@ class TeleBot:
         result = apihelper.send_game(self.token, chat_id, game_short_name, disable_notification, reply_to_message_id,
                                      reply_markup)
         return types.Message.de_json(result)
+
+    def set_game_score(self, user_id, score, chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
+        result = apihelper.set_game_score(self.token, user_id, score, chat_id, message_id, inline_message_id,
+                                          edit_message)
+        if type(result) == bool:
+            return result
+        return types.Message.de_json(result)
+
+    def get_game_high_scores(self, user_id, chat_id=None, message_id=None, inline_message_id=None):
+        result = apihelper.get_game_high_scores(self.token, user_id, chat_id, message_id, inline_message_id)
+        ret = []
+        for r in result:
+            ret.append(types.GameHighScore.de_json(r))
+        return ret
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
