@@ -231,7 +231,7 @@ class Message(JsonDeserializable):
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
         if 'game' in obj:
-            opts['game'] = Game.de_json(obj['photo'])
+            opts['game'] = Game.de_json(obj['game'])
             content_type = 'game'
         if 'photo' in obj:
             opts['photo'] = Message.parse_photo(obj['photo'])
