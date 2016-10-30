@@ -762,7 +762,7 @@ class CallbackQuery(JsonDeserializable):
             message = Message.de_json(obj['message'])
         inline_message_id = obj.get('inline_message_id')
         chat_instance = obj['chat_instance']
-        data = obj['data']
+        data = obj.get('data')
         game_short_name = obj.get('game_short_name')
         return cls(id, from_user, data, chat_instance, message, inline_message_id, game_short_name)
 
