@@ -1471,8 +1471,8 @@ class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
 # Games
 
 class InlineQueryResultGame(JsonSerializable):
-    def __init__(self, type, id, game_short_name, reply_markup=None):
-        self.type = type
+    def __init__(self, id, game_short_name, reply_markup=None):
+        self.type = 'game'
         self.id = id
         self.game_short_name = game_short_name
         self.reply_markup = reply_markup
@@ -1480,7 +1480,7 @@ class InlineQueryResultGame(JsonSerializable):
     def to_json(self):
         json_dic = {'type': self.type, 'id': self.id, 'game_short_name': self.game_short_name}
         if self.reply_markup:
-            json_dic['reply_markup'] = self.reply_markup
+            json_dic['reply_markup'] = self.reply_markup.to_dic()
         return json.dumps(json_dic)
 
 
