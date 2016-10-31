@@ -1472,7 +1472,7 @@ class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
 
 class InlineQueryResultGame(JsonSerializable):
     def __init__(self, type, id, game_short_name, reply_markup=None):
-        self.type = type
+        self.type = 'game'
         self.id = id
         self.game_short_name = game_short_name
         self.reply_markup = reply_markup
