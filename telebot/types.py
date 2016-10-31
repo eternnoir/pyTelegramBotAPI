@@ -1480,7 +1480,7 @@ class InlineQueryResultGame(JsonSerializable):
     def to_json(self):
         json_dic = {'type': self.type, 'id': self.id, 'game_short_name': self.game_short_name}
         if self.reply_markup:
-            json_dic['reply_markup'] = self.reply_markup
+            json_dic['reply_markup'] = self.reply_markup.to_dic()
         return json.dumps(json_dic)
 
 
