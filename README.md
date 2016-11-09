@@ -533,6 +533,6 @@ Get help. Discuss. Chat.
 * [TheZigZagProject](https://github.com/WebShark025/TheZigZagProject) - The 'All In One' bot for Telegram! by WebShark025
 * [proxybot](https://github.com/p-hash/proxybot) - Simple Proxy Bot for Telegram. by p-hash
 * [DonantesMalagaBot](https://github.com/vfranch/DonantesMalagaBot)- DonantesMalagaBot facilitates information to Malaga blood donors about the places where they can donate today or in the incoming days. It also records the date of the last donation so that it helps the donors to know when they can donate again. - by vfranch
-* [DuttyBot](https://github.com/DmytryiStriletskyi/DuttyBot) by *Dmytryi Striletskyi* - Timetables for one university in Kiev. 
+* [DuttyBot](https://github.com/DmytryiStriletskyi/DuttyBot) by *Dmytryi Striletskyi* - Timetable for one university in Kiev. 
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
