@@ -572,7 +572,7 @@ class ForceReply(JsonSerializable):
         return json.dumps(json_dict)
 
 
-class ReplyKeyboardHide(JsonSerializable):
+class ReplyKeyboardRemove(JsonSerializable):
     def __init__(self, selective=None):
         self.selective = selective
 
