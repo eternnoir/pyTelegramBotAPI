@@ -1,3 +1,6 @@
+# workplace
+workplace/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -59,3 +62,5 @@ docs/_build/
 # PyBuilder
 target/
 testMain.py
+/examples/sejong/api_token.py
+*.pyproj
