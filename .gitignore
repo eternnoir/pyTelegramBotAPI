@@ -1,7 +1,5 @@
 # workplace
 workplace/
-.gitattributes
-.gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -64,3 +62,5 @@ docs/_build/
 # PyBuilder
 target/
 testMain.py
+/examples/sejong/api_token.py
+*.pyproj
