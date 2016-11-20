@@ -1,6 +1,12 @@
 ﻿#-*- coding: utf-8 -*-
+import sys, os
 
-import telebot
+try:
+    import telebot
+except ImportError:
+    sys.path.append(os.getcwd())
+    import telebot
+    from telebot.sejong import *
 
 try:
     from api_token import API_TOKEN
