@@ -23,11 +23,10 @@ def getVolunteerInternal():
 	result = []
 	try:
 		volunteer_info = {}
-		data = requests.get(getVolunteerInternal).text
+		data = requests.get(URL_VOLUNTEERINTERNAL).text
 		data = data.replace("\n", "").replace("\r", "").replace("\t", "")
 		volunteers = re.findall("<tr>.*?</tr>", data)
-		del volunteers[0] # remove first row
-		for i in volunteers:
+		for i in volunteers[1:]:
 			if "recruit_close.gif" in i: # if not available anymore
 				continue
 			vol_data = re.findall("<td>(.*?)</td>", i)
@@ -37,7 +36,7 @@ def getVolunteerInternal():
 			volunteer_info['time'] = vol_data[4]
 			result.append(volunteer_info)
 	except Exception, e:
-		print "An error occured.", e
+		print "An error occured, ", e
 	return result
 
 def getVolunteerExternal():
@@ -57,12 +56,15 @@ def getVolunteerExternal():
 		data = requests.get(URL_VOLUNTEEREXTERNAL).text
 		data = data.replace("\n", "").replace("\r", "").replace("\t", "")
 		volunteers = re.findall("<tr>.*?</tr>", data)
-		del volunteers[0] # remove first row
-		for i in volunteers:
+		for i in volunteers[1:]:
 			if "recruit_close.gif" in i: # if not available anymore
 				continue
 			volunteer_info['title'] = re.findall("<a.*?>(.*?)</a>", i)[0]
 			result.append(volunteer_info)
 	except Exception, e:
-		print "An error occured.", e
+		print "An error occured, ", e
 	return result
+
+
+
+

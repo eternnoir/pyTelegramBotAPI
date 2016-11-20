@@ -19,17 +19,21 @@ def crawlInsta(target_id="dlwlrma"):
 	target = target_id
 	max_id = ""
 	while 1:
-		url = URL_INSTAGRAM+target+"/media/?max_id="+max_id+""
-		result = requests.get(url).text
-		insta = json.loads(result)
-		articles = insta['items']
-		for article in articles:
-			if article['type'] == "image":
-				url = article['images']['standard_resolution']['url'].replace("s640x640","s1080x1080")
-				url = url.split("?")[0]
-				urls.append(url)
-			max_id = article['id']
-		if len(articles) == 0:
+		try:
+			url = URL_INSTAGRAM+target+"/media/?max_id="+max_id+""
+			result = requests.get(url).text
+			insta = json.loads(result)
+			articles = insta['items']
+			for article in articles:
+				if article['type'] == "image":
+					url = article['images']['standard_resolution']['url'].replace("s640x640","s1080x1080")
+					url = url.split("?")[0]
+					urls.append(url)
+				max_id = article['id']
+			if len(articles) == 0:
+				break
+		except Exception as e:
+			print "An error occured, ", e
 			break
 	return urls
 
