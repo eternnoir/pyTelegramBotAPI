@@ -103,6 +103,10 @@ class Update(JsonDeserializable):
             message = Message.de_json(obj['message'])
         if 'edited_message' in obj:
             edited_message = Message.de_json(obj['edited_message'])
+        if 'channel_post' in obj:
+            channel_post = Message.de_json(obj['channel_post'])
+        if 'edited_channel_post' in obj:
+            edited_channel_post = Message.de_json(obj['edited_channel_post'])
         if 'inline_query' in obj:
             inline_query = InlineQuery.de_json(obj['inline_query'])
         if 'chosen_inline_result' in obj:
