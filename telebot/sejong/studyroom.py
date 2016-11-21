@@ -85,10 +85,13 @@ class RoomStatus(SingletonInstane):
                 del self.cache[k]
 
     def __update(self, year, month):
-        self.cache[(year, month)] = dict()
-        
+        ret_dict = dict()
+        # self.cache[(year, month)]
         for k in ROOM_MAP:
-            req = urllib2.urlopen(ROOM_INFO_URL_FMT % (year, month-1, k))
+            try:
+                req = urllib2.urlopen(ROOM_INFO_URL_FMT % (year, month-1, k))
+            except urllib2.URLError:
+                continue
             month_dict = dict()
 
             d = req.read().decode("utf-8").replace("\t", "").replace("  ","")
@@ -112,16 +115,22 @@ class RoomStatus(SingletonInstane):
                         month_dict[date].append(int(col.split("<")[0].split(">")[-1]))
                     except:
                         pass
-            self.cache[(year, month)][k] = month_dict
-
-        self.cache[(year, month)]['time'] = utils.time_now()
+            ret_dict[k] = month_dict
+        if len(ret_dict) > 0:
+            ret_dict['time'] = utils.time_now()
+        else:
+            ret_dict = None
+        return ret_dict
 
     def update(self, year, month):
 
         self.GC()
 
         if not (year, month) in self.cache:
-            self.__update(year, month)
+            tmp = self.__update(year, month)
+            if tmp is not None:
+                self.cache[(year, month)] = tmp 
+            
 
     def __search(self, year, month, date, time):
         
