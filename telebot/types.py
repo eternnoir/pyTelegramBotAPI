@@ -577,7 +577,7 @@ class ReplyKeyboardRemove(JsonSerializable):
         self.selective = selective
 
     def to_json(self):
-        json_dict = {'hide_keyboard': True}
+        json_dict = {'remove_keyboard': True}
         if self.selective:
             json_dict['selective'] = True
         return json.dumps(json_dict)
