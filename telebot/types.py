@@ -217,8 +217,10 @@ class Message(JsonDeserializable):
             opts['forward_from'] = User.de_json(obj['forward_from'])
         if 'forward_from_chat' in obj:
             opts['forward_from_chat'] = Chat.de_json(obj['forward_from_chat'])
+        if 'forward_from_message_id' in obj:
+            opts['forward_from_message_id'] = obj.get('forward_from_message_id')
         if 'forward_date' in obj:
-            opts['forward_date'] = obj['forward_date']
+            opts['forward_date'] = obj.get('forward_date')
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'edit_date' in obj:
