@@ -25,10 +25,4 @@ rs.update(2016, 10)
 print rs.search(2016,10,12,12)
 print rs.search(2016,10,12,13)
 
-preset = None
-for i in range(10,14):
-    if preset is not None: 
-        preset = preset.intersection( set(rs.search(2016,10,12,i)) )
-    else:
-        preset = set(rs.search(2016,10,12,i))
-print preset
+print rs.search(2016,10,12,range(10, 10+4))

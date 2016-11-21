@@ -132,11 +132,20 @@ class RoomStatus(SingletonInstane):
             if (time in self.cache[(year, month)][room][date] ) : rst.append(room)
 
         return rst
+    
+    def search(self, year, month, date, time_range):
 
-    def search(self, year, month, date, time):
+        if type(time_range) is int : time_range = [time_range]
+
         self.update(year, month)
-        
-        return self.__search(year, month, date, time)
+
+        preset = None
+        for i in time_range:
+            if preset is not None: 
+                preset = preset.intersection( set(self.__search(year,month,date,i)) )
+            else:
+                preset = set(self.__search(year,month,date,i))
+        return list(preset)
 
 if __name__ == "__main__":
     rs = RoomStatus.instance()
