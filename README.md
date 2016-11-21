@@ -535,6 +535,7 @@ Get help. Discuss. Chat.
 * [DonantesMalagaBot](https://github.com/vfranch/DonantesMalagaBot)- DonantesMalagaBot facilitates information to Malaga blood donors about the places where they can donate today or in the incoming days. It also records the date of the last donation so that it helps the donors to know when they can donate again. - by vfranch
 * [DuttyBot](https://github.com/DmytryiStriletskyi/DuttyBot) by *Dmytryi Striletskyi* - Timetable for one university in Kiev. 
 * [dailypepebot](https://telegram.me/dailypepebot) by [*jaime*](https://github.com/jiwidi) - Get's you random pepe images and gives you their id, then you can call this image with the number. 
+* [wat-bridge](https://github.com/rmed/wat-bridge) by [*rmed*](https://github.com/rmed) - Send and receive messages to/from WhatsApp through Telegram
 
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
