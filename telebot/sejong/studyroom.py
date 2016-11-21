@@ -147,6 +147,13 @@ class RoomStatus(SingletonInstane):
                 preset = set(self.__search(year,month,date,i))
         return list(preset)
 
+    def mappingResult(self, room_list):
+        rst = []
+        for room_no in room_list:
+            rst.append(ROOM_MAP[room_no])
+
+        return rst
+
 if __name__ == "__main__":
     rs = RoomStatus.instance()
 

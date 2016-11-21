@@ -26,3 +26,5 @@ print rs.search(2016,10,12,12)
 print rs.search(2016,10,12,13)
 
 print rs.search(2016,10,12,range(10, 10+4))
+
+print rs.mappingResult(rs.search(2016,10,12,range(10, 10+4)))
