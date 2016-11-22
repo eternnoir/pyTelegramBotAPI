@@ -10,10 +10,11 @@ except ImportError:
     from telebot.sejong import easteregg
     from telebot.sejong import volunteer
     from telebot.sejong import studyroom
+    from telebot.sejong import news
 
 print easteregg.crawlInsta()
 print volunteer.getVolunteerInternal()
-
+print news.getNews(popular)
 
 # Study room search
 rs = studyroom.RoomStatus.instance()
