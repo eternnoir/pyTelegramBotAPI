@@ -6,4 +6,6 @@ install: "pip install -r requirements.txt"
 script:
     - python setup.py install
     - cd tests && py.test
+
+after_success:
     - python examples/sejong/test.py
