@@ -8,6 +8,11 @@ try:
 except ImportError as ie:
     from HTMLParser import HTMLParser
 
+# default credit cve list
+SWEETCHIP_CVE = ['2014-1799', '2015-0037', '2015-1712',
+                 '2015-1714', '2015-2447', '2016-1745']
+SHC_CVE = ['2016-0789']
+
 
 # exception handler decorator
 def handle_exception(func):
@@ -31,7 +36,7 @@ class HTMLWrapper(HTMLParser, object):
 class CVEParser(HTMLWrapper):
     def __init__(self):
         self.option = ""
-        self.report = {'vendor': [], 'vt_info': "", 'cvss': "", 'summary': ""}
+        self.report = {'vendor': [], 'vt_info': "", 'cvss': "", 'summary': "", 'credit': ""}
         super(CVEParser, self).__init__()
 
     def handle_starttag(self, tag, attrs):
@@ -83,5 +88,12 @@ class CVESearch:
         c.feed(res.text)
         report = c.report
         del c
+
+        # special code requested by @sweetchip
+        if number in SWEETCHIP_CVE:
+            report['credit'] = "sweetchip"
+
+        if number in SHC_CVE:
+            report['credit'] = "Seung-Hyun Cho"
 
         return report
