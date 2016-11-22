@@ -85,7 +85,3 @@ class CVESearch:
         del c
 
         return report
-
-cs = CVESearch()
-result = cs.search_by_number('2016-1111')
-print(result)
