@@ -1,7 +1,12 @@
 import requests
 import re
+import traceback
 
-from html.parser import HTMLParser
+# import htmlparser 2.7 / 3.4
+try:
+    from html.parser import HTMLParser
+except ImportError as ie:
+    from HTMLParser import HTMLParser
 
 
 # exception handler decorator
@@ -9,18 +14,25 @@ def handle_exception(func):
     def wrapper(*args, **kwargs):
         try:
             result = func(*args, **kwargs)
-        except Exception as e:
-            print("Exception! \n{0}".format(str(e)))
-            result = "서버에서 오류가 발생하였습니다. 죄송합니다."
+        except:
+            print(traceback.format_exc())
+            result = None
         finally:
             return result
     return wrapper
 
 
-class CVEParser(HTMLParser):
-    def initialize(self):
+# HTMLParser wrapper
+class HTMLWrapper(HTMLParser, object):
+    pass
+
+
+# CVE Parser from remote site
+class CVEParser(HTMLWrapper):
+    def __init__(self):
         self.option = ""
         self.report = {'vendor': [], 'vt_info': "", 'cvss': "", 'summary': ""}
+        super(CVEParser, self).__init__()
 
     def handle_starttag(self, tag, attrs):
         if tag == "div":
@@ -48,7 +60,7 @@ class CVEParser(HTMLParser):
 
     def handle_data(self, data):
         if self.option != "":
-            self.report[self.option] += data.replace('\n', '').replace('\t', '')
+            self.report[self.option] += data.replace('\n', '').replace('\t', '').strip()
 
             if len(self.report[self.option]) != 0:
                 self.report[self.option] += " "
@@ -68,27 +80,12 @@ class CVESearch:
         res = requests.get(url)
 
         c = CVEParser()
-        c.initialize()
         c.feed(res.text)
         report = c.report
         del c
 
-        report['cve'] = "CVE-{0}".format(number)
-        report['url'] = "https://web.nvd.nist.gov/view/vuln/detail?"\
-                        "vulnId=CVE-{0}".format(number)
+        return report
 
-        res = "CVE 검색 결과\n"
-        res += "CVE 번호 : {0}\n".format(report['cve'])
-        res += "CVSS : {0}\n".format(report['cvss'])
-
-        vendors = " ".join(report['vendor'])
-        res += "대상 벤더사 : {0}\n".format(vendors)
-
-        res += "취약점 설명 : {0}\n".format(report['summary'])
-
-        res += "취약점 분류 : {0}\n".format(report['vt_info'])
-        res += "상세 링크 : {0}".format(report['url'])
-
-        return res
-
-result = CVESearch.search_by_number()
+cs = CVESearch()
+result = cs.search_by_number('2016-1111')
+print(result)
