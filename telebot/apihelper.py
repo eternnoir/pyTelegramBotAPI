@@ -443,28 +443,31 @@ def send_game(token, chat_id, game_short_name, disable_notification=None, reply_
 
 
 # https://core.telegram.org/bots/api#setgamescore
-def set_game_score(token, user_id, score, chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
+def set_game_score(token, user_id, score, force=None, disable_edit_message=None, chat_id=None, message_id=None, inline_message_id=None):
     """
     Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot, returns the edited Message, otherwise returns True. Returns an error, if the new score is not greater than the user's current score in the chat.
     :param token: Bot's token (you don't need to fill this)
     :param user_id: User identifier
-    :param score: New score, must be positive
+    :param score: New score, must be non-negative
+    :param force: (Optional) Pass True, if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters
+    :param disable_edit_message: (Optional) Pass True, if the game message should not be automatically edited to include the current scoreboard
     :param chat_id: (Optional, required if inline_message_id is not specified) Unique identifier for the target chat (or username of the target channel in the format @channelusername)
     :param message_id: (Optional, required if inline_message_id is not specified) Unique identifier of the sent message
     :param inline_message_id: (Optional, required if chat_id and message_id are not specified) Identifier of the inline message
-    :param edit_message: (Optional) Pass True, if the game message should be automatically edited to include the current scoreboard
     :return:
     """
     method_url = r'setGameScore'
     payload = {'user_id': user_id, 'score': score}
+    if force:
+        payload['force'] = force
     if chat_id:
         payload['chat_id'] = chat_id
     if message_id:
         payload['message_id'] = message_id
     if inline_message_id:
         payload['inline_message_id'] = inline_message_id
-    if edit_message:
-        payload['edit_message'] = edit_message
+    if disable_edit_message:
+        payload['disable_edit_message'] = disable_edit_message
     return _make_request(token, method_url, params=payload)
 
 
@@ -493,7 +496,20 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
 
 # InlineQuery
 
-def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None):
+def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None, cache_time=None):
+    """
+    Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, True is returned.
+    Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must first create a game for your bot via BotFather and accept the terms. Otherwise, you may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
+    
+    :param token: Bot's token (you don't need to fill this)
+    :param callback_query_id: Unique identifier for the query to be answered
+    :param text: (Optional) Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
+    :param show_alert: (Optional) If true, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false.
+    :param url: (Optional) URL that will be opened by the user's client. If you have created a Game and accepted the conditions via @Botfather, specify the URL that opens your game – note that this will only work if the query comes from a callback_game button.
+    Otherwise, you may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
+    :param cache_time: (Optional) The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
+    :return:
+    """
     method_url = 'answerCallbackQuery'
     payload = {'callback_query_id': callback_query_id}
     if text:
@@ -502,6 +518,8 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
         payload['show_alert'] = show_alert
     if url:
         payload['url'] = url
+    if cache_time:
+        payload['cache_time'] = cache_time
     return _make_request(token, method_url, params=payload, method='post')
 
 
