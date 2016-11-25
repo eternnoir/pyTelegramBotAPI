@@ -3,15 +3,19 @@ from bs4 import BeautifulSoup
 import urllib
 
 def getNews(command):
-    
-    # source for scraping the news
-    issue = urllib.urlopen('http://www.dailysecu.com/rss/S1N1.xml').read()
-    popular = urllib.urlopen('http://www.dailysecu.com/rss/clickTop.xml').read()
 
-    if command == news_issue:
-        r = issue
-    elif command == news_popular:
-        r = popular
+    if command == 'news_issue':
+        try:
+            r = urllib.urlopen('http://www.dailysecu.com/rss/S1N1.xml').read()
+        except urllib.error.HTTPError as e:
+            error_message = "Error %s HTTP." % e.code
+            sys.exit(error_message)
+    elif command == 'news_popular':
+        try:
+            r = urllib.urlopen('http://www.dailysecu.com/rss/clickTop.xml').read()
+        except urllib.error.HTTPError as e:
+            error_message = "Error %s HTTP." % e.code
+            sys.exit(error_message)
 
     soup = BeautifulSoup(r, "html.parser")
     news = soup.find_all("item")
