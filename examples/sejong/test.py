@@ -14,7 +14,7 @@ except ImportError:
 
 print easteregg.crawlInsta()
 print volunteer.getVolunteerInternal()
-print news.getNews(popular)
+print news.getNews('news_issue')
 
 # Study room search
 rs = studyroom.RoomStatus.instance()
