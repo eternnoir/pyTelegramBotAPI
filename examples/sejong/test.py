@@ -21,15 +21,13 @@ data = news.getNews('news_issue')
 newsIndex = data[0]
 newsList = data[1]
 
-newsCount = 1
 for index in newsIndex:
     title = newsIndex[index]
-    print '<',newsCount,'>'
+    print '<',index,'>'
     print '[',newsList[title,'title'],']'
     print newsList[title,'description'],'...'
     print '링크:',newsList[title,'link']
     print ""
-    newsCount = newsCount+1
 
 
 # Study room search
