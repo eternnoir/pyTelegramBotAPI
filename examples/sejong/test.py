@@ -15,10 +15,9 @@ except ImportError:
     from telebot.sejong import studyroom
 
 # Easter EGG
-iu_insta = easteregg.Insta("dlwlrma")
-print iu_insta.getImage()
+#iu_insta = easteregg.Insta("dlwlrma")
+#print iu_insta.getImage()
 
-exit(0)
 
 # Volunteer
 print volunteer.getVolunteerInternal()
