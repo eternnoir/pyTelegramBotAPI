@@ -12,6 +12,7 @@ except ImportError:
     from telebot.sejong import volunteer
     from telebot.sejong import cvesearch
     from telebot.sejong import studyroom
+    from telebot.sejong import news
 
 print easteregg.crawlInsta()
 print volunteer.getVolunteerInternal()
@@ -20,6 +21,20 @@ print volunteer.getVolunteerInternal()
 cs = CVESearch()
 result = cs.search_by_number('2016-1111')
 print result
+
+#SecuNews
+data = news.getNews('news_issue')
+newsIndex = data[0]
+newsList = data[1]
+
+for index in newsIndex:
+    title = newsIndex[index]
+    print '<',index,'>'
+    print '[',newsList[title,'title'],']'
+    print newsList[title,'description'],'...'
+    print '링크:',newsList[title,'link']
+    print ""
+
 
 # Study room search
 rs = studyroom.RoomStatus.instance()
