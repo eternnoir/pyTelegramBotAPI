@@ -9,13 +9,13 @@ def getNews(command):
             r = urllib.urlopen('http://www.dailysecu.com/rss/S1N1.xml').read()
         except urllib.error.HTTPError as e:
             error_message = "Error %s HTTP." % e.code
-            sys.exit(error_message)
+            return error_message
     elif command == 'news_popular':
         try:
             r = urllib.urlopen('http://www.dailysecu.com/rss/clickTop.xml').read()
-        except urllib.error.HTTPError as e:
+        except Exception as e:
             error_message = "Error %s HTTP." % e.code
-            sys.exit(error_message)
+            return error_message
 
     soup = BeautifulSoup(r, "html.parser")
     news = soup.find_all("item")
