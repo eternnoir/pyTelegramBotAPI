@@ -6,6 +6,7 @@ try:
     import telebot
 except ImportError:
     sys.path.append(os.getcwd())
+    sys.path.append("../../")
     import telebot
 
     from telebot.sejong import easteregg
@@ -14,8 +15,14 @@ except ImportError:
     from telebot.sejong import studyroom
     from telebot.sejong import news
 
-print easteregg.crawlInsta()
+# Easter EGG
+#iu_insta = easteregg.Insta("dlwlrma")
+#print iu_insta.getImage()
+
+
+# Volunteer
 print volunteer.getVolunteerInternal()
+print volunteer.getVolunteerExternal()
 
 # cve search
 cs = CVESearch()
