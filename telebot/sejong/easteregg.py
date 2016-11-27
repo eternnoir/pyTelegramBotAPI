@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import re
 import requests
 import json
@@ -7,6 +8,10 @@ import urllib
 import random
 import time
 
+# Variables for Youtube
+DICT_IUYOUTUBE = {}
+
+# Properties for instagram
 URL_INSTAGRAM = "https://www.instagram.com/"
 DIRECTORY = "./insta_images/"
 TARGETID = "dlwlrma"
@@ -88,9 +93,24 @@ class Insta():
             * None
 
             Return Value
-            * file_name (String) : Random image file.
+            * filename (String) : Random image filename.
         """
         random.seed = time.time()
         fname = random.choice(self.getLocalImages())
         return fname
 
+def getIUYoutube(fname):
+	"""
+		Get random URL from playlists.
+	"""
+	result = {}
+	random.seed = time.time()
+	try:
+		f = open(json_name, "rb")
+		result = json.loads(f.read())['list']
+		result = random.choice(result)
+		f.close()
+	except Exception as e:
+		print e
+		return False
+	return result
