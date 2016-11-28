@@ -106,7 +106,7 @@ def getIUYoutube(fname):
 	result = {}
 	random.seed = time.time()
 	try:
-		f = open(json_name, "rb")
+		f = open(fname, "rb")
 		result = json.loads(f.read())['list']
 		result = random.choice(result)
 		f.close()
