@@ -20,7 +20,7 @@ logger.addHandler(console_output_handler)
 
 logger.setLevel(logging.ERROR)
 
-from telebot import apihelper, types, util
+from telebot import apihelper, types, util, botan
 
 """
 Module : telebot
@@ -44,7 +44,7 @@ class TeleBot:
         getUpdates
     """
 
-    def __init__(self, token, threaded=True, skip_pending=False):
+    def __init__(self, token, threaded=True, skip_pending=False, botan_token=None, auto_tracking=False):
         """
         :param token: bot API token
         :return: Telebot object.
@@ -52,6 +52,7 @@ class TeleBot:
         self.token = token
         self.update_listener = []
         self.skip_pending = skip_pending
+        self.botan_token = botan_token
 
         self.__stop_polling = threading.Event()
         self.last_update_id = 0
@@ -74,6 +75,25 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool()
+
+        if botan_token is not None and auto_tracking:
+            def botan_listener(updates):
+                for message in updates:
+                    d = {}
+                    for x, y in six.iteritems(message.__dict__):
+                        if hasattr(y, '__dict__'):
+                            d[x] = vars(y)
+                        elif y is not None:
+                            d[x] = y
+                    user_id = d.get('from_user', d['chat'])['id']
+                    self.track_event('MESSAGE_RECEIVED', user_id, d)
+
+            self.set_update_listener(botan_listener)
+
+    def track_event(self, event_name, user_id, event_description):
+        if self.botan_token is None:
+            return False
+        return botan.track_event(self.botan_token, event_name, user_id, event_description)
 
     def set_webhook(self, url=None, certificate=None):
         return apihelper.set_webhook(self.token, url, certificate)
