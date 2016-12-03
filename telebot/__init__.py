@@ -623,7 +623,7 @@ class TeleBot:
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
                                              switch_pm_text, switch_pm_parameter)
 
-    def answer_callback_query(self, callback_query_id, text=None, show_alert=None, url=None):
+    def answer_callback_query(self, callback_query_id, text=None, show_alert=None, url=None, cache_time=None):
         """
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
         the user as a notification at the top of the chat screen or as an alert.
@@ -632,7 +632,7 @@ class TeleBot:
         :param show_alert:
         :return:
         """
-        return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url)
+        return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
     def register_for_reply(self, message, callback):
         """
