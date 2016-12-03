@@ -200,6 +200,14 @@ def send_something(message):
 
 Same as Message handlers
 
+#### channel_post_handler
+
+Same as Message handlers
+
+#### edited_channel_post_handler
+
+Same as Message handlers
+
 #### Callback Query Handler
 
 In bot2.0 update. You can get `callback_query` in update object. In telebot use `callback_query_handler` to process callback_querys.
