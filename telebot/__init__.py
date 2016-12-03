@@ -578,8 +578,8 @@ class TeleBot:
                                      reply_markup)
         return types.Message.de_json(result)
 
-    def set_game_score(self, user_id, score, chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
-        result = apihelper.set_game_score(self.token, user_id, score, chat_id, message_id, inline_message_id,
+    def set_game_score(self, user_id, score, force=None,chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
+        result = apihelper.set_game_score(self.token, user_id, score, force, chat_id, message_id, inline_message_id,
                                           edit_message)
         if type(result) == bool:
             return result
