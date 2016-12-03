@@ -67,6 +67,8 @@ class TeleBot:
 
         self.message_handlers = []
         self.edited_message_handlers = []
+        self.channel_post_handlers = []
+        self.edited_channel_post_handlers = []
         self.inline_handlers = []
         self.chosen_inline_handlers = []
         self.callback_query_handlers = []
@@ -129,6 +131,8 @@ class TeleBot:
     def process_new_updates(self, updates):
         new_messages = []
         edited_new_messages = []
+        new_channel_posts = []
+        new_edited_channel_posts = []
         new_inline_querys = []
         new_chosen_inline_results = []
         new_callback_querys = []
@@ -139,6 +143,10 @@ class TeleBot:
                 new_messages.append(update.message)
             if update.edited_message:
                 edited_new_messages.append(update.edited_message)
+            if update.channel_post:
+                new_channel_posts.append(update.channel_post)
+            if update.edited_channel_post:
+                new_edited_channel_posts.append(update.edited_channel_post)
             if update.inline_query:
                 new_inline_querys.append(update.inline_query)
             if update.chosen_inline_result:
@@ -150,6 +158,10 @@ class TeleBot:
             self.process_new_messages(new_messages)
         if len(edited_new_messages) > 0:
             self.process_new_edited_messages(edited_new_messages)
+        if len(new_channel_posts) > 0:
+            self.process_new_channel_posts(new_channel_posts)
+        if len(new_edited_channel_posts) > 0:
+            self.process_new_edited_channel_posts(new_edited_channel_posts)
         if len(new_inline_querys) > 0:
             self.process_new_inline_query(new_inline_querys)
         if len(new_chosen_inline_results) > 0:
@@ -166,6 +178,12 @@ class TeleBot:
 
     def process_new_edited_messages(self, edited_message):
         self._notify_command_handlers(self.edited_message_handlers, edited_message)
+
+    def process_new_channel_posts(self, channel_post):
+        self._notify_command_handlers(self.channel_post_handlers, channel_post)
+
+    def process_new_edited_channel_posts(self, edited_channel_post):
+        self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post)
 
     def process_new_inline_query(self, new_inline_querys):
         self._notify_command_handlers(self.inline_handlers, new_inline_querys)
@@ -747,6 +765,38 @@ class TeleBot:
 
     def add_edited_message_handler(self, handler_dict):
         self.edited_message_handlers.append(handler_dict)
+
+    def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=['text'], **kwargs):
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    content_types=content_types,
+                                                    **kwargs)
+            self.add_channel_post_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_channel_post_handler(self, handler_dict):
+        self.channel_post_handlers.append(handler_dict)
+
+    def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=['text'], **kwargs):
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    content_types=content_types,
+                                                    **kwargs)
+            self.add_edited_message_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_edited_channel_post_handler(self, handler_dict):
+        self.edited_channel_post_handlers.append(handler_dict)
 
     def inline_handler(self, func, **kwargs):
         def decorator(handler):

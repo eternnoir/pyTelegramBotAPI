@@ -113,13 +113,17 @@ class Update(JsonDeserializable):
             chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
         if 'callback_query' in obj:
             callback_query = CallbackQuery.de_json(obj['callback_query'])
-        return cls(update_id, message, edited_message, inline_query, chosen_inline_result, callback_query)
+        return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
+                   chosen_inline_result, callback_query)
 
-    def __init__(self, update_id, message, edited_message, inline_query, chosen_inline_result, callback_query):
+    def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
+                 chosen_inline_result, callback_query):
         self.update_id = update_id
         self.edited_message = edited_message
         self.message = message
         self.edited_message = edited_message
+        self.channel_post = channel_post
+        self.edited_channel_post = edited_channel_post
         self.inline_query = inline_query
         self.chosen_inline_result = chosen_inline_result
         self.callback_query = callback_query
@@ -191,7 +195,8 @@ class Chat(JsonDeserializable):
         all_members_are_administrators = obj.get('all_members_are_administrators')
         return cls(id, type, title, username, first_name, last_name, all_members_are_administrators)
 
-    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None, all_members_are_administrators=None):
+    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None,
+                 all_members_are_administrators=None):
         self.type = type
         self.last_name = last_name
         self.first_name = first_name
