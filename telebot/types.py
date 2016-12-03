@@ -96,6 +96,8 @@ class Update(JsonDeserializable):
         update_id = obj['update_id']
         message = None
         edited_message = None
+        channel_post = None
+        edited_channel_post = None
         inline_query = None
         chosen_inline_result = None
         callback_query = None
