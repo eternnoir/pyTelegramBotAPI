@@ -87,15 +87,16 @@ class TeleBot:
     def remove_webhook(self):
         return self.set_webhook()  # No params resets webhook
 
-    def get_updates(self, offset=None, limit=None, timeout=20):
+    def get_updates(self, offset=None, limit=None, timeout=20, allowed_updates=None):
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+        :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :param offset: Integer. Identifier of the first update to be returned.
         :param limit: Integer. Limits the number of updates to be retrieved.
         :param timeout: Integer. Timeout in seconds for long polling.
         :return: array of Updates
         """
-        json_updates = apihelper.get_updates(self.token, offset, limit, timeout)
+        json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates)
         ret = []
         for ju in json_updates:
             ret.append(types.Update.de_json(ju))

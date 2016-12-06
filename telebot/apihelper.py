@@ -136,7 +136,7 @@ def get_webhook_info(token):
     return _make_request(token, method_url, params=payload)
 
 
-def get_updates(token, offset=None, limit=None, timeout=None):
+def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=None):
     method_url = r'getUpdates'
     payload = {}
     if offset:
@@ -145,6 +145,8 @@ def get_updates(token, offset=None, limit=None, timeout=None):
         payload['limit'] = limit
     if timeout:
         payload['timeout'] = timeout
+    if allowed_updates:
+        payload['allowed_updates'] = allowed_updates
     return _make_request(token, method_url, params=payload)
 
 
