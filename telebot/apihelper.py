@@ -130,6 +130,11 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
     return _make_request(token, method_url, params=payload, files=files)
 
 
+def delete_webhook(token):
+    method_url = r'deleteWebhook'
+    return _make_request(token, method_url)
+
+
 def get_webhook_info(token):
     method_url = r'getWebhookInfo'
     payload = {}

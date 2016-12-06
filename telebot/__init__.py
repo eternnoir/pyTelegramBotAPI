@@ -80,6 +80,13 @@ class TeleBot:
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
 
+    def delete_webhook(self):
+        """
+        Use this method to remove webhook integration if you decide to switch back to getUpdates.
+        :return: bool
+        """
+        return apihelper.delete_webhook(self.token)
+
     def get_webhook_info(self):
         result = apihelper.get_webhook_info(self.token)
         return types.WebhookInfo.de_json(result)
