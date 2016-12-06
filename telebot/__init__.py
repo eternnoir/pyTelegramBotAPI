@@ -77,8 +77,8 @@ class TeleBot:
         if self.threaded:
             self.worker_pool = util.ThreadPool()
 
-    def set_webhook(self, url=None, certificate=None):
-        return apihelper.set_webhook(self.token, url, certificate)
+    def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
+        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
 
     def get_webhook_info(self):
         result = apihelper.get_webhook_info(self.token)

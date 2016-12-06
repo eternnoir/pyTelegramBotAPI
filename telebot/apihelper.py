@@ -115,7 +115,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_webhook(token, url=None, certificate=None):
+def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None):
     method_url = r'setWebhook'
     payload = {
         'url': url if url else "",
@@ -123,7 +123,10 @@ def set_webhook(token, url=None, certificate=None):
     files = None
     if certificate:
         files = {'certificate': certificate}
-
+    if max_connections:
+        payload['max_connections'] = max_connections
+    if allowed_updates:
+        payload['allowed_updates'] = allowed_updates
     return _make_request(token, method_url, params=payload, files=files)
 
 
@@ -443,7 +446,8 @@ def send_game(token, chat_id, game_short_name, disable_notification=None, reply_
 
 
 # https://core.telegram.org/bots/api#setgamescore
-def set_game_score(token, user_id, score, force=None, disable_edit_message=None, chat_id=None, message_id=None, inline_message_id=None):
+def set_game_score(token, user_id, score, force=None, disable_edit_message=None, chat_id=None, message_id=None,
+                   inline_message_id=None):
     """
     Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot, returns the edited Message, otherwise returns True. Returns an error, if the new score is not greater than the user's current score in the chat.
     :param token: Bot's token (you don't need to fill this)
