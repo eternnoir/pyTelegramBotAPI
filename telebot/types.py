@@ -625,6 +625,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
         for button in args:
             if util.is_string(button):
                 row.append({'text': button})
+            elif isinstance(button, bytes):
+                row.append({'text': button.decode('utf-8')})
             else:
                 row.append(button.to_dic())
             if i % self.row_width == 0:
