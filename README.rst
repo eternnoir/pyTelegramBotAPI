@@ -497,7 +497,7 @@ Reply markup
 
 All ``send_xyz`` functions of TeleBot take an optional ``reply_markup``
 argument. This argument must be an instance of ``ReplyKeyboardMarkup``,
-``ReplyKeyboardHide`` or ``ForceReply``, which are defined in types.py.
+``ReplyKeyboardRemove`` or ``ForceReply``, which are defined in types.py.
 
 .. code:: python
 
@@ -538,9 +538,9 @@ The last example yields this result:
 
 .. code:: python
 
-    # ReplyKeyboardHide: hides a previously sent ReplyKeyboardMarkup
+    # ReplyKeyboardRemove: hides a previously sent ReplyKeyboardMarkup
     # Takes an optional selective argument (True/False, default False)
-    markup = types.ReplyKeyboardHide(selective=False)
+    markup = types.ReplyKeyboardRemove(selective=False)
     tb.send_message(chat_id, message, reply_markup=markup)
 
 .. code:: python
