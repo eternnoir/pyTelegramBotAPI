@@ -216,7 +216,7 @@ In bot2.0 update. You can get `callback_query` in update object. In telebot use 
 @bot.callback_query_handler(func=lambda call: True)
 def  test_callback(call):
     logger.info(call)
-``` 
+```
 
 #### TeleBot
 ```python
@@ -303,7 +303,7 @@ file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN,
 
 ```
 #### Reply markup
-All `send_xyz` functions of TeleBot take an optional `reply_markup` argument. This argument must be an instance of `ReplyKeyboardMarkup`, `ReplyKeyboardHide` or `ForceReply`, which are defined in types.py.
+All `send_xyz` functions of TeleBot take an optional `reply_markup` argument. This argument must be an instance of `ReplyKeyboardMarkup`, `ReplyKeyboardRemove` or `ForceReply`, which are defined in types.py.
 
 ```python
 from telebot import types
@@ -339,9 +339,9 @@ The last example yields this result:
 ![ReplyKeyboardMarkup](https://pp.vk.me/c624430/v624430512/473e5/_mxxW7FPe4U.jpg "ReplyKeyboardMarkup")
 
 ```python
-# ReplyKeyboardHide: hides a previously sent ReplyKeyboardMarkup
+# ReplyKeyboardRemove: hides a previously sent ReplyKeyboardMarkup
 # Takes an optional selective argument (True/False, default False)
-markup = types.ReplyKeyboardHide(selective=False)
+markup = types.ReplyKeyboardRemove(selective=False)
 tb.send_message(chat_id, message, reply_markup=markup)
 ```
 
@@ -398,7 +398,7 @@ def query_text(inline_query):
 
 ```
 ###Working with entities:
-This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc. 
+This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 Attributes:
 * `type`
 * `url`
@@ -495,14 +495,14 @@ April 9,2016 Telegram release new bot 2.0 API, which has a drastic revision espe
 Telegram Bot API support new type Chat for message.chat.
 
 - Check the ```type``` attribute in ```Chat``` object:
-- 
+-
 ```python
 if message.chat.type == “private”:
 	# private chat message
 
 if message.chat.type == “group”:
 	# group chat message
-	
+
 if message.chat.type == “supergroup”:
 	# supergroup chat message
 
@@ -533,7 +533,7 @@ Get help. Discuss. Chat.
 * [Telegram Proxy Bot](https://bitbucket.org/master_groosha/telegram-proxy-bot) by *Groosha* - A simple BITM (bot-in-the-middle) for Telegram acting as some kind of "proxy".
 * [Telegram Proxy Bot](https://github.com/mrgigabyte/proxybot) by *mrgigabyte* - `Credits for the original version of this bot goes to` **Groosha** `, simply added certain features which I thought were needed`.
 * [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
-* [League of Legends bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie* 
+* [League of Legends bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie*
 * [NeoBot](https://github.com/neoranger/NeoBot) by *neoranger*
 * [TagAlertBot](https://github.com/pitasi/TagAlertBot) by *pitasi*
 * [ComedoresUGRbot](http://telegram.me/ComedoresUGRbot) ([source](https://github.com/alejandrocq/ComedoresUGRbot)) by [*alejandrocq*](https://github.com/alejandrocq) - Telegram bot to check the menu of Universidad de Granada dining hall.
@@ -541,8 +541,8 @@ Get help. Discuss. Chat.
 * [TheZigZagProject](https://github.com/WebShark025/TheZigZagProject) - The 'All In One' bot for Telegram! by WebShark025
 * [proxybot](https://github.com/p-hash/proxybot) - Simple Proxy Bot for Telegram. by p-hash
 * [DonantesMalagaBot](https://github.com/vfranch/DonantesMalagaBot)- DonantesMalagaBot facilitates information to Malaga blood donors about the places where they can donate today or in the incoming days. It also records the date of the last donation so that it helps the donors to know when they can donate again. - by vfranch
-* [DuttyBot](https://github.com/DmytryiStriletskyi/DuttyBot) by *Dmytryi Striletskyi* - Timetable for one university in Kiev. 
-* [dailypepebot](https://telegram.me/dailypepebot) by [*jaime*](https://github.com/jiwidi) - Get's you random pepe images and gives you their id, then you can call this image with the number. 
+* [DuttyBot](https://github.com/DmytryiStriletskyi/DuttyBot) by *Dmytryi Striletskyi* - Timetable for one university in Kiev.
+* [dailypepebot](https://telegram.me/dailypepebot) by [*jaime*](https://github.com/jiwidi) - Get's you random pepe images and gives you their id, then you can call this image with the number.
 * [wat-bridge](https://github.com/rmed/wat-bridge) by [*rmed*](https://github.com/rmed) - Send and receive messages to/from WhatsApp through Telegram
 * [flibusta_bot](https://github.com/Kurbezz/flibusta_bot) by [*Kurbezz*](https://github.com/Kurbezz)
 * [EmaProject](https://github.com/halkliff/emaproject) by [*halkliff*](https://github.com/halkliff) - Ema - Eastern Media Assistant was made thinking on the ease-to-use feature. Coding here is simple, as much as is fast and powerful.

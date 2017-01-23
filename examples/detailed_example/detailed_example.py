@@ -21,7 +21,7 @@ commands = {  # command description used in the "help" command
 imageSelect = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # create the image selection keyboard
 imageSelect.add('cock', 'pussy')
 
-hideBoard = types.ReplyKeyboardHide()  # if sent as reply_markup, will hide the keyboard
+hideBoard = types.ReplyKeyboardRemove()  # if sent as reply_markup, will hide the keyboard
 
 
 # error handling if user isn't known yet
