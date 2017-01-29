@@ -1,6 +1,6 @@
 # Webhook examples using pyTelegramBotAPI
 
-There are 3 examples in this directory using different libraries:
+There are 4 examples in this directory using different libraries:
 
 * **Python (CPython):** *webhook_cpython_echo_bot.py*
   * **Pros:**
@@ -32,5 +32,14 @@ There are 3 examples in this directory using different libraries:
     * The project seems not to be very active, latest version dates 2013.
     * They don't recommend to use it with Python 3, but may work.
     * May be a oversized for just handling webhook petitions.
+    
+* **aiohttp (1.2.0):** *webhook_aiohttp_echo_bot.py*
+  * **Pros:**
+    * It's a web application framework
+    * Python 3 compatible
+    * Asynchronous, excellent perfomance
+    * Utilizes new async/await syntax
+  * **Cons:**
+    * Requires Python 3.4.2+, don't work with Python 2
 
-*Latest update of this document: 2015-10-06*
+*Latest update of this document: 2017-01-30*
