@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import requests
+try:
+    from requests.packages.urllib3 import fields
+except ImportError:
+    fields = None
 import telebot
 from telebot import types
 from telebot import util
@@ -29,6 +33,8 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
+    if files and fields:
+        fields.format_header_param = _no_encode(fields.format_header_param)
     if params:
         if 'timeout' in params: read_timeout = params['timeout'] + 10
         if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
@@ -566,6 +572,15 @@ def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
+
+
+def _no_encode(func):
+    def wrapper(key, val):
+        if key == 'filename':
+            return '{0}={1}'.format(key, val)
+        else:
+            return func(key, val)
+    return wrapper
 
 
 class ApiException(Exception):
