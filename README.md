@@ -181,7 +181,7 @@ def handle_text_doc(message):
 
 #Which could also be defined as:
 def test_message(message):
-	return message.document.mime_type == 'text/plan'
+	return message.document.mime_type == 'text/plain'
 
 @bot.message_handler(func=test_message, content_types=['document'])
 def handle_text_doc(message)
