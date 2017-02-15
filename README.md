@@ -466,7 +466,7 @@ bot.set_update_listener(handle_messages)
 bot.polling()
 ```
 
-### Using webhooks
+### Using web hooks
 When using webhooks telegram sends one Update per call, for processing it you should call process_new_messages([update.message]) when you recieve it.
 
 There are some examples using webhooks in the *examples/webhook_examples* directory.
