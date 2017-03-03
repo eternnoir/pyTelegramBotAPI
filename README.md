@@ -547,5 +547,6 @@ Get help. Discuss. Chat.
 * [flibusta_bot](https://github.com/Kurbezz/flibusta_bot) by [*Kurbezz*](https://github.com/Kurbezz)
 * [EmaProject](https://github.com/halkliff/emaproject) by [*halkliff*](https://github.com/halkliff) - Ema - Eastern Media Assistant was made thinking on the ease-to-use feature. Coding here is simple, as much as is fast and powerful.
 * [filmratingbot](http://t.me/filmratingbot)([source](https://github.com/jcolladosp/film-rating-bot)) by [*jcolladosp*](https://github.com/jcolladosp) - Telegram bot using the Python API that gets films rating from IMDb and metacritic
+* [you2mp3bot](http://t.me/you2mp3bot)([link](https://storebot.me/bot/you2mp3bot)) - This bot can convert a Youtube video to Mp3. All you need is send the URL video.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
