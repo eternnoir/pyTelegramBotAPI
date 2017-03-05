@@ -336,7 +336,7 @@ tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 ```
 The last example yields this result:
 
-![ReplyKeyboardMarkup](https://pp.vk.me/c624430/v624430512/473e5/_mxxW7FPe4U.jpg "ReplyKeyboardMarkup")
+![ReplyKeyboardMarkup](https://farm3.staticflickr.com/2933/32418726704_9ef76093cf_o_d.jpg "ReplyKeyboardMarkup")
 
 ```python
 # ReplyKeyboardRemove: hides a previously sent ReplyKeyboardMarkup
@@ -353,7 +353,7 @@ tb.send_message(chat_id, "Send me another word:", reply_markup=markup)
 ```
 ForceReply:
 
-![ForceReply](https://pp.vk.me/c624430/v624430512/473ec/602byyWUHcs.jpg "ForceReply")
+![ForceReply](https://farm4.staticflickr.com/3809/32418726814_d1baec0fc2_o_d.jpg "ForceReply")
 
 ### Inline Mode
 
