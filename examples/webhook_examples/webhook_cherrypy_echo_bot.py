@@ -73,6 +73,11 @@ bot.remove_webhook()
 bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
+# Disable CherryPy requests log
+access_log = cherrypy.log.access_log
+for handler in tuple(access_log.handlers):
+    access_log.removeHandler(handler)
+
 # Start cherrypy server
 cherrypy.config.update({
     'server.socket_host': WEBHOOK_LISTEN,
