@@ -798,7 +798,7 @@ class TeleBot:
                                                     func=func,
                                                     content_types=content_types,
                                                     **kwargs)
-            self.add_edited_message_handler(handler_dict)
+            self.add_edited_channel_post_handler(handler_dict)
             return handler
 
         return decorator
