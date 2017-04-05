@@ -3,8 +3,9 @@
 import requests
 try:
     from requests.packages.urllib3 import fields
+    format_header_param = fields.format_header_param
 except ImportError:
-    fields = None
+    format_header_param = None
 import telebot
 from telebot import types
 from telebot import util
@@ -33,8 +34,8 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
-    if files and fields:
-        fields.format_header_param = _no_encode(fields.format_header_param)
+    if files and format_header_param:
+        fields.format_header_param = _no_encode(format_header_param)
     if params:
         if 'timeout' in params: read_timeout = params['timeout'] + 10
         if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
