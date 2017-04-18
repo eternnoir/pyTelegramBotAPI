@@ -397,7 +397,7 @@ def query_text(inline_query):
         print(e)
 
 ```
-###Working with entities:
+### Working with entities:
 This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 Attributes:
 * `type`
