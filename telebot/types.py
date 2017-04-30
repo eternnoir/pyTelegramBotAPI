@@ -865,7 +865,7 @@ class InputLocationMessageContent(Dictionaryable):
         self.longitude = longitude
 
     def to_dic(self):
-        json_dic = {'latitude': self.latitudet, 'longitude': self.longitude}
+        json_dic = {'latitude': self.latitude, 'longitude': self.longitude}
         return json_dic
 
 
