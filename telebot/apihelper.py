@@ -7,8 +7,8 @@ from telebot import util
 
 logger = telebot.logger
 
-API_URL = "https://api.telegram.org/bot{0}/{1}"
-FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
+API_URL = u"https://api.telegram.org/bot{0}/{1}"
+FILE_URL = u"https://api.telegram.org/file/bot{0}/{1}"
 
 CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
