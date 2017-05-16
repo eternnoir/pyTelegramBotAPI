@@ -446,6 +446,12 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
     return _make_request(token, method_url, params=payload)
 
 
+def delete_message(token, chat_id=None, message_id=None):
+    method_url = r'deleteMessage'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    return _make_request(token, method_url, params=payload)
+
+
 # Game
 
 def send_game(token, chat_id, game_short_name, disable_notification=None, reply_to_message_id=None, reply_markup=None):
