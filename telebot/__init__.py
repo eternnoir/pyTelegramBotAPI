@@ -45,7 +45,7 @@ class TeleBot:
         getUpdates
     """
 
-    def __init__(self, token, threaded=True, skip_pending=False):
+    def __init__(self, token, threaded=True, skip_pending=False, num_threads=2):
         """
         :param token: bot API token
         :return: Telebot object.
@@ -76,7 +76,7 @@ class TeleBot:
 
         self.threaded = threaded
         if self.threaded:
-            self.worker_pool = util.ThreadPool()
+            self.worker_pool = util.ThreadPool(num_threads=num_threads)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
