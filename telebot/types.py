@@ -168,13 +168,15 @@ class User(JsonDeserializable):
         first_name = obj['first_name']
         last_name = obj.get('last_name')
         username = obj.get('username')
-        return cls(id, first_name, last_name, username)
+        language_code = obj.get('language_code')
+        return cls(id, first_name, last_name, username, language_code)
 
-    def __init__(self, id, first_name, last_name=None, username=None):
+    def __init__(self, id, first_name, last_name=None, username=None, language_code=None):
         self.id = id
         self.first_name = first_name
         self.username = username
         self.last_name = last_name
+        self.language_code = language_code
 
 
 class GroupChat(JsonDeserializable):
