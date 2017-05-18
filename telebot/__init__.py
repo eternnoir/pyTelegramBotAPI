@@ -886,8 +886,36 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.get_me(self)
 
     @util.async()
+    def get_file(self, *args):
+        return TeleBot.get_file(self, *args)
+
+    @util.async()
+    def download_file(self, *args):
+        return TeleBot.download_file(self, *args)
+
+    @util.async()
     def get_user_profile_photos(self, *args, **kwargs):
         return TeleBot.get_user_profile_photos(self, *args, **kwargs)
+
+    @util.async()
+    def get_chat(self, *args):
+        return TeleBot.get_chat(self, *args)
+
+    @util.async()
+    def leave_chat(self, *args):
+        return TeleBot.leave_chat(self, *args)
+
+    @util.async()
+    def get_chat_administrators(self, *args):
+        return TeleBot.get_chat_administrators(self, *args)
+
+    @util.async()
+    def get_chat_members_count(self, *args):
+        return TeleBot.get_chat_members_count(self, *args)
+
+    @util.async()
+    def get_chat_member(self, *args):
+        return TeleBot.get_chat_member(self, *args)
 
     @util.async()
     def send_message(self, *args, **kwargs):
@@ -898,12 +926,20 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.forward_message(self, *args, **kwargs)
 
     @util.async()
+    def delete_message(self, *args):
+        return TeleBot.delete_message(self, *args)
+
+    @util.async()
     def send_photo(self, *args, **kwargs):
         return TeleBot.send_photo(self, *args, **kwargs)
 
     @util.async()
     def send_audio(self, *args, **kwargs):
         return TeleBot.send_audio(self, *args, **kwargs)
+
+    @util.async()
+    def send_voice(self, *args, **kwargs):
+        return TeleBot.send_voice(self, *args, **kwargs)
 
     @util.async()
     def send_document(self, *args, **kwargs):
@@ -922,5 +958,53 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.send_location(self, *args, **kwargs)
 
     @util.async()
+    def send_venue(self, *args, **kwargs):
+        return TeleBot.send_venue(self, *args, **kwargs)
+
+    @util.async()
+    def send_contact(self, *args, **kwargs):
+        return TeleBot.send_contact(self, *args, **kwargs)
+
+    @util.async()
     def send_chat_action(self, *args, **kwargs):
         return TeleBot.send_chat_action(self, *args, **kwargs)
+
+    @util.async()
+    def kick_chat_member(self, *args):
+        return TeleBot.kick_chat_member(self, *args)
+
+    @util.async()
+    def unban_chat_member(self, *args):
+        return TeleBot.unban_chat_member(self, *args)
+
+    @util.async()
+    def edit_message_text(self, *args, **kwargs):
+        return TeleBot.edit_message_text(self, *args, **kwargs)
+
+    @util.async()
+    def edit_message_reply_markup(self, *args, **kwargs):
+        return TeleBot.edit_message_reply_markup(self, *args, **kwargs)
+
+    @util.async()
+    def send_game(self, *args, **kwargs):
+        return TeleBot.send_game(self, *args, **kwargs)
+
+    @util.async()
+    def set_game_score(self, *args, **kwargs):
+        return TeleBot.set_game_score(self, *args, **kwargs)
+
+    @util.async()
+    def get_game_high_scores(self, *args, **kwargs):
+        return TeleBot.get_game_high_scores(self, *args, **kwargs)
+
+    @util.async()
+    def edit_message_caption(self, *args, **kwargs):
+        return TeleBot.edit_message_caption(self, *args, **kwargs)
+
+    @util.async()
+    def answer_inline_query(self, *args, **kwargs):
+        return TeleBot.answer_inline_query(self, *args, **kwargs)
+
+    @util.async()
+    def answer_callback_query(self, *args, **kwargs):
+        return TeleBot.answer_callback_query(self, *args, **kwargs)
