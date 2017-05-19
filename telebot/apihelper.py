@@ -335,13 +335,14 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
     files = None
     if not util.is_string(data):
         files = {'video_note': data}
-        files['video_note']['length'] = 639  # seems like it is MAX length size
     else:
         payload['video_note'] = data
     if duration:
         payload['duration'] = duration
     if length:
         payload['length'] = length
+    else:
+        payload['length'] = 639  # seems like it is MAX length size
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
