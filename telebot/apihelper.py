@@ -544,6 +544,19 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
         payload['inline_message_id'] = inline_message_id
     return _make_request(token, method_url, params=payload)
 
+# Payments (https://core.telegram.org/bots/api#payments)
+
+def send_invoice():
+    # TODO
+    pass
+
+def answer_shippingQuery():
+    # TODO
+    pass
+
+def answer_pre_checkout_query():
+    # TODO
+    pass
 
 # InlineQuery
 
