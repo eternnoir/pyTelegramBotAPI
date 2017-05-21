@@ -39,6 +39,7 @@ class TeleBot:
         sendDocument
         sendSticker
         sendVideo
+        sendVideoNote
         sendLocation
         sendChatAction
         getUserProfilePhotos
@@ -510,6 +511,22 @@ class TeleBot:
             apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
                                  disable_notification, timeout))
 
+    def send_video_note(self, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
+                   disable_notification=None, timeout=None):
+        """
+        Use this method to send video files, Telegram clients support mp4 videos.
+        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
+        :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend a video that is already on the Telegram server
+        :param duration: Integer : Duration of sent video in seconds
+        :param length: Integer : Video width and height, Can't be None and should be in range of (0, 640)
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return:
+        """
+        return types.Message.de_json(
+            apihelper.send_video_note(self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
+                                 disable_notification, timeout))
+
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
                       disable_notification=None):
         """
@@ -559,7 +576,7 @@ class TeleBot:
         its typing status).
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
-                        'record_audio', 'upload_audio', 'upload_document', 'find_location'.
+                        'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note', 'upload_video_note'.
         :return: API reply. :type: boolean
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
@@ -952,6 +969,10 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def send_video(self, *args, **kwargs):
         return TeleBot.send_video(self, *args, **kwargs)
+
+    @util.async()
+    def send_video_note(self, *args, **kwargs):
+        return TeleBot.send_video_note(self, *args, **kwargs)
 
     @util.async()
     def send_location(self, *args, **kwargs):
