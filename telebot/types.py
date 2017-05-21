@@ -283,6 +283,9 @@ class Message(JsonDeserializable):
         if 'new_chat_member' in obj:
             opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
             content_type = 'new_chat_member'
+        if 'new_chat_members' in obj:
+            opts['new_chat_members'] = obj['new_chat_members']
+            content_type = 'new_chat_members'
         if 'left_chat_member' in obj:
             opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
             content_type = 'left_chat_member'

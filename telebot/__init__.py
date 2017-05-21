@@ -576,7 +576,7 @@ class TeleBot:
         its typing status).
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
-                        'record_audio', 'upload_audio', 'upload_document', 'find_location'.
+                        'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note', 'upload_video_note'.
         :return: API reply. :type: boolean
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
