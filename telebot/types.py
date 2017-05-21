@@ -101,6 +101,8 @@ class Update(JsonDeserializable):
         inline_query = None
         chosen_inline_result = None
         callback_query = None
+        shipping_query = None
+        pre_checkout_query = None
         if 'message' in obj:
             message = Message.de_json(obj['message'])
         if 'edited_message' in obj:
@@ -115,11 +117,15 @@ class Update(JsonDeserializable):
             chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
         if 'callback_query' in obj:
             callback_query = CallbackQuery.de_json(obj['callback_query'])
+        if 'shipping_query' in obj:
+            shipping_query = ShippingQuery.de_json(obj['shipping_query'])
+        if 'pre_checkout_query' in obj:
+            pre_checkout_query = PreCheckoutQuery.de_json(obj['pre_checkout_query'])
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
-                   chosen_inline_result, callback_query)
+                   chosen_inline_result, callback_query, shipping_query, pre_checkout_query)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
-                 chosen_inline_result, callback_query):
+                 chosen_inline_result, callback_query, shipping_query, pre_checkout_query):
         self.update_id = update_id
         self.edited_message = edited_message
         self.message = message
@@ -129,6 +135,8 @@ class Update(JsonDeserializable):
         self.inline_query = inline_query
         self.chosen_inline_result = chosen_inline_result
         self.callback_query = callback_query
+        self.shipping_query = shipping_query
+        self.pre_checkout_query = pre_checkout_query
 
 
 class WebhookInfo(JsonDeserializable):
@@ -309,6 +317,12 @@ class Message(JsonDeserializable):
             opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
         if 'pinned_message' in obj:
             opts['pinned_message'] = Message.de_json(obj['pinned_message'])
+        if 'invoice' in obj:
+            opts['invoice'] = Invoice.de_json(obj['invoice'])
+            content_type = 'invoice'
+        if 'successful_payment' in obj:
+            opts['successful_payment'] = SuccessfulPayment.de_json(obj['successful_payment'])
+            content_type = 'successful_payment'
         return cls(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
@@ -367,6 +381,8 @@ class Message(JsonDeserializable):
         self.migrate_to_chat_id = None
         self.migrate_from_chat_id = None
         self.pinned_message = None
+        self.invoice = None
+        self.successful_payment = None
         for key in options:
             setattr(self, key, options[key])
 
