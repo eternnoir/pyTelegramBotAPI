@@ -403,3 +403,9 @@ class TestTeleBot:
     def test_not_string(self):
         i1 = 10
         assert not util.is_string(i1)
+
+    def test_send_video_note(self):
+        file_data = open('./test_data/test_video.mp4', 'rb')
+        tb = telebot.TeleBot(TOKEN)
+        ret_msg = tb.send_video_note(CHAT_ID, file_data)
+        assert ret_msg.message_id

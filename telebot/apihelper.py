@@ -328,6 +328,32 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
+def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
+                    disable_notification=None, timeout=None):
+    method_url = r'sendVideoNote'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not util.is_string(data):
+        files = {'video_note': data}
+    else:
+        payload['video_note'] = data
+    if duration:
+        payload['duration'] = duration
+    if length:
+        payload['length'] = length
+    else:
+        payload['length'] = 639  # seems like it is MAX length size
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
                reply_markup=None, disable_notification=None, timeout=None):
     method_url = r'sendAudio'
@@ -446,7 +472,7 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
     return _make_request(token, method_url, params=payload)
 
 
-def delete_message(token, chat_id=None, message_id=None):
+def delete_message(token, chat_id, message_id):
     method_url = r'deleteMessage'
     payload = {'chat_id': chat_id, 'message_id': message_id}
     return _make_request(token, method_url, params=payload)
@@ -518,6 +544,102 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
         payload['inline_message_id'] = inline_message_id
     return _make_request(token, method_url, params=payload)
 
+# Payments (https://core.telegram.org/bots/api#payments)
+
+def send_invoice(token, chat_id, title, description, invoice_payload, provider_token, currency, prices, start_parameter=None,
+                 photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None,
+                 need_phone_number=None, need_email=None, need_shipping_address=None, is_flexible=None,
+                 disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    """
+    Use this method to send invoices. On success, the sent Message is returned.
+    :param token: Bot's token (you don't need to fill this)
+    :param chat_id: Unique identifier for the target private chat
+    :param title: Product name
+    :param description: Product description
+    :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+    :param provider_token: Payments provider token, obtained via @Botfather
+    :param currency: Three-letter ISO 4217 currency code, see https://core.telegram.org/bots/payments#supported-currencies
+    :param prices: Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+    :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice when used as a start parameter
+    :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+    :param photo_size: Photo size
+    :param photo_width: Photo width
+    :param photo_height: Photo height
+    :param need_name: Pass True, if you require the user's full name to complete the order
+    :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+    :param need_email: Pass True, if you require the user's email to complete the order
+    :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+    :param is_flexible: Pass True, if the final price depends on the shipping method
+    :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+    :param reply_to_message_id: If the message is a reply, ID of the original message
+    :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
+    :return: 
+    """
+    method_url = r'sendInvoice'
+    payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload, 'provider_token': provider_token, 'currency': currency, 'prices': prices}
+    if start_parameter:
+        payload['start_parameter'] = start_parameter
+    if photo_url:
+        payload['photo_url'] = photo_url
+    if photo_size:
+        payload['photo_size'] = photo_size
+    if photo_width:
+        payload['photo_width'] = photo_width
+    if photo_height:
+        payload['photo_height'] = photo_height
+    if need_name:
+        payload['need_name'] = need_name
+    if need_phone_number:
+        payload['need_phone_number'] = need_phone_number
+    if need_email:
+        payload['need_email'] = need_email
+    if need_shipping_address:
+        payload['need_shipping_address'] = need_shipping_address
+    if is_flexible:
+        payload['is_flexible'] = is_flexible
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = reply_markup
+    return _make_request(token, method_url, params=payload)
+
+
+def answer_shippingQuery(token, shipping_query_id, ok, shipping_options=None, error_message=None):
+    """
+    If you sent an invoice requesting a shipping address and the parameter is_flexible was specified, the Bot API will send an Update with a shipping_query field to the bot. Use this method to reply to shipping queries. On success, True is returned.
+    :param token: Bot's token (you don't need to fill this)
+    :param shipping_query_id: Unique identifier for the query to be answered
+    :param ok: Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
+    :param shipping_options: Required if ok is True. A JSON-serialized array of available shipping options.
+    :param error_message: Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
+    :return: 
+    """
+    method_url = 'answerShippingQuery'
+    payload = {'shipping_query_id': shipping_query_id, 'ok': ok}
+    if shipping_options:
+        payload['reply_markup'] = shipping_options
+    if error_message:
+        payload['reply_markup'] = error_message
+    return _make_request(token, method_url, params=payload)
+
+
+def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=None):
+    """
+    Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query. Use this method to respond to such pre-checkout queries. On success, True is returned. Note: The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
+    :param token: Bot's token (you don't need to fill this)
+    :param pre_checkout_query_id: Unique identifier for the query to be answered
+    :param ok: Specify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
+    :param error_message: Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user.
+    :return: 
+    """
+    method_url = 'answerPreCheckoutQuery'
+    payload = {'pre_checkout_query_id': pre_checkout_query_id, 'ok': ok}
+    if error_message:
+        payload['error_message'] = error_message
+    return _make_request(token, method_url, params=payload)
+
 
 # InlineQuery
 
@@ -525,7 +647,6 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
     """
     Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, True is returned.
     Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must first create a game for your bot via BotFather and accept the terms. Otherwise, you may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
-    
     :param token: Bot's token (you don't need to fill this)
     :param callback_query_id: Unique identifier for the query to be answered
     :param text: (Optional) Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
