@@ -794,13 +794,14 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
 
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
-                 switch_inline_query_current_chat=None, callback_game=None):
+                 switch_inline_query_current_chat=None, callback_game=None, pay = None):
         self.text = text
         self.url = url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
+        self.pay = pay
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -817,6 +818,8 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['switch_inline_query_current_chat'] = self.switch_inline_query_current_chat
         if self.callback_game is not None:
             json_dic['callback_game'] = self.callback_game
+        if self.pay is not None:
+            json_dic['pay'] = self.pay
         return json_dic
 
 
