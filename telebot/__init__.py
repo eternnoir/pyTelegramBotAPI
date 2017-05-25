@@ -74,6 +74,8 @@ class TeleBot:
         self.inline_handlers = []
         self.chosen_inline_handlers = []
         self.callback_query_handlers = []
+        self.shipping_query_handlers = []
+        self.pre_checkout_query_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -146,6 +148,9 @@ class TeleBot:
         new_inline_querys = []
         new_chosen_inline_results = []
         new_callback_querys = []
+        new_shipping_query = []
+        new_pre_checkout_query= []
+
         for update in updates:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
@@ -163,6 +168,11 @@ class TeleBot:
                 new_chosen_inline_results.append(update.chosen_inline_result)
             if update.callback_query:
                 new_callback_querys.append(update.callback_query)
+            if update.shipping_query:
+                new_shipping_query.append(update.shipping_query)
+            if update.pre_checkout_query:
+                new_pre_checkout_query.append(update.pre_checkout_query)
+
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
@@ -884,6 +894,28 @@ class TeleBot:
 
     def add_callback_query_handler(self, handler_dict):
         self.callback_query_handlers.append(handler_dict)
+
+    def shipping_query_handler(self, func, **kwargs):
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_shipping_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_shipping_query_handler(self, handler_dict):
+        self.shipping_query_handlers.append(handler_dict)
+
+    def pre_checkout_query_handler(self, func, **kwargs):
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_pre_checkout_queryhandler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_pre_checkout_queryhandler(self, handler_dict):
+        self.pre_checkout_query_handlers.append(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
         for filter, filter_value in six.iteritems(message_handler['filters']):
