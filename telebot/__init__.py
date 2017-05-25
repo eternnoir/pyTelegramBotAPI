@@ -914,7 +914,7 @@ class TeleBot:
 
         return decorator
 
-    def add_pre_checkout_queryhandler(self, handler_dict):
+    def add_pre_checkout_query_handler(self, handler_dict):
         self.pre_checkout_query_handlers.append(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
