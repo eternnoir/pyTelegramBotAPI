@@ -512,7 +512,7 @@ class TeleBot:
                                  disable_notification, timeout))
 
     def send_video_note(self, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                   disable_notification=None, timeout=None):
+                        disable_notification=None, timeout=None):
         """
         Use this method to send video files, Telegram clients support mp4 videos.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
@@ -525,7 +525,7 @@ class TeleBot:
         """
         return types.Message.de_json(
             apihelper.send_video_note(self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
-                                 disable_notification, timeout))
+                                      disable_notification, timeout))
 
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
                       disable_notification=None):
@@ -613,7 +613,8 @@ class TeleBot:
                                      reply_markup)
         return types.Message.de_json(result)
 
-    def set_game_score(self, user_id, score, force=None,chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
+    def set_game_score(self, user_id, score, force=None, chat_id=None, message_id=None, inline_message_id=None,
+                       edit_message=None):
         result = apihelper.set_game_score(self.token, user_id, score, force, chat_id, message_id, inline_message_id,
                                           edit_message)
         if type(result) == bool:
@@ -626,6 +627,24 @@ class TeleBot:
         for r in result:
             ret.append(types.GameHighScore.de_json(r))
         return ret
+
+    def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
+                     start_parameter=None, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
+                     need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
+                     is_flexible=None,
+                     disable_notification=None, reply_to_message_id=None, reply_markup=None):
+        result = apihelper.send_invoice(self.token, chat_id, title, description, invoice_payload, provider_token,
+                                        currency, prices, start_parameter, photo_url, photo_size, photo_width,
+                                        photo_height,
+                                        need_name, need_phone_number, need_email, need_shipping_address, is_flexible,
+                                        disable_notification, reply_to_message_id, reply_markup)
+        return types.Message.de_json(result)
+
+    def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
+        return apihelper.answer_shippingQuery(self.token, shipping_query_id, ok, shipping_options, error_message)
+
+    def answer_pre_checkout_query(self, pre_checkout_query_id, ok, error_message=None):
+        return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
@@ -1017,6 +1036,18 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def get_game_high_scores(self, *args, **kwargs):
         return TeleBot.get_game_high_scores(self, *args, **kwargs)
+
+    @util.async()
+    def send_invoice(self, *args, **kwargs):
+        return TeleBot.send_invoice(self, *args, **kwargs)
+
+    @util.async()
+    def answer_shipping_query(self, *args, **kwargs):
+        return TeleBot.answer_shipping_query(self, *args, **kwargs)
+
+    @util.async()
+    def answer_pre_checkout_query(self, *args, **kwargs):
+        return TeleBot.answer_pre_checkout_query(self, *args, **kwargs)
 
     @util.async()
     def edit_message_caption(self, *args, **kwargs):
