@@ -629,7 +629,7 @@ class TeleBot:
         return ret
 
     def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
-                     start_parameter=None, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
+                     start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
                      is_flexible=None,
                      disable_notification=None, reply_to_message_id=None, reply_markup=None):
