@@ -148,8 +148,8 @@ class TeleBot:
         new_inline_querys = []
         new_chosen_inline_results = []
         new_callback_querys = []
-        new_shipping_query = []
-        new_pre_checkout_query= []
+        new_shipping_querys = []
+        new_pre_checkout_querys = []
 
         for update in updates:
             if update.update_id > self.last_update_id:
@@ -169,9 +169,9 @@ class TeleBot:
             if update.callback_query:
                 new_callback_querys.append(update.callback_query)
             if update.shipping_query:
-                new_shipping_query.append(update.shipping_query)
+                new_shipping_querys.append(update.shipping_query)
             if update.pre_checkout_query:
-                new_pre_checkout_query.append(update.pre_checkout_query)
+                new_pre_checkout_querys.append(update.pre_checkout_query)
 
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
@@ -188,6 +188,10 @@ class TeleBot:
             self.process_new_chosen_inline_query(new_chosen_inline_results)
         if len(new_callback_querys) > 0:
             self.process_new_callback_query(new_callback_querys)
+        if len(new_pre_checkout_querys) > 0:
+            self.process_new_pre_checkout_query(new_pre_checkout_querys)
+        if len(new_shipping_querys) > 0:
+            self.process_new_shipping_query(new_shipping_querys)
 
     def process_new_messages(self, new_messages):
         self._append_pre_next_step_handler()
@@ -213,6 +217,12 @@ class TeleBot:
 
     def process_new_callback_query(self, new_callback_querys):
         self._notify_command_handlers(self.callback_query_handlers, new_callback_querys)
+
+    def process_new_shipping_query(self, new_shipping_querys):
+        self._notify_command_handlers(self.shipping_query_handlers, new_shipping_querys)
+
+    def process_new_pre_checkout_query(self, pre_checkout_querys):
+        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -909,7 +919,7 @@ class TeleBot:
     def pre_checkout_query_handler(self, func, **kwargs):
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_pre_checkout_queryhandler(handler_dict)
+            self.add_pre_checkout_query_handler(handler_dict)
             return handler
 
         return decorator
