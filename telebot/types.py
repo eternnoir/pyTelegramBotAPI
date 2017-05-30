@@ -148,6 +148,8 @@ class WebhookInfo(JsonDeserializable):
         pending_update_count = obj['pending_update_count']
         last_error_date = None
         last_error_message = None
+        max_connections = None
+        allowed_updates = None
         if 'last_error_message' in obj:
             last_error_date = obj['last_error_date']
         if 'last_error_message' in obj:
