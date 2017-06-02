@@ -661,7 +661,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
-        return apihelper.answer_shippingQuery(self.token, shipping_query_id, ok, shipping_options, error_message)
+        return apihelper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
     def answer_pre_checkout_query(self, pre_checkout_query_id, ok, error_message=None):
         return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
