@@ -5,7 +5,7 @@ CHAT_ID = 'YOUR CHAT ID'
 
 bot = telebot.TeleBot(TOKEN)
 
-ret_msg = bot.send_voice(CHAT_ID, open('tests/test_data/record.ogg'))
+ret_msg = bot.send_voice(CHAT_ID, open('tests/test_data/record.ogg', 'rb'))
 
 file_info = bot.get_file(ret_msg.voice.file_id)
 
