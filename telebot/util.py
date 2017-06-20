@@ -4,6 +4,7 @@ import threading
 import re
 import sys
 import six
+import traceback
 from six import string_types
 
 # Python3 queue support.
@@ -56,8 +57,8 @@ class WorkerThread(threading.Thread):
                     self.done_event.set()
                 except Queue.Empty:
                     pass
-                except:
-                    logger.debug("Exception occurred")
+                except Exception as e:
+                    logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
                     self.exc_info = sys.exc_info()
                     self.exception_event.set()
 
