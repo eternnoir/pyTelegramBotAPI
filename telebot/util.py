@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import threading
+import traceback
 import re
 import sys
 import six
-import traceback
 from six import string_types
 
 # Python3 queue support.
