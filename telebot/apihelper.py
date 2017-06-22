@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+try:
+    import ujson as json
+except ImportError:
+    import json
+
 import requests
 
 try:
@@ -137,7 +142,7 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
     if max_connections:
         payload['max_connections'] = max_connections
     if allowed_updates:
-        payload['allowed_updates'] = allowed_updates
+        payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload, files=files)
 
 
@@ -162,7 +167,7 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
     if timeout:
         payload['timeout'] = timeout
     if allowed_updates:
-        payload['allowed_updates'] = allowed_updates
+        payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload)
 
 
