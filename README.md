@@ -125,6 +125,10 @@ All types are defined in types.py. They are all completely in line with the [Tel
 The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings:
 `text`, `audio`, `document`, `photo`, `sticker`, `video`, `video_note`, `voice`, `location`, `contact`, `new_chat_member`, `left_chat_member`, `new_chat_title`, `new_chat_photo`, `delete_chat_photo`, `group_chat_created`, `supergroup_chat_created`, `channel_chat_created`, `migrate_to_chat_id`, `migrate_from_chat_id`, `pinned_message`.
 
+You can use some types in one function. Example:
+
+```content_types=["text", "sticker", "pinned_message", "photo", "audio"]```
+
 ### Methods
 
 All [API methods](https://core.telegram.org/bots/api#available-methods) are located in the TeleBot class. They are renamed to follow common Python naming conventions. E.g. `getMe` is renamed to `get_me` and `sendMessage` to `send_message`.
