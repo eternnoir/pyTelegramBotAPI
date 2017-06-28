@@ -25,6 +25,7 @@
     * [The listener mechanism](#the-listener-mechanism)
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
+    * [Proxy](#proxy)
   * [F.A.Q.](#faq)
     * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
@@ -490,6 +491,16 @@ import logging
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
+```
+
+### Proxy
+
+You can use proxy for request. `apihelper.proxy` object will use by call `requests` proxies argument.
+
+```python
+from telebot import apihelper
+
+apihelper.proxy = {'http', 'http://10.10.1.10:3128'}
 ```
 
 ## F.A.Q.
