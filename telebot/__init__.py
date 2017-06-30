@@ -632,7 +632,9 @@ class TeleBot:
     def unban_chat_member(self, chat_id, user_id):
         return apihelper.unban_chat_member(self.token, chat_id, user_id)
 
-    def restrict_chat_member(self, chat_id, user_id):
+    def restrict_chat_member(self, chat_id, user_id, until_date=None, can_send_messages=True,
+                             can_send_media_messages=True, can_send_other_messages=True,
+                             can_add_web_page_previews=True):
         """
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
@@ -641,9 +643,21 @@ class TeleBot:
         :param chat_id: Int or String : 	Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
+        :param until_date: Date when restrictions will be lifted for the user, unix time.
+            If user is restricted for more than 366 days or less than 30 seconds from the current time,
+            they are considered to be restricted forever
+        :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
+        :param can_send_media_messages Pass True, if the user can send audios, documents, photos, videos, video notes
+            and voice notes, implies can_send_messages
+        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
+            use inline bots, implies can_send_media_messages
+        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
+            implies can_send_media_messages
         :return: types.Message
         """
-        return apihelper.restrict_chat_member(self.token, chat_id, user_id)
+        return apihelper.restrict_chat_member(self.token, chat_id, user_id, until_date, can_send_messages,
+                                              can_send_media_messages, can_send_other_messages,
+                                              can_add_web_page_previews)
 
     def promote_chat_member(self, chat_id, user_id, can_change_info=False, can_post_messages=False,
                             can_edit_messages=False, can_delete_messages=False, can_invite_users=False,
