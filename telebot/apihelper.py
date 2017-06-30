@@ -109,9 +109,19 @@ def set_chat_title(token, chat_id, title):
     payload = {'chat_id': str(chat_id), 'title': title}
     return _make_requests(token, method_url, params=payload, method='post')
 
+
 def set_chat_description(token, chat_id, description):
     method_url = r'setChatDescription'
     payload = {'chat_id', str(chat_id), 'description': description}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+def pin_chat_message(token, chat_id, message_id=None, disable_notfication=None):
+    method_url = r'pinChatMessage'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if disable_notfication:
+        payload['disable_notification'] = disable_notification
+    if message_id:
+        payload['message_id'] = message_id
     return _make_requests(token, method_url, params=payload, method='post')
 
 
