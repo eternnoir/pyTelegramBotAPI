@@ -146,6 +146,11 @@ def delete_chat_photo(token, chat_id):
     payload = {'chat_id': chat_id}
     return _make_requests(token, method_url, params=payload, method='post')
 
+def export_chat_invite_link(token, chat_id):
+    method_url = r'exportChatInviteLink'
+    payload = {'chat_id': chatid}
+    return _make_requests(token, method_url, params=payload, method='post')
+
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                  parse_mode=None, disable_notification=None):
