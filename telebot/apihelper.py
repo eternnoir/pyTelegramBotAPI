@@ -125,6 +125,12 @@ def pin_chat_message(token, chat_id, message_id=None, disable_notfication=None):
     return _make_requests(token, method_url, params=payload, method='post')
 
 
+def unpin_chat_message(token, chat_id):
+    method_url = r'unpinChatMessage'
+    payload = {'chat_id': chat_id}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                  parse_mode=None, disable_notification=None):
     """
