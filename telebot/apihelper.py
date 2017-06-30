@@ -109,6 +109,11 @@ def set_chat_title(token, chat_id, title):
     payload = {'chat_id': str(chat_id), 'title': title}
     return _make_requests(token, method_url, params=payload, method='post')
 
+def set_chat_description(token, chat_id, description):
+    method_url = r'setChatDescription'
+    payload = {'chat_id', str(chat_id), 'description': description}
+    return _make_requests(token, method_url, params=payload, method='post')
+
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                  parse_mode=None, disable_notification=None):
