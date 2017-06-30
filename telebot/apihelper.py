@@ -431,6 +431,71 @@ def unban_chat_member(token, chat_id, user_id):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def restrict_chat_member(token, chat_id, user_id):
+    method_url = 'restrictChatMember'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def promote_chat_member(token, chat_id, user_id, can_change_info=False, can_post_messages=False,
+                        can_edit_messages=False, can_delete_messages=False, can_invite_users=False,
+                        can_restrict_members=False, can_pin_messages=False, can_promote_members=False):
+    method_url = 'promoteChatMember'
+    payload = {'chat_id': chat_id, 'user_id': user_id, 'can_change_info': can_change_info,
+               'can_post_messages': can_post_messages, 'can_edit_messages': can_edit_messages,
+               'can_delete_messages': can_delete_messages, 'can_invite_users': can_invite_users,
+               'can_restrict_members': can_restrict_members, 'can_pin_messages': can_pin_messages,
+               'can_promote_members': can_promote_members }
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def export_chat_invite_link(token, chat_id):
+    method_url = 'exportChatInviteLink'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_chat_photo(token, chat_id, photo):
+    method_url = 'setChatPhoto'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not util.is_string(photo):
+        files = {'photo': photo}
+    else:
+        payload['photo'] = photo
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def delete_chat_photo(token, chat_id):
+    method_url = 'deleteChatPhoto'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_chat_title(token, chat_id, title):
+    method_url = 'setChatTitle'
+    payload = {'chat_id': chat_id, 'title': title}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_chat_description(token, chat_id, description):
+    method_url = 'setChatDescription'
+    payload = {'chat_id': chat_id, 'description': description}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def pin_chat_message(token, chat_id, message_id, disable_notification=False):
+    method_url = 'pinChatMessage'
+    payload = {'chat_id': chat_id, 'message_id': message_id, 'disable_notification': disable_notification}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def unpin_chat_message(token, chat_id):
+    method_url = 'unpinChatMessage'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 # Updating messages
 
 def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
