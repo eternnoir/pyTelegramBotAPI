@@ -420,9 +420,11 @@ def get_method_by_type(data_type):
         return r'sendSticker'
 
 
-def kick_chat_member(token, chat_id, user_id):
+def kick_chat_member(token, chat_id, user_id, until_date=None):
     method_url = 'kickChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
+    if until_date:
+        payload['until_date'] = until_date
     return _make_request(token, method_url, params=payload, method='post')
 
 

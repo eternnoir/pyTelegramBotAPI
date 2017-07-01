@@ -620,14 +620,16 @@ class TeleBot:
         """
         return apihelper.send_chat_action(self.token, chat_id, action)
 
-    def kick_chat_member(self, chat_id, user_id):
+    def kick_chat_member(self, chat_id, user_id, until_date=None):
         """
         Use this method to kick a user from a group or a supergroup.
         :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
         :param user_id: Int : Unique identifier of the target user
+        :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
+               less than 30 seconds from the current time they are considered to be banned forever
         :return: types.Message
         """
-        return apihelper.kick_chat_member(self.token, chat_id, user_id)
+        return apihelper.kick_chat_member(self.token, chat_id, user_id, until_date)
 
     def unban_chat_member(self, chat_id, user_id):
         return apihelper.unban_chat_member(self.token, chat_id, user_id)
