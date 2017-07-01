@@ -215,10 +215,15 @@ class Chat(JsonDeserializable):
         first_name = obj.get('first_name')
         last_name = obj.get('last_name')
         all_members_are_administrators = obj.get('all_members_are_administrators')
-        return cls(id, type, title, username, first_name, last_name, all_members_are_administrators)
+        if 'photo' in obj:
+            photo = ChatPhoto.de_json(obj['photo'])
+        description = obj.get('description')
+        invite_link = obj.get('invite_link')
+        return cls(id, type, title, username, first_name, last_name, all_members_are_administrators,
+                   photo, description, invite_link)
 
     def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None,
-                 all_members_are_administrators=None):
+                 all_members_are_administrators=None, photo=None, description=None, invite_link=None):
         self.type = type
         self.last_name = last_name
         self.first_name = first_name
@@ -226,6 +231,9 @@ class Chat(JsonDeserializable):
         self.id = id
         self.title = title
         self.all_members_are_administrators = all_members_are_administrators
+        self.photo = photo
+        self.description = description
+        self.invite_link = invite_link
 
 
 class Message(JsonDeserializable):
@@ -850,18 +858,62 @@ class CallbackQuery(JsonDeserializable):
         self.inline_message_id = inline_message_id
 
 
+class ChatPhoto(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        small_file_id = obj['small_file_id']
+        big_file_id = obj['big_file_id']
+        return cls(small_file_id, big_file_id)
+
+    def __init__(self, small_file_id, big_file_id):
+        self.small_file_id = small_file_id
+        self.big_file_id = big_file_id
+
+
 class ChatMember(JsonDeserializable):
     @classmethod
     def de_json(cls, json_type):
         obj = cls.check_json(json_type)
         user = User.de_json(obj['user'])
         status = obj['status']
-        return cls(user, status)
+        until_date = obj.get('until_date')
+        can_be_edited = obj.get('can_be_edited')
+        can_change_info = obj.get('can_change_info')
+        can_post_messages = obj.get('can_post_messages')
+        can_edit_messages = obj.get('can_edit_messages')
+        can_delete_messages = obj.get('can_delete_messages')
+        can_invite_users = obj.get('can_invite_users')
+        can_restrict_members = obj.get('can_restrict_members')
+        can_pin_messages = obj.get('can_pin_messages')
+        can_promote_members = obj.get('can_promote_members')
+        can_send_messages = obj.get('can_send_messages')
+        can_send_media_messages = obj.get('can_send_media_messages')
+        can_send_other_messages = obj.get('can_send_other_messages')
+        can_add_web_page_previews = obj.get('can_add_web_page_previews')
+        return cls(user, status, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
+                   can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
+                   can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews)
 
-    def __init__(self, user, status):
+    def __init__(self, user, status, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
+                   can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
+                   can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews):
         self.user = user
         self.status = status
-
+        self.until_date = until_date
+        self.can_be_edited = can_be_edited
+        self.can_change_info = can_change_info
+        self.can_post_messages = can_post_messages
+        self.can_edit_messages = can_edit_messages
+        self.can_delete_messages = can_delete_messages
+        self.can_invite_users = can_invite_users
+        self.can_restrict_members = can_restrict_members
+        self.can_pin_messages = can_pin_messages
+        self.can_promote_members = can_promote_members
+        self.can_send_messages = can_send_messages
+        self.can_send_media_messages = can_send_media_messages
+        self.can_send_other_messages = can_send_other_messages
+        self.can_add_web_page_previews = can_add_web_page_previews
 
 # InlineQuery
 
