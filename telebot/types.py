@@ -215,6 +215,7 @@ class Chat(JsonDeserializable):
         first_name = obj.get('first_name')
         last_name = obj.get('last_name')
         all_members_are_administrators = obj.get('all_members_are_administrators')
+        photo = None
         if 'photo' in obj:
             photo = ChatPhoto.de_json(obj['photo'])
         description = obj.get('description')
