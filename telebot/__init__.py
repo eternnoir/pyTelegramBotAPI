@@ -634,9 +634,9 @@ class TeleBot:
     def unban_chat_member(self, chat_id, user_id):
         return apihelper.unban_chat_member(self.token, chat_id, user_id)
 
-    def restrict_chat_member(self, chat_id, user_id, until_date=None, can_send_messages=True,
-                             can_send_media_messages=True, can_send_other_messages=True,
-                             can_add_web_page_previews=True):
+    def restrict_chat_member(self, chat_id, user_id, until_date=None, can_send_messages=None,
+                             can_send_media_messages=None, can_send_other_messages=None,
+                             can_add_web_page_previews=None):
         """
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
@@ -661,9 +661,9 @@ class TeleBot:
                                               can_send_media_messages, can_send_other_messages,
                                               can_add_web_page_previews)
 
-    def promote_chat_member(self, chat_id, user_id, can_change_info=False, can_post_messages=False,
-                            can_edit_messages=False, can_delete_messages=False, can_invite_users=False,
-                            can_restrict_members=False, can_pin_messages=False, can_promote_members=False):
+    def promote_chat_member(self, chat_id, user_id, can_change_info=None, can_post_messages=None,
+                            can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
+                            can_restrict_members=None, can_pin_messages=None, can_promote_members=None):
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.

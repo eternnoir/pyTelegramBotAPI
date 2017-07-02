@@ -434,25 +434,46 @@ def unban_chat_member(token, chat_id, user_id):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_messages=True,
-                             can_send_media_messages=True, can_send_other_messages=True,
-                             can_add_web_page_previews=True):
+def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_messages=None,
+                         can_send_media_messages=None, can_send_other_messages=None,
+                         can_add_web_page_previews=None):
     method_url = 'restrictChatMember'
-    payload = {'chat_id': chat_id, 'user_id': user_id, 'until_date': until_date, 'can_send_messages': can_send_messages,
-               'can_send_media_messages': can_send_media_messages, 'can_send_other_messages': can_send_other_messages,
-               'can_add_web_page_previews': can_add_web_page_previews}
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    if until_date:
+        payload['until_date'] = until_date
+    if can_send_messages:
+        payload['can_send_messages'] = can_send_messages
+    if can_send_media_messages:
+        payload['can_send_media_messages'] = can_send_media_messages
+    if can_send_other_messages:
+        payload['can_send_other_messages'] = can_send_other_messages
+    if can_add_web_page_previews:
+        payload['can_add_web_page_previews'] = can_add_web_page_previews
+
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def promote_chat_member(token, chat_id, user_id, can_change_info=False, can_post_messages=False,
-                        can_edit_messages=False, can_delete_messages=False, can_invite_users=False,
-                        can_restrict_members=False, can_pin_messages=False, can_promote_members=False):
+def promote_chat_member(token, chat_id, user_id, can_change_info=None, can_post_messages=None,
+                        can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
+                        can_restrict_members=None, can_pin_messages=None, can_promote_members=None):
     method_url = 'promoteChatMember'
-    payload = {'chat_id': chat_id, 'user_id': user_id, 'can_change_info': can_change_info,
-               'can_post_messages': can_post_messages, 'can_edit_messages': can_edit_messages,
-               'can_delete_messages': can_delete_messages, 'can_invite_users': can_invite_users,
-               'can_restrict_members': can_restrict_members, 'can_pin_messages': can_pin_messages,
-               'can_promote_members': can_promote_members }
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    if can_change_info:
+        payload['can_change_info'] = can_change_info
+    if can_post_messages:
+        payload['can_post_messages'] = can_post_messages
+    if can_edit_messages:
+        payload['can_edit_messages'] = can_edit_messages
+    if can_delete_messages:
+        payload['can_delete_messages'] = can_delete_messages
+    if can_invite_users:
+        payload['can_invite_users'] = can_invite_users
+    if can_restrict_members:
+        payload['can_restrict_members'] = can_restrict_members
+    if can_pin_messages:
+        payload['can_pin_messages'] = can_pin_messages
+    if can_promote_members:
+        payload['can_promote_members'] = can_promote_members
     return _make_request(token, method_url, params=payload, method='post')
 
 
