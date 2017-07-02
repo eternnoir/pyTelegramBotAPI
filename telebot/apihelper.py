@@ -105,6 +105,54 @@ def download_file(token, file_path):
     return result.content
 
 
+def set_chat_title(token, chat_id, title):
+    method_url = r'setChatTitle'
+    payload = {'chat_id': str(chat_id), 'title': title}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+
+def set_chat_description(token, chat_id, description):
+    method_url = r'setChatDescription'
+    payload = {'chat_id', str(chat_id), 'description': description}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+def pin_chat_message(token, chat_id, message_id=None, disable_notfication=None):
+    method_url = r'pinChatMessage'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if disable_notfication:
+        payload['disable_notification'] = disable_notification
+    if message_id:
+        payload['message_id'] = message_id
+    return _make_requests(token, method_url, params=payload, method='post')
+
+
+def unpin_chat_message(token, chat_id):
+    method_url = r'unpinChatMessage'
+    payload = {'chat_id': chat_id}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+def set_chat_photo(token, chat_id, photo):
+    method_url = r'setChatPhoto'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not util.is_string(photo):
+        files = {'photo': photo}
+    else:
+        payload['photo'] = photo
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def delete_chat_photo(token, chat_id):
+    method_url = r'deleteChatPhoto'
+    payload = {'chat_id': chat_id}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+def export_chat_invite_link(token, chat_id):
+    method_url = r'exportChatInviteLink'
+    payload = {'chat_id': chatid}
+    return _make_requests(token, method_url, params=payload, method='post')
+
+
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                  parse_mode=None, disable_notification=None):
     """
@@ -675,7 +723,7 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
     :param reply_to_message_id: If the message is a reply, ID of the original message
     :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
-    :return: 
+    :return:
     """
     method_url = r'sendInvoice'
     payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
@@ -716,7 +764,7 @@ def answer_shipping_query(token, shipping_query_id, ok, shipping_options=None, e
     :param ok: Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
     :param shipping_options: Required if ok is True. A JSON-serialized array of available shipping options.
     :param error_message: Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
-    :return: 
+    :return:
     """
     method_url = 'answerShippingQuery'
     payload = {'shipping_query_id': shipping_query_id, 'ok': ok}
@@ -734,7 +782,7 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
     :param pre_checkout_query_id: Unique identifier for the query to be answered
     :param ok: Specify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
     :param error_message: Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user.
-    :return: 
+    :return:
     """
     method_url = 'answerPreCheckoutQuery'
     payload = {'pre_checkout_query_id': pre_checkout_query_id, 'ok': ok}
