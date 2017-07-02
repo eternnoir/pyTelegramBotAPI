@@ -305,7 +305,11 @@ class Message(JsonDeserializable):
             opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
             content_type = 'new_chat_member'
         if 'new_chat_members' in obj:
-            opts['new_chat_members'] = obj['new_chat_members']
+            chat_members = obj['new_chat_members']
+            nms = []
+            for m in chat_members:
+                nms.append(User.de_json(m))
+            opts['new_chat_members'] = nms
             content_type = 'new_chat_members'
         if 'left_chat_member' in obj:
             opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
@@ -382,6 +386,7 @@ class Message(JsonDeserializable):
         self.location = None
         self.venue = None
         self.new_chat_member = None
+        self.new_chat_members = None
         self.left_chat_member = None
         self.new_chat_title = None
         self.new_chat_photo = None
