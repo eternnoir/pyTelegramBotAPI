@@ -1215,12 +1215,48 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.send_chat_action(self, *args, **kwargs)
 
     @util.async()
-    def kick_chat_member(self, *args):
-        return TeleBot.kick_chat_member(self, *args)
+    def kick_chat_member(self, *args, **kwargs):
+        return TeleBot.kick_chat_member(self, *args, **kwargs)
 
     @util.async()
     def unban_chat_member(self, *args):
         return TeleBot.unban_chat_member(self, *args)
+
+    @util.async()
+    def restrict_chat_member(self, *args, **kwargs):
+        return TeleBot.restrict_chat_member(self, *args, **kwargs)
+
+    @util.async()
+    def promote_chat_member(self, *args, **kwargs):
+        return TeleBot.promote_chat_member(self, *args, **kwargs)
+
+    @util.async()
+    def export_chat_invite_link(self, *args):
+        return TeleBot.export_chat_invite_link(self, *args)
+
+    @util.async()
+    def set_chat_photo(self, *args):
+        return TeleBot.set_chat_photo(self, *args)
+
+    @util.async()
+    def delete_chat_photo(self, *args):
+        return TeleBot.delete_chat_photo(self, *args)
+
+    @util.async()
+    def set_chat_title(self, *args):
+        return TeleBot.set_chat_title(self, *args)
+
+    @util.async()
+    def set_chat_description(self, *args):
+        return TeleBot.set_chat_description(self, *args)
+
+    @util.async()
+    def pin_chat_message(self, *args, **kwargs):
+        return TeleBot.pin_chat_message(self, *args, **kwargs)
+
+    @util.async()
+    def unpin_chat_message(self, *args):
+        return TeleBot.unpin_chat_message(self, *args)
 
     @util.async()
     def edit_message_text(self, *args, **kwargs):
