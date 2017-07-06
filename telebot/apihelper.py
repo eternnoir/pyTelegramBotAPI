@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import requests
+
 try:
     from requests.packages.urllib3 import fields
+
     format_header_param = fields.format_header_param
 except ImportError:
     format_header_param = None
@@ -39,7 +41,8 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     if params:
         if 'timeout' in params: read_timeout = params['timeout'] + 10
         if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
-    result = req_session.request(method, request_url, params=params, files=files, timeout=(connect_timeout, read_timeout))
+    result = req_session.request(method, request_url, params=params, files=files,
+                                 timeout=(connect_timeout, read_timeout))
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
 
@@ -544,11 +547,12 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
         payload['inline_message_id'] = inline_message_id
     return _make_request(token, method_url, params=payload)
 
+
 # Payments (https://core.telegram.org/bots/api#payments)
 
-def send_invoice(token, chat_id, title, description, invoice_payload, provider_token, currency, prices, start_parameter=None,
-                 photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None,
-                 need_phone_number=None, need_email=None, need_shipping_address=None, is_flexible=None,
+def send_invoice(token, chat_id, title, description, invoice_payload, provider_token, currency, prices,
+                 start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
+                 need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None, is_flexible=None,
                  disable_notification=None, reply_to_message_id=None, reply_markup=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
@@ -556,7 +560,7 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :param chat_id: Unique identifier for the target private chat
     :param title: Product name
     :param description: Product description
-    :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+    :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
     :param provider_token: Payments provider token, obtained via @Botfather
     :param currency: Three-letter ISO 4217 currency code, see https://core.telegram.org/bots/payments#supported-currencies
     :param prices: Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
@@ -576,9 +580,9 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :return: 
     """
     method_url = r'sendInvoice'
-    payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload, 'provider_token': provider_token, 'currency': currency, 'prices': prices}
-    if start_parameter:
-        payload['start_parameter'] = start_parameter
+    payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
+               'provider_token': provider_token, 'start_parameter': start_parameter, 'currency': currency,
+               'prices': _convert_list_json_serializable(prices)}
     if photo_url:
         payload['photo_url'] = photo_url
     if photo_size:
@@ -602,11 +606,11 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = reply_markup
+        payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)
 
 
-def answer_shippingQuery(token, shipping_query_id, ok, shipping_options=None, error_message=None):
+def answer_shipping_query(token, shipping_query_id, ok, shipping_options=None, error_message=None):
     """
     If you sent an invoice requesting a shipping address and the parameter is_flexible was specified, the Bot API will send an Update with a shipping_query field to the bot. Use this method to reply to shipping queries. On success, True is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -619,9 +623,9 @@ def answer_shippingQuery(token, shipping_query_id, ok, shipping_options=None, er
     method_url = 'answerShippingQuery'
     payload = {'shipping_query_id': shipping_query_id, 'ok': ok}
     if shipping_options:
-        payload['reply_markup'] = shipping_options
+        payload['reply_markup'] = _convert_list_json_serializable(shipping_options)
     if error_message:
-        payload['reply_markup'] = error_message
+        payload['error_message'] = error_message
     return _make_request(token, method_url, params=payload)
 
 
@@ -672,7 +676,7 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
 def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
                         switch_pm_text=None, switch_pm_parameter=None):
     method_url = 'answerInlineQuery'
-    payload = {'inline_query_id': inline_query_id, 'results': _convert_inline_results(results)}
+    payload = {'inline_query_id': inline_query_id, 'results': _convert_list_json_serializable(results)}
     if cache_time:
         payload['cache_time'] = cache_time
     if is_personal:
@@ -686,7 +690,7 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def _convert_inline_results(results):
+def _convert_list_json_serializable(results):
     ret = ''
     for r in results:
         if isinstance(r, types.JsonSerializable):
@@ -708,6 +712,7 @@ def _no_encode(func):
             return '{0}={1}'.format(key, val)
         else:
             return func(key, val)
+
     return wrapper
 
 

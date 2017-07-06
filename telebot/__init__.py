@@ -74,6 +74,8 @@ class TeleBot:
         self.inline_handlers = []
         self.chosen_inline_handlers = []
         self.callback_query_handlers = []
+        self.shipping_query_handlers = []
+        self.pre_checkout_query_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -146,6 +148,9 @@ class TeleBot:
         new_inline_querys = []
         new_chosen_inline_results = []
         new_callback_querys = []
+        new_shipping_querys = []
+        new_pre_checkout_querys = []
+
         for update in updates:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
@@ -163,6 +168,11 @@ class TeleBot:
                 new_chosen_inline_results.append(update.chosen_inline_result)
             if update.callback_query:
                 new_callback_querys.append(update.callback_query)
+            if update.shipping_query:
+                new_shipping_querys.append(update.shipping_query)
+            if update.pre_checkout_query:
+                new_pre_checkout_querys.append(update.pre_checkout_query)
+
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
@@ -178,6 +188,10 @@ class TeleBot:
             self.process_new_chosen_inline_query(new_chosen_inline_results)
         if len(new_callback_querys) > 0:
             self.process_new_callback_query(new_callback_querys)
+        if len(new_pre_checkout_querys) > 0:
+            self.process_new_pre_checkout_query(new_pre_checkout_querys)
+        if len(new_shipping_querys) > 0:
+            self.process_new_shipping_query(new_shipping_querys)
 
     def process_new_messages(self, new_messages):
         self._append_pre_next_step_handler()
@@ -203,6 +217,12 @@ class TeleBot:
 
     def process_new_callback_query(self, new_callback_querys):
         self._notify_command_handlers(self.callback_query_handlers, new_callback_querys)
+
+    def process_new_shipping_query(self, new_shipping_querys):
+        self._notify_command_handlers(self.shipping_query_handlers, new_shipping_querys)
+
+    def process_new_pre_checkout_query(self, pre_checkout_querys):
+        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -512,7 +532,7 @@ class TeleBot:
                                  disable_notification, timeout))
 
     def send_video_note(self, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                   disable_notification=None, timeout=None):
+                        disable_notification=None, timeout=None):
         """
         Use this method to send video files, Telegram clients support mp4 videos.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
@@ -525,7 +545,7 @@ class TeleBot:
         """
         return types.Message.de_json(
             apihelper.send_video_note(self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
-                                 disable_notification, timeout))
+                                      disable_notification, timeout))
 
     def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
                       disable_notification=None):
@@ -613,7 +633,8 @@ class TeleBot:
                                      reply_markup)
         return types.Message.de_json(result)
 
-    def set_game_score(self, user_id, score, force=None,chat_id=None, message_id=None, inline_message_id=None, edit_message=None):
+    def set_game_score(self, user_id, score, force=None, chat_id=None, message_id=None, inline_message_id=None,
+                       edit_message=None):
         result = apihelper.set_game_score(self.token, user_id, score, force, chat_id, message_id, inline_message_id,
                                           edit_message)
         if type(result) == bool:
@@ -626,6 +647,24 @@ class TeleBot:
         for r in result:
             ret.append(types.GameHighScore.de_json(r))
         return ret
+
+    def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
+                     start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
+                     need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
+                     is_flexible=None,
+                     disable_notification=None, reply_to_message_id=None, reply_markup=None):
+        result = apihelper.send_invoice(self.token, chat_id, title, description, invoice_payload, provider_token,
+                                        currency, prices, start_parameter, photo_url, photo_size, photo_width,
+                                        photo_height,
+                                        need_name, need_phone_number, need_email, need_shipping_address, is_flexible,
+                                        disable_notification, reply_to_message_id, reply_markup)
+        return types.Message.de_json(result)
+
+    def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
+        return apihelper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
+
+    def answer_pre_checkout_query(self, pre_checkout_query_id, ok, error_message=None):
+        return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
@@ -866,6 +905,28 @@ class TeleBot:
     def add_callback_query_handler(self, handler_dict):
         self.callback_query_handlers.append(handler_dict)
 
+    def shipping_query_handler(self, func, **kwargs):
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_shipping_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_shipping_query_handler(self, handler_dict):
+        self.shipping_query_handlers.append(handler_dict)
+
+    def pre_checkout_query_handler(self, func, **kwargs):
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_pre_checkout_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_pre_checkout_query_handler(self, handler_dict):
+        self.pre_checkout_query_handlers.append(handler_dict)
+
     def _test_message_handler(self, message_handler, message):
         for filter, filter_value in six.iteritems(message_handler['filters']):
             if filter_value is None:
@@ -1017,6 +1078,18 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def get_game_high_scores(self, *args, **kwargs):
         return TeleBot.get_game_high_scores(self, *args, **kwargs)
+
+    @util.async()
+    def send_invoice(self, *args, **kwargs):
+        return TeleBot.send_invoice(self, *args, **kwargs)
+
+    @util.async()
+    def answer_shipping_query(self, *args, **kwargs):
+        return TeleBot.answer_shipping_query(self, *args, **kwargs)
+
+    @util.async()
+    def answer_pre_checkout_query(self, *args, **kwargs):
+        return TeleBot.answer_pre_checkout_query(self, *args, **kwargs)
 
     @util.async()
     def edit_message_caption(self, *args, **kwargs):

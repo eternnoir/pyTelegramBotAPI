@@ -148,6 +148,8 @@ class WebhookInfo(JsonDeserializable):
         pending_update_count = obj['pending_update_count']
         last_error_date = None
         last_error_message = None
+        max_connections = None
+        allowed_updates = None
         if 'last_error_message' in obj:
             last_error_date = obj['last_error_date']
         if 'last_error_message' in obj:
@@ -794,13 +796,14 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
 
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
-                 switch_inline_query_current_chat=None, callback_game=None):
+                 switch_inline_query_current_chat=None, callback_game=None, pay=None):
         self.text = text
         self.url = url
         self.callback_data = callback_data
         self.switch_inline_query = switch_inline_query
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
+        self.pay = pay
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -817,6 +820,8 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['switch_inline_query_current_chat'] = self.switch_inline_query_current_chat
         if self.callback_game is not None:
             json_dic['callback_game'] = self.callback_game
+        if self.pay is not None:
+            json_dic['pay'] = self.pay
         return json_dic
 
 
@@ -1074,7 +1079,7 @@ class InlineQueryResultPhoto(JsonSerializable):
 
 class InlineQueryResultGif(JsonSerializable):
     def __init__(self, id, gif_url, thumb_url, gif_width=None, gif_height=None, title=None, caption=None,
-                 reply_markup=None, input_message_content=None):
+                 reply_markup=None, input_message_content=None, gif_duration=None):
         """
         Represents a link to an animated GIF file.
         :param id: Unique identifier for this result, 1-64 bytes.
@@ -1098,6 +1103,7 @@ class InlineQueryResultGif(JsonSerializable):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.gif_duration = gif_duration
 
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'gif_url': self.gif_url, 'thumb_url': self.thumb_url}
@@ -1113,12 +1119,14 @@ class InlineQueryResultGif(JsonSerializable):
             json_dict['reply_markup'] = self.reply_markup.to_dic()
         if self.input_message_content:
             json_dict['input_message_content'] = self.input_message_content.to_dic()
+        if self.gif_duration:
+            json_dict['gif_duration'] = self.gif_duration
         return json.dumps(json_dict)
 
 
 class InlineQueryResultMpeg4Gif(JsonSerializable):
     def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None, title=None, caption=None,
-                 reply_markup=None, input_message_content=None):
+                 reply_markup=None, input_message_content=None, mpeg4_duration=None):
         """
         Represents a link to a video animation (H.264/MPEG-4 AVC video without sound).
         :param id: Unique identifier for this result, 1-64 bytes
@@ -1142,6 +1150,7 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.mpeg4_duration = mpeg4_duration
 
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'mpeg4_url': self.mpeg4_url, 'thumb_url': self.thumb_url}
@@ -1157,6 +1166,8 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
             json_dict['reply_markup'] = self.reply_markup.to_dic()
         if self.input_message_content:
             json_dict['input_message_content'] = self.input_message_content.to_dic()
+        if self.mpeg4_duration:
+            json_dict['mpeg4_duration '] = self.mpeg4_duration
         return json.dumps(json_dict)
 
 
