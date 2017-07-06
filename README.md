@@ -25,6 +25,7 @@
     * [The listener mechanism](#the-listener-mechanism)
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
+    * [Proxy](#proxy)
   * [F.A.Q.](#faq)
     * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
@@ -124,6 +125,10 @@ All types are defined in types.py. They are all completely in line with the [Tel
 
 The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings:
 `text`, `audio`, `document`, `photo`, `sticker`, `video`, `video_note`, `voice`, `location`, `contact`, `new_chat_member`, `left_chat_member`, `new_chat_title`, `new_chat_photo`, `delete_chat_photo`, `group_chat_created`, `supergroup_chat_created`, `channel_chat_created`, `migrate_to_chat_id`, `migrate_from_chat_id`, `pinned_message`.
+
+You can use some types in one function. Example:
+
+```content_types=["text", "sticker", "pinned_message", "photo", "audio"]```
 
 ### Methods
 
@@ -487,6 +492,26 @@ import logging
 logger = telebot.logger
 telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 ```
+
+### Proxy
+
+You can use proxy for request. `apihelper.proxy` object will use by call `requests` proxies argument.
+
+```python
+from telebot import apihelper
+
+apihelper.proxy = {'http', 'http://10.10.1.10:3128'}
+```
+
+If you want to use socket5 proxy you need install dependency `pip install requests[socks]`.
+
+```python
+proxies = {
+    'http': 'socks5://user:pass@host:port',
+    'https': 'socks5://user:pass@host:port'
+}
+```
+
 
 ## F.A.Q.
 
