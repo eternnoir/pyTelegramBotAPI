@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import threading
+import traceback
 import re
 import sys
 import six
@@ -56,8 +57,8 @@ class WorkerThread(threading.Thread):
                     self.done_event.set()
                 except Queue.Empty:
                     pass
-                except:
-                    logger.debug("Exception occurred")
+                except Exception as e:
+                    logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
                     self.exc_info = sys.exc_info()
                     self.exception_event.set()
 
