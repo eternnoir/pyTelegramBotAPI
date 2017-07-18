@@ -17,6 +17,9 @@ except ImportError:
 from telebot import logger
 
 
+thread_local = threading.local()
+
+
 class WorkerThread(threading.Thread):
         count = 0
 
@@ -242,3 +245,12 @@ def extract_arguments(text):
     regexp = re.compile("\/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
+
+
+def per_thread(key, construct_value):
+    try:
+        return getattr(thread_local, key)
+    except AttributeError:
+        value = construct_value()
+        setattr(thread_local, key, value)
+        return value
