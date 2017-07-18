@@ -18,7 +18,6 @@ from telebot import types
 from telebot import util
 
 logger = telebot.logger
-req_session = requests.session()
 proxy = None
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"
@@ -26,6 +25,10 @@ FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
 CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
+
+
+def _get_req_session():
+    return util.per_thread('req_session', lambda: requests.session())
 
 
 def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
@@ -47,8 +50,8 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     if params:
         if 'timeout' in params: read_timeout = params['timeout'] + 10
         if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
-    result = req_session.request(method, request_url, params=params, files=files,
-                                 timeout=(connect_timeout, read_timeout), proxies=proxy)
+    result = _get_req_session().req_session.request(method, request_url, params=params, files=files,
+            timeout=(connect_timeout, read_timeout), proxies=proxy)
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
 
@@ -97,7 +100,7 @@ def get_file(token, file_id):
 
 def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)
-    result = req_session.get(url)
+    result = _get_req_session().get(url)
     if result.status_code != 200:
         msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
             .format(result.status_code, result.reason, result.text)
