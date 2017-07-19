@@ -50,7 +50,7 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     if params:
         if 'timeout' in params: read_timeout = params['timeout'] + 10
         if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
-    result = _get_req_session().req_session.request(method, request_url, params=params, files=files,
+    result = _get_req_session().request(method, request_url, params=params, files=files,
             timeout=(connect_timeout, read_timeout), proxies=proxy)
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
