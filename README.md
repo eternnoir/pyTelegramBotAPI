@@ -580,5 +580,7 @@ Get help. Discuss. Chat.
 * [filmratingbot](http://t.me/filmratingbot)([source](https://github.com/jcolladosp/film-rating-bot)) by [*jcolladosp*](https://github.com/jcolladosp) - Telegram bot using the Python API that gets films rating from IMDb and metacritic
 * [you2mp3bot](http://t.me/you2mp3bot)([link](https://storebot.me/bot/you2mp3bot)) - This bot can convert a Youtube video to Mp3. All you need is send the URL video.
 * [areajugonesbot](http://t.me/areajugonesbot)([link](http://t.me/areajugonesbot)) - The areajugonesbot sends news published on the videogames blog Areajugones to Telegram.
+* [Send2Kindlebot](http://t.me/Send2KindleBot) ([source](https://github.com/GabrielRF/Send2KindleBot)) by *GabrielRF* - Send to Kindle service.
+* [RastreioBot](http://t.me/RastreioBot) ([source](https://github.com/GabrielRF/RastreioBot)) by *GabrielRF* - Bot used to track packages on the Brazilian Mail Service.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
