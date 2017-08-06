@@ -791,22 +791,6 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
     return _make_request(token, method_url, params=payload, method='post')
 
 
-# def send_sticker(token, chat_id, sticker, disable_notification=None, reply_to_message_id=None, reply_markup=None):
-#     method_url = 'sendSticker'
-#     payload = {'chat_id': chat_id}
-#     if not util.is_string(sticker):
-#         files = {'sticker': sticker}
-#     else:
-#         payload['sticker'] = sticker
-#     if disable_notification:
-#         payload['disable_notification'] = disable_notification
-#     if reply_to_message_id:
-#         payload['reply_to_message_id'] = reply_to_message_id
-#     if reply_markup:
-#         payload['reply_markup'] = _convert_markup(reply_markup)
-#     return _make_request(token, method_url, params=payload, files=files, method='post')
-
-
 def get_sticker_set(token, name):
     method_url = 'getStickerSet'
     return _make_request(token, method_url, params={'name': name})
@@ -815,7 +799,7 @@ def get_sticker_set(token, name):
 def upload_sticker_file(token, user_id, png_sticker):
     method_url = 'uploadStickerFile'
     payload = {'user_id': user_id}
-    files = {'png_sticker', png_sticker}
+    files = {'png_sticker': png_sticker}
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
