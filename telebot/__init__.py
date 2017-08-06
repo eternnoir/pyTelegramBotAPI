@@ -873,18 +873,18 @@ class TeleBot:
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    def send_sticker(self, chat_id, sticker, disable_notification=None, reply_to_message_id=None, reply_markup=None):
-        """
-        Use this method to send .webp stickers. On success, the sent Message is returned.
-        :param chat_id:
-        :param sticker:
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :return:
-        """
-        result = apihelper.send_sticker(self.token, chat_id, sticker, disable_notification, reply_markup, reply_markup)
-        return types.Message.de_json(result)
+    # def send_sticker(self, chat_id, sticker, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    #     """
+    #     Use this method to send .webp stickers. On success, the sent Message is returned.
+    #     :param chat_id:
+    #     :param sticker:
+    #     :param disable_notification:
+    #     :param reply_to_message_id:
+    #     :param reply_markup:
+    #     :return:
+    #     """
+    #     result = apihelper.send_sticker(self.token, chat_id, sticker, disable_notification, reply_markup, reply_markup)
+    #     return types.Message.de_json(result)
 
     def get_sticker_set(self, name):
         """
