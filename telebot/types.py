@@ -921,6 +921,7 @@ class ChatMember(JsonDeserializable):
         self.can_send_other_messages = can_send_other_messages
         self.can_add_web_page_previews = can_add_web_page_previews
 
+
 # InlineQuery
 
 class InlineQuery(JsonDeserializable):
@@ -1860,6 +1861,7 @@ class PreCheckoutQuery(JsonDeserializable):
         self.shipping_option_id = shipping_option_id
         self.order_info = order_info
 
+
 # Stickers
 
 class StickerSet(JsonDeserializable):
@@ -1869,17 +1871,16 @@ class StickerSet(JsonDeserializable):
         name = obj['name']
         title = obj['title']
         contains_masks = obj['contains_masks']
-        stickers=[]
-        for s in obj['stickers']
+        stickers = []
+        for s in obj['stickers']:
             stickers.append(Sticker.de_json(s))
         return cls(name, title, contains_masks, stickers)
 
-    def __init__(self, name, title, contains_masks,stickers):
+    def __init__(self, name, title, contains_masks, stickers):
         self.stickers = stickers
         self.contains_masks = contains_masks
         self.title = title
         self.name = name
-
 
 
 class Sticker(JsonDeserializable):
@@ -1898,19 +1899,20 @@ class Sticker(JsonDeserializable):
         if 'mask_position' in obj:
             mask_position = MaskPosition.de_json(obj['mask_position'])
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, thumb,emoji, set_name, mask_position, file_size)
+        return cls(file_id, width, height, thumb, emoji, set_name, mask_position, file_size)
 
-    def __init__(self,file_id,width,height,thumb,emoji,set_name,mask_position,file_size):
+    def __init__(self, file_id, width, height, thumb, emoji, set_name, mask_position, file_size):
         self.file_id = file_id
         self.width = width
         self.height = height
-        self.thumb=thumb
+        self.thumb = thumb
         self.emoji = emoji
         self.set_name = set_name
         self.mask_position = mask_position
-        self.file_size=file_size
+        self.file_size = file_size
 
-class MaskPosition(JsonDeserializable):
+
+class MaskPosition(JsonDeserializable, JsonSerializable):
     @classmethod
     def de_json(cls, json_string):
         obj = cls.check_json(json_string)
@@ -1925,3 +1927,10 @@ class MaskPosition(JsonDeserializable):
         self.x_shift = x_shift
         self.y_shift = y_shift
         self.scale = scale
+
+    def to_json(self):
+        return json.dumps(self.to_dic())
+
+    def to_dic(self):
+        return {'point': self.point, 'x_shift': self.x_shift, 'y_shift': self.y_shift, 'scale': self.scale}
+

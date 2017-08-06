@@ -51,7 +51,7 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
         if 'timeout' in params: read_timeout = params['timeout'] + 10
         if 'connect-timeout' in params: connect_timeout = params['connect-timeout'] + 10
     result = _get_req_session().request(method, request_url, params=params, files=files,
-            timeout=(connect_timeout, read_timeout), proxies=proxy)
+                                        timeout=(connect_timeout, read_timeout), proxies=proxy)
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
 
@@ -788,6 +788,72 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
         payload['switch_pm_text'] = switch_pm_text
     if switch_pm_parameter:
         payload['switch_pm_parameter'] = switch_pm_parameter
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def send_sticker(token, chat_id, sticker, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    method_url = 'sendSticker'
+    payload = {'chat_id': chat_id}
+    if not util.is_string(sticker):
+        files = {'sticker': sticker}
+    else:
+        payload['sticker'] = sticker
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def get_sticker_set(token, name):
+    method_url = 'getStickerSet'
+    return _make_request(token, method_url, params={'name': name})
+
+
+def upload_sticker_file(token, user_id, png_sticker):
+    method_url = 'uploadStickerFile'
+    payload = {'user_id': user_id}
+    files = {'png_sticker', png_sticker}
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def create_new_sticker_set(token, user_id, name, title, png_sticker, emojis, contains_masks=None, mask_position=None):
+    method_url = 'createNewStickerSet'
+    payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
+    if not util.is_string(png_sticker):
+        files = {'png_sticker': png_sticker}
+    else:
+        payload['png_sticker'] = png_sticker
+    if contains_masks:
+        payload['contains_masks'] = contains_masks
+    if mask_position:
+        payload['mask_position'] = mask_position.to_json()
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def add_sticker_to_set(token, user_id, name, png_sticker, emojis, mask_position):
+    method_url = 'addStickerToSet'
+    payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
+    if not util.is_string(png_sticker):
+        files = {'png_sticker': png_sticker}
+    else:
+        payload['png_sticker'] = png_sticker
+    if mask_position:
+        payload['mask_position'] = mask_position.to_json()
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
+def set_sticker_position_in_set(token, sticker, position):
+    method_url = 'setStickerPositionInSet'
+    payload = {'sticker': sticker, 'position': position}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def delete_sticker_from_set(token, sticker):
+    method_url = 'deleteStickerFromSet'
+    payload = {'sticker': sticker}
     return _make_request(token, method_url, params=payload, method='post')
 
 
