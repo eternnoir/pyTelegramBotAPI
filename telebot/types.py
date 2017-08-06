@@ -902,8 +902,8 @@ class ChatMember(JsonDeserializable):
                    can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews)
 
     def __init__(self, user, status, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
-                   can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
-                   can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews):
+                 can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
+                 can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews):
         self.user = user
         self.status = status
         self.until_date = until_date
@@ -1859,3 +1859,69 @@ class PreCheckoutQuery(JsonDeserializable):
         self.invoice_payload = invoice_payload
         self.shipping_option_id = shipping_option_id
         self.order_info = order_info
+
+# Stickers
+
+class StickerSet(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        name = obj['name']
+        title = obj['title']
+        contains_masks = obj['contains_masks']
+        stickers=[]
+        for s in obj['stickers']
+            stickers.append(Sticker.de_json(s))
+        return cls(name, title, contains_masks, stickers)
+
+    def __init__(self, name, title, contains_masks,stickers):
+        self.stickers = stickers
+        self.contains_masks = contains_masks
+        self.title = title
+        self.name = name
+
+
+
+class Sticker(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        file_id = obj['file_id']
+        width = obj['width']
+        height = obj['height']
+        thumb = None
+        if 'thumb' in obj:
+            thumb = PhotoSize.de_json(obj['thumb'])
+        emoji = obj.get('emoji')
+        set_name = obj.get('set_name')
+        mask_position = None
+        if 'mask_position' in obj:
+            mask_position = MaskPosition.de_json(obj['mask_position'])
+        file_size = obj.get('file_size')
+        return cls(file_id, width, height, thumb,emoji, set_name, mask_position, file_size)
+
+    def __init__(self,file_id,width,height,thumb,emoji,set_name,mask_position,file_size):
+        self.file_id = file_id
+        self.width = width
+        self.height = height
+        self.thumb=thumb
+        self.emoji = emoji
+        self.set_name = set_name
+        self.mask_position = mask_position
+        self.file_size=file_size
+
+class MaskPosition(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        obj = cls.check_json(json_string)
+        point = obj['point']
+        x_shift = obj['x_shift']
+        y_shift = obj['y_shift']
+        scale = obj['scale']
+        return cls(point, x_shift, y_shift, scale)
+
+    def __init__(self, point, x_shift, y_shift, scale):
+        self.point = point
+        self.x_shift = x_shift
+        self.y_shift = y_shift
+        self.scale = scale
