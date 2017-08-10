@@ -234,8 +234,8 @@ tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 # - none_stop: True/False (default False) - Don't stop polling when receiving an error from the Telegram servers
 # - interval: True/False (default False) - The interval between polling requests
 #           Note: Editing this parameter harms the bot's response time
-# - block: True/False (default True) - Blocks upon calling this function
-tb.polling(none_stop=False, interval=0, block=True)
+# - timeout: integer (default 20) - Timeout in seconds for long polling.
+tb.polling(none_stop=False, interval=0, timeout=20)
 
 # getMe
 user = tb.get_me()
@@ -582,5 +582,6 @@ Get help. Discuss. Chat.
 * [areajugonesbot](http://t.me/areajugonesbot)([link](http://t.me/areajugonesbot)) - The areajugonesbot sends news published on the videogames blog Areajugones to Telegram.
 * [Send2Kindlebot](http://t.me/Send2KindleBot) ([source](https://github.com/GabrielRF/Send2KindleBot)) by *GabrielRF* - Send to Kindle service.
 * [RastreioBot](http://t.me/RastreioBot) ([source](https://github.com/GabrielRF/RastreioBot)) by *GabrielRF* - Bot used to track packages on the Brazilian Mail Service.
+* [filex_bot](http://t.me/filex_bot)([link](https://github.com/victor141516/FileXbot-telegram))
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.

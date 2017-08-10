@@ -255,6 +255,7 @@ class TeleBot:
         Warning: Do not call this function more than once!
 
         Always get updates.
+        :param interval:
         :param none_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Timeout in seconds for long polling.
         :return:
@@ -462,6 +463,7 @@ class TeleBot:
                    disable_notification=None):
         """
         Use this method to send photos.
+        :param disable_notification:
         :param chat_id:
         :param photo:
         :param caption:
@@ -870,6 +872,86 @@ class TeleBot:
         :return:
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
+
+    # def send_sticker(self, chat_id, sticker, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    #     """
+    #     Use this method to send .webp stickers. On success, the sent Message is returned.
+    #     :param chat_id:
+    #     :param sticker:
+    #     :param disable_notification:
+    #     :param reply_to_message_id:
+    #     :param reply_markup:
+    #     :return:
+    #     """
+    #     result = apihelper.send_sticker(self.token, chat_id, sticker, disable_notification, reply_markup, reply_markup)
+    #     return types.Message.de_json(result)
+
+    def get_sticker_set(self, name):
+        """
+        Use this method to get a sticker set. On success, a StickerSet object is returned.
+        :param token:
+        :param name:
+        :return:
+        """
+        result = apihelper.get_sticker_set(self.token, name)
+        return types.StickerSet.de_json(result)
+
+    def upload_sticker_file(self, user_id, png_sticker):
+        """
+        Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
+        methods (can be used multiple times). Returns the uploaded File on success.
+        :param user_id:
+        :param png_sticker:
+        :return:
+        """
+        result = apihelper.upload_sticker_file(self.token, user_id, png_sticker)
+        return types.File.de_json(result)
+
+    def create_new_sticker_set(self, user_id, name, title, png_sticker, emojis, contains_masks=None,
+                               mask_position=None):
+        """
+        Use this method to create new sticker set owned by a user. The bot will be able to edit the created sticker set.
+        Returns True on success.
+        :param user_id:
+        :param name:
+        :param title:
+        :param png_sticker:
+        :param emojis:
+        :param contains_masks:
+        :param mask_position:
+        :return:
+        """
+        return apihelper.create_new_sticker_set(self.token, user_id, name, title, png_sticker, emojis, contains_masks,
+                                                mask_position)
+
+    def add_sticker_to_set(self, user_id, name, png_sticker, emojis, mask_position):
+        """
+        Use this method to add a new sticker to a set created by the bot. Returns True on success.
+        :param user_id:
+        :param name:
+        :param png_sticker:
+        :param emojis:
+        :param mask_position:
+        :return:
+        """
+        return apihelper.add_sticker_to_set(self.token, user_id, name, png_sticker, emojis, mask_position)
+
+    def set_sticker_position_in_set(self, sticker, position):
+        """
+        Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
+        :param sticker:
+        :param position:
+        :return:
+        """
+        return apihelper.set_sticker_position_in_set(self.token, sticker, position)
+
+    def delete_sticker_from_set(self, sticker):
+        """
+        Use this method to delete a sticker from a set created by the bot. Returns True on success.
+        :param sticker:
+        :return:
+        """
+        return apihelper.delete_sticker_from_set(self.token, sticker)
 
     def register_for_reply(self, message, callback):
         """
@@ -1301,3 +1383,31 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def answer_callback_query(self, *args, **kwargs):
         return TeleBot.answer_callback_query(self, *args, **kwargs)
+
+    @util.async()
+    def send_sticker(self, *args, **kwargs):
+        return TeleBot.send_sticker(self, *args, **kwargs)
+
+    @util.async()
+    def get_sticker_set(self, *args, **kwargs):
+        return TeleBot.get_sticker_set(self, *args, **kwargs)
+
+    @util.async()
+    def upload_sticker_file(self, *args, **kwargs):
+        return TeleBot.upload_sticker_file(self, *args, **kwargs)
+
+    @util.async()
+    def create_new_sticker_set(self, *args, **kwargs):
+        return TeleBot.create_new_sticker_set(self, *args, **kwargs)
+
+    @util.async()
+    def add_sticker_to_set(self, *args, **kwargs):
+        return TeleBot.add_sticker_to_set(self, *args, **kwargs)
+
+    @util.async()
+    def set_sticker_position_in_set(self, *args, **kwargs):
+        return TeleBot.set_sticker_position_in_set(self, *args, **kwargs)
+
+    @util.async()
+    def delete_sticker_from_set(self, *args, **kwargs):
+        return TeleBot.delete_sticker_from_set(self, *args, **kwargs)
