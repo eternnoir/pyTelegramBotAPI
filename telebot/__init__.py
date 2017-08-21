@@ -998,6 +998,15 @@ class TeleBot:
             self.pre_message_subscribers_next_step[chat_id].append(callback)
         else:
             self.pre_message_subscribers_next_step[chat_id] = [callback]
+            
+    def clear_step_handler(self, message):
+        """
+        Clears all callback functions registered by register_next_step_handler().
+
+        :param message:     The message for which we want to handle new message after that in same chat.
+        """
+        chat_id = message.chat.id
+        self.pre_message_subscribers_next_step[chat_id] = []
 
     def _notify_message_next_handler(self, new_messages):
         for message in new_messages:
