@@ -177,14 +177,16 @@ class User(JsonDeserializable):
     def de_json(cls, json_string):
         obj = cls.check_json(json_string)
         id = obj['id']
+        is_bot = obj['is_bot']
         first_name = obj['first_name']
         last_name = obj.get('last_name')
         username = obj.get('username')
         language_code = obj.get('language_code')
-        return cls(id, first_name, last_name, username, language_code)
+        return cls(id, is_bot, first_name, last_name, username, language_code)
 
-    def __init__(self, id, first_name, last_name=None, username=None, language_code=None):
+    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None):
         self.id = id
+        self.is_bot = is_bot
         self.first_name = first_name
         self.username = username
         self.last_name = last_name
@@ -220,11 +222,15 @@ class Chat(JsonDeserializable):
             photo = ChatPhoto.de_json(obj['photo'])
         description = obj.get('description')
         invite_link = obj.get('invite_link')
+        pinned_message = None
+        if 'pinned_message' in obj:
+            pinned_message = Message.de_json(obj['pinned_message'])
         return cls(id, type, title, username, first_name, last_name, all_members_are_administrators,
-                   photo, description, invite_link)
+                   photo, description, invite_link, pinned_message)
 
     def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None,
-                 all_members_are_administrators=None, photo=None, description=None, invite_link=None):
+                 all_members_are_administrators=None, photo=None, description=None, invite_link=None,
+                 pinned_message=None):
         self.type = type
         self.last_name = last_name
         self.first_name = first_name
@@ -235,6 +241,7 @@ class Chat(JsonDeserializable):
         self.photo = photo
         self.description = description
         self.invite_link = invite_link
+        self.pinned_message = pinned_message
 
 
 class Message(JsonDeserializable):
@@ -255,12 +262,16 @@ class Message(JsonDeserializable):
             opts['forward_from_chat'] = Chat.de_json(obj['forward_from_chat'])
         if 'forward_from_message_id' in obj:
             opts['forward_from_message_id'] = obj.get('forward_from_message_id')
+        if 'forward_signature' in obj:
+            opts['forward_signature'] = obj.get('forward_signature')
         if 'forward_date' in obj:
             opts['forward_date'] = obj.get('forward_date')
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'edit_date' in obj:
             opts['edit_date'] = obj.get('edit_date')
+        if 'author_signature' in obj:
+            opts['author_signature'] = obj.get('author_signature')
         if 'text' in obj:
             opts['text'] = obj['text']
             content_type = 'text'
