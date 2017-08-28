@@ -389,7 +389,7 @@ class TestTeleBot:
 
     def create_text_message(self, text):
         params = {'text': text}
-        chat = types.User(11, 'test')
+        chat = types.User(11, False, 'test')
         return types.Message(1, None, None, chat, 'text', params)
 
     def test_is_string_unicode(self):
