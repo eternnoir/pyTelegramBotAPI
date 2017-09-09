@@ -583,5 +583,6 @@ Get help. Discuss. Chat.
 * [Send2Kindlebot](http://t.me/Send2KindleBot) ([source](https://github.com/GabrielRF/Send2KindleBot)) by *GabrielRF* - Send to Kindle service.
 * [RastreioBot](http://t.me/RastreioBot) ([source](https://github.com/GabrielRF/RastreioBot)) by *GabrielRF* - Bot used to track packages on the Brazilian Mail Service.
 * [filex_bot](http://t.me/filex_bot)([link](https://github.com/victor141516/FileXbot-telegram))
+* [Spbu4UBot](http://t.me/Spbu4UBot)([link](https://github.com/EeOneDown/spbu4u)) by *EeOneDown* - Bot with timetables for SPbU students.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
