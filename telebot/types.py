@@ -383,6 +383,7 @@ class Message(JsonDeserializable):
         self.forward_date = None
         self.reply_to_message = None
         self.edit_date = None
+        self.author_signature = None
         self.text = None
         self.entities = None
         self.audio = None
