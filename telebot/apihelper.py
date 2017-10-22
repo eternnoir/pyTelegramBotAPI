@@ -209,6 +209,18 @@ def get_chat_members_count(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
+def set_chat_sticker_set(token, chat_id, sticker_set_name):
+    method_url = r'setChatStickerSet'
+    payload = {'chat_id': chat_id, 'sticker_set_name': sticker_set_name}
+    return _make_request(token, method_url, params=payload)
+
+
+def delete_chat_sticker_set(token, chat_id):
+    method_url = r'deleteChatStickerSet'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+
 def get_chat_member(token, chat_id, user_id):
     method_url = r'getChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
@@ -243,16 +255,48 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_location(token, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
+def send_location(token, chat_id, latitude, longitude, live_period=None, reply_to_message_id=None, reply_markup=None,
                   disable_notification=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
+    if live_period:
+        payload['live_perion'] = live_period
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if disable_notification:
         payload['disable_notification'] = disable_notification
+    return _make_request(token, method_url, params=payload)
+
+
+def edit_message_live_location(token, latitude, longitude, chat_id=None, message_id=None,
+                               inline_message_id=None, reply_markup=None):
+    method_url = r'editMessageLiveLocation'
+    payload = {'latitude': latitude, 'longitude': longitude}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
+def stop_message_live_location(token, chat_id=None, message_id=None,
+                               inline_message_id=None, reply_markup=None):
+    method_url = r'stopMessageLiveLocation'
+    payload = {}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)
 
 
