@@ -610,6 +610,35 @@ class TeleBot:
             apihelper.send_location(self.token, chat_id, latitude, longitude, live_period, reply_to_message_id, reply_markup,
                                     disable_notification))
 
+    def edit_message_live_location(self, latitude, longitude, chat_id=None, message_id=None,
+                                   inline_message_id=None, reply_markup=None):
+        """
+        Use this method to edit live location
+        :param latitude:
+        :param longitude:
+        :param chat_id:
+        :param message_id:
+        :param inline_message_id:
+        :param reply_markup:
+        :return:
+        """
+        return types.Message.de_json(
+            apihelper.edit_message_live_location(self, latitude, longitude, chat_id, message_id,
+                                                 inline_message_id, reply_markup))
+
+    def stop_message_live_location(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+        """
+        Use this method to stop updating a live location message sent by the bot
+        or via the bot (for inline bots) before live_period expires
+        :param chat_id:
+        :param message_id:
+        :param inline_message_id:
+        :param reply_markup:
+        :return:
+        """
+        return types.Message.de_json(
+            apihelper.stop_message_live_location(self, chat_id, message_id, inline_message_id, reply_markup))
+
     def send_venue(self, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
                    reply_to_message_id=None, reply_markup=None):
         """
@@ -1327,6 +1356,14 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def send_location(self, *args, **kwargs):
         return TeleBot.send_location(self, *args, **kwargs)
+
+    @util.async()
+    def edit_message_live_location(self, *args, **kwargs):
+        return TeleBot.edit_message_live_location(self, *args, **kwargs)
+
+    @util.async()
+    def stop_message_live_location(self, *args, **kwargs):
+        return TeleBot.stop_message_live_location(self, *args, **kwargs)
 
     @util.async()
     def send_venue(self, *args, **kwargs):
