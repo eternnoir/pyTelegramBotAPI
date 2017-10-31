@@ -225,12 +225,14 @@ class Chat(JsonDeserializable):
         pinned_message = None
         if 'pinned_message' in obj:
             pinned_message = Message.de_json(obj['pinned_message'])
+        sticker_set_name = obj.get('sticker_set_name')
+        can_set_sticker_set = obj.get('can_set_sticker_set')
         return cls(id, type, title, username, first_name, last_name, all_members_are_administrators,
-                   photo, description, invite_link, pinned_message)
+                   photo, description, invite_link, pinned_message, sticker_set_name, can_set_sticker_set)
 
     def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None,
                  all_members_are_administrators=None, photo=None, description=None, invite_link=None,
-                 pinned_message=None):
+                 pinned_message=None, sticker_set_name=None, can_set_sticker_set=None):
         self.type = type
         self.last_name = last_name
         self.first_name = first_name
@@ -242,6 +244,8 @@ class Chat(JsonDeserializable):
         self.description = description
         self.invite_link = invite_link
         self.pinned_message = pinned_message
+        self.sticker_set_name = sticker_set_name
+        self.can_set_sticker_set = can_set_sticker_set
 
 
 class Message(JsonDeserializable):
@@ -277,6 +281,8 @@ class Message(JsonDeserializable):
             content_type = 'text'
         if 'entities' in obj:
             opts['entities'] = Message.parse_entities(obj['entities'])
+        if 'caption_entities' in obj:
+            opts['caption_entities'] = Message.parse_entities(obj['caption_entities'])
         if 'audio' in obj:
             opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
@@ -984,12 +990,15 @@ class InputTextMessageContent(Dictionaryable):
 
 
 class InputLocationMessageContent(Dictionaryable):
-    def __init__(self, latitude, longitude):
+    def __init__(self, latitude, longitude, live_period=None):
         self.latitude = latitude
         self.longitude = longitude
+        self.live_period = live_period
 
     def to_dic(self):
         json_dic = {'latitude': self.latitude, 'longitude': self.longitude}
+        if self.live_period:
+            json_dic['live_period'] = self.live_period
         return json_dic
 
 
@@ -1386,13 +1395,14 @@ class InlineQueryResultDocument(JsonSerializable):
 
 
 class InlineQueryResultLocation(JsonSerializable):
-    def __init__(self, id, title, latitude, longitude, reply_markup=None,
+    def __init__(self, id, title, latitude, longitude, live_period=None, reply_markup=None,
                  input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'location'
         self.id = id
         self.title = title
         self.latitude = latitude
         self.longitude = longitude
+        self.live_period = live_period
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.thumb_url = thumb_url
@@ -1402,6 +1412,8 @@ class InlineQueryResultLocation(JsonSerializable):
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
                      'title': self.title}
+        if self.live_period:
+            json_dict['live_period'] = self.live_period
         if self.thumb_url:
             json_dict['thumb_url'] = self.thumb_url
         if self.thumb_width:

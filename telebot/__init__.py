@@ -407,6 +407,32 @@ class TeleBot:
         result = apihelper.get_chat_members_count(self.token, chat_id)
         return result
 
+    def set_chat_sticker_set(self, chat_id, sticker_set_name):
+        """
+        Use this method to set a new group sticker set for a supergroup. The bot must be an administrator
+        in the chat for this to work and must have the appropriate admin rights.
+        Use the field can_set_sticker_set optionally returned in getChat requests to check
+        if the bot can use this method. Returns True on success.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+        (in the format @supergroupusername)
+        :param sticker_set_name: Name of the sticker set to be set as the group sticker set
+        :return:
+        """
+        result = apihelper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
+        return result
+
+    def delete_chat_sticker_set(self, chat_id):
+        """
+        Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat
+        for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
+        optionally returned in getChat requests to check if the bot can use this method. Returns True on success.
+        :param chat_id:	Unique identifier for the target chat or username of the target supergroup
+        (in the format @supergroupusername)
+        :return:
+        """
+        result = apihelper.delete_chat_sticker_set(self.token, chat_id)
+        return result
+
     def get_chat_member(self, chat_id, user_id):
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
@@ -568,20 +594,50 @@ class TeleBot:
             apihelper.send_video_note(self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
                                       disable_notification, timeout))
 
-    def send_location(self, chat_id, latitude, longitude, reply_to_message_id=None, reply_markup=None,
+    def send_location(self, chat_id, latitude, longitude, live_period=None, reply_to_message_id=None, reply_markup=None,
                       disable_notification=None):
         """
         Use this method to send point on the map.
         :param chat_id:
         :param latitude:
         :param longitude:
+        :param live_period
         :param reply_to_message_id:
         :param reply_markup:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_location(self.token, chat_id, latitude, longitude, reply_to_message_id, reply_markup,
+            apihelper.send_location(self.token, chat_id, latitude, longitude, live_period, reply_to_message_id, reply_markup,
                                     disable_notification))
+
+    def edit_message_live_location(self, latitude, longitude, chat_id=None, message_id=None,
+                                   inline_message_id=None, reply_markup=None):
+        """
+        Use this method to edit live location
+        :param latitude:
+        :param longitude:
+        :param chat_id:
+        :param message_id:
+        :param inline_message_id:
+        :param reply_markup:
+        :return:
+        """
+        return types.Message.de_json(
+            apihelper.edit_message_live_location(self, latitude, longitude, chat_id, message_id,
+                                                 inline_message_id, reply_markup))
+
+    def stop_message_live_location(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+        """
+        Use this method to stop updating a live location message sent by the bot
+        or via the bot (for inline bots) before live_period expires
+        :param chat_id:
+        :param message_id:
+        :param inline_message_id:
+        :param reply_markup:
+        :return:
+        """
+        return types.Message.de_json(
+            apihelper.stop_message_live_location(self, chat_id, message_id, inline_message_id, reply_markup))
 
     def send_venue(self, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
                    reply_to_message_id=None, reply_markup=None):
@@ -1246,6 +1302,14 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.get_chat_members_count(self, *args)
 
     @util.async()
+    def set_chat_sticker_set(self, *args):
+        return TeleBot.set_chat_sticker_set(self, *args)
+
+    @util.async()
+    def delete_chat_sticker_set(self, *args):
+        return TeleBot.delete_chat_sticker_set(self, *args)
+
+    @util.async()
     def get_chat_member(self, *args):
         return TeleBot.get_chat_member(self, *args)
 
@@ -1292,6 +1356,14 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def send_location(self, *args, **kwargs):
         return TeleBot.send_location(self, *args, **kwargs)
+
+    @util.async()
+    def edit_message_live_location(self, *args, **kwargs):
+        return TeleBot.edit_message_live_location(self, *args, **kwargs)
+
+    @util.async()
+    def stop_message_live_location(self, *args, **kwargs):
+        return TeleBot.stop_message_live_location(self, *args, **kwargs)
 
     @util.async()
     def send_venue(self, *args, **kwargs):
