@@ -392,6 +392,7 @@ class Message(JsonDeserializable):
         self.author_signature = None
         self.text = None
         self.entities = None
+        self.caption_entities = None
         self.audio = None
         self.document = None
         self.photo = None
