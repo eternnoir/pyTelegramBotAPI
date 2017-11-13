@@ -1814,7 +1814,7 @@ class ShippingOption(JsonSerializable):
         price_list = []
         for p in self.prices:
             price_list.append(p.to_dic())
-        json_dict = {'id': self.id, 'title': self.title, 'prices': price_list}
+        json_dict = json.dumps({'id': self.id, 'title': self.title, 'prices': price_list})
         return json_dict
 
 
