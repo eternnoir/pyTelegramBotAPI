@@ -768,7 +768,7 @@ def answer_shipping_query(token, shipping_query_id, ok, shipping_options=None, e
     method_url = 'answerShippingQuery'
     payload = {'shipping_query_id': shipping_query_id, 'ok': ok}
     if shipping_options:
-        payload['reply_markup'] = _convert_list_json_serializable(shipping_options)
+        payload['shipping_options'] = _convert_list_json_serializable(shipping_options)
     if error_message:
         payload['error_message'] = error_message
     return _make_request(token, method_url, params=payload)
