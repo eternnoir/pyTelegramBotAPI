@@ -201,7 +201,8 @@ class TestTeleBot:
     def test_send_audio_dis_noti(self):
         file_data = open('./test_data/record.mp3', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_audio(CHAT_ID, file_data, 1, performer='eternnoir', title='pyTelegram', disable_notification=True)
+        ret_msg = tb.send_audio(CHAT_ID, file_data, 1, performer='eternnoir', title='pyTelegram',
+                                disable_notification=True)
         assert ret_msg.content_type == 'audio'
         assert ret_msg.audio.performer == 'eternnoir'
         assert ret_msg.audio.title == 'pyTelegram'

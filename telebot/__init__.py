@@ -1260,12 +1260,12 @@ class TeleBot:
     def _notify_command_handlers(self, handlers, new_messages):
         for message in new_messages:
             # if message has next step handler, dont exec command handlers
-            if (isinstance(message, types.CallbackQuery)) or \
-                   (isinstance(message, types.Message) and (message.chat.id not in self.message_subscribers_next_step)):
-                for message_handler in handlers:
-                    if self._test_message_handler(message_handler, message):
-                        self._exec_task(message_handler['function'], message)
-                        break
+            if hasattr(message, 'chat') and message.chat and (message.chat.id in self.message_subscribers_next_step):
+                continue
+            for message_handler in handlers:
+                if self._test_message_handler(message_handler, message):
+                    self._exec_task(message_handler['function'], message)
+                    break
 
 
 class AsyncTeleBot(TeleBot):
