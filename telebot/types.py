@@ -339,16 +339,20 @@ class Message(JsonDeserializable):
             opts['delete_chat_photo'] = obj['delete_chat_photo']
         if 'group_chat_created' in obj:
             opts['group_chat_created'] = obj['group_chat_created']
+            content_type = 'group_chat_created'
         if 'supergroup_chat_created' in obj:
             opts['supergroup_chat_created'] = obj['supergroup_chat_created']
+            content_type = 'supergroup_chat_created'
         if 'channel_chat_created' in obj:
             opts['channel_chat_created'] = obj['channel_chat_created']
+            content_type = 'channel_chat_created'
         if 'migrate_to_chat_id' in obj:
             opts['migrate_to_chat_id'] = obj['migrate_to_chat_id']
         if 'migrate_from_chat_id' in obj:
             opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
         if 'pinned_message' in obj:
             opts['pinned_message'] = Message.de_json(obj['pinned_message'])
+            content_type = 'pinned_message'
         if 'invoice' in obj:
             opts['invoice'] = Invoice.de_json(obj['invoice'])
             content_type = 'invoice'
