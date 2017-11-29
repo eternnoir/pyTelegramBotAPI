@@ -255,6 +255,18 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
+def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
+    method_url = r'sendMediaGroup'
+    media_json = _convert_list_json_serializable(media)
+    print(media_json)
+    payload = {'chat_id': chat_id, 'media': media_json}
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    return _make_request(token, method_url, params=payload)
+
+
 def send_location(token, chat_id, latitude, longitude, live_period=None, reply_to_message_id=None, reply_markup=None,
                   disable_notification=None):
     method_url = r'sendLocation'

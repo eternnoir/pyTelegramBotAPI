@@ -594,6 +594,21 @@ class TeleBot:
             apihelper.send_video_note(self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
                                       disable_notification, timeout))
 
+    def send_media_group(self, chat_id, media, disable_notification=None, reply_to_message_id=None):
+        """
+        send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+        :param chat_id:
+        :param media:
+        :param disable_notification:
+        :param reply_to_message_id:
+        :return:
+        """
+        result = apihelper.send_media_group(self.token, chat_id, media, disable_notification, reply_to_message_id)
+        ret = []
+        for msg in result:
+            ret.append(types.Message.de_json(msg))
+        return ret
+
     def send_location(self, chat_id, latitude, longitude, live_period=None, reply_to_message_id=None, reply_markup=None,
                       disable_notification=None):
         """

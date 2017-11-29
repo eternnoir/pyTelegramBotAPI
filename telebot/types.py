@@ -1959,3 +1959,45 @@ class MaskPosition(JsonDeserializable, JsonSerializable):
     def to_dic(self):
         return {'point': self.point, 'x_shift': self.x_shift, 'y_shift': self.y_shift, 'scale': self.scale}
 
+
+# InputMedia
+
+class InputMediaPhoto(JsonSerializable):
+    def __init__(self, media, caption=None):
+        self.type = "photo"
+        self.media = media
+        self.caption = caption
+
+    def to_json(self):
+        return json.dumps(self.to_dic())
+
+    def to_dic(self):
+        ret = {'type': self.type, 'media': self.media}
+        if self.caption:
+            ret['caption'] = self.caption
+        return ret
+
+
+class InputMediaVideo(JsonSerializable):
+    def __init__(self, media, caption=None, width=None, height=None, duration=None):
+        self.type = "video"
+        self.media = media
+        self.caption = caption
+        self.width = width
+        self.height = height
+        self.duration = duration
+
+    def to_json(self):
+        return json.dumps(self.to_dic())
+
+    def to_dic(self):
+        ret = {'type': self.type, 'media': self.media}
+        if self.caption:
+            ret['caption'] = self.caption
+        if self.width:
+            ret['width'] = self.width
+        if self.height:
+            ret['height'] = self.height
+        if self.duration:
+            ret['duration'] = self.duration
+        return ret
