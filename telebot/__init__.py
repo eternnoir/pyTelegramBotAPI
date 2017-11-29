@@ -622,7 +622,8 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_location(self.token, chat_id, latitude, longitude, live_period, reply_to_message_id, reply_markup,
+            apihelper.send_location(self.token, chat_id, latitude, longitude, live_period, reply_to_message_id,
+                                    reply_markup,
                                     disable_notification))
 
     def edit_message_live_location(self, latitude, longitude, chat_id=None, message_id=None,
@@ -888,12 +889,12 @@ class TeleBot:
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
                      is_flexible=None,
-                     disable_notification=None, reply_to_message_id=None, reply_markup=None):
+                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=Noen):
         result = apihelper.send_invoice(self.token, chat_id, title, description, invoice_payload, provider_token,
                                         currency, prices, start_parameter, photo_url, photo_size, photo_width,
                                         photo_height,
                                         need_name, need_phone_number, need_email, need_shipping_address, is_flexible,
-                                        disable_notification, reply_to_message_id, reply_markup)
+                                        disable_notification, reply_to_message_id, reply_markup, provider_data)
         return types.Message.de_json(result)
 
     def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
@@ -1069,7 +1070,7 @@ class TeleBot:
             self.pre_message_subscribers_next_step[chat_id].append(callback)
         else:
             self.pre_message_subscribers_next_step[chat_id] = [callback]
-            
+
     def clear_step_handler(self, message):
         """
         Clears all callback functions registered by register_next_step_handler().
@@ -1370,6 +1371,10 @@ class AsyncTeleBot(TeleBot):
     @util.async()
     def send_video_note(self, *args, **kwargs):
         return TeleBot.send_video_note(self, *args, **kwargs)
+
+    @util.async()
+    def send_media_group(self, *args, **kwargs):
+        return TeleBot.send_media_group(self, *args, **kwargs)
 
     @util.async()
     def send_location(self, *args, **kwargs):

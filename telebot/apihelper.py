@@ -710,7 +710,7 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
 def send_invoice(token, chat_id, title, description, invoice_payload, provider_token, currency, prices,
                  start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                  need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None, is_flexible=None,
-                 disable_notification=None, reply_to_message_id=None, reply_markup=None):
+                 disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -764,6 +764,8 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if provider_data:
+        payload['provider_data'] = provider_data
     return _make_request(token, method_url, params=payload)
 
 
