@@ -889,7 +889,7 @@ class TeleBot:
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
                      is_flexible=None,
-                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=Noen):
+                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None):
         result = apihelper.send_invoice(self.token, chat_id, title, description, invoice_payload, provider_token,
                                         currency, prices, start_parameter, photo_url, photo_size, photo_width,
                                         photo_height,

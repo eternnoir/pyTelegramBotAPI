@@ -410,3 +410,11 @@ class TestTeleBot:
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_video_note(CHAT_ID, file_data)
         assert ret_msg.message_id
+
+    def test_send_media_group(self):
+        tb = telebot.TeleBot(TOKEN)
+        img1 = 'https://i.imgur.com/CjXjcnU.png'
+        img2 = 'https://i.imgur.com/CjXjcnU.png'
+        medias = [types.InputMediaPhoto(img1, "View"), types.InputMediaPhoto(img2, "Dog")]
+        result = tb.send_media_group(CHAT_ID, medias)
+        assert len(result) == 2
