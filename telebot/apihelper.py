@@ -258,7 +258,6 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
 def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
     method_url = r'sendMediaGroup'
     media_json = _convert_list_json_serializable(media)
-    print(media_json)
     payload = {'chat_id': chat_id, 'media': media_json}
     if disable_notification:
         payload['disable_notification'] = disable_notification

@@ -333,10 +333,13 @@ class Message(JsonDeserializable):
             content_type = 'left_chat_member'
         if 'new_chat_title' in obj:
             opts['new_chat_title'] = obj['new_chat_title']
+            content_type = 'new_chat_title'
         if 'new_chat_photo' in obj:
             opts['new_chat_photo'] = Message.parse_photo(obj['new_chat_photo'])
+            content_type = 'new_chat_photo'
         if 'delete_chat_photo' in obj:
             opts['delete_chat_photo'] = obj['delete_chat_photo']
+            content_type = 'delete_chat_photo'
         if 'group_chat_created' in obj:
             opts['group_chat_created'] = obj['group_chat_created']
             content_type = 'group_chat_created'
@@ -348,8 +351,10 @@ class Message(JsonDeserializable):
             content_type = 'channel_chat_created'
         if 'migrate_to_chat_id' in obj:
             opts['migrate_to_chat_id'] = obj['migrate_to_chat_id']
+            content_type = 'migrate_to_chat_id'
         if 'migrate_from_chat_id' in obj:
             opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
+            content_type = 'migrate_from_chat_id'
         if 'pinned_message' in obj:
             opts['pinned_message'] = Message.de_json(obj['pinned_message'])
             content_type = 'pinned_message'
