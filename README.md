@@ -584,5 +584,5 @@ Get help. Discuss. Chat.
 * [RastreioBot](http://t.me/RastreioBot) ([source](https://github.com/GabrielRF/RastreioBot)) by *GabrielRF* - Bot used to track packages on the Brazilian Mail Service.
 * [filex_bot](http://t.me/filex_bot)([link](https://github.com/victor141516/FileXbot-telegram))
 * [Spbu4UBot](http://t.me/Spbu4UBot)([link](https://github.com/EeOneDown/spbu4u)) by *EeOneDown* - Bot with timetables for SPbU students.
-
+* [SmartySBot](http://t.me/ZDU_bot)([link](https://github.com/0xVK/SmartySBot)) by *0xVK* - Telegram timetable bot, for Zhytomyr Ivan Franko State University students. 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
