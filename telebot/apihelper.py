@@ -271,7 +271,7 @@ def send_location(token, chat_id, latitude, longitude, live_period=None, reply_t
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
-        payload['live_perion'] = live_period
+        payload['live_period'] = live_period
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
