@@ -639,7 +639,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.edit_message_live_location(self, latitude, longitude, chat_id, message_id,
+            apihelper.edit_message_live_location(self.token, latitude, longitude, chat_id, message_id,
                                                  inline_message_id, reply_markup))
 
     def stop_message_live_location(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
@@ -653,7 +653,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.stop_message_live_location(self, chat_id, message_id, inline_message_id, reply_markup))
+            apihelper.stop_message_live_location(self.token, chat_id, message_id, inline_message_id, reply_markup))
 
     def send_venue(self, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
                    reply_to_message_id=None, reply_markup=None):
