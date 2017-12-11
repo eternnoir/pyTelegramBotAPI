@@ -23,7 +23,7 @@ proxy = None
 API_URL = "https://api.telegram.org/bot{0}/{1}"
 FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
 
-CONNECT_TIMEOUT = 3.5
+CONNECT_TIMEOUT = 15
 READ_TIMEOUT = 9999
 
 
