@@ -302,7 +302,7 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
+def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None, caption=''):
     method_url = r'sendMediaGroup'
     try:
         media_list = files_to_send(media, caption)
