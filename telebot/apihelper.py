@@ -141,7 +141,6 @@ def file_to_send(files, text):
         photoExtensions = ['gif', 'jpeg', 'jpg', 'png'] # photo extensions
         videoExtensions = ['mp4'] # video extensions
         for i in files:
-            print(i)
             url = None
             if len(files_to_send) > 0:
                 text = ''
