@@ -2,7 +2,7 @@ import telebot
 import os
 from flask import Flask, request
 
-bot = telebot.TeleBot('<api_token>')
+bot = telebot.TeleBot('341519589:AAGsM9G8_0UHiMxRF2uUhXdootK8m086Yqo")
 
 server = Flask(__name__)
 
@@ -22,7 +22,7 @@ def getMessage():
 @server.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url="https://herokuProject_url/bot")
+    bot.set_webhook(url="https://git.heroku.com/polar-inlet-33421.git")
     return "!", 200
 
 server.run(host="0.0.0.0", port=os.environ.get('PORT', 5000))
