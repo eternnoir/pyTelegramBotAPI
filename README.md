@@ -291,8 +291,8 @@ tb.send_video(chat_id, "FILEID")
 
 # sendVideoNote
 videonote = open('/tmp/videonote.mp4', 'rb')
-tb.send_video(chat_id, videonote)
-tb.send_video(chat_id, "FILEID")
+tb.send_video_note(chat_id, videonote)
+tb.send_video_note(chat_id, "FILEID")
 
 # sendLocation
 tb.send_location(chat_id, lat, lon)
