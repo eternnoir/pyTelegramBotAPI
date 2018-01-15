@@ -257,13 +257,14 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
 
 def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
     method_url = r'sendMediaGroup'
-    media_json = _convert_list_json_serializable(media)
+    media_json, files = _convert_input_media(media)
     payload = {'chat_id': chat_id, 'media': media_json}
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post' if files else 'get',
+                         files=files if files else None)
 
 
 def send_location(token, chat_id, latitude, longitude, live_period=None, reply_to_message_id=None, reply_markup=None,
@@ -914,6 +915,19 @@ def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
+
+
+def _convert_input_media(array):
+    media = []
+    files = {}
+    for input_media in array:
+        if isinstance(input_media, types.JsonSerializable):
+            media_dict = input_media.to_dic()
+            if media_dict['media'].startswith('attach://'):
+                key = media_dict['media'].replace('attach://', '')
+                files[key] = input_media.media
+            media.append(media_dict)
+    return json.dumps(media), files
 
 
 def _no_encode(func):

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+import random
+import string
 import threading
 import traceback
 import re
@@ -254,3 +255,7 @@ def per_thread(key, construct_value):
         value = construct_value()
         setattr(thread_local, key, value)
         return value
+
+
+def generate_random_token():
+    return ''.join(random.sample(string.ascii_letters, 16))
