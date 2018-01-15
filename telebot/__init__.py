@@ -996,7 +996,7 @@ class TeleBot:
         return apihelper.create_new_sticker_set(self.token, user_id, name, title, png_sticker, emojis, contains_masks,
                                                 mask_position)
 
-    def add_sticker_to_set(self, user_id, name, png_sticker, emojis, mask_position):
+    def add_sticker_to_set(self, user_id, name, png_sticker, emojis, mask_position=None):
         """
         Use this method to add a new sticker to a set created by the bot. Returns True on success.
         :param user_id:
