@@ -274,6 +274,8 @@ class Message(JsonDeserializable):
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'edit_date' in obj:
             opts['edit_date'] = obj.get('edit_date')
+        if 'media_group_id' in obj:
+            opts['media_group_id'] = obj.get('media_group_id')
         if 'author_signature' in obj:
             opts['author_signature'] = obj.get('author_signature')
         if 'text' in obj:
@@ -398,6 +400,7 @@ class Message(JsonDeserializable):
         self.forward_date = None
         self.reply_to_message = None
         self.edit_date = None
+        self.media_group_id = None
         self.author_signature = None
         self.text = None
         self.entities = None

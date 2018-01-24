@@ -418,3 +418,5 @@ class TestTeleBot:
         medias = [types.InputMediaPhoto(img1, "View"), types.InputMediaPhoto(img2, "Dog")]
         result = tb.send_media_group(CHAT_ID, medias)
         assert len(result) == 2
+        assert result[0].media_group_id is not None
+        assert result[0].media_group_id == result[1].media_group_id
