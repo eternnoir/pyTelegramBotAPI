@@ -6,6 +6,7 @@ except ImportError:
     import json
 
 import requests
+import re
 
 try:
     from requests.packages.urllib3 import fields
@@ -107,6 +108,51 @@ def download_file(token, file_path):
         raise ApiException(msg, 'Download file', result)
     return result.content
 
+def getExtension(file):
+    res = re.split('\.', file)
+    return res[len(res)-1]
+
+def uploadImage(filename):
+    fileExtension = 'image/{}'.format(getExtension(filename))
+    with open(filename, 'rb') as f:
+        r = requests.post(
+                url = 'http://telegra.ph/upload',
+                files={'file': ('file', f, fileExtension)}
+            ).json()
+    URL = 'telegra.ph{}'.format(r[0]['src'])
+    return URL
+
+def uploadVideo(filename):
+    fileExtension = 'video/{}'.format(getExtension(filename))
+    with open(filename, 'rb') as f:
+        r = requests.post(
+                url = 'http://telegra.ph/upload',
+                files={'file': ('file', f, fileExtension)}
+            ).json()
+    URL = 'telegra.ph{}'.format(r[0]['src'])
+    return URL
+
+def file_to_send(files, text):
+    files_to_send = []
+    if len(files) > 9:
+        raise ValueError ('Too many files')
+        pass
+    else:
+        photoExtensions = ['gif', 'jpeg', 'jpg', 'png'] # photo extensions
+        videoExtensions = ['mp4'] # video extensions
+        for i in files:
+            url = None
+            if len(files_to_send) > 0:
+                text = ''
+            if getExtension(i) in photoExtensions:
+                url = uploadImage(i)
+                files_to_send.append(telebot.types.InputMediaPhoto(url, caption=text))
+            elif getExtension(i) in videoExtensions:
+                url = uploadVideo(i)
+                files_to_send.append(telebot.types.InputMediaVideo(url, caption=text))
+            else:
+                raise ValueError ('Unrecognizable file extension')
+    return files_to_send
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
                  parse_mode=None, disable_notification=None):
@@ -255,8 +301,12 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
+def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None, caption=''):
     method_url = r'sendMediaGroup'
+    try:
+        media_list = files_to_send(media, caption)
+    except Exception as e:
+        media_list = media
     media_json = _convert_list_json_serializable(media)
     payload = {'chat_id': chat_id, 'media': media_json}
     if disable_notification:
