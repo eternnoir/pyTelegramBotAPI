@@ -305,10 +305,7 @@ tb.send_chat_action(chat_id, action_string)
 # getFile
 # Downloading a file is straightforward
 # Returns a File object
-import requests
-file_info = tb.get_file(file_id)
-
-file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN, file_info.file_path))
+file = tb.download_file(file_info.file_path)
 
 
 ```
