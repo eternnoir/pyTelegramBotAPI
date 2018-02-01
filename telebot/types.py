@@ -1984,7 +1984,8 @@ class InputMediaPhoto(JsonSerializable):
         return json.dumps(self.to_dic())
 
     def to_dic(self):
-        ret = {'type': self.type, 'media': self.media}
+        ret = {'type': self.type, 'media': 'attach://' + util.generate_random_token()
+               if not util.is_string(self.media) else self.media}
         if self.caption:
             ret['caption'] = self.caption
         return ret
@@ -2003,7 +2004,8 @@ class InputMediaVideo(JsonSerializable):
         return json.dumps(self.to_dic())
 
     def to_dic(self):
-        ret = {'type': self.type, 'media': self.media}
+        ret = {'type': self.type, 'media': 'attach://' + util.generate_random_token()
+               if not util.is_string(self.media) else self.media}
         if self.caption:
             ret['caption'] = self.caption
         if self.width:
