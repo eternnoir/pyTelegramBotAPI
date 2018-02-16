@@ -503,8 +503,8 @@ class TeleBot:
                                  parse_mode, disable_notification))
 
     def send_audio(self, chat_id, audio, caption=None, duration=None, performer=None, title=None,
-                   reply_to_message_id=None,
-                   reply_markup=None, parse_mode=None, disable_notification=None, timeout=None):
+                   reply_to_message_id=None, reply_markup=None, parse_mode=None, disable_notification=None,
+                   timeout=None):
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
         :param chat_id:Unique identifier for the message recipient
@@ -545,7 +545,8 @@ class TeleBot:
         :param data:
         :param reply_to_message_id:
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
+        :param disable_notification:
         :return: API reply.
         """
         return types.Message.de_json(

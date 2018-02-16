@@ -460,8 +460,8 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None,
-              timeout=None, parse_mode=None, caption=None):
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
+              disable_notification=None, timeout=None, caption=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None

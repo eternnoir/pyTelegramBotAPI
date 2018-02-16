@@ -468,3 +468,9 @@ class TestTeleBot:
         assert result[0].media_group_id is not None
         assert result[0].caption_entities[0].type == 'bold'
         assert result[1].caption_entities[0].type == 'italic'
+
+    def test_send_document_formating_caption(self):
+        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        tb = telebot.TeleBot(TOKEN)
+        ret_msg = tb.send_document(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
+        assert ret_msg.caption_entities[0].type == 'italic'
