@@ -909,9 +909,10 @@ class TeleBot:
     def answer_pre_checkout_query(self, pre_checkout_query_id, ok, error_message=None):
         return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
-    def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+    def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None,
+                             parse_mode=None, reply_markup=None):
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
-                                                reply_markup)
+                                                parse_mode, reply_markup)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
