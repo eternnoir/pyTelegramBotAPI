@@ -236,7 +236,7 @@ def forward_message(token, chat_id, from_chat_id, message_id, disable_notificati
 
 
 def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
-               disable_notification=None):
+               parse_mode=None, disable_notification=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -250,6 +250,8 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
     if disable_notification:
         payload['disable_notification'] = disable_notification
     return _make_request(token, method_url, params=payload, files=files, method='post')
@@ -349,7 +351,7 @@ def send_chat_action(token, chat_id, action):
 
 
 def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               disable_notification=None, timeout=None):
+               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -365,6 +367,10 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if supports_streaming:
+        payload['supports_streaming'] = supports_streaming
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if timeout:
@@ -373,7 +379,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
 
 
 def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
-               disable_notification=None, timeout=None):
+               parse_mode=None, disable_notification=None, timeout=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -389,6 +395,8 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if timeout:
@@ -423,7 +431,7 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
 
 
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None, disable_notification=None, timeout=None):
+               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -443,6 +451,8 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if timeout:
@@ -450,8 +460,8 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, disable_notification=None,
-              timeout=None, caption=None):
+def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
+              disable_notification=None, timeout=None, caption=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -463,6 +473,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode and data_type == 'document':
+        payload['parse_mode'] = parse_mode
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if timeout:
@@ -604,7 +616,8 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
     return _make_request(token, method_url, params=payload)
 
 
-def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
+                         parse_mode=None, reply_markup=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -613,6 +626,8 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
         payload['message_id'] = message_id
     if inline_message_id:
         payload['inline_message_id'] = inline_message_id
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)

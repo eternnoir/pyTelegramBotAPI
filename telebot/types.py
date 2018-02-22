@@ -366,6 +366,9 @@ class Message(JsonDeserializable):
         if 'successful_payment' in obj:
             opts['successful_payment'] = SuccessfulPayment.de_json(obj['successful_payment'])
             content_type = 'successful_payment'
+        if 'connected_website' in obj:
+            opts['connected_website'] = obj['connected_website']
+            content_type = 'connected_website'
         return cls(message_id, from_user, date, chat, content_type, opts)
 
     @classmethod
@@ -430,6 +433,7 @@ class Message(JsonDeserializable):
         self.pinned_message = None
         self.invoice = None
         self.successful_payment = None
+        self.connected_website = None
         for key in options:
             setattr(self, key, options[key])
 
@@ -1975,10 +1979,11 @@ class MaskPosition(JsonDeserializable, JsonSerializable):
 # InputMedia
 
 class InputMediaPhoto(JsonSerializable):
-    def __init__(self, media, caption=None):
+    def __init__(self, media, caption=None, parse_mode=None):
         self.type = "photo"
         self.media = media
         self.caption = caption
+        self.parse_mode = parse_mode
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -1988,17 +1993,22 @@ class InputMediaPhoto(JsonSerializable):
                if not util.is_string(self.media) else self.media}
         if self.caption:
             ret['caption'] = self.caption
+        if self.parse_mode:
+            ret['parse_mode'] = self.parse_mode
         return ret
 
 
 class InputMediaVideo(JsonSerializable):
-    def __init__(self, media, caption=None, width=None, height=None, duration=None):
+    def __init__(self, media, caption=None, parse_mode=None, width=None, height=None, duration=None,
+                 supports_streaming=None):
         self.type = "video"
         self.media = media
         self.caption = caption
+        self.parse_mode = parse_mode
         self.width = width
         self.height = height
         self.duration = duration
+        self.supports_streaming = supports_streaming
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -2008,10 +2018,14 @@ class InputMediaVideo(JsonSerializable):
                if not util.is_string(self.media) else self.media}
         if self.caption:
             ret['caption'] = self.caption
+        if self.parse_mode:
+            ret['parse_mode'] = self.parse_mode
         if self.width:
             ret['width'] = self.width
         if self.height:
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
+        if self.supports_streaming:
+            ret['supports_streaming'] = self.supports_streaming
         return ret
