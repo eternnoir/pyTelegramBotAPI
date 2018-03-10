@@ -14,9 +14,9 @@ try:
     import Queue
 except ImportError:
     import queue as Queue
+import logging
 
-from telebot import logger
-
+logger = logging.getLogger('TeleBot')
 
 thread_local = threading.local()
 
