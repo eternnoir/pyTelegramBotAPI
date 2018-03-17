@@ -9,6 +9,8 @@ import six
 
 import logging
 
+from telebot.step_handler_backends import StepHandlerMemoryBackend
+
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
@@ -65,7 +67,8 @@ class TeleBot:
         answerInlineQuery
         """
 
-    def __init__(self, token, threaded=True, skip_pending=False, num_threads=2):
+    def __init__(self, token, threaded=True, skip_pending=False, num_threads=2,
+                 step_handler_backend=StepHandlerMemoryBackend()):
         """
         :param token: bot API token
         :return: Telebot object.
@@ -95,6 +98,7 @@ class TeleBot:
         self.callback_query_handlers = []
         self.shipping_query_handlers = []
         self.pre_checkout_query_handlers = []
+        self.step_handler_backend = step_handler_backend
 
         self.threaded = threaded
         if self.threaded:
@@ -1073,11 +1077,7 @@ class TeleBot:
         :param message:     The message for which we want to handle new message after that in same chat.
         :param callback:    The callback function which next new message arrives.
         """
-        chat_id = message.chat.id
-        if chat_id in self.pre_message_subscribers_next_step:
-            self.pre_message_subscribers_next_step[chat_id].append(callback)
-        else:
-            self.pre_message_subscribers_next_step[chat_id] = [callback]
+        self.step_handler_backend.register_handler(message.chat.id, callback)
 
     def clear_step_handler(self, message):
         """
@@ -1085,17 +1085,16 @@ class TeleBot:
 
         :param message:     The message for which we want to handle new message after that in same chat.
         """
-        chat_id = message.chat.id
-        self.pre_message_subscribers_next_step[chat_id] = []
+        self.step_handler_backend.clear_handler(message.chat.id)
 
     def _notify_message_next_handler(self, new_messages):
         for message in new_messages:
             chat_id = message.chat.id
-            if chat_id in self.message_subscribers_next_step:
-                handlers = self.message_subscribers_next_step[chat_id]
+            handlers = self.step_handler_backend.get_handlers(chat_id)
+            if handlers:
                 for handler in handlers:
                     self._exec_task(handler, message)
-                self.message_subscribers_next_step.pop(chat_id, None)
+                self.step_handler_backend.clear_handler(chat_id)
 
     def _append_pre_next_step_handler(self):
         for k in self.pre_message_subscribers_next_step.keys():
