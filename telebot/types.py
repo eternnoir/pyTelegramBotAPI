@@ -392,7 +392,7 @@ class Message(JsonDeserializable):
             ret.append(MessageEntity.de_json(me))
         return ret
 
-    def __init__(self, message_id, from_user, date, chat, content_type, options):
+    def __init__(self, message_id, from_user, date, chat, content_type, options, json_string):
         self.content_type = content_type
         self.message_id = message_id
         self.from_user = from_user
@@ -436,7 +436,7 @@ class Message(JsonDeserializable):
         self.connected_website = None
         for key in options:
             setattr(self, key, options[key])
-        self.json = json
+        self.json = json_string
 
 
 class MessageEntity(JsonDeserializable):
