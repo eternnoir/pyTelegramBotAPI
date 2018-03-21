@@ -369,7 +369,7 @@ class Message(JsonDeserializable):
         if 'connected_website' in obj:
             opts['connected_website'] = obj['connected_website']
             content_type = 'connected_website'
-        return cls(message_id, from_user, date, chat, content_type, opts, json)
+        return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
     def parse_chat(cls, chat):
