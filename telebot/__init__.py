@@ -98,7 +98,15 @@ class TeleBot:
 
         self.threaded = threaded
         if self.threaded:
+            self.polling_thread = None
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
+
+    def stop_instance(self):
+        if self.threaded:
+            self.worker_pool.close()
+            if self.polling_thread != None:
+                self.polling_thread.stop()
+                self.polling_thread.join()
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
@@ -270,32 +278,36 @@ class TeleBot:
         self.__stop_polling.clear()
         error_interval = .25
 
-        polling_thread = util.WorkerThread(name="PollingThread")
+        if self.polling_thread != None:
+            self.polling_thread.stop()
+            self.polling_thread.join()
+
+        self.polling_thread = util.WorkerThread(name="PollingThread")
         or_event = util.OrEvent(
-            polling_thread.done_event,
-            polling_thread.exception_event,
+            self.polling_thread.done_event,
+            self.polling_thread.exception_event,
             self.worker_pool.exception_event
         )
 
         while not self.__stop_polling.wait(interval):
             or_event.clear()
             try:
-                polling_thread.put(self.__retrieve_updates, timeout)
+                self.polling_thread.put(self.__retrieve_updates, timeout)
 
                 or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
 
-                polling_thread.raise_exceptions()
+                self.polling_thread.raise_exceptions()
                 self.worker_pool.raise_exceptions()
 
                 error_interval = .25
             except apihelper.ApiException as e:
                 logger.error(e)
+                self.polling_thread.clear_exceptions()
+                self.worker_pool.clear_exceptions()
                 if not none_stop:
                     self.__stop_polling.set()
                     logger.info("Exception occurred. Stopping.")
                 else:
-                    polling_thread.clear_exceptions()
-                    self.worker_pool.clear_exceptions()
                     logger.info("Waiting for {0} seconds until retry".format(error_interval))
                     time.sleep(error_interval)
                     error_interval *= 2
@@ -304,7 +316,9 @@ class TeleBot:
                 self.__stop_polling.set()
                 break
 
-        polling_thread.stop()
+        self.polling_thread.stop()
+        self.polling_thread.join()
+
         logger.info('Stopped polling.')
 
     def __non_threaded_polling(self, none_stop=False, interval=0, timeout=3):
@@ -340,11 +354,6 @@ class TeleBot:
 
     def stop_polling(self):
         self.__stop_polling.set()
-
-    def stop_bot(self):
-        self.stop_polling()
-        if self.worker_pool:
-            self.worker_pool.close()
 
     def set_update_listener(self, listener):
         self.update_listener.append(listener)
@@ -483,7 +492,7 @@ class TeleBot:
 
     def delete_message(self, chat_id, message_id):
         """
-        Use this method to delete message. Returns True on success. 
+        Use this method to delete message. Returns True on success.
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :return: API reply.
