@@ -83,6 +83,8 @@ class WorkerThread(threading.Thread):
 
         def stop(self):
             self._running = False
+            #The event will surely stop
+            self.continue_event.set()
 
 
 class ThreadPool:
@@ -234,12 +236,12 @@ def OrEvent(*events):
 def extract_arguments(text):
     """
     Returns the argument after the command.
-    
+
     Examples:
     extract_arguments("/get name"): 'name'
     extract_arguments("/get"): ''
     extract_arguments("/get@botName name"): 'name'
-    
+
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
     """
@@ -248,7 +250,11 @@ def extract_arguments(text):
     return result.group(2) if is_command(text) else None
 
 
-def per_thread(key, construct_value):
+def per_thread(key, construct_value, reset):
+    if reset == True:
+        value = construct_value()
+        setattr(thread_local, key, value)
+
     try:
         return getattr(thread_local, key)
     except AttributeError:
