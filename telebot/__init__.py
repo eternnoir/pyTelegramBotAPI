@@ -356,6 +356,9 @@ class TeleBot:
     def get_file(self, file_id):
         return types.File.de_json(apihelper.get_file(self.token, file_id))
 
+    def get_file_url(self, file_id):
+        return apihelper.get_file_url(self.token, file_id)
+
     def download_file(self, file_path):
         return apihelper.download_file(self.token, file_path)
 
