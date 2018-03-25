@@ -98,6 +98,11 @@ def get_file(token, file_id):
     return _make_request(token, method_url, params={'file_id': file_id})
 
 
+def get_file_url(token, file_id):
+    method_url = r'getFile'
+    return FILE_URL.format(token, types.File.de_json(_make_request(token, method_url, params={'file_id': file_id})).file_path)
+
+
 def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)
     result = _get_req_session().get(url)
