@@ -438,6 +438,55 @@ class Message(JsonDeserializable):
             setattr(self, key, options[key])
         self.json = json_string
 
+    @property
+    def html_text(self):
+        #NOTE: create by @sviat9440
+        if not self.entities:
+            return self.text
+        _subs = {
+            "bold": "<b>{text}</b>",
+            "italic": "<i>{text}</i>",
+            "pre": "<pre>{text}</pre>",
+            "code": "<code>{text}</code>",
+            "url": "<a href=\"{url}\">{text}</a>"
+        }
+        _block = {
+            "text": None,
+            "type": None,
+            "url": None,
+            "user": None
+        }
+        html_text = ""
+        def func(block):
+            text = block["text"]
+            print(block["type"])
+            if block["type"] == "text_mention":
+                block["url"] = "tg://user?id={0}".format(block["user"].id)
+                block["type"] = "url"
+            if not block["type"] or not _subs.get(block["type"]):
+                return text
+            subs = _subs.get(block["type"])
+            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            return subs.format(text=text, url=block["url"])
+
+        offset = 0
+        for entity in self.entities:
+            if entity.offset > offset:
+                block = _block.copy()
+                block["text"] = self.text[offset:entity.offset]
+                html_text += func(block)
+                offset = entity.offset
+            block = _block.copy()
+            block["text"] = self.text[offset:offset + entity.length]
+            block["type"] = entity.type
+            block["url"] = entity.url
+            block["user"] = entity.user
+            html_text += func(block)
+            offset += entity.length
+        return html_text
+
+    #NOTE: message.html_text
+
 
 class MessageEntity(JsonDeserializable):
     @classmethod
