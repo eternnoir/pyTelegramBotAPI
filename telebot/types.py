@@ -459,7 +459,6 @@ class Message(JsonDeserializable):
         html_text = ""
         def func(block):
             text = block["text"]
-            print(block["type"])
             if block["type"] == "text_mention":
                 block["url"] = "tg://user?id={0}".format(block["user"].id)
                 block["type"] = "url"
