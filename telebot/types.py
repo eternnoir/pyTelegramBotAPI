@@ -450,38 +450,26 @@ class Message(JsonDeserializable):
             "code": "<code>{text}</code>",
             "url": "<a href=\"{url}\">{text}</a>"
         }
-        _block = {
-            "text": None,
-            "type": None,
-            "url": None,
-            "user": None
-        }
         html_text = ""
-        def func(block):
-            text = block["text"]
-            if block["type"] == "text_mention":
-                block["url"] = "tg://user?id={0}".format(block["user"].id)
-                block["type"] = "url"
-            if not block["type"] or not _subs.get(block["type"]):
+        def func(text, type=None, url=None, user=None):
+            if type == "text_mention":
+                type = "url"
+                url = "tg://user?id={0}".format(user.id)
+            if not type or not _subs.get(type):
                 return text
-            subs = _subs.get(block["type"])
+            subs = _subs.get(type)
             text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            return subs.format(text=text, url=block["url"])
+            return subs.format(text=text, url=url)
 
         offset = 0
         for entity in self.entities:
             if entity.offset > offset:
-                block = _block.copy()
-                block["text"] = self.text[offset:entity.offset]
-                html_text += func(block)
+                html_text += func(self.text[offset:entity.offset])
                 offset = entity.offset
-            block = _block.copy()
-            block["text"] = self.text[offset:offset + entity.length]
-            block["type"] = entity.type
-            block["url"] = entity.url
-            block["user"] = entity.user
-            html_text += func(block)
+            html_text += func(self.text[offset:offset + entity.length], entity.type, entity.url, entity.user)
             offset += entity.length
+        if offset < len(self.text):
+            html_text += func(self.text[offset:])
         return html_text
 
     #NOTE: message.html_text
