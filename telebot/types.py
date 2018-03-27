@@ -440,7 +440,20 @@ class Message(JsonDeserializable):
 
     @property
     def html_text(self):
-        #NOTE: create by @sviat9440
+        #   Author: @sviat9440
+        #   Message: "*Test* parse _formatting_, [url](https://example.com) and [mention](tg://user?id=123456)"
+        #
+        #   Example:
+        #       message.html_text
+        #       >> "<b>Test</b> parse <i>formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">mention</a>
+        #
+        #   Cusom subs:
+        #       You can customize the substitutes. By default, there is no substitute for the entities: hashtag, bot_command, email. You can add or modify substitute an existing entity.
+        #   Example:
+        #       message.custom_subs = {"bold": "<strong class=\"example\">{text}</strong>", "italic": "<i class=\"example\">{text}</i>"}
+        #       message.html_text
+        #       >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">mention</a>
+
         if not self.entities:
             return self.text
         _subs = {
@@ -450,6 +463,9 @@ class Message(JsonDeserializable):
             "code": "<code>{text}</code>",
             "url": "<a href=\"{url}\">{text}</a>"
         }
+        if hasattr(self, "custom_subs"):
+            for type in self.custom_subs:
+                _subs[type] = self.custom_subs[type]
         html_text = ""
         def func(text, type=None, url=None, user=None):
             if type == "text_mention":
@@ -471,8 +487,6 @@ class Message(JsonDeserializable):
         if offset < len(self.text):
             html_text += func(self.text[offset:])
         return html_text
-
-    #NOTE: message.html_text
 
 
 class MessageEntity(JsonDeserializable):
