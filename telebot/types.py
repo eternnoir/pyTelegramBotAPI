@@ -441,18 +441,18 @@ class Message(JsonDeserializable):
     @property
     def html_text(self):
         #   Author: @sviat9440
-        #   Message: "*Test* parse _formatting_, [url](https://example.com) and [mention](tg://user?id=123456)"
+        #   Message: "*Test* parse _formatting_, [url](https://example.com), [text_mention](tg://user?id=123456) and mention @username"
         #
         #   Example:
         #       message.html_text
-        #       >> "<b>Test</b> parse <i>formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">mention</a>
+        #       >> "<b>Test</b> parse <i>formatting</i>, <a href=\"https://example.com\">url</a>, <a href=\"tg://user?id=123456\">text_mention</a> and mention @username"
         #
         #   Cusom subs:
         #       You can customize the substitutes. By default, there is no substitute for the entities: hashtag, bot_command, email. You can add or modify substitute an existing entity.
         #   Example:
-        #       message.custom_subs = {"bold": "<strong class=\"example\">{text}</strong>", "italic": "<i class=\"example\">{text}</i>"}
+        #       message.custom_subs = {"bold": "<strong class=\"example\">{text}</strong>", "italic": "<i class=\"example\">{text}</i>", "mention": "<a href={url}>{text}</a>"}
         #       message.html_text
-        #       >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">mention</a>
+        #       >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">text_mention</a> and mention <a href=\"https://t.me/username\">@username</a>"
 
         if not self.entities:
             return self.text
@@ -471,6 +471,8 @@ class Message(JsonDeserializable):
             if type == "text_mention":
                 type = "url"
                 url = "tg://user?id={0}".format(user.id)
+            elif type == "mention":
+                url = "https://t.me/{0}".format(text[1:])
             if not type or not _subs.get(type):
                 return text
             subs = _subs.get(type)
