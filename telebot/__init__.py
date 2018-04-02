@@ -304,6 +304,13 @@ class TeleBot:
                 self.__stop_polling.set()
                 polling_thread.stop()
                 break
+            except Exception as e:
+                logger.error("Exception occurred. {0}".format(e))
+                if not none_stop:
+                    raise
+                logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                time.sleep(error_interval)
+                error_interval *= 2
 
         logger.info('Stopped polling.')
 
@@ -329,6 +336,13 @@ class TeleBot:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
                 break
+            except Exception as e:
+                logger.error("Exception occurred. {0}".format(e))
+                if not none_stop:
+                    raise
+                logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                time.sleep(error_interval)
+                error_interval *= 2
 
         logger.info('Stopped polling.')
 
