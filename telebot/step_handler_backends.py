@@ -1,4 +1,16 @@
 class StepHandlerBaseBackend(object):
+    _callbacks = {}
+
+    @classmethod
+    def add_handler(cls, callback):
+        cls._callbacks[callback.__name__] = callback
+        return callback
+
+    @classmethod
+    def add_handlers(cls, *callbacks):
+        for callback in callbacks:
+            cls.add_handler(callback)
+
     def register_handler(self, chat_id, callback):
         raise NotImplementedError()
 
@@ -26,18 +38,6 @@ class StepHandlerMemoryBackend(StepHandlerBaseBackend):
 
 
 class StepHandlerRedisBackend(StepHandlerBaseBackend):
-    _callbacks = {}
-
-    @classmethod
-    def add_handler(cls, callback):
-        cls._callbacks[callback.__name__] = callback
-        return callback
-
-    @classmethod
-    def add_handlers(cls, *callbacks):
-        for callback in callbacks:
-            cls.add_handler(callback)
-
     def __init__(self, host='localhost', port=6379, db=0, prefix='telebot'):
         from redis import Redis
         self.prefix = str(prefix)

@@ -1290,6 +1290,12 @@ class TeleBot:
                     self._exec_task(message_handler['function'], message)
                     break
 
+    def add_step_handler(self, callback):
+        return self.step_handler_backend.add_handler(callback)
+
+    def add_step_handlers(self, *callbacks):
+        self.step_handler_backend.add_handlers(*callbacks)
+
 
 class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
