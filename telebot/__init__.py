@@ -262,7 +262,6 @@ class TeleBot:
         """
         error_interval = .25
         while not self.__stop_polling.is_set():
-            print(1)
             try:
                 if self.threaded:
                     self.__threaded_polling(none_stop, interval, timeout)
