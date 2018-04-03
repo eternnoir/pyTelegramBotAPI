@@ -302,7 +302,6 @@ class TeleBot:
             except KeyboardInterrupt:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
-                polling_thread.stop()
                 break
             except Exception as e:
                 logger.error("Exception occurred. {0}".format(e))
@@ -312,6 +311,7 @@ class TeleBot:
                 time.sleep(error_interval)
                 error_interval *= 2
 
+        polling_thread.stop()
         logger.info('Stopped polling.')
 
     def __non_threaded_polling(self, none_stop=False, interval=0, timeout=3):
@@ -354,6 +354,11 @@ class TeleBot:
 
     def stop_polling(self):
         self.__stop_polling.set()
+
+    def stop_bot(self):
+        self.stop_polling()
+        if self.worker_pool:
+            self.worker_pool.close()
 
     def set_update_listener(self, listener):
         self.update_listener.append(listener)
