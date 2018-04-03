@@ -260,10 +260,22 @@ class TeleBot:
         :param timeout: Timeout in seconds for long polling.
         :return:
         """
-        if self.threaded:
-            self.__threaded_polling(none_stop, interval, timeout)
-        else:
-            self.__non_threaded_polling(none_stop, interval, timeout)
+        error_interval = .25
+        while not self.__stop_polling.is_set():
+            print(1)
+            try:
+                if self.threaded:
+                    self.__threaded_polling(none_stop, interval, timeout)
+                else:
+                    self.__non_threaded_polling(none_stop, interval, timeout)
+                error_interval = .25
+            except Exception as e:
+                logger.error("Exception occurred. {0}".format(e))
+                if not none_stop:
+                    raise
+                logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                time.sleep(error_interval)
+                error_interval *= 2
 
     def __threaded_polling(self, none_stop=False, interval=0, timeout=3):
         logger.info('Started polling.')
@@ -303,13 +315,6 @@ class TeleBot:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
                 break
-            except Exception as e:
-                logger.error("Exception occurred. {0}".format(e))
-                if not none_stop:
-                    raise
-                logger.info("Waiting for {0} seconds until retry".format(error_interval))
-                time.sleep(error_interval)
-                error_interval *= 2
 
         polling_thread.stop()
         logger.info('Stopped polling.')
@@ -336,13 +341,6 @@ class TeleBot:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
                 break
-            except Exception as e:
-                logger.error("Exception occurred. {0}".format(e))
-                if not none_stop:
-                    raise
-                logger.info("Waiting for {0} seconds until retry".format(error_interval))
-                time.sleep(error_interval)
-                error_interval *= 2
 
         logger.info('Stopped polling.')
 
@@ -500,7 +498,7 @@ class TeleBot:
 
     def delete_message(self, chat_id, message_id):
         """
-        Use this method to delete message. Returns True on success. 
+        Use this method to delete message. Returns True on success.
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :return: API reply.
