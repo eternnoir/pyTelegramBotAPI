@@ -268,6 +268,10 @@ class TeleBot:
                 else:
                     self.__non_threaded_polling(none_stop, interval, timeout)
                 error_interval = .25
+            except KeyboardInterrupt:
+                logger.info("KeyboardInterrupt received.")
+                self.__stop_polling.set()
+                break
             except Exception as e:
                 logger.error("Exception occurred. {0}".format(e))
                 if not none_stop:
