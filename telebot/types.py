@@ -481,9 +481,6 @@ class Message(JsonDeserializable):
 
         offset = 0
         for entity in self.entities:
-            if entity.type == "bot_command":
-                entity.offset -= 1
-                entity.length += 1
             if entity.offset > offset:
                 html_text += func(self.text[offset:entity.offset])
                 offset = entity.offset
