@@ -247,6 +247,15 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
+    def infinity_polling(self, *args, **kwargs):
+        while not self.__stop_polling.is_set():
+            try:
+                self.polling(*args, **kwargs)
+            except Exception as e:
+                time.sleep(5)
+                pass
+        logger.info("Break infinity polling")
+
     def polling(self, none_stop=False, interval=0, timeout=20):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
@@ -486,7 +495,7 @@ class TeleBot:
 
     def delete_message(self, chat_id, message_id):
         """
-        Use this method to delete message. Returns True on success. 
+        Use this method to delete message. Returns True on success.
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :return: API reply.

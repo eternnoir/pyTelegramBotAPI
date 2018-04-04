@@ -438,6 +438,63 @@ class Message(JsonDeserializable):
             setattr(self, key, options[key])
         self.json = json_string
 
+    @property
+    def html_text(self):
+        """
+        Author: @sviat9440
+        Message: "*Test* parse _formatting_, [url](https://example.com), [text_mention](tg://user?id=123456) and mention @username"
+
+        Example:
+            message.html_text
+            >> "<b>Test</b> parse <i>formatting</i>, <a href=\"https://example.com\">url</a>, <a href=\"tg://user?id=123456\">text_mention</a> and mention @username"
+
+        Cusom subs:
+            You can customize the substitutes. By default, there is no substitute for the entities: hashtag, bot_command, email. You can add or modify substitute an existing entity.
+        Example:
+            message.custom_subs = {"bold": "<strong class=\"example\">{text}</strong>", "italic": "<i class=\"example\">{text}</i>", "mention": "<a href={url}>{text}</a>"}
+            message.html_text
+            >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">text_mention</a> and mention <a href=\"https://t.me/username\">@username</a>"
+        """
+
+        if not self.entities:
+            return self.text
+        _subs = {
+            "bold": "<b>{text}</b>",
+            "italic": "<i>{text}</i>",
+            "pre": "<pre>{text}</pre>",
+            "code": "<code>{text}</code>",
+            "url": "<a href=\"{url}\">{text}</a>"
+        }
+        if hasattr(self, "custom_subs"):
+            for type in self.custom_subs:
+                _subs[type] = self.custom_subs[type]
+        html_text = ""
+        def func(text, type=None, url=None, user=None):
+            if type == "text_mention":
+                type = "url"
+                url = "tg://user?id={0}".format(user.id)
+            elif type == "mention":
+                url = "https://t.me/{0}".format(text[1:])
+            if not type or not _subs.get(type):
+                return text
+            subs = _subs.get(type)
+            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            return subs.format(text=text, url=url)
+
+        offset = 0
+        for entity in self.entities:
+            if entity.type == "bot_command":
+                entity.offset -= 1
+                entity.length += 1
+            if entity.offset > offset:
+                html_text += func(self.text[offset:entity.offset])
+                offset = entity.offset
+            html_text += func(self.text[offset:offset + entity.length], entity.type, entity.url, entity.user)
+            offset += entity.length
+        if offset < len(self.text):
+            html_text += func(self.text[offset:])
+        return html_text
+
 
 class MessageEntity(JsonDeserializable):
     @classmethod
@@ -1822,7 +1879,7 @@ class ShippingOption(JsonSerializable):
     def add_price(self, *args):
         """
         Add LabeledPrice to ShippingOption
-        :param args: LabeledPrices 
+        :param args: LabeledPrices
         """
         for price in args:
             self.prices.append(price)
