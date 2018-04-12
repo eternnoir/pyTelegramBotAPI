@@ -20,7 +20,7 @@ logger.addHandler(console_output_handler)
 
 logger.setLevel(logging.ERROR)
 
-from telebot import apihelper, types, util
+from pytelegrambotapi import apihelper, types, util
 
 """
 Module : telebot
@@ -70,6 +70,7 @@ class TeleBot:
         :param token: bot API token
         :return: Telebot object.
         """
+
         self.token = token
         self.update_listener = []
         self.skip_pending = skip_pending
@@ -78,13 +79,11 @@ class TeleBot:
         self.last_update_id = 0
         self.exc_info = None
 
-        self.message_subscribers_messages = []
-        self.message_subscribers_callbacks = []
-        self.message_subscribers_lock = threading.Lock()
+        # key: message_id, value: handler list
+        self.reply_handlers = {}
 
         # key: chat_id, value: handler list
-        self.message_subscribers_next_step = {}
-        self.pre_message_subscribers_next_step = {}
+        self.next_step_handlers = {}
 
         self.message_handlers = []
         self.edited_message_handlers = []
@@ -213,11 +212,10 @@ class TeleBot:
             self.process_new_shipping_query(new_shipping_querys)
 
     def process_new_messages(self, new_messages):
-        self._append_pre_next_step_handler()
+        self._notify_next_handlers(new_messages)
+        self._notify_reply_handlers(new_messages)
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages)
-        self._notify_message_subscribers(new_messages)
-        self._notify_message_next_handler(new_messages)
 
     def process_new_edited_messages(self, edited_message):
         self._notify_command_handlers(self.edited_message_handlers, edited_message)
@@ -912,8 +910,8 @@ class TeleBot:
     def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
-                     is_flexible=None,
-                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None):
+                     is_flexible=None, disable_notification=None, reply_to_message_id=None, reply_markup=None,
+                     provider_data=None):
         result = apihelper.send_invoice(self.token, chat_id, title, description, invoice_payload, provider_token,
                                         currency, prices, start_parameter, photo_url, photo_size, photo_width,
                                         photo_height,
@@ -1050,7 +1048,7 @@ class TeleBot:
         """
         return apihelper.delete_sticker_from_set(self.token, sticker)
 
-    def register_for_reply(self, message, callback):
+    def register_for_reply(self, message, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when a reply to `message` arrives.
 
@@ -1061,40 +1059,60 @@ class TeleBot:
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
-        with self.message_subscribers_lock:
-            self.message_subscribers_messages.insert(0, message.message_id)
-            self.message_subscribers_callbacks.insert(0, callback)
-            if len(self.message_subscribers_messages) > 10000:
-                self.message_subscribers_messages.pop()
-                self.message_subscribers_callbacks.pop()
+        message_id = message.message_id
+        self.register_for_reply_by_message_id(message_id, callback, *args, **kwargs)
 
-    def _notify_message_subscribers(self, new_messages):
+    def register_for_reply_by_message_id(self, message_id, callback, *args, **kwargs):
+        """
+        Registers a callback function to be notified when a reply to `message` arrives.
+
+        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
+        the difference between a reply to `message` and an ordinary message.
+
+        :param message:     The message for which we are awaiting a reply.
+        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
+                            parameter, which will contain the replied message.
+        """
+        if message_id in self.reply_handlers.keys():
+            self.reply_handlers[message_id].append({"callback": callback, "args": args, "kwargs": kwargs})
+        else:
+            self.reply_handlers[message_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
+
+    def _notify_reply_handlers(self, new_messages):
         for message in new_messages:
-            if not message.reply_to_message:
-                continue
+            if hasattr(message, "reply_to_message") and message.reply_to_message is not None:
+                reply_msg_id = message.reply_to_message.message_id
+                if reply_msg_id in self.reply_handlers.keys():
+                    handlers = self.reply_handlers[reply_msg_id]
+                    for handler in handlers:
+                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                    self.reply_handlers.pop(reply_msg_id)
 
-            reply_msg_id = message.reply_to_message.message_id
-            if reply_msg_id in self.message_subscribers_messages:
-                index = self.message_subscribers_messages.index(reply_msg_id)
-                self.message_subscribers_callbacks[index](message)
-
-                with self.message_subscribers_lock:
-                    index = self.message_subscribers_messages.index(reply_msg_id)
-                    del self.message_subscribers_messages[index]
-                    del self.message_subscribers_callbacks[index]
-
-    def register_next_step_handler(self, message, callback):
+    def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when new message arrives after `message`.
 
-        :param message:     The message for which we want to handle new message after that in same chat.
+        :param message:     The message for which we want to handle new message in the same chat.
         :param callback:    The callback function which next new message arrives.
+        :param args:        Args to pass in callback func
+        :param kwargs:      Args to pass in callback func
         """
         chat_id = message.chat.id
-        if chat_id in self.pre_message_subscribers_next_step:
-            self.pre_message_subscribers_next_step[chat_id].append(callback)
+        self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
+
+    def register_next_step_handler_by_chat_id(self, chat_id, callback, *args, **kwargs):
+        """
+        Registers a callback function to be notified when new message arrives after `message`.
+
+        :param chat_id:     The chat for which we want to handle new message.
+        :param callback:    The callback function which next new message arrives.
+        :param args:        Args to pass in callback func
+        :param kwargs:      Args to pass in callback func
+        """
+        if chat_id in self.next_step_handlers.keys():
+            self.next_step_handlers[chat_id].append({"callback": callback, "args": args, "kwargs": kwargs})
         else:
-            self.pre_message_subscribers_next_step[chat_id] = [callback]
+            self.next_step_handlers[chat_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
 
     def clear_step_handler(self, message):
         """
@@ -1103,26 +1121,48 @@ class TeleBot:
         :param message:     The message for which we want to handle new message after that in same chat.
         """
         chat_id = message.chat.id
-        self.pre_message_subscribers_next_step[chat_id] = []
+        self.clear_step_handler_by_chat_id(chat_id)
 
-    def _notify_message_next_handler(self, new_messages):
-        for message in new_messages:
+    def clear_step_handler_by_chat_id(self, chat_id):
+        """
+        Clears all callback functions registered by register_next_step_handler().
+
+        :param chat_id: The chat for which we want to clear next step handlers
+        """
+        self.next_step_handlers[chat_id] = []
+
+    def clear_reply_handlers(self, message):
+        """
+        Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
+
+        :param message_id: The message for which we want to clear reply handlers
+        """
+        message_id = message.message_id
+        self.clear_reply_handlers_by_message_id(message_id)
+
+    def clear_reply_handlers_by_message_id(self, message_id):
+        """
+        Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
+
+        :param message_id: The message id for which we want to clear reply handlers
+        """
+        self.reply_handlers[message_id] = []
+
+    def _notify_next_handlers(self, new_messages):
+        i = 0
+        while i < len(new_messages):
+            message = new_messages[i]
             chat_id = message.chat.id
-            if chat_id in self.message_subscribers_next_step:
-                handlers = self.message_subscribers_next_step[chat_id]
+            if chat_id in self.next_step_handlers.keys():
+                handlers = self.next_step_handlers[chat_id]
                 for handler in handlers:
-                    self._exec_task(handler, message)
-                self.message_subscribers_next_step.pop(chat_id, None)
+                    self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                self.next_step_handlers.pop(chat_id, None)
+                new_messages.pop(i)  # removing message that detects with next_step_handler
+            i += 1
 
-    def _append_pre_next_step_handler(self):
-        for k in self.pre_message_subscribers_next_step.keys():
-            if k in self.message_subscribers_next_step:
-                self.message_subscribers_next_step[k].extend(self.pre_message_subscribers_next_step[k])
-            else:
-                self.message_subscribers_next_step[k] = self.pre_message_subscribers_next_step[k]
-        self.pre_message_subscribers_next_step = {}
-
-    def _build_handler_dict(self, handler, **filters):
+    @staticmethod
+    def _build_handler_dict(handler, **filters):
         return {
             'function': handler,
             'filters': filters
@@ -1300,9 +1340,6 @@ class TeleBot:
 
     def _notify_command_handlers(self, handlers, new_messages):
         for message in new_messages:
-            # if message has next step handler, dont exec command handlers
-            if hasattr(message, 'chat') and message.chat and (message.chat.id in self.message_subscribers_next_step):
-                continue
             for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
                     self._exec_task(message_handler['function'], message)

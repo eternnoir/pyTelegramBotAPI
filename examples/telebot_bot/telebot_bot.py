@@ -3,7 +3,7 @@
 # and goes by the name 'TeleBot (@pyTeleBot)'. Join our group to talk to him!
 # WARNING: Tested with Python 2.7
 
-import telebot
+import pytelegrambotapi
 import os
 
 text_messages = {
@@ -30,7 +30,7 @@ text_messages = {
 if "TELEBOT_BOT_TOKEN" not in os.environ or "GROUP_CHAT_ID" not in os.environ:
     raise AssertionError("Please configure TELEBOT_BOT_TOKEN and GROUP_CHAT_ID as environment variables")
 
-bot = telebot.AsyncTeleBot(os.environ["TELEBOT_BOT_TOKEN"])
+bot = pytelegrambotapi.AsyncTeleBot(os.environ["TELEBOT_BOT_TOKEN"])
 GROUP_CHAT_ID = int(os.environ["GROUP_CHAT_ID"])
 
 def is_api_group(chat_id):

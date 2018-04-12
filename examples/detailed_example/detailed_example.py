@@ -2,8 +2,8 @@
 This is a detailed example using almost every command of the API
 """
 
-import telebot
-from telebot import types
+import pytelegrambotapi
+from pytelegrambotapi import types
 import time
 
 TOKEN = '<token_string>'
@@ -48,7 +48,7 @@ def listener(messages):
             print str(m.chat.first_name) + " [" + str(m.chat.id) + "]: " + m.text
 
 
-bot = telebot.TeleBot(TOKEN)
+bot = pytelegrambotapi.TeleBot(TOKEN)
 bot.set_update_listener(listener)  # register listener
 
 

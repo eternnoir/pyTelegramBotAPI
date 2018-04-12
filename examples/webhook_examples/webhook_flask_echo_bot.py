@@ -5,7 +5,7 @@
 # It echoes any incoming text messages and does not use the polling method.
 
 import flask
-import telebot
+import pytelegrambotapi
 import logging
 
 
@@ -30,10 +30,10 @@ WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
 
-logger = telebot.logger
-telebot.logger.setLevel(logging.INFO)
+logger = pytelegrambotapi.logger
+pytelegrambotapi.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = pytelegrambotapi.TeleBot(API_TOKEN)
 
 app = flask.Flask(__name__)
 
@@ -49,7 +49,7 @@ def index():
 def webhook():
     if flask.request.headers.get('content-type') == 'application/json':
         json_string = flask.request.get_data().decode('utf-8')
-        update = telebot.types.Update.de_json(json_string)
+        update = pytelegrambotapi.types.Update.de_json(json_string)
         bot.process_new_updates([update])
         return ''
     else:

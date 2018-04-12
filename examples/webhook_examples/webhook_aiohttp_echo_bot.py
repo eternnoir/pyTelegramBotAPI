@@ -9,7 +9,7 @@ import ssl
 
 from aiohttp import web
 
-import telebot
+import pytelegrambotapi
 
 
 API_TOKEN = '<api_token>'
@@ -33,10 +33,10 @@ WEBHOOK_URL_BASE = "https://{}:{}".format(WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/{}/".format(API_TOKEN)
 
 
-logger = telebot.logger
-telebot.logger.setLevel(logging.INFO)
+logger = pytelegrambotapi.logger
+pytelegrambotapi.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = pytelegrambotapi.TeleBot(API_TOKEN)
 
 app = web.Application()
 
@@ -45,7 +45,7 @@ app = web.Application()
 async def handle(request):
     if request.match_info.get('token') == bot.token:
         request_body_dict = await request.json()
-        update = telebot.types.Update.de_json(request_body_dict)
+        update = pytelegrambotapi.types.Update.de_json(request_body_dict)
         bot.process_new_updates([update])
         return web.Response()
     else:

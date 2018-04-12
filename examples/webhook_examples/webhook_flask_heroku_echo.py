@@ -1,10 +1,10 @@
 import os
 
-import telebot
+import pytelegrambotapi
 from flask import Flask, request
 
 TOKEN = '<api_token>'
-bot = telebot.TeleBot(TOKEN)
+bot = pytelegrambotapi.TeleBot(TOKEN)
 server = Flask(__name__)
 
 
@@ -20,7 +20,7 @@ def echo_message(message):
 
 @server.route('/' + TOKEN, methods=['POST'])
 def getMessage():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    bot.process_new_updates([pytelegrambotapi.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
 
 

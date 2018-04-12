@@ -4,7 +4,7 @@
 # This example shows webhook echo bot with Tornado web framework
 # Documenation to Tornado: http://tornadoweb.org
 
-import telebot
+import pytelegrambotapi
 import tornado.web
 import tornado.ioloop
 import tornado.httpserver
@@ -27,7 +27,7 @@ WEBHOOK_URL_BASE = "https://{0}:{1}/{2}".format(WEBHOOK_HOST, str(WEBHOOK_PORT),
 # When asked for "Common Name (e.g. server FQDN or YOUR name)" you should reply
 # with the same value in you put in WEBHOOK_HOST
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = pytelegrambotapi.TeleBot(API_TOKEN)
 
 class Root(tornado.web.RequestHandler):
     def get(self):
@@ -45,7 +45,7 @@ class webhook_serv(tornado.web.RequestHandler):
 
             # length = int(self.request.headers['Content-Length'])
             json_data = self.request.body.decode("utf-8")
-            update = telebot.types.Update.de_json(json_data)
+            update = pytelegrambotapi.types.Update.de_json(json_data)
             bot.process_new_updates([update])
             self.write("")
             self.finish()

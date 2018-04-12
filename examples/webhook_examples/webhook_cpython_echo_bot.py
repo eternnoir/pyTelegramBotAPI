@@ -6,7 +6,7 @@
 
 import BaseHTTPServer
 import ssl
-import telebot
+import pytelegrambotapi
 import logging
 
 
@@ -31,10 +31,10 @@ WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
 
-logger = telebot.logger
-telebot.logger.setLevel(logging.INFO)
+logger = pytelegrambotapi.logger
+pytelegrambotapi.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = pytelegrambotapi.TeleBot(API_TOKEN)
 
 
 # WebhookHandler, process webhook calls
@@ -59,7 +59,7 @@ class WebhookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
 
-            update = telebot.types.Update.de_json(json_string)
+            update = pytelegrambotapi.types.Update.de_json(json_string)
             bot.process_new_messages([update.message])
         else:
             self.send_error(403)

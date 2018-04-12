@@ -7,9 +7,9 @@ import time
 import pytest
 import os
 
-import telebot
-from telebot import types
-from telebot import util
+import pytelegrambotapi
+from pytelegrambotapi import types
+from pytelegrambotapi import util
 
 should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
 
@@ -29,11 +29,11 @@ class TestTeleBot:
         def listener(messages):
             assert len(messages) == 100
 
-        tb = telebot.TeleBot('')
+        tb = pytelegrambotapi.TeleBot('')
         tb.set_update_listener(listener)
 
     def test_message_handler(self):
-        tb = telebot.TeleBot('')
+        tb = pytelegrambotapi.TeleBot('')
         msg = self.create_text_message('/help')
 
         @tb.message_handler(commands=['help', 'start'])
@@ -45,7 +45,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_reg(self):
-        bot = telebot.TeleBot('')
+        bot = pytelegrambotapi.TeleBot('')
         msg = self.create_text_message(r'https://web.telegram.org/')
 
         @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
@@ -57,7 +57,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda(self):
-        bot = telebot.TeleBot('')
+        bot = pytelegrambotapi.TeleBot('')
         msg = self.create_text_message(r'lambda_text')
 
         @bot.message_handler(func=lambda message: r'lambda' in message.text)
@@ -69,7 +69,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda_fail(self):
-        bot = telebot.TeleBot('')
+        bot = pytelegrambotapi.TeleBot('')
         msg = self.create_text_message(r'text')
 
         @bot.message_handler(func=lambda message: r'lambda' in message.text)
@@ -81,7 +81,7 @@ class TestTeleBot:
         assert not msg.text == 'got'
 
     def test_message_handler_reg_fail(self):
-        bot = telebot.TeleBot('')
+        bot = pytelegrambotapi.TeleBot('')
         msg = self.create_text_message(r'web.telegram.org/')
 
         @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
@@ -93,7 +93,7 @@ class TestTeleBot:
         assert not msg.text == 'got'
 
     def test_send_message_with_markdown(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         markdown = """
         *bold text*
         _italic text_
@@ -103,7 +103,7 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_message_with_disable_notification(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         markdown = """
         *bold text*
         _italic text_
@@ -114,7 +114,7 @@ class TestTeleBot:
 
     def test_send_file(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data)
         assert ret_msg.message_id
 
@@ -123,7 +123,7 @@ class TestTeleBot:
 
     def test_send_file_dis_noti(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data, disable_notification=True)
         assert ret_msg.message_id
 
@@ -132,7 +132,7 @@ class TestTeleBot:
 
     def test_send_file_caption(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data, caption="Test")
         assert ret_msg.message_id
 
@@ -141,30 +141,30 @@ class TestTeleBot:
 
     def test_send_video(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data)
         assert ret_msg.message_id
 
     def test_send_video_dis_noti(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data, disable_notification=True)
         assert ret_msg.message_id
 
     def test_send_video_more_params(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data, 1)
         assert ret_msg.message_id
 
     def test_send_video_more_params_dis_noti(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data, 1, disable_notification=True)
         assert ret_msg.message_id
 
     def test_send_file_exception(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         try:
             tb.send_document(CHAT_ID, None)
             assert False
@@ -174,7 +174,7 @@ class TestTeleBot:
 
     def test_send_photo(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_photo(CHAT_ID, file_data)
         assert ret_msg.message_id
 
@@ -183,7 +183,7 @@ class TestTeleBot:
 
     def test_send_photo_dis_noti(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_photo(CHAT_ID, file_data)
         assert ret_msg.message_id
 
@@ -192,7 +192,7 @@ class TestTeleBot:
 
     def test_send_audio(self):
         file_data = open('./test_data/record.mp3', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_audio(CHAT_ID, file_data, 1, performer='eternnoir', title='pyTelegram')
         assert ret_msg.content_type == 'audio'
         assert ret_msg.audio.performer == 'eternnoir'
@@ -200,7 +200,7 @@ class TestTeleBot:
 
     def test_send_audio_dis_noti(self):
         file_data = open('./test_data/record.mp3', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_audio(CHAT_ID, file_data, 1, performer='eternnoir', title='pyTelegram',
                                 disable_notification=True)
         assert ret_msg.content_type == 'audio'
@@ -209,19 +209,19 @@ class TestTeleBot:
 
     def test_send_voice(self):
         file_data = open('./test_data/record.ogg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data)
         assert ret_msg.voice.mime_type == 'audio/ogg'
 
     def test_send_voice_dis_noti(self):
         file_data = open('./test_data/record.ogg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data, disable_notification=True)
         assert ret_msg.voice.mime_type == 'audio/ogg'
 
     def test_get_file(self):
         file_data = open('./test_data/record.ogg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data)
         file_id = ret_msg.voice.file_id
         file_info = tb.get_file(file_id)
@@ -229,7 +229,7 @@ class TestTeleBot:
 
     def test_get_file_dis_noti(self):
         file_data = open('./test_data/record.ogg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data, disable_notification=True)
         file_id = ret_msg.voice.file_id
         file_info = tb.get_file(file_id)
@@ -237,19 +237,19 @@ class TestTeleBot:
 
     def test_send_message(self):
         text = 'CI Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_message(CHAT_ID, text)
         assert ret_msg.message_id
 
     def test_send_message_dis_noti(self):
         text = 'CI Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_message(CHAT_ID, text, disable_notification=True)
         assert ret_msg.message_id
 
     def test_send_message_with_markup(self):
         text = 'CI Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         markup = types.ReplyKeyboardMarkup()
         markup.add(types.KeyboardButton("1"))
         markup.add(types.KeyboardButton("2"))
@@ -258,7 +258,7 @@ class TestTeleBot:
 
     def test_send_message_with_markup_use_string(self):
         text = 'CI Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         markup = types.ReplyKeyboardMarkup()
         markup.add("1")
         markup.add("2")
@@ -269,7 +269,7 @@ class TestTeleBot:
 
     def test_send_message_with_inlinemarkup(self):
         text = 'CI Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
         markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
@@ -278,28 +278,28 @@ class TestTeleBot:
 
     def test_forward_message(self):
         text = 'CI forward_message Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         msg = tb.send_message(CHAT_ID, text)
         ret_msg = tb.forward_message(CHAT_ID, CHAT_ID, msg.message_id)
         assert ret_msg.forward_from
 
     def test_forward_message_dis_noti(self):
         text = 'CI forward_message Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         msg = tb.send_message(CHAT_ID, text)
         ret_msg = tb.forward_message(CHAT_ID, CHAT_ID, msg.message_id, disable_notification=True)
         assert ret_msg.forward_from
 
     def test_reply_to(self):
         text = 'CI reply_to Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         msg = tb.send_message(CHAT_ID, text)
         ret_msg = tb.reply_to(msg, text + ' REPLY')
         assert ret_msg.reply_to_message.message_id == msg.message_id
 
     def test_register_for_reply(self):
         text = 'CI reply_to Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         msg = tb.send_message(CHAT_ID, text, reply_markup=types.ForceReply())
         reply_msg = tb.reply_to(msg, text + ' REPLY')
 
@@ -311,7 +311,7 @@ class TestTeleBot:
         tb.process_new_messages([reply_msg])
 
     def test_send_location(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         lat = 26.3875591
         lon = -161.2901042
         ret_msg = tb.send_location(CHAT_ID, lat, lon)
@@ -319,7 +319,7 @@ class TestTeleBot:
         assert int(ret_msg.location.latitude) == int(lat)
 
     def test_send_location_dis_noti(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         lat = 26.3875591
         lon = -161.2901042
         ret_msg = tb.send_location(CHAT_ID, lat, lon, disable_notification=True)
@@ -327,7 +327,7 @@ class TestTeleBot:
         assert int(ret_msg.location.latitude) == int(lat)
 
     def test_send_venue(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         lat = 26.3875591
         lon = -161.2901042
         ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address")
@@ -335,50 +335,50 @@ class TestTeleBot:
         assert int(lat) == int(ret_msg.venue.location.latitude)
 
     def test_send_venue_dis_noti(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         lat = 26.3875591
         lon = -161.2901042
         ret_msg = tb.send_venue(CHAT_ID, lat, lon, "Test Venue", "1123 Test Venue address", disable_notification=True)
         assert ret_msg.venue.title == "Test Venue"
 
     def test_Chat(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         me = tb.get_me()
         msg = tb.send_message(CHAT_ID, 'Test')
         assert me.id == msg.from_user.id
         assert msg.chat.id == int(CHAT_ID)
 
     def test_edit_message_text(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         msg = tb.send_message(CHAT_ID, 'Test')
         new_msg = tb.edit_message_text('Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.text == 'Edit test'
 
     def test_edit_message_caption(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         msg = tb.send_document(CHAT_ID, file_data, caption="Test")
         new_msg = tb.edit_message_caption(caption='Edit test', chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.caption == 'Edit test'
 
     def test_get_chat(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ch = tb.get_chat(GROUP_ID)
         assert str(ch.id) == GROUP_ID
 
     def test_get_chat_administrators(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         cas = tb.get_chat_administrators(GROUP_ID)
         assert len(cas) > 0
 
     def test_get_chat_members_count(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         cn = tb.get_chat_members_count(GROUP_ID)
         assert cn > 1
 
     def test_edit_markup(self):
         text = 'CI Test Message'
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
         markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
@@ -407,12 +407,12 @@ class TestTeleBot:
 
     def test_send_video_note(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_video_note(CHAT_ID, file_data)
         assert ret_msg.message_id
 
     def test_send_media_group(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         img1 = 'https://i.imgur.com/CjXjcnU.png'
         img2 = 'https://i.imgur.com/CjXjcnU.png'
         medias = [types.InputMediaPhoto(img1, "View"), types.InputMediaPhoto(img2, "Dog")]
@@ -424,7 +424,7 @@ class TestTeleBot:
     def test_send_media_group_local_files(self):
         photo = open('../examples/detailed_example/kitten.jpg', 'rb')
         video = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         medias = [types.InputMediaPhoto(photo, "View"),
                   types.InputMediaVideo(video)]
         result = tb.send_media_group(CHAT_ID, medias)
@@ -434,31 +434,31 @@ class TestTeleBot:
 
     def test_send_photo_formating_caption(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_photo(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
         assert ret_msg.caption_entities[0].type == 'italic'
 
     def test_send_video_formatting_caption(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_video(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
         assert ret_msg.caption_entities[0].type == 'italic'
 
     def test_send_audio_formatting_caption(self):
         file_data = open('./test_data/record.mp3', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_audio(CHAT_ID, file_data, caption='<b>bold</b>', parse_mode='HTML')
         assert ret_msg.caption_entities[0].type == 'bold'
 
     def test_send_voice_formatting_caprion(self):
         file_data = open('./test_data/record.ogg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_voice(CHAT_ID, file_data, caption='<b>bold</b>', parse_mode='HTML')
         assert ret_msg.caption_entities[0].type == 'bold'
         assert ret_msg.voice.mime_type == 'audio/ogg'
 
     def test_send_media_group_formatting_caption(self):
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         img1 = 'https://i.imgur.com/CjXjcnU.png'
         img2 = 'https://i.imgur.com/CjXjcnU.png'
         medias = [types.InputMediaPhoto(img1, "*View*", parse_mode='Markdown'),
@@ -471,6 +471,6 @@ class TestTeleBot:
 
     def test_send_document_formating_caption(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
-        tb = telebot.TeleBot(TOKEN)
+        tb = pytelegrambotapi.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
         assert ret_msg.caption_entities[0].type == 'italic'

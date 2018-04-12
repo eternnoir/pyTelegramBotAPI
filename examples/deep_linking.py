@@ -30,10 +30,10 @@
 # Steps 1 to 4 will have to be implemented in a web server, using a language such as PHP, Python, C# or Java. These
 # steps are not shown here. Only steps 5 to 7 are illustrated, some in pseudo-code, with this example.
 
-import telebot
+import pytelegrambotapi
 import time
 
-bot = telebot.TeleBot('TOKEN')
+bot = pytelegrambotapi.TeleBot('TOKEN')
 
 def extract_unique_code(text):
     # Extracts the unique_code from the sent /start command.
