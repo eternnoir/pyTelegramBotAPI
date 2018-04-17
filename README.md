@@ -503,13 +503,10 @@ from telebot import apihelper
 apihelper.proxy = {'http', 'http://10.10.1.10:3128'}
 ```
 
-If you want to use socket5 proxy you need install dependency `pip install requests[socks]`.
+If you want to use socket5 proxy you need install dependency `pip install requests[socks]` and make sure, that you have the latest version of `gunicorn`, `PySocks`, `pyTelegramBotAPI`, `requests` and `urllib3`.
 
 ```python
-proxies = {
-    'http': 'socks5://user:pass@host:port',
-    'https': 'socks5://user:pass@host:port'
-}
+apihelper.proxy = {'https', ' 'socks5://userproxy:password@proxy_address:port''}
 ```
 
 
