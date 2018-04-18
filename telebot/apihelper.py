@@ -953,7 +953,7 @@ def _convert_input_media(array):
 def _no_encode(func):
     def wrapper(key, val):
         if key == 'filename':
-            return '{0}={1}'.format(key, val)
+            return u'{0}={1}'.format(key, val)
         else:
             return func(key, val)
 
