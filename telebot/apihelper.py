@@ -105,7 +105,7 @@ def get_file_url(token, file_id):
 
 def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)
-    result = _get_req_session().get(url)
+    result = _get_req_session().get(url, proxies=proxy)
     if result.status_code != 200:
         msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
             .format(result.status_code, result.reason, result.text)
