@@ -847,7 +847,7 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
         payload['show_alert'] = show_alert
     if url:
         payload['url'] = url
-    if cache_time:
+    if cache_time is not None:
         payload['cache_time'] = cache_time
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -856,7 +856,7 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
                         switch_pm_text=None, switch_pm_parameter=None):
     method_url = 'answerInlineQuery'
     payload = {'inline_query_id': inline_query_id, 'results': _convert_list_json_serializable(results)}
-    if cache_time:
+    if cache_time is not None:
         payload['cache_time'] = cache_time
     if is_personal:
         payload['is_personal'] = is_personal
