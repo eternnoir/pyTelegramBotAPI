@@ -127,7 +127,6 @@ class Update(JsonDeserializable):
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query):
         self.update_id = update_id
-        self.edited_message = edited_message
         self.message = message
         self.edited_message = edited_message
         self.channel_post = channel_post
