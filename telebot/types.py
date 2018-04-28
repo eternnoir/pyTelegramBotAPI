@@ -7,7 +7,7 @@ except ImportError:
 
 import six
 
-from pytelegrambotapi import util
+from telebot import util
 
 
 class JsonSerializable:

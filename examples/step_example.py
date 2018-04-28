@@ -4,12 +4,12 @@ This Example will show you how to use register_next_step handler.
 """
 import time
 
-import pytelegrambotapi
-from pytelegrambotapi import types
+import telebot
+from telebot import types
 
 API_TOKEN = '<api_token>'
 
-bot = pytelegrambotapi.TeleBot(API_TOKEN)
+bot = telebot.TeleBot(API_TOKEN)
 
 user_dict = {}
 

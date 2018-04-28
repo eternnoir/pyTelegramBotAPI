@@ -5,7 +5,7 @@
 # It echoes any incoming text messages and does not use the polling method.
 
 import cherrypy
-import pytelegrambotapi
+import telebot
 import logging
 
 
@@ -30,10 +30,10 @@ WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
 
-logger = pytelegrambotapi.logger
-pytelegrambotapi.logger.setLevel(logging.INFO)
+logger = telebot.logger
+telebot.logger.setLevel(logging.INFO)
 
-bot = pytelegrambotapi.TeleBot(API_TOKEN)
+bot = telebot.TeleBot(API_TOKEN)
 
 
 # WebhookServer, process webhook calls
@@ -45,7 +45,7 @@ class WebhookServer(object):
            cherrypy.request.headers['content-type'] == 'application/json':
             length = int(cherrypy.request.headers['content-length'])
             json_string = cherrypy.request.body.read(length).decode("utf-8")
-            update = pytelegrambotapi.types.Update.de_json(json_string)
+            update = telebot.types.Update.de_json(json_string)
             bot.process_new_updates([update])
             return ''
         else:

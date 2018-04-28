@@ -2,7 +2,7 @@
 import sys
 
 sys.path.append('../')
-from pytelegrambotapi import types
+from telebot import types
 
 
 def test_json_user():

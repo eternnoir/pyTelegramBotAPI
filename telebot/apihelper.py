@@ -13,11 +13,11 @@ try:
     format_header_param = fields.format_header_param
 except ImportError:
     format_header_param = None
-import pytelegrambotapi
-from pytelegrambotapi import types
-from pytelegrambotapi import util
+import telebot
+from telebot import types
+from telebot import util
 
-logger = pytelegrambotapi.logger
+logger = telebot.logger
 proxy = None
 
 API_URL = "https://api.telegram.org/bot{0}/{1}"

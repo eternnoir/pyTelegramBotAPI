@@ -20,7 +20,7 @@ logger.addHandler(console_output_handler)
 
 logger.setLevel(logging.ERROR)
 
-from pytelegrambotapi import apihelper, types, util
+from telebot import apihelper, types, util
 
 """
 Module : telebot

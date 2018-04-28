@@ -1,11 +1,11 @@
 # This is a simple echo bot using the decorator mechanism.
 # It echoes any incoming text messages.
 
-import pytelegrambotapi
+import telebot
 
 API_TOKEN = '<api_token>'
 
-bot = pytelegrambotapi.TeleBot(API_TOKEN)
+bot = telebot.TeleBot(API_TOKEN)
 
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['help', 'start'])
