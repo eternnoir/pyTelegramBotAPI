@@ -467,8 +467,10 @@ class Message(JsonDeserializable):
         if hasattr(self, "custom_subs"):
             for type in self.custom_subs:
                 _subs[type] = self.custom_subs[type]
+        utf16_text = self.text.encode("utf-16-le")
         html_text = ""
         def func(text, type=None, url=None, user=None):
+            text = text.decode("utf-16-le")
             if type == "text_mention":
                 type = "url"
                 url = "tg://user?id={0}".format(user.id)
@@ -482,16 +484,13 @@ class Message(JsonDeserializable):
 
         offset = 0
         for entity in self.entities:
-            if entity.type == "bot_command":
-                entity.offset -= 1
-                entity.length += 1
             if entity.offset > offset:
-                html_text += func(self.text[offset:entity.offset])
+                html_text += func(utf16_text[offset * 2 : entity.offset * 2])
                 offset = entity.offset
-            html_text += func(self.text[offset:offset + entity.length], entity.type, entity.url, entity.user)
+            html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
             offset += entity.length
-        if offset < len(self.text):
-            html_text += func(self.text[offset:])
+        if offset * 2 < len(utf16_text):
+            html_text += func(utf16_text[offset * 2:])
         return html_text
 
 
