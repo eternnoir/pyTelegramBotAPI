@@ -984,7 +984,6 @@ class TeleBot:
     def get_sticker_set(self, name):
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
-        :param token:
         :param name:
         :return:
         """
@@ -1135,7 +1134,7 @@ class TeleBot:
         """
         Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
 
-        :param message_id: The message for which we want to clear reply handlers
+        :param message: The message for which we want to clear reply handlers
         """
         message_id = message.message_id
         self.clear_reply_handlers_by_message_id(message_id)
@@ -1328,7 +1327,8 @@ class TeleBot:
 
         return True
 
-    def _test_filter(self, filter, filter_value, message):
+    @staticmethod
+    def _test_filter(filter, filter_value, message):
         test_cases = {
             'content_types': lambda msg: msg.content_type in filter_value,
             'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
