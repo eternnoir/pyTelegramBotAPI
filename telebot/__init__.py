@@ -7,6 +7,9 @@ import re
 import sys
 import six
 
+import os
+import json
+
 import logging
 
 logger = logging.getLogger('TeleBot')
@@ -85,6 +88,16 @@ class TeleBot:
         # key: chat_id, value: handler list
         self.next_step_handlers = {}
 
+        self.save_reply_handlers = False
+        self.reply_handlers_save_file = None
+        self.reply_save_delay = None
+        self.save_reply_timer = None
+
+        self.save_step_handlers = False
+        self.step_handlers_save_file = None
+        self.step_save_delay = None
+        self.save_step_timer = None
+
         self.message_handlers = []
         self.edited_message_handlers = []
         self.channel_post_handlers = []
@@ -98,6 +111,67 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
+
+    @staticmethod
+    def dump_handlers(handlers, filename="./handler-saves/step.save", file_mode="w"):
+        dirs = filename.rsplit('/', maxsplit=1)[0]
+        os.makedirs(dirs, exist_ok=True)
+        with open(filename + ".tmp", file_mode) as file:
+            for mid, handler in handlers.items():
+                name = handler['callback'].__name__
+                module = handler['callback'].__module__
+
+                tmp = {str(mid): {"callback": {"module": module, "name": name}, "args": handler["args"],
+                                  "kwargs": handler["kwargs"]}}
+
+                json.dump(tmp, file)
+
+        if os.path.isfile(filename):
+            os.remove(filename)
+
+        os.rename(filename + ".tmp", filename)
+
+    def save_next_step_handlers(self):
+        self.dump_handlers(self.next_step_handlers, self.step_handlers_save_file)
+
+    def save_reply_handlers_method(self):
+        self.dump_handlers(self.next_step_handlers, self.step_handlers_save_file)
+
+    def start_save_next_step_timer(self):
+        if self.save_step_timer.is_alive(): return
+
+        self.save_step_timer.start()
+
+    def start_save_reply_timer(self):
+        if self.save_reply_timer.is_alive(): return
+
+        self.save_reply_timer.start()
+
+    def enable_save_next_step_handlers(self, delay=120, filename="./handler-saves/step.save"):
+        self.save_step_handlers = True
+        self.step_handlers_save_file = filename
+        self.step_save_delay = delay
+        self.save_step_timer = threading.Timer(self.step_save_delay, self.save_next_step_handlers)
+
+    def enable_save_reply_handlers(self, delay=120, filename="./handler-saves/reply.save"):
+        self.save_reply_handlers = True
+        self.reply_handlers_save_file = filename
+        self.reply_save_delay = delay
+        self.save_reply_timer = threading.Timer(self.reply_save_delay, self.save_reply_handlers_method)
+
+    @staticmethod
+    def load_handlers(filename):
+        if os.path.isfile(filename) and os.path.getsize(filename) > 0:
+            with open(filename, "r") as file:
+                handlers = json.load(file)
+
+            return handlers
+
+    def load_next_step_handlers(self, filename="./handler-saves/step.save"):
+        self.next_step_handlers.update(self.load_handlers(filename))
+
+    def load_reply_handlers(self, filename="./handler-saves/reply.save"):
+        self.reply_handlers.update(self.load_handlers(filename))
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
@@ -1078,6 +1152,8 @@ class TeleBot:
         else:
             self.reply_handlers[message_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
 
+        self.start_save_reply_timer()
+
     def _notify_reply_handlers(self, new_messages):
         for message in new_messages:
             if hasattr(message, "reply_to_message") and message.reply_to_message is not None:
@@ -1087,6 +1163,7 @@ class TeleBot:
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     self.reply_handlers.pop(reply_msg_id)
+        self.start_save_reply_timer()
 
     def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
@@ -1114,6 +1191,8 @@ class TeleBot:
         else:
             self.next_step_handlers[chat_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
 
+        self.start_save_next_step_timer()
+
     def clear_step_handler(self, message):
         """
         Clears all callback functions registered by register_next_step_handler().
@@ -1130,6 +1209,8 @@ class TeleBot:
         :param chat_id: The chat for which we want to clear next step handlers
         """
         self.next_step_handlers[chat_id] = []
+
+        self.start_save_next_step_timer()
 
     def clear_reply_handlers(self, message):
         """
@@ -1148,6 +1229,8 @@ class TeleBot:
         """
         self.reply_handlers[message_id] = []
 
+        self.start_save_next_step_timer()
+
     def _notify_next_handlers(self, new_messages):
         i = 0
         while i < len(new_messages):
@@ -1160,6 +1243,8 @@ class TeleBot:
                 self.next_step_handlers.pop(chat_id, None)
                 new_messages.pop(i)  # removing message that detects with next_step_handler
             i += 1
+
+        self.start_save_next_step_timer()
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
