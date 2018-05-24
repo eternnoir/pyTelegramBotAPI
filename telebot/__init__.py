@@ -113,7 +113,7 @@ class TeleBot:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
 
     @staticmethod
-    def dump_handlers(handlers, filename="./handler-saves/step.save", file_mode="w"):
+    def dump_handlers(handlers, filename, file_mode="w"):
         dirs = filename.rsplit('/', maxsplit=1)[0]
         os.makedirs(dirs, exist_ok=True)
         with open(filename + ".tmp", file_mode) as file:
@@ -164,6 +164,12 @@ class TeleBot:
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "r") as file:
                 handlers = json.load(file)
+
+                for handler in handlers:
+                    name = handler["callback"]["name"]
+                    module = handler["callback"]["module"]
+
+                    handler = getattr(sys.modules[module], name)
 
             return handlers
 
