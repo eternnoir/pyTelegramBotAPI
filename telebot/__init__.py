@@ -39,8 +39,11 @@ class Saver:
 
     def start_save_timer(self):
         if not self.timer.is_alive():
-            self.timer = threading.Timer(self.delay, self.save_handlers)
-            self.timer.start()
+            if self.delay <= 0:
+                self.save_handlers()
+            else:
+                self.timer = threading.Timer(self.delay, self.save_handlers)
+                self.timer.start()
 
     def save_handlers(self):
         self.dump_handlers(self.handlers, self.filename)
