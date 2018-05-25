@@ -1179,8 +1179,8 @@ class TeleBot:
             self.reply_handlers[message_id].append({"callback": callback, "args": args, "kwargs": kwargs})
         else:
             self.reply_handlers[message_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
-
-        self.reply_saver.start_save_timer()
+        if self.reply_saver is not None:
+            self.reply_saver.start_save_timer()
 
     def _notify_reply_handlers(self, new_messages):
         for message in new_messages:
@@ -1191,7 +1191,8 @@ class TeleBot:
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     self.reply_handlers.pop(reply_msg_id)
-                    self.reply_saver.start_save_timer()
+                    if self.reply_saver is not None:
+                        self.reply_saver.start_save_timer()
 
     def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
@@ -1219,7 +1220,8 @@ class TeleBot:
         else:
             self.next_step_handlers[chat_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
 
-        self.next_step_saver.start_save_timer()
+        if self.next_step_saver is not None:
+            self.next_step_saver.start_save_timer()
 
     def clear_step_handler(self, message):
         """
@@ -1238,7 +1240,8 @@ class TeleBot:
         """
         self.next_step_handlers[chat_id] = []
 
-        self.next_step_saver.start_save_timer()
+        if self.next_step_saver is not None:
+            self.next_step_saver.start_save_timer()
 
     def clear_reply_handlers(self, message):
         """
@@ -1257,7 +1260,8 @@ class TeleBot:
         """
         self.reply_handlers[message_id] = []
 
-        self.reply_saver.start_save_timer()
+        if self.reply_saver is not None:
+            self.reply_saver.start_save_timer()
 
     def _notify_next_handlers(self, new_messages):
         i = 0
@@ -1270,7 +1274,8 @@ class TeleBot:
                     self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                 self.next_step_handlers.pop(chat_id, None)
                 new_messages.pop(i)  # removing message that detects with next_step_handler
-                self.next_step_saver.start_save_timer()
+                if self.next_step_saver is not None:
+                    self.next_step_saver.start_save_timer()
             i += 1
 
 
