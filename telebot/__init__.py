@@ -1441,6 +1441,48 @@ class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
         TeleBot.__init__(self, *args, **kwargs)
 
+    @staticmethod
+    @util.async()
+    def dump_handlers(handlers, filename, file_mode="w"):
+        return TeleBot.dump_handlers(handlers, filename, file_mode)
+
+    @util.async()
+    def save_next_step_handlers(self):
+        return TeleBot.save_next_step_handlers(self)
+
+    @util.async()
+    def save_reply_handlers_method(self):
+        return TeleBot.save_reply_handlers_method(self)
+
+    @util.async()
+    def start_save_next_step_timer(self):
+        return TeleBot.start_save_next_step_timer(self)
+
+    @util.async()
+    def start_save_reply_timer(self):
+        return TeleBot.start_save_reply_timer(self)
+
+    @util.async()
+    def enable_save_next_step_handlers(self, delay=120, filename="./handler-saves/step.save"):
+        return TeleBot.enable_save_next_step_handlers(self, delay, filename)
+
+    @util.async()
+    def enable_save_reply_handlers(self, delay=120, filename="./handler-saves/reply.save"):
+        return TeleBot.enable_save_reply_handlers(self, delay, filename)
+
+    @staticmethod
+    @util.async()
+    def load_handlers(filename):
+        return TeleBot.load_handlers(filename)
+
+    @util.async()
+    def load_next_step_handlers(self, filename="./handler-saves/step.save"):
+        return TeleBot.load_next_step_handlers(self, filename)
+
+    @util.async()
+    def load_reply_handlers(self, filename="./handler-saves/reply.save"):
+        return TeleBot.load_reply_handlers(self, filename)
+
     @util.async()
     def get_me(self):
         return TeleBot.get_me(self)
