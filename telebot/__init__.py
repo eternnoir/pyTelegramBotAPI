@@ -98,13 +98,6 @@ class Saver:
                         else:
                             result[int(id_)] = [tmp]
 
-                a = """                for key, handlers_ in handlers.items():
-                    for handler in handlers_:
-                        name = handler["callback"]["name"]
-                        module = handler["callback"]["module"]
-
-                        callback = getattr(sys.modules["__main__"], "next_")
-                        handler["callback"] = callback"""
             if del_file_after_loading:
                 os.remove(filename)
             return result
