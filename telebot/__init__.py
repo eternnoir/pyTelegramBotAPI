@@ -30,6 +30,25 @@ Module : telebot
 """
 
 
+class Handler:
+    def __init__(self, callback: {dict, function}, *args, **kwargs):
+        if type(callback) == dict:
+            self.callback = getattr(sys.modules[callback["module"]], callback["name"])
+        else:
+            self.callback = callback
+
+        self.args = args
+        self.kwargs = kwargs
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def copy_to_dump(self):
+        module_ = self.callback.__module__
+        name = self.callback.__name__
+        return Handler({"module": module_, "name": name}, *self.args, **self.kwargs)
+
+
 class Saver:
     def __init__(self, handlers, filename, delay):
         self.handlers = handlers
@@ -61,15 +80,10 @@ class Saver:
         with open(filename + ".tmp", file_mode) as file:
             for id_, handlers_ in handlers.items():
                 for handler in handlers_:
-                    name = handler['callback'].__name__
-                    module = handler['callback'].__module__
-
-                    tmp = {"callback": {"module": module, "name": name}, "args": handler["args"],
-                                      "kwargs": handler["kwargs"]}
                     if id_ in to_dump.keys():
-                        to_dump[id_].append(tmp)
+                        to_dump[id_].append(handler.copy_to_dump())
                     else:
-                        to_dump[id_] = [tmp]
+                        to_dump[id_] = [handler.copy_to_dump()]
 
             json.dump(to_dump, file)
 
@@ -87,11 +101,8 @@ class Saver:
                 result = {}
                 for id_, handlers_ in handlers.items():
                     for handler in handlers_:
-                        name = handler['callback']["name"]
-                        module = handler['callback']["module"]
-                        callback = getattr(sys.modules[module], name)
 
-                        tmp = {"callback": callback, "args": handler["args"], "kwargs": handler["kwargs"]}
+                        tmp = Handler(handler['callback'], handler["args"], handler["kwargs"])
 
                         if int(id_) in result.keys():
                             result[int(id_)].append(tmp)
@@ -1172,9 +1183,9 @@ class TeleBot:
                             parameter, which will contain the replied message.
         """
         if message_id in self.reply_handlers.keys():
-            self.reply_handlers[message_id].append({"callback": callback, "args": args, "kwargs": kwargs})
+            self.reply_handlers[message_id].append(Handler(callback, *args, **kwargs))
         else:
-            self.reply_handlers[message_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
+            self.reply_handlers[message_id] = [Handler(callback, *args, **kwargs)]
         if self.reply_saver is not None:
             self.reply_saver.start_save_timer()
 
@@ -1212,9 +1223,9 @@ class TeleBot:
         :param kwargs:      Args to pass in callback func
         """
         if chat_id in self.next_step_handlers.keys():
-            self.next_step_handlers[chat_id].append({"callback": callback, "args": args, "kwargs": kwargs})
+            self.next_step_handlers[chat_id].append(Handler(callback, *args, **kwargs))
         else:
-            self.next_step_handlers[chat_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
+            self.next_step_handlers[chat_id] = [Handler(callback, *args, **kwargs)]
 
         if self.next_step_saver is not None:
             self.next_step_saver.start_save_timer()
