@@ -48,8 +48,8 @@ class Saver:
     def save_handlers(self):
         self.dump_handlers(self.handlers, self.filename)
 
-    def load_handlers(self, filename):
-        tmp = self.return_load_handlers(filename)
+    def load_handlers(self, filename, del_file_after_loading=True):
+        tmp = self.return_load_handlers(filename, del_file_after_loading=del_file_after_loading)
         if tmp is not None:
             self.handlers.update(tmp)
 
@@ -79,7 +79,7 @@ class Saver:
         os.rename(filename + ".tmp", filename)
 
     @staticmethod
-    def return_load_handlers(filename):
+    def return_load_handlers(filename, del_file_after_loading=True):
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "r") as file:
                 handlers = json.load(file)
@@ -105,7 +105,8 @@ class Saver:
 
                         callback = getattr(sys.modules["__main__"], "next_")
                         handler["callback"] = callback"""
-
+            if del_file_after_loading:
+                os.remove(filename)
             return result
 
 
