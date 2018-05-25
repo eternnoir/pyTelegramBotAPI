@@ -1191,7 +1191,7 @@ class TeleBot:
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     self.reply_handlers.pop(reply_msg_id)
-            self.reply_saver.start_save_timer()
+                    self.reply_saver.start_save_timer()
 
     def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
@@ -1270,9 +1270,9 @@ class TeleBot:
                     self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                 self.next_step_handlers.pop(chat_id, None)
                 new_messages.pop(i)  # removing message that detects with next_step_handler
+                self.next_step_saver.start_save_timer()
             i += 1
 
-        self.next_step_saver.start_save_timer()
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
