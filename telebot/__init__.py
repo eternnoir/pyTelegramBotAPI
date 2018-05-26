@@ -116,8 +116,6 @@ class Saver:
             return result
 
 
-
-
 class TeleBot:
     """ This is TeleBot Class
     Methods:
