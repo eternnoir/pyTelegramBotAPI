@@ -31,22 +31,16 @@ Module : telebot
 
 
 class Handler:
-    def __init__(self, callback: {dict, 'function'}, *args, **kwargs):
-        if type(callback) == dict:
-            self.callback = getattr(sys.modules[callback["module"]], callback["name"])
-        else:
-            self.callback = callback
-
+    """
+    Class for (next step|reply) handlers
+    """
+    def __init__(self, callback: 'function', *args, **kwargs):
+        self.callback = callback
         self.args = args
         self.kwargs = kwargs
 
     def __getitem__(self, item):
         return getattr(self, item)
-
-    def copy_to_dump(self):
-        module_ = self.callback.__module__
-        name = self.callback.__name__
-        return Handler({"module": module_, "name": name}, *self.args, **self.kwargs)
 
 
 class Saver:
@@ -76,16 +70,9 @@ class Saver:
     def dump_handlers(handlers, filename, file_mode="wb"):
         dirs = filename.rsplit('/', maxsplit=1)[0]
         os.makedirs(dirs, exist_ok=True)
-        to_dump = {}
-        with open(filename + ".tmp", file_mode) as file:
-            for id_, handlers_ in handlers.items():
-                for handler in handlers_:
-                    if id_ in to_dump.keys():
-                        to_dump[id_].append(handler.copy_to_dump())
-                    else:
-                        to_dump[id_] = [handler.copy_to_dump()]
 
-            pickle.dump(to_dump, file)
+        with open(filename + ".tmp", file_mode) as file:
+            pickle.dump(handlers, file)
 
         if os.path.isfile(filename):
             os.remove(filename)
@@ -97,20 +84,11 @@ class Saver:
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "rb") as file:
                 handlers = pickle.load(file)
-                result = {}
-                for id_, handlers_ in handlers.items():
-                    for handler in handlers_:
-
-                        tmp = Handler(handler['callback'], *handler["args"], **handler["kwargs"])
-
-                        if id_ in result.keys():
-                            result[id_].append(tmp)
-                        else:
-                            result[id_] = [tmp]
 
             if del_file_after_loading:
                 os.remove(filename)
-            return result
+
+            return handlers
 
 
 class TeleBot:
