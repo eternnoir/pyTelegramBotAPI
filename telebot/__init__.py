@@ -44,6 +44,9 @@ class Handler:
 
 
 class Saver:
+    """
+    Class for saving (next step|reply) handlers
+    """
     def __init__(self, handlers, filename, delay):
         self.handlers = handlers
         self.filename = filename
@@ -167,21 +170,51 @@ class TeleBot:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
 
     def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
+        """
+        Enable saving next step handlers (by default saving disable)
+
+        :param delay: Delay between changes in handlers and saving
+        :param filename: Filename of save file
+        """
         self.next_step_saver = Saver(self.next_step_handlers, filename, delay)
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
+        """
+        Enable saving reply handlers (by default saving disable)
+
+        :param delay: Delay between changes in handlers and saving
+        :param filename: Filename of save file
+        """
         self.reply_saver = Saver(self.reply_handlers, filename, delay)
 
     def disable_save_next_step_handlers(self):
+        """
+        Disable saving next step handlers (by default saving disable)
+        """
         self.next_step_saver = None
 
     def disable_save_reply_handlers(self):
+        """
+        Disable saving next step handlers (by default saving disable)
+        """
         self.reply_saver = None
 
     def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
+        """
+        Load next step handlers from save file
+
+        :param filename: Filename of the file where handlers was saved
+        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+        """
         self.next_step_saver.load_handlers(filename, del_file_after_loading)
 
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
+        """
+        Load reply handlers from save file
+
+        :param filename: Filename of the file where handlers was saved
+        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+        """
         self.reply_saver.load_handlers(filename)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
