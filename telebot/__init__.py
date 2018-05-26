@@ -9,6 +9,7 @@ import six
 
 import os
 import json
+import pickle
 
 import logging
 
@@ -31,7 +32,7 @@ Module : telebot
 
 
 class Handler:
-    def __init__(self, callback: {dict, function}, *args, **kwargs):
+    def __init__(self, callback: {dict, 'function'}, *args, **kwargs):
         if type(callback) == dict:
             self.callback = getattr(sys.modules[callback["module"]], callback["name"])
         else:
@@ -73,7 +74,7 @@ class Saver:
             self.handlers.update(tmp)
 
     @staticmethod
-    def dump_handlers(handlers, filename, file_mode="w"):
+    def dump_handlers(handlers, filename, file_mode="wb"):
         dirs = filename.rsplit('/', maxsplit=1)[0]
         os.makedirs(dirs, exist_ok=True)
         to_dump = {}
@@ -85,7 +86,8 @@ class Saver:
                     else:
                         to_dump[id_] = [handler.copy_to_dump()]
 
-            json.dump(to_dump, file)
+            # json.dump(to_dump, file)
+            pickle.dump(to_dump, file)
 
         if os.path.isfile(filename):
             os.remove(filename)
@@ -95,14 +97,14 @@ class Saver:
     @staticmethod
     def return_load_handlers(filename, del_file_after_loading=True):
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
-            with open(filename, "r") as file:
-                handlers = json.load(file)
-
+            with open(filename, "rb") as file:
+                # handlers = json.load(file)
+                handlers = pickle.load(file)
                 result = {}
                 for id_, handlers_ in handlers.items():
                     for handler in handlers_:
 
-                        tmp = Handler(handler['callback'], handler["args"], handler["kwargs"])
+                        tmp = Handler(handler['callback'], *handler["args"], **handler["kwargs"])
 
                         if int(id_) in result.keys():
                             result[int(id_)].append(tmp)
