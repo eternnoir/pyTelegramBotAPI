@@ -8,7 +8,6 @@ import sys
 import six
 
 import os
-import json
 import pickle
 
 import logging
@@ -86,7 +85,6 @@ class Saver:
                     else:
                         to_dump[id_] = [handler.copy_to_dump()]
 
-            # json.dump(to_dump, file)
             pickle.dump(to_dump, file)
 
         if os.path.isfile(filename):
@@ -98,7 +96,6 @@ class Saver:
     def return_load_handlers(filename, del_file_after_loading=True):
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "rb") as file:
-                # handlers = json.load(file)
                 handlers = pickle.load(file)
                 result = {}
                 for id_, handlers_ in handlers.items():
@@ -106,10 +103,10 @@ class Saver:
 
                         tmp = Handler(handler['callback'], *handler["args"], **handler["kwargs"])
 
-                        if int(id_) in result.keys():
-                            result[int(id_)].append(tmp)
+                        if id_ in result.keys():
+                            result[id_].append(tmp)
                         else:
-                            result[int(id_)] = [tmp]
+                            result[id_] = [tmp]
 
             if del_file_after_loading:
                 os.remove(filename)
