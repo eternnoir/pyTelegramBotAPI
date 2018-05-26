@@ -166,10 +166,10 @@ class TeleBot:
         if self.threaded:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
 
-    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save", del_file_after_loading=True):
+    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
         self.next_step_saver = Saver(self.next_step_handlers, filename, delay)
 
-    def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save", del_file_after_loading=True):
+    def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
         self.reply_saver = Saver(self.reply_handlers, filename, delay)
 
     def disable_save_next_step_handlers(self):
@@ -178,10 +178,10 @@ class TeleBot:
     def disable_save_reply_handlers(self):
         self.reply_saver = None
 
-    def load_next_step_handlers(self, filename="./.handler-saves/step.save"):
-        self.next_step_saver.load_handlers(filename)
+    def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
+        self.next_step_saver.load_handlers(filename, del_file_after_loading)
 
-    def load_reply_handlers(self, filename="./.handler-saves/reply.save"):
+    def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
         self.reply_saver.load_handlers(filename)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
