@@ -34,7 +34,7 @@ class Handler:
     """
     Class for (next step|reply) handlers
     """
-    def __init__(self, callback: 'function', *args, **kwargs):
+    def __init__(self, callback, *args, **kwargs):
         self.callback = callback
         self.args = args
         self.kwargs = kwargs
