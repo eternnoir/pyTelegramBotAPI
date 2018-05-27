@@ -437,8 +437,7 @@ class Message(JsonDeserializable):
             setattr(self, key, options[key])
         self.json = json_string
 
-    @property
-    def html_text(self):
+    def __html_text(self, text, entities):
         """
         Author: @sviat9440
         Message: "*Test* parse _formatting_, [url](https://example.com), [text_mention](tg://user?id=123456) and mention @username"
@@ -455,19 +454,20 @@ class Message(JsonDeserializable):
             >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">text_mention</a> and mention <a href=\"https://t.me/username\">@username</a>"
         """
 
-        if not self.entities:
-            return self.text
+        if not entities:
+            return text
         _subs = {
             "bold": "<b>{text}</b>",
             "italic": "<i>{text}</i>",
             "pre": "<pre>{text}</pre>",
             "code": "<code>{text}</code>",
-            "url": "<a href=\"{url}\">{text}</a>"
+            "url": "<a href=\"{url}\">{text}</a>",
+            "text_link": "<a href=\"{url}\">{text}</a>"
         }
         if hasattr(self, "custom_subs"):
             for type in self.custom_subs:
                 _subs[type] = self.custom_subs[type]
-        utf16_text = self.text.encode("utf-16-le")
+        utf16_text = text.encode("utf-16-le")
         html_text = ""
         def func(text, type=None, url=None, user=None):
             text = text.decode("utf-16-le")
@@ -483,7 +483,7 @@ class Message(JsonDeserializable):
             return subs.format(text=text, url=url)
 
         offset = 0
-        for entity in self.entities:
+        for entity in entities:
             if entity.offset > offset:
                 html_text += func(utf16_text[offset * 2 : entity.offset * 2])
                 offset = entity.offset
@@ -493,6 +493,13 @@ class Message(JsonDeserializable):
             html_text += func(utf16_text[offset * 2:])
         return html_text
 
+    @property
+    def html_text(self):
+        return self.__html_text(self.text, self.entities)
+
+    @property
+    def html_caption(self):
+        return self.__html_text(self.caption, self.caption_entities)
 
 class MessageEntity(JsonDeserializable):
     @classmethod
