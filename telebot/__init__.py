@@ -1172,6 +1172,8 @@ class TeleBot:
         Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
         the difference between a reply to `message` and an ordinary message.
 
+        Warning: In case `callback` as lambda function, saving reply handlers will not work.
+
         :param message:     The message for which we are awaiting a reply.
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
@@ -1185,6 +1187,8 @@ class TeleBot:
 
         Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
         the difference between a reply to `message` and an ordinary message.
+
+        Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
         :param message:     The message for which we are awaiting a reply.
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
@@ -1213,6 +1217,8 @@ class TeleBot:
         """
         Registers a callback function to be notified when new message arrives after `message`.
 
+        Warning: In case `callback` as lambda function, saving next step handlers will not work.
+
         :param message:     The message for which we want to handle new message in the same chat.
         :param callback:    The callback function which next new message arrives.
         :param args:        Args to pass in callback func
@@ -1224,6 +1230,8 @@ class TeleBot:
     def register_next_step_handler_by_chat_id(self, chat_id, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when new message arrives after `message`.
+
+        Warning: In case `callback` as lambda function, saving next step handlers will not work.
 
         :param chat_id:     The chat for which we want to handle new message.
         :param callback:    The callback function which next new message arrives.
