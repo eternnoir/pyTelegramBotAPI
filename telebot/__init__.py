@@ -1190,7 +1190,7 @@ class TeleBot:
 
         Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
-        :param message:     The message for which we are awaiting a reply.
+        :param message_id:  The id of the message for which we are awaiting a reply.
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
