@@ -1169,9 +1169,6 @@ class TeleBot:
         """
         Registers a callback function to be notified when a reply to `message` arrives.
 
-        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
-        the difference between a reply to `message` and an ordinary message.
-
         Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
         :param message:     The message for which we are awaiting a reply.
@@ -1184,9 +1181,6 @@ class TeleBot:
     def register_for_reply_by_message_id(self, message_id, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when a reply to `message` arrives.
-
-        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
-        the difference between a reply to `message` and an ordinary message.
 
         Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
