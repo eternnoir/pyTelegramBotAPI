@@ -1153,13 +1153,17 @@ class TeleBot:
         while i < len(new_messages):
             message = new_messages[i]
             chat_id = message.chat.id
+            was_poped = False
             if chat_id in self.next_step_handlers.keys():
                 handlers = self.next_step_handlers[chat_id]
-                for handler in handlers:
-                    self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                if (handlers):
+                    for handler in handlers:
+                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                    new_messages.pop(i)  # removing message that detects with next_step_handler
+                    was_poped = True
                 self.next_step_handlers.pop(chat_id, None)
-                new_messages.pop(i)  # removing message that detects with next_step_handler
-            i += 1
+            if (not was_poped):
+                i += 1
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
