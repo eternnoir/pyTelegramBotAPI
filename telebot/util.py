@@ -143,7 +143,7 @@ class AsyncTask:
             return self.result
 
 
-def async():
+def async_dec():
     def decorator(fn):
         def wrapper(*args, **kwargs):
             return AsyncTask(fn, *args, **kwargs)
