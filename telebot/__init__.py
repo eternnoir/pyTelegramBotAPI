@@ -70,6 +70,7 @@ class TeleBot:
         :param token: bot API token
         :return: Telebot object.
         """
+
         self.token = token
         self.update_listener = []
         self.skip_pending = skip_pending
@@ -78,13 +79,11 @@ class TeleBot:
         self.last_update_id = 0
         self.exc_info = None
 
-        self.message_subscribers_messages = []
-        self.message_subscribers_callbacks = []
-        self.message_subscribers_lock = threading.Lock()
+        # key: message_id, value: handler list
+        self.reply_handlers = {}
 
         # key: chat_id, value: handler list
-        self.message_subscribers_next_step = {}
-        self.pre_message_subscribers_next_step = {}
+        self.next_step_handlers = {}
 
         self.message_handlers = []
         self.edited_message_handlers = []
@@ -221,11 +220,10 @@ class TeleBot:
             self.process_new_shipping_query(new_shipping_querys)
 
     def process_new_messages(self, new_messages):
-        self._append_pre_next_step_handler()
+        self._notify_next_handlers(new_messages)
+        self._notify_reply_handlers(new_messages)
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages)
-        self._notify_message_subscribers(new_messages)
-        self._notify_message_next_handler(new_messages)
 
     def process_new_edited_messages(self, edited_message):
         self._notify_command_handlers(self.edited_message_handlers, edited_message)
@@ -254,6 +252,15 @@ class TeleBot:
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
+
+    def infinity_polling(self, *args, **kwargs):
+        while not self.__stop_polling.is_set():
+            try:
+                self.polling(*args, **kwargs)
+            except Exception as e:
+                time.sleep(5)
+                pass
+        logger.info("Break infinity polling")
 
     def polling(self, none_stop=False, interval=0, timeout=20):
         """
@@ -364,6 +371,9 @@ class TeleBot:
 
     def get_file(self, file_id):
         return types.File.de_json(apihelper.get_file(self.token, file_id))
+
+    def get_file_url(self, file_id):
+        return apihelper.get_file_url(self.token, file_id)
 
     def download_file(self, file_path):
         return apihelper.download_file(self.token, file_path)
@@ -909,8 +919,8 @@ class TeleBot:
     def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
-                     is_flexible=None,
-                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None):
+                     is_flexible=None, disable_notification=None, reply_to_message_id=None, reply_markup=None,
+                     provider_data=None):
         result = apihelper.send_invoice(self.token, chat_id, title, description, invoice_payload, provider_token,
                                         currency, prices, start_parameter, photo_url, photo_size, photo_width,
                                         photo_height,
@@ -1047,7 +1057,7 @@ class TeleBot:
         """
         return apihelper.delete_sticker_from_set(self.token, sticker)
 
-    def register_for_reply(self, message, callback):
+    def register_for_reply(self, message, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when a reply to `message` arrives.
 
@@ -1058,40 +1068,60 @@ class TeleBot:
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
-        with self.message_subscribers_lock:
-            self.message_subscribers_messages.insert(0, message.message_id)
-            self.message_subscribers_callbacks.insert(0, callback)
-            if len(self.message_subscribers_messages) > 10000:
-                self.message_subscribers_messages.pop()
-                self.message_subscribers_callbacks.pop()
+        message_id = message.message_id
+        self.register_for_reply_by_message_id(message_id, callback, *args, **kwargs)
 
-    def _notify_message_subscribers(self, new_messages):
+    def register_for_reply_by_message_id(self, message_id, callback, *args, **kwargs):
+        """
+        Registers a callback function to be notified when a reply to `message` arrives.
+
+        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
+        the difference between a reply to `message` and an ordinary message.
+
+        :param message:     The message for which we are awaiting a reply.
+        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
+                            parameter, which will contain the replied message.
+        """
+        if message_id in self.reply_handlers.keys():
+            self.reply_handlers[message_id].append({"callback": callback, "args": args, "kwargs": kwargs})
+        else:
+            self.reply_handlers[message_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
+
+    def _notify_reply_handlers(self, new_messages):
         for message in new_messages:
-            if not message.reply_to_message:
-                continue
+            if hasattr(message, "reply_to_message") and message.reply_to_message is not None:
+                reply_msg_id = message.reply_to_message.message_id
+                if reply_msg_id in self.reply_handlers.keys():
+                    handlers = self.reply_handlers[reply_msg_id]
+                    for handler in handlers:
+                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                    self.reply_handlers.pop(reply_msg_id)
 
-            reply_msg_id = message.reply_to_message.message_id
-            if reply_msg_id in self.message_subscribers_messages:
-                index = self.message_subscribers_messages.index(reply_msg_id)
-                self.message_subscribers_callbacks[index](message)
-
-                with self.message_subscribers_lock:
-                    index = self.message_subscribers_messages.index(reply_msg_id)
-                    del self.message_subscribers_messages[index]
-                    del self.message_subscribers_callbacks[index]
-
-    def register_next_step_handler(self, message, callback):
+    def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when new message arrives after `message`.
 
-        :param message:     The message for which we want to handle new message after that in same chat.
+        :param message:     The message for which we want to handle new message in the same chat.
         :param callback:    The callback function which next new message arrives.
+        :param args:        Args to pass in callback func
+        :param kwargs:      Args to pass in callback func
         """
         chat_id = message.chat.id
-        if chat_id in self.pre_message_subscribers_next_step:
-            self.pre_message_subscribers_next_step[chat_id].append(callback)
+        self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
+
+    def register_next_step_handler_by_chat_id(self, chat_id, callback, *args, **kwargs):
+        """
+        Registers a callback function to be notified when new message arrives after `message`.
+
+        :param chat_id:     The chat for which we want to handle new message.
+        :param callback:    The callback function which next new message arrives.
+        :param args:        Args to pass in callback func
+        :param kwargs:      Args to pass in callback func
+        """
+        if chat_id in self.next_step_handlers.keys():
+            self.next_step_handlers[chat_id].append({"callback": callback, "args": args, "kwargs": kwargs})
         else:
-            self.pre_message_subscribers_next_step[chat_id] = [callback]
+            self.next_step_handlers[chat_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
 
     def clear_step_handler(self, message):
         """
@@ -1100,26 +1130,52 @@ class TeleBot:
         :param message:     The message for which we want to handle new message after that in same chat.
         """
         chat_id = message.chat.id
-        self.pre_message_subscribers_next_step[chat_id] = []
+        self.clear_step_handler_by_chat_id(chat_id)
 
-    def _notify_message_next_handler(self, new_messages):
-        for message in new_messages:
+    def clear_step_handler_by_chat_id(self, chat_id):
+        """
+        Clears all callback functions registered by register_next_step_handler().
+
+        :param chat_id: The chat for which we want to clear next step handlers
+        """
+        self.next_step_handlers[chat_id] = []
+
+    def clear_reply_handlers(self, message):
+        """
+        Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
+
+        :param message_id: The message for which we want to clear reply handlers
+        """
+        message_id = message.message_id
+        self.clear_reply_handlers_by_message_id(message_id)
+
+    def clear_reply_handlers_by_message_id(self, message_id):
+        """
+        Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
+
+        :param message_id: The message id for which we want to clear reply handlers
+        """
+        self.reply_handlers[message_id] = []
+
+    def _notify_next_handlers(self, new_messages):
+        i = 0
+        while i < len(new_messages):
+            message = new_messages[i]
             chat_id = message.chat.id
-            if chat_id in self.message_subscribers_next_step:
-                handlers = self.message_subscribers_next_step[chat_id]
-                for handler in handlers:
-                    self._exec_task(handler, message)
-                self.message_subscribers_next_step.pop(chat_id, None)
+            was_poped = False
+            if chat_id in self.next_step_handlers.keys():
+                handlers = self.next_step_handlers[chat_id]
+                if (handlers):
+                    for handler in handlers:
+                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                    new_messages.pop(i)  # removing message that detects with next_step_handler
+                    was_poped = True
+                self.next_step_handlers.pop(chat_id, None)
+            if (not was_poped):
+                i += 1
 
-    def _append_pre_next_step_handler(self):
-        for k in self.pre_message_subscribers_next_step.keys():
-            if k in self.message_subscribers_next_step:
-                self.message_subscribers_next_step[k].extend(self.pre_message_subscribers_next_step[k])
-            else:
-                self.message_subscribers_next_step[k] = self.pre_message_subscribers_next_step[k]
-        self.pre_message_subscribers_next_step = {}
-
-    def _build_handler_dict(self, handler, **filters):
+    @staticmethod
+    def _build_handler_dict(handler, **filters):
         return {
             'function': handler,
             'filters': filters
@@ -1297,9 +1353,6 @@ class TeleBot:
 
     def _notify_command_handlers(self, handlers, new_messages):
         for message in new_messages:
-            # if message has next step handler, dont exec command handlers
-            if hasattr(message, 'chat') and message.chat and (message.chat.id in self.message_subscribers_next_step):
-                continue
             for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
                     self._exec_task(message_handler['function'], message)
@@ -1310,230 +1363,230 @@ class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
         TeleBot.__init__(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def get_me(self):
         return TeleBot.get_me(self)
 
-    @util.async()
+    @util.async_dec()
     def get_file(self, *args):
         return TeleBot.get_file(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def download_file(self, *args):
         return TeleBot.download_file(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def get_user_profile_photos(self, *args, **kwargs):
         return TeleBot.get_user_profile_photos(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def get_chat(self, *args):
         return TeleBot.get_chat(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def leave_chat(self, *args):
         return TeleBot.leave_chat(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def get_chat_administrators(self, *args):
         return TeleBot.get_chat_administrators(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def get_chat_members_count(self, *args):
         return TeleBot.get_chat_members_count(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def set_chat_sticker_set(self, *args):
         return TeleBot.set_chat_sticker_set(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def delete_chat_sticker_set(self, *args):
         return TeleBot.delete_chat_sticker_set(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def get_chat_member(self, *args):
         return TeleBot.get_chat_member(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def send_message(self, *args, **kwargs):
         return TeleBot.send_message(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def forward_message(self, *args, **kwargs):
         return TeleBot.forward_message(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def delete_message(self, *args):
         return TeleBot.delete_message(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def send_photo(self, *args, **kwargs):
         return TeleBot.send_photo(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_audio(self, *args, **kwargs):
         return TeleBot.send_audio(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_voice(self, *args, **kwargs):
         return TeleBot.send_voice(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_document(self, *args, **kwargs):
         return TeleBot.send_document(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_sticker(self, *args, **kwargs):
         return TeleBot.send_sticker(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_video(self, *args, **kwargs):
         return TeleBot.send_video(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_video_note(self, *args, **kwargs):
         return TeleBot.send_video_note(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_media_group(self, *args, **kwargs):
         return TeleBot.send_media_group(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_location(self, *args, **kwargs):
         return TeleBot.send_location(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def edit_message_live_location(self, *args, **kwargs):
         return TeleBot.edit_message_live_location(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def stop_message_live_location(self, *args, **kwargs):
         return TeleBot.stop_message_live_location(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_venue(self, *args, **kwargs):
         return TeleBot.send_venue(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_contact(self, *args, **kwargs):
         return TeleBot.send_contact(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_chat_action(self, *args, **kwargs):
         return TeleBot.send_chat_action(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def kick_chat_member(self, *args, **kwargs):
         return TeleBot.kick_chat_member(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def unban_chat_member(self, *args):
         return TeleBot.unban_chat_member(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def restrict_chat_member(self, *args, **kwargs):
         return TeleBot.restrict_chat_member(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def promote_chat_member(self, *args, **kwargs):
         return TeleBot.promote_chat_member(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def export_chat_invite_link(self, *args):
         return TeleBot.export_chat_invite_link(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def set_chat_photo(self, *args):
         return TeleBot.set_chat_photo(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def delete_chat_photo(self, *args):
         return TeleBot.delete_chat_photo(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def set_chat_title(self, *args):
         return TeleBot.set_chat_title(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def set_chat_description(self, *args):
         return TeleBot.set_chat_description(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def pin_chat_message(self, *args, **kwargs):
         return TeleBot.pin_chat_message(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def unpin_chat_message(self, *args):
         return TeleBot.unpin_chat_message(self, *args)
 
-    @util.async()
+    @util.async_dec()
     def edit_message_text(self, *args, **kwargs):
         return TeleBot.edit_message_text(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def edit_message_reply_markup(self, *args, **kwargs):
         return TeleBot.edit_message_reply_markup(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_game(self, *args, **kwargs):
         return TeleBot.send_game(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def set_game_score(self, *args, **kwargs):
         return TeleBot.set_game_score(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def get_game_high_scores(self, *args, **kwargs):
         return TeleBot.get_game_high_scores(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_invoice(self, *args, **kwargs):
         return TeleBot.send_invoice(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def answer_shipping_query(self, *args, **kwargs):
         return TeleBot.answer_shipping_query(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def answer_pre_checkout_query(self, *args, **kwargs):
         return TeleBot.answer_pre_checkout_query(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def edit_message_caption(self, *args, **kwargs):
         return TeleBot.edit_message_caption(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def answer_inline_query(self, *args, **kwargs):
         return TeleBot.answer_inline_query(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def answer_callback_query(self, *args, **kwargs):
         return TeleBot.answer_callback_query(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def send_sticker(self, *args, **kwargs):
         return TeleBot.send_sticker(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def get_sticker_set(self, *args, **kwargs):
         return TeleBot.get_sticker_set(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def upload_sticker_file(self, *args, **kwargs):
         return TeleBot.upload_sticker_file(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def create_new_sticker_set(self, *args, **kwargs):
         return TeleBot.create_new_sticker_set(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def add_sticker_to_set(self, *args, **kwargs):
         return TeleBot.add_sticker_to_set(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def set_sticker_position_in_set(self, *args, **kwargs):
         return TeleBot.set_sticker_position_in_set(self, *args, **kwargs)
 
-    @util.async()
+    @util.async_dec()
     def delete_sticker_from_set(self, *args, **kwargs):
         return TeleBot.delete_sticker_from_set(self, *args, **kwargs)

@@ -120,13 +120,18 @@ def get_file(token, file_id):
     return _make_request(token, method_url, params={'file_id': file_id})
 
 
+def get_file_url(token, file_id):
+    method_url = r'getFile'
+    return FILE_URL.format(token, get_file(token, file_id).file_path)
+
+
 def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)
     retries = 5
     done = False
     while retries:
         try:
-            result = _get_req_session().get(url)
+            result = _get_req_session().get(url, proxies=proxy)
             done = True
             break
         except requests.exceptions.ConnectionError as e:
@@ -141,7 +146,6 @@ def download_file(token, file_path):
         _get_req_session(reset=True)
         msg = "Couldn't connect to telegram servers"
         raise ApiException(msg, 'Download file', 'done=False')
-
     if result.status_code != 200:
         msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
             .format(result.status_code, result.reason, result.text)
@@ -884,7 +888,7 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
         payload['show_alert'] = show_alert
     if url:
         payload['url'] = url
-    if cache_time:
+    if cache_time is not None:
         payload['cache_time'] = cache_time
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -893,7 +897,7 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
                         switch_pm_text=None, switch_pm_parameter=None):
     method_url = 'answerInlineQuery'
     payload = {'inline_query_id': inline_query_id, 'results': _convert_list_json_serializable(results)}
-    if cache_time:
+    if cache_time is not None:
         payload['cache_time'] = cache_time
     if is_personal:
         payload['is_personal'] = is_personal
@@ -990,7 +994,7 @@ def _convert_input_media(array):
 def _no_encode(func):
     def wrapper(key, val):
         if key == 'filename':
-            return '{0}={1}'.format(key, val)
+            return u'{0}={1}'.format(key, val)
         else:
             return func(key, val)
 
