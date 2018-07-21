@@ -6,6 +6,7 @@ import time
 import re
 import sys
 import six
+import copy
 
 import logging
 
@@ -1155,13 +1156,13 @@ class TeleBot:
             chat_id = message.chat.id
             was_poped = False
             if chat_id in self.next_step_handlers.keys():
-                handlers = self.next_step_handlers[chat_id]
+                handlers = copy.deepcopy(self.next_step_handlers[chat_id])
+                self.next_step_handlers.pop(chat_id, None)
                 if (handlers):
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     new_messages.pop(i)  # removing message that detects with next_step_handler
                     was_poped = True
-                self.next_step_handlers.pop(chat_id, None)
             if (not was_poped):
                 i += 1
 
