@@ -459,7 +459,7 @@ class TeleBot:
         return types.ChatMember.de_json(result)
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-                     parse_mode=None, disable_notification=None):
+                     parse_mode=None, disable_notification=None, timeout=None):
         """
         Use this method to send text messages.
 
@@ -477,7 +477,7 @@ class TeleBot:
         """
         return types.Message.de_json(
             apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
-                                   reply_markup, parse_mode, disable_notification))
+                                   reply_markup, parse_mode, disable_notification, timeout))
 
     def forward_message(self, chat_id, from_chat_id, message_id, disable_notification=None):
         """
