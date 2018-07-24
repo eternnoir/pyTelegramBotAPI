@@ -7,6 +7,9 @@ import re
 import sys
 import six
 
+import os
+import pickle
+
 import logging
 
 logger = logging.getLogger('TeleBot')
@@ -25,6 +28,70 @@ from telebot import apihelper, types, util
 """
 Module : telebot
 """
+
+
+class Handler:
+    """
+    Class for (next step|reply) handlers
+    """
+    def __init__(self, callback, *args, **kwargs):
+        self.callback = callback
+        self.args = args
+        self.kwargs = kwargs
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+
+class Saver:
+    """
+    Class for saving (next step|reply) handlers
+    """
+    def __init__(self, handlers, filename, delay):
+        self.handlers = handlers
+        self.filename = filename
+        self.delay = delay
+        self.timer = threading.Timer(delay, self.save_handlers)
+
+    def start_save_timer(self):
+        if not self.timer.is_alive():
+            if self.delay <= 0:
+                self.save_handlers()
+            else:
+                self.timer = threading.Timer(self.delay, self.save_handlers)
+                self.timer.start()
+
+    def save_handlers(self):
+        self.dump_handlers(self.handlers, self.filename)
+
+    def load_handlers(self, filename, del_file_after_loading=True):
+        tmp = self.return_load_handlers(filename, del_file_after_loading=del_file_after_loading)
+        if tmp is not None:
+            self.handlers.update(tmp)
+
+    @staticmethod
+    def dump_handlers(handlers, filename, file_mode="wb"):
+        dirs = filename.rsplit('/', maxsplit=1)[0]
+        os.makedirs(dirs, exist_ok=True)
+
+        with open(filename + ".tmp", file_mode) as file:
+            pickle.dump(handlers, file)
+
+        if os.path.isfile(filename):
+            os.remove(filename)
+
+        os.rename(filename + ".tmp", filename)
+
+    @staticmethod
+    def return_load_handlers(filename, del_file_after_loading=True):
+        if os.path.isfile(filename) and os.path.getsize(filename) > 0:
+            with open(filename, "rb") as file:
+                handlers = pickle.load(file)
+
+            if del_file_after_loading:
+                os.remove(filename)
+
+            return handlers
 
 
 class TeleBot:
@@ -85,6 +152,9 @@ class TeleBot:
         # key: chat_id, value: handler list
         self.next_step_handlers = {}
 
+        self.next_step_saver = None
+        self.reply_saver = None
+
         self.message_handlers = []
         self.edited_message_handlers = []
         self.channel_post_handlers = []
@@ -98,6 +168,54 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
+
+    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
+        """
+        Enable saving next step handlers (by default saving disable)
+
+        :param delay: Delay between changes in handlers and saving
+        :param filename: Filename of save file
+        """
+        self.next_step_saver = Saver(self.next_step_handlers, filename, delay)
+
+    def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
+        """
+        Enable saving reply handlers (by default saving disable)
+
+        :param delay: Delay between changes in handlers and saving
+        :param filename: Filename of save file
+        """
+        self.reply_saver = Saver(self.reply_handlers, filename, delay)
+
+    def disable_save_next_step_handlers(self):
+        """
+        Disable saving next step handlers (by default saving disable)
+        """
+        self.next_step_saver = None
+
+    def disable_save_reply_handlers(self):
+        """
+        Disable saving next step handlers (by default saving disable)
+        """
+        self.reply_saver = None
+
+    def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
+        """
+        Load next step handlers from save file
+
+        :param filename: Filename of the file where handlers was saved
+        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+        """
+        self.next_step_saver.load_handlers(filename, del_file_after_loading)
+
+    def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
+        """
+        Load reply handlers from save file
+
+        :param filename: Filename of the file where handlers was saved
+        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+        """
+        self.reply_saver.load_handlers(filename)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
@@ -984,7 +1102,6 @@ class TeleBot:
     def get_sticker_set(self, name):
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
-        :param token:
         :param name:
         :return:
         """
@@ -1052,8 +1169,7 @@ class TeleBot:
         """
         Registers a callback function to be notified when a reply to `message` arrives.
 
-        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
-        the difference between a reply to `message` and an ordinary message.
+        Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
         :param message:     The message for which we are awaiting a reply.
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
@@ -1066,17 +1182,18 @@ class TeleBot:
         """
         Registers a callback function to be notified when a reply to `message` arrives.
 
-        Warning: `message` must be sent with reply_markup=types.ForceReply(), otherwise TeleBot will not be able to see
-        the difference between a reply to `message` and an ordinary message.
+        Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
-        :param message:     The message for which we are awaiting a reply.
+        :param message_id:  The id of the message for which we are awaiting a reply.
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
         if message_id in self.reply_handlers.keys():
-            self.reply_handlers[message_id].append({"callback": callback, "args": args, "kwargs": kwargs})
+            self.reply_handlers[message_id].append(Handler(callback, *args, **kwargs))
         else:
-            self.reply_handlers[message_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
+            self.reply_handlers[message_id] = [Handler(callback, *args, **kwargs)]
+        if self.reply_saver is not None:
+            self.reply_saver.start_save_timer()
 
     def _notify_reply_handlers(self, new_messages):
         for message in new_messages:
@@ -1087,10 +1204,14 @@ class TeleBot:
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     self.reply_handlers.pop(reply_msg_id)
+                    if self.reply_saver is not None:
+                        self.reply_saver.start_save_timer()
 
     def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
         Registers a callback function to be notified when new message arrives after `message`.
+
+        Warning: In case `callback` as lambda function, saving next step handlers will not work.
 
         :param message:     The message for which we want to handle new message in the same chat.
         :param callback:    The callback function which next new message arrives.
@@ -1104,15 +1225,20 @@ class TeleBot:
         """
         Registers a callback function to be notified when new message arrives after `message`.
 
+        Warning: In case `callback` as lambda function, saving next step handlers will not work.
+
         :param chat_id:     The chat for which we want to handle new message.
         :param callback:    The callback function which next new message arrives.
         :param args:        Args to pass in callback func
         :param kwargs:      Args to pass in callback func
         """
         if chat_id in self.next_step_handlers.keys():
-            self.next_step_handlers[chat_id].append({"callback": callback, "args": args, "kwargs": kwargs})
+            self.next_step_handlers[chat_id].append(Handler(callback, *args, **kwargs))
         else:
-            self.next_step_handlers[chat_id] = [{"callback": callback, "args": args, "kwargs": kwargs}]
+            self.next_step_handlers[chat_id] = [Handler(callback, *args, **kwargs)]
+
+        if self.next_step_saver is not None:
+            self.next_step_saver.start_save_timer()
 
     def clear_step_handler(self, message):
         """
@@ -1131,11 +1257,14 @@ class TeleBot:
         """
         self.next_step_handlers[chat_id] = []
 
+        if self.next_step_saver is not None:
+            self.next_step_saver.start_save_timer()
+
     def clear_reply_handlers(self, message):
         """
         Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
 
-        :param message_id: The message for which we want to clear reply handlers
+        :param message: The message for which we want to clear reply handlers
         """
         message_id = message.message_id
         self.clear_reply_handlers_by_message_id(message_id)
@@ -1147,6 +1276,9 @@ class TeleBot:
         :param message_id: The message id for which we want to clear reply handlers
         """
         self.reply_handlers[message_id] = []
+
+        if self.reply_saver is not None:
+            self.reply_saver.start_save_timer()
 
     def _notify_next_handlers(self, new_messages):
         i = 0
@@ -1162,8 +1294,14 @@ class TeleBot:
                     new_messages.pop(i)  # removing message that detects with next_step_handler
                     was_poped = True
                 self.next_step_handlers.pop(chat_id, None)
+                new_messages.pop(i)  # removing message that detects with next_step_handler
+                if self.next_step_saver is not None:
+                    self.next_step_saver.start_save_timer()
+            i += 1
+
             if (not was_poped):
                 i += 1
+
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
@@ -1332,7 +1470,8 @@ class TeleBot:
 
         return True
 
-    def _test_filter(self, filter, filter_value, message):
+    @staticmethod
+    def _test_filter(filter, filter_value, message):
         test_cases = {
             'content_types': lambda msg: msg.content_type in filter_value,
             'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
@@ -1353,6 +1492,32 @@ class TeleBot:
 class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
         TeleBot.__init__(self, *args, **kwargs)
+
+    @util.async_dec()
+    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save", del_file_after_loading=True):
+        return TeleBot.enable_save_next_step_handlers(self, delay, filename, del_file_after_loading)
+
+    @util.async_dec()
+    def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save", del_file_after_loading=True):
+        return TeleBot.enable_save_reply_handlers(self, delay, filename, del_file_after_loading)
+
+    @util.async_dec()
+    def disable_save_next_step_handlers(self):
+        return TeleBot.disable_save_next_step_handlers(self)
+
+    @util.async_dec()
+    def disable_save_reply_handlers(self):
+        return TeleBot.enable_save_reply_handlers(self)
+
+    @util.async_dec()
+    def load_next_step_handlers(self, filename="./.handler-saves/step.save"):
+        return TeleBot.load_next_step_handlers(self, filename)
+
+    @util.async_dec()
+    def load_reply_handlers(self, filename="./.handler-saves/reply.save"):
+        return TeleBot.load_reply_handlers(self, filename)
+
+    @util.async_dec()
 
     @util.async_dec()
     def get_me(self):
