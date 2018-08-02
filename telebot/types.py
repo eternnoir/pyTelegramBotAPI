@@ -1191,7 +1191,7 @@ class InlineQueryResultArticle(JsonSerializable):
 
 class InlineQueryResultPhoto(JsonSerializable):
     def __init__(self, id, photo_url, thumb_url, photo_width=None, photo_height=None, title=None,
-                 description=None, caption=None, reply_markup=None, input_message_content=None):
+                 description=None, caption=None, parse_mode=None, reply_markup=None, input_message_content=None):
         """
         Represents a link to a photo.
         :param id: Unique identifier for this result, 1-64 bytes
@@ -1202,6 +1202,8 @@ class InlineQueryResultPhoto(JsonSerializable):
         :param title: Title for the result.
         :param description: Short description of the result.
         :param caption: Caption of the photo to be sent, 0-200 characters.
+        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or
+        inline URLs in the media caption.
         :param reply_markup: InlineKeyboardMarkup : Inline keyboard attached to the message
         :param input_message_content: InputMessageContent : Content of the message to be sent instead of the photo
         :return:
@@ -1215,6 +1217,7 @@ class InlineQueryResultPhoto(JsonSerializable):
         self.title = title
         self.description = description
         self.caption = caption
+        self.parse_mode = parse_mode
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
 
@@ -1230,6 +1233,8 @@ class InlineQueryResultPhoto(JsonSerializable):
             json_dict['description'] = self.description
         if self.caption:
             json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
             json_dict['reply_markup'] = self.reply_markup.to_dic()
         if self.input_message_content:
@@ -1286,7 +1291,7 @@ class InlineQueryResultGif(JsonSerializable):
 
 class InlineQueryResultMpeg4Gif(JsonSerializable):
     def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None, title=None, caption=None,
-                 reply_markup=None, input_message_content=None, mpeg4_duration=None):
+                 parse_mode=None, reply_markup=None, input_message_content=None, mpeg4_duration=None):
         """
         Represents a link to a video animation (H.264/MPEG-4 AVC video without sound).
         :param id: Unique identifier for this result, 1-64 bytes
@@ -1296,6 +1301,8 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         :param mpeg4_height: Video height
         :param title: Title for the result
         :param caption: Caption of the MPEG-4 file to be sent, 0-200 characters
+        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text
+        or inline URLs in the media caption.
         :param reply_markup: InlineKeyboardMarkup : Inline keyboard attached to the message
         :param input_message_content: InputMessageContent : Content of the message to be sent instead of the photo
         :return:
@@ -1308,6 +1315,7 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         self.thumb_url = thumb_url
         self.title = title
         self.caption = caption
+        self.parse_mode = parse_mode
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.mpeg4_duration = mpeg4_duration
@@ -1322,6 +1330,8 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
             json_dict['title'] = self.title
         if self.caption:
             json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
             json_dict['reply_markup'] = self.reply_markup.to_dic()
         if self.input_message_content:
@@ -1333,8 +1343,8 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
 
 class InlineQueryResultVideo(JsonSerializable):
     def __init__(self, id, video_url, mime_type, thumb_url, title,
-                 caption=None, video_width=None, video_height=None, video_duration=None, description=None,
-                 reply_markup=None, input_message_content=None):
+                 caption=None, parse_mode=None, video_width=None, video_height=None, video_duration=None,
+                 description=None, reply_markup=None, input_message_content=None):
         """
         Represents link to a page containing an embedded video player or a video file.
         :param id: Unique identifier for this result, 1-64 bytes
@@ -1342,6 +1352,8 @@ class InlineQueryResultVideo(JsonSerializable):
         :param mime_type: Mime type of the content of video url, “text/html” or “video/mp4”
         :param thumb_url: URL of the thumbnail (jpeg only) for the video
         :param title: Title for the result
+        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or
+        inline URLs in the media caption.
         :param video_width: Video width
         :param video_height: Video height
         :param video_duration: Video duration in seconds
@@ -1358,6 +1370,7 @@ class InlineQueryResultVideo(JsonSerializable):
         self.thumb_url = thumb_url
         self.title = title
         self.caption = caption
+        self.parse_mode = parse_mode
         self.description = description
         self.input_message_content = input_message_content
         self.reply_markup = reply_markup
@@ -1375,6 +1388,8 @@ class InlineQueryResultVideo(JsonSerializable):
             json_dict['description'] = self.description
         if self.caption:
             json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
             json_dict['reply_markup'] = self.reply_markup.to_dic()
         if self.input_message_content:
@@ -1383,13 +1398,14 @@ class InlineQueryResultVideo(JsonSerializable):
 
 
 class InlineQueryResultAudio(JsonSerializable):
-    def __init__(self, id, audio_url, title, caption=None, performer=None, audio_duration=None, reply_markup=None,
-                 input_message_content=None):
+    def __init__(self, id, audio_url, title, caption=None, parse_mode=None, performer=None, audio_duration=None,
+                 reply_markup=None, input_message_content=None):
         self.type = 'audio'
         self.id = id
         self.audio_url = audio_url
         self.title = title
         self.caption = caption
+        self.parse_mode = parse_mode
         self.performer = performer
         self.audio_duration = audio_duration
         self.reply_markup = reply_markup
@@ -1399,6 +1415,8 @@ class InlineQueryResultAudio(JsonSerializable):
         json_dict = {'type': self.type, 'id': self.id, 'audio_url': self.audio_url, 'title': self.title}
         if self.caption:
             json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         if self.performer:
             json_dict['performer'] = self.performer
         if self.audio_duration:
@@ -1411,13 +1429,14 @@ class InlineQueryResultAudio(JsonSerializable):
 
 
 class InlineQueryResultVoice(JsonSerializable):
-    def __init__(self, id, voice_url, title, caption=None, performer=None, voice_duration=None, reply_markup=None,
-                 input_message_content=None):
+    def __init__(self, id, voice_url, title, caption=None, parse_mode=None, performer=None, voice_duration=None,
+                 reply_markup=None, input_message_content=None):
         self.type = 'voice'
         self.id = id
         self.voice_url = voice_url
         self.title = title
         self.caption = caption
+        self.parse_mode = parse_mode
         self.performer = performer
         self.voice_duration = voice_duration
         self.reply_markup = reply_markup
@@ -1427,6 +1446,8 @@ class InlineQueryResultVoice(JsonSerializable):
         json_dict = {'type': self.type, 'id': self.id, 'voice_url': self.voice_url, 'title': self.title}
         if self.caption:
             json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         if self.performer:
             json_dict['performer'] = self.performer
         if self.voice_duration:
@@ -1439,14 +1460,15 @@ class InlineQueryResultVoice(JsonSerializable):
 
 
 class InlineQueryResultDocument(JsonSerializable):
-    def __init__(self, id, title, document_url, mime_type, caption=None, description=None, reply_markup=None,
-                 input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
+    def __init__(self, id, title, document_url, mime_type, caption=None, parse_mode=None, description=None,
+                 reply_markup=None, input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'document'
         self.id = id
         self.title = title
         self.document_url = document_url
         self.mime_type = mime_type
         self.caption = caption
+        self.parse_mode = parse_mode
         self.description = description
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
@@ -1459,6 +1481,8 @@ class InlineQueryResultDocument(JsonSerializable):
                      'mime_type': self.mime_type}
         if self.caption:
             json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         if self.description:
             json_dict['description'] = self.description
         if self.thumb_url:
@@ -1601,8 +1625,8 @@ class BaseInlineQueryResultCached(JsonSerializable):
 
 
 class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
-    def __init__(self, id, photo_file_id, title=None, description=None, caption=None, reply_markup=None,
-                 input_message_content=None):
+    def __init__(self, id, photo_file_id, title=None, description=None, caption=None, parse_mode=None,
+                 reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'photo'
         self.id = id
@@ -1613,10 +1637,11 @@ class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['photo_file_id'] = photo_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
-    def __init__(self, id, gif_file_id, title=None, description=None, caption=None, reply_markup=None,
+    def __init__(self, id, gif_file_id, title=None, description=None, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'gif'
@@ -1628,11 +1653,12 @@ class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['gif_file_id'] = gif_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
-    def __init__(self, id, mpeg4_file_id, title=None, description=None, caption=None, reply_markup=None,
-                 input_message_content=None):
+    def __init__(self, id, mpeg4_file_id, title=None, description=None, caption=None, parse_mode=None,
+                 reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'mpeg4_gif'
         self.id = id
@@ -1643,6 +1669,7 @@ class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
@@ -1657,7 +1684,7 @@ class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
 
 
 class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
-    def __init__(self, id, document_file_id, title, description=None, caption=None, reply_markup=None,
+    def __init__(self, id, document_file_id, title, description=None, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'document'
@@ -1669,10 +1696,11 @@ class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['document_file_id'] = document_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
-    def __init__(self, id, video_file_id, title, description=None, caption=None, reply_markup=None,
+    def __init__(self, id, video_file_id, title, description=None, caption=None, parse_mode=None, reply_markup=None,
                  input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'video'
@@ -1684,10 +1712,12 @@ class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['video_file_id'] = video_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
-    def __init__(self, id, voice_file_id, title, caption=None, reply_markup=None, input_message_content=None):
+    def __init__(self, id, voice_file_id, title, caption=None, parse_mode=None, reply_markup=None,
+                 input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'voice'
         self.id = id
@@ -1697,10 +1727,11 @@ class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['voice_file_id'] = voice_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
-    def __init__(self, id, audio_file_id, caption=None, reply_markup=None, input_message_content=None):
+    def __init__(self, id, audio_file_id, caption=None, parse_mode=None, reply_markup=None, input_message_content=None):
         BaseInlineQueryResultCached.__init__(self)
         self.type = 'audio'
         self.id = id
@@ -1709,6 +1740,7 @@ class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.payload_dic['audio_file_id'] = audio_file_id
+        self.payload_dic['parse_mode'] = parse_mode
 
 
 # Games
