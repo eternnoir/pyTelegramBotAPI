@@ -1295,7 +1295,6 @@ class TeleBot:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     new_messages.pop(i)  # removing message that detects with next_step_handler
                     was_poped = True
-                new_messages.pop(i)  # removing message that detects with next_step_handler
                 if self.next_step_saver is not None:
                     self.next_step_saver.start_save_timer()
             if (not was_poped):
