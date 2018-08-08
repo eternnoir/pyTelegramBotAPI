@@ -6,6 +6,7 @@ import time
 import re
 import sys
 import six
+import collections
 
 import logging
 
@@ -693,6 +694,7 @@ class TeleBot:
             chat_id = message.chat.id
             if chat_id in self.message_subscribers_next_step:
                 handlers = self.message_subscribers_next_step[chat_id]
+                handlers = list(collections.Counter(handlers))
                 for handler in handlers:
                     self._exec_task(handler, message)
                 self.message_subscribers_next_step.pop(chat_id, None)
