@@ -585,5 +585,7 @@ Get help. Discuss. Chat.
 * [yandex_music_bot](http://t.me/yandex_music_bot)- Downloads tracks/albums/public playlists from Yandex.Music streaming service for free.
 * [LearnIt](https://t.me/LearnItbot)([link](https://github.com/tiagonapoli/LearnIt)) - A Telegram Bot created to help people to memorize other languages’ vocabulary.
 * [MusicQuiz_bot](https://t.me/MusicQuiz_bot) by [Etoneja](https://github.com/Etoneja) - Listen to audiosamles and try to name the performer of the song.
+* [Bot-Telegram-Shodan ](https://github.com/rubenleon/Bot-Telegram-Shodan) by [rubenleon](https://github.com/rubenleon)
+
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
