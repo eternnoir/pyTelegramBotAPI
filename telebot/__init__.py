@@ -999,6 +999,12 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
+    def edit_message_media(self, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+        result = apihelper.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup)
+        if type(result) == bool:  # if edit inline message return is bool not Message.
+            return result
+        return types.Message.de_json(result)
+
     def edit_message_reply_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
         result = apihelper.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
         if type(result) == bool:
@@ -1676,6 +1682,10 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def edit_message_text(self, *args, **kwargs):
         return TeleBot.edit_message_text(self, *args, **kwargs)
+
+    @util.async_dec()
+    def edit_message_media(self, *args, **kwargs):
+        return TeleBot.edit_message_media(self, *args, **kwargs)
 
     @util.async_dec()
     def edit_message_reply_markup(self, *args, **kwargs):

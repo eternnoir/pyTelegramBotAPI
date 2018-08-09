@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from telebot.types import InputMedia
 
 try:
     import ujson as json
@@ -264,7 +265,7 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
 
 def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
     method_url = r'sendMediaGroup'
-    media_json, files = _convert_input_media(media)
+    media_json, files = _convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
     if disable_notification:
         payload['disable_notification'] = disable_notification
@@ -638,6 +639,21 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
     return _make_request(token, method_url, params=payload)
 
 
+def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+    method_url = r'editMessageMedia'
+    media_json, file = _convert_input_media(media)
+    payload = {'media': media_json}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=file)
+
+
 def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
     method_url = r'editMessageReplyMarkup'
     payload = {}
@@ -937,11 +953,17 @@ def _convert_markup(markup):
     return markup
 
 
-def _convert_input_media(array):
+def _convert_input_media(media):
+    if isinstance(media, InputMedia):
+        return media._convert_input_media()
+    return None, None
+
+
+def _convert_input_media_array(array):
     media = []
     files = {}
     for input_media in array:
-        if isinstance(input_media, types.JsonSerializable):
+        if isinstance(input_media, InputMedia):
             media_dict = input_media.to_dic()
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
