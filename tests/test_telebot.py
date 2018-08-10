@@ -366,11 +366,14 @@ class TestTeleBot:
         file_data_2 = open('../examples/detailed_example/rooster.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
         msg = tb.send_photo(CHAT_ID, file_data)
-        new_msg = tb.edit_message_media(chat_id=CHAT_ID, message_id=msg.message_id, media=file_data_2)
+        new_msg = tb.edit_message_media(chat_id=CHAT_ID, message_id=msg.message_id,
+                                        media=types.InputMediaPhoto(file_data_2, caption='Test editMessageMedia 0'))
         assert type(new_msg) != bool
 
-        new_msg = tb.edit_message_media(chat_id=CHAT_ID, message_id=msg.message_id, media=msg.photo[0].file_id)
+        new_msg = tb.edit_message_media(chat_id=CHAT_ID, message_id=msg.message_id,
+                                        media=types.InputMediaPhoto(msg.photo[0].file_id, caption='Test editMessageMedia'))
         assert type(new_msg) != bool
+        assert new_msg.caption == 'Test editMessageMedia'
 
     def test_get_chat(self):
         tb = telebot.TeleBot(TOKEN)

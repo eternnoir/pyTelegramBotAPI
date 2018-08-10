@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from telebot.types import InputMedia
 
 try:
     import ujson as json
@@ -651,7 +650,7 @@ def edit_message_media(token, media, chat_id=None, message_id=None, inline_messa
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
-    return _make_request(token, method_url, params=payload, files=file)
+    return _make_request(token, method_url, params=payload, files=file, method='post' if file else 'get')
 
 
 def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
@@ -954,7 +953,7 @@ def _convert_markup(markup):
 
 
 def _convert_input_media(media):
-    if isinstance(media, InputMedia):
+    if isinstance(media, types.InputMedia):
         return media._convert_input_media()
     return None, None
 
@@ -963,7 +962,7 @@ def _convert_input_media_array(array):
     media = []
     files = {}
     for input_media in array:
-        if isinstance(input_media, InputMedia):
+        if isinstance(input_media, types.InputMedia):
             media_dict = input_media.to_dic()
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
