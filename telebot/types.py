@@ -2073,48 +2073,61 @@ class MaskPosition(JsonDeserializable, JsonSerializable):
 
 # InputMedia
 
-class InputMediaPhoto(JsonSerializable):
-    def __init__(self, media, caption=None, parse_mode=None):
-        self.type = "photo"
+class InputMedia(JsonSerializable):
+    def __init__(self, type, media, caption=None, parse_mode=None):
+        self.type = type
         self.media = media
         self.caption = caption
         self.parse_mode = parse_mode
+
+        if util.is_string(self.media):
+            self._media_name = ''
+            self._media_dic = self.media
+        else:
+            self._media_name = util.generate_random_token()
+            self._media_dic = 'attach://{}'.format(self._media_name)
 
     def to_json(self):
         return json.dumps(self.to_dic())
 
     def to_dic(self):
-        ret = {'type': self.type, 'media': 'attach://' + util.generate_random_token()
-               if not util.is_string(self.media) else self.media}
+        ret = {'type': self.type, 'media': self._media_dic}
         if self.caption:
             ret['caption'] = self.caption
         if self.parse_mode:
             ret['parse_mode'] = self.parse_mode
         return ret
 
+    def _convert_input_media(self):
+        if util.is_string(self.media):
+            return self.to_json(), None
 
-class InputMediaVideo(JsonSerializable):
-    def __init__(self, media, caption=None, parse_mode=None, width=None, height=None, duration=None,
+        return self.to_json(), {self._media_name: self.media}
+
+
+class InputMediaPhoto(InputMedia):
+    def __init__(self, media, caption=None, parse_mode=None):
+        super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
+
+    def to_dic(self):
+        ret = super(InputMediaPhoto, self).to_dic()
+        return ret
+
+
+class InputMediaVideo(InputMedia):
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None,
                  supports_streaming=None):
-        self.type = "video"
-        self.media = media
-        self.caption = caption
-        self.parse_mode = parse_mode
+        super(InputMediaVideo, self).__init__(type="video", media=media, caption=caption, parse_mode=parse_mode)
+        self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
 
-    def to_json(self):
-        return json.dumps(self.to_dic())
-
     def to_dic(self):
-        ret = {'type': self.type, 'media': 'attach://' + util.generate_random_token()
-               if not util.is_string(self.media) else self.media}
-        if self.caption:
-            ret['caption'] = self.caption
-        if self.parse_mode:
-            ret['parse_mode'] = self.parse_mode
+        ret = super(InputMediaVideo, self).to_dic()
+        if self.thumb:
+            ret['thumb'] = self.thumb
         if self.width:
             ret['width'] = self.width
         if self.height:
@@ -2123,4 +2136,58 @@ class InputMediaVideo(JsonSerializable):
             ret['duration'] = self.duration
         if self.supports_streaming:
             ret['supports_streaming'] = self.supports_streaming
+        return ret
+
+
+class InputMediaAnimation(InputMedia):
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None):
+        super(InputMediaAnimation, self).__init__(type="animation", media=media, caption=caption, parse_mode=parse_mode)
+        self.thumb = thumb
+        self.width = width
+        self.height = height
+        self.duration = duration
+
+    def to_dic(self):
+        ret = super(InputMediaAnimation, self).to_dic()
+        if self.thumb:
+            ret['thumb'] = self.thumb
+        if self.width:
+            ret['width'] = self.width
+        if self.height:
+            ret['height'] = self.height
+        if self.duration:
+            ret['duration'] = self.duration
+        return ret
+
+
+class InputMediaAudio(InputMedia):
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, duration=None, performer=None, title=None):
+        super(InputMediaAudio, self).__init__(type="audio", media=media, caption=caption, parse_mode=parse_mode)
+        self.thumb = thumb
+        self.duration = duration
+        self.performer = performer
+        self.title = title
+
+    def to_dic(self):
+        ret = super(InputMediaAudio, self).to_dic()
+        if self.thumb:
+            ret['thumb'] = self.thumb
+        if self.duration:
+            ret['duration'] = self.duration
+        if self.performer:
+            ret['performer'] = self.performer
+        if self.title:
+            ret['title'] = self.title
+        return ret
+
+
+class InputMediaDocument(InputMedia):
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None):
+        super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
+        self.thumb = thumb
+
+    def to_dic(self):
+        ret = super(InputMediaDocument, self).to_dic()
+        if self.thumb:
+            ret['thumb'] = self.thumb
         return ret
