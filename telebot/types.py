@@ -2085,7 +2085,7 @@ class InputMedia(JsonSerializable):
             self._media_dic = self.media
         else:
             self._media_name = util.generate_random_token()
-            self._media_dic = 'attach://{}'.format(self._media_name)
+            self._media_dic = 'attach://{0}'.format(self._media_name)
 
     def to_json(self):
         return json.dumps(self.to_dic())
