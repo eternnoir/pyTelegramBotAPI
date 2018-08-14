@@ -10,7 +10,7 @@ import six
 from telebot import util
 
 
-class JsonSerializable:
+class JsonSerializable(object):
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
@@ -26,7 +26,7 @@ class JsonSerializable:
         raise NotImplementedError
 
 
-class Dictionaryable:
+class Dictionaryable(object):
     """
     Subclasses of this class are guaranteed to be able to be converted to dictionary.
     All subclasses of this class must override to_dic.
@@ -42,7 +42,7 @@ class Dictionaryable:
         raise NotImplementedError
 
 
-class JsonDeserializable:
+class JsonDeserializable(object):
     """
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
     All subclasses of this class must override de_json.
