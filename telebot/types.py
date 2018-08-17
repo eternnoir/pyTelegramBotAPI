@@ -457,11 +457,11 @@ class Message(JsonDeserializable):
         if not entities:
             return text
         _subs = {
-            "bold": "<b>{text}</b>",
-            "italic": "<i>{text}</i>",
-            "pre": "<pre>{text}</pre>",
-            "code": "<code>{text}</code>",
-            "url": "<a href=\"{url}\">{text}</a>",
+            "bold"     : "<b>{text}</b>",
+            "italic"   : "<i>{text}</i>",
+            "pre"      : "<pre>{text}</pre>",
+            "code"     : "<code>{text}</code>",
+            "url"      : "<a href=\"{url}\">{text}</a>",
             "text_link": "<a href=\"{url}\">{text}</a>"
         }
         if hasattr(self, "custom_subs"):
@@ -469,6 +469,7 @@ class Message(JsonDeserializable):
                 _subs[type] = self.custom_subs[type]
         utf16_text = text.encode("utf-16-le")
         html_text = ""
+
         def func(text, type=None, url=None, user=None):
             text = text.decode("utf-16-le")
             if type == "text_mention":
@@ -500,6 +501,7 @@ class Message(JsonDeserializable):
     @property
     def html_caption(self):
         return self.__html_text(self.caption, self.caption_entities)
+
 
 class MessageEntity(JsonDeserializable):
     @classmethod
@@ -1069,7 +1071,7 @@ class InputVenueMessageContent(Dictionaryable):
 
     def to_dic(self):
         json_dic = {'latitude': self.latitude, 'longitude': self.longitude, 'title': self.title,
-                    'address': self.address}
+                    'address' : self.address}
         if self.foursquare_id:
             json_dic['foursquare_id'] = self.foursquare_id
         return json_dic

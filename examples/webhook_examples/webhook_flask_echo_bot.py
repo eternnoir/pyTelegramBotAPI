@@ -31,7 +31,6 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
-
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
@@ -78,7 +77,7 @@ bot.remove_webhook()
 time.sleep(0.1)
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Start flask server

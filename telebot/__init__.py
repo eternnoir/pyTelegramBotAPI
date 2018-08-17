@@ -33,6 +33,7 @@ class Handler:
     """
     Class for (next step|reply) handlers
     """
+
     def __init__(self, callback, *args, **kwargs):
         self.callback = callback
         self.args = args
@@ -46,6 +47,7 @@ class Saver:
     """
     Class for saving (next step|reply) handlers
     """
+
     def __init__(self, handlers, filename, delay):
         self.handlers = handlers
         self.filename = filename
@@ -1303,12 +1305,11 @@ class TeleBot:
             if not was_poped:
                 i += 1
 
-
     @staticmethod
     def _build_handler_dict(handler, **filters):
         return {
             'function': handler,
-            'filters': filters
+            'filters' : filters
         }
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=['text'], **kwargs):
@@ -1517,8 +1518,6 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
         return TeleBot.load_reply_handlers(self, filename, del_file_after_loading)
-
-    @util.async_dec()
 
     @util.async_dec()
     def get_me(self):

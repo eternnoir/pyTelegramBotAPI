@@ -13,10 +13,10 @@ knownUsers = []  # todo: save these in a file,
 userStep = {}  # so they won't reset every time the bot restarts
 
 commands = {  # command description used in the "help" command
-              'start': 'Get used to the bot',
-              'help': 'Gives you information about the available commands',
-              'sendLongText': 'A test using the \'send_chat_action\' command',
-              'getImage': 'A test using multi-stage messages, custom keyboard, and media sending'
+    'start'       : 'Get used to the bot',
+    'help'        : 'Gives you information about the available commands',
+    'sendLongText': 'A test using the \'send_chat_action\' command',
+    'getImage'    : 'A test using multi-stage messages, custom keyboard, and media sending'
 }
 
 imageSelect = types.ReplyKeyboardMarkup(one_time_keyboard=True)  # create the image selection keyboard
@@ -128,5 +128,6 @@ def command_text_hi(m):
 def command_default(m):
     # this is the standard reply to a normal message
     bot.send_message(m.chat.id, "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
+
 
 bot.polling()

@@ -36,7 +36,6 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
-
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
@@ -90,12 +89,12 @@ def echo_message(message):
 bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Start server
 httpd = HTTPServer((WEBHOOK_LISTEN, WEBHOOK_PORT),
-                                  WebhookHandler)
+                   WebhookHandler)
 
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                certfile=WEBHOOK_SSL_CERT,
