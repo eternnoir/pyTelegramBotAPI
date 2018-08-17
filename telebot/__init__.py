@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import threading
-import time
-import re
-import sys
-import six
-
+import logging
 import os
 import pickle
+import re
+import sys
+import threading
+import time
 
-import logging
+import six
 
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(

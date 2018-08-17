@@ -2,9 +2,10 @@
 This is a detailed example using almost every command of the API
 """
 
+import time
+
 import telebot
 from telebot import types
-import time
 
 TOKEN = '<token_string>'
 

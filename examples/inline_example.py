@@ -1,8 +1,9 @@
 # This example show how to write an inline mode telegramt bot use pyTelegramBotAPI.
-import telebot
-import time
-import sys
 import logging
+import sys
+import time
+
+import telebot
 from telebot import types
 
 API_TOKEN = '<TOKEN>'

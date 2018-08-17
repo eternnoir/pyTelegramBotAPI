@@ -4,12 +4,14 @@
 # This example shows webhook echo bot with Tornado web framework
 # Documenation to Tornado: http://tornadoweb.org
 
-import telebot
-import tornado.web
-import tornado.ioloop
-import tornado.httpserver
-import tornado.options
 import signal
+
+import tornado.httpserver
+import tornado.ioloop
+import tornado.options
+import tornado.web
+
+import telebot
 
 API_TOKEN = '<api_token>'
 WEBHOOK_CERT = "./cert.pem"

@@ -4,11 +4,12 @@
 # This is a simple echo bot using decorators and webhook with flask
 # It echoes any incoming text messages and does not use the polling method.
 
-import flask
-import telebot
 import logging
 import time
 
+import flask
+
+import telebot
 
 API_TOKEN = '<api_token>'
 

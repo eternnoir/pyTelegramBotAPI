@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import random
+import re
 import string
+import sys
 import threading
 import traceback
-import re
-import sys
+
 import six
 from six import string_types
 

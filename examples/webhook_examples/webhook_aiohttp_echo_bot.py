@@ -11,7 +11,6 @@ from aiohttp import web
 
 import telebot
 
-
 API_TOKEN = '<api_token>'
 
 WEBHOOK_HOST = '<ip/host where the bot is running>'

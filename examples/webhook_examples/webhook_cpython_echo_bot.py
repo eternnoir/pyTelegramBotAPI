@@ -11,10 +11,10 @@ except ImportError:
     # Python 3
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import ssl
-import telebot
 import logging
+import ssl
 
+import telebot
 
 API_TOKEN = '<api_token>'
 

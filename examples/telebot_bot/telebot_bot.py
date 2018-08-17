@@ -3,8 +3,9 @@
 # and goes by the name 'TeleBot (@pyTeleBot)'. Join our group to talk to him!
 # WARNING: Tested with Python 2.7
 
-import telebot
 import os
+
+import telebot
 
 text_messages = {
     'welcome':

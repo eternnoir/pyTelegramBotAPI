@@ -4,10 +4,11 @@
 # This is a simple echo bot using decorators and webhook with CherryPy
 # It echoes any incoming text messages and does not use the polling method.
 
-import cherrypy
-import telebot
 import logging
 
+import cherrypy
+
+import telebot
 
 API_TOKEN = '<api_token>'
 
