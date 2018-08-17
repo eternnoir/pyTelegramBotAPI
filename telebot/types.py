@@ -598,29 +598,6 @@ class Document(JsonDeserializable):
         self.file_size = file_size
 
 
-class Sticker(JsonDeserializable):
-    @classmethod
-    def de_json(cls, json_string):
-        obj = cls.check_json(json_string)
-        file_id = obj['file_id']
-        width = obj['width']
-        height = obj['height']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
-        emoji = obj.get('emoji')
-        file_size = obj.get('file_size')
-        return cls(file_id, width, height, thumb, emoji, file_size)
-
-    def __init__(self, file_id, width, height, thumb, emoji=None, file_size=None):
-        self.file_id = file_id
-        self.width = width
-        self.height = height
-        self.thumb = thumb
-        self.emoji = emoji
-        self.file_size = file_size
-
-
 class Video(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
