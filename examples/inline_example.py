@@ -69,5 +69,5 @@ if __name__ == '__main__':
     try:
         main_loop()
     except KeyboardInterrupt:
-        print >> sys.stderr, '\nExiting by user request.\n'
+        print('\nExiting by user request.\n')
         sys.exit(0)

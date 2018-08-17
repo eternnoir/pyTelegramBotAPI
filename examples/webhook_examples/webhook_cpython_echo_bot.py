@@ -4,7 +4,13 @@
 # This is a simple echo bot using decorators and webhook with BaseHTTPServer
 # It echoes any incoming text messages and does not use the polling method.
 
-import BaseHTTPServer
+try:
+    # Python 2
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+except ImportError:
+    # Python 3
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
 import ssl
 import telebot
 import logging
@@ -38,7 +44,7 @@ bot = telebot.TeleBot(API_TOKEN)
 
 
 # WebhookHandler, process webhook calls
-class WebhookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class WebhookHandler(BaseHTTPRequestHandler):
     server_version = "WebhookHandler/1.0"
 
     def do_HEAD(self):
@@ -88,7 +94,7 @@ bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Start server
-httpd = BaseHTTPServer.HTTPServer((WEBHOOK_LISTEN, WEBHOOK_PORT),
+httpd = HTTPServer((WEBHOOK_LISTEN, WEBHOOK_PORT),
                                   WebhookHandler)
 
 httpd.socket = ssl.wrap_socket(httpd.socket,

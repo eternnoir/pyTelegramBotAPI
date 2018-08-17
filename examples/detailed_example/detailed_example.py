@@ -33,7 +33,7 @@ def get_user_step(uid):
     else:
         knownUsers.append(uid)
         userStep[uid] = 0
-        print "New user detected, who hasn't used \"/start\" yet"
+        print("New user detected, who hasn't used \"/start\" yet")
         return 0
 
 
@@ -45,7 +45,7 @@ def listener(messages):
     for m in messages:
         if m.content_type == 'text':
             # print the sent message to the console
-            print str(m.chat.first_name) + " [" + str(m.chat.id) + "]: " + m.text
+            print(str(m.chat.first_name) + " [" + str(m.chat.id) + "]: " + m.text)
 
 
 bot = telebot.TeleBot(TOKEN)
