@@ -1496,12 +1496,12 @@ class AsyncTeleBot(TeleBot):
         TeleBot.__init__(self, *args, **kwargs)
 
     @util.async_dec()
-    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save", del_file_after_loading=True):
-        return TeleBot.enable_save_next_step_handlers(self, delay, filename, del_file_after_loading)
+    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
+        return TeleBot.enable_save_next_step_handlers(self, delay, filename)
 
     @util.async_dec()
-    def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save", del_file_after_loading=True):
-        return TeleBot.enable_save_reply_handlers(self, delay, filename, del_file_after_loading)
+    def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
+        return TeleBot.enable_save_reply_handlers(self, delay, filename)
 
     @util.async_dec()
     def disable_save_next_step_handlers(self):
@@ -1512,12 +1512,12 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.enable_save_reply_handlers(self)
 
     @util.async_dec()
-    def load_next_step_handlers(self, filename="./.handler-saves/step.save"):
-        return TeleBot.load_next_step_handlers(self, filename)
+    def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
+        return TeleBot.load_next_step_handlers(self, filename, del_file_after_loading)
 
     @util.async_dec()
-    def load_reply_handlers(self, filename="./.handler-saves/reply.save"):
-        return TeleBot.load_reply_handlers(self, filename)
+    def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
+        return TeleBot.load_reply_handlers(self, filename, del_file_after_loading)
 
     @util.async_dec()
 
