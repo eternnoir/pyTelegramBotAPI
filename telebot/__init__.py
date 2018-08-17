@@ -1294,14 +1294,14 @@ class TeleBot:
             was_poped = False
             if chat_id in self.next_step_handlers.keys():
                 handlers = self.next_step_handlers.pop(chat_id, None)
-                if (handlers):
+                if handlers:
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
                     new_messages.pop(i)  # removing message that detects with next_step_handler
                     was_poped = True
                 if self.next_step_saver is not None:
                     self.next_step_saver.start_save_timer()
-            if (not was_poped):
+            if not was_poped:
                 i += 1
 
 

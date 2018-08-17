@@ -99,7 +99,6 @@ def get_file(token, file_id):
 
 
 def get_file_url(token, file_id):
-    method_url = r'getFile'
     return FILE_URL.format(token, get_file(token, file_id).file_path)
 
 
@@ -123,6 +122,8 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     :param disable_web_page_preview:
     :param reply_to_message_id:
     :param reply_markup:
+    :param parse_mode:
+    :param disable_notification:
     :return:
     """
     method_url = r'sendMessage'
@@ -769,7 +770,8 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
     :param reply_to_message_id: If the message is a reply, ID of the original message
     :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
-    :return: 
+    :param provider_data:
+    :return:
     """
     method_url = r'sendInvoice'
     payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,

@@ -31,7 +31,6 @@
 # steps are not shown here. Only steps 5 to 7 are illustrated, some in pseudo-code, with this example.
 
 import telebot
-import time
 
 bot = telebot.TeleBot('TOKEN')
 

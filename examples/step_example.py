@@ -2,7 +2,6 @@
 """
 This Example will show you how to use register_next_step handler.
 """
-import time
 
 import telebot
 from telebot import types
