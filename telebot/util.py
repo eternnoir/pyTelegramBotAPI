@@ -248,13 +248,12 @@ def extract_arguments(text):
     return result.group(2) if is_command(text) else None
 
 
-def per_thread(key, construct_value):
-    try:
-        return getattr(thread_local, key)
-    except AttributeError:
+def per_thread(key, construct_value, reset=False):
+    if reset or not hasattr(thread_local, key):
         value = construct_value()
         setattr(thread_local, key, value)
-        return value
+
+    return getattr(thread_local, key)
 
 
 def generate_random_token():
