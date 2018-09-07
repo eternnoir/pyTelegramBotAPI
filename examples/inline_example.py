@@ -1,4 +1,4 @@
-# This example show how to write an inline mode telegramt bot use pyTelegramBotAPI.
+# This example show how to write an inline mode telegram bot use pyTelegramBotAPI.
 import telebot
 import time
 import sys
