@@ -27,8 +27,8 @@ CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
 
 
-def _get_req_session():
-    return util.per_thread('req_session', lambda: requests.session())
+def _get_req_session(reset=False):
+    return util.per_thread('req_session', lambda: requests.session(), reset)
 
 
 def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
