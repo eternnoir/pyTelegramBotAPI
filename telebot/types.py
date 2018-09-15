@@ -1605,6 +1605,7 @@ class BaseInlineQueryResultCached(JsonSerializable):
         self.caption = None
         self.reply_markup = None
         self.input_message_content = None
+        self.parse_mode = None
         self.payload_dic = {}
 
     def to_json(self):
@@ -1621,6 +1622,8 @@ class BaseInlineQueryResultCached(JsonSerializable):
             json_dict['reply_markup'] = self.reply_markup.to_dic()
         if self.input_message_content:
             json_dict['input_message_content'] = self.input_message_content.to_dic()
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
         return json.dumps(json_dict)
 
 
@@ -1636,8 +1639,8 @@ class InlineQueryResultCachedPhoto(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['photo_file_id'] = photo_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
@@ -1652,8 +1655,8 @@ class InlineQueryResultCachedGif(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['gif_file_id'] = gif_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
@@ -1668,8 +1671,8 @@ class InlineQueryResultCachedMpeg4Gif(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedSticker(BaseInlineQueryResultCached):
@@ -1695,8 +1698,8 @@ class InlineQueryResultCachedDocument(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['document_file_id'] = document_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
@@ -1711,8 +1714,8 @@ class InlineQueryResultCachedVideo(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['video_file_id'] = video_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
@@ -1726,8 +1729,8 @@ class InlineQueryResultCachedVoice(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['voice_file_id'] = voice_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
@@ -1739,8 +1742,8 @@ class InlineQueryResultCachedAudio(BaseInlineQueryResultCached):
         self.caption = caption
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
+        self.parse_mode = parse_mode
         self.payload_dic['audio_file_id'] = audio_file_id
-        self.payload_dic['parse_mode'] = parse_mode
 
 
 # Games
