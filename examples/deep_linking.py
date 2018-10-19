@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 # This example shows how to implement deep linking (https://core.telegram.org/bots#deep-linking)
 # with the pyTelegramBotAPI.
 # Note: This is not a working, production-ready sample.
