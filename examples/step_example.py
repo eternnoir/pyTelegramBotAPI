@@ -2,7 +2,6 @@
 """
 This Example will show you how to use register_next_step handler.
 """
-import time
 
 import telebot
 from telebot import types
@@ -83,6 +82,5 @@ bot.enable_save_next_step_handlers(delay=2)
 # Load next_step_handlers from save file (default "./.handlers-saves/step.save")
 # WARNING It will work only if enable_save_next_step_handlers was called!
 bot.load_next_step_handlers()
-
 
 bot.polling()

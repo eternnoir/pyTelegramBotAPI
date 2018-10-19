@@ -59,7 +59,7 @@ def test_json_Message_Sticker_without_thumb():
     json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
-    assert msg.sticker.thumb == None
+    assert msg.sticker.thumb is None
     assert msg.content_type == 'sticker'
 
 
@@ -113,6 +113,7 @@ def test_json_voice():
     assert voice.duration == 0
     assert voice.file_size == 10481
 
+
 def test_json_update():
     json_string = r'{"update_id":938203,"message":{"message_id":241,"from":{"is_bot":true,"id":9734,"first_name":"Fk","last_name":"Wg","username":"nir"},"chat":{"id":1111,"first_name":"Fk","type":"private","last_name":"Wg","username":"oir"},"date":1441447009,"text":"HIHI"}}'
     update = types.Update.de_json(json_string)
@@ -120,12 +121,14 @@ def test_json_update():
     assert update.message.message_id == 241
     assert update.message.from_user.id == 9734
 
+
 def test_json_chat():
     json_string = r'{"id": -111111,"title": "Test Title","type": "group"}'
     chat = types.Chat.de_json(json_string)
     assert chat.id == -111111
     assert chat.type == 'group'
     assert chat.title == 'Test Title'
+
 
 def test_InlineQueryResultCachedPhoto():
     iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid')
@@ -143,6 +146,7 @@ def test_InlineQueryResultCachedPhoto_with_title():
     assert 'Title' in json_str
     assert 'caption' not in json_str
 
+
 def test_InlineQueryResultCachedPhoto_with_markup():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
@@ -154,4 +158,3 @@ def test_InlineQueryResultCachedPhoto_with_markup():
     assert 'Title' in json_str
     assert 'caption' not in json_str
     assert 'reply_markup' in json_str
-

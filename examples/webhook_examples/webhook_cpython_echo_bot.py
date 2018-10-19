@@ -4,11 +4,17 @@
 # This is a simple echo bot using decorators and webhook with BaseHTTPServer
 # It echoes any incoming text messages and does not use the polling method.
 
-import BaseHTTPServer
-import ssl
-import telebot
-import logging
+try:
+    # Python 2
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+except ImportError:
+    # Python 3
+    from http.server import BaseHTTPRequestHandler, HTTPServer
 
+import logging
+import ssl
+
+import telebot
 
 API_TOKEN = '<api_token>'
 
@@ -30,7 +36,6 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
 
-
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
@@ -38,7 +43,7 @@ bot = telebot.TeleBot(API_TOKEN)
 
 
 # WebhookHandler, process webhook calls
-class WebhookHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class WebhookHandler(BaseHTTPRequestHandler):
     server_version = "WebhookHandler/1.0"
 
     def do_HEAD(self):
@@ -84,12 +89,12 @@ def echo_message(message):
 bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Start server
-httpd = BaseHTTPServer.HTTPServer((WEBHOOK_LISTEN, WEBHOOK_PORT),
-                                  WebhookHandler)
+httpd = HTTPServer((WEBHOOK_LISTEN, WEBHOOK_PORT),
+                   WebhookHandler)
 
 httpd.socket = ssl.wrap_socket(httpd.socket,
                                certfile=WEBHOOK_SSL_CERT,

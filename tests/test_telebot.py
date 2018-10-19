@@ -402,7 +402,8 @@ class TestTeleBot:
         new_msg = tb.edit_message_reply_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
         assert new_msg.message_id
 
-    def create_text_message(self, text):
+    @staticmethod
+    def create_text_message(text):
         params = {'text': text}
         chat = types.User(11, False, 'test')
         return types.Message(1, None, None, chat, 'text', params, "")
