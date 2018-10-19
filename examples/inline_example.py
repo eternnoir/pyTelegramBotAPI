@@ -1,8 +1,9 @@
-# This example show how to write an inline mode telegramt bot use pyTelegramBotAPI.
-import telebot
-import time
-import sys
+# This example show how to write an inline mode telegram bot use pyTelegramBotAPI.
 import logging
+import sys
+import time
+
+import telebot
 from telebot import types
 
 API_TOKEN = '<TOKEN>'
@@ -69,5 +70,5 @@ if __name__ == '__main__':
     try:
         main_loop()
     except KeyboardInterrupt:
-        print >> sys.stderr, '\nExiting by user request.\n'
+        print('\nExiting by user request.\n')
         sys.exit(0)

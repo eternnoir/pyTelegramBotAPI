@@ -11,7 +11,6 @@ from aiohttp import web
 
 import telebot
 
-
 API_TOKEN = '<api_token>'
 
 WEBHOOK_HOST = '<ip/host where the bot is running>'
@@ -32,7 +31,6 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 WEBHOOK_URL_BASE = "https://{}:{}".format(WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/{}/".format(API_TOKEN)
 
-
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
@@ -50,6 +48,7 @@ async def handle(request):
         return web.Response()
     else:
         return web.Response(status=403)
+
 
 app.router.add_post('/{token}/', handle)
 
@@ -72,7 +71,7 @@ def echo_message(message):
 bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Build ssl context

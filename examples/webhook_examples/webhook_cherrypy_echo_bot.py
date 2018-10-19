@@ -4,10 +4,11 @@
 # This is a simple echo bot using decorators and webhook with CherryPy
 # It echoes any incoming text messages and does not use the polling method.
 
-import cherrypy
-import telebot
 import logging
 
+import cherrypy
+
+import telebot
 
 API_TOKEN = '<api_token>'
 
@@ -28,7 +29,6 @@ WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
 
 WEBHOOK_URL_BASE = "https://%s:%s" % (WEBHOOK_HOST, WEBHOOK_PORT)
 WEBHOOK_URL_PATH = "/%s/" % (API_TOKEN)
-
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
@@ -70,7 +70,7 @@ def echo_message(message):
 bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE+WEBHOOK_URL_PATH,
+bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
                 certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Disable CherryPy requests log
@@ -80,9 +80,9 @@ for handler in tuple(access_log.handlers):
 
 # Start cherrypy server
 cherrypy.config.update({
-    'server.socket_host': WEBHOOK_LISTEN,
-    'server.socket_port': WEBHOOK_PORT,
-    'server.ssl_module': 'builtin',
+    'server.socket_host'    : WEBHOOK_LISTEN,
+    'server.socket_port'    : WEBHOOK_PORT,
+    'server.ssl_module'     : 'builtin',
     'server.ssl_certificate': WEBHOOK_SSL_CERT,
     'server.ssl_private_key': WEBHOOK_SSL_PRIV
 })

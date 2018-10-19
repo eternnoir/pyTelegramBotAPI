@@ -27,8 +27,8 @@ CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
 
 
-def _get_req_session():
-    return util.per_thread('req_session', lambda: requests.session())
+def _get_req_session(reset=False):
+    return util.per_thread('req_session', lambda: requests.session(), reset)
 
 
 def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
@@ -99,7 +99,6 @@ def get_file(token, file_id):
 
 
 def get_file_url(token, file_id):
-    method_url = r'getFile'
     return FILE_URL.format(token, get_file(token, file_id).file_path)
 
 
@@ -123,6 +122,8 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     :param disable_web_page_preview:
     :param reply_to_message_id:
     :param reply_markup:
+    :param parse_mode:
+    :param disable_notification:
     :return:
     """
     method_url = r'sendMessage'
@@ -266,7 +267,7 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
 
 def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
     method_url = r'sendMediaGroup'
-    media_json, files = _convert_input_media(media)
+    media_json, files = _convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
     if disable_notification:
         payload['disable_notification'] = disable_notification
@@ -640,6 +641,21 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
     return _make_request(token, method_url, params=payload)
 
 
+def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+    method_url = r'editMessageMedia'
+    media_json, file = _convert_input_media(media)
+    payload = {'media': media_json}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=file, method='post' if file else 'get')
+
+
 def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
     method_url = r'editMessageReplyMarkup'
     payload = {}
@@ -756,7 +772,8 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
     :param reply_to_message_id: If the message is a reply, ID of the original message
     :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
-    :return: 
+    :param provider_data:
+    :return:
     """
     method_url = r'sendInvoice'
     payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
@@ -939,11 +956,17 @@ def _convert_markup(markup):
     return markup
 
 
-def _convert_input_media(array):
+def _convert_input_media(media):
+    if isinstance(media, types.InputMedia):
+        return media._convert_input_media()
+    return None, None
+
+
+def _convert_input_media_array(array):
     media = []
     files = {}
     for input_media in array:
-        if isinstance(input_media, types.JsonSerializable):
+        if isinstance(input_media, types.InputMedia):
             media_dict = input_media.to_dic()
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')

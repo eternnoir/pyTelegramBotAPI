@@ -4,12 +4,14 @@
 # This example shows webhook echo bot with Tornado web framework
 # Documenation to Tornado: http://tornadoweb.org
 
-import telebot
-import tornado.web
-import tornado.ioloop
-import tornado.httpserver
-import tornado.options
 import signal
+
+import tornado.httpserver
+import tornado.ioloop
+import tornado.options
+import tornado.web
+
+import telebot
 
 API_TOKEN = '<api_token>'
 WEBHOOK_CERT = "./cert.pem"
@@ -29,15 +31,18 @@ WEBHOOK_URL_BASE = "https://{0}:{1}/{2}".format(WEBHOOK_HOST, str(WEBHOOK_PORT),
 
 bot = telebot.TeleBot(API_TOKEN)
 
+
 class Root(tornado.web.RequestHandler):
     def get(self):
         self.write("Hi! This is webhook example!")
         self.finish()
 
+
 class webhook_serv(tornado.web.RequestHandler):
     def get(self):
         self.write("What are you doing here?")
         self.finish()
+
     def post(self):
         if "Content-Length" in self.request.headers and \
             "Content-Type" in self.request.headers and \
@@ -52,13 +57,17 @@ class webhook_serv(tornado.web.RequestHandler):
         else:
             self.write("What are you doing here?")
             self.finish()
- 
+
+
 tornado.options.define("port", default=WEBHOOK_PORT, help="run on the given port", type=int)
 is_closing = False
+
+
 def signal_handler(signum, frame):
     global is_closing
     print("Exiting...")
     is_closing = True
+
 
 def try_exit():
     global is_closing
@@ -66,13 +75,15 @@ def try_exit():
         # clean up here
         tornado.ioloop.IOLoop.instance().stop()
         print("Exit success!")
-        
+
+
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.reply_to(message,
                  ("Hi there, I am EchoBot.\n"
                   "I am here to echo your kind words back to you."))
+
 
 bot.remove_webhook()
 bot.set_webhook(url=WEBHOOK_URL_BASE,
@@ -86,9 +97,9 @@ application = tornado.web.Application([
 ])
 
 http_server = tornado.httpserver.HTTPServer(application, ssl_options={
-        "certfile": WEBHOOK_CERT,
-        "keyfile": WEBHOOK_PKEY,
-    })
+    "certfile": WEBHOOK_CERT,
+    "keyfile" : WEBHOOK_PKEY,
+})
 http_server.listen(tornado.options.options.port)
 tornado.ioloop.PeriodicCallback(try_exit, 100).start()
 tornado.ioloop.IOLoop.instance().start()
