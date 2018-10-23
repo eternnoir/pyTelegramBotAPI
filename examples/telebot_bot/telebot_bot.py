@@ -44,12 +44,12 @@ def on_user_joins(message):
     if not is_api_group(message.chat.id):
         return
 
-    name = message.new_chat_participant.first_name
-    if hasattr(message.new_chat_participant, 'last_name') and message.new_chat_participant.last_name is not None:
-        name += u" {}".format(message.new_chat_participant.last_name)
+    name = message.new_chat_member.first_name
+    if hasattr(message.new_chat_member, 'last_name') and message.new_chat_member.last_name is not None:
+        name += u" {}".format(message.new_chat_member.last_name)
 
-    if hasattr(message.new_chat_participant, 'username') and message.new_chat_participant.username is not None:
-        name += u" (@{})".format(message.new_chat_participant.username)
+    if hasattr(message.new_chat_member, 'username') and message.new_chat_member.username is not None:
+        name += u" (@{})".format(message.new_chat_member.username)
 
     bot.reply_to(message, text_messages['welcome'].format(name=name))
 
