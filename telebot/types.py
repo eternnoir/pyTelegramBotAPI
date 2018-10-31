@@ -867,10 +867,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         """
         btn_array = []
         for button in args:
-            if button is None:
-                continue
-            else:
-                btn_array.append(button.to_dic())
+            btn_array.append(button.to_dic())
         self.keyboard.append(btn_array)
         return self
 
