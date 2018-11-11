@@ -1902,6 +1902,7 @@ class ShippingOption(JsonSerializable):
         """
         for price in args:
             self.prices.append(price)
+        return self
 
     def to_json(self):
         price_list = []
