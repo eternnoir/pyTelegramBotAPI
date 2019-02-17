@@ -459,9 +459,11 @@ class TeleBot:
         logger.info('Stopped polling.')
 
     def _exec_task(self, task, *args, **kwargs):
-        if self.threaded:
+        if self.threaded and not kwargs.get('blocking'):
+            kwargs.pop('blocking', None)
             self.worker_pool.put(task, *args, **kwargs)
         else:
+            kwargs.pop('blocking', None)
             return task(*args, **kwargs)
 
     def stop_polling(self):
@@ -1309,6 +1311,7 @@ class TeleBot:
     def _build_handler_dict(handler, **filters):
         return {
             'function': handler,
+            'blocking':filters.pop("blocking", None),
             'filters' : filters
         }
 
@@ -1486,8 +1489,9 @@ class TeleBot:
     def _notify_command_handlers(self, handlers, new_messages):
         for message in new_messages:
             for message_handler in handlers:
+                blocking = message_handler.get('blocking')
                 if self._test_message_handler(message_handler, message):
-                    result = self._exec_task(message_handler['function'], message)
+                    result = self._exec_task(message_handler['function'], message, blocking=blocking)
                     if result == util.TELEBOT_EAT_ALL:
                         break
 
