@@ -459,11 +459,10 @@ class TeleBot:
         logger.info('Stopped polling.')
 
     def _exec_task(self, task, *args, **kwargs):
-        if self.threaded and not kwargs.get('blocking'):
-            kwargs.pop('blocking', None)
+        _blocking = kwargs.pop('blocking', None)
+        if self.threaded and not _blocking:
             self.worker_pool.put(task, *args, **kwargs)
         else:
-            kwargs.pop('blocking', None)
             return task(*args, **kwargs)
 
     def stop_polling(self):
