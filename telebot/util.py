@@ -21,8 +21,9 @@ logger = logging.getLogger('TeleBot')
 
 thread_local = threading.local()
 
-TELEBOT_EAT_NONE=None
-TELEBOT_EAT_ALL=-256
+TELEBOT_EAT_NONE = None
+TELEBOT_EAT_ALL = -256
+TELEBOT_DEFAULT_BREAK = True
 
 class WorkerThread(threading.Thread):
         count = 0

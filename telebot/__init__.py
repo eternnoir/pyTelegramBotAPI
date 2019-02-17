@@ -1311,6 +1311,7 @@ class TeleBot:
         return {
             'function': handler,
             'blocking':filters.pop("blocking", None),
+            'final':filters.pop("final", util.TELEBOT_DEFAULT_BREAK),
             'filters' : filters
         }
 
@@ -1489,9 +1490,10 @@ class TeleBot:
         for message in new_messages:
             for message_handler in handlers:
                 blocking = message_handler.get('blocking')
+                final = message_handler.get('final')
                 if self._test_message_handler(message_handler, message):
                     result = self._exec_task(message_handler['function'], message, blocking=blocking)
-                    if result == util.TELEBOT_EAT_ALL:
+                    if final or result == util.TELEBOT_EAT_ALL:
                         break
 
 
