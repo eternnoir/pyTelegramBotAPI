@@ -462,7 +462,7 @@ class TeleBot:
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
         else:
-            task(*args, **kwargs)
+            return task(*args, **kwargs)
 
     def stop_polling(self):
         self.__stop_polling.set()
@@ -1487,8 +1487,9 @@ class TeleBot:
         for message in new_messages:
             for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
-                    self._exec_task(message_handler['function'], message)
-                    break
+                    result = self._exec_task(message_handler['function'], message)
+                    if result == util.TELEBOT_EAT_ALL:
+                        break
 
 
 class AsyncTeleBot(TeleBot):
