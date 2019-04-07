@@ -524,16 +524,16 @@ Telegram Bot API support new type Chat for message.chat.
 - Check the ```type``` attribute in ```Chat``` object:
 -
 ```python
-if message.chat.type == “private”:
+if message.chat.type == "private":
 	# private chat message
 
-if message.chat.type == “group”:
+if message.chat.type == "group":
 	# group chat message
 
-if message.chat.type == “supergroup”:
+if message.chat.type == "supergroup":
 	# supergroup chat message
 
-if message.chat.type == “channel”:
+if message.chat.type == "channel":
 	# channel message
 
 ```
