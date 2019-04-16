@@ -9,8 +9,8 @@ bot = telebot.TeleBot(TELEGRAM_TOKEN)
 def gen_markup():
     markup = InlineKeyboardMarkup()
     markup.row_width = 2
-    markup.add(InlineKeyboardButton("Yes", callback_data=f"cb_yes"),
-                               InlineKeyboardButton("No", callback_data=f"cb_no"))
+    markup.add(InlineKeyboardButton("Yes", callback_data="cb_yes"),
+                               InlineKeyboardButton("No", callback_data="cb_no"))
     return markup
 
 @bot.callback_query_handler(func=lambda call: True)
