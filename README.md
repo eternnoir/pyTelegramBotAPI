@@ -587,6 +587,7 @@ Get help. Discuss. Chat.
 * [MusicQuiz_bot](https://t.me/MusicQuiz_bot) by [Etoneja](https://github.com/Etoneja) - Listen to audiosamles and try to name the performer of the song.
 * [Bot-Telegram-Shodan ](https://github.com/rubenleon/Bot-Telegram-Shodan) by [rubenleon](https://github.com/rubenleon)
 * [MandangoBot](https://t.me/MandangoBot) by @Alvaricias - Bot for managing Marvel Strike Force alliances (only in spanish, atm).
+* [kaishnik-bot](https://t.me/kaishnik_bot) ([source](https://github.com/airatk/kaishnik-bot)) by *airatk* - bot which shows all the necessary information to KNTRU-KAI students.
 
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
