@@ -1477,7 +1477,7 @@ class TeleBot:
         test_cases = {
             'content_types': lambda msg: msg.content_type in filter_value,
             'regexp':   lambda msg: (msg.text is not None and re.search(filter_value, msg.text, re.IGNORECASE)) or (msg.caption is not None and re.search(filter_value, msg.caption, re.IGNORECASE)),
-            'commands': lambda msg: (msg.text is not None and util.extract_command(msg.text)) or (msg.caption is not None and util.extract_command(msg.caption)) in filter_value,
+            'commands': lambda msg: util.extract_command(msg.text or msg.caption or '') in filter_value,
             'func': lambda msg: filter_value(msg)
         }
 
