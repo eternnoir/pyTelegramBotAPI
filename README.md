@@ -589,6 +589,8 @@ Get help. Discuss. Chat.
 * [MandangoBot](https://t.me/MandangoBot) by @Alvaricias - Bot for managing Marvel Strike Force alliances (only in spanish, atm).
 * [kaishnik-bot](https://t.me/kaishnik_bot) ([source](https://github.com/airatk/kaishnik-bot)) by *airatk* - bot which shows all the necessary information to KNTRU-KAI students.
 * [Creation Date](https://t.me/creationdatebot) by @karipov - interpolates account creation dates based on telegram given ID’s
+* [m0xbot](https://t.me/m0xbot) by [kor0p](https://github.com/kor0p) - tic-tac-toe.  
+* [kboardbot](https://t.me/kboardbot) by [kor0p](https://github.com/kor0p) - inline switches keyboard layout (English, Hebrew, Ukrainian, Russian).  
 
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
