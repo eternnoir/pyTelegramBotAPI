@@ -12,6 +12,27 @@ TOKEN = '<token_string>'
 knownUsers = []  # todo: save these in a file,
 userStep = {}  # so they won't reset every time the bot restarts
 
+"""
+This tutorial is really great! I got a lot from it, so I wanted to contribute
+by taking a crack at this
+"""
+
+#This calls the file where the chat ids are stored
+def get_chat_ids():
+    f="'Your Path'/chatIDs.txt" #replace 'Your Path' with the path to the folder where you plan to store your chat ids
+    id_list = []
+    with open(f, "r") as file:
+        for line in file: 
+            chat_id = line[:-1] 
+            id_list.append(chat_id)
+    return id_list
+#This adds the chat id to a file where all chat id's are stored
+def add_chat_id(new_id):
+    f= "'Your Path'/chatIDs.txt" #replace 'Your Path' with the path to the folder where you plan to store your chat ids
+    with open(f, "a") as file:
+        file.write(str(new_id)+"\n")
+        file.close()
+
 commands = {  # command description used in the "help" command
     'start'       : 'Get used to the bot',
     'help'        : 'Gives you information about the available commands',
@@ -57,15 +78,16 @@ bot.set_update_listener(listener)  # register listener
 @bot.message_handler(commands=['start'])
 def command_start(m):
     cid = m.chat.id
+    knownUsers = get_chat_ids()
     if cid not in knownUsers:  # if user hasn't used the "/start" command yet:
         knownUsers.append(cid)  # save user id, so you could brodcast messages to all users of this bot later
         userStep[cid] = 0  # save user id and his current "command level", so he can use the "/getImage" command
         bot.send_message(cid, "Hello, stranger, let me scan you...")
+        add_chat_id(cid)
         bot.send_message(cid, "Scanning complete, I know you now")
         command_help(m)  # show the new user the help page
     else:
         bot.send_message(cid, "I already know you, no need for me to scan you again!")
-
 
 # help page
 @bot.message_handler(commands=['help'])
