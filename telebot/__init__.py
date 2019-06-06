@@ -113,6 +113,7 @@ class TeleBot:
         getUserProfilePhotos
         getUpdates
         getFile
+        sendPoll
         kickChatMember
         unbanChatMember
         restrictChatMember
@@ -1043,6 +1044,12 @@ class TeleBot:
                                         need_name, need_phone_number, need_email, need_shipping_address, is_flexible,
                                         disable_notification, reply_to_message_id, reply_markup, provider_data)
         return types.Message.de_json(result)
+
+    def send_poll(self, chat_id, poll, disable_notifications=False, reply_to_message=None, reply_markup=None):
+        return types.Message.de_json(apihelper.send_poll(self.token, chat_id, poll.question, poll.options, disable_notifications, reply_to_message, reply_markup))
+
+    def stop_poll(self, chat_id, message_id):
+        return types.Poll.de_json(apihelper.stop_poll(self.token, chat_id, message_id))
 
     def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
         return apihelper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
