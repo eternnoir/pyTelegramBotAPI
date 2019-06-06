@@ -26,6 +26,7 @@
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
     * [Proxy](#proxy)
+  * [New in library](#new-in-library)
   * [F.A.Q.](#faq)
     * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
@@ -509,6 +510,10 @@ If you want to use socket5 proxy you need install dependency `pip install reques
 apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 ```
 
+
+## New in library
+
+06.06.2019 - Добавленна поддержка опросов (Poll). Добавлены функции send_poll, stop_poll
 
 ## F.A.Q.
 
