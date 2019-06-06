@@ -1,6 +1,5 @@
 import os
 from telebot import logger, logging, types, TeleBot
-import telebot.apihelper as api
 
 try:
     TOKEN = os.environ['TOKEN']
