@@ -916,7 +916,7 @@ class InlineKeyboardButton(JsonSerializable):
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
         self.pay = pay
-        self.login_url = login_url.to_dic()
+        self.login_url = login_url
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -936,7 +936,7 @@ class InlineKeyboardButton(JsonSerializable):
         if self.pay is not None:
             json_dic['pay'] = self.pay
         if self.login_url is not None:
-            json_dic['login_url'] = self.login_url
+            json_dic['login_url'] = self.login_url.to_dic()
         return json_dic
 
 
