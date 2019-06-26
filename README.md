@@ -592,5 +592,6 @@ Get help. Discuss. Chat.
 * [m0xbot](https://t.me/m0xbot) by [kor0p](https://github.com/kor0p) - tic-tac-toe.  
 * [kboardbot](https://t.me/kboardbot) by [kor0p](https://github.com/kor0p) - inline switches keyboard layout (English, Hebrew, Ukrainian, Russian).  
 * [Robbie](https://t.me/romdeliverybot) ([source](https://github.com/FacuM/romdeliverybot_support)) by @FacuM - Support Telegram bot for developers and maintainers.
+* [AsadovBot](https://t.me/asadov_bot) ([source])(https://github.com/desexcile/BotApi)) by @DesExcile - Сatalog of poems by Eduard Asadov.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
