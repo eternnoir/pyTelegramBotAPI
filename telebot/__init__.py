@@ -1757,3 +1757,11 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def delete_sticker_from_set(self, *args, **kwargs):
         return TeleBot.delete_sticker_from_set(self, *args, **kwargs)
+
+    @util.async_dec()
+    def send_poll(self, *args, **kwargs):
+        return TeleBot.send_poll(self, *args, **kwargs)
+
+    @util.async_dec()
+    def stop_poll(self, *args, **kwargs):
+        return TeleBot.stop_poll(self, *args, **kwargs)
