@@ -885,9 +885,30 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         return json_dict
 
 
+class LoginUrl(JsonSerializable):
+    def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None):
+        self.url = url
+        self.forward_text = forward_text
+        self.bot_username = bot_username
+        self.request_write_access = request_write_access
+
+    def to_json(self):
+        return json.dumps(self.to_dic())
+
+    def to_dic(self):
+        json_dic = {'url': self.url}
+        if self.forward_text:
+            json_dic['forward_text'] = self.forward_text
+        if self.bot_username:
+            json_dic['bot_username'] = self.bot_username
+        if self.request_write_access:
+            json_dic['request_write_access'] = self.request_write_access
+        return json_dic
+
+
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
-                 switch_inline_query_current_chat=None, callback_game=None, pay=None):
+                 switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None):
         self.text = text
         self.url = url
         self.callback_data = callback_data
@@ -895,6 +916,7 @@ class InlineKeyboardButton(JsonSerializable):
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
         self.pay = pay
+        self.login_url = login_url
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -913,6 +935,8 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['callback_game'] = self.callback_game
         if self.pay is not None:
             json_dic['pay'] = self.pay
+        if self.login_url is not None:
+            json_dic['login_url'] = self.login_url.to_dic()
         return json_dic
 
 
