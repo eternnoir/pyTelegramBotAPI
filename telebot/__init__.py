@@ -364,12 +364,12 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, *args, **kwargs):
+    def infinity_polling(self, timeout=20, *args, **kwargs):
         while not self.__stop_polling.is_set():
             try:
-                self.polling(*args, **kwargs)
+                self.polling(timeout=timeout, *args, **kwargs)
             except Exception as e:
-                time.sleep(5)
+                time.sleep(timeout)
                 pass
         logger.info("Break infinity polling")
 
