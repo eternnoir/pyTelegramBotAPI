@@ -1333,7 +1333,7 @@ class TeleBot:
             bot.send_message(message.chat.id, 'Document received, sir!')
 
         # Handle all other commands.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
         def default_command(message):
             bot.send_message(message.chat.id, "This is the default command handler.")
 
