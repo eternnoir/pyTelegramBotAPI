@@ -938,6 +938,26 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def send_poll(token, chat_id, question, options, disable_notifications=False, reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendPoll'
+    payload = {'chat_id': str(chat_id), 'question': question, 'options': _convert_list_json_serializable(options)}
+    if disable_notifications:
+        payload['disable_notification'] = disable_notifications
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
+def stop_poll(token, chat_id, message_id, reply_markup=None):
+    method_url = r'stopPoll'
+    payload = {'chat_id': str(chat_id), 'message_id': message_id}
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
 def _convert_list_json_serializable(results):
     ret = ''
     for r in results:

@@ -368,6 +368,9 @@ class Message(JsonDeserializable):
         if 'connected_website' in obj:
             opts['connected_website'] = obj['connected_website']
             content_type = 'connected_website'
+        if 'poll' in obj:
+            opts['poll'] = Poll.de_json(obj['poll'])
+            content_type = 'poll'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -2197,3 +2200,48 @@ class InputMediaDocument(InputMedia):
         if self.thumb:
             ret['thumb'] = self.thumb
         return ret
+
+
+class PollOption(JsonSerializable, JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        text = obj['text']
+        voter_count = int(obj['voter_count'])
+        option = cls(text)
+        option.voter_count = voter_count
+        return option
+
+    def __init__(self, text):
+        self.text = text
+        self.voter_count = 0
+
+    def to_json(self):
+        return json.dumps(self.text)
+
+
+class Poll(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        poll_id = obj['id']
+        question = obj['question']
+        poll = cls(question)
+        options = []
+        for opt in obj['options']:
+            options.append(PollOption.de_json(opt))
+        poll.options = options
+        is_closed = obj['is_closed']
+        poll.id = poll_id
+        poll.is_closed = is_closed
+        return poll
+
+    def __init__(self, question):
+        self.options = []
+        self.question = question
+
+    def add(self, option):
+        if type(option) is PollOption:
+            self.options.append(option)
+        else:
+            self.options.append(PollOption(option))
