@@ -296,6 +296,9 @@ class Message(JsonDeserializable):
         if 'photo' in obj:
             opts['photo'] = Message.parse_photo(obj['photo'])
             content_type = 'photo'
+        if 'animation' in obj:
+            opts['animation'] = Animation.de_json(obj['animation'])
+            content_type = 'animation'
         if 'sticker' in obj:
             opts['sticker'] = Sticker.de_json(obj['sticker'])
             content_type = 'sticker'
@@ -421,6 +424,7 @@ class Message(JsonDeserializable):
         self.contact = None
         self.location = None
         self.venue = None
+        self.animation = None
         self.new_chat_member = None
         self.new_chat_members = None
         self.left_chat_member = None
@@ -2055,7 +2059,6 @@ class Sticker(JsonDeserializable):
         self.set_name = set_name
         self.mask_position = mask_position
         self.file_size = file_size
-
 
 class MaskPosition(JsonDeserializable, JsonSerializable):
     @classmethod
