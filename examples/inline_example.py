@@ -51,7 +51,7 @@ def query_video(inline_query):
         print(e)
 
 
-@bot.inline_handler(lambda query: len(query.query) is 0)
+@bot.inline_handler(lambda query: len(query.query) == 0)
 def default_query(inline_query):
     try:
         r = types.InlineQueryResultArticle('1', 'default', types.InputTextMessageContent('default'))
