@@ -20,8 +20,8 @@ from telebot import util
 logger = telebot.logger
 proxy = None
 
-API_URL = "https://api.telegram.org/bot{0}/{1}"
-FILE_URL = "https://api.telegram.org/file/bot{0}/{1}"
+API_URL = None
+FILE_URL = None
 
 CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
@@ -41,6 +41,11 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     :param files: Optional files.
     :return: The result parsed to a JSON dictionary.
     """
+    if base_url is None:
+        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
+    else:
+        request_url = base_url.format(token, method_name)
+        
     request_url = base_url.format(token, method_name)
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
@@ -99,8 +104,11 @@ def get_file(token, file_id):
 
 
 def get_file_url(token, file_id):
-    return FILE_URL.format(token, get_file(token, file_id).file_path)
-
+    if FILE_URL is None:
+        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id).file_path)
+    else:
+        return FILE_URL.format(token, get_file(token, file_id).file_path)
+    
 
 def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)
