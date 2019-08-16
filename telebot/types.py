@@ -2039,6 +2039,7 @@ class Sticker(JsonDeserializable):
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
+        is_animated = obj['is_animated']
         thumb = None
         if 'thumb' in obj:
             thumb = PhotoSize.de_json(obj['thumb'])
@@ -2048,9 +2049,9 @@ class Sticker(JsonDeserializable):
         if 'mask_position' in obj:
             mask_position = MaskPosition.de_json(obj['mask_position'])
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, thumb, emoji, set_name, mask_position, file_size)
+        return cls(file_id, width, height, thumb, emoji, set_name, mask_position, file_size, is_animated)
 
-    def __init__(self, file_id, width, height, thumb, emoji, set_name, mask_position, file_size):
+    def __init__(self, file_id, width, height, thumb, emoji, set_name, mask_position, file_size, is_animated):
         self.file_id = file_id
         self.width = width
         self.height = height
@@ -2059,6 +2060,7 @@ class Sticker(JsonDeserializable):
         self.set_name = set_name
         self.mask_position = mask_position
         self.file_size = file_size
+        self.is_animated = is_animated
 
 class MaskPosition(JsonDeserializable, JsonSerializable):
     @classmethod
