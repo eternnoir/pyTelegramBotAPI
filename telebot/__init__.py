@@ -113,6 +113,7 @@ class TeleBot:
         getUserProfilePhotos
         getUpdates
         getFile
+        sendPoll
         kickChatMember
         unbanChatMember
         restrictChatMember
@@ -364,12 +365,12 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, *args, **kwargs):
+    def infinity_polling(self, timeout=20, *args, **kwargs):
         while not self.__stop_polling.is_set():
             try:
-                self.polling(*args, **kwargs)
+                self.polling(timeout=timeout, *args, **kwargs)
             except Exception as e:
-                time.sleep(5)
+                time.sleep(timeout)
                 pass
         logger.info("Break infinity polling")
 
@@ -1044,6 +1045,12 @@ class TeleBot:
                                         disable_notification, reply_to_message_id, reply_markup, provider_data)
         return types.Message.de_json(result)
 
+    def send_poll(self, chat_id, poll, disable_notifications=False, reply_to_message=None, reply_markup=None):
+        return types.Message.de_json(apihelper.send_poll(self.token, chat_id, poll.question, poll.options, disable_notifications, reply_to_message, reply_markup))
+
+    def stop_poll(self, chat_id, message_id):
+        return types.Poll.de_json(apihelper.stop_poll(self.token, chat_id, message_id))
+
     def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
         return apihelper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
@@ -1333,7 +1340,7 @@ class TeleBot:
             bot.send_message(message.chat.id, 'Document received, sir!')
 
         # Handle all other commands.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
         def default_command(message):
             bot.send_message(message.chat.id, "This is the default command handler.")
 
@@ -1750,3 +1757,11 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def delete_sticker_from_set(self, *args, **kwargs):
         return TeleBot.delete_sticker_from_set(self, *args, **kwargs)
+
+    @util.async_dec()
+    def send_poll(self, *args, **kwargs):
+        return TeleBot.send_poll(self, *args, **kwargs)
+
+    @util.async_dec()
+    def stop_poll(self, *args, **kwargs):
+        return TeleBot.stop_poll(self, *args, **kwargs)

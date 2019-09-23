@@ -86,11 +86,13 @@ def echo_message(message):
 
 
 # Remove webhook, it fails sometimes the set if there is a previous webhook
-bot.remove_webhook()
+#bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+# Beacuse telegram bot api server will check webhook server is alive.
+# Here we need set webhook after server started manually.
+#bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+#                certificate=open(WEBHOOK_SSL_CERT, 'r'))
 
 # Start server
 httpd = HTTPServer((WEBHOOK_LISTEN, WEBHOOK_PORT),

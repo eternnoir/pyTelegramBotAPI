@@ -619,7 +619,7 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
         payload['disable_web_page_preview'] = disable_web_page_preview
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
@@ -636,7 +636,7 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
         payload['parse_mode'] = parse_mode
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
@@ -665,13 +665,13 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 def delete_message(token, chat_id, message_id):
     method_url = r'deleteMessage'
     payload = {'chat_id': chat_id, 'message_id': message_id}
-    return _make_request(token, method_url, params=payload)
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 # Game
@@ -814,7 +814,7 @@ def answer_shipping_query(token, shipping_query_id, ok, shipping_options=None, e
     :param ok: Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
     :param shipping_options: Required if ok is True. A JSON-serialized array of available shipping options.
     :param error_message: Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
-    :return: 
+    :return:
     """
     method_url = 'answerShippingQuery'
     payload = {'shipping_query_id': shipping_query_id, 'ok': ok}
@@ -832,7 +832,7 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
     :param pre_checkout_query_id: Unique identifier for the query to be answered
     :param ok: Specify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
     :param error_message: Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user.
-    :return: 
+    :return:
     """
     method_url = 'answerPreCheckoutQuery'
     payload = {'pre_checkout_query_id': pre_checkout_query_id, 'ok': ok}
@@ -936,6 +936,26 @@ def delete_sticker_from_set(token, sticker):
     method_url = 'deleteStickerFromSet'
     payload = {'sticker': sticker}
     return _make_request(token, method_url, params=payload, method='post')
+
+
+def send_poll(token, chat_id, question, options, disable_notifications=False, reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendPoll'
+    payload = {'chat_id': str(chat_id), 'question': question, 'options': _convert_list_json_serializable(options)}
+    if disable_notifications:
+        payload['disable_notification'] = disable_notifications
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
+def stop_poll(token, chat_id, message_id, reply_markup=None):
+    method_url = r'stopPoll'
+    payload = {'chat_id': str(chat_id), 'message_id': message_id}
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
 
 
 def _convert_list_json_serializable(results):

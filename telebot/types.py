@@ -368,6 +368,9 @@ class Message(JsonDeserializable):
         if 'connected_website' in obj:
             opts['connected_website'] = obj['connected_website']
             content_type = 'connected_website'
+        if 'poll' in obj:
+            opts['poll'] = Poll.de_json(obj['poll'])
+            content_type = 'poll'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -885,9 +888,30 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         return json_dict
 
 
+class LoginUrl(JsonSerializable):
+    def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None):
+        self.url = url
+        self.forward_text = forward_text
+        self.bot_username = bot_username
+        self.request_write_access = request_write_access
+
+    def to_json(self):
+        return json.dumps(self.to_dic())
+
+    def to_dic(self):
+        json_dic = {'url': self.url}
+        if self.forward_text:
+            json_dic['forward_text'] = self.forward_text
+        if self.bot_username:
+            json_dic['bot_username'] = self.bot_username
+        if self.request_write_access:
+            json_dic['request_write_access'] = self.request_write_access
+        return json_dic
+
+
 class InlineKeyboardButton(JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
-                 switch_inline_query_current_chat=None, callback_game=None, pay=None):
+                 switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None):
         self.text = text
         self.url = url
         self.callback_data = callback_data
@@ -895,6 +919,7 @@ class InlineKeyboardButton(JsonSerializable):
         self.switch_inline_query_current_chat = switch_inline_query_current_chat
         self.callback_game = callback_game
         self.pay = pay
+        self.login_url = login_url
 
     def to_json(self):
         return json.dumps(self.to_dic())
@@ -913,6 +938,8 @@ class InlineKeyboardButton(JsonSerializable):
             json_dic['callback_game'] = self.callback_game
         if self.pay is not None:
             json_dic['pay'] = self.pay
+        if self.login_url is not None:
+            json_dic['login_url'] = self.login_url.to_dic()
         return json_dic
 
 
@@ -2173,3 +2200,48 @@ class InputMediaDocument(InputMedia):
         if self.thumb:
             ret['thumb'] = self.thumb
         return ret
+
+
+class PollOption(JsonSerializable, JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        text = obj['text']
+        voter_count = int(obj['voter_count'])
+        option = cls(text)
+        option.voter_count = voter_count
+        return option
+
+    def __init__(self, text):
+        self.text = text
+        self.voter_count = 0
+
+    def to_json(self):
+        return json.dumps(self.text)
+
+
+class Poll(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_type):
+        obj = cls.check_json(json_type)
+        poll_id = obj['id']
+        question = obj['question']
+        poll = cls(question)
+        options = []
+        for opt in obj['options']:
+            options.append(PollOption.de_json(opt))
+        poll.options = options
+        is_closed = obj['is_closed']
+        poll.id = poll_id
+        poll.is_closed = is_closed
+        return poll
+
+    def __init__(self, question):
+        self.options = []
+        self.question = question
+
+    def add(self, option):
+        if type(option) is PollOption:
+            self.options.append(option)
+        else:
+            self.options.append(PollOption(option))
