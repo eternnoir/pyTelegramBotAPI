@@ -107,8 +107,8 @@ def get_file_url(token, file_id):
     if FILE_URL is None:
         return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id).file_path)
     else:
-        return FILE_URL.format(token, get_file(token, file_id).file_path)
-    
+        return FILE_URL.format(token, get_file(token, file_id)['file_path'])
+ 
 
 def download_file(token, file_path):
     url = FILE_URL.format(token, file_path)

@@ -371,6 +371,9 @@ class Message(JsonDeserializable):
         if 'poll' in obj:
             opts['poll'] = Poll.de_json(obj['poll'])
             content_type = 'poll'
+        if 'passport_data' in obj:
+            opts['passport_data'] = obj['passport_data']
+            content_type = 'passport_data'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
