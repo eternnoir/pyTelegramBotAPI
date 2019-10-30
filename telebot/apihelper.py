@@ -99,7 +99,7 @@ def get_file(token, file_id):
 
 
 def get_file_url(token, file_id):
-    return FILE_URL.format(token, get_file(token, file_id).file_path)
+    return FILE_URL.format(token, get_file(token, file_id)['file_path'])
 
 
 def download_file(token, file_path):
