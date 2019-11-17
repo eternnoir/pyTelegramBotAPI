@@ -17,73 +17,73 @@ except ImportError:
     import queue as Queue
 import logging
 
-logger = logging.getLogger('TeleBot')
+logger = logging.getLogger("TeleBot")
 
 thread_local = threading.local()
 
 
 class WorkerThread(threading.Thread):
-        count = 0
+    count = 0
 
-        def __init__(self, exception_callback=None, queue=None, name=None):
-            if not name:
-                name = "WorkerThread{0}".format(self.__class__.count + 1)
-                self.__class__.count += 1
-            if not queue:
-                queue = Queue.Queue()
+    def __init__(self, exception_callback=None, queue=None, name=None):
+        if not name:
+            name = f"WorkerThread{self.__class__.count + 1}"
+            self.__class__.count += 1
+        if not queue:
+            queue = Queue.Queue()
 
-            threading.Thread.__init__(self, name=name)
-            self.queue = queue
-            self.daemon = True
+        threading.Thread.__init__(self, name=name)
+        self.queue = queue
+        self.daemon = True
 
-            self.received_task_event = threading.Event()
-            self.done_event = threading.Event()
-            self.exception_event = threading.Event()
-            self.continue_event = threading.Event()
+        self.received_task_event = threading.Event()
+        self.done_event = threading.Event()
+        self.exception_event = threading.Event()
+        self.continue_event = threading.Event()
 
-            self.exception_callback = exception_callback
-            self.exc_info = None
-            self._running = True
-            self.start()
+        self.exception_callback = exception_callback
+        self.exc_info = None
+        self._running = True
+        self.start()
 
-        def run(self):
-            while self._running:
-                try:
-                    task, args, kwargs = self.queue.get(block=True, timeout=.5)
-                    self.continue_event.clear()
-                    self.received_task_event.clear()
-                    self.done_event.clear()
-                    self.exception_event.clear()
-                    logger.debug("Received task")
-                    self.received_task_event.set()
+    def run(self):
+        while self._running:
+            try:
+                task, args, kwargs = self.queue.get(block=True, timeout=.5)
+                self.continue_event.clear()
+                self.received_task_event.clear()
+                self.done_event.clear()
+                self.exception_event.clear()
+                logger.debug("Received task")
+                self.received_task_event.set()
 
-                    task(*args, **kwargs)
-                    logger.debug("Task complete")
-                    self.done_event.set()
-                except Queue.Empty:
-                    pass
-                except Exception as e:
-                    logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
-                    self.exc_info = sys.exc_info()
-                    self.exception_event.set()
+                task(*args, **kwargs)
+                logger.debug("Task complete")
+                self.done_event.set()
+            except Queue.Empty:
+                pass
+            except Exception as e:
+                logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
+                self.exc_info = sys.exc_info()
+                self.exception_event.set()
 
-                    if self.exception_callback:
-                        self.exception_callback(self, self.exc_info)
-                    self.continue_event.wait()
+                if self.exception_callback:
+                    self.exception_callback(self, self.exc_info)
+                self.continue_event.wait()
 
-        def put(self, task, *args, **kwargs):
-            self.queue.put((task, args, kwargs))
+    def put(self, task, *args, **kwargs):
+        self.queue.put((task, args, kwargs))
 
-        def raise_exceptions(self):
-            if self.exception_event.is_set():
-                six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
+    def raise_exceptions(self):
+        if self.exception_event.is_set():
+            six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
 
-        def clear_exceptions(self):
-            self.exception_event.clear()
-            self.continue_event.set()
+    def clear_exceptions(self):
+        self.exception_event.clear()
+        self.continue_event.set()
 
-        def stop(self):
-            self._running = False
+    def stop(self):
+        self._running = False
 
 
 class ThreadPool:
@@ -131,7 +131,7 @@ class AsyncTask:
     def _run(self):
         try:
             self.result = self.target(*self.args, **self.kwargs)
-        except:
+        except Exception:
             self.result = sys.exc_info()
         self.done = True
 
@@ -157,13 +157,16 @@ def async_dec():
 def is_string(var):
     return isinstance(var, string_types)
 
+
 def is_command(text):
     """
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
     :param text: Text to check.
+
     :return: True if `text` is a command, else False.
     """
-    return text.startswith('/')
+
+    return text.startswith("/")
 
 
 def extract_command(text):
@@ -180,7 +183,10 @@ def extract_command(text):
     :param text: String to extract the command from
     :return: the command if `text` is a command (according to is_command), else None.
     """
-    return text.split()[0].split('@')[0][1:] if is_command(text) else None
+
+    if is_command(text):
+        return text.split()[0].split("@")[0][1:]
+    return None
 
 
 def split_string(text, chars_per_string):
@@ -192,7 +198,9 @@ def split_string(text, chars_per_string):
     :param chars_per_string: The number of characters per line the text is split into.
     :return: The splitted text as a list of strings.
     """
+
     return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
+
 
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
 def or_set(self):
@@ -212,8 +220,10 @@ def orify(e, changed_callback):
     e.set = lambda: or_set(e)
     e.clear = lambda: or_clear(e)
 
+
 def OrEvent(*events):
     or_event = threading.Event()
+
     def changed():
         bools = [e.is_set() for e in events]
         if any(bools):
@@ -232,6 +242,7 @@ def OrEvent(*events):
     changed()
     return or_event
 
+
 def extract_arguments(text):
     """
     Returns the argument after the command.
@@ -244,7 +255,8 @@ def extract_arguments(text):
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
     """
-    regexp = re.compile("/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
+
+    regexp = re.compile("/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
 
@@ -258,4 +270,4 @@ def per_thread(key, construct_value, reset=False):
 
 
 def generate_random_token():
-    return ''.join(random.sample(string.ascii_letters, 16))
+    return "".join(random.sample(string.ascii_letters, 16))
