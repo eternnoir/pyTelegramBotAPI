@@ -2,9 +2,11 @@
 from setuptools import setup
 from io import open
 
+
 def read(filename):
     with open(filename, encoding='utf-8') as file:
         return file.read()
+
 
 setup(name='pyTelegramBotAPI',
       version='3.6.6',

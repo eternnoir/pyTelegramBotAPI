@@ -142,7 +142,7 @@ class TeleBot:
         """
 
         self.token = token
-        self.update_listener = []
+        self.update_listener = list()
         self.skip_pending = skip_pending
 
         self.__stop_polling = threading.Event()
@@ -150,23 +150,23 @@ class TeleBot:
         self.exc_info = None
 
         # key: message_id, value: handler list
-        self.reply_handlers = {}
+        self.reply_handlers = dict()
 
         # key: chat_id, value: handler list
-        self.next_step_handlers = {}
+        self.next_step_handlers = dict()
 
         self.next_step_saver = None
         self.reply_saver = None
 
-        self.message_handlers = []
-        self.edited_message_handlers = []
-        self.channel_post_handlers = []
-        self.edited_channel_post_handlers = []
-        self.inline_handlers = []
-        self.chosen_inline_handlers = []
-        self.callback_query_handlers = []
-        self.shipping_query_handlers = []
-        self.pre_checkout_query_handlers = []
+        self.message_handlers = list()
+        self.edited_message_handlers = list()
+        self.channel_post_handlers = list()
+        self.edited_channel_post_handlers = list()
+        self.inline_handlers = list()
+        self.chosen_inline_handlers = list()
+        self.callback_query_handlers = list()
+        self.shipping_query_handlers = list()
+        self.pre_checkout_query_handlers = list()
 
         self.threaded = threaded
         if self.threaded:
@@ -179,6 +179,7 @@ class TeleBot:
         :param delay: Delay between changes in handlers and saving
         :param filename: Filename of save file
         """
+
         self.next_step_saver = Saver(self.next_step_handlers, filename, delay)
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
@@ -188,18 +189,25 @@ class TeleBot:
         :param delay: Delay between changes in handlers and saving
         :param filename: Filename of save file
         """
+
         self.reply_saver = Saver(self.reply_handlers, filename, delay)
 
     def disable_save_next_step_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
+
+        :return:
         """
+
         self.next_step_saver = None
 
     def disable_save_reply_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
+
+        :return:
         """
+
         self.reply_saver = None
 
     def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
@@ -209,6 +217,7 @@ class TeleBot:
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
+
         self.next_step_saver.load_handlers(filename, del_file_after_loading)
 
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
@@ -218,6 +227,7 @@ class TeleBot:
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
+
         self.reply_saver.load_handlers(filename)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
@@ -226,8 +236,10 @@ class TeleBot:
     def delete_webhook(self):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
+
         :return: bool
         """
+
         return apihelper.delete_webhook(self.token)
 
     def get_webhook_info(self):
@@ -240,12 +252,14 @@ class TeleBot:
     def get_updates(self, offset=None, limit=None, timeout=20, allowed_updates=None):
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :param offset: Integer. Identifier of the first update to be returned.
         :param limit: Integer. Limits the number of updates to be retrieved.
         :param timeout: Integer. Timeout in seconds for long polling.
         :return: array of Updates
         """
+
         json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates)
         ret = []
         for ju in json_updates:
@@ -257,6 +271,7 @@ class TeleBot:
         Get and discard all pending updates before first poll of the bot
         :return: total updates skipped
         """
+
         total = 0
         updates = self.get_updates(offset=self.last_update_id, timeout=1)
         while updates:
@@ -273,22 +288,24 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
+
         if self.skip_pending:
-            logger.debug(f"Skipped {self.__skip_updates()} pending messages")
+            update = self.__skip_updates()
+            logger.debug(f"Skipped {update} pending messages.")
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         self.process_new_updates(updates)
 
     def process_new_updates(self, updates):
-        new_messages = []
-        edited_new_messages = []
-        new_channel_posts = []
-        new_edited_channel_posts = []
-        new_inline_querys = []
-        new_chosen_inline_results = []
-        new_callback_querys = []
-        new_shipping_querys = []
-        new_pre_checkout_querys = []
+        new_messages = list()
+        edited_new_messages = list()
+        new_channel_posts = list()
+        new_edited_channel_posts = list()
+        new_inline_querys = list()
+        new_chosen_inline_results = list()
+        new_callback_querys = list()
+        new_shipping_querys = list()
+        new_pre_checkout_querys = list()
 
         for update in updates:
             if update.update_id > self.last_update_id:
