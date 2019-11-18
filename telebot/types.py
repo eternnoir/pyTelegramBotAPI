@@ -2002,13 +2002,16 @@ class ShippingOption(JsonSerializable):
     def add_price(self, *args):
         """
         Add LabeledPrice to ShippingOption
+
         :param args: LabeledPrices
         """
+
         for price in args:
             self.prices.append(price)
+        return self
 
     def to_json(self):
-        price_list = []
+        price_list = list()
         for p in self.prices:
             price_list.append(p.to_dic())
         json_dict = json.dumps(dict(id=self.id, title=self.title, prices=price_list))

@@ -49,7 +49,7 @@ def _make_request(token, method_name, method="get", params=None, files=None, bas
         request_url = base_url.format(token, method_name)
 
     request_url = base_url.format(token, method_name)
-    logger.debug(f"Request: method={method} url={request_url} params={params} files={files}")
+    logger.debug("Request: method=%s url=%s params=%s files=%s", method, request_url, params, files)
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
     if files and format_header_param:
@@ -61,7 +61,7 @@ def _make_request(token, method_name, method="get", params=None, files=None, bas
             connect_timeout = params["connect-timeout"] + 10
     result = _get_req_session().request(method, request_url, params=params, files=files,
                                         timeout=(connect_timeout, read_timeout), proxies=proxy)
-    logger.debug(f"The server returned: {result.text.encode('utf8')}")
+    logger.debug("The server returned: %s", result.text.encode('utf8'))
     return _check_result(method_name, result)["result"]
 
 

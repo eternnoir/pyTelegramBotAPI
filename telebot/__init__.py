@@ -466,7 +466,7 @@ class TeleBot:
                     self.__stop_polling.set()
                     logger.info("Exception occurred. Stopping.")
                 else:
-                    logger.info(f"Waiting for {error_interval} seconds until retry")
+                    logger.info("Waiting for %s seconds until retry", error_interval)
                     time.sleep(error_interval)
                     error_interval *= 2
             except KeyboardInterrupt:
