@@ -31,7 +31,7 @@ Module : telebot
 
 class Handler:
     """
-    Class for (next step|reply) handlers
+    Class for (next steplogger.debug|reply) handlers
     """
 
     def __init__(self, callback, *args, **kwargs):
@@ -290,8 +290,7 @@ class TeleBot:
         """
 
         if self.skip_pending:
-            update = self.__skip_updates()
-            logger.debug(f"Skipped {update} pending messages.")
+            logger.debug("Skipped %s pending messages.", self.__skip_updates())
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
         self.process_new_updates(updates)
@@ -329,7 +328,7 @@ class TeleBot:
             if update.pre_checkout_query:
                 new_pre_checkout_querys.append(update.pre_checkout_query)
 
-        logger.debug(f"Received {len(updates)} new updates")
+        logger.debug("Received %s new updates", len(updates))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
         if len(edited_new_messages) > 0:
