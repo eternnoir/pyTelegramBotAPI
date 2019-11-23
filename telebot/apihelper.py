@@ -45,8 +45,7 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
         request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
     else:
         request_url = base_url.format(token, method_name)
-        
-    request_url = base_url.format(token, method_name)
+
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
