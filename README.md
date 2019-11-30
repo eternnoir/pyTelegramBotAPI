@@ -251,7 +251,7 @@ updates = tb.get_updates()
 updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
 
 # sendMessage
-tb.send_message(chatid, text)
+tb.send_message(chat_id, text)
 
 # forwardMessage
 tb.forward_message(to_chat_id, from_chat_id, message_id)
