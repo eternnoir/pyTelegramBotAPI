@@ -598,5 +598,6 @@ Get help. Discuss. Chat.
 * [kboardbot](https://t.me/kboardbot) by [kor0p](https://github.com/kor0p) - inline switches keyboard layout (English, Hebrew, Ukrainian, Russian).  
 * [Robbie](https://t.me/romdeliverybot) ([source](https://github.com/FacuM/romdeliverybot_support)) by @FacuM - Support Telegram bot for developers and maintainers.
 * [AsadovBot](https://t.me/asadov_bot) ([source](https://github.com/desexcile/BotApi)) by @DesExcile - Сatalog of poems by Eduard Asadov.
+* [thesaurus_com_bot](https://t.me/thesaurus_com_bot) ([source](https://github.com/LeoSvalov/words-i-learn-bot)) by @LeoSvalov - words and synonyms from [dictionary.com](https://www.dictionary.com) and [thesaurus.com](https://www.thesaurus.com) in the telegram.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
