@@ -477,10 +477,10 @@ class Message(JsonDeserializable):
                 url = "tg://user?id={0}".format(user.id)
             elif type == "mention":
                 url = "https://t.me/{0}".format(text[1:])
+            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             if not type or not _subs.get(type):
                 return text
             subs = _subs.get(type)
-            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             return subs.format(text=text, url=url)
 
         offset = 0
