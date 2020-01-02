@@ -579,7 +579,7 @@ class TeleBot:
         return types.ChatMember.de_json(result)
 
     def send_message(self, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-                     parse_mode=None, disable_notification=None):
+                     parse_mode=None, disable_notification=None, timeout=None):
         """
         Use this method to send text messages.
 
@@ -597,7 +597,7 @@ class TeleBot:
         """
         return types.Message.de_json(
             apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
-                                   reply_markup, parse_mode, disable_notification))
+                                   reply_markup, parse_mode, disable_notification, timeout))
 
     def forward_message(self, chat_id, from_chat_id, message_id, disable_notification=None):
         """
@@ -843,7 +843,7 @@ class TeleBot:
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
                less than 30 seconds from the current time they are considered to be banned forever
-        :return: types.Message
+        :return: boolean
         """
         return apihelper.kick_chat_member(self.token, chat_id, user_id, until_date)
 

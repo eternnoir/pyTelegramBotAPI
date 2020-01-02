@@ -121,7 +121,7 @@ def download_file(token, file_path):
 
 
 def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-                 parse_mode=None, disable_notification=None):
+                 parse_mode=None, disable_notification=None, timeout=None):
     """
     Use this method to send text messages. On success, the sent Message is returned.
     :param token:
@@ -146,6 +146,8 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
         payload['parse_mode'] = parse_mode
     if disable_notification:
         payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
 
