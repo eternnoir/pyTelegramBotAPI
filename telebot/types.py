@@ -404,6 +404,7 @@ class Message(JsonDeserializable):
         self.date = date
         self.chat = chat
         self.forward_from_chat = None
+        self.forward_from_message_id = None
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
