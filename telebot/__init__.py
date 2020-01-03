@@ -452,7 +452,7 @@ class TeleBot:
         logger.info("Stopped polling.")
 
     def __non_threaded_polling(self, none_stop=False, interval=0, timeout=3):
-        logger.info("Stopped polling.")
+        logger.info("Started polling.")
         self.__stop_polling.clear()
         error_interval = .25
 
