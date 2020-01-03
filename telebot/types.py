@@ -404,6 +404,7 @@ class Message(JsonDeserializable):
         self.date = date
         self.chat = chat
         self.forward_from_chat = None
+        self.forward_from_message_id = None
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
@@ -483,10 +484,10 @@ class Message(JsonDeserializable):
                 url = "tg://user?id={0}".format(user.id)
             elif type == "mention":
                 url = "https://t.me/{0}".format(text[1:])
+            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             if not type or not _subs.get(type):
                 return text
             subs = _subs.get(type)
-            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             return subs.format(text=text, url=url)
 
         offset = 0
@@ -1932,6 +1933,7 @@ class ShippingOption(JsonSerializable):
         """
         for price in args:
             self.prices.append(price)
+        return self
 
     def to_json(self):
         price_list = []

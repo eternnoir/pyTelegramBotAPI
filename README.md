@@ -251,7 +251,7 @@ updates = tb.get_updates()
 updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
 
 # sendMessage
-tb.send_message(chatid, text)
+tb.send_message(chat_id, text)
 
 # forwardMessage
 tb.forward_message(to_chat_id, from_chat_id, message_id)
@@ -566,7 +566,7 @@ Get help. Discuss. Chat.
 * [Telegram Proxy Bot](https://github.com/mrgigabyte/proxybot) by *mrgigabyte* - `Credits for the original version of this bot goes to` **Groosha** `, simply added certain features which I thought were needed`.
 * [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
 * [League of Legends bot](https://telegram.me/League_of_Legends_bot) ([source](https://github.com/i32ropie/lol)) by *i32ropie*
-* [NeoBot](https://github.com/neoranger/NeoBot) by *neoranger*
+* [NeoBot](https://github.com/neoranger/NeoBot) by [@NeoRanger](https://github.com/neoranger)
 * [TagAlertBot](https://github.com/pitasi/TagAlertBot) by *pitasi*
 * [ComedoresUGRbot](http://telegram.me/ComedoresUGRbot) ([source](https://github.com/alejandrocq/ComedoresUGRbot)) by [*alejandrocq*](https://github.com/alejandrocq) - Telegram bot to check the menu of Universidad de Granada dining hall.
 * [picpingbot](https://web.telegram.org/#/im?p=%40picpingbot) - Fun anonymous photo exchange by Boogie Muffin.
@@ -591,6 +591,7 @@ Get help. Discuss. Chat.
 * [MusicQuiz_bot](https://t.me/MusicQuiz_bot) by [Etoneja](https://github.com/Etoneja) - Listen to audiosamles and try to name the performer of the song.
 * [Bot-Telegram-Shodan ](https://github.com/rubenleon/Bot-Telegram-Shodan) by [rubenleon](https://github.com/rubenleon)
 * [MandangoBot](https://t.me/MandangoBot) by @Alvaricias - Bot for managing Marvel Strike Force alliances (only in spanish, atm).
+* [ManjaroBot](https://t.me/ManjaroBot) by [@NeoRanger](https://github.com/neoranger) - Bot for Manjaro Linux Spanish group with a lot of info for Manjaro Newbies.
 * [VigoBusTelegramBot](https://t.me/vigobusbot) ([GitHub](https://github.com/Pythoneiro/VigoBus-TelegramBot)) - Bot that provides buses coming to a certain stop and their remaining time for the city of Vigo (Galicia - Spain)
 * [kaishnik-bot](https://t.me/kaishnik_bot) ([source](https://github.com/airatk/kaishnik-bot)) by *airatk* - bot which shows all the necessary information to KNTRU-KAI students.
 * [Creation Date](https://t.me/creationdatebot) by @karipov - interpolates account creation dates based on telegram given ID’s
@@ -598,5 +599,6 @@ Get help. Discuss. Chat.
 * [kboardbot](https://t.me/kboardbot) by [kor0p](https://github.com/kor0p) - inline switches keyboard layout (English, Hebrew, Ukrainian, Russian).  
 * [Robbie](https://t.me/romdeliverybot) ([source](https://github.com/FacuM/romdeliverybot_support)) by @FacuM - Support Telegram bot for developers and maintainers.
 * [AsadovBot](https://t.me/asadov_bot) ([source](https://github.com/desexcile/BotApi)) by @DesExcile - Сatalog of poems by Eduard Asadov.
+* [thesaurus_com_bot](https://t.me/thesaurus_com_bot) ([source](https://github.com/LeoSvalov/words-i-learn-bot)) by @LeoSvalov - words and synonyms from [dictionary.com](https://www.dictionary.com) and [thesaurus.com](https://www.thesaurus.com) in the telegram.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
