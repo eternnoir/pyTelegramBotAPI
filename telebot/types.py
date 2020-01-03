@@ -260,118 +260,124 @@ class Message(JsonDeserializable):
         chat = Chat.de_json(obj["chat"])
         content_type = None
         opts = {}
-        if "forward_from" in obj:
-            opts["forward_from"] = User.de_json(obj["forward_from"])
-        if "" in obj:
-            opts["forward_from_chat"] = Chat.de_json(obj["forward_from_chat"])
-        if "forward_from_message_id" in obj:
-            opts[""] = obj.get("forward_from_message_id")
-        if "forward_signature" in obj:
-            opts["forward_signature"] = obj.get("forward_signature")
-        if "forward_date" in obj:
-            opts["forward_date"] = obj.get("forward_date")
-        if "reply_to_message" in obj:
-            opts["reply_to_message"] = Message.de_json(obj["reply_to_message"])
-        if "edit_date" in obj:
-            opts["edit_date"] = obj.get("edit_date")
-        if "media_group_id" in obj:
-            opts["media_group_id"] = obj.get("media_group_id")
-        if "author_signature" in obj:
-            opts["author_signature"] = obj.get("author_signature")
-        if "text" in obj:
-            opts["text"] = obj["text"]
-            content_type = "text"
-        if "entities" in obj:
-            opts["entities"] = Message.parse_entities(obj["entities"])
-        if "caption_entities" in obj:
-            opts["caption_entities"] = Message.parse_entities(obj["caption_entities"])
-        if "audio" in obj:
-            opts["audio"] = Audio.de_json(obj["audio"])
-            content_type = "audio"
-        if "document" in obj:
-            opts["document"] = Document.de_json(obj["document"])
-            content_type = "document"
-        if "game" in obj:
-            opts["game"] = Game.de_json(obj["game"])
-            content_type = "game"
-        if "photo" in obj:
-            opts["photo"] = Message.parse_photo(obj["photo"])
-            content_type = "photo"
-        if "sticker" in obj:
-            opts["sticker"] = Sticker.de_json(obj["sticker"])
-            content_type = "sticker"
-        if "video" in obj:
-            opts["video"] = Video.de_json(obj["video"])
-            content_type = "video"
-        if "video_note" in obj:
-            opts["video_note"] = VideoNote.de_json(obj["video_note"])
-            content_type = "video_note"
-        if "voice" in obj:
-            opts["voice"] = Audio.de_json(obj["voice"])
-            content_type = "voice"
-        if "caption" in obj:
-            opts["caption"] = obj["caption"]
-        if "contact" in obj:
-            opts["contact"] = Contact.de_json(json.dumps(obj["contact"]))
-            content_type = "contact"
-        if "location" in obj:
-            opts["location"] = Location.de_json(obj["location"])
-            content_type = "location"
-        if "venue" in obj:
-            opts["venue"] = Venue.de_json(obj["venue"])
-            content_type = "venue"
-        if "new_chat_member" in obj:
-            opts["new_chat_member"] = User.de_json(obj["new_chat_member"])
-            content_type = "new_chat_member"
-        if "new_chat_members" in obj:
-            chat_members = obj["new_chat_members"]
-            opts["new_chat_members"] = [User.de_json(m) for m in chat_members]
-            content_type = "new_chat_members"
-        if "left_chat_member" in obj:
-            opts["left_chat_member"] = User.de_json(obj["left_chat_member"])
-            content_type = "left_chat_member"
-        if "new_chat_title" in obj:
-            opts["new_chat_title"] = obj["new_chat_title"]
-            content_type = "new_chat_title"
-        if "new_chat_photo" in obj:
-            opts["new_chat_photo"] = Message.parse_photo(obj["new_chat_photo"])
-            content_type = "new_chat_photo"
-        if "delete_chat_photo" in obj:
-            opts["delete_chat_photo"] = obj["delete_chat_photo"]
-            content_type = "delete_chat_photo"
-        if "group_chat_created" in obj:
-            opts["group_chat_created"] = obj["group_chat_created"]
-            content_type = "group_chat_created"
-        if "supergroup_chat_created" in obj:
-            opts["supergroup_chat_created"] = obj["supergroup_chat_created"]
-            content_type = "supergroup_chat_created"
-        if "channel_chat_created" in obj:
-            opts["channel_chat_created"] = obj["channel_chat_created"]
-            content_type = "channel_chat_created"
-        if "migrate_to_chat_id" in obj:
-            opts["migrate_to_chat_id"] = obj["migrate_to_chat_id"]
-            content_type = "migrate_to_chat_id"
-        if "migrate_from_chat_id" in obj:
-            opts["migrate_from_chat_id"] = obj["migrate_from_chat_id"]
-            content_type = "migrate_from_chat_id"
-        if "pinned_message" in obj:
-            opts["pinned_message"] = Message.de_json(obj["pinned_message"])
-            content_type = "pinned_message"
-        if "invoice" in obj:
-            opts["invoice"] = Invoice.de_json(obj["invoice"])
-            content_type = "invoice"
-        if "successful_payment" in obj:
-            opts["successful_payment"] = SuccessfulPayment.de_json(obj["successful_payment"])
-            content_type = "successful_payment"
-        if "connected_website" in obj:
-            opts["connected_website"] = obj["connected_website"]
-            content_type = "connected_website"
-        if "poll" in obj:
-            opts["poll"] = Poll.de_json(obj["poll"])
-            content_type = "poll"
-        if "passport_data" in obj:
-            opts["passport_data"] = obj["passport_data"]
-            content_type = "passport_data"
+        if 'forward_from' in obj:
+            opts['forward_from'] = User.de_json(obj['forward_from'])
+        if 'forward_from_chat' in obj:
+            opts['forward_from_chat'] = Chat.de_json(obj['forward_from_chat'])
+        if 'forward_from_message_id' in obj:
+            opts['forward_from_message_id'] = obj.get('forward_from_message_id')
+        if 'forward_signature' in obj:
+            opts['forward_signature'] = obj.get('forward_signature')
+        if 'forward_date' in obj:
+            opts['forward_date'] = obj.get('forward_date')
+        if 'reply_to_message' in obj:
+            opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
+        if 'edit_date' in obj:
+            opts['edit_date'] = obj.get('edit_date')
+        if 'media_group_id' in obj:
+            opts['media_group_id'] = obj.get('media_group_id')
+        if 'author_signature' in obj:
+            opts['author_signature'] = obj.get('author_signature')
+        if 'text' in obj:
+            opts['text'] = obj['text']
+            content_type = 'text'
+        if 'entities' in obj:
+            opts['entities'] = Message.parse_entities(obj['entities'])
+        if 'caption_entities' in obj:
+            opts['caption_entities'] = Message.parse_entities(obj['caption_entities'])
+        if 'audio' in obj:
+            opts['audio'] = Audio.de_json(obj['audio'])
+            content_type = 'audio'
+        if 'animation' in obj:
+            opts['animation'] = Animation.de_json(obj['animation'])
+            content_type = 'animation'
+        if 'document' in obj:
+            opts['document'] = Document.de_json(obj['document'])
+            content_type = 'document'
+        if 'game' in obj:
+            opts['game'] = Game.de_json(obj['game'])
+            content_type = 'game'
+        if 'photo' in obj:
+            opts['photo'] = Message.parse_photo(obj['photo'])
+            content_type = 'photo'
+        if 'sticker' in obj:
+            opts['sticker'] = Sticker.de_json(obj['sticker'])
+            content_type = 'sticker'
+        if 'video' in obj:
+            opts['video'] = Video.de_json(obj['video'])
+            content_type = 'video'
+        if 'video_note' in obj:
+            opts['video_note'] = VideoNote.de_json(obj['video_note'])
+            content_type = 'video_note'
+        if 'voice' in obj:
+            opts['voice'] = Audio.de_json(obj['voice'])
+            content_type = 'voice'
+        if 'caption' in obj:
+            opts['caption'] = obj['caption']
+        if 'contact' in obj:
+            opts['contact'] = Contact.de_json(json.dumps(obj['contact']))
+            content_type = 'contact'
+        if 'location' in obj:
+            opts['location'] = Location.de_json(obj['location'])
+            content_type = 'location'
+        if 'venue' in obj:
+            opts['venue'] = Venue.de_json(obj['venue'])
+            content_type = 'venue'
+        if 'new_chat_member' in obj:
+            opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
+            content_type = 'new_chat_member'
+        if 'new_chat_members' in obj:
+            chat_members = obj['new_chat_members']
+            nms = []
+            for m in chat_members:
+                nms.append(User.de_json(m))
+            opts['new_chat_members'] = nms
+            content_type = 'new_chat_members'
+        if 'left_chat_member' in obj:
+            opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
+            content_type = 'left_chat_member'
+        if 'new_chat_title' in obj:
+            opts['new_chat_title'] = obj['new_chat_title']
+            content_type = 'new_chat_title'
+        if 'new_chat_photo' in obj:
+            opts['new_chat_photo'] = Message.parse_photo(obj['new_chat_photo'])
+            content_type = 'new_chat_photo'
+        if 'delete_chat_photo' in obj:
+            opts['delete_chat_photo'] = obj['delete_chat_photo']
+            content_type = 'delete_chat_photo'
+        if 'group_chat_created' in obj:
+            opts['group_chat_created'] = obj['group_chat_created']
+            content_type = 'group_chat_created'
+        if 'supergroup_chat_created' in obj:
+            opts['supergroup_chat_created'] = obj['supergroup_chat_created']
+            content_type = 'supergroup_chat_created'
+        if 'channel_chat_created' in obj:
+            opts['channel_chat_created'] = obj['channel_chat_created']
+            content_type = 'channel_chat_created'
+        if 'migrate_to_chat_id' in obj:
+            opts['migrate_to_chat_id'] = obj['migrate_to_chat_id']
+            content_type = 'migrate_to_chat_id'
+        if 'migrate_from_chat_id' in obj:
+            opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
+            content_type = 'migrate_from_chat_id'
+        if 'pinned_message' in obj:
+            opts['pinned_message'] = Message.de_json(obj['pinned_message'])
+            content_type = 'pinned_message'
+        if 'invoice' in obj:
+            opts['invoice'] = Invoice.de_json(obj['invoice'])
+            content_type = 'invoice'
+        if 'successful_payment' in obj:
+            opts['successful_payment'] = SuccessfulPayment.de_json(obj['successful_payment'])
+            content_type = 'successful_payment'
+        if 'connected_website' in obj:
+            opts['connected_website'] = obj['connected_website']
+            content_type = 'connected_website'
+        if 'poll' in obj:
+            opts['poll'] = Poll.de_json(obj['poll'])
+            content_type = 'poll'
+        if 'passport_data' in obj:
+            opts['passport_data'] = obj['passport_data']
+            content_type = 'passport_data'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -396,6 +402,7 @@ class Message(JsonDeserializable):
         self.date = date
         self.chat = chat
         self.forward_from_chat = None
+        self.forward_from_message_id = None
         self.forward_from = None
         self.forward_date = None
         self.reply_to_message = None
@@ -416,6 +423,7 @@ class Message(JsonDeserializable):
         self.contact = None
         self.location = None
         self.venue = None
+        self.animation = None
         self.new_chat_member = None
         self.new_chat_members = None
         self.left_chat_member = None
@@ -473,11 +481,11 @@ class Message(JsonDeserializable):
                 type = "url"
                 url = f"tg://user?id={user.id}"
             elif type == "mention":
-                url = f"https://t.me/{text[1:]}"
+                url = "https://t.me/{0}".format(text[1:])
+            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             if not type or not _subs.get(type):
                 return text
             subs = _subs.get(type)
-            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             return subs.format(text=text, url=url)
 
         offset = 0
@@ -2116,21 +2124,22 @@ class Sticker(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         obj = cls.check_json(json_string)
-        file_id = obj["file_id"]
-        width = obj["width"]
-        height = obj["height"]
+        file_id = obj['file_id']
+        width = obj['width']
+        height = obj['height']
+        is_animated = obj['is_animated']
         thumb = None
         if "thumb" in obj:
             thumb = PhotoSize.de_json(obj["thumb"])
         emoji = obj.get("emoji")
         set_name = obj.get("set_name")
         mask_position = None
-        if "mask_position" in obj:
-            mask_position = MaskPosition.de_json(obj["mask_position"])
-        file_size = obj.get("file_size")
-        return cls(file_id, width, height, thumb, emoji, set_name, mask_position, file_size)
+        if 'mask_position' in obj:
+            mask_position = MaskPosition.de_json(obj['mask_position'])
+        file_size = obj.get('file_size')
+        return cls(file_id, width, height, thumb, emoji, set_name, mask_position, file_size, is_animated)
 
-    def __init__(self, file_id, width, height, thumb, emoji, set_name, mask_position, file_size):
+    def __init__(self, file_id, width, height, thumb, emoji, set_name, mask_position, file_size, is_animated):
         self.file_id = file_id
         self.width = width
         self.height = height
@@ -2139,7 +2148,7 @@ class Sticker(JsonDeserializable):
         self.set_name = set_name
         self.mask_position = mask_position
         self.file_size = file_size
-
+        self.is_animated = is_animated
 
 class MaskPosition(JsonDeserializable, JsonSerializable):
     
