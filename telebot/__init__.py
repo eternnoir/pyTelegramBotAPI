@@ -107,6 +107,7 @@ class TeleBot:
         sendDocument
         sendSticker
         sendVideo
+        sendAnimation
         sendVideoNote
         sendLocation
         sendChatAction
@@ -719,6 +720,23 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
                                  parse_mode, supports_streaming, disable_notification, timeout))
+
+    def send_animation(self, chat_id, animation, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+                   parse_mode=None, disable_notification=None, timeout=None):
+        """
+        Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
+        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
+        :param data: InputFile or String : Animation to send. You can either pass a file_id as String to resend an animation that is already on the Telegram server
+        :param duration: Integer : Duration of sent video in seconds
+        :param caption: String : Animation caption (may also be used when resending animation by file_id).
+        :param parse_mode:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return:
+        """
+        return types.Message.de_json(
+            apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
+                                 parse_mode, disable_notification, timeout))
 
     def send_video_note(self, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
                         disable_notification=None, timeout=None):

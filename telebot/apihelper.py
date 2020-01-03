@@ -397,6 +397,32 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
+def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+               parse_mode=None, disable_notification=None, timeout=None):
+    method_url = r'sendAnimation'
+    payload = {'chat_id': chat_id}
+    files = None
+    if not util.is_string(data):
+        files = {'animation': data}
+    else:
+        payload['animation'] = data
+    if duration:
+        payload['duration'] = duration
+    if caption:
+        payload['caption'] = caption
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['connect-timeout'] = timeout
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+
 def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
                parse_mode=None, disable_notification=None, timeout=None):
     method_url = r'sendVoice'
