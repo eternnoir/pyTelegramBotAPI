@@ -287,6 +287,9 @@ class Message(JsonDeserializable):
         if 'audio' in obj:
             opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
+        if 'animation' in obj:
+            opts['animation'] = Animation.de_json(obj['animation'])
+            content_type = 'animation'
         if 'document' in obj:
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
@@ -296,9 +299,6 @@ class Message(JsonDeserializable):
         if 'photo' in obj:
             opts['photo'] = Message.parse_photo(obj['photo'])
             content_type = 'photo'
-        if 'animation' in obj:
-            opts['animation'] = Animation.de_json(obj['animation'])
-            content_type = 'animation'
         if 'sticker' in obj:
             opts['sticker'] = Sticker.de_json(obj['sticker'])
             content_type = 'sticker'
