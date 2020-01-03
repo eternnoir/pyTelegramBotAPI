@@ -48,7 +48,7 @@ def test_json_Message_Audio():
 
 
 def test_json_Message_Sticker():
-    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"thumb":{"file_id":"AAQFABPJLB0sAAQq17w-li3bzoIfAAIC","file_size":1822,"width":90,"height":60},"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"is_animated":true,"thumb":{"file_id":"AAQFABPJLB0sAAQq17w-li3bzoIfAAIC","file_size":1822,"width":90,"height":60},"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb.height == 60
@@ -56,7 +56,7 @@ def test_json_Message_Sticker():
 
 
 def test_json_Message_Sticker_without_thumb():
-    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"is_animated":true,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb is None
