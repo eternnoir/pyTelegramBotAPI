@@ -31,7 +31,7 @@ def _get_req_session(reset=False):
     return util.per_thread('req_session', lambda: requests.session(), reset)
 
 
-def _make_request(token, method_name, method='get', params=None, files=None, base_url=API_URL):
+def _make_request(token, method_name, method='get', params=None, files=None):
     """
     Makes a request to the Telegram API.
     :param token: The bot's API token. (Created with @BotFather)
@@ -41,11 +41,11 @@ def _make_request(token, method_name, method='get', params=None, files=None, bas
     :param files: Optional files.
     :return: The result parsed to a JSON dictionary.
     """
-    if base_url is None:
+    if API_URL is None:
         request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
     else:
-        request_url = base_url.format(token, method_name)
-
+        request_url = API_URL.format(token, method_name)
+    
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
@@ -104,13 +104,17 @@ def get_file(token, file_id):
 
 def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id).file_path)
+        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)['file_path'])
     else:
         return FILE_URL.format(token, get_file(token, file_id)['file_path'])
  
 
 def download_file(token, file_path):
-    url = FILE_URL.format(token, file_path)
+    if FILE_URL is None:
+        url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+    else:
+        url =  FILE_URL.format(token, file_path)
+        
     result = _get_req_session().get(url, proxies=proxy)
     if result.status_code != 200:
         msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
