@@ -31,8 +31,7 @@ def _get_req_session(reset=False):
     return util.per_thread("req_session", lambda: requests.session(), reset)
 
 
-
-def _make_request(token, method_name, method='get', params=None, files=None):
+def _make_request(token, method_name, method="get", params=None, files=None):
     """
     Makes a request to the Telegram API.
 
@@ -48,8 +47,12 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
     else:
         request_url = API_URL.format(token, method_name)
-    
-    logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
+
+    logger.debug(
+        "Request: method={0} url={1} params={2} files={3}".format(
+            method, request_url, params, files
+        )
+    )
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
     if files and format_header_param:
@@ -59,9 +62,15 @@ def _make_request(token, method_name, method='get', params=None, files=None):
             read_timeout = params["timeout"] + 10
         if "connect-timeout" in params:
             connect_timeout = params["connect-timeout"] + 10
-    result = _get_req_session().request(method, request_url, params=params, files=files,
-                                        timeout=(connect_timeout, read_timeout), proxies=proxy)
-    logger.debug("The server returned: %s", result.text.encode('utf8'))
+    result = _get_req_session().request(
+        method,
+        request_url,
+        params=params,
+        files=files,
+        timeout=(connect_timeout, read_timeout),
+        proxies=proxy,
+    )
+    logger.debug("The server returned: %s", result.text.encode("utf8"))
     return _check_result(method_name, result)["result"]
 
 
@@ -80,8 +89,10 @@ def _check_result(method_name, result):
     """
 
     if result.status_code != 200:
-        msg = f"The server returned HTTP {result.status_code} {result.reason}. " \
-              f"Response body:\n[{result.text.encode('utf8')}]"
+        msg = (
+            f"The server returned HTTP {result.status_code} {result.reason}. "
+            f"Response body:\n[{result.text.encode('utf8')}]"
+        )
         raise ApiException(msg, method_name, result)
 
     try:
@@ -103,24 +114,24 @@ def get_me(token):
 
 def get_file(token, file_id):
     method_url = r"getFile"
-    return _make_request(token,
-                         method_url,
-                         params=dict(file_id=file_id))
+    return _make_request(token, method_url, params=dict(file_id=file_id))
 
 
 def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)['file_path'])
+        return "https://api.telegram.org/file/bot{0}/{1}".format(
+            token, get_file(token, file_id)["file_path"]
+        )
     else:
         return FILE_URL.format(token, get_file(token, file_id)["file_path"])
 
 
 def download_file(token, file_path):
     if FILE_URL is None:
-        url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+        url = "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
     else:
-        url =  FILE_URL.format(token, file_path)
-        
+        url = FILE_URL.format(token, file_path)
+
     result = _get_req_session().get(url, proxies=proxy)
     if result.status_code != 200:
         msg = f"The server returned HTTP {result.status_code} {result.reason}. Response body:\n[{result.text}]"
@@ -128,8 +139,17 @@ def download_file(token, file_path):
     return result.content
 
 
-def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-                 parse_mode=None, disable_notification=None, timeout=None):
+def send_message(
+    token,
+    chat_id,
+    text,
+    disable_web_page_preview=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    disable_notification=None,
+    timeout=None,
+):
     """
     Use this method to send text messages. On success, the sent Message is returned.
 
@@ -141,6 +161,7 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     :param reply_markup:
     :param parse_mode:
     :param disable_notification:
+    :param timeout:
     :return:
     """
 
@@ -156,13 +177,15 @@ def send_message(token, chat_id, text, disable_web_page_preview=None, reply_to_m
     if parse_mode:
         payload["parse_mode"] = parse_mode
     if disable_notification:
-        payload['disable_notification'] = disable_notification
+        payload["disable_notification"] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
-    return _make_request(token, method_url, params=payload, method='post')
+        payload["connect-timeout"] = timeout
+    return _make_request(token, method_url, params=payload, method="post")
 
 
-def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None):
+def set_webhook(
+    token, url=None, certificate=None, max_connections=None, allowed_updates=None
+):
     """
     Installs the webhook
 
@@ -233,7 +256,7 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
     if timeout:
         payload["timeout"] = timeout
     if allowed_updates:
-        payload['allowed_updates'] = json.dumps(allowed_updates)
+        payload["allowed_updates"] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload)
 
 
@@ -266,8 +289,8 @@ def get_chat_administrators(token, chat_id):
 
 
 def get_chat_members_count(token, chat_id):
-    method_url = r'getChatMembersCount'
-    payload = {'chat_id': chat_id}
+    method_url = r"getChatMembersCount"
+    payload = {"chat_id": chat_id}
     return _make_request(token, method_url, params=payload)
 
 
@@ -289,7 +312,9 @@ def get_chat_member(token, chat_id, user_id):
     return _make_request(token, method_url, params=payload)
 
 
-def forward_message(token, chat_id, from_chat_id, message_id, disable_notification=None):
+def forward_message(
+    token, chat_id, from_chat_id, message_id, disable_notification=None
+):
     method_url = r"forwardMessage"
     payload = dict(chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id)
     if disable_notification:
@@ -297,8 +322,16 @@ def forward_message(token, chat_id, from_chat_id, message_id, disable_notificati
     return _make_request(token, method_url, params=payload)
 
 
-def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, disable_notification=None):
+def send_photo(
+    token,
+    chat_id,
+    photo,
+    caption=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    disable_notification=None,
+):
     method_url = r"sendPhoto"
     payload = dict(chat_id=chat_id)
     files = None
@@ -319,7 +352,9 @@ def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, re
     return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def send_media_group(token, chat_id, media, disable_notification=None, reply_to_message_id=None):
+def send_media_group(
+    token, chat_id, media, disable_notification=None, reply_to_message_id=None
+):
     method_url = r"sendMediaGroup"
     media_json, files = _convert_input_media_array(media)
     payload = dict(chat_id=chat_id, media=media_json)
@@ -327,14 +362,25 @@ def send_media_group(token, chat_id, media, disable_notification=None, reply_to_
         payload["disable_notification"] = disable_notification
     if reply_to_message_id:
         payload["reply_to_message_id"] = reply_to_message_id
-    return _make_request(token, method_url,
-                         params=payload,
-                         method="post" if files else "get",
-                         files=files if files else None)
+    return _make_request(
+        token,
+        method_url,
+        params=payload,
+        method="post" if files else "get",
+        files=files if files else None,
+    )
 
 
-def send_location(token, chat_id, latitude, longitude, live_period=None, reply_to_message_id=None, reply_markup=None,
-                  disable_notification=None):
+def send_location(
+    token,
+    chat_id,
+    latitude,
+    longitude,
+    live_period=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    disable_notification=None,
+):
     method_url = r"sendLocation"
     payload = dict(chat_id=chat_id, latitude=latitude, longitude=longitude)
     if live_period:
@@ -348,8 +394,15 @@ def send_location(token, chat_id, latitude, longitude, live_period=None, reply_t
     return _make_request(token, method_url, params=payload)
 
 
-def edit_message_live_location(token, latitude, longitude, chat_id=None, message_id=None,
-                               inline_message_id=None, reply_markup=None):
+def edit_message_live_location(
+    token,
+    latitude,
+    longitude,
+    chat_id=None,
+    message_id=None,
+    inline_message_id=None,
+    reply_markup=None,
+):
     method_url = r"editMessageLiveLocation"
     payload = dict(latitude=latitude, longitude=longitude)
     if chat_id:
@@ -363,8 +416,9 @@ def edit_message_live_location(token, latitude, longitude, chat_id=None, message
     return _make_request(token, method_url, params=payload)
 
 
-def stop_message_live_location(token, chat_id=None, message_id=None,
-                               inline_message_id=None, reply_markup=None):
+def stop_message_live_location(
+    token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None
+):
     method_url = r"stopMessageLiveLocation"
     payload = dict()
     if chat_id:
@@ -378,10 +432,26 @@ def stop_message_live_location(token, chat_id=None, message_id=None,
     return _make_request(token, method_url, params=payload)
 
 
-def send_venue(token, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
-               reply_to_message_id=None, reply_markup=None):
+def send_venue(
+    token,
+    chat_id,
+    latitude,
+    longitude,
+    title,
+    address,
+    foursquare_id=None,
+    disable_notification=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+):
     method_url = r"sendVenue"
-    payload = dict(chat_id=chat_id, latitude=latitude, longitude=longitude, title=title, address=address)
+    payload = dict(
+        chat_id=chat_id,
+        latitude=latitude,
+        longitude=longitude,
+        title=title,
+        address=address,
+    )
     if foursquare_id:
         payload["foursquare_id"] = foursquare_id
     if disable_notification:
@@ -393,8 +463,16 @@ def send_venue(token, chat_id, latitude, longitude, title, address, foursquare_i
     return _make_request(token, method_url, params=payload)
 
 
-def send_contact(token, chat_id, phone_number, first_name, last_name=None, disable_notification=None,
-                 reply_to_message_id=None, reply_markup=None):
+def send_contact(
+    token,
+    chat_id,
+    phone_number,
+    first_name,
+    last_name=None,
+    disable_notification=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+):
     method_url = r"sendContact"
     payload = dict(chat_id=chat_id, phone_number=phone_number, first_name=first_name)
     if last_name:
@@ -414,8 +492,19 @@ def send_chat_action(token, chat_id, action):
     return _make_request(token, method_url, params=payload)
 
 
-def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None):
+def send_video(
+    token,
+    chat_id,
+    data,
+    duration=None,
+    caption=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    supports_streaming=None,
+    disable_notification=None,
+    timeout=None,
+):
     method_url = r"sendVideo"
     payload = dict(chat_id=chat_id)
     files = None
@@ -442,34 +531,54 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, disable_notification=None, timeout=None):
-    method_url = r'sendAnimation'
-    payload = {'chat_id': chat_id}
+def send_animation(
+    token,
+    chat_id,
+    data,
+    duration=None,
+    caption=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    disable_notification=None,
+    timeout=None,
+):
+    method_url = r"sendAnimation"
+    payload = {"chat_id": chat_id}
     files = None
     if not util.is_string(data):
-        files = {'animation': data}
+        files = {"animation": data}
     else:
-        payload['animation'] = data
+        payload["animation"] = data
     if duration:
-        payload['duration'] = duration
+        payload["duration"] = duration
     if caption:
-        payload['caption'] = caption
+        payload["caption"] = caption
     if reply_to_message_id:
-        payload['reply_to_message_id'] = reply_to_message_id
+        payload["reply_to_message_id"] = reply_to_message_id
     if reply_markup:
-        payload['reply_markup'] = _convert_markup(reply_markup)
+        payload["reply_markup"] = _convert_markup(reply_markup)
     if parse_mode:
-        payload['parse_mode'] = parse_mode
+        payload["parse_mode"] = parse_mode
     if disable_notification:
-        payload['disable_notification'] = disable_notification
+        payload["disable_notification"] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
-    return _make_request(token, method_url, params=payload, files=files, method='post')
+        payload["connect-timeout"] = timeout
+    return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, disable_notification=None, timeout=None):
+def send_voice(
+    token,
+    chat_id,
+    voice,
+    caption=None,
+    duration=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    disable_notification=None,
+    timeout=None,
+):
     method_url = r"sendVoice"
     payload = dict(chat_id=chat_id)
     files = None
@@ -494,8 +603,17 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
     return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                    disable_notification=None, timeout=None):
+def send_video_note(
+    token,
+    chat_id,
+    data,
+    duration=None,
+    length=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    disable_notification=None,
+    timeout=None,
+):
     method_url = r"sendVideoNote"
     payload = dict(chat_id=chat_id)
     files = None
@@ -520,8 +638,20 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
     return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None):
+def send_audio(
+    token,
+    chat_id,
+    audio,
+    caption=None,
+    duration=None,
+    performer=None,
+    title=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    disable_notification=None,
+    timeout=None,
+):
     method_url = r"sendAudio"
     payload = {"chat_id": chat_id}
     files = None
@@ -550,8 +680,18 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
     return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
-              disable_notification=None, timeout=None, caption=None):
+def send_data(
+    token,
+    chat_id,
+    data,
+    data_type,
+    reply_to_message_id=None,
+    reply_markup=None,
+    parse_mode=None,
+    disable_notification=None,
+    timeout=None,
+    caption=None,
+):
     method_url = get_method_by_type(data_type)
     payload = dict(chat_id=chat_id)
     files = None
@@ -595,9 +735,16 @@ def unban_chat_member(token, chat_id, user_id):
     return _make_request(token, method_url, params=payload, method="post")
 
 
-def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_messages=None,
-                         can_send_media_messages=None, can_send_other_messages=None,
-                         can_add_web_page_previews=None):
+def restrict_chat_member(
+    token,
+    chat_id,
+    user_id,
+    until_date=None,
+    can_send_messages=None,
+    can_send_media_messages=None,
+    can_send_other_messages=None,
+    can_add_web_page_previews=None,
+):
     method_url = "restrictChatMember"
     payload = dict(chat_id=chat_id, user_id=user_id)
     if until_date:
@@ -614,9 +761,19 @@ def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_mess
     return _make_request(token, method_url, params=payload, method="post")
 
 
-def promote_chat_member(token, chat_id, user_id, can_change_info=None, can_post_messages=None,
-                        can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
-                        can_restrict_members=None, can_pin_messages=None, can_promote_members=None):
+def promote_chat_member(
+    token,
+    chat_id,
+    user_id,
+    can_change_info=None,
+    can_post_messages=None,
+    can_edit_messages=None,
+    can_delete_messages=None,
+    can_invite_users=None,
+    can_restrict_members=None,
+    can_pin_messages=None,
+    can_promote_members=None,
+):
     method_url = "promoteChatMember"
     payload = dict(chat_id=chat_id, user_id=user_id)
     if can_change_info:
@@ -675,7 +832,11 @@ def set_chat_description(token, chat_id, description):
 
 def pin_chat_message(token, chat_id, message_id, disable_notification=False):
     method_url = "pinChatMessage"
-    payload = dict(chat_id=chat_id, message_id=message_id, disable_notification=disable_notification)
+    payload = dict(
+        chat_id=chat_id,
+        message_id=message_id,
+        disable_notification=disable_notification,
+    )
     return _make_request(token, method_url, params=payload, method="post")
 
 
@@ -687,8 +848,17 @@ def unpin_chat_message(token, chat_id):
 
 # Updating messages
 
-def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
-                      disable_web_page_preview=None, reply_markup=None):
+
+def edit_message_text(
+    token,
+    text,
+    chat_id=None,
+    message_id=None,
+    inline_message_id=None,
+    parse_mode=None,
+    disable_web_page_preview=None,
+    reply_markup=None,
+):
     method_url = r"editMessageText"
     payload = dict(text=text)
     if chat_id:
@@ -706,8 +876,15 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
     return _make_request(token, method_url, params=payload, method="post")
 
 
-def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, reply_markup=None):
+def edit_message_caption(
+    token,
+    caption,
+    chat_id=None,
+    message_id=None,
+    inline_message_id=None,
+    parse_mode=None,
+    reply_markup=None,
+):
     method_url = r"editMessageCaption"
     payload = dict(caption=caption)
     if chat_id:
@@ -723,7 +900,14 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
     return _make_request(token, method_url, params=payload, method="post")
 
 
-def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_media(
+    token,
+    media,
+    chat_id=None,
+    message_id=None,
+    inline_message_id=None,
+    reply_markup=None,
+):
     method_url = r"editMessageMedia"
     media_json, file = _convert_input_media(media)
     payload = dict(media=media_json)
@@ -735,14 +919,14 @@ def edit_message_media(token, media, chat_id=None, message_id=None, inline_messa
         payload["inline_message_id"] = inline_message_id
     if reply_markup:
         payload["reply_markup"] = _convert_markup(reply_markup)
-    return _make_request(token,
-                         method_url,
-                         params=payload,
-                         files=file,
-                         method='post' if file else "get")
+    return _make_request(
+        token, method_url, params=payload, files=file, method="post" if file else "get"
+    )
 
 
-def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_reply_markup(
+    token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None
+):
     method_url = r"editMessageReplyMarkup"
     payload = dict()
     if chat_id:
@@ -764,7 +948,15 @@ def delete_message(token, chat_id, message_id):
 
 # Game
 
-def send_game(token, chat_id, game_short_name, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+
+def send_game(
+    token,
+    chat_id,
+    game_short_name,
+    disable_notification=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+):
     method_url = r"sendGame"
     payload = dict(chat_id=chat_id, game_short_name=game_short_name)
     if disable_notification:
@@ -776,8 +968,16 @@ def send_game(token, chat_id, game_short_name, disable_notification=None, reply_
     return _make_request(token, method_url, params=payload)
 
 
-def set_game_score(token, user_id, score, force=None, disable_edit_message=None, chat_id=None, message_id=None,
-                   inline_message_id=None):
+def set_game_score(
+    token,
+    user_id,
+    score,
+    force=None,
+    disable_edit_message=None,
+    chat_id=None,
+    message_id=None,
+    inline_message_id=None,
+):
     """
     Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot,
     returns the edited Message, otherwise returns True.
@@ -814,7 +1014,9 @@ def set_game_score(token, user_id, score, force=None, disable_edit_message=None,
     return _make_request(token, method_url, params=payload)
 
 
-def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_message_id=None):
+def get_game_high_scores(
+    token, user_id, chat_id=None, message_id=None, inline_message_id=None
+):
     """
 
     Use this method to get data for high score tables. Will return the score of the specified user and several
@@ -845,10 +1047,30 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
     return _make_request(token, method_url, params=payload)
 
 
-def send_invoice(token, chat_id, title, description, invoice_payload, provider_token, currency, prices,
-                 start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
-                 need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None, is_flexible=None,
-                 disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None):
+def send_invoice(
+    token,
+    chat_id,
+    title,
+    description,
+    invoice_payload,
+    provider_token,
+    currency,
+    prices,
+    start_parameter,
+    photo_url=None,
+    photo_size=None,
+    photo_width=None,
+    photo_height=None,
+    need_name=None,
+    need_phone_number=None,
+    need_email=None,
+    need_shipping_address=None,
+    is_flexible=None,
+    disable_notification=None,
+    reply_to_message_id=None,
+    reply_markup=None,
+    provider_data=None,
+):
     """
     Use this method to send invoices. On success, the sent Message is returned.
 
@@ -858,12 +1080,17 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :param chat_id: Unique identifier for the target private chat
     :param title: Product name
     :param description: Product description
-    :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+    :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+     use for your internal processes.
     :param provider_token: Payments provider token, obtained via @Botfather
-    :param currency: Three-letter ISO 4217 currency code, see https://core.telegram.org/bots/payments#supported-currencies
-    :param prices: Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
-    :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice when used as a start parameter
-    :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+    :param currency: Three-letter ISO 4217 currency code,
+        see https://core.telegram.org/bots/payments#supported-currencies
+    :param prices: Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost,
+        delivery tax, bonus, etc.)
+    :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice when
+         used as a start parameter
+    :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for
+         a service. People like it better when they see what they are paying for.
     :param photo_size: Photo size
     :param photo_width: Photo width
     :param photo_height: Photo height
@@ -874,15 +1101,23 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     :param is_flexible: Pass True, if the final price depends on the shipping method
     :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
     :param reply_to_message_id: If the message is a reply, ID of the original message
-    :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
+    :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price'
+        button will be shown. If not empty, the first button must be a Pay button
     :param provider_data:
     :return:
     """
 
     method_url = r"sendInvoice"
-    payload = dict(chat_id=chat_id, title=title, description=description, payload=invoice_payload,
-                   provider_token=provider_token, start_parameter=start_parameter, currency=currency,
-                   prices=_convert_list_json_serializable(prices))
+    payload = dict(
+        chat_id=chat_id,
+        title=title,
+        description=description,
+        payload=invoice_payload,
+        provider_token=provider_token,
+        start_parameter=start_parameter,
+        currency=currency,
+        prices=_convert_list_json_serializable(prices),
+    )
     if photo_url:
         payload["photo_url"] = photo_url
     if photo_size:
@@ -912,7 +1147,9 @@ def send_invoice(token, chat_id, title, description, invoice_payload, provider_t
     return _make_request(token, method_url, params=payload)
 
 
-def answer_shipping_query(token, shipping_query_id, ok, shipping_options=None, error_message=None):
+def answer_shipping_query(
+    token, shipping_query_id, ok, shipping_options=None, error_message=None
+):
     """
     If you sent an invoice requesting a shipping address and the parameter is_flexible was specified,
     he Bot API will send an Update with a shipping_query field to the bot. Use this method to reply to shipping queries.
@@ -964,11 +1201,15 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
     return _make_request(token, method_url, params=payload)
 
 
-def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None, cache_time=None):
+def answer_callback_query(
+    token, callback_query_id, text=None, show_alert=None, url=None, cache_time=None
+):
     """
     Use this method to send answers to callback queries sent from inline keyboards.
     The answer will be displayed to the user as a notification at the top of the chat screen or as an alert
-    Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must first create a game for your bot via BotFather and accept the terms. Otherwise, you may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
+    Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must
+    first create a game for your bot via BotFather and accept the terms.
+    Otherwise, you may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
 
     :param token: Bot's token (you don't need to fill this)
     :param callback_query_id: Unique identifier for the query to be answered
@@ -1000,10 +1241,21 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
     return _make_request(token, method_url, params=payload, method="post")
 
 
-def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
-                        switch_pm_text=None, switch_pm_parameter=None):
+def answer_inline_query(
+    token,
+    inline_query_id,
+    results,
+    cache_time=None,
+    is_personal=None,
+    next_offset=None,
+    switch_pm_text=None,
+    switch_pm_parameter=None,
+):
     method_url = "answerInlineQuery"
-    payload = dict(inline_query_id=inline_query_id, results=_convert_list_json_serializable(results))
+    payload = dict(
+        inline_query_id=inline_query_id,
+        results=_convert_list_json_serializable(results),
+    )
     if cache_time is not None:
         payload["cache_time"] = cache_time
     if is_personal:
@@ -1019,7 +1271,7 @@ def answer_inline_query(token, inline_query_id, results, cache_time=None, is_per
 
 def get_sticker_set(token, name):
     method_url = r"getStickerSet"
-    return _make_request(token, method_url, params={'name': name})
+    return _make_request(token, method_url, params={"name": name})
 
 
 def upload_sticker_file(token, user_id, png_sticker):
@@ -1029,7 +1281,16 @@ def upload_sticker_file(token, user_id, png_sticker):
     return _make_request(token, method_url, params=payload, files=files, method="post")
 
 
-def create_new_sticker_set(token, user_id, name, title, png_sticker, emojis, contains_masks=None, mask_position=None):
+def create_new_sticker_set(
+    token,
+    user_id,
+    name,
+    title,
+    png_sticker,
+    emojis,
+    contains_masks=None,
+    mask_position=None,
+):
     method_url = r"createNewStickerSet"
     payload = dict(user_id=user_id, name=name, title=title, emojis=emojis)
     files = None
@@ -1069,10 +1330,21 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method="post")
 
 
-def send_poll(token, chat_id, question, options, disable_notifications=False, reply_to_message_id=None,
-              reply_markup=None):
+def send_poll(
+    token,
+    chat_id,
+    question,
+    options,
+    disable_notifications=False,
+    reply_to_message_id=None,
+    reply_markup=None,
+):
     method_url = r"sendPoll"
-    payload = dict(chat_id=str(chat_id), question=question, options=_convert_list_json_serializable(options))
+    payload = dict(
+        chat_id=str(chat_id),
+        question=question,
+        options=_convert_list_json_serializable(options),
+    )
     if disable_notifications:
         payload["disable_notification"] = disable_notifications
     if reply_to_message_id:
@@ -1128,7 +1400,7 @@ def _convert_input_media_array(array):
 def _no_encode(func):
     def wrapper(key, val):
         if key == "filename":
-            return u'{0}={1}'.format(key, val)
+            return "{0}={1}".format(key, val)
         else:
             return func(key, val)
 
@@ -1144,6 +1416,8 @@ class ApiException(Exception):
     """
 
     def __init__(self, msg, function_name, result):
-        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
+        super(ApiException, self).__init__(
+            "A request to the Telegram API was unsuccessful. {0}".format(msg)
+        )
         self.function_name = function_name
         self.result = result

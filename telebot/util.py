@@ -49,7 +49,7 @@ class WorkerThread(threading.Thread):
     def run(self):
         while self._running:
             try:
-                task, args, kwargs = self.queue.get(block=True, timeout=.5)
+                task, args, kwargs = self.queue.get(block=True, timeout=0.5)
                 self.continue_event.clear()
                 self.received_task_event.clear()
                 self.done_event.clear()
@@ -63,7 +63,13 @@ class WorkerThread(threading.Thread):
             except Queue.Empty:
                 pass
             except Exception as e:
-                logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
+                logger.error(
+                    type(e).__name__
+                    + " occurred, args="
+                    + str(e.args)
+                    + "\n"
+                    + traceback.format_exc()
+                )
                 self.exc_info = sys.exc_info()
                 self.exception_event.set()
 
@@ -87,10 +93,11 @@ class WorkerThread(threading.Thread):
 
 
 class ThreadPool:
-
     def __init__(self, num_threads=2):
         self.tasks = Queue.Queue()
-        self.workers = [WorkerThread(self.on_exception, self.tasks) for _ in range(num_threads)]
+        self.workers = [
+            WorkerThread(self.on_exception, self.tasks) for _ in range(num_threads)
+        ]
         self.num_threads = num_threads
 
         self.exception_event = threading.Event()
@@ -199,7 +206,9 @@ def split_string(text, chars_per_string):
     :return: The splitted text as a list of strings.
     """
 
-    return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
+    return [
+        text[i : i + chars_per_string] for i in range(0, len(text), chars_per_string)
+    ]
 
 
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
