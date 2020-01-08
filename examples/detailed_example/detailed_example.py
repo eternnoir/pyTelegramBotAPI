@@ -105,15 +105,15 @@ def msg_image_select(m):
     # for some reason the 'upload_photo' status isn't quite working (doesn't show at all)
     bot.send_chat_action(cid, 'typing')
 
-    if text == "cock":  # send the appropriate image based on the reply to the "/getImage" command
+    if text == 'Mickey':  # send the appropriate image based on the reply to the "/getImage" command
         bot.send_photo(cid, open('rooster.jpg', 'rb'),
                        reply_markup=hideBoard)  # send file and hide keyboard, after image is sent
         userStep[cid] = 0  # reset the users step back to 0
-    elif text == "pussy":
+    elif text == 'Minnie':
         bot.send_photo(cid, open('kitten.jpg', 'rb'), reply_markup=hideBoard)
         userStep[cid] = 0
     else:
-        bot.send_message(cid, "Don't type crap, if I give you a predefined keyboard!")
+        bot.send_message(cid, "Please, use the predefined keyboard!")
         bot.send_message(cid, "Please try again")
 
 

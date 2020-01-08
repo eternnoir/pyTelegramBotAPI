@@ -24,7 +24,6 @@ setup(name='pyTelegramBotAPI',
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Programming Language :: Python :: 2',
-          'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3',
           'Environment :: Console',
