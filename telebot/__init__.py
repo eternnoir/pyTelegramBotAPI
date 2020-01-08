@@ -1033,7 +1033,7 @@ class TeleBot:
 
     def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
-	"""
+        """
         Use this method to edit text and game messages.
         :param text:
         :param chat_id:
@@ -1051,7 +1051,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     def edit_message_media(self, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
-	"""
+        """
         Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL.
         :param media:
         :param chat_id:
@@ -1066,7 +1066,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     def edit_message_reply_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
-	"""
+        """
         Use this method to edit only the reply markup of messages.
         :param chat_id:
         :param message_id:
@@ -1081,7 +1081,7 @@ class TeleBot:
 
     def send_game(self, chat_id, game_short_name, disable_notification=None, reply_to_message_id=None,
                   reply_markup=None):
-	"""
+        """
         Used to send the game
         :param chat_id:
         :param game_short_name:
@@ -1096,7 +1096,7 @@ class TeleBot:
 
     def set_game_score(self, user_id, score, force=None, chat_id=None, message_id=None, inline_message_id=None,
                        edit_message=None):
-	"""
+        """
         Sets the value of points in the game to a specific user
         :param user_id:
         :param score:
@@ -1114,7 +1114,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     def get_game_high_scores(self, user_id, chat_id=None, message_id=None, inline_message_id=None):
-	"""
+        """
         Gets top points and game play
         :param user_id:
         :param chat_id:
@@ -1133,18 +1133,18 @@ class TeleBot:
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
                      is_flexible=None, disable_notification=None, reply_to_message_id=None, reply_markup=None,
                      provider_data=None):
-	"""
+        """
         Sends invoice
-	:param chat_id:
-	:param title:
-	:param description:
-	:param invoice_payload:
-	:param provider_token:
-	:param currency:
-	:param prices:
-	:param start_parameter:
-	:param photo_url:
-	:param photo_size:
+	    :param chat_id:
+	    :param title:
+	    :param description:
+	    :param invoice_payload:
+	    :param provider_token:
+	    :param currency:
+	    :param prices:
+	    :param start_parameter:
+	    :param photo_url:
+	    :param photo_size:
         :param photo_width:
         :param photo_height:
         :param need_name:
@@ -1166,7 +1166,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     def send_poll(self, chat_id, poll, disable_notifications=False, reply_to_message=None, reply_markup=None):
-	"""
+        """
         Sends poll
         :param chat_id:
         :param poll:
@@ -1178,7 +1178,7 @@ class TeleBot:
         return types.Message.de_json(apihelper.send_poll(self.token, chat_id, poll.question, poll.options, disable_notifications, reply_to_message, reply_markup))
 
     def stop_poll(self, chat_id, message_id):
-	"""
+        """
         Stops poll
         :param chat_id:
         :param message_id:
@@ -1187,7 +1187,7 @@ class TeleBot:
         return types.Poll.de_json(apihelper.stop_poll(self.token, chat_id, message_id))
 
     def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
-	"""
+        """
         Asks for an answer to a shipping question
         :param shipping_query_id:
         :param ok:
@@ -1198,18 +1198,18 @@ class TeleBot:
         return apihelper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
     def answer_pre_checkout_query(self, pre_checkout_query_id, ok, error_message=None):
-	"""
+        """
         Response to a request for pre-inspection
-	:param pre_checkout_query_id:
-	:param ok:
-	:param error_message:
-	:return:
-	"""
+        :param pre_checkout_query_id:
+        :param ok:
+        :param error_message:
+        :return:
+	    """
         return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None,
                              parse_mode=None, reply_markup=None):
-	"""
+        """
         Use this method to edit captions of messages
         :param caption:
         :param chat_id:
@@ -1228,7 +1228,7 @@ class TeleBot:
     def reply_to(self, message, text, **kwargs):
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
-	:param message:
+	    :param message:
         :param text:
         :param kwargs:
         :return:
@@ -1477,9 +1477,9 @@ class TeleBot:
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
-	"""
-	Builds a dictionary for a handler
-	:param handler:
+        """
+        Builds a dictionary for a handler
+        :param handler:
         :param filters:
         :return:
         """
@@ -1536,7 +1536,7 @@ class TeleBot:
         return decorator
 
     def add_message_handler(self, handler_dict):
-	"""
+        """
         Adds a message handler
         :param handler_dict:
         :return:
@@ -1756,7 +1756,7 @@ class TeleBot:
         self.pre_checkout_query_handlers.append(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
-	"""
+        """
         Test message handler
         :param message_handler:
         :param message:
@@ -1773,11 +1773,11 @@ class TeleBot:
 
     @staticmethod
     def _test_filter(filter, filter_value, message):
-	"""
-	Test filters
-	:param filter:
-	:param filter_value:
-	:param message:
+        """
+        Test filters
+        :param filter:
+        :param filter_value:
+        :param message:
         :return:
         """
         test_cases = {
