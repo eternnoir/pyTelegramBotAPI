@@ -155,7 +155,7 @@ TeleBot supports the following filters:
 |name|argument(s)|Condition|
 |:---:|---| ---|
 |content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
-|regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions](https://docs.python.org/2/library/re.html)|
+|regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions](https://docs.python.org/2/library/re.html))|
 |commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
 |func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
 
