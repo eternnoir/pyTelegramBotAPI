@@ -2244,6 +2244,8 @@ class Poll(JsonDeserializable):
         is_closed = obj['is_closed']
         poll.id = poll_id
         poll.is_closed = is_closed
+        is_anonymous = obj['is_anonymous']
+        poll.is_anonymous = is_anonymous
         return poll
 
     def __init__(self, question):
