@@ -190,7 +190,7 @@ def test_message(message):
 	return message.document.mime_type == 'text/plain'
 
 @bot.message_handler(func=test_message, content_types=['document'])
-def handle_text_doc(message)
+def handle_text_doc(message):
 	pass
 
 # Handlers can be stacked to create a function which will be called if either message_handler is eligible
