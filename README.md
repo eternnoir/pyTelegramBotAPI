@@ -466,7 +466,10 @@ The TeleBot constructor takes the following optional arguments:
    TeleBot should execute message handlers on it's polling Thread.
 
 ### The listener mechanism
-As an alternative to the message handlers, one can also register a function as a listener to TeleBot. Example:
+As an alternative to the message handlers, one can also register a function as a listener to TeleBot.
+
+NOTICE: handlers won't disappear! Your message will be processed both by handlers and listeners. Also, it's impossible to predict which will work at first because of threading. If you use threaded=False, custom listeners will work earlier, after them handlers will be called. 
+Example:
 ```python
 def handle_messages(messages):
 	for message in messages:
