@@ -180,12 +180,12 @@ def handle_docs_audio(message):
 def handle_message(message):
 	pass
 
-#Handles all messages for which the lambda returns True
+# Handles all messages for which the lambda returns True
 @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
 def handle_text_doc(message):
 	pass
 
-#Which could also be defined as:
+# Which could also be defined as:
 def test_message(message):
 	return message.document.mime_type == 'text/plain'
 
