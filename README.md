@@ -216,7 +216,7 @@ Same as Message handlers
 
 #### Callback Query Handler
 
-In bot2.0 update. You can get `callback_query` in update object. In telebot use `callback_query_handler` to process callback_querys.
+In bot2.0 update. You can get `callback_query` in update object. In telebot use `callback_query_handler` to process callback queries.
 
 ```python
 @bot.callback_query_handler(func=lambda call: True)
@@ -372,7 +372,7 @@ More information about [Inline mode](https://core.telegram.org/bots/inline).
 
 #### inline_handler
 
-Now, you can use inline_handler to get inline_query in telebot.
+Now, you can use inline_handler to get inline queries in telebot.
 
 ```python
 
