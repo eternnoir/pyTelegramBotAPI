@@ -1,5 +1,10 @@
+certifi==2019.11.28
+chardet==3.0.4
+dill==0.3.1.1
+idna==2.7
 py==1.4.29
 pytest==3.0.2
 requests==2.20.0
 six==1.9.0
+urllib3==1.24.3
 wheel==0.24.0

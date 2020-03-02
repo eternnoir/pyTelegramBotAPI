@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import logging
 import os
-import pickle
+import dill as pickle
 import re
 import sys
 import threading
