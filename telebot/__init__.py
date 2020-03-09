@@ -167,6 +167,7 @@ class TeleBot:
         self.callback_query_handlers = []
         self.shipping_query_handlers = []
         self.pre_checkout_query_handlers = []
+        self.poll_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -289,6 +290,7 @@ class TeleBot:
         new_callback_querys = []
         new_shipping_querys = []
         new_pre_checkout_querys = []
+        new_polls = []
 
         for update in updates:
             if update.update_id > self.last_update_id:
@@ -311,6 +313,8 @@ class TeleBot:
                 new_shipping_querys.append(update.shipping_query)
             if update.pre_checkout_query:
                 new_pre_checkout_querys.append(update.pre_checkout_query)
+            if update.poll:
+                new_polls.append(update.poll)
 
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
@@ -327,10 +331,12 @@ class TeleBot:
             self.process_new_chosen_inline_query(new_chosen_inline_results)
         if len(new_callback_querys) > 0:
             self.process_new_callback_query(new_callback_querys)
-        if len(new_pre_checkout_querys) > 0:
-            self.process_new_pre_checkout_query(new_pre_checkout_querys)
         if len(new_shipping_querys) > 0:
             self.process_new_shipping_query(new_shipping_querys)
+        if len(new_pre_checkout_querys) > 0:
+            self.process_new_pre_checkout_query(new_pre_checkout_querys)
+        if len(new_polls) > 0:
+            self.process_new_poll(new_polls)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -361,6 +367,9 @@ class TeleBot:
 
     def process_new_pre_checkout_query(self, pre_checkout_querys):
         self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys)
+
+    def process_new_poll(self, polls):
+        self._notify_command_handlers(self.poll_handlers, polls)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -1754,6 +1763,28 @@ class TeleBot:
         :return:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
+
+    def poll_handler(self, func, **kwargs):
+        """
+        Poll request handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_poll_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_poll_handler(self, handler_dict):
+        """
+        Adds a poll request handler
+        :param handler_dict:
+        :return:
+        """
+        self.poll_handlers.append(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
         """
