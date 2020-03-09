@@ -327,10 +327,10 @@ class TeleBot:
             self.process_new_chosen_inline_query(new_chosen_inline_results)
         if len(new_callback_querys) > 0:
             self.process_new_callback_query(new_callback_querys)
-        if len(new_pre_checkout_querys) > 0:
-            self.process_new_pre_checkout_query(new_pre_checkout_querys)
         if len(new_shipping_querys) > 0:
             self.process_new_shipping_query(new_shipping_querys)
+        if len(new_pre_checkout_querys) > 0:
+            self.process_new_pre_checkout_query(new_pre_checkout_querys)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
