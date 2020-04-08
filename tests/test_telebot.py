@@ -408,6 +408,23 @@ class TestTeleBot:
         chat = types.User(11, False, 'test')
         return types.Message(1, None, None, chat, 'text', params, "")
 
+    @staticmethod
+    def create_message_update(text):
+        params = {'text': text}
+        chat = types.User(11, False, 'test')
+        message = types.Message(1, None, None, chat, 'text', params, "")
+        edited_message = None
+        channel_post = None
+        edited_channel_post = None
+        inline_query = None
+        chosen_inline_result = None
+        callback_query = None
+        shipping_query = None
+        pre_checkout_query = None
+        poll = None
+        return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
+                   chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll)
+
     def test_is_string_unicode(self):
         s1 = u'string'
         assert util.is_string(s1)
@@ -489,3 +506,35 @@ class TestTeleBot:
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_document(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
         assert ret_msg.caption_entities[0].type == 'italic'
+
+    def test_typed_middleware_handler(self):
+        tb = telebot.TeleBot('')
+        update = self.create_message_update('/help')
+
+        @tb.middleware_handler(update_types=['message'])
+        def middleware(tb_instance, message):
+            message.text = 'got'
+
+        @tb.message_handler(func=lambda m: m.text == 'got')
+        def command_handler(message):
+            message.text = message.text + message.text
+
+        tb.process_new_updates([update])
+        time.sleep(1)
+        assert update.message.text == 'got' * 2
+
+    def test_default_middleware_handler(self):
+        tb = telebot.TeleBot('')
+        update = self.create_message_update('/help')
+
+        @tb.middleware_handler()
+        def middleware(tb_instance, update):
+            update.message.text = 'got'
+
+        @tb.message_handler(func=lambda m: m.text == 'got')
+        def command_handler(message):
+            message.text = message.text + message.text
+
+        tb.process_new_updates([update])
+        time.sleep(1)
+        assert update.message.text == 'got' * 2
