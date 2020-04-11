@@ -514,9 +514,29 @@ apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 ```
 
 
-## New in library
+## API conformance
 
-06.06.2019 - Добавленна поддержка опросов (Poll). Добавлены функции send_poll, stop_poll
+_Checking is in progress..._
+
+✅ [Bot API 3.5](https://core.telegram.org/bots/api-changelog#november-17-2017) _- To be checked..._
+
+* ✔ [Bot API 3.4](https://core.telegram.org/bots/api-changelog#october-11-2017)
+* ✔ [Bot API 3.3](https://core.telegram.org/bots/api-changelog#august-23-2017)
+* ✔ [Bot API 3.2](https://core.telegram.org/bots/api-changelog#july-21-2017)
+* ✔ [Bot API 3.1](https://core.telegram.org/bots/api-changelog#june-30-2017)
+* ✔ [Bot API 3.0](https://core.telegram.org/bots/api-changelog#may-18-2017)
+* ✔ [Bot API 2.3.1](https://core.telegram.org/bots/api-changelog#december-4-2016)
+* ✔ [Bot API 2.3](https://core.telegram.org/bots/api-changelog#november-21-2016)
+* ✔ [Bot API 2.2](https://core.telegram.org/bots/api-changelog#october-3-2016)
+* ✔ [Bot API 2.1](https://core.telegram.org/bots/api-changelog#may-22-2016)
+* ✔ [Bot API 2.0](https://core.telegram.org/bots/api-changelog#april-9-2016) 
+
+
+## Change log
+
+11.09.2020 - Refactoring. new_chat_member is out of support. Bugfix in html_text. Started Bot API conformance checking.
+
+06.06.2019 - Added polls support (Poll). Added functions send_poll, stop_poll
 
 ## F.A.Q.
 
