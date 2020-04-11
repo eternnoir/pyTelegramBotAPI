@@ -169,6 +169,21 @@ class TeleBot:
         self.pre_checkout_query_handlers = []
         self.poll_handlers = []
 
+        self.typed_middleware_handlers = {
+            'message': [],
+            'edited_message': [],
+            'channel_post': [],
+            'edited_channel_post': [],
+            'inline_query': [],
+            'chosen_inline_result': [],
+            'callback_query': [],
+            'shipping_query': [],
+            'pre_checkout_query': [],
+            'poll': [],
+        }
+
+        self.default_middleware_handlers = []
+
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
@@ -293,6 +308,10 @@ class TeleBot:
         new_polls = []
 
         for update in updates:
+
+            if apihelper.ENABLE_MIDDLEWARE:
+                self.process_middlewares(update)
+
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
             if update.message:
@@ -370,6 +389,16 @@ class TeleBot:
 
     def process_new_poll(self, polls):
         self._notify_command_handlers(self.poll_handlers, polls)
+
+    def process_middlewares(self, update):
+        for update_type, middlewares in self.typed_middleware_handlers.items():
+            if hasattr(update, update_type):
+                for typed_middleware_handler in middlewares:
+                    typed_middleware_handler(self, getattr(update, update_type))
+
+        if len(self.default_middleware_handlers) > 0:
+            for default_middleware_handler in self.default_middleware_handlers:
+                default_middleware_handler(self, update)
 
     def __notify_update(self, new_messages):
         for listener in self.update_listener:
@@ -1496,6 +1525,52 @@ class TeleBot:
             'function': handler,
             'filters' : filters
         }
+
+    def middleware_handler(self, update_types=None):
+        """
+        Middleware handler decorator.
+
+        This decorator can be used to decorate functions that must be handled as middlewares before entering any other
+        message handlers
+        But, be careful and check type of the update inside the handler if more than one update_type is given
+
+        Example:
+
+        bot = TeleBot('TOKEN')
+
+        # Print post message text before entering to any post_channel handlers
+        @bot.middleware_handler(update_types=['channel_post', 'edited_channel_post'])
+        def print_channel_post_text(bot_instance, channel_post):
+            print(channel_post.text)
+
+        # Print update id before entering to any handlers
+        @bot.middleware_handler()
+        def print_channel_post_text(bot_instance, update):
+            print(update.update_id)
+
+        :param update_types: Optional list of update types that can be passed into the middleware handler.
+
+        """
+
+        def decorator(handler):
+            self.add_middleware_handler(handler, update_types)
+
+            return handler
+
+        return decorator
+
+    def add_middleware_handler(self, handler, update_types=None):
+        """
+        Add middleware handler
+        :param handler:
+        :param update_types:
+        :return:
+        """
+        if update_types:
+            for update_type in update_types:
+                self.typed_middleware_handlers[update_type].append(handler)
+        else:
+            self.default_middleware_handlers.append(handler)
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
