@@ -223,6 +223,24 @@ In bot2.0 update. You can get `callback_query` in update object. In telebot use 
 def  test_callback(call):
     logger.info(call)
 ```
+#### Middleware Handler
+
+A middleware handler is a function that allows you to modify requests or the bot context as they pass through the 
+Telegram to the bot. You can imagine middleware as a chain of logic connection handled before any other handlers are
+executed.
+
+```python
+@bot.middleware_handler(update_types=['message'])
+def modify_message(bot_instance, message):
+    # modifying the message before it reaches any other handler 
+    message.another_text = message.text + ':changed'
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    # the message is already modified when it reaches message handler
+    assert message.another_text == message.text + ':changed'
+```
+There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
 
 #### TeleBot
 ```python
