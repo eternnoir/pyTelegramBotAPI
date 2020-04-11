@@ -99,7 +99,7 @@ class Update(JsonDeserializable):
         callback_query = CallbackQuery.de_json(obj.get('callback_query'))
         shipping_query = ShippingQuery.de_json(obj.get('shipping_query'))
         pre_checkout_query = PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
-        poll = Poll.de_json(obj['poll'])
+        poll = Poll.de_json(obj.get('poll'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll)
 
