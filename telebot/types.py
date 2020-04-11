@@ -49,7 +49,7 @@ class JsonDeserializable(object):
     """
 
     @classmethod
-    def de_json(cls, json_type):
+    def de_json(cls, json_string):
         """
         Returns an instance of this class from the given json dict or string.
 
@@ -86,8 +86,9 @@ class JsonDeserializable(object):
 
 class Update(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         update_id = obj['update_id']
         message = Message.de_json(obj.get('message'))
         edited_message = Message.de_json(obj.get('edited_message'))
@@ -668,8 +669,9 @@ class Location(JsonDeserializable):
 
 class Venue(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         location = Location.de_json(obj['location'])
         title = obj['title']
         address = obj['address']
@@ -699,8 +701,9 @@ class UserProfilePhotos(JsonDeserializable):
 
 class File(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         file_size = obj.get('file_size')
         file_path = obj.get('file_path')
@@ -928,8 +931,9 @@ class InlineKeyboardButton(JsonSerializable):
 
 class CallbackQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
         message = Message.de_json(obj.get('message'))
@@ -951,8 +955,9 @@ class CallbackQuery(JsonDeserializable):
 
 class ChatPhoto(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         small_file_id = obj['small_file_id']
         big_file_id = obj['big_file_id']
         return cls(small_file_id, big_file_id)
@@ -964,8 +969,9 @@ class ChatPhoto(JsonDeserializable):
 
 class ChatMember(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         user = User.de_json(obj['user'])
         status = obj['status']
         until_date = obj.get('until_date')
@@ -1011,8 +1017,9 @@ class ChatMember(JsonDeserializable):
 
 class InlineQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
         location = Location.de_json(obj.get('location'))
@@ -1098,8 +1105,9 @@ class InputContactMessageContent(Dictionaryable):
 
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         result_id = obj['result_id']
         from_user = User.de_json(obj['from'])
         query = obj['query']
@@ -2181,8 +2189,9 @@ class InputMediaDocument(InputMedia):
 
 class PollOption(JsonSerializable, JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         text = obj['text']
         voter_count = int(obj['voter_count'])
         option = cls(text)
@@ -2199,8 +2208,9 @@ class PollOption(JsonSerializable, JsonDeserializable):
 
 class Poll(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         poll_id = obj['id']
         question = obj['question']
         poll = cls(question)
