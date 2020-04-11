@@ -18,6 +18,7 @@ from telebot import types
 from telebot import util
 
 logger = telebot.logger
+
 proxy = None
 
 API_URL = None
@@ -25,6 +26,8 @@ FILE_URL = None
 
 CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
+
+CUSTOM_SERIALIZER = None
 
 ENABLE_MIDDLEWARE = False
 

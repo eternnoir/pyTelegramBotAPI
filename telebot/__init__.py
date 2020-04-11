@@ -76,7 +76,10 @@ class Saver:
         os.makedirs(dirs, exist_ok=True)
 
         with open(filename + ".tmp", file_mode) as file:
-            pickle.dump(handlers, file)
+            if (apihelper.CUSTOM_SERIALIZER is None):
+                pickle.dump(handlers, file)
+            else:
+                apihelper.CUSTOM_SERIALIZER.dump(handlers, file)
 
         if os.path.isfile(filename):
             os.remove(filename)
@@ -87,7 +90,10 @@ class Saver:
     def return_load_handlers(filename, del_file_after_loading=True):
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "rb") as file:
-                handlers = pickle.load(file)
+                if (apihelper.CUSTOM_SERIALIZER is None):
+                    handlers = pickle.load(file)
+                else:
+                    handlers = apihelper.CUSTOM_SERIALIZER.load(file)
 
             if del_file_after_loading:
                 os.remove(filename)
