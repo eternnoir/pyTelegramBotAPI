@@ -508,6 +508,10 @@ class TestTeleBot:
         assert ret_msg.caption_entities[0].type == 'italic'
 
     def test_typed_middleware_handler(self):
+        from telebot import apihelper
+
+        apihelper.ENABLE_MIDDLEWARE = True
+
         tb = telebot.TeleBot('')
         update = self.create_message_update('/help')
 
@@ -524,6 +528,10 @@ class TestTeleBot:
         assert update.message.text == 'got' * 2
 
     def test_default_middleware_handler(self):
+        from telebot import apihelper
+
+        apihelper.ENABLE_MIDDLEWARE = True
+
         tb = telebot.TeleBot('')
         update = self.create_message_update('/help')
 

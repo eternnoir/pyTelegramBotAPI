@@ -309,7 +309,8 @@ class TeleBot:
 
         for update in updates:
 
-            self.process_middlewares(update)
+            if apihelper.ENABLE_MIDDLEWARE:
+                self.process_middlewares(update)
 
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
