@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append('../')
+
 import os
 import time
 
@@ -155,12 +159,8 @@ def test_memory_handler_backend_clear_reply_handler(telegram_bot, private_chat, 
     assert reply_to_message_update_type.message.text == 'entered start'
 
 
-def test_file_handler_backend_register_next_step_handler(private_chat, update_type):
-    telegram_bot = telebot.TeleBot(
-        token='',
-        threaded=False,
-        next_step_backend=FileHandlerBackend(filename='./.handler-saves/step1.save', delay=1)
-    )
+def test_file_handler_backend_register_next_step_handler(telegram_bot, private_chat, update_type):
+    telegram_bot.next_step_backend=FileHandlerBackend(filename='./.handler-saves/step1.save', delay=0.1)
 
     @telegram_bot.message_handler(commands=['start'])
     def start(message):
@@ -170,7 +170,7 @@ def test_file_handler_backend_register_next_step_handler(private_chat, update_ty
     telegram_bot.process_new_updates([update_type])
     assert update_type.message.text == 'entered start'
 
-    time.sleep(2)
+    time.sleep(0.2)
 
     assert os.path.exists(telegram_bot.next_step_backend.filename)
 
@@ -187,17 +187,13 @@ def test_file_handler_backend_register_next_step_handler(private_chat, update_ty
 
     assert private_chat.id not in telegram_bot.next_step_backend.handlers
 
-    time.sleep(2)
+    time.sleep(0.2)
     if os.path.exists(telegram_bot.next_step_backend.filename):
         os.remove(telegram_bot.next_step_backend.filename)
 
 
-def test_file_handler_backend_clear_next_step_handler(private_chat, update_type):
-    telegram_bot = telebot.TeleBot(
-        token='',
-        threaded=False,
-        next_step_backend=FileHandlerBackend(filename='./.handler-saves/step2.save', delay=1)
-    )
+def test_file_handler_backend_clear_next_step_handler(telegram_bot, private_chat, update_type):
+    telegram_bot.next_step_backend=FileHandlerBackend(filename='./.handler-saves/step2.save', delay=0.1)
 
     @telegram_bot.message_handler(commands=['start'])
     def start(message):
@@ -209,13 +205,13 @@ def test_file_handler_backend_clear_next_step_handler(private_chat, update_type)
 
     assert len(telegram_bot.next_step_backend.handlers[private_chat.id]) == 1
 
-    time.sleep(2)
+    time.sleep(0.2)
 
     assert os.path.exists(telegram_bot.next_step_backend.filename)
 
     telegram_bot.clear_step_handler_by_chat_id(private_chat.id)
 
-    time.sleep(2)
+    time.sleep(0.2)
 
     telegram_bot.next_step_backend.load_handlers()
 
@@ -224,7 +220,7 @@ def test_file_handler_backend_clear_next_step_handler(private_chat, update_type)
     telegram_bot.process_new_updates([update_type])
     assert update_type.message.text == 'entered start'
 
-    time.sleep(2)
+    time.sleep(0.2)
     if os.path.exists(telegram_bot.next_step_backend.filename):
         os.remove(telegram_bot.next_step_backend.filename)
 
