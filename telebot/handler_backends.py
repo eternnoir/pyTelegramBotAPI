@@ -9,11 +9,10 @@ class HandlerBackend:
     """
     Class for saving (next step|reply) handlers
     """
-    handlers = {}
-
     def __init__(self, handlers=None):
-        if handlers:
-            self.handlers = handlers
+        if handlers is None:
+            handlers = {}
+        self.handlers = handlers
 
     def register_handler(self, handler_group_id, handler):
         raise NotImplementedError()
