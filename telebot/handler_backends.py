@@ -77,7 +77,9 @@ class FileHandlerBackend(HandlerBackend):
     def save_handlers(self):
         self.dump_handlers(self.handlers, self.filename)
 
-    def load_handlers(self, filename, del_file_after_loading=True):
+    def load_handlers(self, filename=None, del_file_after_loading=True):
+        if not filename:
+            filename = self.filename
         tmp = self.return_load_handlers(filename, del_file_after_loading=del_file_after_loading)
         if tmp is not None:
             self.handlers.update(tmp)
