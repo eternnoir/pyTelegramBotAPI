@@ -49,7 +49,7 @@ class JsonDeserializable(object):
     """
 
     @classmethod
-    def de_json(cls, json_type):
+    def de_json(cls, json_string):
         """
         Returns an instance of this class from the given json dict or string.
 
@@ -66,14 +66,9 @@ class JsonDeserializable(object):
         :param json_type:
         :return:
         """
-        try:
-            str_types = (str, unicode)
-        except NameError:
-            str_types = (str,)
-
-        if type(json_type) == dict:
+        if isinstance(json_type, dict):
             return json_type
-        elif type(json_type) in str_types:
+        elif isinstance(json_type, str):
             return json.loads(json_type)
         else:
             raise ValueError("json_type should be a json dict or string.")
@@ -91,39 +86,20 @@ class JsonDeserializable(object):
 
 class Update(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         update_id = obj['update_id']
-        message = None
-        edited_message = None
-        channel_post = None
-        edited_channel_post = None
-        inline_query = None
-        chosen_inline_result = None
-        callback_query = None
-        shipping_query = None
-        pre_checkout_query = None
-        poll = None
-        if 'message' in obj:
-            message = Message.de_json(obj['message'])
-        if 'edited_message' in obj:
-            edited_message = Message.de_json(obj['edited_message'])
-        if 'channel_post' in obj:
-            channel_post = Message.de_json(obj['channel_post'])
-        if 'edited_channel_post' in obj:
-            edited_channel_post = Message.de_json(obj['edited_channel_post'])
-        if 'inline_query' in obj:
-            inline_query = InlineQuery.de_json(obj['inline_query'])
-        if 'chosen_inline_result' in obj:
-            chosen_inline_result = ChosenInlineResult.de_json(obj['chosen_inline_result'])
-        if 'callback_query' in obj:
-            callback_query = CallbackQuery.de_json(obj['callback_query'])
-        if 'shipping_query' in obj:
-            shipping_query = ShippingQuery.de_json(obj['shipping_query'])
-        if 'pre_checkout_query' in obj:
-            pre_checkout_query = PreCheckoutQuery.de_json(obj['pre_checkout_query'])
-        if 'poll' in obj:
-            poll = Poll.de_json(obj['poll'])
+        message = Message.de_json(obj.get('message'))
+        edited_message = Message.de_json(obj.get('edited_message'))
+        channel_post = Message.de_json(obj.get('channel_post'))
+        edited_channel_post = Message.de_json(obj.get('edited_channel_post'))
+        inline_query = InlineQuery.de_json(obj.get('inline_query'))
+        chosen_inline_result = ChosenInlineResult.de_json(obj.get('chosen_inline_result'))
+        callback_query = CallbackQuery.de_json(obj.get('callback_query'))
+        shipping_query = ShippingQuery.de_json(obj.get('shipping_query'))
+        pre_checkout_query = PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
+        poll = Poll.de_json(obj.get('poll'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll)
 
@@ -145,22 +121,15 @@ class Update(JsonDeserializable):
 class WebhookInfo(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         url = obj['url']
         has_custom_certificate = obj['has_custom_certificate']
         pending_update_count = obj['pending_update_count']
-        last_error_date = None
-        last_error_message = None
-        max_connections = None
-        allowed_updates = None
-        if 'last_error_message' in obj:
-            last_error_date = obj['last_error_date']
-        if 'last_error_message' in obj:
-            last_error_message = obj['last_error_message']
-        if 'max_connections' in obj:
-            max_connections = obj['max_connections']
-        if 'allowed_updates' in obj:
-            allowed_updates = obj['allowed_updates']
+        last_error_date = obj.get('last_error_date')
+        last_error_message = obj.get('last_error_message')
+        max_connections = obj.get('max_connections')
+        allowed_updates = obj.get('allowed_updates')
         return cls(url, has_custom_certificate, pending_update_count, last_error_date, last_error_message,
                    max_connections, allowed_updates)
 
@@ -178,6 +147,7 @@ class WebhookInfo(JsonDeserializable):
 class User(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         id = obj['id']
         is_bot = obj['is_bot']
@@ -199,6 +169,7 @@ class User(JsonDeserializable):
 class GroupChat(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         id = obj['id']
         title = obj['title']
@@ -212,6 +183,7 @@ class GroupChat(JsonDeserializable):
 class Chat(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         id = obj['id']
         type = obj['type']
@@ -220,14 +192,10 @@ class Chat(JsonDeserializable):
         first_name = obj.get('first_name')
         last_name = obj.get('last_name')
         all_members_are_administrators = obj.get('all_members_are_administrators')
-        photo = None
-        if 'photo' in obj:
-            photo = ChatPhoto.de_json(obj['photo'])
+        photo = ChatPhoto.de_json(obj.get('photo'))
         description = obj.get('description')
         invite_link = obj.get('invite_link')
-        pinned_message = None
-        if 'pinned_message' in obj:
-            pinned_message = Message.de_json(obj['pinned_message'])
+        pinned_message = Message.de_json(obj.get('pinned_message'))
         sticker_set_name = obj.get('sticker_set_name')
         can_set_sticker_set = obj.get('can_set_sticker_set')
         return cls(id, type, title, username, first_name, last_name, all_members_are_administrators,
@@ -254,11 +222,10 @@ class Chat(JsonDeserializable):
 class Message(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         message_id = obj['message_id']
-        from_user = None
-        if 'from' in obj:
-            from_user = User.de_json(obj['from'])
+        from_user = User.de_json(obj.get('from'))
         date = obj['date']
         chat = Chat.de_json(obj['chat'])
         content_type = None
@@ -326,15 +293,11 @@ class Message(JsonDeserializable):
         if 'venue' in obj:
             opts['venue'] = Venue.de_json(obj['venue'])
             content_type = 'venue'
-        if 'new_chat_member' in obj:
-            opts['new_chat_member'] = User.de_json(obj['new_chat_member'])
-            content_type = 'new_chat_member'
         if 'new_chat_members' in obj:
-            chat_members = obj['new_chat_members']
-            nms = []
-            for m in chat_members:
-                nms.append(User.de_json(m))
-            opts['new_chat_members'] = nms
+            new_chat_members = []
+            for member in obj['new_chat_members']:
+                new_chat_members.append(User.de_json(member))
+            opts['new_chat_members'] = new_chat_members
             content_type = 'new_chat_members'
         if 'left_chat_member' in obj:
             opts['left_chat_member'] = User.de_json(obj['left_chat_member'])
@@ -410,9 +373,10 @@ class Message(JsonDeserializable):
         self.from_user = from_user
         self.date = date
         self.chat = chat
+        self.forward_from = None
         self.forward_from_chat = None
         self.forward_from_message_id = None
-        self.forward_from = None
+        self.forward_signature = None
         self.forward_date = None
         self.reply_to_message = None
         self.edit_date = None
@@ -433,7 +397,7 @@ class Message(JsonDeserializable):
         self.location = None
         self.venue = None
         self.animation = None
-        self.new_chat_member = None
+        self.new_chat_member = None  # Deprecated since Bot API 3.0. Not processed anymore
         self.new_chat_members = None
         self.left_chat_member = None
         self.new_chat_title = None
@@ -455,6 +419,7 @@ class Message(JsonDeserializable):
     def __html_text(self, text, entities):
         """
         Author: @sviat9440
+        Updaters: @badiboy
         Message: "*Test* parse _formatting_, [url](https://example.com), [text_mention](tg://user?id=123456) and mention @username"
 
         Example:
@@ -471,12 +436,13 @@ class Message(JsonDeserializable):
 
         if not entities:
             return text
+
         _subs = {
             "bold"     : "<b>{text}</b>",
             "italic"   : "<i>{text}</i>",
             "pre"      : "<pre>{text}</pre>",
             "code"     : "<code>{text}</code>",
-            "url"      : "<a href=\"{url}\">{text}</a>",
+            #"url"      : "<a href=\"{url}\">{text}</a>", # @badiboy plain URLs have no text and do not need tags
             "text_link": "<a href=\"{url}\">{text}</a>"
         }
         if hasattr(self, "custom_subs"):
@@ -503,8 +469,15 @@ class Message(JsonDeserializable):
             if entity.offset > offset:
                 html_text += func(utf16_text[offset * 2 : entity.offset * 2])
                 offset = entity.offset
-            html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
-            offset += entity.length
+                html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
+                offset += entity.length
+            elif entity.offset == offset:
+                html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
+                offset += entity.length
+            else:
+                # TODO: process nested entities from Bot API 4.5
+                # Now ignoring them
+                pass
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
         return html_text
@@ -521,14 +494,13 @@ class Message(JsonDeserializable):
 class MessageEntity(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         type = obj['type']
         offset = obj['offset']
         length = obj['length']
         url = obj.get('url')
-        user = None
-        if 'user' in obj:
-            user = User.de_json(obj['user'])
+        user = User.de_json(obj.get('user'))
         return cls(type, offset, length, url, user)
 
     def __init__(self, type, offset, length, url=None, user=None):
@@ -542,6 +514,7 @@ class MessageEntity(JsonDeserializable):
 class PhotoSize(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
@@ -559,6 +532,7 @@ class PhotoSize(JsonDeserializable):
 class Audio(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
@@ -580,6 +554,7 @@ class Audio(JsonDeserializable):
 class Voice(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         duration = obj['duration']
@@ -597,6 +572,7 @@ class Voice(JsonDeserializable):
 class Document(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         thumb = None
@@ -618,14 +594,13 @@ class Document(JsonDeserializable):
 class Video(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
         return cls(file_id, width, height, duration, thumb, mime_type, file_size)
@@ -643,13 +618,12 @@ class Video(JsonDeserializable):
 class VideoNote(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         length = obj['length']
         duration = obj['duration']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         file_size = obj.get('file_size')
         return cls(file_id, length, duration, thumb, file_size)
 
@@ -664,6 +638,7 @@ class VideoNote(JsonDeserializable):
 class Contact(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
@@ -681,6 +656,7 @@ class Contact(JsonDeserializable):
 class Location(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         longitude = obj['longitude']
         latitude = obj['latitude']
@@ -693,8 +669,9 @@ class Location(JsonDeserializable):
 
 class Venue(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         location = Location.de_json(obj['location'])
         title = obj['title']
         address = obj['address']
@@ -711,6 +688,7 @@ class Venue(JsonDeserializable):
 class UserProfilePhotos(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         total_count = obj['total_count']
         photos = [[PhotoSize.de_json(y) for y in x] for x in obj['photos']]
@@ -723,8 +701,9 @@ class UserProfilePhotos(JsonDeserializable):
 
 class File(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         file_id = obj['file_id']
         file_size = obj.get('file_size')
         file_path = obj.get('file_path')
@@ -764,7 +743,6 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
         self.row_width = row_width
-
         self.keyboard = []
 
     def add(self, *args):
@@ -818,13 +796,10 @@ class ReplyKeyboardMarkup(JsonSerializable):
         json_dict = {'keyboard': self.keyboard}
         if self.one_time_keyboard:
             json_dict['one_time_keyboard'] = True
-
         if self.resize_keyboard:
             json_dict['resize_keyboard'] = True
-
         if self.selective:
             json_dict['selective'] = True
-
         return json.dumps(json_dict)
 
 
@@ -849,7 +824,6 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
     def __init__(self, row_width=3):
         self.row_width = row_width
-
         self.keyboard = []
 
     def add(self, *args):
@@ -957,13 +931,12 @@ class InlineKeyboardButton(JsonSerializable):
 
 class CallbackQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
-        message = None
-        if 'message' in obj:
-            message = Message.de_json(obj['message'])
+        message = Message.de_json(obj.get('message'))
         inline_message_id = obj.get('inline_message_id')
         chat_instance = obj['chat_instance']
         data = obj.get('data')
@@ -982,8 +955,9 @@ class CallbackQuery(JsonDeserializable):
 
 class ChatPhoto(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         small_file_id = obj['small_file_id']
         big_file_id = obj['big_file_id']
         return cls(small_file_id, big_file_id)
@@ -995,8 +969,9 @@ class ChatPhoto(JsonDeserializable):
 
 class ChatMember(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         user = User.de_json(obj['user'])
         status = obj['status']
         until_date = obj.get('until_date')
@@ -1042,13 +1017,12 @@ class ChatMember(JsonDeserializable):
 
 class InlineQuery(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
-        location = None
-        if 'location' in obj:
-            location = Location.de_json(obj['location'])
+        location = Location.de_json(obj.get('location'))
         query = obj['query']
         offset = obj['offset']
         return cls(id, from_user, location, query, offset)
@@ -1131,14 +1105,13 @@ class InputContactMessageContent(Dictionaryable):
 
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         result_id = obj['result_id']
         from_user = User.de_json(obj['from'])
         query = obj['query']
-        location = None
-        if 'location' in obj:
-            location = Location.de_json(obj['location'])
+        location = Location.de_json(obj.get('location'))
         inline_message_id = obj.get('inline_message_id')
         return cls(result_id, from_user, query, location, inline_message_id)
 
@@ -1783,6 +1756,7 @@ class InlineQueryResultGame(JsonSerializable):
 class Game(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         title = obj['title']
         description = obj['description']
@@ -1791,9 +1765,7 @@ class Game(JsonDeserializable):
         text_entities = None
         if 'text_entities' in obj:
             text_entities = Game.parse_entities(obj['text_entities'])
-        animation = None
-        if 'animation' in obj:
-            animation = Animation.de_json(obj['animation'])
+        animation = Animation.de_json(obj.get('animation'))
         return cls(title, description, photo, text, text_entities, animation)
 
     @classmethod
@@ -1822,11 +1794,10 @@ class Game(JsonDeserializable):
 class Animation(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
@@ -1843,6 +1814,7 @@ class Animation(JsonDeserializable):
 class GameHighScore(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         position = obj['position']
         user = User.de_json(obj['user'])
@@ -1872,6 +1844,7 @@ class LabeledPrice(JsonSerializable):
 class Invoice(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         title = obj['title']
         description = obj['description']
@@ -1891,6 +1864,7 @@ class Invoice(JsonDeserializable):
 class ShippingAddress(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         country_code = obj['country_code']
         state = obj['state']
@@ -1912,13 +1886,12 @@ class ShippingAddress(JsonDeserializable):
 class OrderInfo(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         name = obj.get('name')
         phone_number = obj.get('phone_number')
         email = obj.get('email')
-        shipping_address = None
-        if 'shipping_address' in obj:
-            shipping_address = ShippingAddress.de_json(obj['shipping_address'])
+        shipping_address = ShippingAddress.de_json(obj.get('shipping_address'))
         return cls(name, phone_number, email, shipping_address)
 
     def __init__(self, name, phone_number, email, shipping_address):
@@ -1954,14 +1927,13 @@ class ShippingOption(JsonSerializable):
 class SuccessfulPayment(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         currency = obj['currency']
         total_amount = obj['total_amount']
         invoice_payload = obj['invoice_payload']
         shipping_option_id = obj.get('shipping_option_id')
-        order_info = None
-        if 'order_info' in obj:
-            order_info = OrderInfo.de_json(obj['order_info'])
+        order_info = OrderInfo.de_json(obj.get('order_info'))
         telegram_payment_charge_id = obj['telegram_payment_charge_id']
         provider_payment_charge_id = obj['provider_payment_charge_id']
         return cls(currency, total_amount, invoice_payload, shipping_option_id, order_info,
@@ -1981,6 +1953,7 @@ class SuccessfulPayment(JsonDeserializable):
 class ShippingQuery(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
@@ -1998,6 +1971,7 @@ class ShippingQuery(JsonDeserializable):
 class PreCheckoutQuery(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
@@ -2005,9 +1979,7 @@ class PreCheckoutQuery(JsonDeserializable):
         total_amount = obj['total_amount']
         invoice_payload = obj['invoice_payload']
         shipping_option_id = obj.get('shipping_option_id')
-        order_info = None
-        if 'order_info' in obj:
-            order_info = OrderInfo.de_json(obj['order_info'])
+        order_info = OrderInfo.de_json(obj.get('order_info'))
         return cls(id, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info)
 
     def __init__(self, id, from_user, currency, total_amount, invoice_payload, shipping_option_id, order_info):
@@ -2025,6 +1997,7 @@ class PreCheckoutQuery(JsonDeserializable):
 class StickerSet(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         name = obj['name']
         title = obj['title']
@@ -2044,19 +2017,16 @@ class StickerSet(JsonDeserializable):
 class Sticker(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
         height = obj['height']
         is_animated = obj['is_animated']
-        thumb = None
-        if 'thumb' in obj:
-            thumb = PhotoSize.de_json(obj['thumb'])
+        thumb = PhotoSize.de_json(obj.get('thumb'))
         emoji = obj.get('emoji')
         set_name = obj.get('set_name')
-        mask_position = None
-        if 'mask_position' in obj:
-            mask_position = MaskPosition.de_json(obj['mask_position'])
+        mask_position = MaskPosition.de_json(obj.get('mask_position'))
         file_size = obj.get('file_size')
         return cls(file_id, width, height, thumb, emoji, set_name, mask_position, file_size, is_animated)
 
@@ -2074,6 +2044,7 @@ class Sticker(JsonDeserializable):
 class MaskPosition(JsonDeserializable, JsonSerializable):
     @classmethod
     def de_json(cls, json_string):
+        if (json_string is None): return None
         obj = cls.check_json(json_string)
         point = obj['point']
         x_shift = obj['x_shift']
@@ -2218,8 +2189,9 @@ class InputMediaDocument(InputMedia):
 
 class PollOption(JsonSerializable, JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         text = obj['text']
         voter_count = int(obj['voter_count'])
         option = cls(text)
@@ -2236,8 +2208,9 @@ class PollOption(JsonSerializable, JsonDeserializable):
 
 class Poll(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_type):
-        obj = cls.check_json(json_type)
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
         poll_id = obj['id']
         question = obj['question']
         poll = cls(question)
@@ -2249,9 +2222,7 @@ class Poll(JsonDeserializable):
         is_anonymous = obj['is_anonymous']
         poll_type = obj['type']
         allows_multiple_answers = obj['allows_multiple_answers']
-        correct_option_id = None
-        if 'correct_option_id' in obj:
-            correct_option_id = obj['correct_option_id']
+        correct_option_id = obj.get('correct_option_id')
         poll.id = poll_id
         poll.options = options
         poll.total_voter_count = total_voter_count
