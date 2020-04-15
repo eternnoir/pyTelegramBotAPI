@@ -11,7 +11,7 @@ import telebot
 from telebot import types
 from telebot import util
 
-should_skip = False
+should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
 
 if not should_skip:
     TOKEN = os.environ['TOKEN']
