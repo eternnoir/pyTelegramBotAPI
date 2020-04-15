@@ -11,7 +11,7 @@ import telebot
 from telebot import types
 from telebot import util
 
-should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
+should_skip = False
 
 if not should_skip:
     TOKEN = os.environ['TOKEN']
@@ -240,6 +240,12 @@ class TestTeleBot:
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_message(CHAT_ID, text)
         assert ret_msg.message_id
+
+    def test_send_dice(self):
+        tb = telebot.TeleBot(TOKEN)
+        ret_msg = tb.send_dice(CHAT_ID)
+        assert ret_msg.message_id
+        assert ret_msg.content_type == 'dice'
 
     def test_send_message_dis_noti(self):
         text = 'CI Test Message'

@@ -259,6 +259,18 @@ def forward_message(token, chat_id, from_chat_id, message_id, disable_notificati
     return _make_request(token, method_url, params=payload)
 
 
+def send_dice(token, chat_id, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    method_url = r'sendDice'
+    payload = {'chat_id': chat_id}
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
 def send_photo(token, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
                parse_mode=None, disable_notification=None):
     method_url = r'sendPhoto'

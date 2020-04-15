@@ -293,6 +293,9 @@ class Message(JsonDeserializable):
         if 'venue' in obj:
             opts['venue'] = Venue.de_json(obj['venue'])
             content_type = 'venue'
+        if 'dice' in obj:
+            opts['dice'] = Dice.de_json(obj['dice'])
+            content_type = 'dice'
         if 'new_chat_members' in obj:
             new_chat_members = []
             for member in obj['new_chat_members']:
@@ -397,6 +400,7 @@ class Message(JsonDeserializable):
         self.location = None
         self.venue = None
         self.animation = None
+        self.dice = None
         self.new_chat_member = None  # Deprecated since Bot API 3.0. Not processed anymore
         self.new_chat_members = None
         self.left_chat_member = None
@@ -509,6 +513,24 @@ class MessageEntity(JsonDeserializable):
         self.length = length
         self.url = url
         self.user = user
+
+
+class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
+        value = obj['value']
+        return cls(value)
+    
+    def __init__(self, value):
+        self.value = value
+        
+    def to_json(self):
+        return json.dumps({'value': self.value})
+    
+    def to_dic(self):
+        return {'value': self.value}
 
 
 class PhotoSize(JsonDeserializable):

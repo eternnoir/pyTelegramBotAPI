@@ -117,6 +117,7 @@ class TeleBot:
         sendVideoNote
         sendLocation
         sendChatAction
+        sendDice
         getUserProfilePhotos
         getUpdates
         getFile
@@ -664,6 +665,19 @@ class TeleBot:
         :return: API reply.
         """
         return apihelper.delete_message(self.token, chat_id, message_id)
+
+    def send_dice(self, chat_id, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+        """
+        Use this method to send dices.
+        :param chat_id:
+        :param disable_notification:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return: Message
+        """
+        return types.Message.de_json(
+            apihelper.send_dice(self.token, chat_id, disable_notification, reply_to_message_id, reply_markup)
+        )
 
     def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
                    parse_mode=None, disable_notification=None):
@@ -1990,6 +2004,10 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def send_message(self, *args, **kwargs):
         return TeleBot.send_message(self, *args, **kwargs)
+
+    @util.async_dec()
+    def send_dice(self, *args, **kwargs):
+        return TeleBot.send_dice(self, *args, **kwargs)
 
     @util.async_dec()
     def forward_message(self, *args, **kwargs):
