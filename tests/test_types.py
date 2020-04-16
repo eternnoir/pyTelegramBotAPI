@@ -17,6 +17,14 @@ def test_json_message():
     assert msg.text == 'HIHI'
 
 
+def test_json_message_with_dice():
+    jsonstring = r'{"message_id":5560,"from":{"id":879343317,"is_bot":false,"first_name":"George","last_name":"Forse","username":"dr_fxrse","language_code":"ru"},"chat":{"id":879343317,"first_name":"George","last_name":"Forse","username":"dr_fxrse","type":"private"},"date":1586926330,"dice":{"value":4}}'
+    msg = types.Message.de_json(jsonstring)
+    assert msg.content_type == 'dice'
+    assert isinstance(msg.dice, types.Dice)
+    assert msg.dice.value == 4
+
+
 def test_json_message_group():
     json_string = r'{"message_id":10,"from":{"id":12345,"first_name":"g","last_name":"G","username":"GG","is_bot":true},"chat":{"id":-866,"type":"private","title":"\u4ea4"},"date":1435303157,"text":"HIHI"}'
     msg = types.Message.de_json(json_string)
