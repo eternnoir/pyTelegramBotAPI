@@ -1204,7 +1204,7 @@ class TeleBot:
                                         disable_notification, reply_to_message_id, reply_markup, provider_data)
         return types.Message.de_json(result)
 
-    def send_poll(self, chat_id, poll, disable_notifications=False, reply_to_message=None, reply_markup=None):
+    def send_poll(self, chat_id, poll, disable_notifications=False, reply_to_message=None, reply_markup=None, is_anonymous=True, allows_multiple_answers=False, poll_type=None, correct_option_id=None):
         """
         Sends poll
         :param chat_id:
@@ -1214,7 +1214,7 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
-        return types.Message.de_json(apihelper.send_poll(self.token, chat_id, poll.question, poll.options, disable_notifications, reply_to_message, reply_markup))
+        return types.Message.de_json(apihelper.send_poll(self.token, chat_id, poll.question, poll.options, disable_notifications, reply_to_message, reply_markup, is_anonymous, allows_multiple_answers, poll_type, correct_option_id))
 
     def stop_poll(self, chat_id, message_id):
         """

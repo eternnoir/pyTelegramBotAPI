@@ -994,7 +994,7 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def send_poll(token, chat_id, question, options, disable_notifications=False, reply_to_message_id=None, reply_markup=None):
+def send_poll(token, chat_id, question, options, disable_notifications=False, reply_to_message_id=None, reply_markup=None, is_anonymous=True, allows_multiple_answers=False, poll_type=None, correct_option_id=None):
     method_url = r'sendPoll'
     payload = {'chat_id': str(chat_id), 'question': question, 'options': _convert_list_json_serializable(options)}
     if disable_notifications:
@@ -1003,6 +1003,13 @@ def send_poll(token, chat_id, question, options, disable_notifications=False, re
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if not is_anonymous:
+        payload['is_anonymous'] = is_anonymous
+    if allows_multiple_answers:
+        payload['allows_multiple_answers'] = allows_multiple_answers
+    if poll_type == 'quiz' and correct_option_id:
+        payload['type'] = 'quiz'
+        payload['correct_option_id'] = correct_option_id
     return _make_request(token, method_url, params=payload)
 
 
