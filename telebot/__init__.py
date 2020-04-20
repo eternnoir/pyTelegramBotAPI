@@ -380,7 +380,7 @@ class TeleBot:
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
-            if hasattr(update, update_type):
+            if hasattr(update, update_type) and update.__dict__[update_type]:
                 for typed_middleware_handler in middlewares:
                     typed_middleware_handler(self, getattr(update, update_type))
 
