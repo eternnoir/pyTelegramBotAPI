@@ -569,7 +569,7 @@ def unban_chat_member(token, chat_id, user_id):
 
 def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_messages=None,
                          can_send_media_messages=None, can_send_other_messages=None,
-                         can_add_web_page_previews=None):
+                         can_add_web_page_previews=None, can_invite_users=None):
     method_url = 'restrictChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if until_date:
@@ -582,7 +582,9 @@ def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_mess
         payload['can_send_other_messages'] = can_send_other_messages
     if can_add_web_page_previews:
         payload['can_add_web_page_previews'] = can_add_web_page_previews
-
+    if can_invite_users:
+        payload['can_invite_users'] = can_invite_users
+        
     return _make_request(token, method_url, params=payload, method='post')
 
 
