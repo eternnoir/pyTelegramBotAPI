@@ -930,7 +930,7 @@ class TeleBot:
 
     def restrict_chat_member(self, chat_id, user_id, until_date=None, can_send_messages=None,
                              can_send_media_messages=None, can_send_other_messages=None,
-                             can_add_web_page_previews=None):
+                             can_add_web_page_previews=None, can_invite_users=None):
         """
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
@@ -949,6 +949,8 @@ class TeleBot:
             use inline bots, implies can_send_media_messages
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
             implies can_send_media_messages
+	:param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
+	    implies can_invite_users
         :return: types.Message
         """
         return apihelper.restrict_chat_member(self.token, chat_id, user_id, until_date, can_send_messages,
