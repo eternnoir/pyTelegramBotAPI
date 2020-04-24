@@ -3,3 +3,4 @@ pytest==3.0.2
 requests==2.20.0
 six==1.9.0
 wheel==0.24.0
+redis==3.4.1

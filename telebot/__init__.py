@@ -2,8 +2,6 @@
 from __future__ import print_function
 
 import logging
-import os
-import pickle
 import re
 import sys
 import threading
@@ -23,6 +21,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, types, util
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 
 """
 Module : telebot
@@ -43,64 +42,6 @@ class Handler:
         return getattr(self, item)
 
 
-class Saver:
-    """
-    Class for saving (next step|reply) handlers
-    """
-
-    def __init__(self, handlers, filename, delay):
-        self.handlers = handlers
-        self.filename = filename
-        self.delay = delay
-        self.timer = threading.Timer(delay, self.save_handlers)
-
-    def start_save_timer(self):
-        if not self.timer.is_alive():
-            if self.delay <= 0:
-                self.save_handlers()
-            else:
-                self.timer = threading.Timer(self.delay, self.save_handlers)
-                self.timer.start()
-
-    def save_handlers(self):
-        self.dump_handlers(self.handlers, self.filename)
-
-    def load_handlers(self, filename, del_file_after_loading=True):
-        tmp = self.return_load_handlers(filename, del_file_after_loading=del_file_after_loading)
-        if tmp is not None:
-            self.handlers.update(tmp)
-
-    @staticmethod
-    def dump_handlers(handlers, filename, file_mode="wb"):
-        dirs = filename.rsplit('/', maxsplit=1)[0]
-        os.makedirs(dirs, exist_ok=True)
-
-        with open(filename + ".tmp", file_mode) as file:
-            if (apihelper.CUSTOM_SERIALIZER is None):
-                pickle.dump(handlers, file)
-            else:
-                apihelper.CUSTOM_SERIALIZER.dump(handlers, file)
-
-        if os.path.isfile(filename):
-            os.remove(filename)
-
-        os.rename(filename + ".tmp", filename)
-
-    @staticmethod
-    def return_load_handlers(filename, del_file_after_loading=True):
-        if os.path.isfile(filename) and os.path.getsize(filename) > 0:
-            with open(filename, "rb") as file:
-                if (apihelper.CUSTOM_SERIALIZER is None):
-                    handlers = pickle.load(file)
-                else:
-                    handlers = apihelper.CUSTOM_SERIALIZER.load(file)
-
-            if del_file_after_loading:
-                os.remove(filename)
-
-            return handlers
-
-
 class TeleBot:
     """ This is TeleBot Class
     Methods:
@@ -117,6 +58,7 @@ class TeleBot:
         sendVideoNote
         sendLocation
         sendChatAction
+        sendDice
         getUserProfilePhotos
         getUpdates
         getFile
@@ -141,7 +83,10 @@ class TeleBot:
         answerInlineQuery
         """
 
-    def __init__(self, token, threaded=True, skip_pending=False, num_threads=2):
+    def __init__(
+            self, token, threaded=True, skip_pending=False, num_threads=2,
+            next_step_backend=None, reply_backend=None
+    ):
         """
         :param token: bot API token
         :return: Telebot object.
@@ -155,14 +100,13 @@ class TeleBot:
         self.last_update_id = 0
         self.exc_info = None
 
-        # key: message_id, value: handler list
-        self.reply_handlers = {}
+        self.next_step_backend = next_step_backend
+        if not self.next_step_backend:
+            self.next_step_backend = MemoryHandlerBackend()
 
-        # key: chat_id, value: handler list
-        self.next_step_handlers = {}
-
-        self.next_step_saver = None
-        self.reply_saver = None
+        self.reply_backend = reply_backend
+        if not self.reply_backend:
+            self.reply_backend = MemoryHandlerBackend()
 
         self.message_handlers = []
         self.edited_message_handlers = []
@@ -196,51 +140,89 @@ class TeleBot:
 
     def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
         """
-        Enable saving next step handlers (by default saving disable)
+        Enable saving next step handlers (by default saving disabled)
+
+        This function explicitly assigns FileHandlerBackend (instead of Saver) just to keep backward
+        compatibility whose purpose was to enable file saving capability for handlers. And the same
+        implementation is now available with FileHandlerBackend
+
+        Most probably this function should be deprecated in future major releases
 
         :param delay: Delay between changes in handlers and saving
         :param filename: Filename of save file
         """
-        self.next_step_saver = Saver(self.next_step_handlers, filename, delay)
+        self.next_step_backend = FileHandlerBackend(self.next_step_backend.handlers, filename, delay)
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
         """
         Enable saving reply handlers (by default saving disable)
 
+        This function explicitly assigns FileHandlerBackend (instead of Saver) just to keep backward
+        compatibility whose purpose was to enable file saving capability for handlers. And the same
+        implementation is now available with FileHandlerBackend
+
+        Most probably this function should be deprecated in future major releases
+
         :param delay: Delay between changes in handlers and saving
         :param filename: Filename of save file
         """
-        self.reply_saver = Saver(self.reply_handlers, filename, delay)
+        self.reply_backend = FileHandlerBackend(self.reply_backend.handlers, filename, delay)
 
     def disable_save_next_step_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
+
+        This function is left to keep backward compatibility whose purpose was to disable file saving capability
+        for handlers. For the same purpose, MemoryHandlerBackend is reassigned as a new next_step_backend backend
+        instead of FileHandlerBackend.
+
+        Most probably this function should be deprecated in future major releases
         """
-        self.next_step_saver = None
+        self.next_step_backend = MemoryHandlerBackend(self.next_step_backend.handlers)
 
     def disable_save_reply_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
+
+        This function is left to keep backward compatibility whose purpose was to disable file saving capability
+        for handlers. For the same purpose, MemoryHandlerBackend is reassigned as a new reply_backend backend
+        instead of FileHandlerBackend.
+
+        Most probably this function should be deprecated in future major releases
         """
-        self.reply_saver = None
+        self.reply_backend = MemoryHandlerBackend(self.reply_backend.handlers)
 
     def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
         """
         Load next step handlers from save file
 
+        This function is left to keep backward compatibility whose purpose was to load handlers from file with the
+        help of FileHandlerBackend and is only recommended to use if next_step_backend was assigned as
+        FileHandlerBackend before entering this function
+
+        Most probably this function should be deprecated in future major releases
+
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
-        self.next_step_saver.load_handlers(filename, del_file_after_loading)
+        self.next_step_backend: FileHandlerBackend
+        self.next_step_backend.load_handlers(filename, del_file_after_loading)
 
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
         """
         Load reply handlers from save file
 
+        This function is left to keep backward compatibility whose purpose was to load handlers from file with the
+        help of FileHandlerBackend and is only recommended to use if reply_backend was assigned as
+        FileHandlerBackend before entering this function
+
+        Most probably this function should be deprecated in future major releases
+
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
-        self.reply_saver.load_handlers(filename)
+        self.reply_backend: FileHandlerBackend
+        self.reply_backend.load_handlers(filename, del_file_after_loading)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
@@ -397,7 +379,7 @@ class TeleBot:
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
-            if hasattr(update, update_type):
+            if getattr(update, update_type) is not None:
                 for typed_middleware_handler in middlewares:
                     typed_middleware_handler(self, getattr(update, update_type))
 
@@ -664,6 +646,19 @@ class TeleBot:
         :return: API reply.
         """
         return apihelper.delete_message(self.token, chat_id, message_id)
+
+    def send_dice(self, chat_id, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+        """
+        Use this method to send dices.
+        :param chat_id:
+        :param disable_notification:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :return: Message
+        """
+        return types.Message.de_json(
+            apihelper.send_dice(self.token, chat_id, disable_notification, reply_to_message_id, reply_markup)
+        )
 
     def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,
                    parse_mode=None, disable_notification=None):
@@ -937,7 +932,7 @@ class TeleBot:
 
     def restrict_chat_member(self, chat_id, user_id, until_date=None, can_send_messages=None,
                              can_send_media_messages=None, can_send_other_messages=None,
-                             can_add_web_page_previews=None):
+                             can_add_web_page_previews=None, can_invite_users=None):
         """
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
@@ -956,11 +951,13 @@ class TeleBot:
             use inline bots, implies can_send_media_messages
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
             implies can_send_media_messages
+	:param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
+	    implies can_invite_users
         :return: types.Message
         """
         return apihelper.restrict_chat_member(self.token, chat_id, user_id, until_date, can_send_messages,
                                               can_send_media_messages, can_send_other_messages,
-                                              can_add_web_page_previews)
+                                              can_add_web_page_previews, can_invite_users)
 
     def promote_chat_member(self, chat_id, user_id, can_change_info=None, can_post_messages=None,
                             can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
@@ -1401,12 +1398,7 @@ class TeleBot:
         :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
                             parameter, which will contain the replied message.
         """
-        if message_id in self.reply_handlers.keys():
-            self.reply_handlers[message_id].append(Handler(callback, *args, **kwargs))
-        else:
-            self.reply_handlers[message_id] = [Handler(callback, *args, **kwargs)]
-        if self.reply_saver is not None:
-            self.reply_saver.start_save_timer()
+        self.reply_backend.register_handler(message_id, Handler(callback, *args, **kwargs))
 
     def _notify_reply_handlers(self, new_messages):
         """
@@ -1416,14 +1408,9 @@ class TeleBot:
         """
         for message in new_messages:
             if hasattr(message, "reply_to_message") and message.reply_to_message is not None:
-                reply_msg_id = message.reply_to_message.message_id
-                if reply_msg_id in self.reply_handlers.keys():
-                    handlers = self.reply_handlers[reply_msg_id]
-                    for handler in handlers:
-                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
-                    self.reply_handlers.pop(reply_msg_id)
-                    if self.reply_saver is not None:
-                        self.reply_saver.start_save_timer()
+                handlers = self.reply_backend.get_handlers(message.reply_to_message.message_id)
+                for handler in handlers:
+                    self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
 
     def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
@@ -1450,13 +1437,7 @@ class TeleBot:
         :param args:        Args to pass in callback func
         :param kwargs:      Args to pass in callback func
         """
-        if chat_id in self.next_step_handlers.keys():
-            self.next_step_handlers[chat_id].append(Handler(callback, *args, **kwargs))
-        else:
-            self.next_step_handlers[chat_id] = [Handler(callback, *args, **kwargs)]
-
-        if self.next_step_saver is not None:
-            self.next_step_saver.start_save_timer()
+        self.next_step_backend.register_handler(chat_id, Handler(callback, *args, **kwargs))
 
     def clear_step_handler(self, message):
         """
@@ -1473,10 +1454,7 @@ class TeleBot:
 
         :param chat_id: The chat for which we want to clear next step handlers
         """
-        self.next_step_handlers[chat_id] = []
-
-        if self.next_step_saver is not None:
-            self.next_step_saver.start_save_timer()
+        self.next_step_backend.clear_handlers(chat_id)
 
     def clear_reply_handlers(self, message):
         """
@@ -1493,10 +1471,7 @@ class TeleBot:
 
         :param message_id: The message id for which we want to clear reply handlers
         """
-        self.reply_handlers[message_id] = []
-
-        if self.reply_saver is not None:
-            self.reply_saver.start_save_timer()
+        self.reply_backend.clear_handlers(message_id)
 
     def _notify_next_handlers(self, new_messages):
         """
@@ -1504,22 +1479,14 @@ class TeleBot:
         :param new_messages:
         :return:
         """
-        i = 0
-        while i < len(new_messages):
-            message = new_messages[i]
-            chat_id = message.chat.id
-            was_poped = False
-            if chat_id in self.next_step_handlers.keys():
-                handlers = self.next_step_handlers.pop(chat_id, None)
-                if handlers:
-                    for handler in handlers:
-                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
-                    new_messages.pop(i)  # removing message that detects with next_step_handler
-                    was_poped = True
-                if self.next_step_saver is not None:
-                    self.next_step_saver.start_save_timer()
-            if not was_poped:
-                i += 1
+        for i, message in enumerate(new_messages):
+            need_pop = False
+            handlers = self.next_step_backend.get_handlers(message.chat.id)
+            for handler in handlers:
+                need_pop = True
+                self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+            if need_pop:
+                new_messages.pop(i)  # removing message that detects with next_step_handler
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
@@ -1993,6 +1960,10 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def send_message(self, *args, **kwargs):
         return TeleBot.send_message(self, *args, **kwargs)
+
+    @util.async_dec()
+    def send_dice(self, *args, **kwargs):
+        return TeleBot.send_dice(self, *args, **kwargs)
 
     @util.async_dec()
     def forward_message(self, *args, **kwargs):
