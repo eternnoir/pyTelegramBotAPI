@@ -303,7 +303,7 @@ class TeleBot:
 
     def process_new_updates(self, updates):
         new_messages = []
-        edited_new_messages = []
+        new_edited_messages = []
         new_channel_posts = []
         new_edited_channel_posts = []
         new_inline_querys = []
@@ -314,7 +314,6 @@ class TeleBot:
         new_polls = []
 
         for update in updates:
-
             if apihelper.ENABLE_MIDDLEWARE:
                 self.process_middlewares(update)
 
@@ -323,7 +322,7 @@ class TeleBot:
             if update.message:
                 new_messages.append(update.message)
             if update.edited_message:
-                edited_new_messages.append(update.edited_message)
+                new_edited_messages.append(update.edited_message)
             if update.channel_post:
                 new_channel_posts.append(update.channel_post)
             if update.edited_channel_post:
@@ -344,8 +343,8 @@ class TeleBot:
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
             self.process_new_messages(new_messages)
-        if len(edited_new_messages) > 0:
-            self.process_new_edited_messages(edited_new_messages)
+        if len(new_edited_messages) > 0:
+            self.process_new_edited_messages(new_edited_messages)
         if len(new_channel_posts) > 0:
             self.process_new_channel_posts(new_channel_posts)
         if len(new_edited_channel_posts) > 0:
@@ -414,7 +413,7 @@ class TeleBot:
         while not self.__stop_polling.is_set():
             try:
                 self.polling(timeout=timeout, *args, **kwargs)
-            except Exception as e:
+            except Exception:
                 time.sleep(timeout)
                 pass
         logger.info("Break infinity polling")
@@ -638,6 +637,7 @@ class TeleBot:
         :param reply_markup:
         :param parse_mode:
         :param disable_notification: Boolean, Optional. Sends the message silently.
+        :param timeout:
         :return: API reply.
         """
         return types.Message.de_json(
@@ -782,12 +782,14 @@ class TeleBot:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param data: InputFile or String : Animation to send. You can either pass a file_id as String to resend an animation that is already on the Telegram server
+        :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an animation that is already on the Telegram server
         :param duration: Integer : Duration of sent video in seconds
         :param caption: String : Animation caption (may also be used when resending animation by file_id).
         :param parse_mode:
         :param reply_to_message_id:
         :param reply_markup:
+        :param disable_notification:
+        :param timeout:
         :return:
         """
         return types.Message.de_json(
@@ -1598,11 +1600,12 @@ class TeleBot:
         def command_handle_document(message):
             bot.send_message(message.chat.id, 'Document received, sir!')
 
-        # Handle all other commands.
+        # Handle all other messages.
         @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
         def default_command(message):
             bot.send_message(message.chat.id, "This is the default command handler.")
 
+        :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
         :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
@@ -1874,20 +1877,20 @@ class TeleBot:
         :param message:
         :return:
         """
-        for filter, filter_value in six.iteritems(message_handler['filters']):
+        for message_filter, filter_value in six.iteritems(message_handler['filters']):
             if filter_value is None:
                 continue
 
-            if not self._test_filter(filter, filter_value, message):
+            if not self._test_filter(message_filter, filter_value, message):
                 return False
 
         return True
 
     @staticmethod
-    def _test_filter(filter, filter_value, message):
+    def _test_filter(message_filter, filter_value, message):
         """
         Test filters
-        :param filter:
+        :param message_filter:
         :param filter_value:
         :param message:
         :return:
@@ -1899,7 +1902,7 @@ class TeleBot:
             'func': lambda msg: filter_value(msg)
         }
 
-        return test_cases.get(filter, lambda msg: False)(message)
+        return test_cases.get(message_filter, lambda msg: False)(message)
 
     def _notify_command_handlers(self, handlers, new_messages):
         """
