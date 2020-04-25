@@ -166,3 +166,15 @@ def test_InlineQueryResultCachedPhoto_with_markup():
     assert 'Title' in json_str
     assert 'caption' not in json_str
     assert 'reply_markup' in json_str
+
+
+def test_json_poll_1():
+    jsonstring = r'{"message_id": 395020,"from": {"id": 111,"is_bot": false,"first_name": "FN","last_name": "LN","username": "Badiboy","language_code": "ru"},"chat": {"id": 111,"first_name": "FN","last_name": "LN","username": "Badiboy","type": "private"},"date": 1587841239,"poll": {"id": "5272018969396510722","question": "Test poll 1","options": [{"text": "Answer 1","voter_count": 0},{"text": "Answer 2","voter_count": 0}],"total_voter_count": 0,"is_closed": false,"is_anonymous": true,"type": "regular","allows_multiple_answers": true}}'
+    msg = types.Message.de_json(jsonstring)
+    assert msg.poll is not None
+    assert isinstance(msg.poll, types.Poll)
+    assert msg.poll.id == '5272018969396510722'
+    assert msg.poll.question is not None
+    assert msg.poll.options is not None
+    assert len(msg.poll.options) == 2
+    assert msg.poll.allows_multiple_answers == True
