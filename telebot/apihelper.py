@@ -1003,13 +1003,16 @@ def send_poll(token, chat_id, question, options, disable_notifications=False, re
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
-    if not is_anonymous is not None:
+    if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
     if allows_multiple_answers is not None:
         payload['allows_multiple_answers'] = allows_multiple_answers
-    if poll_type == 'quiz' and correct_option_id is not None:
-        payload['type'] = 'quiz'
-        payload['correct_option_id'] = correct_option_id
+    if poll_type is not None:
+        if poll_type == 'quiz' and correct_option_id is not None:
+            payload['type'] = 'quiz'
+            payload['correct_option_id'] = correct_option_id
+        if poll_type == 'regular':
+            payload['type'] = 'regular'
     return _make_request(token, method_url, params=payload)
 
 
