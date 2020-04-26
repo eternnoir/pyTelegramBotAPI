@@ -996,14 +996,37 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def send_poll(token, chat_id, question, options, disable_notifications=False, reply_to_message_id=None, reply_markup=None):
+def send_poll(token, chat_id, poll, explanation_parse_mode=None, disable_notifications=False, reply_to_message_id=None, reply_markup=None):
     method_url = r'sendPoll'
-    payload = {'chat_id': str(chat_id), 'question': question, 'options': _convert_list_json_serializable(options)}
+    payload = {
+        'chat_id': str(chat_id),
+        'question': poll.question,
+        'options': _convert_list_json_serializable(poll.options)}
+
+    if poll.is_anonymous is not None:
+        payload['is_anonymous'] = poll.is_anonymous
+    if poll.type is not None:
+        payload['type'] = poll.type
+    if poll.allows_multiple_answers is not None:
+        payload['allows_multiple_answers'] = poll.allows_multiple_answers
+    if poll.correct_option_id is not None:
+        payload['correct_option_id'] = poll.correct_option_id
+    if poll.explanation is not None:
+        payload['explanation'] = poll.explanation
+    if explanation_parse_mode is not None:
+        payload['explanation_parse_mode'] = explanation_parse_mode
+    if poll.open_period is not None:
+        payload['open_period'] = poll.open_period
+    if poll.close_date is not None:
+        payload['close_date'] = poll.close_date
+    if poll.is_closed is not None:
+        payload['is_closed'] = poll.is_closed
+
     if disable_notifications:
         payload['disable_notification'] = disable_notifications
-    if reply_to_message_id:
+    if reply_to_message_id is not None:
         payload['reply_to_message_id'] = reply_to_message_id
-    if reply_markup:
+    if reply_markup is not None:
         payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)
 

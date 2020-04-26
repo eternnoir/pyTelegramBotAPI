@@ -34,10 +34,10 @@ class Dictionaryable(object):
 
     def to_dic(self):
         """
-        Returns a JSON string representation of this class.
+        Returns a DICT with class field values
 
         This function must be overridden by subclasses.
-        :return: a JSON formatted string.
+        :return: a DICT
         """
         raise NotImplementedError
 
@@ -450,23 +450,23 @@ class Message(JsonDeserializable):
             "text_link": "<a href=\"{url}\">{text}</a>"
         }
         if hasattr(self, "custom_subs"):
-            for type in self.custom_subs:
-                _subs[type] = self.custom_subs[type]
+            for key, value in self.custom_subs.items():
+                _subs[key] = value
         utf16_text = text.encode("utf-16-le")
         html_text = ""
 
-        def func(text, type=None, url=None, user=None):
-            text = text.decode("utf-16-le")
-            if type == "text_mention":
-                type = "url"
+        def func(upd_text, subst_type=None, url=None, user=None):
+            upd_text = upd_text.decode("utf-16-le")
+            if subst_type == "text_mention":
+                subst_type = "url"
                 url = "tg://user?id={0}".format(user.id)
-            elif type == "mention":
-                url = "https://t.me/{0}".format(text[1:])
-            text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            if not type or not _subs.get(type):
-                return text
-            subs = _subs.get(type)
-            return subs.format(text=text, url=url)
+            elif subst_type == "mention":
+                url = "https://t.me/{0}".format(upd_text[1:])
+            upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            if not subst_type or not _subs.get(subst_type):
+                return upd_text
+            subs = _subs.get(subst_type)
+            return subs.format(text=upd_text, url=url)
 
         offset = 0
         for entity in entities:
@@ -527,7 +527,7 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         self.value = value
         
     def to_json(self):
-        return json.dumps({'value': self.value})
+        return json.dumps(self.to_dic())
     
     def to_dic(self):
         return {'value': self.value}
@@ -896,7 +896,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         return json_dict
 
 
-class LoginUrl(JsonSerializable):
+class LoginUrl(Dictionaryable, JsonSerializable):
     def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None):
         self.url = url
         self.forward_text = forward_text
@@ -917,7 +917,7 @@ class LoginUrl(JsonSerializable):
         return json_dic
 
 
-class InlineKeyboardButton(JsonSerializable):
+class InlineKeyboardButton(Dictionaryable, JsonSerializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
                  switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None):
         self.text = text
@@ -2063,7 +2063,8 @@ class Sticker(JsonDeserializable):
         self.file_size = file_size
         self.is_animated = is_animated
 
-class MaskPosition(JsonDeserializable, JsonSerializable):
+
+class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
     @classmethod
     def de_json(cls, json_string):
         if (json_string is None): return None
@@ -2089,7 +2090,7 @@ class MaskPosition(JsonDeserializable, JsonSerializable):
 
 # InputMedia
 
-class InputMedia(JsonSerializable):
+class InputMedia(Dictionaryable, JsonSerializable):
     def __init__(self, type, media, caption=None, parse_mode=None):
         self.type = type
         self.media = media
@@ -2216,15 +2217,14 @@ class PollOption(JsonSerializable, JsonDeserializable):
         obj = cls.check_json(json_string)
         text = obj['text']
         voter_count = int(obj['voter_count'])
-        option = cls(text)
-        option.voter_count = voter_count
-        return option
+        return cls(text, voter_count)
 
-    def __init__(self, text):
+    def __init__(self, text, voter_count = 0):
         self.text = text
-        self.voter_count = 0
+        self.voter_count = voter_count
 
     def to_json(self):
+        # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
         return json.dumps(self.text)
 
 
@@ -2235,7 +2235,6 @@ class Poll(JsonDeserializable):
         obj = cls.check_json(json_string)
         poll_id = obj['id']
         question = obj['question']
-        poll = cls(question)
         options = []
         for opt in obj['options']:
             options.append(PollOption.de_json(opt))
@@ -2245,19 +2244,39 @@ class Poll(JsonDeserializable):
         poll_type = obj['type']
         allows_multiple_answers = obj['allows_multiple_answers']
         correct_option_id = obj.get('correct_option_id')
-        poll.id = poll_id
-        poll.options = options
-        poll.total_voter_count = total_voter_count
-        poll.is_closed = is_closed
-        poll.is_anonymous = is_anonymous
-        poll.type = poll_type
-        poll.allows_multiple_answers = allows_multiple_answers
-        poll.correct_option_id = correct_option_id
-        return poll
+        explanation = obj.get('explanation')
+        if 'explanation_entities' in obj:
+            explanation_entities = Message.parse_entities(obj['explanation_entities'])
+        else:
+            explanation_entities = None
+        open_period = obj.get('open_period')
+        close_date = obj.get('close_date')
+        #poll =
+        return cls(
+            question, options,
+            poll_id, total_voter_count, is_closed, is_anonymous, poll_type,
+            allows_multiple_answers, correct_option_id, explanation, explanation_entities,
+            open_period, close_date)
 
-    def __init__(self, question):
-        self.options = []
+    def __init__(
+            self,
+            question, options,
+            poll_id=None, total_voter_count=None, is_closed=None, is_anonymous=None, poll_type=None,
+            allows_multiple_answers=None, correct_option_id=None, explanation=None, explanation_entities=None,
+            open_period=None, close_date=None):
+        self.id = poll_id
         self.question = question
+        self.options = options
+        self.total_voter_count = total_voter_count
+        self.is_closed = is_closed
+        self.is_anonymous = is_anonymous
+        self.type = poll_type
+        self.allows_multiple_answers = allows_multiple_answers
+        self.correct_option_id = correct_option_id
+        self.explanation = explanation
+        self.explanation_entities = explanation_entities if not(explanation_entities is None) else []
+        self.open_period = open_period
+        self.close_date = close_date
 
     def add(self, option):
         if type(option) is PollOption:
