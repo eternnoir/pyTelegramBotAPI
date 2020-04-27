@@ -243,7 +243,7 @@ class TestTeleBot:
 
     def test_send_dice(self):
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_dice(CHAT_ID)
+        ret_msg = tb.send_dice(CHAT_ID, emoji='🎯')
         assert ret_msg.message_id
         assert ret_msg.content_type == 'dice'
 
