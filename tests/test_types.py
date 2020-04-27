@@ -18,7 +18,7 @@ def test_json_message():
 
 
 def test_json_message_with_dice():
-    jsonstring = r'{"message_id":5560,"from":{"id":879343317,"is_bot":false,"first_name":"George","last_name":"Forse","username":"dr_fxrse","language_code":"ru"},"chat":{"id":879343317,"first_name":"George","last_name":"Forse","username":"dr_fxrse","type":"private"},"date":1586926330,"dice":{"value": 4, "emoji": "\ud83c\udfb2"}}'
+    jsonstring = r'{"message_id":5560,"from":{"id":879343317,"is_bot":false,"first_name":"George","last_name":"Forse","username":"dr_fxrse","language_code":"ru"},"chat":{"id":879343317,"first_name":"George","last_name":"Forse","username":"dr_fxrse","type":"private"},"date":1586926330,"dice":{"value": 4, "emoji": "\ud83c\udfaf"}}'
     msg = types.Message.de_json(jsonstring)
     assert msg.content_type == 'dice'
     assert isinstance(msg.dice, types.Dice)
