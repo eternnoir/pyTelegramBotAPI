@@ -5,7 +5,7 @@ import threading
 from telebot import apihelper
 
 
-class HandlerBackend:
+class HandlerBackend(object):
     """
     Class for saving (next step|reply) handlers
     """
