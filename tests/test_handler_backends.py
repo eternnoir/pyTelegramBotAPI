@@ -10,7 +10,8 @@ import time
 import pytest
 
 import telebot
-from telebot import types, MemoryHandlerBackend, FileHandlerBackend
+from telebot import types
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 
 if REDIS_TESTS:
     from telebot.handler_backends import RedisHandlerBackend
@@ -230,8 +231,8 @@ def test_file_handler_backend_clear_next_step_handler(telegram_bot, private_chat
 
 
 def test_redis_handler_backend_register_next_step_handler(telegram_bot, private_chat, update_type):
-    if not(REDIS_TESTS):
-        return
+    if not REDIS_TESTS:
+        pytest.skip('please install redis and configure redis server, then enable REDIS_TESTS')
 
     telegram_bot.next_step_backend = RedisHandlerBackend(prefix='pyTelegramBotApi:step_backend1')
 
@@ -248,8 +249,8 @@ def test_redis_handler_backend_register_next_step_handler(telegram_bot, private_
 
 
 def test_redis_handler_backend_clear_next_step_handler(telegram_bot, private_chat, update_type):
-    if not(REDIS_TESTS):
-        return
+    if not REDIS_TESTS:
+        pytest.skip('please install redis and configure redis server, then enable REDIS_TESTS')
 
     telegram_bot.next_step_backend = RedisHandlerBackend(prefix='pyTelegramBotApi:step_backend2')
 
