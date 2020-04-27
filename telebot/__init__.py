@@ -205,7 +205,6 @@ class TeleBot:
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
-        self.next_step_backend: FileHandlerBackend
         self.next_step_backend.load_handlers(filename, del_file_after_loading)
 
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
@@ -221,7 +220,6 @@ class TeleBot:
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
         """
-        self.reply_backend: FileHandlerBackend
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
