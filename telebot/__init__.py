@@ -647,17 +647,18 @@ class TeleBot:
         """
         return apihelper.delete_message(self.token, chat_id, message_id)
 
-    def send_dice(self, chat_id, disable_notification=None, reply_to_message_id=None, reply_markup=None):
+    def send_dice(self, chat_id, emoji=None, disable_notification=None, reply_to_message_id=None, reply_markup=None):
         """
         Use this method to send dices.
         :param chat_id:
+        :param emoji:
         :param disable_notification:
         :param reply_to_message_id:
         :param reply_markup:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_dice(self.token, chat_id, disable_notification, reply_to_message_id, reply_markup)
+            apihelper.send_dice(self.token, chat_id, emoji, disable_notification, reply_to_message_id, reply_markup)
         )
 
     def send_photo(self, chat_id, photo, caption=None, reply_to_message_id=None, reply_markup=None,

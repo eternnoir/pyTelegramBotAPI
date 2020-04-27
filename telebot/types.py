@@ -521,16 +521,19 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         value = obj['value']
-        return cls(value)
+        emoji = obj['emoji']
+        return cls(value, emoji)
     
-    def __init__(self, value):
+    def __init__(self, value, emoji):
         self.value = value
+        self.emoji = emoji
         
     def to_json(self):
         return json.dumps(self.to_dic())
     
     def to_dic(self):
-        return {'value': self.value}
+        return {'value': self.value,
+                'emoji': self.emoji}
 
 
 class PhotoSize(JsonDeserializable):
