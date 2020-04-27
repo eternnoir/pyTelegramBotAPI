@@ -28,7 +28,7 @@
     * [Logging](#logging)
     * [Proxy](#proxy)
   * [API conformance](#api-conformance)
-  * [Change log](#сhange-log)
+  * [Change log](#change-log)
   * [F.A.Q.](#faq)
     * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
