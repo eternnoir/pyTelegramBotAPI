@@ -40,7 +40,7 @@ class MemoryHandlerBackend(HandlerBackend):
 
 class FileHandlerBackend(HandlerBackend):
     def __init__(self, handlers=None, filename='./.handler-saves/handlers.save', delay=120):
-        super().__init__(handlers)
+        super(FileHandlerBackend, self).__init__(handlers)
         self.filename = filename
         self.delay = delay
         self.timer = threading.Timer(delay, self.save_handlers)
@@ -116,7 +116,7 @@ class FileHandlerBackend(HandlerBackend):
 
 class RedisHandlerBackend(HandlerBackend):
     def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot'):
-        super().__init__(handlers)
+        super(RedisHandlerBackend, self).__init__(handlers)
         from redis import Redis
         self.prefix = prefix
         self.redis = Redis(host, port, db)
