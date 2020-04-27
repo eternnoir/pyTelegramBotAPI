@@ -2,6 +2,8 @@ import sys
 
 sys.path.append('../')
 
+REDIS_TESTS = False
+
 import os
 import time
 
@@ -9,7 +11,9 @@ import pytest
 
 import telebot
 from telebot import types, MemoryHandlerBackend, FileHandlerBackend
-from telebot.handler_backends import RedisHandlerBackend
+
+if REDIS_TESTS:
+    from telebot.handler_backends import RedisHandlerBackend
 
 
 @pytest.fixture()
@@ -226,6 +230,9 @@ def test_file_handler_backend_clear_next_step_handler(telegram_bot, private_chat
 
 
 def test_redis_handler_backend_register_next_step_handler(telegram_bot, private_chat, update_type):
+    if not(REDIS_TESTS):
+        return
+
     telegram_bot.next_step_backend = RedisHandlerBackend(prefix='pyTelegramBotApi:step_backend1')
 
     @telegram_bot.message_handler(commands=['start'])
@@ -241,6 +248,9 @@ def test_redis_handler_backend_register_next_step_handler(telegram_bot, private_
 
 
 def test_redis_handler_backend_clear_next_step_handler(telegram_bot, private_chat, update_type):
+    if not(REDIS_TESTS):
+        return
+
     telegram_bot.next_step_backend = RedisHandlerBackend(prefix='pyTelegramBotApi:step_backend2')
 
     @telegram_bot.message_handler(commands=['start'])
