@@ -48,7 +48,7 @@ class TestTeleBot:
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'https://web.telegram.org/')
 
-        @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+        @bot.message_handler(regexp=r'((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
         def command_url(message):
             msg.text = 'got'
 
@@ -84,7 +84,7 @@ class TestTeleBot:
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'web.telegram.org/')
 
-        @bot.message_handler(regexp='((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
+        @bot.message_handler(regexp=r'((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
         def command_url(message):
             msg.text = 'got'
 
