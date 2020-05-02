@@ -998,31 +998,36 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def send_poll(token, chat_id, poll, explanation_parse_mode=None, disable_notifications=False, reply_to_message_id=None, reply_markup=None):
+def send_poll(
+        token, chat_id,
+        question, options,
+        is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
+        explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
+        disable_notifications=False, reply_to_message_id=None, reply_markup=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
-        'question': poll.question,
-        'options': _convert_list_json_serializable(poll.options)}
+        'question': question,
+        'options': _convert_list_json_serializable(options)}
 
-    if poll.is_anonymous is not None:
-        payload['is_anonymous'] = poll.is_anonymous
-    if poll.type is not None:
-        payload['type'] = poll.type
-    if poll.allows_multiple_answers is not None:
-        payload['allows_multiple_answers'] = poll.allows_multiple_answers
-    if poll.correct_option_id is not None:
-        payload['correct_option_id'] = poll.correct_option_id
-    if poll.explanation is not None:
-        payload['explanation'] = poll.explanation
+    if is_anonymous is not None:
+        payload['is_anonymous'] = is_anonymous
+    if type is not None:
+        payload['type'] = type
+    if allows_multiple_answers is not None:
+        payload['allows_multiple_answers'] = allows_multiple_answers
+    if correct_option_id is not None:
+        payload['correct_option_id'] = correct_option_id
+    if explanation is not None:
+        payload['explanation'] = explanation
     if explanation_parse_mode is not None:
         payload['explanation_parse_mode'] = explanation_parse_mode
-    if poll.open_period is not None:
-        payload['open_period'] = poll.open_period
-    if poll.close_date is not None:
-        payload['close_date'] = poll.close_date
-    if poll.is_closed is not None:
-        payload['is_closed'] = poll.is_closed
+    if open_period is not None:
+        payload['open_period'] = open_period
+    if close_date is not None:
+        payload['close_date'] = close_date
+    if is_closed is not None:
+        payload['is_closed'] = is_closed
 
     if disable_notifications:
         payload['disable_notification'] = disable_notifications
