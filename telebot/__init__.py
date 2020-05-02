@@ -1207,17 +1207,42 @@ class TeleBot:
                                         disable_notification, reply_to_message_id, reply_markup, provider_data)
         return types.Message.de_json(result)
 
-    def send_poll(self, chat_id, poll, explanation_parse_mode=None, disable_notifications=False, reply_to_message=None, reply_markup=None):
+    def send_poll(
+            self, chat_id,
+            question, options,
+            is_anonymous=None, type=None, allows_multiple_answers=None, correct_option_id=None,
+            explanation=None, explanation_parse_mode=None, open_period=None, close_date=None, is_closed=None,
+            disable_notifications=False, reply_to_message_id=None, reply_markup=None):
         """
-        Sends poll
+        Send polls
         :param chat_id:
-        :param poll:
+        :param question:
+        :param options: array of str with answers
+        :param is_anonymous:
+        :param type:
+        :param allows_multiple_answers:
+        :param correct_option_id:
+        :param explanation:
+        :param explanation_parse_mode:
+        :param open_period:
+        :param close_date:
+        :param is_closed:
         :param disable_notifications:
-        :param reply_to_message:
+        :param reply_to_message_id:
         :param reply_markup:
         :return:
         """
-        return types.Message.de_json(apihelper.send_poll(self.token, chat_id, poll, explanation_parse_mode, disable_notifications, reply_to_message, reply_markup))
+
+        if isinstance(question, types.Poll):
+            raise Exception("The send_poll signature was changed, please see send_poll function details.")
+
+        return types.Message.de_json(
+            apihelper.send_poll(
+                self.token, chat_id,
+                question, options,
+                is_anonymous, type, allows_multiple_answers, correct_option_id,
+                explanation, explanation_parse_mode, open_period, close_date, is_closed,
+                disable_notifications, reply_to_message_id, reply_markup))
 
     def stop_poll(self, chat_id, message_id):
         """

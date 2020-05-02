@@ -5,6 +5,8 @@ import string
 import sys
 import threading
 import traceback
+import warnings
+import functools
 
 import six
 from six import string_types
@@ -259,3 +261,19 @@ def per_thread(key, construct_value, reset=False):
 
 def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
+
+
+def deprecated(func):
+    """This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used."""
+    # https://stackoverflow.com/a/30253848/441814
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.simplefilter('always', DeprecationWarning)  # turn off filter
+        warnings.warn("Call to deprecated function {}.".format(func.__name__),
+                      category=DeprecationWarning,
+                      stacklevel=2)
+        warnings.simplefilter('default', DeprecationWarning)  # reset filter
+        return func(*args, **kwargs)
+    return new_func
