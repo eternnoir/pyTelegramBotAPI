@@ -1217,7 +1217,7 @@ class TeleBot:
         Send polls
         :param chat_id:
         :param question:
-        :param options:
+        :param options: array of str with answers
         :param is_anonymous:
         :param type:
         :param allows_multiple_answers:

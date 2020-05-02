@@ -1008,7 +1008,7 @@ def send_poll(
     payload = {
         'chat_id': str(chat_id),
         'question': question,
-        'options': _convert_list_json_serializable(options)}
+        'options': json.dumps(options)}
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
