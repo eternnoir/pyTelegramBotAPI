@@ -207,15 +207,15 @@ def send_something(message):
 
 #### Edited Message handlers
 
-Same as Message handlers
+@bot.edited_message_handler(filters)
 
 #### channel_post_handler
 
-Same as Message handlers
+@bot.channel_post_handler(filters)
 
 #### edited_channel_post_handler
 
-Same as Message handlers
+@bot.edited_channel_post_handler(filters)
 
 #### Callback Query Handler
 
