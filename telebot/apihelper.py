@@ -1079,7 +1079,7 @@ def _convert_input_media_array(array):
     files = {}
     for input_media in array:
         if isinstance(input_media, types.InputMedia):
-            media_dict = input_media.to_dic()
+            media_dict = input_media.to_dict()
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
                 files[key] = input_media.media
