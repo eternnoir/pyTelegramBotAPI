@@ -29,10 +29,10 @@ class JsonSerializable(object):
 class Dictionaryable(object):
     """
     Subclasses of this class are guaranteed to be able to be converted to dictionary.
-    All subclasses of this class must override to_dic.
+    All subclasses of this class must override to_dict.
     """
 
-    def to_dic(self):
+    def to_dict(self):
         """
         Returns a DICT with class field values
 
@@ -529,9 +529,9 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         self.emoji = emoji
 
     def to_json(self):
-        return json.dumps(self.to_dic())
+        return json.dumps(self.to_dict())
 
-    def to_dic(self):
+    def to_dict(self):
         return {'value': self.value,
                 'emoji': self.emoji}
 
@@ -794,7 +794,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
             elif isinstance(button, bytes):
                 row.append({'text': button.decode('utf-8')})
             else:
-                row.append(button.to_dic())
+                row.append(button.to_dict())
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -815,7 +815,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
             if util.is_string(button):
                 btn_array.append({'text': button})
             else:
-                btn_array.append(button.to_dic())
+                btn_array.append(button.to_dict())
         self.keyboard.append(btn_array)
         return self
 
@@ -870,7 +870,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         i = 1
         row = []
         for button in args:
-            row.append(button.to_dic())
+            row.append(button.to_dict())
             if i % self.row_width == 0:
                 self.keyboard.append(row)
                 row = []
@@ -888,7 +888,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         """
         btn_array = []
         for button in args:
-            btn_array.append(button.to_dic())
+            btn_array.append(button.to_dict())
         self.keyboard.append(btn_array)
         return self
 
@@ -1063,8 +1063,7 @@ class BotCommand(JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'command': self.command, 'description': self.description}
-        return json_dict
+        return {'command': self.command, 'description': self.description}
 
 
 # InlineQuery
@@ -1107,7 +1106,7 @@ class InputTextMessageContent(Dictionaryable):
         self.parse_mode = parse_mode
         self.disable_web_page_preview = disable_web_page_preview
 
-    def to_dic(self):
+    def to_dict(self):
         json_dic = {'message_text': self.message_text}
         if self.parse_mode:
             json_dic['parse_mode'] = self.parse_mode
@@ -1122,7 +1121,7 @@ class InputLocationMessageContent(Dictionaryable):
         self.longitude = longitude
         self.live_period = live_period
 
-    def to_dic(self):
+    def to_dict(self):
         json_dic = {'latitude': self.latitude, 'longitude': self.longitude}
         if self.live_period:
             json_dic['live_period'] = self.live_period
@@ -1137,12 +1136,16 @@ class InputVenueMessageContent(Dictionaryable):
         self.address = address
         self.foursquare_id = foursquare_id
 
-    def to_dic(self):
-        json_dic = {'latitude': self.latitude, 'longitude': self.longitude, 'title': self.title,
-                    'address' : self.address}
+    def to_dict(self):
+        json_dict = {
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'title': self.title,
+            'address' : self.address
+        }
         if self.foursquare_id:
-            json_dic['foursquare_id'] = self.foursquare_id
-        return json_dic
+            json_dict['foursquare_id'] = self.foursquare_id
+        return json_dict
 
 
 class InputContactMessageContent(Dictionaryable):
@@ -1151,11 +1154,11 @@ class InputContactMessageContent(Dictionaryable):
         self.first_name = first_name
         self.last_name = last_name
 
-    def to_dic(self):
-        json_dic = {'phone_numbe': self.phone_number, 'first_name': self.first_name}
+    def to_dict(self):
+        json_dict = {'phone_numbe': self.phone_number, 'first_name': self.first_name}
         if self.last_name:
-            json_dic['last_name'] = self.last_name
-        return json_dic
+            json_dict['last_name'] = self.last_name
+        return json_dict
 
 
 class ChosenInlineResult(JsonDeserializable):
@@ -1217,10 +1220,13 @@ class InlineQueryResultArticle(JsonSerializable):
         self.thumb_height = thumb_height
 
     def to_json(self):
-        json_dict = {'type': self.type, 'id': self.id, 'title': self.title,
-                     'input_message_content': self.input_message_content.to_dic()}
+        json_dict = {
+            'type': self.type,
+            'id': self.id,
+            'title': self.title,
+            'input_message_content': self.input_message_content.to_dict()}
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.url:
             json_dict['url'] = self.url
         if self.hide_url:
@@ -1283,9 +1289,9 @@ class InlineQueryResultPhoto(JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1328,9 +1334,9 @@ class InlineQueryResultGif(JsonSerializable):
         if self.caption:
             json_dict['caption'] = self.caption
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         if self.gif_duration:
             json_dict['gif_duration'] = self.gif_duration
         return json.dumps(json_dict)
@@ -1380,9 +1386,9 @@ class InlineQueryResultMpeg4Gif(JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         if self.mpeg4_duration:
             json_dict['mpeg4_duration '] = self.mpeg4_duration
         return json.dumps(json_dict)
@@ -1438,9 +1444,9 @@ class InlineQueryResultVideo(JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1469,9 +1475,9 @@ class InlineQueryResultAudio(JsonSerializable):
         if self.audio_duration:
             json_dict['audio_duration'] = self.audio_duration
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1500,9 +1506,9 @@ class InlineQueryResultVoice(JsonSerializable):
         if self.voice_duration:
             json_dict['voice_duration'] = self.voice_duration
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1539,9 +1545,9 @@ class InlineQueryResultDocument(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1572,9 +1578,9 @@ class InlineQueryResultLocation(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1606,9 +1612,9 @@ class InlineQueryResultVenue(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1637,9 +1643,9 @@ class InlineQueryResultContact(JsonSerializable):
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1666,9 +1672,9 @@ class BaseInlineQueryResultCached(JsonSerializable):
         if self.caption:
             json_dict['caption'] = self.caption
         if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dic()
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dic()
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         return json.dumps(json_dict)
@@ -1805,7 +1811,7 @@ class InlineQueryResultGame(JsonSerializable):
     def to_json(self):
         json_dic = {'type': self.type, 'id': self.id, 'game_short_name': self.game_short_name}
         if self.reply_markup:
-            json_dic['reply_markup'] = self.reply_markup.to_dic()
+            json_dic['reply_markup'] = self.reply_markup.to_dict()
         return json.dumps(json_dic)
 
 
@@ -1891,10 +1897,9 @@ class LabeledPrice(JsonSerializable):
         self.amount = amount
 
     def to_json(self):
-        return json.dumps(self.to_dic())
-
-    def to_dic(self):
-        return {'label': self.label, 'amount': self.amount}
+        return json.dumps({
+            'label': self.label, 'amount': self.amount
+        })
 
 
 class Invoice(JsonDeserializable):
@@ -1975,7 +1980,7 @@ class ShippingOption(JsonSerializable):
     def to_json(self):
         price_list = []
         for p in self.prices:
-            price_list.append(p.to_dic())
+            price_list.append(p.to_dict())
         json_dict = json.dumps({'id': self.id, 'title': self.title, 'prices': price_list})
         return json_dict
 
@@ -2116,9 +2121,9 @@ class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
         self.scale = scale
 
     def to_json(self):
-        return json.dumps(self.to_dic())
+        return json.dumps(self.to_dict())
 
-    def to_dic(self):
+    def to_dict(self):
         return {'point': self.point, 'x_shift': self.x_shift, 'y_shift': self.y_shift, 'scale': self.scale}
 
 
@@ -2139,15 +2144,15 @@ class InputMedia(Dictionaryable, JsonSerializable):
             self._media_dic = 'attach://{0}'.format(self._media_name)
 
     def to_json(self):
-        return json.dumps(self.to_dic())
+        return json.dumps(self.to_dict())
 
-    def to_dic(self):
-        ret = {'type': self.type, 'media': self._media_dic}
+    def to_dict(self):
+        json_dict = {'type': self.type, 'media': self._media_dic}
         if self.caption:
-            ret['caption'] = self.caption
+            json_dict['caption'] = self.caption
         if self.parse_mode:
-            ret['parse_mode'] = self.parse_mode
-        return ret
+            json_dict['parse_mode'] = self.parse_mode
+        return json_dict
 
     def _convert_input_media(self):
         if util.is_string(self.media):
@@ -2160,9 +2165,8 @@ class InputMediaPhoto(InputMedia):
     def __init__(self, media, caption=None, parse_mode=None):
         super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
 
-    def to_dic(self):
-        ret = super(InputMediaPhoto, self).to_dic()
-        return ret
+    def to_dict(self):
+        return super(InputMediaPhoto, self).to_dict()
 
 
 class InputMediaVideo(InputMedia):
@@ -2175,8 +2179,8 @@ class InputMediaVideo(InputMedia):
         self.duration = duration
         self.supports_streaming = supports_streaming
 
-    def to_dic(self):
-        ret = super(InputMediaVideo, self).to_dic()
+    def to_dict(self):
+        ret = super(InputMediaVideo, self).to_dict()
         if self.thumb:
             ret['thumb'] = self.thumb
         if self.width:
@@ -2198,8 +2202,8 @@ class InputMediaAnimation(InputMedia):
         self.height = height
         self.duration = duration
 
-    def to_dic(self):
-        ret = super(InputMediaAnimation, self).to_dic()
+    def to_dict(self):
+        ret = super(InputMediaAnimation, self).to_dict()
         if self.thumb:
             ret['thumb'] = self.thumb
         if self.width:
@@ -2219,8 +2223,8 @@ class InputMediaAudio(InputMedia):
         self.performer = performer
         self.title = title
 
-    def to_dic(self):
-        ret = super(InputMediaAudio, self).to_dic()
+    def to_dict(self):
+        ret = super(InputMediaAudio, self).to_dict()
         if self.thumb:
             ret['thumb'] = self.thumb
         if self.duration:
@@ -2237,8 +2241,8 @@ class InputMediaDocument(InputMedia):
         super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
 
-    def to_dic(self):
-        ret = super(InputMediaDocument, self).to_dic()
+    def to_dict(self):
+        ret = super(InputMediaDocument, self).to_dict()
         if self.thumb:
             ret['thumb'] = self.thumb
         return ret
