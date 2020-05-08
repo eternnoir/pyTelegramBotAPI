@@ -80,6 +80,7 @@ class TeleBot:
         getChatMembersCount
         getChatMember
         answerCallbackQuery
+        setMyCommands
         answerInlineQuery
         """
 
@@ -1021,6 +1022,15 @@ class TeleBot:
         :return:
         """
         return apihelper.delete_chat_photo(self.token, chat_id)
+
+    def set_my_commands(self, commands):
+        """
+        Use this method to change the list of the bot's commands.
+        :param commands: Array of BotCommand. A JSON-serialized list of bot commands
+            to be set as the list of the bot's commands. At most 100 commands can be specified.
+        :return:
+        """
+        return apihelper.set_my_commands(self.token, commands)
 
     def set_chat_title(self, chat_id, title):
         """

@@ -643,6 +643,12 @@ def set_chat_title(token, chat_id, title):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def set_my_commands(token, commands):
+    method_url = r'setMyCommands'
+    payload = {'commands': _convert_list_json_serializable(commands)}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def set_chat_description(token, chat_id, description):
     method_url = 'setChatDescription'
     payload = {'chat_id': chat_id, 'description': description}

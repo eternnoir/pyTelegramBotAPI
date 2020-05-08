@@ -523,14 +523,14 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         value = obj['value']
         emoji = obj['emoji']
         return cls(value, emoji)
-    
+
     def __init__(self, value, emoji):
         self.value = value
         self.emoji = emoji
-        
+
     def to_json(self):
         return json.dumps(self.to_dic())
-    
+
     def to_dic(self):
         return {'value': self.value,
                 'emoji': self.emoji}
@@ -619,7 +619,8 @@ class Document(JsonDeserializable):
 class Video(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         width = obj['width']
@@ -643,7 +644,8 @@ class Video(JsonDeserializable):
 class VideoNote(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         length = obj['length']
@@ -663,7 +665,8 @@ class VideoNote(JsonDeserializable):
 class Contact(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         phone_number = obj['phone_number']
         first_name = obj['first_name']
@@ -681,7 +684,8 @@ class Contact(JsonDeserializable):
 class Location(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         longitude = obj['longitude']
         latitude = obj['latitude']
@@ -695,7 +699,8 @@ class Location(JsonDeserializable):
 class Venue(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         location = Location.de_json(obj['location'])
         title = obj['title']
@@ -713,7 +718,8 @@ class Venue(JsonDeserializable):
 class UserProfilePhotos(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         total_count = obj['total_count']
         photos = [[PhotoSize.de_json(y) for y in x] for x in obj['photos']]
@@ -727,7 +733,8 @@ class UserProfilePhotos(JsonDeserializable):
 class File(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
         file_size = obj.get('file_size')
@@ -835,15 +842,15 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         self.request_location = request_location
 
     def to_json(self):
-        return json.dumps(self.to_dic())
+        return json.dumps(self.to_dict())
 
-    def to_dic(self):
-        json_dic = {'text': self.text}
+    def to_dict(self):
+        json_dict = {'text': self.text}
         if self.request_contact:
-            json_dic['request_contact'] = self.request_contact
+            json_dict['request_contact'] = self.request_contact
         if self.request_location:
-            json_dic['request_location'] = self.request_location
-        return json_dic
+            json_dict['request_location'] = self.request_location
+        return json_dict
 
 
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
@@ -894,7 +901,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         json_dict = {'inline_keyboard': self.keyboard}
         return json.dumps(json_dict)
 
-    def to_dic(self):
+    def to_dict(self):
         json_dict = {'inline_keyboard': self.keyboard}
         return json_dict
 
@@ -907,17 +914,17 @@ class LoginUrl(Dictionaryable, JsonSerializable):
         self.request_write_access = request_write_access
 
     def to_json(self):
-        return json.dumps(self.to_dic())
+        return json.dumps(self.to_dict())
 
-    def to_dic(self):
-        json_dic = {'url': self.url}
+    def to_dict(self):
+        json_dict = {'url': self.url}
         if self.forward_text:
-            json_dic['forward_text'] = self.forward_text
+            json_dict['forward_text'] = self.forward_text
         if self.bot_username:
-            json_dic['bot_username'] = self.bot_username
+            json_dict['bot_username'] = self.bot_username
         if self.request_write_access:
-            json_dic['request_write_access'] = self.request_write_access
-        return json_dic
+            json_dict['request_write_access'] = self.request_write_access
+        return json_dict
 
 
 class InlineKeyboardButton(Dictionaryable, JsonSerializable):
@@ -933,25 +940,25 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         self.login_url = login_url
 
     def to_json(self):
-        return json.dumps(self.to_dic())
+        return json.dumps(self.to_dict())
 
-    def to_dic(self):
-        json_dic = {'text': self.text}
+    def to_dict(self):
+        json_dict = {'text': self.text}
         if self.url:
-            json_dic['url'] = self.url
+            json_dict['url'] = self.url
         if self.callback_data:
-            json_dic['callback_data'] = self.callback_data
+            json_dict['callback_data'] = self.callback_data
         if self.switch_inline_query is not None:
-            json_dic['switch_inline_query'] = self.switch_inline_query
+            json_dict['switch_inline_query'] = self.switch_inline_query
         if self.switch_inline_query_current_chat is not None:
-            json_dic['switch_inline_query_current_chat'] = self.switch_inline_query_current_chat
+            json_dict['switch_inline_query_current_chat'] = self.switch_inline_query_current_chat
         if self.callback_game is not None:
-            json_dic['callback_game'] = self.callback_game
+            json_dict['callback_game'] = self.callback_game
         if self.pay is not None:
-            json_dic['pay'] = self.pay
+            json_dict['pay'] = self.pay
         if self.login_url is not None:
-            json_dic['login_url'] = self.login_url.to_dic()
-        return json_dic
+            json_dict['login_url'] = self.login_url.to_dict()
+        return json_dict
 
 
 class CallbackQuery(JsonDeserializable):
@@ -981,7 +988,8 @@ class CallbackQuery(JsonDeserializable):
 class ChatPhoto(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         small_file_id = obj['small_file_id']
         big_file_id = obj['big_file_id']
@@ -995,7 +1003,8 @@ class ChatPhoto(JsonDeserializable):
 class ChatMember(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         user = User.de_json(obj['user'])
         status = obj['status']
@@ -1038,12 +1047,33 @@ class ChatMember(JsonDeserializable):
         self.can_add_web_page_previews = can_add_web_page_previews
 
 
+class BotCommand(JsonSerializable):
+    def __init__(self, command, description):
+        """
+        This object represents a bot command.
+        :param command: Text of the command, 1-32 characters.
+            Can contain only lowercase English letters, digits and underscores.
+        :param description: Description of the command, 3-256 characters.
+        :return:
+        """
+        self.command = command
+        self.description = description
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        json_dict = {'command': self.command, 'description': self.description}
+        return json_dict
+
+
 # InlineQuery
 
 class InlineQuery(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         id = obj['id']
         from_user = User.de_json(obj['from'])
@@ -1131,7 +1161,8 @@ class InputContactMessageContent(Dictionaryable):
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         result_id = obj['result_id']
         from_user = User.de_json(obj['from'])
