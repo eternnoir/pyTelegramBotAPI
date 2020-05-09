@@ -855,17 +855,27 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
 
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
     def __init__(self, row_width=3):
+        """
+        This object represents an inline keyboard that appears
+            right next to the message it belongs to.
+
+        :return:
+        """
         self.row_width = row_width
         self.keyboard = []
 
     def add(self, *args):
         """
-        This function adds strings to the keyboard, while not exceeding row_width.
-        E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
+        This method adds buttons to the keyboard without exceeding row_width.
+
+        E.g. InlineKeyboardMarkup#add("A", "B", "C") yields the json result:
+            {keyboard: [["A"], ["B"], ["C"]]}
         when row_width is set to 1.
-        When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
-        See https://core.telegram.org/bots/api#replykeyboardmarkup
-        :param args: KeyboardButton to append to the keyboard
+        When row_width is set to 2, the result:
+            {keyboard: [["A", "B"], ["C"]]}
+        See https://core.telegram.org/bots/api#inlinekeyboardmarkup
+
+        :param args: Array of InlineKeyboardButton to append to the keyboard
         """
         i = 1
         row = []
@@ -880,26 +890,28 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
 
     def row(self, *args):
         """
-        Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
-        ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
+        Adds a list of InlineKeyboardButton to the keyboard.
+            This metod does not consider row_width.
+
+        InlineKeyboardMarkup.row("A").row("B", "C").to_json() outputs:
+            '{keyboard: [["A"], ["B", "C"]]}'
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
-        :param args: strings
+
+        :param args: Array of InlineKeyboardButton to append to the keyboard
         :return: self, to allow function chaining.
         """
-        btn_array = []
-        for button in args:
-            btn_array.append(button.to_dict())
-        self.keyboard.append(btn_array)
+        button_array = [button.to_dict() for button in args]
+        self.keyboard.append(button_array)
         return self
 
     def to_json(self):
         """
-        Converts this object to its json representation following the Telegram API guidelines described here:
+        Converts this object to its json representation
+            following the Telegram API guidelines described here:
         https://core.telegram.org/bots/api#inlinekeyboardmarkup
         :return:
         """
-        json_dict = {'inline_keyboard': self.keyboard}
-        return json.dumps(json_dict)
+        return json.dumps(self.to_dict())
 
     def to_dict(self):
         json_dict = {'inline_keyboard': self.keyboard}
