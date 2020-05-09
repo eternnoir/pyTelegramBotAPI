@@ -183,7 +183,8 @@ class GroupChat(JsonDeserializable):
 class Chat(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if (json_string is None):
+            return None
         obj = cls.check_json(json_string)
         id = obj['id']
         type = obj['type']
@@ -196,10 +197,11 @@ class Chat(JsonDeserializable):
         description = obj.get('description')
         invite_link = obj.get('invite_link')
         pinned_message = Message.de_json(obj.get('pinned_message'))
+        slow_mode_delay = obj.get('slow_mode_delay')
         sticker_set_name = obj.get('sticker_set_name')
         can_set_sticker_set = obj.get('can_set_sticker_set')
         return cls(id, type, title, username, first_name, last_name, all_members_are_administrators,
-                   photo, description, invite_link, pinned_message, sticker_set_name, can_set_sticker_set)
+                   photo, description, invite_link, pinned_message, slow_mode_delay, sticker_set_name, can_set_sticker_set)
 
     def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None,
                  all_members_are_administrators=None, photo=None, description=None, invite_link=None,
@@ -1020,6 +1022,7 @@ class ChatMember(JsonDeserializable):
         obj = cls.check_json(json_string)
         user = User.de_json(obj['user'])
         status = obj['status']
+        custom_title = obj.get('custom_title')
         until_date = obj.get('until_date')
         can_be_edited = obj.get('can_be_edited')
         can_change_info = obj.get('can_change_info')
@@ -1034,7 +1037,7 @@ class ChatMember(JsonDeserializable):
         can_send_media_messages = obj.get('can_send_media_messages')
         can_send_other_messages = obj.get('can_send_other_messages')
         can_add_web_page_previews = obj.get('can_add_web_page_previews')
-        return cls(user, status, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
+        return cls(user, status, custom_title, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
                    can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
                    can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews)
 
