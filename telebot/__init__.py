@@ -985,6 +985,20 @@ class TeleBot:
                                              can_edit_messages, can_delete_messages, can_invite_users,
                                              can_restrict_members, can_pin_messages, can_promote_members)
 
+    def set_chat_administrator_custom_title(self, chat_id, user_id, custom_title):
+        """
+        Use this method to set a custom title for an administrator
+            in a supergroup promoted by the bot.
+        Returns True on success.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :param user_id: Unique identifier of the target user
+        :param custom_title: New custom title for the administrator;
+            0-16 characters, emoji are not allowed
+        :return:
+        """
+        return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
+
     def export_chat_invite_link(self, chat_id):
         """
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
