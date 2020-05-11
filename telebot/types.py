@@ -1062,6 +1062,62 @@ class ChatMember(JsonDeserializable):
         self.can_add_web_page_previews = can_add_web_page_previews
 
 
+class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
+    def __init__(self, can_send_messages=None, can_send_media_messages=None,
+                 can_send_polls=None, can_send_other_messages=None,
+                 can_add_web_page_previews=None, can_change_info=None,
+                 can_invite_users=None, can_pin_messages=None):
+        self.can_send_messages = can_send_messages
+        self.can_send_media_messages = can_send_media_messages
+        self.can_send_polls = can_send_polls
+        self.can_send_other_messages = can_send_other_messages
+        self.can_add_web_page_previews = can_add_web_page_previews
+        self.can_change_info = can_change_info
+        self.can_invite_users = can_invite_users
+        self.can_pin_messages = can_pin_messages
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return json_string
+        obj = cls.check_json(json_string)
+        can_send_messages = obj.get('can_send_messages')
+        can_send_media_messages = obj.get('can_send_media_messages')
+        can_send_polls = obj.get('can_send_polls')
+        can_send_other_messages = obj.get('can_send_other_messages')
+        can_add_web_page_previews = obj.get('can_add_web_page_previews')
+        can_change_info = obj.get('can_change_info')
+        can_invite_users = obj.get('can_invite_users')
+        can_pin_messages = obj.get('can_pin_messages')
+        return cls(
+            can_send_messages, can_send_media_messages, can_send_polls,
+            can_send_other_messages, can_add_web_page_previews,
+            can_change_info, can_invite_users, can_pin_messages)
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        json_dict = dict()
+        if self.can_send_messages is not None:
+            json_dict['can_send_messages'] = self.can_send_messages
+        if self.can_send_media_messages is not None:
+            json_dict['can_send_media_messages'] = self.can_send_media_messages
+        if self.can_send_polls is not None:
+            json_dict['can_send_polls'] = self.can_send_polls
+        if self.can_send_other_messages is not None:
+            json_dict['can_send_other_messages'] = self.can_send_other_messages
+        if self.can_add_web_page_previews is not None:
+            json_dict['can_add_web_page_previews'] = self.can_add_web_page_previews
+        if self.can_change_info is not None:
+            json_dict['can_change_info'] = self.can_change_info
+        if self.can_invite_users is not None:
+            json_dict['can_invite_users'] = self.can_invite_users
+        if self.can_pin_messages is not None:
+            json_dict['can_pin_messages'] = self.can_pin_messages
+        return json_dict
+
+
 class BotCommand(JsonSerializable):
     def __init__(self, command, description):
         """

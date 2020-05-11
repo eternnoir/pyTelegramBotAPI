@@ -547,9 +547,11 @@ class TeleBot:
 
     def get_chat_administrators(self, chat_id):
         """
-        Use this method to get a list of administrators in a chat. On success, returns an Array of ChatMember objects
-        that contains information about all chat administrators except other bots.
-        :param chat_id:
+        Use this method to get a list of administrators in a chat.
+        On success, returns an Array of ChatMember objects that contains
+            information about all chat administrators except other bots.
+        :param chat_id: Unique identifier for the target chat or username
+            of the target supergroup or channel (in the format @channelusername)
         :return:
         """
         result = apihelper.get_chat_administrators(self.token, chat_id)
@@ -998,6 +1000,19 @@ class TeleBot:
         :return:
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
+
+
+    def set_chat_permissions(self, chat_id, permissions):
+        """
+        Use this method to set default chat permissions for all members.
+            The bot must be an administrator in the group or a supergroup for this to work
+            and must have the can_restrict_members admin rights.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :param permissions: New default chat permissions
+        :return:
+        """
+        return apihelper.set_chat_permissions(self.token, chat_id, permissions)
 
     def export_chat_invite_link(self, chat_id):
         """

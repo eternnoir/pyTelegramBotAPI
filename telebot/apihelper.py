@@ -620,6 +620,14 @@ def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def set_chat_permissions(token, chat_id, permissions):
+    method_url = 'setChatPermissions'
+    payload = {
+        'chat_id': chat_id,
+        'permissions': _convert_list_json_serializable(permissions)}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def export_chat_invite_link(token, chat_id):
     method_url = 'exportChatInviteLink'
     payload = {'chat_id': chat_id}
