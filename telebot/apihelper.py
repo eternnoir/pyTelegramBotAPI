@@ -586,7 +586,6 @@ def restrict_chat_member(token, chat_id, user_id, until_date=None, can_send_mess
         payload['can_add_web_page_previews'] = can_add_web_page_previews
     if can_invite_users:
         payload['can_invite_users'] = can_invite_users
-        
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -611,6 +610,21 @@ def promote_chat_member(token, chat_id, user_id, can_change_info=None, can_post_
         payload['can_pin_messages'] = can_pin_messages
     if can_promote_members:
         payload['can_promote_members'] = can_promote_members
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
+    method_url = 'setChatAdministratorCustomTitle'
+    payload = {
+        'chat_id': chat_id, 'user_id': user_id, 'custom_title': custom_title}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_chat_permissions(token, chat_id, permissions):
+    method_url = 'setChatPermissions'
+    payload = {
+        'chat_id': chat_id,
+        'permissions': _convert_list_json_serializable(permissions)}
     return _make_request(token, method_url, params=payload, method='post')
 
 

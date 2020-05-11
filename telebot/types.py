@@ -183,7 +183,8 @@ class GroupChat(JsonDeserializable):
 class Chat(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None:
+            return None
         obj = cls.check_json(json_string)
         id = obj['id']
         type = obj['type']
@@ -196,25 +197,34 @@ class Chat(JsonDeserializable):
         description = obj.get('description')
         invite_link = obj.get('invite_link')
         pinned_message = Message.de_json(obj.get('pinned_message'))
+        permissions = ChatPermissions.de_json(obj.get('permissions'))
+        slow_mode_delay = obj.get('slow_mode_delay')
         sticker_set_name = obj.get('sticker_set_name')
         can_set_sticker_set = obj.get('can_set_sticker_set')
-        return cls(id, type, title, username, first_name, last_name, all_members_are_administrators,
-                   photo, description, invite_link, pinned_message, sticker_set_name, can_set_sticker_set)
+        return cls(
+            id, type, title, username, first_name, last_name,
+            all_members_are_administrators, photo, description, invite_link,
+            pinned_message, permissions, slow_mode_delay, sticker_set_name,
+            can_set_sticker_set)
 
-    def __init__(self, id, type, title=None, username=None, first_name=None, last_name=None,
-                 all_members_are_administrators=None, photo=None, description=None, invite_link=None,
-                 pinned_message=None, sticker_set_name=None, can_set_sticker_set=None):
-        self.type = type
-        self.last_name = last_name
-        self.first_name = first_name
-        self.username = username
+    def __init__(self, id, type, title=None, username=None, first_name=None,
+                 last_name=None, all_members_are_administrators=None,
+                 photo=None, description=None, invite_link=None,
+                 pinned_message=None, permissions=None, slow_mode_delay=None, 
+                 sticker_set_name=None, can_set_sticker_set=None):
         self.id = id
+        self.type = type
         self.title = title
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
         self.all_members_are_administrators = all_members_are_administrators
         self.photo = photo
         self.description = description
         self.invite_link = invite_link
         self.pinned_message = pinned_message
+        self.permissions = permissions
+        self.slow_mode_delay = slow_mode_delay
         self.sticker_set_name = sticker_set_name
         self.can_set_sticker_set = can_set_sticker_set
 
@@ -855,17 +865,27 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
 
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
     def __init__(self, row_width=3):
+        """
+        This object represents an inline keyboard that appears
+            right next to the message it belongs to.
+
+        :return:
+        """
         self.row_width = row_width
         self.keyboard = []
 
     def add(self, *args):
         """
-        This function adds strings to the keyboard, while not exceeding row_width.
-        E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
+        This method adds buttons to the keyboard without exceeding row_width.
+
+        E.g. InlineKeyboardMarkup#add("A", "B", "C") yields the json result:
+            {keyboard: [["A"], ["B"], ["C"]]}
         when row_width is set to 1.
-        When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
-        See https://core.telegram.org/bots/api#replykeyboardmarkup
-        :param args: KeyboardButton to append to the keyboard
+        When row_width is set to 2, the result:
+            {keyboard: [["A", "B"], ["C"]]}
+        See https://core.telegram.org/bots/api#inlinekeyboardmarkup
+
+        :param args: Array of InlineKeyboardButton to append to the keyboard
         """
         i = 1
         row = []
@@ -880,26 +900,28 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
 
     def row(self, *args):
         """
-        Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
-        ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
+        Adds a list of InlineKeyboardButton to the keyboard.
+            This metod does not consider row_width.
+
+        InlineKeyboardMarkup.row("A").row("B", "C").to_json() outputs:
+            '{keyboard: [["A"], ["B", "C"]]}'
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
-        :param args: strings
+
+        :param args: Array of InlineKeyboardButton to append to the keyboard
         :return: self, to allow function chaining.
         """
-        btn_array = []
-        for button in args:
-            btn_array.append(button.to_dict())
-        self.keyboard.append(btn_array)
+        button_array = [button.to_dict() for button in args]
+        self.keyboard.append(button_array)
         return self
 
     def to_json(self):
         """
-        Converts this object to its json representation following the Telegram API guidelines described here:
+        Converts this object to its json representation
+            following the Telegram API guidelines described here:
         https://core.telegram.org/bots/api#inlinekeyboardmarkup
         :return:
         """
-        json_dict = {'inline_keyboard': self.keyboard}
-        return json.dumps(json_dict)
+        return json.dumps(self.to_dict())
 
     def to_dict(self):
         json_dict = {'inline_keyboard': self.keyboard}
@@ -1003,48 +1025,116 @@ class ChatPhoto(JsonDeserializable):
 class ChatMember(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None):
+        if json_string is None:
             return None
         obj = cls.check_json(json_string)
         user = User.de_json(obj['user'])
         status = obj['status']
+        custom_title = obj.get('custom_title')
         until_date = obj.get('until_date')
         can_be_edited = obj.get('can_be_edited')
-        can_change_info = obj.get('can_change_info')
         can_post_messages = obj.get('can_post_messages')
         can_edit_messages = obj.get('can_edit_messages')
         can_delete_messages = obj.get('can_delete_messages')
-        can_invite_users = obj.get('can_invite_users')
         can_restrict_members = obj.get('can_restrict_members')
-        can_pin_messages = obj.get('can_pin_messages')
         can_promote_members = obj.get('can_promote_members')
+        can_change_info = obj.get('can_change_info')
+        can_invite_users = obj.get('can_invite_users')
+        can_pin_messages = obj.get('can_pin_messages')
+        is_member = obj.get('is_member')
         can_send_messages = obj.get('can_send_messages')
         can_send_media_messages = obj.get('can_send_media_messages')
+        can_send_polls = obj.get('can_send_polls')
         can_send_other_messages = obj.get('can_send_other_messages')
         can_add_web_page_previews = obj.get('can_add_web_page_previews')
-        return cls(user, status, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
-                   can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
-                   can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews)
+        return cls(
+            user, status, custom_title, until_date, can_be_edited, can_post_messages,
+            can_edit_messages, can_delete_messages, can_restrict_members,
+            can_promote_members, can_change_info, can_invite_users, can_pin_messages,
+            is_member, can_send_messages, can_send_media_messages, can_send_polls,
+            can_send_other_messages, can_add_web_page_previews)
 
-    def __init__(self, user, status, until_date, can_be_edited, can_change_info, can_post_messages, can_edit_messages,
-                 can_delete_messages, can_invite_users, can_restrict_members, can_pin_messages, can_promote_members,
-                 can_send_messages, can_send_media_messages, can_send_other_messages, can_add_web_page_previews):
+    def __init__(self, user, status, custom_title=None, until_date=None, can_be_edited=None,
+                 can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
+                 can_restrict_members=None, can_promote_members=None, can_change_info=None,
+                 can_invite_users=None,  can_pin_messages=None, is_member=None,
+                 can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
+                 can_send_other_messages=None, can_add_web_page_previews=None):
         self.user = user
         self.status = status
+        self.custom_title = custom_title
         self.until_date = until_date
         self.can_be_edited = can_be_edited
-        self.can_change_info = can_change_info
         self.can_post_messages = can_post_messages
         self.can_edit_messages = can_edit_messages
         self.can_delete_messages = can_delete_messages
-        self.can_invite_users = can_invite_users
         self.can_restrict_members = can_restrict_members
-        self.can_pin_messages = can_pin_messages
         self.can_promote_members = can_promote_members
+        self.can_change_info = can_change_info
+        self.can_invite_users = can_invite_users
+        self.can_pin_messages = can_pin_messages
+        self.is_member = is_member
         self.can_send_messages = can_send_messages
         self.can_send_media_messages = can_send_media_messages
+        self.can_send_polls = can_send_polls
         self.can_send_other_messages = can_send_other_messages
         self.can_add_web_page_previews = can_add_web_page_previews
+
+
+class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
+    def __init__(self, can_send_messages=None, can_send_media_messages=None,
+                 can_send_polls=None, can_send_other_messages=None,
+                 can_add_web_page_previews=None, can_change_info=None,
+                 can_invite_users=None, can_pin_messages=None):
+        self.can_send_messages = can_send_messages
+        self.can_send_media_messages = can_send_media_messages
+        self.can_send_polls = can_send_polls
+        self.can_send_other_messages = can_send_other_messages
+        self.can_add_web_page_previews = can_add_web_page_previews
+        self.can_change_info = can_change_info
+        self.can_invite_users = can_invite_users
+        self.can_pin_messages = can_pin_messages
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return json_string
+        obj = cls.check_json(json_string)
+        can_send_messages = obj.get('can_send_messages')
+        can_send_media_messages = obj.get('can_send_media_messages')
+        can_send_polls = obj.get('can_send_polls')
+        can_send_other_messages = obj.get('can_send_other_messages')
+        can_add_web_page_previews = obj.get('can_add_web_page_previews')
+        can_change_info = obj.get('can_change_info')
+        can_invite_users = obj.get('can_invite_users')
+        can_pin_messages = obj.get('can_pin_messages')
+        return cls(
+            can_send_messages, can_send_media_messages, can_send_polls,
+            can_send_other_messages, can_add_web_page_previews,
+            can_change_info, can_invite_users, can_pin_messages)
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        json_dict = dict()
+        if self.can_send_messages is not None:
+            json_dict['can_send_messages'] = self.can_send_messages
+        if self.can_send_media_messages is not None:
+            json_dict['can_send_media_messages'] = self.can_send_media_messages
+        if self.can_send_polls is not None:
+            json_dict['can_send_polls'] = self.can_send_polls
+        if self.can_send_other_messages is not None:
+            json_dict['can_send_other_messages'] = self.can_send_other_messages
+        if self.can_add_web_page_previews is not None:
+            json_dict['can_add_web_page_previews'] = self.can_add_web_page_previews
+        if self.can_change_info is not None:
+            json_dict['can_change_info'] = self.can_change_info
+        if self.can_invite_users is not None:
+            json_dict['can_invite_users'] = self.can_invite_users
+        if self.can_pin_messages is not None:
+            json_dict['can_pin_messages'] = self.can_pin_messages
+        return json_dict
 
 
 class BotCommand(JsonSerializable):
