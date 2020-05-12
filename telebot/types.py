@@ -100,11 +100,12 @@ class Update(JsonDeserializable):
         shipping_query = ShippingQuery.de_json(obj.get('shipping_query'))
         pre_checkout_query = PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
         poll = Poll.de_json(obj.get('poll'))
+        poll_answer = PollAnswer.de_json(obj.get('poll_answer'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
-                   chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll)
+                   chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
-                 chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll):
+                 chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -116,6 +117,7 @@ class Update(JsonDeserializable):
         self.shipping_query = shipping_query
         self.pre_checkout_query = pre_checkout_query
         self.poll = poll
+        self.poll_answer = poll_answer
 
 
 class WebhookInfo(JsonDeserializable):
@@ -144,7 +146,7 @@ class WebhookInfo(JsonDeserializable):
         self.allowed_updates = allowed_updates
 
 
-class User(JsonDeserializable):
+class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     @classmethod
     def de_json(cls, json_string):
         if (json_string is None): return None
@@ -164,6 +166,17 @@ class User(JsonDeserializable):
         self.username = username
         self.last_name = last_name
         self.language_code = language_code
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        return {'id': self.id,
+                'is_bot': self.is_bot,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'username': self.username,
+                'language_code': self.language_code}
 
 
 class GroupChat(JsonDeserializable):
@@ -2411,3 +2424,27 @@ class Poll(JsonDeserializable):
             self.options.append(option)
         else:
             self.options.append(PollOption(option))
+
+
+class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None): return None
+        obj = cls.check_json(json_string)
+        poll_id = obj['poll_id']
+        user = User.de_json(obj['user'])
+        options_ids = obj['option_ids']
+        return cls(poll_id, user, options_ids)
+
+    def __init__(self, poll_id, user, options_ids):
+        self.poll_id = poll_id
+        self.user = user
+        self.options_ids = options_ids
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        return {'poll_id': self.poll_id,
+                'user': self.user.to_dict(),
+                'options_ids': self.options_ids}

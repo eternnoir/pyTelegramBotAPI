@@ -119,6 +119,7 @@ class TeleBot:
         self.shipping_query_handlers = []
         self.pre_checkout_query_handlers = []
         self.poll_handlers = []
+        self.poll_answer_handlers = []
 
         self.typed_middleware_handlers = {
             'message': [],
@@ -293,6 +294,7 @@ class TeleBot:
         new_shipping_querys = []
         new_pre_checkout_querys = []
         new_polls = []
+        new_poll_answers = []
 
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -320,6 +322,8 @@ class TeleBot:
                 new_pre_checkout_querys.append(update.pre_checkout_query)
             if update.poll:
                 new_polls.append(update.poll)
+            if update.poll_answer:
+                new_poll_answers.append(update.poll_answer)
 
         logger.debug('Received {0} new updates'.format(len(updates)))
         if len(new_messages) > 0:
@@ -342,6 +346,8 @@ class TeleBot:
             self.process_new_pre_checkout_query(new_pre_checkout_querys)
         if len(new_polls) > 0:
             self.process_new_poll(new_polls)
+        if len(new_poll_answers) > 0:
+            self.process_new_poll_answer(new_poll_answers)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -375,6 +381,9 @@ class TeleBot:
 
     def process_new_poll(self, polls):
         self._notify_command_handlers(self.poll_handlers, polls)
+
+    def process_new_poll_answer(self, poll_answers):
+        self._notify_command_handlers(self.poll_answer_handlers, poll_answers)
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
@@ -1561,7 +1570,7 @@ class TeleBot:
         """
         return {
             'function': handler,
-            'filters' : filters
+            'filters': filters
         }
 
     def middleware_handler(self, update_types=None):
@@ -1899,6 +1908,28 @@ class TeleBot:
         :return:
         """
         self.poll_handlers.append(handler_dict)
+
+    def poll_answer_handler(self, func=None, **kwargs):
+        """
+        Poll_answer request handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_poll_answer_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_poll_answer_handler(self, handler_dict):
+        """
+        Adds a poll_answer request handler
+        :param handler_dict:
+        :return:
+        """
+        self.poll_answer_handlers.append(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
         """

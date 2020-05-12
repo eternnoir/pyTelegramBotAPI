@@ -178,4 +178,13 @@ def test_json_poll_1():
     assert msg.poll.question is not None
     assert msg.poll.options is not None
     assert len(msg.poll.options) == 2
-    assert msg.poll.allows_multiple_answers == True
+    assert msg.poll.allows_multiple_answers is True
+
+
+def test_json_poll_answer():
+    jsonstring = r'{"poll_id": "5895675970559410186", "user": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "option_ids": [1]}'
+    __import__('pprint').pprint(__import__('json').loads(jsonstring))
+    poll_answer = types.PollAnswer.de_json(jsonstring)
+    assert poll_answer.poll_id == '5895675970559410186'
+    assert isinstance(poll_answer.user, types.User)
+    assert poll_answer.options_ids == [1]
