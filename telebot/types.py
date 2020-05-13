@@ -273,6 +273,8 @@ class Message(JsonDeserializable):
             opts['author_signature'] = obj.get('author_signature')
         if 'text' in obj:
             opts['text'] = obj['text']
+            opts['argv'] = opts['text'].split(" ")
+            opts['argc'] = len(opts['argv'])
             content_type = 'text'
         if 'entities' in obj:
             opts['entities'] = Message.parse_entities(obj['entities'])
@@ -409,6 +411,8 @@ class Message(JsonDeserializable):
         self.media_group_id = None
         self.author_signature = None
         self.text = None
+        self.argv = None
+        self.argc = None
         self.entities = None
         self.caption_entities = None
         self.audio = None
