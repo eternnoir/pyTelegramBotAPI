@@ -223,7 +223,7 @@ class Chat(JsonDeserializable):
     def __init__(self, id, type, title=None, username=None, first_name=None,
                  last_name=None, all_members_are_administrators=None,
                  photo=None, description=None, invite_link=None,
-                 pinned_message=None, permissions=None, slow_mode_delay=None, 
+                 pinned_message=None, permissions=None, slow_mode_delay=None,
                  sticker_set_name=None, can_set_sticker_set=None):
         self.id = id
         self.type = type
@@ -859,10 +859,11 @@ class ReplyKeyboardMarkup(JsonSerializable):
 
 
 class KeyboardButton(Dictionaryable, JsonSerializable):
-    def __init__(self, text, request_contact=None, request_location=None):
+    def __init__(self, text, request_contact=None, request_location=None, request_poll=None):
         self.text = text
         self.request_contact = request_contact
         self.request_location = request_location
+        self.request_poll = request_poll
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -873,7 +874,17 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['request_contact'] = self.request_contact
         if self.request_location:
             json_dict['request_location'] = self.request_location
+        if self.request_poll:
+            json_dict['request_poll'] = self.request_poll.to_dict()
         return json_dict
+
+
+class KeyboardButtonPollType(Dictionaryable):
+    def __init__(self, type=''):
+        self.type = type
+
+    def to_dict(self):
+        return {'type': self.type}
 
 
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):

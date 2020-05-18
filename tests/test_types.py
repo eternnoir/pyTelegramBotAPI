@@ -188,3 +188,11 @@ def test_json_poll_answer():
     assert poll_answer.poll_id == '5895675970559410186'
     assert isinstance(poll_answer.user, types.User)
     assert poll_answer.options_ids == [1]
+
+
+def test_KeyboardButtonPollType():
+    markup = types.ReplyKeyboardMarkup()
+    markup.add(types.KeyboardButton('send me a poll', request_poll=types.KeyboardButtonPollType(type='quiz')))
+    json_str = markup.to_json()
+    assert 'request_poll' in json_str
+    assert 'quiz' in json_str
