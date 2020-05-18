@@ -190,14 +190,6 @@ def test_json_poll_answer():
     assert poll_answer.options_ids == [1]
 
 
-def test_json_poll_answer():
-    json_string = r'{"poll_id": "qwerty963852741","user": {"id": 111,"is_bot": false,"first_name": "Tele","last_name": "Bot","username": "Telebot","language_code": "ru"},"option_ids": [1, 2]}'
-    msg = types.PollAnswer.de_json(json_string)
-    assert isinstance(msg.user, types.User)
-    assert msg.poll_id == 'qwerty963852741'
-    assert len(msg.option_ids) == 2
-
-
 def test_KeyboardButtonPollType():
     markup = types.ReplyKeyboardMarkup()
     markup.add(types.KeyboardButton('send me a poll', request_poll=types.KeyboardButtonPollType(type='quiz')))
