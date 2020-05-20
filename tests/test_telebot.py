@@ -553,3 +553,8 @@ class TestTeleBot:
         tb.process_new_updates([update])
         time.sleep(1)
         assert update.message.text == 'got' * 2
+
+    def test_chat_permissions(self):
+        tb = telebot.TeleBot(TOKEN)
+        permissions = types.ChatPermissions(can_send_messages=True, can_send_polls=False)
+        msg = tb.set_chat_permissions(CHAT_ID, permissions)
