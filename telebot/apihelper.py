@@ -671,7 +671,8 @@ def promote_chat_member(
 def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
     method_url = 'setChatAdministratorCustomTitle'
     payload = {
-        'chat_id': chat_id, 'user_id': user_id, 'custom_title': custom_title}
+        'chat_id': chat_id, 'user_id': user_id, 'custom_title': custom_title
+    }
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -679,7 +680,8 @@ def set_chat_permissions(token, chat_id, permissions):
     method_url = 'setChatPermissions'
     payload = {
         'chat_id': chat_id,
-        'permissions': _convert_list_json_serializable(permissions)}
+        'permissions': permissions.to_json()
+    }
     return _make_request(token, method_url, params=payload, method='post')
 
 
