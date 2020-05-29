@@ -20,6 +20,7 @@ from telebot import util
 logger = telebot.logger
 
 proxy = None
+session = None
 
 API_URL = None
 FILE_URL = None
@@ -33,7 +34,7 @@ ENABLE_MIDDLEWARE = False
 
 
 def _get_req_session(reset=False):
-    return util.per_thread('req_session', lambda: requests.session(), reset)
+    return util.per_thread('req_session', lambda: session if session else requests.session(), reset)
 
 
 def _make_request(token, method_name, method='get', params=None, files=None):
