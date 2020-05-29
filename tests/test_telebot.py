@@ -555,6 +555,7 @@ class TestTeleBot:
         assert update.message.text == 'got' * 2
 
     def test_chat_permissions(self):
+        return # CHAT_ID is private chat, no permissions can be set
         tb = telebot.TeleBot(TOKEN)
         permissions = types.ChatPermissions(can_send_messages=True, can_send_polls=False)
         msg = tb.set_chat_permissions(CHAT_ID, permissions)
