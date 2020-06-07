@@ -85,7 +85,7 @@ Let's define a message handler which handles incoming `/start` and `/help` comma
 ```python
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
-	bot.reply_to(message, "Howdy, how are you doing?")
+	bot.reply_to(message, "Hey dude, how are you doing?")
 ```
 A function which is decorated by a message handler __can have an arbitrary name, however, it must have only one parameter (the message)__.
 
