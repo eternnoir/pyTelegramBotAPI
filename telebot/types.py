@@ -295,7 +295,7 @@ class Message(JsonDeserializable):
             content_type = 'photo'
         if 'sticker' in obj:
             opts['sticker'] = Sticker.de_json(obj['sticker'])
-            content_type = 'sticker'
+            content_type = 'sticker_animation' if 'is_animated' in obj['sticker'] else 'sticker'
         if 'video' in obj:
             opts['video'] = Video.de_json(obj['video'])
             content_type = 'video'
