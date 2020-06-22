@@ -157,15 +157,21 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         last_name = obj.get('last_name')
         username = obj.get('username')
         language_code = obj.get('language_code')
-        return cls(id, is_bot, first_name, last_name, username, language_code)
+        can_join_groups = obj.get('can_join_groups')
+        can_read_all_group_messages = obj.get('can_read_all_group_messages')
+        supports_inline_queries = obj.get('supports_inline_queries')
+        return cls(id, is_bot, first_name, last_name, username, language_code, can_join_groups, can_read_all_group_messages, supports_inline_queries)
 
-    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None):
+    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None):
         self.id = id
         self.is_bot = is_bot
         self.first_name = first_name
         self.username = username
         self.last_name = last_name
         self.language_code = language_code
+        self.can_join_groups = can_join_groups
+        self.can_read_all_group_messages = can_read_all_group_messages
+        self.supports_inline_queries = supports_inline_queries
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -176,7 +182,10 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'first_name': self.first_name,
                 'last_name': self.last_name,
                 'username': self.username,
-                'language_code': self.language_code}
+                'language_code': self.language_code,
+                'can_join_groups': self.can_join_groups,
+                'can_read_all_group_messages': self.can_read_all_group_messages,
+                'supports_inline_queries': self.supports_inline_queries}
 
 
 class GroupChat(JsonDeserializable):
