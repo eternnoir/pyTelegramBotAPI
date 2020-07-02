@@ -53,8 +53,8 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         request_url = API_URL.format(token, method_name)
     
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
-    read_timeout = READ_TIMEOUT
-    connect_timeout = CONNECT_TIMEOUT
+    read_timeout = READ_TIMEOUT + 70 * 2
+    connect_timeout = CONNECT_TIMEOUT + 70 * 2
     if files and format_header_param:
         fields.format_header_param = _no_encode(format_header_param)
     if params:
