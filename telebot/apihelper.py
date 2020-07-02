@@ -53,8 +53,8 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         request_url = API_URL.format(token, method_name)
     
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
-    read_timeout = READ_TIMEOUT
-    connect_timeout = CONNECT_TIMEOUT
+    read_timeout = READ_TIMEOUT + 70 * 2
+    connect_timeout = CONNECT_TIMEOUT + 70 * 2
     if files and format_header_param:
         fields.format_header_param = _no_encode(format_header_param)
     if params:
@@ -435,7 +435,7 @@ def send_chat_action(token, chat_id, action, timeout=None):
 
 
 def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, thumb=None):
+               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, thumb=None, width=None, height=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -464,6 +464,10 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
             files['thumb'] = thumb
         else:
             payload['thumb'] = thumb
+    if width:
+        payload['width'] = width
+    if height:
+        payload['height'] = height
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
