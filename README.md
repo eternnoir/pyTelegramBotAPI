@@ -650,5 +650,6 @@ Get help. Discuss. Chat.
 * [InfoBot](https://t.me/info2019_bot) ([source](https://github.com/irevenko/info-bot)) by @irevenko - An all-round bot that displays some statistics (weather, time, crypto etc...)
 * [FoodBot](https://t.me/ChensonUz_bot) ([source](https://github.com/Fliego/old_restaurant_telegram_chatbot)) by @Fliego - a simple bot for food ordering
 * [Sporty](https://t.me/SportydBot) ([source](https://github.com/0xnu/sporty)) by @0xnu - Telegram bot for displaying the latest news, sports schedules and injury updates.
+* [Neural style transfer](https://t.me/ebanyivolshebnikBot) ([source](https://github.com/timbyxty/StyleTransfer-tgbot)) by @timbyxty - bot for transferring style from one picture to another based on neural network.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
