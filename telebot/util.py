@@ -25,67 +25,67 @@ thread_local = threading.local()
 
 
 class WorkerThread(threading.Thread):
-        count = 0
+    count = 0
 
-        def __init__(self, exception_callback=None, queue=None, name=None):
-            if not name:
-                name = "WorkerThread{0}".format(self.__class__.count + 1)
-                self.__class__.count += 1
-            if not queue:
-                queue = Queue.Queue()
+    def __init__(self, exception_callback=None, queue=None, name=None):
+        if not name:
+            name = "WorkerThread{0}".format(self.__class__.count + 1)
+            self.__class__.count += 1
+        if not queue:
+            queue = Queue.Queue()
 
-            threading.Thread.__init__(self, name=name)
-            self.queue = queue
-            self.daemon = True
+        threading.Thread.__init__(self, name=name)
+        self.queue = queue
+        self.daemon = True
 
-            self.received_task_event = threading.Event()
-            self.done_event = threading.Event()
-            self.exception_event = threading.Event()
-            self.continue_event = threading.Event()
+        self.received_task_event = threading.Event()
+        self.done_event = threading.Event()
+        self.exception_event = threading.Event()
+        self.continue_event = threading.Event()
 
-            self.exception_callback = exception_callback
-            self.exc_info = None
-            self._running = True
-            self.start()
+        self.exception_callback = exception_callback
+        self.exc_info = None
+        self._running = True
+        self.start()
 
-        def run(self):
-            while self._running:
-                try:
-                    task, args, kwargs = self.queue.get(block=True, timeout=.5)
-                    self.continue_event.clear()
-                    self.received_task_event.clear()
-                    self.done_event.clear()
-                    self.exception_event.clear()
-                    logger.debug("Received task")
-                    self.received_task_event.set()
+    def run(self):
+        while self._running:
+            try:
+                task, args, kwargs = self.queue.get(block=True, timeout=.5)
+                self.continue_event.clear()
+                self.received_task_event.clear()
+                self.done_event.clear()
+                self.exception_event.clear()
+                logger.debug("Received task")
+                self.received_task_event.set()
 
-                    task(*args, **kwargs)
-                    logger.debug("Task complete")
-                    self.done_event.set()
-                except Queue.Empty:
-                    pass
-                except Exception as e:
-                    logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
-                    self.exc_info = sys.exc_info()
-                    self.exception_event.set()
+                task(*args, **kwargs)
+                logger.debug("Task complete")
+                self.done_event.set()
+            except Queue.Empty:
+                pass
+            except Exception as e:
+                logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
+                self.exc_info = sys.exc_info()
+                self.exception_event.set()
 
-                    if self.exception_callback:
-                        self.exception_callback(self, self.exc_info)
-                    self.continue_event.wait()
+                if self.exception_callback:
+                    self.exception_callback(self, self.exc_info)
+                self.continue_event.wait()
 
-        def put(self, task, *args, **kwargs):
-            self.queue.put((task, args, kwargs))
+    def put(self, task, *args, **kwargs):
+        self.queue.put((task, args, kwargs))
 
-        def raise_exceptions(self):
-            if self.exception_event.is_set():
-                six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
+    def raise_exceptions(self):
+        if self.exception_event.is_set():
+            six.reraise(self.exc_info[0], self.exc_info[1], self.exc_info[2])
 
-        def clear_exceptions(self):
-            self.exception_event.clear()
-            self.continue_event.set()
+    def clear_exceptions(self):
+        self.exception_event.clear()
+        self.continue_event.set()
 
-        def stop(self):
-            self._running = False
+    def stop(self):
+        self._running = False
 
 
 class ThreadPool:
