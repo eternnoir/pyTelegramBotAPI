@@ -85,15 +85,17 @@ class TeleBot:
         """
 
     def __init__(
-            self, token, threaded=True, skip_pending=False, num_threads=2,
+            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None
     ):
         """
         :param token: bot API token
+        :param parse_mode: default parse_mode
         :return: Telebot object.
         """
 
         self.token = token
+        self.parse_mode = parse_mode
         self.update_listener = []
         self.skip_pending = skip_pending
 
@@ -632,6 +634,8 @@ class TeleBot:
         :param timeout:
         :return: API reply.
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         return types.Message.de_json(
             apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
                                    reply_markup, parse_mode, disable_notification, timeout))
@@ -689,6 +693,8 @@ class TeleBot:
         :param reply_markup:
         :return: API reply.
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         return types.Message.de_json(
             apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
@@ -731,6 +737,8 @@ class TeleBot:
         :param timeout:
         :return: Message
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         return types.Message.de_json(
             apihelper.send_voice(self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
@@ -749,6 +757,8 @@ class TeleBot:
         :param timeout:
         :return: API reply.
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         return types.Message.de_json(
             apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
                                 parse_mode, disable_notification, timeout, caption=caption))
@@ -785,9 +795,11 @@ class TeleBot:
         :param reply_markup:
         :param disable_notification:
         :param timeout:
-	:param thumb:
+	    :param thumb:
         :return:
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         return types.Message.de_json(
             apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
                                  parse_mode, supports_streaming, disable_notification, timeout, thumb))
@@ -807,6 +819,8 @@ class TeleBot:
         :param timeout:
         :return:
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         return types.Message.de_json(
             apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
@@ -1165,6 +1179,8 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              disable_web_page_preview, reply_markup)
         if type(result) == bool:  # if edit inline message return is bool not Message.
@@ -1367,6 +1383,8 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
+        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
                                                 parse_mode, reply_markup)
         if type(result) == bool:
