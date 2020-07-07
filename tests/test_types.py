@@ -57,7 +57,7 @@ def test_json_Message_Audio():
 
 
 def test_json_Message_Sticker():
-    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"is_animated":true,"thumb":{"file_id":"AAQFABPJLB0sAAQq17w-li3bzoIfAAIC","file_size":1822,"width":90,"height":60},"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    json_string = r'{"message_id": 21552, "from": {"id": 590740002, "is_bot": false, "first_name": "⚜️ Ƥυrуα ⚜️", "username": "Purya", "language_code": "en"}, "chat": {"id": -1001309982000, "title": "123", "type": "supergroup"}, "date": 1594068909, "sticker": {"width": 368, "height": 368, "emoji": "🤖", "set_name": "ipuryapack", "is_animated": false, "thumb": {"file_id": "AAMCBAADHQJOFL7mAAJUMF8Dj62hpmDhpRAYvkc8CtIqipolAAJ8AAPA-8cF9yxjgjkLS97A0D4iXQARtQAHbQADHy4AAhoE", "file_unique_id": "AQADwNA-Il0AAx8uAAI", "file_size": 7776, "width": 60, "height": 60}, "file_id": "CAACAgQAAx0CThS-5gACVDBfA4-toaZg4aUQGL5HWerSKoqaJQACArADwPvHBfcsY4I5C3feGgQ", "file_unique_id": "AgADfAADsPvHWQ", "file_size": 14602}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb.height == 60
@@ -65,7 +65,7 @@ def test_json_Message_Sticker():
 
 
 def test_json_Message_Sticker_without_thumb():
-    json_string = r'{"message_id":98,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435479551,"sticker":{"width":550,"height":368,"is_animated":true,"file_id":"BQADBQADNAIAAsYifgYdGJOa6bGAsQI","file_size":30320}}'
+    json_string = r'{"message_id": 21552, "from": {"id": 590740002, "is_bot": false, "first_name": "⚜️ Ƥυrуα ⚜️", "username": "Purya", "language_code": "en"}, "chat": {"id": -1001309982000, "title": "123", "type": "supergroup"}, "date": 1594068909, "sticker": {"width": 368, "height": 368, "emoji": "🤖", "set_name": "ipuryapack", "is_animated": false, "file_id": "CAACAgQAAx0CThS-5gACVDBfA4-toaZg4aUQGL5HWerSKoqaJQACArADwPvHBfcsY4I5C3feGgQ", "file_unique_id": "AgADfAADsPvHWQ", "file_size": 14602}}'
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb is None
