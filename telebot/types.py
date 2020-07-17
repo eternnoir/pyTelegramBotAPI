@@ -514,7 +514,8 @@ class Message(JsonDeserializable):
                 html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
                 offset += entity.length
             else:
-                # For future entities
+                # TODO: process nested entities from Bot API 4.5
+                # Now ignoring them
                 pass
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
