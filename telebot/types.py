@@ -479,8 +479,11 @@ class Message(JsonDeserializable):
             "pre"      : "<pre>{text}</pre>",
             "code"     : "<code>{text}</code>",
             #"url"      : "<a href=\"{url}\">{text}</a>", # @badiboy plain URLs have no text and do not need tags
-            "text_link": "<a href=\"{url}\">{text}</a>"
-        }
+            "text_link": "<a href=\"{url}\">{text}</a>",
+            "strikethrough": "<s>{text}</s>",
+            "underline":     "<u>{text}</u>"
+ 	    }
+         
         if hasattr(self, "custom_subs"):
             for key, value in self.custom_subs.items():
                 _subs[key] = value
@@ -511,8 +514,7 @@ class Message(JsonDeserializable):
                 html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
                 offset += entity.length
             else:
-                # TODO: process nested entities from Bot API 4.5
-                # Now ignoring them
+                # For future entities
                 pass
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
