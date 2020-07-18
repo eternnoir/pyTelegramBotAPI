@@ -479,8 +479,11 @@ class Message(JsonDeserializable):
             "pre"      : "<pre>{text}</pre>",
             "code"     : "<code>{text}</code>",
             #"url"      : "<a href=\"{url}\">{text}</a>", # @badiboy plain URLs have no text and do not need tags
-            "text_link": "<a href=\"{url}\">{text}</a>"
-        }
+            "text_link": "<a href=\"{url}\">{text}</a>",
+            "strikethrough": "<s>{text}</s>",
+            "underline":     "<u>{text}</u>"
+ 	    }
+         
         if hasattr(self, "custom_subs"):
             for key, value in self.custom_subs.items():
                 _subs[key] = value
