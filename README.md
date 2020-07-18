@@ -75,7 +75,7 @@ Then, open the file and create an instance of the TeleBot class.
 ```python
 import telebot
 
-bot = telebot.TeleBot("TOKEN")
+bot = telebot.TeleBot("TOKEN", parse_mode=None) # You can set parse_mode by default. HTML or MARKDOWN
 ```
 *Note: Make sure to actually replace TOKEN with your own API token.*
 
