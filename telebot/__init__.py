@@ -648,14 +648,14 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout))
 
-    def delete_message(self, chat_id, message_id):
+    def delete_message(self, chat_id, message_id, timeout=None):
         """
         Use this method to delete message. Returns True on success.
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :return: API reply.
         """
-        return apihelper.delete_message(self.token, chat_id, message_id)
+        return apihelper.delete_message(self.token, chat_id, message_id, timeout)
 
     def send_dice(
             self, chat_id,
@@ -1252,39 +1252,41 @@ class TeleBot:
     def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
-                     is_flexible=None, disable_notification=None, reply_to_message_id=None, reply_markup=None,
-                     provider_data=None, timeout=None):
+                     send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
+                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None, timeout=None):
         """
         Sends invoice
-	    :param chat_id:
-	    :param title:
-	    :param description:
-	    :param invoice_payload:
-	    :param provider_token:
-	    :param currency:
-	    :param prices:
-	    :param start_parameter:
-	    :param photo_url:
-	    :param photo_size:
-        :param photo_width:
-        :param photo_height:
-        :param need_name:
-        :param need_phone_number:
-        :param need_email:
-        :param need_shipping_address:
-        :param is_flexible:
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param provider_data:
+        :param chat_id: Unique identifier for the target private chat
+        :param title: Product name
+        :param description: Product description
+        :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+        :param provider_token: Payments provider token, obtained via @Botfather
+        :param currency: Three-letter ISO 4217 currency code, see https://core.telegram.org/bots/payments#supported-currencies
+        :param prices: Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice when used as a start parameter
+        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+        :param photo_size: Photo size
+        :param photo_width: Photo width
+        :param photo_height: Photo height
+        :param need_name: Pass True, if you require the user's full name to complete the order
+        :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :param need_email: Pass True, if you require the user's email to complete the order
+        :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :param is_flexible: Pass True, if the final price depends on the shipping method
+        :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
+        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
         :return:
         """
         result = apihelper.send_invoice(
             self.token, chat_id, title, description, invoice_payload, provider_token,
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
             photo_height, need_name, need_phone_number, need_email, need_shipping_address,
-            is_flexible, disable_notification, reply_to_message_id, reply_markup,
-            provider_data, timeout)
+            send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
+            reply_to_message_id, reply_markup, provider_data, timeout)
         return types.Message.de_json(result)
 
     def send_poll(

@@ -320,7 +320,7 @@ def send_media_group(
         disable_notification=None, reply_to_message_id=None,
         timeout=None):
     method_url = r'sendMediaGroup'
-    media_json, files = _convert_input_media_array(media)
+    media_json, files = convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
@@ -781,7 +781,7 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
 
 def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
     method_url = r'editMessageMedia'
-    media_json, file = _convert_input_media(media)
+    media_json, file = convert_input_media(media)
     payload = {'media': media_json}
     if chat_id:
         payload['chat_id'] = chat_id
@@ -808,9 +808,11 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def delete_message(token, chat_id, message_id):
+def delete_message(token, chat_id, message_id, timeout=None):
     method_url = r'deleteMessage'
     payload = {'chat_id': chat_id, 'message_id': message_id}
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -890,7 +892,8 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
 def send_invoice(
         token, chat_id, title, description, invoice_payload, provider_token, currency, prices,
         start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
-        need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None, is_flexible=None,
+        need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
+        send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
         timeout=None):
     """
@@ -913,10 +916,12 @@ def send_invoice(
     :param need_email: Pass True, if you require the user's email to complete the order
     :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
     :param is_flexible: Pass True, if the final price depends on the shipping method
+    :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+    :param send_email_to_provider: Pass True, if user's email address should be sent to provider
     :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
     :param reply_to_message_id: If the message is a reply, ID of the original message
     :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
-    :param provider_data:
+    :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
     :return:
     """
     method_url = r'sendInvoice'
@@ -939,6 +944,10 @@ def send_invoice(
         payload['need_email'] = need_email
     if need_shipping_address is not None:
         payload['need_shipping_address'] = need_shipping_address
+    if send_phone_number_to_provider is not None:
+        payload['send_phone_number_to_provider'] = send_phone_number_to_provider
+    if send_email_to_provider is not None:
+        payload['send_email_to_provider'] = send_email_to_provider
     if is_flexible is not None:
         payload['is_flexible'] = is_flexible
     if disable_notification is not None:
@@ -1154,13 +1163,13 @@ def _convert_markup(markup):
     return markup
 
 
-def _convert_input_media(media):
+def convert_input_media(media):
     if isinstance(media, types.InputMedia):
-        return media._convert_input_media()
+        return media.convert_input_media()
     return None, None
 
 
-def _convert_input_media_array(array):
+def convert_input_media_array(array):
     media = []
     files = {}
     for input_media in array:

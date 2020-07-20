@@ -2268,7 +2268,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
             json_dict['parse_mode'] = self.parse_mode
         return json_dict
 
-    def _convert_input_media(self):
+    def convert_input_media(self):
         if util.is_string(self.media):
             return self.to_json(), None
 
