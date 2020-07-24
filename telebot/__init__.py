@@ -743,14 +743,14 @@ class TeleBot:
             apihelper.send_voice(self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
 
-    def send_document(self, chat_id, data, reply_to_message_id=None, caption=None, reply_markup=None,
+    def send_document(self, chat_id, data, caption=None, reply_to_message_id=None, reply_markup=None,
                       parse_mode=None, disable_notification=None, timeout=None):
         """
         Use this method to send general files.
         :param chat_id:
         :param data:
-        :param reply_to_message_id:
         :param caption:
+        :param reply_to_message_id:
         :param reply_markup:
         :param parse_mode:
         :param disable_notification:
@@ -781,14 +781,14 @@ class TeleBot:
                 self.token, chat_id, data, 'sticker', reply_to_message_id, reply_markup,
                 disable_notification, timeout))
 
-    def send_video(self, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+    def send_video(self, chat_id, data, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
                    parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, thumb=None, width=None, height=None):
         """
         Use this method to send video files, Telegram clients support mp4 videos.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param data: InputFile or String : Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram server
-        :param duration: Integer : Duration of sent video in seconds
         :param caption: String : Video caption (may also be used when resending videos by file_id).
+        :param duration: Integer : Duration of sent video in seconds
         :param parse_mode:
         :param supports_streaming:
         :param reply_to_message_id:
@@ -801,17 +801,17 @@ class TeleBot:
         parse_mode = self.parse_mode if not parse_mode else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
+            apihelper.send_video(self.token, chat_id, data, caption, duration, reply_to_message_id, reply_markup,
                                  parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height))
 
-    def send_animation(self, chat_id, animation, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+    def send_animation(self, chat_id, animation, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
                    parse_mode=None, disable_notification=None, timeout=None):
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an animation that is already on the Telegram server
-        :param duration: Integer : Duration of sent video in seconds
         :param caption: String : Animation caption (may also be used when resending animation by file_id).
+        :param duration: Integer : Duration of sent video in seconds
         :param parse_mode:
         :param reply_to_message_id:
         :param reply_markup:
@@ -822,7 +822,7 @@ class TeleBot:
         parse_mode = self.parse_mode if not parse_mode else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
+            apihelper.send_animation(self.token, chat_id, animation, caption, duration, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
 
     def send_video_note(self, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
