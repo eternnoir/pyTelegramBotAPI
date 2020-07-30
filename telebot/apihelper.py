@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 
 try:
     import ujson as json
@@ -6,6 +7,7 @@ except ImportError:
     import json
 
 import requests
+from requests.exceptions import HTTPError, ConnectionError, Timeout
 
 try:
     from requests.packages.urllib3 import fields
@@ -27,6 +29,10 @@ FILE_URL = None
 
 CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
+
+RETRY_ON_ERROR = False
+RETRY_TIMEOUT = 2
+MAX_RETRIES = 15
 
 CUSTOM_SERIALIZER = None
 
@@ -62,9 +68,42 @@ def _make_request(token, method_name, method='get', params=None, files=None):
             read_timeout = params.pop('timeout') + 10
         if 'connect-timeout' in params:
             connect_timeout = params.pop('connect-timeout') + 10
-    result = _get_req_session().request(
-        method, request_url, params=params, files=files,
-        timeout=(connect_timeout, read_timeout), proxies=proxy)
+    
+    if RETRY_ON_ERROR:
+        got_result = False
+        current_try = 0
+        
+        while not got_result and current_try<MAX_RETRIES-1:
+            current_try+=1
+            
+            try:
+                result = _get_req_session().request(
+                    method, request_url, params=params, files=files,
+                    timeout=(connect_timeout, read_timeout), proxies=proxy)
+                got_result = True
+                
+            except HTTPError:
+                logger.debug("HTTP Error on {0} method (Try #{1})".format(method_name, current_try))
+                time.sleep(RETRY_TIMEOUT)
+                
+            except ConnectionError:
+                logger.debug("Connection Error on {0} method (Try #{1})".format(method_name, current_try))
+                time.sleep(RETRY_TIMEOUT)
+                
+            except Timeout:
+                logger.debug("Timeout Error on {0} method (Try #{1})".format(method_name, current_try))
+                time.sleep(RETRY_TIMEOUT)
+            
+        
+        if not got_result:
+            result = _get_req_session().request(
+                    method, request_url, params=params, files=files,
+                    timeout=(connect_timeout, read_timeout), proxies=proxy)
+    else:
+        result = _get_req_session().request(
+            method, request_url, params=params, files=files,
+            timeout=(connect_timeout, read_timeout), proxies=proxy)
+    
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     return _check_result(method_name, result)['result']
 
