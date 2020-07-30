@@ -116,7 +116,7 @@ def _check_result(method_name, result):
         - The content of the result is invalid JSON.
         - The method call was unsuccessful (The JSON 'ok' field equals False)
 
-    :raises BaseApiException: if one of the above listed cases is applicable
+    :raises ApiException: if one of the above listed cases is applicable
     :param method_name: The name of the method called
     :param result: The returned result of the method request
     :return: The result parsed to a JSON dictionary.
@@ -1239,7 +1239,7 @@ def _no_encode(func):
     return wrapper
 
 
-class BaseApiException(Exception):
+class ApiException(Exception):
     """
     This class represents a base Exception thrown when a call to the Telegram API fails.
     In addition to an informative message, it has a `function_name` and a `result` attribute, which respectively
@@ -1248,11 +1248,11 @@ class BaseApiException(Exception):
     """
 
     def __init__(self, msg, function_name, result):
-        super(BaseApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
+        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
     
-class ApiHTTPException(BaseApiException):
+class ApiHTTPException(ApiException):
     """
     This class represents an Exception thrown when a call to the 
     Telegram API server returns HTTP code that is not 200.
@@ -1264,7 +1264,7 @@ class ApiHTTPException(BaseApiException):
             function_name,
             result)
     
-class ApiInvalidJSONException(BaseApiException):
+class ApiInvalidJSONException(ApiException):
     """
     This class represents an Exception thrown when a call to the 
     Telegram API server returns invalid json.
@@ -1276,7 +1276,7 @@ class ApiInvalidJSONException(BaseApiException):
             function_name,
             result)
     
-class ApiTelegramException(BaseApiException):
+class ApiTelegramException(ApiException):
     """
     This class represents an Exception thrown when a Telegram API returns error code.
     """
