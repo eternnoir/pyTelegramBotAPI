@@ -122,21 +122,16 @@ def _check_result(method_name, result):
     :return: The result parsed to a JSON dictionary.
     """
     if result.status_code != 200:
-        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
-            .format(result.status_code, result.reason, result.text.encode('utf8'))
-        raise ApiException(msg, method_name, result)
+        raise ApiHTTPException(method_name, result)
 
     try:
         result_json = result.json()
     except:
-        msg = 'The server returned an invalid JSON response. Response body:\n[{0}]' \
-            .format(result.text.encode('utf8'))
-        raise ApiException(msg, method_name, result)
+        raise ApiInvalidJSONException(method_name, result)
 
     if not result_json['ok']:
-        msg = 'Error code: {0} Description: {1}' \
-            .format(result_json['error_code'], result_json['description'])
-        raise ApiException(msg, method_name, result)
+        raise ApiTelegramException(msg, method_name, result, result_json)
+        
     return result_json
 
 
@@ -165,9 +160,8 @@ def download_file(token, file_path):
         
     result = _get_req_session().get(url, proxies=proxy)
     if result.status_code != 200:
-        msg = 'The server returned HTTP {0} {1}. Response body:\n[{2}]' \
-            .format(result.status_code, result.reason, result.text)
-        raise ApiException(msg, 'Download file', result)
+        raise ApiHTTPException('Download file', result)
+        
     return result.content
 
 
@@ -1247,7 +1241,7 @@ def _no_encode(func):
 
 class ApiException(Exception):
     """
-    This class represents an Exception thrown when a call to the Telegram API fails.
+    This class represents a base Exception thrown when a call to the Telegram API fails.
     In addition to an informative message, it has a `function_name` and a `result` attribute, which respectively
     contain the name of the failed function and the returned result that made the function to be considered  as
     failed.
@@ -1257,3 +1251,40 @@ class ApiException(Exception):
         super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
+    
+class ApiHTTPException(ApiException):
+    """
+    This class represents an Exception thrown when a call to the 
+    Telegram API server returns HTTP code that is not 200.
+    """
+    def __init__(self, function_name, result):
+        super(ApiHTTPException, self).__init__(
+            "The server returned HTTP {0} {1}. Response body:\n[{2}]" \
+            .format(result.status_code, result.reason, result.text.encode('utf8')),
+            function_name,
+            result)
+    
+class ApiInvalidJSONException(ApiException):
+    """
+    This class represents an Exception thrown when a call to the 
+    Telegram API server returns invalid json.
+    """
+    def __init__(self, function_name, result):
+        super(ApiInvalidJSONException, self).__init__(
+            "The server returned an invalid JSON response. Response body:\n[{0}]" \
+            .format(result.text.encode('utf8')),
+            function_name,
+            result)
+    
+class ApiTelegramException(ApiException):
+    """
+    This class represents an Exception thrown when a Telegram API returns error code.
+    """
+    def __init__(self, function_name, result, result_json):
+        super(ApiTelegramException, self).__init__(
+            "Error code: {0} Description: {1}" \
+            .format(result_json['error_code'], result_json['description']),
+            function_name,
+            result)
+        self.result_json = result_json
+        
