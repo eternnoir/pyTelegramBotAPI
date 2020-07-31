@@ -166,6 +166,12 @@ def async_dec():
 def is_string(var):
     return isinstance(var, string_types)
 
+def is_dict(var):
+    return isinstance(var, dict)
+
+def is_bytes(var):
+    return isinstance(var, bytes)
+
 def is_pil_image(var):
     return pil_imported and isinstance(var, PIL.Image.Image)
 
@@ -278,6 +284,11 @@ def per_thread(key, construct_value, reset=False):
 
     return getattr(thread_local, key)
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    # https://stackoverflow.com/a/312464/9935473
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
