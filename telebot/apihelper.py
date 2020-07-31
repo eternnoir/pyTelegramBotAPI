@@ -329,10 +329,12 @@ def send_photo(
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
-    if not util.is_string(photo):
-        files = {'photo': photo}
-    else:
+    if util.is_string(photo):
         payload['photo'] = photo
+    elif util.is_pil_image(photo):
+        files = {'photo': util.pil_image_to_file(photo)}
+    else:
+        files = {'photo': photo}
     if caption:
         payload['caption'] = caption
     if reply_to_message_id:
@@ -743,10 +745,12 @@ def set_chat_photo(token, chat_id, photo):
     method_url = 'setChatPhoto'
     payload = {'chat_id': chat_id}
     files = None
-    if not util.is_string(photo):
-        files = {'photo': photo}
-    else:
+    if util.is_string(photo):
         payload['photo'] = photo
+    elif util.is_pil_image(photo):
+        files = {'photo': util.pil_image_to_file(photo)}
+    else:
+        files = {'photo': photo}
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
