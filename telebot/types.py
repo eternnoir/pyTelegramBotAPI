@@ -66,9 +66,9 @@ class JsonDeserializable(object):
         :param json_type:
         :return:
         """
-        if isinstance(json_type, dict):
+        if util.is_dict(json_type):
             return json_type
-        elif isinstance(json_type, str):
+        elif util.is_string(json_type):
             return json.loads(json_type)
         else:
             raise ValueError("json_type should be a json dict or string.")
@@ -806,36 +806,44 @@ class ReplyKeyboardRemove(JsonSerializable):
 
 class ReplyKeyboardMarkup(JsonSerializable):
     def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
+        if row_width>12:
+            raise ValueError('Telegram does not support reply keyboard row width over 12')
+
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
         self.selective = selective
         self.row_width = row_width
         self.keyboard = []
 
-    def add(self, *args):
+    def add(self, *args, row_width=None):
         """
         This function adds strings to the keyboard, while not exceeding row_width.
         E.g. ReplyKeyboardMarkup#add("A", "B", "C") yields the json result {keyboard: [["A"], ["B"], ["C"]]}
         when row_width is set to 1.
         When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
         See https://core.telegram.org/bots/api#replykeyboardmarkup
+        :raises ValueError: If row_width > 12
         :param args: KeyboardButton to append to the keyboard
+        :param row_width: width of row
+        :return: self, to allow function chaining.
         """
-        i = 1
-        row = []
-        for button in args:
-            if util.is_string(button):
-                row.append({'text': button})
-            elif isinstance(button, bytes):
-                row.append({'text': button.decode('utf-8')})
-            else:
-                row.append(button.to_dict())
-            if i % self.row_width == 0:
-                self.keyboard.append(row)
-                row = []
-            i += 1
-        if len(row) > 0:
-            self.keyboard.append(row)
+        row_width = row_width or self.row_width
+        
+        if row_width>12:
+            raise ValueError('Telegram does not support reply keyboard row width over 12')
+        
+        for row in util.chunks(args, row_width):
+            button_array = []
+            for button in row:
+                if util.is_string(button):
+                    button_array.append({'text': button})
+                elif util.is_bytes(button):
+                    button_array.append({'text': button.decode('utf-8')})
+                else:
+                    button_array.append(button.to_dict())
+            self.keyboard.append(button_array)
+
+        return self
 
     def row(self, *args):
         """
@@ -845,14 +853,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
         :param args: strings
         :return: self, to allow function chaining.
         """
-        btn_array = []
-        for button in args:
-            if util.is_string(button):
-                btn_array.append({'text': button})
-            else:
-                btn_array.append(button.to_dict())
-        self.keyboard.append(btn_array)
-        return self
+        
+        return self.add(args, 12)
 
     def to_json(self):
         """
@@ -904,13 +906,17 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         """
         This object represents an inline keyboard that appears
             right next to the message it belongs to.
-
+        
+        :raises ValueError: If row_width > 8
         :return:
         """
+        if row_width>8:
+            raise ValueError('Telegram does not support inline keyboard row width over 8')
+
         self.row_width = row_width
         self.keyboard = []
 
-    def add(self, *args):
+    def add(self, *args, row_width=None):
         """
         This method adds buttons to the keyboard without exceeding row_width.
 
@@ -920,20 +926,23 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         When row_width is set to 2, the result:
             {keyboard: [["A", "B"], ["C"]]}
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
-
+        
+        :raises ValueError: If row_width > 8
         :param args: Array of InlineKeyboardButton to append to the keyboard
+        :param row_width: width of row
+        :return: self, to allow function chaining.
         """
-        i = 1
-        row = []
-        for button in args:
-            row.append(button.to_dict())
-            if i % self.row_width == 0:
-                self.keyboard.append(row)
-                row = []
-            i += 1
-        if len(row) > 0:
-            self.keyboard.append(row)
-
+        row_width = row_width or self.row_width
+        
+        if row_width>8:
+            raise ValueError('Telegram does not support inline keyboard row width over 8')
+        
+        for row in util.chunks(args, row_width):
+            button_array = [button.to_dict() for button in row]
+            self.keyboard.append(button_array)
+        
+        return self
+        
     def row(self, *args):
         """
         Adds a list of InlineKeyboardButton to the keyboard.
@@ -942,13 +951,12 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         InlineKeyboardMarkup.row("A").row("B", "C").to_json() outputs:
             '{keyboard: [["A"], ["B", "C"]]}'
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
-
+        
         :param args: Array of InlineKeyboardButton to append to the keyboard
         :return: self, to allow function chaining.
         """
-        button_array = [button.to_dict() for button in args]
-        self.keyboard.append(button_array)
-        return self
+         
+        return self.add(args, 8)
 
     def to_json(self):
         """
