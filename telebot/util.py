@@ -19,6 +19,13 @@ except ImportError:
     import queue as Queue
 import logging
 
+try:
+    import PIL
+    from io import BytesIO
+    pil_imported = True
+except:
+    pil_imported = False
+
 logger = logging.getLogger('TeleBot')
 
 thread_local = threading.local()
@@ -158,6 +165,19 @@ def async_dec():
 
 def is_string(var):
     return isinstance(var, string_types)
+
+def is_pil_image(var):
+    return pil_imported and isinstance(var, PIL.Image.Image)
+
+def pil_image_to_file(image, extension='JPEG', quality='web_low'):
+    if pil_imported:
+        photoBuffer = BytesIO()
+        image.convert('RGB').save(photoBuffer, extension, quality=quality)
+        photoBuffer.seek(0)
+        
+        return photoBuffer
+    else:
+        raise RuntimeError('PIL module is not imported')
 
 def is_command(text):
     """
