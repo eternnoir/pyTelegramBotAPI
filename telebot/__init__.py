@@ -18,7 +18,7 @@ console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
 logger.addHandler(console_output_handler)
 
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
 
 from telebot import apihelper, types, util
 from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
