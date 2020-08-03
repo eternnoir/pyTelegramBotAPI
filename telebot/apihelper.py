@@ -105,7 +105,10 @@ def _make_request(token, method_name, method='get', params=None, files=None):
             timeout=(connect_timeout, read_timeout), proxies=proxy)
     
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
-    return _check_result(method_name, result)['result']
+    
+    json_result = _check_result(method_name, result)
+    if json_result:
+        return json_result['result']
 
 
 def _check_result(method_name, result):
@@ -121,18 +124,18 @@ def _check_result(method_name, result):
     :param result: The returned result of the method request
     :return: The result parsed to a JSON dictionary.
     """
-    if result.status_code != 200:
-        raise ApiHTTPException(method_name, result)
-
     try:
         result_json = result.json()
     except:
         raise ApiInvalidJSONException(method_name, result)
-
-    if not result_json['ok']:
-        raise ApiTelegramException(msg, method_name, result, result_json)
-        
-    return result_json
+    else:    
+        if not result_json['ok']:
+            raise ApiTelegramException(method_name, result, result_json)
+            
+        elif result.status_code != 200:
+            raise ApiHTTPException(method_name, result)
+    
+        return result_json
 
 
 def get_me(token):
@@ -1291,4 +1294,5 @@ class ApiTelegramException(ApiException):
             function_name,
             result)
         self.result_json = result_json
+        self.error_code = result_json['error_code']
         
