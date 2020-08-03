@@ -943,8 +943,17 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
             row_width=8
         
         for row in util.chunks(args, row_width):
-            button_array = [button.to_dict() for button in row]
-            self.keyboard.append(button_array)
+            for button in row:
+                if isinstance(button, list):
+                    button_array = []
+                    for _button in button:
+                        button_array.extend([_button.to_dict()])
+                    self.keyboard.append(button_array)
+                else:
+                    button_array = [button.to_dict()]
+                    self.keyboard.append(button_array)
+        
+        return self
         
         return self
         
