@@ -808,10 +808,13 @@ class ReplyKeyboardRemove(JsonSerializable):
 
 
 class ReplyKeyboardMarkup(JsonSerializable):
+    max_row_keys = 12
+
     def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
-        if row_width>12:
-            logger.warning('Telegram does not support reply keyboard row width over 12')
-            row_width=12
+        if row_width > self.max_row_keys:
+            # Todo: Will be replaced with Exception in future releases
+            logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
+            row_width = self.max_row_keys
 
         self.resize_keyboard = resize_keyboard
         self.one_time_keyboard = one_time_keyboard
@@ -830,12 +833,14 @@ class ReplyKeyboardMarkup(JsonSerializable):
         :param row_width: width of row
         :return: self, to allow function chaining.
         """
-        row_width = row_width or self.row_width
+        if row_width is None:
+            row_width = self.row_width
         
         
-        if row_width>12:
-            logger.warning('Telegram does not support reply keyboard row width over 12')
-            row_width=12
+        if row_width > self.max_row_keys:
+            # Todo: Will be replaced with Exception in future releases
+            logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
+            row_width = self.max_row_keys
         
         for row in util.chunks(args, row_width):
             button_array = []
@@ -907,6 +912,8 @@ class KeyboardButtonPollType(Dictionaryable):
 
 
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
+    max_row_keys = 12
+
     def __init__(self, row_width=3):
         """
         This object represents an inline keyboard that appears
@@ -914,9 +921,10 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         
         :return:
         """
-        if row_width>8:
-            logger.warning('Telegram does not support inline keyboard row width over 8')
-            row_width=8
+        if row_width > self.max_row_keys:
+            # Todo: Will be replaced with Exception in future releases
+            logger.error('Telegram does not support inline keyboard row width over %d.' % self.max_row_keys)
+            row_width = self.max_row_keys
         
         self.row_width = row_width
         self.keyboard = []
@@ -936,11 +944,13 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         :param row_width: width of row
         :return: self, to allow function chaining.
         """
-        row_width = row_width or self.row_width
+        if row_width is None:
+            row_width = self.row_width
         
-        if row_width>8:
-            logger.warning('Telegram does not support inline keyboard row width over 8')
-            row_width=8
+        if row_width > self.max_row_keys:
+            # Todo: Will be replaced with Exception in future releases
+            logger.error('Telegram does not support inline keyboard row width over %d.' % self.max_row_keys)
+            row_width = self.max_row_keys
         
         for row in util.chunks(args, row_width):
             button_array = [button.to_dict() for button in row]
