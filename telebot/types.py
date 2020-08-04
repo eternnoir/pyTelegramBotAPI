@@ -917,7 +917,7 @@ class KeyboardButtonPollType(Dictionaryable):
 
 
 class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
-    max_row_keys = 12
+    max_row_keys = 8
 
     def __init__(self, row_width=3):
         """
