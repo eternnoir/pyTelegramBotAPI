@@ -869,7 +869,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         :return: self, to allow function chaining.
         """
         
-        return self.add(args, 12)
+        return self.add(*args, row_width=self.max_row_keys)
 
     def to_json(self):
         """
@@ -976,7 +976,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         :return: self, to allow function chaining.
         """
          
-        return self.add(args, 8)
+        return self.add(*args, row_width=self.max_row_keys)
 
     def to_json(self):
         """
