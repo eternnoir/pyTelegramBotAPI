@@ -11,7 +11,6 @@ from requests.exceptions import HTTPError, ConnectionError, Timeout
 
 try:
     from requests.packages.urllib3 import fields
-
     format_header_param = fields.format_header_param
 except ImportError:
     format_header_param = None
@@ -130,7 +129,7 @@ def _check_result(method_name, result):
         raise ApiInvalidJSONException(method_name, result)
 
     if not result_json['ok']:
-        raise ApiTelegramException(msg, method_name, result, result_json)
+        raise ApiTelegramException(method_name, result, result_json)
         
     return result_json
 
