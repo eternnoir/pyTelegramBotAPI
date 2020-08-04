@@ -127,14 +127,15 @@ def _check_result(method_name, result):
     try:
         result_json = result.json()
     except:
-        raise ApiInvalidJSONException(method_name, result)
+        if result.status_code != 200:
+            raise ApiHTTPException(method_name, result)
+        else:
+            raise ApiInvalidJSONException(method_name, result)
+        
     else:    
         if not result_json['ok']:
             raise ApiTelegramException(method_name, result, result_json)
             
-        elif result.status_code != 200:
-            raise ApiHTTPException(method_name, result)
-    
         return result_json
 
 
