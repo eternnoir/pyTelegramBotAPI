@@ -11,7 +11,10 @@ import six
 
 from telebot import util
 
+DISABLE_KEYLEN_ERROR = False
+
 logger = logging.getLogger('TeleBot')
+
 
 class JsonSerializable(object):
     """
@@ -813,7 +816,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
     def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
-            logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
+            if not DISABLE_KEYLEN_ERROR:
+                logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
             row_width = self.max_row_keys
 
         self.resize_keyboard = resize_keyboard
@@ -839,7 +843,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
         
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
-            logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
+            if not DISABLE_KEYLEN_ERROR:
+                logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
             row_width = self.max_row_keys
         
         for row in util.chunks(args, row_width):
