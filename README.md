@@ -653,5 +653,6 @@ Get help. Discuss. Chat.
 * [Neural style transfer](https://t.me/ebanyivolshebnikBot) ([source](https://github.com/timbyxty/StyleTransfer-tgbot)) by @timbyxty - bot for transferring style from one picture to another based on neural network.
 * [JoinGroup Silencer Bot](https://t.me/joingroup_silencer_bot) ([source](https://github.com/zeph1997/Telegram-Group-Silencer-Bot)) by [@zeph1997](https://github.com/zeph1997) - A Telegram Bot to remove "join group" and "removed from group" notifications.
 * [AdviceBook](https://t.me/adviceokbot) by [@barbax7](https://github.com/barbax7) - A Telegram Bot that allows you to receive random reading tips when you don't know which book to read.
+* [Blue_CC_Bot](https://t.me/Blue_CC_Bot) by [@Akash](https://github.com/BLUE-DEVIL1134) - A Telegram Bot Which Checks Your Given Credit Cards And Says Which Is A Real,Card And Which Is Fake.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
