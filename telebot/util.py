@@ -191,6 +191,7 @@ def is_command(text):
     :param text: Text to check.
     :return: True if `text` is a command, else False.
     """
+    if (text is None): return None
     return text.startswith('/')
 
 
@@ -208,6 +209,7 @@ def extract_command(text):
     :param text: String to extract the command from
     :return: the command if `text` is a command (according to is_command), else None.
     """
+    if (text is None): return None
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
 
 
