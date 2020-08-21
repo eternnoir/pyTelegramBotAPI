@@ -532,7 +532,10 @@ def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_m
     if timeout:
         payload['connect-timeout'] = timeout
     if thumb:
-        payload['thumb'] = thumb
+        if not util.is_string(thumb):
+            files['thumb'] = thumb
+        else:
+            payload['thumb'] = thumb
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -586,7 +589,10 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
     if timeout:
         payload['connect-timeout'] = timeout
     if thumb:
-        payload['thumb'] = thumb
+        if not util.is_string(thumb):
+            files['thumb'] = thumb
+        else:
+            payload['thumb'] = thumb
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -647,7 +653,10 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     if caption:
         payload['caption'] = caption
     if thumb:
-        payload['thumb'] = thumb
+        if not util.is_string(thumb):
+            files['thumb'] = thumb
+        else:
+            payload['thumb'] = thumb
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
