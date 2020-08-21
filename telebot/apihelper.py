@@ -509,7 +509,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
 
 
 def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, disable_notification=None, timeout=None):
+               parse_mode=None, disable_notification=None, timeout=None, thumb=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -531,6 +531,8 @@ def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_m
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
+    if thumb:
+        payload['thumb'] = thumb
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -561,7 +563,7 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
 
 
 def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                    disable_notification=None, timeout=None):
+                    disable_notification=None, timeout=None, thumb=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -571,7 +573,7 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
         payload['video_note'] = data
     if duration:
         payload['duration'] = duration
-    if length:
+    if length and (str(length).isdigit() and int(length) <= 639):
         payload['length'] = length
     else:
         payload['length'] = 639  # seems like it is MAX length size
@@ -583,6 +585,8 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
+    if thumb:
+        payload['thumb'] = thumb
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -622,7 +626,7 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
 
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
-              disable_notification=None, timeout=None, caption=None):
+              disable_notification=None, timeout=None, caption=None, thumb=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -642,6 +646,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['connect-timeout'] = timeout
     if caption:
         payload['caption'] = caption
+    if thumb:
+        payload['thumb'] = thumb
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
