@@ -878,7 +878,7 @@ class TeleBot:
 
         return types.Message.de_json(
             apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
-                                     parse_mode, disable_notification, timeout, thumb))
+                                 parse_mode, disable_notification, timeout, thumb))
 
     def send_video_note(self, chat_id, data, duration=None, length=None,
                         reply_to_message_id=None, reply_markup=None,
