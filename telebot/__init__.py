@@ -42,6 +42,15 @@ class Handler:
         return getattr(self, item)
 
 
+class ExceptionHandler:
+    """
+    Class for handling exceptions while Polling
+    """
+
+    def handle(self, exception):
+        return False
+
+
 class TeleBot:
     """ This is TeleBot Class
     Methods:
@@ -86,7 +95,7 @@ class TeleBot:
 
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
-            next_step_backend=None, reply_backend=None
+            next_step_backend=None, reply_backend=None, exception_handler=None
     ):
         """
         :param token: bot API token
@@ -110,6 +119,8 @@ class TeleBot:
         self.reply_backend = reply_backend
         if not self.reply_backend:
             self.reply_backend = MemoryHandlerBackend()
+
+        self.exception_handler = exception_handler
 
         self.message_handlers = []
         self.edited_message_handlers = []
@@ -452,20 +463,41 @@ class TeleBot:
 
                 error_interval = 0.25
             except apihelper.ApiException as e:
-                logger.error(e)
-                if not none_stop:
-                    self.__stop_polling.set()
-                    logger.info("Exception occurred. Stopping.")
+                if self.exception_handler is not None:
+                    handled = self.exception_handler.handle(e)
+                else:
+                    handled = False
+
+                if not handled:
+                    logger.error(e)
+                    if not none_stop:
+                        self.__stop_polling.set()
+                        logger.info("Exception occurred. Stopping.")
+                    else:
+                        polling_thread.clear_exceptions()
+                        self.worker_pool.clear_exceptions()
+                        logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                        time.sleep(error_interval)
+                        error_interval *= 2
                 else:
                     polling_thread.clear_exceptions()
                     self.worker_pool.clear_exceptions()
-                    logger.info("Waiting for {0} seconds until retry".format(error_interval))
                     time.sleep(error_interval)
-                    error_interval *= 2
             except KeyboardInterrupt:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
                 break
+            except Exception as e:
+                if self.exception_handler is not None:
+                    handled = self.exception_handler.handle(e)
+                else:
+                    handled = False
+                if not handled:
+                    raise e
+                else:
+                    polling_thread.clear_exceptions()
+                    self.worker_pool.clear_exceptions()
+                    time.sleep(error_interval)
 
         polling_thread.stop()
         logger.info('Stopped polling.')
@@ -480,18 +512,35 @@ class TeleBot:
                 self.__retrieve_updates(timeout)
                 error_interval = 0.25
             except apihelper.ApiException as e:
-                logger.error(e)
-                if not none_stop:
-                    self.__stop_polling.set()
-                    logger.info("Exception occurred. Stopping.")
+                if self.exception_handler is not None:
+                    handled = self.exception_handler.handle(e)
                 else:
-                    logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                    handled = False
+
+                if not handled:
+                    logger.error(e)
+                    if not none_stop:
+                        self.__stop_polling.set()
+                        logger.info("Exception occurred. Stopping.")
+                    else:
+                        logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                        time.sleep(error_interval)
+                        error_interval *= 2
+                else:
                     time.sleep(error_interval)
-                    error_interval *= 2
             except KeyboardInterrupt:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
                 break
+            except Exception as e:
+                if self.exception_handler is not None:
+                    handled = self.exception_handler.handle(e)
+                else:
+                    handled = False
+                if not handled:
+                    raise e
+                else:
+                    time.sleep(error_interval)
 
         logger.info('Stopped polling.')
 
@@ -805,7 +854,7 @@ class TeleBot:
                                  parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height))
 
     def send_animation(self, chat_id, animation, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-                   parse_mode=None, disable_notification=None, timeout=None):
+                       parse_mode=None, disable_notification=None, timeout=None):
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
@@ -823,7 +872,7 @@ class TeleBot:
 
         return types.Message.de_json(
             apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
-                                 parse_mode, disable_notification, timeout))
+                                     parse_mode, disable_notification, timeout))
 
     def send_video_note(self, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
                         disable_notification=None, timeout=None):
@@ -1055,7 +1104,6 @@ class TeleBot:
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
-
     def set_chat_permissions(self, chat_id, permissions):
         """
         Use this method to set default chat permissions for all members.
@@ -1270,7 +1318,7 @@ class TeleBot:
     def send_invoice(self, chat_id, title, description, invoice_payload, provider_token, currency, prices,
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
-                     send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
+                     send_phone_number_to_provider=None, send_email_to_provider=None, is_flexible=None,
                      disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None, timeout=None):
         """
         Sends invoice
@@ -1386,7 +1434,7 @@ class TeleBot:
         :return:
         """
         parse_mode = self.parse_mode if not parse_mode else parse_mode
-        
+
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
                                                 parse_mode, reply_markup)
         if type(result) == bool:
@@ -1837,6 +1885,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_inline_handler(handler_dict)
@@ -1859,6 +1908,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_chosen_inline_handler(handler_dict)
@@ -1881,6 +1931,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_callback_query_handler(handler_dict)
@@ -1903,6 +1954,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_shipping_query_handler(handler_dict)
@@ -1925,6 +1977,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_pre_checkout_query_handler(handler_dict)
@@ -1947,6 +2000,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_poll_handler(handler_dict)
@@ -1969,6 +2023,7 @@ class TeleBot:
         :param kwargs:
         :return:
         """
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_poll_answer_handler(handler_dict)
