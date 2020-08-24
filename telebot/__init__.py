@@ -7,8 +7,6 @@ import sys
 import threading
 import time
 
-import six
-
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
@@ -134,20 +132,20 @@ class TeleBot:
         self.poll_handlers = []
         self.poll_answer_handlers = []
 
-        self.typed_middleware_handlers = {
-            'message': [],
-            'edited_message': [],
-            'channel_post': [],
-            'edited_channel_post': [],
-            'inline_query': [],
-            'chosen_inline_result': [],
-            'callback_query': [],
-            'shipping_query': [],
-            'pre_checkout_query': [],
-            'poll': [],
-        }
-
-        self.default_middleware_handlers = []
+        if apihelper.ENABLE_MIDDLEWARE:
+            self.typed_middleware_handlers = {
+                'message': [],
+                'edited_message': [],
+                'channel_post': [],
+                'edited_channel_post': [],
+                'inline_query': [],
+                'chosen_inline_result': [],
+                'callback_query': [],
+                'shipping_query': [],
+                'pre_checkout_query': [],
+                'poll': [],
+            }
+            self.default_middleware_handlers = []
 
         self.threaded = threaded
         if self.threaded:
@@ -297,17 +295,22 @@ class TeleBot:
         self.process_new_updates(updates)
 
     def process_new_updates(self, updates):
-        new_messages = []
-        new_edited_messages = []
-        new_channel_posts = []
-        new_edited_channel_posts = []
-        new_inline_querys = []
-        new_chosen_inline_results = []
-        new_callback_querys = []
-        new_shipping_querys = []
-        new_pre_checkout_querys = []
-        new_polls = []
-        new_poll_answers = []
+        upd_count = len(updates)
+        logger.debug('Received {0} new updates'.format(upd_count))
+        if (upd_count == 0):
+            return
+
+        new_messages = None
+        new_edited_messages = None
+        new_channel_posts = None
+        new_edited_channel_posts = None
+        new_inline_queries = None
+        new_chosen_inline_results = None
+        new_callback_queries = None
+        new_shipping_queries = None
+        new_pre_checkout_queries = None
+        new_polls = None
+        new_poll_answers = None
 
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -316,50 +319,60 @@ class TeleBot:
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
             if update.message:
+                if new_messages is None: new_messages = []
                 new_messages.append(update.message)
             if update.edited_message:
+                if new_edited_messages is None: new_edited_messages = []
                 new_edited_messages.append(update.edited_message)
             if update.channel_post:
+                if new_channel_posts is None: new_channel_posts = []
                 new_channel_posts.append(update.channel_post)
             if update.edited_channel_post:
+                if new_edited_channel_posts is None: new_edited_channel_posts = []
                 new_edited_channel_posts.append(update.edited_channel_post)
             if update.inline_query:
-                new_inline_querys.append(update.inline_query)
+                if new_inline_queries is None: new_inline_queries = []
+                new_inline_queries.append(update.inline_query)
             if update.chosen_inline_result:
+                if new_chosen_inline_results is None: new_chosen_inline_results = []
                 new_chosen_inline_results.append(update.chosen_inline_result)
             if update.callback_query:
-                new_callback_querys.append(update.callback_query)
+                if new_callback_queries is None: new_callback_queries = []
+                new_callback_queries.append(update.callback_query)
             if update.shipping_query:
-                new_shipping_querys.append(update.shipping_query)
+                if new_shipping_queries is None: new_shipping_queries = []
+                new_shipping_queries.append(update.shipping_query)
             if update.pre_checkout_query:
-                new_pre_checkout_querys.append(update.pre_checkout_query)
+                if new_pre_checkout_queries is None: new_pre_checkout_queries = []
+                new_pre_checkout_queries.append(update.pre_checkout_query)
             if update.poll:
+                if new_polls is None: new_polls = []
                 new_polls.append(update.poll)
             if update.poll_answer:
+                if new_poll_answers is None: new_poll_answers = []
                 new_poll_answers.append(update.poll_answer)
 
-        logger.debug('Received {0} new updates'.format(len(updates)))
-        if len(new_messages) > 0:
+        if new_messages:
             self.process_new_messages(new_messages)
-        if len(new_edited_messages) > 0:
+        if new_edited_messages:
             self.process_new_edited_messages(new_edited_messages)
-        if len(new_channel_posts) > 0:
+        if new_channel_posts:
             self.process_new_channel_posts(new_channel_posts)
-        if len(new_edited_channel_posts) > 0:
+        if new_edited_channel_posts:
             self.process_new_edited_channel_posts(new_edited_channel_posts)
-        if len(new_inline_querys) > 0:
-            self.process_new_inline_query(new_inline_querys)
-        if len(new_chosen_inline_results) > 0:
+        if new_inline_queries:
+            self.process_new_inline_query(new_inline_queries)
+        if new_chosen_inline_results:
             self.process_new_chosen_inline_query(new_chosen_inline_results)
-        if len(new_callback_querys) > 0:
-            self.process_new_callback_query(new_callback_querys)
-        if len(new_shipping_querys) > 0:
-            self.process_new_shipping_query(new_shipping_querys)
-        if len(new_pre_checkout_querys) > 0:
-            self.process_new_pre_checkout_query(new_pre_checkout_querys)
-        if len(new_polls) > 0:
+        if new_callback_queries:
+            self.process_new_callback_query(new_callback_queries)
+        if new_shipping_queries:
+            self.process_new_shipping_query(new_shipping_queries)
+        if new_pre_checkout_queries:
+            self.process_new_pre_checkout_query(new_pre_checkout_queries)
+        if new_polls:
             self.process_new_poll(new_polls)
-        if len(new_poll_answers) > 0:
+        if new_poll_answers:
             self.process_new_poll_answer(new_poll_answers)
 
     def process_new_messages(self, new_messages):
@@ -409,6 +422,8 @@ class TeleBot:
                 default_middleware_handler(self, update)
 
     def __notify_update(self, new_messages):
+        if len(self.update_listener) == 0:
+            return
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
@@ -1590,8 +1605,9 @@ class TeleBot:
         for message in new_messages:
             if hasattr(message, "reply_to_message") and message.reply_to_message is not None:
                 handlers = self.reply_backend.get_handlers(message.reply_to_message.message_id)
-                for handler in handlers:
-                    self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+                if handlers:
+                    for handler in handlers:
+                        self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
 
     def register_next_step_handler(self, message, callback, *args, **kwargs):
         """
@@ -1663,11 +1679,12 @@ class TeleBot:
         for i, message in enumerate(new_messages):
             need_pop = False
             handlers = self.next_step_backend.get_handlers(message.chat.id)
-            for handler in handlers:
-                need_pop = True
-                self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
+            if handlers:
+                for handler in handlers:
+                    need_pop = True
+                    self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
             if need_pop:
-                new_messages.pop(i)  # removing message that detects with next_step_handler
+                new_messages.pop(i)  # removing message that was detected with next_step_handler
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
@@ -1769,9 +1786,7 @@ class TeleBot:
                                                     func=func,
                                                     content_types=content_types,
                                                     **kwargs)
-
             self.add_message_handler(handler_dict)
-
             return handler
 
         return decorator
@@ -2054,7 +2069,7 @@ class TeleBot:
         :param message:
         :return:
         """
-        for message_filter, filter_value in six.iteritems(message_handler['filters']):
+        for message_filter, filter_value in message_handler['filters'].items():
             if filter_value is None:
                 continue
 
@@ -2088,6 +2103,8 @@ class TeleBot:
         :param new_messages:
         :return:
         """
+        if len(handlers) == 0:
+            return
         for message in new_messages:
             for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
