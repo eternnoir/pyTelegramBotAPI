@@ -22,7 +22,7 @@ setup(name='pyTelegramBotAPI',
       packages=['telebot'],
       license='GPL2',
       keywords='telegram bot api tools',
-      install_requires=['requests', 'six'],
+      install_requires=['requests'],
       extras_require={
           'json': 'ujson',
           'redis': 'redis>=3.4.1'

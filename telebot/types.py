@@ -7,8 +7,6 @@ try:
 except ImportError:
     import json
 
-import six
-
 from telebot import util
 
 DISABLE_KEYLEN_ERROR = False
@@ -81,13 +79,13 @@ class JsonDeserializable(object):
 
     def __str__(self):
         d = {}
-        for x, y in six.iteritems(self.__dict__):
+        for x, y in self.__dict__.items():
             if hasattr(y, '__dict__'):
                 d[x] = y.__dict__
             else:
                 d[x] = y
 
-        return six.text_type(d)
+        return str(d)
 
 
 class Update(JsonDeserializable):

@@ -1005,6 +1005,7 @@ def send_invoice(
     :param reply_to_message_id: If the message is a reply, ID of the original message
     :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
     :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
+    :param timeout:
     :return:
     """
     method_url = r'sendInvoice'
@@ -1318,7 +1319,7 @@ class ApiTelegramException(ApiException):
     """
     def __init__(self, function_name, result, result_json):
         super(ApiTelegramException, self).__init__(
-            "Error code: {0} Description: {1}" \
+            "Error code: {0}. Description: {1}" \
             .format(result_json['error_code'], result_json['description']),
             function_name,
             result)

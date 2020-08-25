@@ -32,10 +32,13 @@ class MemoryHandlerBackend(HandlerBackend):
             self.handlers[handler_group_id] = [handler]
 
     def clear_handlers(self, handler_group_id):
-        self.handlers.pop(handler_group_id, [])
+        self.handlers.pop(handler_group_id, None)
 
     def get_handlers(self, handler_group_id):
-        return self.handlers.pop(handler_group_id, [])
+        return self.handlers.pop(handler_group_id, None)
+
+    def load_handlers(self, filename, del_file_after_loading):
+        raise NotImplementedError()
 
 
 class FileHandlerBackend(HandlerBackend):
@@ -50,19 +53,15 @@ class FileHandlerBackend(HandlerBackend):
             self.handlers[handler_group_id].append(handler)
         else:
             self.handlers[handler_group_id] = [handler]
-
         self.start_save_timer()
 
     def clear_handlers(self, handler_group_id):
-        self.handlers.pop(handler_group_id, [])
-
+        self.handlers.pop(handler_group_id, None)
         self.start_save_timer()
 
     def get_handlers(self, handler_group_id):
-        handlers = self.handlers.pop(handler_group_id, [])
-
+        handlers = self.handlers.pop(handler_group_id, None)
         self.start_save_timer()
-
         return handlers
 
     def start_save_timer(self):
@@ -136,10 +135,9 @@ class RedisHandlerBackend(HandlerBackend):
         self.redis.delete(self._key(handler_group_id))
 
     def get_handlers(self, handler_group_id):
-        handlers = []
+        handlers = None
         value = self.redis.get(self._key(handler_group_id))
         if value:
             handlers = pickle.loads(value)
             self.clear_handlers(handler_group_id)
-
         return handlers
