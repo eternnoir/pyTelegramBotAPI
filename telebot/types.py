@@ -274,6 +274,8 @@ class Message(JsonDeserializable):
             opts['forward_from_message_id'] = obj.get('forward_from_message_id')
         if 'forward_signature' in obj:
             opts['forward_signature'] = obj.get('forward_signature')
+        if 'forward_sender_name' in obj:
+            opts['forward_sender_name'] = obj.get('forward_sender_name')
         if 'forward_date' in obj:
             opts['forward_date'] = obj.get('forward_date')
         if 'reply_to_message' in obj:
@@ -416,6 +418,7 @@ class Message(JsonDeserializable):
         self.forward_from_chat = None
         self.forward_from_message_id = None
         self.forward_signature = None
+        self.forward_sender_name = None
         self.forward_date = None
         self.reply_to_message = None
         self.edit_date = None
@@ -544,14 +547,16 @@ class MessageEntity(JsonDeserializable):
         length = obj['length']
         url = obj.get('url')
         user = User.de_json(obj.get('user'))
-        return cls(type, offset, length, url, user)
+        language = obj.get('language')
+        return cls(type, offset, length, url, user, language)
 
-    def __init__(self, type, offset, length, url=None, user=None):
+    def __init__(self, type, offset, length, url=None, user=None, language=None):
         self.type = type
         self.offset = offset
         self.length = length
         self.url = url
         self.user = user
+        self.language = language
 
 
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
@@ -711,13 +716,15 @@ class Contact(JsonDeserializable):
         first_name = obj['first_name']
         last_name = obj.get('last_name')
         user_id = obj.get('user_id')
-        return cls(phone_number, first_name, last_name, user_id)
+        vcard = obj.get('vcard')
+        return cls(phone_number, first_name, last_name, user_id, vcard)
 
-    def __init__(self, phone_number, first_name, last_name=None, user_id=None):
+    def __init__(self, phone_number, first_name, last_name=None, user_id=None, vcard=None):
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
         self.user_id = user_id
+        self.vcard = vcard
 
 
 class Location(JsonDeserializable):
@@ -745,13 +752,15 @@ class Venue(JsonDeserializable):
         title = obj['title']
         address = obj['address']
         foursquare_id = obj.get('foursquare_id')
-        return cls(location, title, address, foursquare_id)
+        foursquare_type = obj.get('foursquare_type')
+        return cls(location, title, address, foursquare_id, foursquare_type)
 
-    def __init__(self, location, title, address, foursquare_id=None):
+    def __init__(self, location, title, address, foursquare_id=None, foursquare_type=None):
         self.location = location
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
+        self.foursquare_type = foursquare_type
 
 
 class UserProfilePhotos(JsonDeserializable):
@@ -1281,12 +1290,13 @@ class InputLocationMessageContent(Dictionaryable):
 
 
 class InputVenueMessageContent(Dictionaryable):
-    def __init__(self, latitude, longitude, title, address, foursquare_id=None):
+    def __init__(self, latitude, longitude, title, address, foursquare_id=None, foursquare_type=None):
         self.latitude = latitude
         self.longitude = longitude
         self.title = title
         self.address = address
         self.foursquare_id = foursquare_id
+        self.foursquare_type = foursquare_type
 
     def to_dict(self):
         json_dict = {
@@ -1297,19 +1307,24 @@ class InputVenueMessageContent(Dictionaryable):
         }
         if self.foursquare_id:
             json_dict['foursquare_id'] = self.foursquare_id
+        if self.foursquare_type:
+            json_dict['foursquare_type'] = self.foursquare_type
         return json_dict
 
 
 class InputContactMessageContent(Dictionaryable):
-    def __init__(self, phone_number, first_name, last_name=None):
+    def __init__(self, phone_number, first_name, last_name=None, vcard=None):
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
+        self.vcard = vcard
 
     def to_dict(self):
         json_dict = {'phone_numbe': self.phone_number, 'first_name': self.first_name}
         if self.last_name:
             json_dict['last_name'] = self.last_name
+        if self.vcard:
+            json_dict['vcard'] = self.vcard
         return json_dict
 
 
@@ -1737,8 +1752,8 @@ class InlineQueryResultLocation(JsonSerializable):
 
 
 class InlineQueryResultVenue(JsonSerializable):
-    def __init__(self, id, title, latitude, longitude, address, foursquare_id=None, reply_markup=None,
-                 input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
+    def __init__(self, id, title, latitude, longitude, address, foursquare_id=None, foursquare_type=None,
+                 reply_markup=None, input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'venue'
         self.id = id
         self.title = title
@@ -1746,6 +1761,7 @@ class InlineQueryResultVenue(JsonSerializable):
         self.longitude = longitude
         self.address = address
         self.foursquare_id = foursquare_id
+        self.foursquare_type = foursquare_type
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.thumb_url = thumb_url
@@ -1757,6 +1773,8 @@ class InlineQueryResultVenue(JsonSerializable):
                      'longitude': self.longitude, 'address': self.address}
         if self.foursquare_id:
             json_dict['foursquare_id'] = self.foursquare_id
+        if self.foursquare_type:
+            json_dict['foursquare_type'] = self.foursquare_type
         if self.thumb_url:
             json_dict['thumb_url'] = self.thumb_url
         if self.thumb_width:
@@ -1771,13 +1789,15 @@ class InlineQueryResultVenue(JsonSerializable):
 
 
 class InlineQueryResultContact(JsonSerializable):
-    def __init__(self, id, phone_number, first_name, last_name=None, reply_markup=None,
-                 input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
+    def __init__(self, id, phone_number, first_name, last_name=None, vcard=None,
+                 reply_markup=None, input_message_content=None,
+                 thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'contact'
         self.id = id
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
+        self.vcard = vcard
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
         self.thumb_url = thumb_url
@@ -1788,16 +1808,18 @@ class InlineQueryResultContact(JsonSerializable):
         json_dict = {'type': self.type, 'id': self.id, 'phone_number': self.phone_number, 'first_name': self.first_name}
         if self.last_name:
             json_dict['last_name'] = self.last_name
+        if self.vcard:
+            json_dict['vcard'] = self.vcard
+        if self.reply_markup:
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
+        if self.input_message_content:
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
         if self.thumb_url:
             json_dict['thumb_url'] = self.thumb_url
         if self.thumb_width:
             json_dict['thumb_width'] = self.thumb_width
         if self.thumb_height:
             json_dict['thumb_height'] = self.thumb_height
-        if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
-        if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
         return json.dumps(json_dict)
 
 
@@ -1976,9 +1998,10 @@ class Game(JsonDeserializable):
         description = obj['description']
         photo = Game.parse_photo(obj['photo'])
         text = obj.get('text')
-        text_entities = None
         if 'text_entities' in obj:
             text_entities = Game.parse_entities(obj['text_entities'])
+        else:
+            text_entities = None
         animation = Animation.de_json(obj.get('animation'))
         return cls(title, description, photo, text, text_entities, animation)
 
@@ -2446,7 +2469,6 @@ class Poll(JsonDeserializable):
             explanation_entities = None
         open_period = obj.get('open_period')
         close_date = obj.get('close_date')
-        #poll =
         return cls(
             question, options,
             poll_id, total_voter_count, is_closed, is_anonymous, poll_type,
@@ -2469,7 +2491,7 @@ class Poll(JsonDeserializable):
         self.allows_multiple_answers = allows_multiple_answers
         self.correct_option_id = correct_option_id
         self.explanation = explanation
-        self.explanation_entities = explanation_entities if not(explanation_entities is None) else []
+        self.explanation_entities = explanation_entities # Default state of entities is None. if (explanation_entities is not None) else []
         self.open_period = open_period
         self.close_date = close_date
 

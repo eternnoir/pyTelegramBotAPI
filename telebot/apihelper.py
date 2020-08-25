@@ -427,12 +427,14 @@ def stop_message_live_location(
 
 def send_venue(
         token, chat_id, latitude, longitude, title, address,
-        foursquare_id=None, disable_notification=None,
+        foursquare_id=None, foursquare_type=None, disable_notification=None,
         reply_to_message_id=None, reply_markup=None, timeout=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
         payload['foursquare_id'] = foursquare_id
+    if foursquare_type:
+        payload['foursquare_type'] = foursquare_type
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if reply_to_message_id:
@@ -445,13 +447,14 @@ def send_venue(
 
 
 def send_contact(
-        token, chat_id, phone_number, first_name,
-        last_name=None, disable_notification=None,
-        reply_to_message_id=None, reply_markup=None, timeout=None):
+        token, chat_id, phone_number, first_name, last_name=None, vcard=None,
+        disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
         payload['last_name'] = last_name
+    if vcard:
+        payload['vcard'] = vcard
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if reply_to_message_id:
