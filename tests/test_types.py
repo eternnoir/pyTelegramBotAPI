@@ -110,7 +110,7 @@ def test_json_UserProfilePhotos():
 
 
 def test_json_contact():
-    json_string = r'{"phone_number":"00011111111","first_name":"dd","last_name":"ddl","user_id":8633}'
+    json_string = r'{"phone_number":"00011111111","first_name":"dd","last_name":"ddl","user_id":8633,"vcard":"SomeContactString"}'
     contact = types.Contact.de_json(json_string)
     assert contact.first_name == 'dd'
     assert contact.last_name == 'ddl'

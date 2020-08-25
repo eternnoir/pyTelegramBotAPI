@@ -711,6 +711,7 @@ class TeleBot:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
+        :param timeout:
         :return: API reply.
         """
         return types.Message.de_json(
@@ -721,6 +722,7 @@ class TeleBot:
         Use this method to delete message. Returns True on success.
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
+        :param timeout:
         :return: API reply.
         """
         return apihelper.delete_message(self.token, chat_id, message_id, timeout)
@@ -736,6 +738,7 @@ class TeleBot:
         :param disable_notification:
         :param reply_to_message_id:
         :param reply_markup:
+        :param timeout:
         :return: Message
         """
         return types.Message.de_json(
@@ -755,6 +758,7 @@ class TeleBot:
         :param parse_mode
         :param reply_to_message_id:
         :param reply_markup:
+        :param timeout:
         :return: API reply.
         """
         parse_mode = self.parse_mode if not parse_mode else parse_mode
@@ -924,6 +928,7 @@ class TeleBot:
         :param media:
         :param disable_notification:
         :param reply_to_message_id:
+        :param timeout:
         :return:
         """
         result = apihelper.send_media_group(
@@ -945,6 +950,7 @@ class TeleBot:
         :param reply_to_message_id:
         :param reply_markup:
         :param disable_notification:
+        :param timeout:
         :return: API reply.
         """
         return types.Message.de_json(
@@ -962,6 +968,7 @@ class TeleBot:
         :param message_id:
         :param inline_message_id:
         :param reply_markup:
+        :param timeout:
         :return:
         """
         return types.Message.de_json(
@@ -979,6 +986,7 @@ class TeleBot:
         :param message_id:
         :param inline_message_id:
         :param reply_markup:
+        :param timeout:
         :return:
         """
         return types.Message.de_json(
@@ -986,8 +994,8 @@ class TeleBot:
                 self.token, chat_id, message_id, inline_message_id, reply_markup, timeout))
 
     def send_venue(
-            self, chat_id, latitude, longitude, title, address, foursquare_id=None, disable_notification=None,
-            reply_to_message_id=None, reply_markup=None, timeout=None):
+            self, chat_id, latitude, longitude, title, address, foursquare_id=None, foursquare_type=None,
+            disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None):
         """
         Use this method to send information about a venue.
         :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
@@ -996,25 +1004,26 @@ class TeleBot:
         :param title: String : Name of the venue
         :param address: String : Address of the venue
         :param foursquare_id: String : Foursquare identifier of the venue
+        :param foursquare_type: Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
         :param disable_notification:
         :param reply_to_message_id:
         :param reply_markup:
+        :param timeout:
         :return:
         """
         return types.Message.de_json(
             apihelper.send_venue(
-                self.token, chat_id, latitude, longitude, title, address, foursquare_id,
+                self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
                 disable_notification, reply_to_message_id, reply_markup, timeout)
         )
 
     def send_contact(
-            self, chat_id, phone_number, first_name,
-            last_name=None, disable_notification=None,
-            reply_to_message_id=None, reply_markup=None, timeout=None):
+            self, chat_id, phone_number, first_name, last_name=None, vcard=None,
+            disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None):
         return types.Message.de_json(
             apihelper.send_contact(
-                self.token, chat_id, phone_number, first_name, last_name, disable_notification,
-                reply_to_message_id, reply_markup, timeout)
+                self.token, chat_id, phone_number, first_name, last_name, vcard,
+                disable_notification, reply_to_message_id, reply_markup, timeout)
         )
 
     def send_chat_action(self, chat_id, action, timeout=None):
@@ -1025,6 +1034,7 @@ class TeleBot:
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
                         'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note', 'upload_video_note'.
+        :param timeout:
         :return: API reply. :type: boolean
         """
         return apihelper.send_chat_action(self.token, chat_id, action, timeout)
@@ -1297,6 +1307,7 @@ class TeleBot:
         :param disable_notification:
         :param reply_to_message_id:
         :param reply_markup:
+        :param timeout:
         :return:
         """
         result = apihelper.send_game(
@@ -1368,6 +1379,7 @@ class TeleBot:
         :param reply_to_message_id: If the message is a reply, ID of the original message
         :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
         :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
+        :param timeout:
         :return:
         """
         result = apihelper.send_invoice(
@@ -1400,6 +1412,7 @@ class TeleBot:
         :param disable_notifications:
         :param reply_to_message_id:
         :param reply_markup:
+        :param timeout:
         :return:
         """
 
@@ -1414,14 +1427,15 @@ class TeleBot:
                 explanation, explanation_parse_mode, open_period, close_date, is_closed,
                 disable_notifications, reply_to_message_id, reply_markup, timeout))
 
-    def stop_poll(self, chat_id, message_id):
+    def stop_poll(self, chat_id, message_id, reply_markup=None):
         """
         Stops poll
         :param chat_id:
         :param message_id:
+        :param reply_markup:
         :return:
         """
-        return types.Poll.de_json(apihelper.stop_poll(self.token, chat_id, message_id))
+        return types.Poll.de_json(apihelper.stop_poll(self.token, chat_id, message_id, reply_markup))
 
     def answer_shipping_query(self, shipping_query_id, ok, shipping_options=None, error_message=None):
         """

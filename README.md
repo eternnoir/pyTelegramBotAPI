@@ -539,8 +539,13 @@ apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 
 _Checking is in progress..._
 
-✅ [Bot API 3.5](https://core.telegram.org/bots/api-changelog#november-17-2017) _- To be checked..._
+✅ [Bot API 4.3](https://core.telegram.org/bots/api-changelog#may-31-2019) _- To be checked..._
 
+* ✔ [Bot API 4.2](https://core.telegram.org/bots/api-changelog#april-14-2019)
+* ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018) - No Passport support.
+* ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018) - No Passport support.
+* ✔ [Bot API 3.6](https://core.telegram.org/bots/api-changelog#february-13-2018)
+* ✔ [Bot API 3.5](https://core.telegram.org/bots/api-changelog#november-17-2017)
 * ✔ [Bot API 3.4](https://core.telegram.org/bots/api-changelog#october-11-2017)
 * ✔ [Bot API 3.3](https://core.telegram.org/bots/api-changelog#august-23-2017)
 * ✔ [Bot API 3.2](https://core.telegram.org/bots/api-changelog#july-21-2017)
