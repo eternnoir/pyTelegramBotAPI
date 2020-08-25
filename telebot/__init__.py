@@ -92,8 +92,8 @@ class TeleBot:
         """
 
     def __init__(
-            self, token, parse_mode=None, last_update_id=0, threaded=True, skip_pending=False, num_threads=2,
-            next_step_backend=None, reply_backend=None, exception_handler=None
+            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
+            next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0
     ):
         """
         :param token: bot API token
