@@ -92,7 +92,7 @@ class TeleBot:
         """
 
     def __init__(
-            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
+            self, token, parse_mode=None, last_update_id=0, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None
     ):
         """
@@ -107,7 +107,7 @@ class TeleBot:
         self.skip_pending = skip_pending
 
         self.__stop_polling = threading.Event()
-        self.last_update_id = 0
+        self.last_update_id = last_update_id
         self.exc_info = None
 
         self.next_step_backend = next_step_backend
