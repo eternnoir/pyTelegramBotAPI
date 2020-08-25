@@ -5,6 +5,7 @@
 [![PyPi Package Version](https://img.shields.io/pypi/v/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
+[![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
 
   * [Getting started.](#getting-started)
   * [Writing your first bot](#writing-your-first-bot)
@@ -39,7 +40,7 @@
 
 ## Getting started.
 
-This API is tested with Python 2.6, Python 2.7, Python 3.4, Pypy and Pypy 3.
+This API is tested with Python Python 3.6-3.8 and Pypy 3.
 There are two ways to install the library:
 
 * Installation using pip (a Python package manager)*:
