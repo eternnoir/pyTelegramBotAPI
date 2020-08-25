@@ -655,5 +655,7 @@ Get help. Discuss. Chat.
 * [AdviceBook](https://t.me/adviceokbot) by [@barbax7](https://github.com/barbax7) - A Telegram Bot that allows you to receive random reading tips when you don't know which book to read.
 * [Blue_CC_Bot](https://t.me/Blue_CC_Bot) by [@Akash](https://github.com/BLUE-DEVIL1134) - A Telegram Bot Which Checks Your Given Credit Cards And Says Which Is A Real,Card And Which Is Fake.
 * [RandomInfoBot](https://t.me/RandomInfoBot) by [@Akash](https://github.com/BLUE-DEVIL1134) - A Telegram Bot Which Generates Random Information Of Humans Scraped From Over 13 Websites.
+* [TasksListsBot](https://t.me/TasksListsBot) ([source](https://github.com/Pablo-Davila/TasksListsBot)) by [@Pablo-Davila](https://github.com/Pablo-Davila) - A (tasks) lists manager bot for Telegram.
+* [MyElizaPsychologistBot](https://t.me/TasksListsBot) ([source](https://github.com/Pablo-Davila/MyElizaPsychologistBot)) by [@Pablo-Davila](https://github.com/Pablo-Davila) - An implementation of the famous Eliza psychologist chatbot.
 
 Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
