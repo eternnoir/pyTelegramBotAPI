@@ -586,13 +586,15 @@ class PhotoSize(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         width = obj['width']
         height = obj['height']
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, file_size)
+        return cls(file_id, file_unique_id, width, height, file_size)
 
-    def __init__(self, file_id, width, height, file_size=None):
+    def __init__(self, file_id, file_unique_id, width, height, file_size=None):
         self.file_size = file_size
+        self.file_unique_id = file_unique_id
         self.height = height
         self.width = width
         self.file_id = file_id
@@ -604,15 +606,17 @@ class Audio(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         duration = obj['duration']
         performer = obj.get('performer')
         title = obj.get('title')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, duration, performer, title, mime_type, file_size)
+        return cls(file_id, file_unique_id, duration, performer, title, mime_type, file_size)
 
-    def __init__(self, file_id, duration, performer=None, title=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, duration, performer=None, title=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.duration = duration
         self.performer = performer
         self.title = title
@@ -626,13 +630,15 @@ class Voice(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         duration = obj['duration']
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, duration, mime_type, file_size)
+        return cls(file_id, file_unique_id, duration, mime_type, file_size)
 
-    def __init__(self, file_id, duration, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, duration, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.duration = duration
         self.mime_type = mime_type
         self.file_size = file_size
@@ -644,16 +650,18 @@ class Document(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         thumb = None
         if 'thumb' in obj and 'file_id' in obj['thumb']:
             thumb = PhotoSize.de_json(obj['thumb'])
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, thumb, file_name, mime_type, file_size)
+        return cls(file_id, file_unique_id, thumb, file_name, mime_type, file_size)
 
-    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
@@ -667,16 +675,18 @@ class Video(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
         thumb = PhotoSize.de_json(obj.get('thumb'))
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, duration, thumb, mime_type, file_size)
+        return cls(file_id, file_unique_id, width, height, duration, thumb, mime_type, file_size)
 
-    def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.width = width
         self.height = height
         self.duration = duration
@@ -692,14 +702,16 @@ class VideoNote(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         length = obj['length']
         duration = obj['duration']
         thumb = PhotoSize.de_json(obj.get('thumb'))
         file_size = obj.get('file_size')
-        return cls(file_id, length, duration, thumb, file_size)
+        return cls(file_id, file_unique_id, length, duration, thumb, file_size)
 
-    def __init__(self, file_id, length, duration, thumb=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, length, duration, thumb=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.length = length
         self.duration = duration
         self.thumb = thumb
@@ -785,12 +797,14 @@ class File(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         file_size = obj.get('file_size')
         file_path = obj.get('file_path')
-        return cls(file_id, file_size, file_path)
+        return cls(file_id, file_unique_id, file_size, file_path)
 
-    def __init__(self, file_id, file_size, file_path):
+    def __init__(self, file_id, file_unique_id, file_size, file_path):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.file_size = file_size
         self.file_path = file_path
 
@@ -1085,12 +1099,16 @@ class ChatPhoto(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         small_file_id = obj['small_file_id']
+        small_file_unique_id = obj['small_file_unique_id']
         big_file_id = obj['big_file_id']
-        return cls(small_file_id, big_file_id)
+        big_file_unique_id = obj['big_file_unique_id']
+        return cls(small_file_id, small_file_unique_id, big_file_id, big_file_unique_id)
 
-    def __init__(self, small_file_id, big_file_id):
+    def __init__(self, small_file_id, small_file_unique_id, big_file_id, big_file_unique_id):
         self.small_file_id = small_file_id
+        self.small_file_unique_id = small_file_unique_id
         self.big_file_id = big_file_id
+        self.big_file_unique_id = big_file_unique_id
 
 
 class ChatMember(JsonDeserializable):
@@ -2034,14 +2052,16 @@ class Animation(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         thumb = PhotoSize.de_json(obj.get('thumb'))
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, thumb, file_name, mime_type, file_size)
+        return cls(file_id, file_unique_id, thumb, file_name, mime_type, file_size)
 
-    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
