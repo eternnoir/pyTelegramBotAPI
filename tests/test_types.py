@@ -41,14 +41,14 @@ def test_json_GroupChat():
 
 
 def test_json_Document():
-    json_string = r'{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}'
+    json_string = r'{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_unique_id": "AgADJQEAAqfhOEY","file_size":446}'
     doc = types.Document.de_json(json_string)
     assert doc.thumb is None
     assert doc.file_name == 'Text File'
 
 
 def test_json_Message_Audio():
-    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd","username":"dd","is_bot":true },"chat":{"id":10834,"first_name":"dd","type":"private","type":"private","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_size":20096}}'
+    json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd","username":"dd","is_bot":true },"chat":{"id":10834,"first_name":"dd","type":"private","type":"private","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_unique_id": "AgADawEAAn8VSFY","file_size":20096}}'
     msg = types.Message.de_json(json_string)
     assert msg.audio.duration == 1
     assert msg.content_type == 'audio'
@@ -73,21 +73,21 @@ def test_json_Message_Sticker_without_thumb():
 
 
 def test_json_Message_Document():
-    json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_size":446}}'
+    json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":446}}'
     msg = types.Message.de_json(json_string)
     assert msg.document.file_name == 'Text File'
     assert msg.content_type == 'document'
 
 
 def test_json_Message_Photo():
-    json_string = r'{"message_id":96,"from":{"id":109734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"dd","username":"dd"},"date":1435478191,"photo":[{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_size":615,"width":90,"height":67},{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_size":10174,"width":320,"height":240},{"file_id":"dd-A_LsTIABFNx-FUOaEa_3AABAQABAg","file_size":53013,"width":759,"height":570}]}'
+    json_string = r'{"message_id":96,"from":{"id":109734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"dd","username":"dd"},"date":1435478191,"photo":[{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":615,"width":90,"height":67},{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":10174,"width":320,"height":240},{"file_id":"dd-A_LsTIABFNx-FUOaEa_3AABAQABAg","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":53013,"width":759,"height":570}]}'
     msg = types.Message.de_json(json_string)
     assert len(msg.photo) == 3
     assert msg.content_type == 'photo'
 
 
 def test_json_Message_Video():
-    json_string = r'{"message_id":101,"from":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd","is_bot":true },"chat":{"id":109734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1435481960,"video":{"duration":3,"caption":"","width":360,"height":640,"thumb":{"file_id":"AAQFABPiYnBjkDwMAAIC","file_size":1597,"width":50,"height":90},"file_id":"BAADBQADNifgb_TOPEKErGoQI","file_size":260699}}'
+    json_string = r'{"message_id":101,"from":{"id":109734,"first_name":"dd","last_name":"dd","username":"dd","is_bot":true },"chat":{"id":109734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1435481960,"video":{"duration":3,"caption":"","width":360,"height":640,"thumb":{"file_id":"AAQFABPiYnBjkDwMAAIC","file_unique_id": "AQADTeisa3QAAz1nAAI","file_size":1597,"width":50,"height":90},"file_id":"BAADBQADNifgb_TOPEKErGoQI","file_unique_id": "AgADbgEAAn8VSFY","file_size":260699}}'
     msg = types.Message.de_json(json_string)
     assert msg.video
     assert msg.video.duration == 3
@@ -103,7 +103,7 @@ def test_json_Message_Location():
 
 
 def test_json_UserProfilePhotos():
-    json_string = r'{"total_count":1,"photos":[[{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAATZH_SpyZjzIwdVAAIC","file_size":6150,"width":160,"height":160},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAATOiTNi_YoJMghVAAIC","file_size":13363,"width":320,"height":320},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAAQW4DyFv0-lhglVAAIC","file_size":28347,"width":640,"height":640},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAAT50RvJCg0GQApVAAIC","file_size":33953,"width":800,"height":800}]]}'
+    json_string = r'{"total_count":1,"photos":[[{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAATZH_SpyZjzIwdVAAIC","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":6150,"width":160,"height":160},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAATOiTNi_YoJMghVAAIC","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":13363,"width":320,"height":320},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAAQW4DyFv0-lhglVAAIC","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":28347,"width":640,"height":640},{"file_id":"AgADAgADqacxG6wpRwABvEB6fpeIcKS4HAIkAAT50RvJCg0GQApVAAIC","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":33953,"width":800,"height":800}]]}'
     upp = types.UserProfilePhotos.de_json(json_string)
     assert upp.photos[0][0].width == 160
     assert upp.photos[0][-1].height == 800
@@ -117,7 +117,7 @@ def test_json_contact():
 
 
 def test_json_voice():
-    json_string = r'{"duration": 0,"mime_type": "audio/ogg","file_id": "AwcccccccDH1JaB7w_gyFjYQxVAg","file_size": 10481}'
+    json_string = r'{"duration": 0,"mime_type": "audio/ogg","file_id": "AwcccccccDH1JaB7w_gyFjYQxVAg","file_unique_id": "AgADbAEAAn8VSFY","file_size": 10481}'
     voice = types.Voice.de_json(json_string)
     assert voice.duration == 0
     assert voice.file_size == 10481
