@@ -385,6 +385,9 @@ class Message(JsonDeserializable):
         if 'passport_data' in obj:
             opts['passport_data'] = obj['passport_data']
             content_type = 'passport_data'
+        if 'reply_markup' in obj:
+            opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
+            content_type = 'reply_markup'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -455,6 +458,7 @@ class Message(JsonDeserializable):
         self.invoice = None
         self.successful_payment = None
         self.connected_website = None
+        self.reply_markup = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
