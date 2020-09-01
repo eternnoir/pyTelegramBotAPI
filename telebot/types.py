@@ -1017,12 +1017,23 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         return json_dict
 
 
-class LoginUrl(Dictionaryable, JsonSerializable):
+class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
     def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None):
         self.url = url
         self.forward_text = forward_text
         self.bot_username = bot_username
         self.request_write_access = request_write_access
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        url = obj['url']
+        forward_text = obj.get('forward_text')
+        bot_username = obj.get('bot_username')
+        request_write_access = obj.get('request_write_access')
+        return cls(url, forward_text, bot_username, request_write_access)
 
     def to_json(self):
         return json.dumps(self.to_dict())
