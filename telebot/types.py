@@ -941,10 +941,18 @@ class KeyboardButtonPollType(Dictionaryable):
         return {'type': self.type}
 
 
-class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
+class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)):
     max_row_keys = 8
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        keyboard = [[button for button in row] for row in obj['inline_keyboard']]
+        return cls(keyboard)
 
-    def __init__(self, row_width=3):
+    def __init__(self, keyboard=[] ,row_width=3):
         """
         This object represents an inline keyboard that appears
             right next to the message it belongs to.
@@ -957,7 +965,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
             row_width = self.max_row_keys
         
         self.row_width = row_width
-        self.keyboard = []
+        self.keyboard = keyboard
 
     def add(self, *args, row_width=None):
         """
