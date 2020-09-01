@@ -1049,7 +1049,7 @@ class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
         return json_dict
 
 
-class InlineKeyboardButton(Dictionaryable, JsonSerializable):
+class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
                  switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None):
         self.text = text
@@ -1060,6 +1060,21 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         self.callback_game = callback_game
         self.pay = pay
         self.login_url = login_url
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        text = obj['text']
+        url = obj.get('url')
+        callback_data = obj.get('callback_data')
+        switch_inline_query = obj.get('switch_inline_query')
+        switch_inline_query_current_chat = obj.get('switch_inline_query_current_chat')
+        callback_game = obj.get('callback_game')
+        pay = obj.get('pay')
+        login_url = LoginUrl.de_json(obj.get('login_url'))
+        return cls(text, url, callback_data, switch_inline_query, switch_inline_query_current_chat, callback_game, pay, login_url)
 
     def to_json(self):
         return json.dumps(self.to_dict())
