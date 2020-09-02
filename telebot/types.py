@@ -940,7 +940,7 @@ class KeyboardButtonPollType(Dictionaryable):
         return {'type': self.type}
 
 
-class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)):
+class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable):
     max_row_keys = 8
     
     @classmethod
@@ -948,7 +948,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         if (json_string is None):
             return None
         obj = cls.check_json(json_string)
-        keyboard = [[button for button in row] for row in obj['inline_keyboard']]
+        keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
         return cls(keyboard)
 
     def __init__(self, keyboard=[] ,row_width=3):
@@ -990,7 +990,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
             row_width = self.max_row_keys
         
         for row in util.chunks(args, row_width):
-            button_array = [button.to_dict() for button in row]
+            button_array = [button for button in row]
             self.keyboard.append(button_array)
         
         return self
@@ -1020,7 +1020,8 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'inline_keyboard': self.keyboard}
+        json_dict = dict()
+        json_dict['inline_keyboard'] = [[json.loads(button.to_json()) for button in row] for row in self.keyboard]
         return json_dict
 
 
