@@ -1021,7 +1021,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
 
     def to_dict(self):
         json_dict = dict()
-        json_dict['inline_keyboard'] = [[json.loads(button.to_json()) for button in row] for row in self.keyboard]
+        json_dict['inline_keyboard'] = [[button.to_dict() for button in row] for row in self.keyboard]
         return json_dict
 
 
