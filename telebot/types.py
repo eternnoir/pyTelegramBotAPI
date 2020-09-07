@@ -385,6 +385,8 @@ class Message(JsonDeserializable):
         if 'passport_data' in obj:
             opts['passport_data'] = obj['passport_data']
             content_type = 'passport_data'
+        if 'reply_markup' in obj:
+            opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -455,6 +457,7 @@ class Message(JsonDeserializable):
         self.invoice = None
         self.successful_payment = None
         self.connected_website = None
+        self.reply_markup = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -937,10 +940,18 @@ class KeyboardButtonPollType(Dictionaryable):
         return {'type': self.type}
 
 
-class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
+class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable):
     max_row_keys = 8
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
+        return cls(keyboard)
 
-    def __init__(self, row_width=3):
+    def __init__(self, keyboard=[] ,row_width=3):
         """
         This object represents an inline keyboard that appears
             right next to the message it belongs to.
@@ -953,7 +964,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
             row_width = self.max_row_keys
         
         self.row_width = row_width
-        self.keyboard = []
+        self.keyboard = keyboard
 
     def add(self, *args, row_width=None):
         """
@@ -979,7 +990,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
             row_width = self.max_row_keys
         
         for row in util.chunks(args, row_width):
-            button_array = [button.to_dict() for button in row]
+            button_array = [button for button in row]
             self.keyboard.append(button_array)
         
         return self
@@ -1009,16 +1020,28 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'inline_keyboard': self.keyboard}
+        json_dict = dict()
+        json_dict['inline_keyboard'] = [[button.to_dict() for button in row] for row in self.keyboard]
         return json_dict
 
 
-class LoginUrl(Dictionaryable, JsonSerializable):
+class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
     def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None):
         self.url = url
         self.forward_text = forward_text
         self.bot_username = bot_username
         self.request_write_access = request_write_access
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        url = obj['url']
+        forward_text = obj.get('forward_text')
+        bot_username = obj.get('bot_username')
+        request_write_access = obj.get('request_write_access')
+        return cls(url, forward_text, bot_username, request_write_access)
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1034,7 +1057,7 @@ class LoginUrl(Dictionaryable, JsonSerializable):
         return json_dict
 
 
-class InlineKeyboardButton(Dictionaryable, JsonSerializable):
+class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
                  switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None):
         self.text = text
@@ -1045,6 +1068,21 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         self.callback_game = callback_game
         self.pay = pay
         self.login_url = login_url
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        text = obj['text']
+        url = obj.get('url')
+        callback_data = obj.get('callback_data')
+        switch_inline_query = obj.get('switch_inline_query')
+        switch_inline_query_current_chat = obj.get('switch_inline_query_current_chat')
+        callback_game = obj.get('callback_game')
+        pay = obj.get('pay')
+        login_url = LoginUrl.de_json(obj.get('login_url'))
+        return cls(text, url, callback_data, switch_inline_query, switch_inline_query_current_chat, callback_game, pay, login_url)
 
     def to_json(self):
         return json.dumps(self.to_dict())

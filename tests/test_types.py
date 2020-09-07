@@ -17,6 +17,28 @@ def test_json_message():
     assert msg.text == 'HIHI'
 
 
+def test_json_message_with_reply_markup():
+    jsonstring = r'{"message_id":48,"from":{"id":153587469,"is_bot":false,"first_name":"Neko","username":"Neko"},"chat":{"id":153587469,"first_name":"Neko","username":"Neko","type":"private"},"date":1598879570,"text":"test","reply_markup":{"inline_keyboard":[[{"text":"Google","url":"http://www.google.com"},{"text":"Yahoo","url":"http://www.yahoo.com"}]]}}'
+    msg = types.Message.de_json(jsonstring)
+    assert msg.content_type == 'text'
+    assert msg.reply_markup.keyboard[0][0].text == 'Google'
+
+
+def test_json_InlineKeyboardMarkup():
+    jsonstring = r'{"inline_keyboard":[[{"text":"Google","url":"http://www.google.com"},{"text":"Yahoo","url":"http://www.yahoo.com"}]]}'
+    markup = types.InlineKeyboardMarkup.de_json(jsonstring)
+    assert markup.keyboard[0][0].text == 'Google'
+    assert markup.keyboard[0][1].url == 'http://www.yahoo.com'
+
+
+def test_json_InlineKeyboardButton():
+    jsonstring = r'{"text":"Google","url":"http://www.google.com"}'
+    button = types.InlineKeyboardButton.de_json(jsonstring)
+    assert button.text == 'Google'
+    assert button.url == 'http://www.google.com'
+
+
+
 def test_json_message_with_dice():
     jsonstring = r'{"message_id":5560,"from":{"id":879343317,"is_bot":false,"first_name":"George","last_name":"Forse","username":"dr_fxrse","language_code":"ru"},"chat":{"id":879343317,"first_name":"George","last_name":"Forse","username":"dr_fxrse","type":"private"},"date":1586926330,"dice":{"value": 4, "emoji": "\ud83c\udfaf"}}'
     msg = types.Message.de_json(jsonstring)
