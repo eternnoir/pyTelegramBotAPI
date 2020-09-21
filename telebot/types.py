@@ -951,7 +951,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
         return cls(keyboard)
 
-    def __init__(self, keyboard=[] ,row_width=3):
+    def __init__(self, keyboard=None ,row_width=3):
         """
         This object represents an inline keyboard that appears
             right next to the message it belongs to.
@@ -964,7 +964,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
             row_width = self.max_row_keys
         
         self.row_width = row_width
-        self.keyboard = keyboard
+        self.keyboard = keyboard if keyboard else []
 
     def add(self, *args, row_width=None):
         """
