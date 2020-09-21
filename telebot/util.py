@@ -11,7 +11,7 @@ import queue as Queue
 import logging
 
 try:
-    import PIL
+    from PIL import Image
     from io import BytesIO
     pil_imported = True
 except:
@@ -164,7 +164,7 @@ def is_bytes(var):
     return isinstance(var, bytes)
 
 def is_pil_image(var):
-    return pil_imported and isinstance(var, PIL.Image.Image)
+    return pil_imported and isinstance(var, Image.Image)
 
 def pil_image_to_file(image, extension='JPEG', quality='web_low'):
     if pil_imported:

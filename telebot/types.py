@@ -385,6 +385,8 @@ class Message(JsonDeserializable):
         if 'passport_data' in obj:
             opts['passport_data'] = obj['passport_data']
             content_type = 'passport_data'
+        if 'reply_markup' in obj:
+            opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -455,6 +457,7 @@ class Message(JsonDeserializable):
         self.invoice = None
         self.successful_payment = None
         self.connected_website = None
+        self.reply_markup = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -586,13 +589,15 @@ class PhotoSize(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         width = obj['width']
         height = obj['height']
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, file_size)
+        return cls(file_id, file_unique_id, width, height, file_size)
 
-    def __init__(self, file_id, width, height, file_size=None):
+    def __init__(self, file_id, file_unique_id, width, height, file_size=None):
         self.file_size = file_size
+        self.file_unique_id = file_unique_id
         self.height = height
         self.width = width
         self.file_id = file_id
@@ -604,15 +609,17 @@ class Audio(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         duration = obj['duration']
         performer = obj.get('performer')
         title = obj.get('title')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, duration, performer, title, mime_type, file_size)
+        return cls(file_id, file_unique_id, duration, performer, title, mime_type, file_size)
 
-    def __init__(self, file_id, duration, performer=None, title=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, duration, performer=None, title=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.duration = duration
         self.performer = performer
         self.title = title
@@ -626,13 +633,15 @@ class Voice(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         duration = obj['duration']
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, duration, mime_type, file_size)
+        return cls(file_id, file_unique_id, duration, mime_type, file_size)
 
-    def __init__(self, file_id, duration, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, duration, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.duration = duration
         self.mime_type = mime_type
         self.file_size = file_size
@@ -644,16 +653,18 @@ class Document(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         thumb = None
         if 'thumb' in obj and 'file_id' in obj['thumb']:
             thumb = PhotoSize.de_json(obj['thumb'])
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, thumb, file_name, mime_type, file_size)
+        return cls(file_id, file_unique_id, thumb, file_name, mime_type, file_size)
 
-    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
@@ -667,16 +678,18 @@ class Video(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         width = obj['width']
         height = obj['height']
         duration = obj['duration']
         thumb = PhotoSize.de_json(obj.get('thumb'))
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, width, height, duration, thumb, mime_type, file_size)
+        return cls(file_id, file_unique_id, width, height, duration, thumb, mime_type, file_size)
 
-    def __init__(self, file_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, width, height, duration, thumb=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.width = width
         self.height = height
         self.duration = duration
@@ -692,14 +705,16 @@ class VideoNote(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         length = obj['length']
         duration = obj['duration']
         thumb = PhotoSize.de_json(obj.get('thumb'))
         file_size = obj.get('file_size')
-        return cls(file_id, length, duration, thumb, file_size)
+        return cls(file_id, file_unique_id, length, duration, thumb, file_size)
 
-    def __init__(self, file_id, length, duration, thumb=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, length, duration, thumb=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.length = length
         self.duration = duration
         self.thumb = thumb
@@ -785,12 +800,14 @@ class File(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         file_size = obj.get('file_size')
         file_path = obj.get('file_path')
-        return cls(file_id, file_size, file_path)
+        return cls(file_id, file_unique_id, file_size, file_path)
 
-    def __init__(self, file_id, file_size, file_path):
+    def __init__(self, file_id, file_unique_id, file_size, file_path):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.file_size = file_size
         self.file_path = file_path
 
@@ -923,10 +940,18 @@ class KeyboardButtonPollType(Dictionaryable):
         return {'type': self.type}
 
 
-class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
+class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable):
     max_row_keys = 8
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
+        return cls(keyboard)
 
-    def __init__(self, row_width=3):
+    def __init__(self, keyboard=[] ,row_width=3):
         """
         This object represents an inline keyboard that appears
             right next to the message it belongs to.
@@ -939,7 +964,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
             row_width = self.max_row_keys
         
         self.row_width = row_width
-        self.keyboard = []
+        self.keyboard = keyboard
 
     def add(self, *args, row_width=None):
         """
@@ -965,7 +990,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
             row_width = self.max_row_keys
         
         for row in util.chunks(args, row_width):
-            button_array = [button.to_dict() for button in row]
+            button_array = [button for button in row]
             self.keyboard.append(button_array)
         
         return self
@@ -995,16 +1020,28 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'inline_keyboard': self.keyboard}
+        json_dict = dict()
+        json_dict['inline_keyboard'] = [[button.to_dict() for button in row] for row in self.keyboard]
         return json_dict
 
 
-class LoginUrl(Dictionaryable, JsonSerializable):
+class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
     def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None):
         self.url = url
         self.forward_text = forward_text
         self.bot_username = bot_username
         self.request_write_access = request_write_access
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        url = obj['url']
+        forward_text = obj.get('forward_text')
+        bot_username = obj.get('bot_username')
+        request_write_access = obj.get('request_write_access')
+        return cls(url, forward_text, bot_username, request_write_access)
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1020,7 +1057,7 @@ class LoginUrl(Dictionaryable, JsonSerializable):
         return json_dict
 
 
-class InlineKeyboardButton(Dictionaryable, JsonSerializable):
+class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable):
     def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
                  switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None):
         self.text = text
@@ -1031,6 +1068,21 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable):
         self.callback_game = callback_game
         self.pay = pay
         self.login_url = login_url
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        text = obj['text']
+        url = obj.get('url')
+        callback_data = obj.get('callback_data')
+        switch_inline_query = obj.get('switch_inline_query')
+        switch_inline_query_current_chat = obj.get('switch_inline_query_current_chat')
+        callback_game = obj.get('callback_game')
+        pay = obj.get('pay')
+        login_url = LoginUrl.de_json(obj.get('login_url'))
+        return cls(text, url, callback_data, switch_inline_query, switch_inline_query_current_chat, callback_game, pay, login_url)
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1085,12 +1137,16 @@ class ChatPhoto(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         small_file_id = obj['small_file_id']
+        small_file_unique_id = obj['small_file_unique_id']
         big_file_id = obj['big_file_id']
-        return cls(small_file_id, big_file_id)
+        big_file_unique_id = obj['big_file_unique_id']
+        return cls(small_file_id, small_file_unique_id, big_file_id, big_file_unique_id)
 
-    def __init__(self, small_file_id, big_file_id):
+    def __init__(self, small_file_id, small_file_unique_id, big_file_id, big_file_unique_id):
         self.small_file_id = small_file_id
+        self.small_file_unique_id = small_file_unique_id
         self.big_file_id = big_file_id
+        self.big_file_unique_id = big_file_unique_id
 
 
 class ChatMember(JsonDeserializable):
@@ -2034,14 +2090,16 @@ class Animation(JsonDeserializable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         file_id = obj['file_id']
+        file_unique_id = obj['file_unique_id']
         thumb = PhotoSize.de_json(obj.get('thumb'))
         file_name = obj.get('file_name')
         mime_type = obj.get('mime_type')
         file_size = obj.get('file_size')
-        return cls(file_id, thumb, file_name, mime_type, file_size)
+        return cls(file_id, file_unique_id, thumb, file_name, mime_type, file_size)
 
-    def __init__(self, file_id, thumb=None, file_name=None, mime_type=None, file_size=None):
+    def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None):
         self.file_id = file_id
+        self.file_unique_id = file_unique_id
         self.thumb = thumb
         self.file_name = file_name
         self.mime_type = mime_type
