@@ -945,7 +945,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable):
         """
         This method adds buttons to the keyboard without exceeding row_width.
 
-        E.g. InlineKeyboardMarkup#add("A", "B", "C") yields the json result:
+        E.g. InlineKeyboardMarkup.add("A", "B", "C") yields the json result:
             {keyboard: [["A"], ["B"], ["C"]]}
         when row_width is set to 1.
         When row_width is set to 2, the result:
