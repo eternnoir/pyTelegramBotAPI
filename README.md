@@ -668,4 +668,4 @@ Get help. Discuss. Chat.
 * [MyElizaPsychologistBot](https://t.me/TasksListsBot) ([source](https://github.com/Pablo-Davila/MyElizaPsychologistBot)) by [@Pablo-Davila](https://github.com/Pablo-Davila) - An implementation of the famous Eliza psychologist chatbot.
 * [Evdembot](https://t.me/Evdembot) by Adem Kavak. A bot that informs you about everything you want.
 
-**Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.**
+> **Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.**
