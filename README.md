@@ -251,7 +251,7 @@ There are other examples using middleware handler in the [examples/middleware](e
 import telebot
 
 TOKEN = '<token_string>'
-tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
+bot = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 
 # Upon calling this function, TeleBot starts polling the Telegram servers for new messages.
 # - none_stop: True/False (default False) - Don't stop polling when receiving an error from the Telegram servers
@@ -261,75 +261,75 @@ tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 tb.polling(none_stop=False, interval=0, timeout=20)
 
 # getMe
-user = tb.get_me()
+user = bot.get_me()
 
 # setWebhook
 tb.set_webhook(url="http://example.com", certificate=open('mycert.pem'))
 # unset webhook
-tb.remove_webhook()
+bot.remove_webhook()
 
 # getUpdates
-updates = tb.get_updates()
-updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
+updates = bot.get_updates()
+updates = bot.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
 
 # sendMessage
-tb.send_message(chat_id, text)
+bot.send_message(chat_id, text)
 
 # forwardMessage
-tb.forward_message(to_chat_id, from_chat_id, message_id)
+bot.forward_message(to_chat_id, from_chat_id, message_id)
 
 # All send_xyz functions which can take a file as an argument, can also take a file_id instead of a file.
 # sendPhoto
 photo = open('/tmp/photo.png', 'rb')
-tb.send_photo(chat_id, photo)
-tb.send_photo(chat_id, "FILEID")
+bot.send_photo(chat_id, photo)
+bot.send_photo(chat_id, "FILEID")
 
 # sendAudio
 audio = open('/tmp/audio.mp3', 'rb')
-tb.send_audio(chat_id, audio)
-tb.send_audio(chat_id, "FILEID")
+bot.send_audio(chat_id, audio)
+bot.send_audio(chat_id, "FILEID")
 
 ## sendAudio with duration, performer and title.
-tb.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
+bot.send_audio(CHAT_ID, file_data, 1, 'eternnoir', 'pyTelegram')
 
 # sendVoice
 voice = open('/tmp/voice.ogg', 'rb')
-tb.send_voice(chat_id, voice)
-tb.send_voice(chat_id, "FILEID")
+bot.send_voice(chat_id, voice)
+bot.send_voice(chat_id, "FILEID")
 
 # sendDocument
 doc = open('/tmp/file.txt', 'rb')
-tb.send_document(chat_id, doc)
-tb.send_document(chat_id, "FILEID")
+bot.send_document(chat_id, doc)
+bot.send_document(chat_id, "FILEID")
 
 # sendSticker
 sti = open('/tmp/sti.webp', 'rb')
-tb.send_sticker(chat_id, sti)
-tb.send_sticker(chat_id, "FILEID")
+bot.send_sticker(chat_id, sti)
+bot.send_sticker(chat_id, "FILEID")
 
 # sendVideo
 video = open('/tmp/video.mp4', 'rb')
-tb.send_video(chat_id, video)
-tb.send_video(chat_id, "FILEID")
+bot.send_video(chat_id, video)
+bot.send_video(chat_id, "FILEID")
 
 # sendVideoNote
 videonote = open('/tmp/videonote.mp4', 'rb')
-tb.send_video_note(chat_id, videonote)
-tb.send_video_note(chat_id, "FILEID")
+bot.send_video_note(chat_id, videonote)
+bot.send_video_note(chat_id, "FILEID")
 
 # sendLocation
-tb.send_location(chat_id, lat, lon)
+bot.send_location(chat_id, lat, lon)
 
 # sendChatAction
 # action_string can be one of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
 # 'record_audio', 'upload_audio', 'upload_document' or 'find_location'.
-tb.send_chat_action(chat_id, action_string)
+bot.send_chat_action(chat_id, action_string)
 
 # getFile
 # Downloading a file is straightforward
 # Returns a File object
 import requests
-file_info = tb.get_file(file_id)
+file_info = bot.get_file(file_id)
 
 file = requests.get('https://api.telegram.org/file/bot{0}/{1}'.format(API_TOKEN, file_info.file_path))
 
@@ -340,6 +340,9 @@ All `send_xyz` functions of TeleBot take an optional `reply_markup` argument. Th
 
 ```python
 from telebot import types
+from telebot import TeleBot
+
+bot = TeleBot('The Telegram Bot Token')
 
 # Using the ReplyKeyboardMarkup class
 # It's constructor can take the following optional arguments:
@@ -354,7 +357,7 @@ itembtn1 = types.KeyboardButton('a')
 itembtn2 = types.KeyboardButton('v')
 itembtn3 = types.KeyboardButton('d')
 markup.add(itembtn1, itembtn2, itembtn3)
-tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
+bot.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 
 # or add KeyboardButton one row at a time:
 markup = types.ReplyKeyboardMarkup()
@@ -365,7 +368,7 @@ itembtnd = types.KeyboardButton('d')
 itembtne = types.KeyboardButton('e')
 markup.row(itembtna, itembtnv)
 markup.row(itembtnc, itembtnd, itembtne)
-tb.send_message(chat_id, "Choose one letter:", reply_markup=markup)
+bot.send_message(chat_id, "Choose one letter:", reply_markup=markup)
 ```
 The last example yields this result:
 
@@ -375,14 +378,14 @@ The last example yields this result:
 # ReplyKeyboardRemove: hides a previously sent ReplyKeyboardMarkup
 # Takes an optional selective argument (True/False, default False)
 markup = types.ReplyKeyboardRemove(selective=False)
-tb.send_message(chat_id, message, reply_markup=markup)
+bot.send_message(chat_id, message, reply_markup=markup)
 ```
 
 ```python
 # ForceReply: forces a user to reply to a message
 # Takes an optional selective argument (True/False, default False)
 markup = types.ForceReply(selective=False)
-tb.send_message(chat_id, "Send me another word:", reply_markup=markup)
+bot.send_message(chat_id, "Send me another word:", reply_markup=markup)
 ```
 ForceReply:
 
@@ -452,14 +455,14 @@ Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra deta
 There exists an implementation of TeleBot which executes all `send_xyz` and the `get_me` functions asynchronously. This can speed up you bot __significantly__, but it has unwanted side effects if used without caution.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
-tb = telebot.AsyncTeleBot("TOKEN")
+bot = telebot.AsyncTeleBot("TOKEN")
 ```
 Now, every function that calls the Telegram API is executed in a separate Thread. The functions are modified to return an AsyncTask instance (defined in util.py). Using AsyncTeleBot allows you to do the following:
 ```python
 import telebot
 
-tb = telebot.AsyncTeleBot("TOKEN")
-task = tb.get_me() # Execute an API call
+bot = telebot.AsyncTeleBot("TOKEN")
+task = bot.get_me() # Execute an API call
 # Do some other operations...
 a = 0
 for a in range(100):
@@ -479,7 +482,7 @@ large_text = open("large_text.txt", "rb").read()
 # split_string returns a list with the splitted text.
 splitted_text = util.split_string(large_text, 3000)
 for text in splitted_text:
-	tb.send_message(chat_id, text)
+	bot.send_message(chat_id, text)
 ```
 ### Controlling the amount of Threads used by TeleBot
 The TeleBot constructor takes the following optional arguments:
@@ -665,4 +668,4 @@ Get help. Discuss. Chat.
 * [MyElizaPsychologistBot](https://t.me/TasksListsBot) ([source](https://github.com/Pablo-Davila/MyElizaPsychologistBot)) by [@Pablo-Davila](https://github.com/Pablo-Davila) - An implementation of the famous Eliza psychologist chatbot.
 * [Evdembot](https://t.me/Evdembot) by Adem Kavak. A bot that informs you about everything you want.
 
-Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
+* Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
