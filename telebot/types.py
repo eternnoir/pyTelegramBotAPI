@@ -503,7 +503,7 @@ class Message(JsonDeserializable):
         def func(upd_text, subst_type=None, url=None, user=None):
             upd_text = upd_text.decode("utf-16-le")
             if subst_type == "text_mention":
-                subst_type = "url"
+                subst_type = "text_link"
                 url = "tg://user?id={0}".format(user.id)
             elif subst_type == "mention":
                 url = "https://t.me/{0}".format(upd_text[1:])
