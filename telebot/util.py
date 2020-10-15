@@ -301,3 +301,18 @@ def deprecated(func):
         warnings.simplefilter('default', DeprecationWarning)  # reset filter
         return func(*args, **kwargs)
     return new_func
+
+
+# Cloud helpers
+def webhook_functions(request):
+    """A webhook endpoint for Google Cloud Functions FaaS."""
+    if request.is_json:
+        try:
+            request_json = request.get_json()
+            update = telebot.types.Update.de_json(request_json)
+            bot.process_new_updates([update])
+            return ''
+        except:
+            return 'Bot FAIL', 400
+    else:
+        return 'Bot ON'
