@@ -312,7 +312,8 @@ def webhook_functions(request):
             update = telebot.types.Update.de_json(request_json)
             bot.process_new_updates([update])
             return ''
-        except:
+        except Exception as e:
+            print(e)
             return 'Bot FAIL', 400
     else:
         return 'Bot ON'
