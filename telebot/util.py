@@ -6,6 +6,7 @@ import threading
 import traceback
 import warnings
 import functools
+from telebot import types
 
 import queue as Queue
 import logging
@@ -309,7 +310,7 @@ def webhook_functions(request):
     if request.is_json:
         try:
             request_json = request.get_json()
-            update = telebot.types.Update.de_json(request_json)
+            update = types.Update.de_json(request_json)
             bot.process_new_updates([update])
             return ''
         except Exception as e:
