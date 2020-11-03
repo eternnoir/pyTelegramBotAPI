@@ -296,12 +296,13 @@ class Message(JsonDeserializable):
         if 'audio' in obj:
             opts['audio'] = Audio.de_json(obj['audio'])
             content_type = 'audio'
-        if 'animation' in obj:
-            opts['animation'] = Animation.de_json(obj['animation'])
-            content_type = 'animation'
         if 'document' in obj:
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
+        if 'animation' in obj:
+            # Document content type accompanies "animation", so "animation" should be checked below "document" to override it
+            opts['animation'] = Animation.de_json(obj['animation'])
+            content_type = 'animation'
         if 'game' in obj:
             opts['game'] = Game.de_json(obj['game'])
             content_type = 'game'
