@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import logging
+import requests
 import re
 import sys
 import threading
@@ -90,6 +91,7 @@ class TeleBot:
         setMyCommands
         answerInlineQuery
         """
+    request_acceptable_exceptions = [requests.exceptions.ReadTimeout]
 
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
@@ -261,7 +263,14 @@ class TeleBot:
         :param timeout: Integer. Timeout in seconds for long polling.
         :return: array of Updates
         """
-        json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates)
+        try:
+            json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates)
+        except Exception as e:
+            if not e in self.request_acceptable_exceptions:
+                raise e
+            else:
+                return self.get_updates()
+
         ret = []
         for ju in json_updates:
             ret.append(types.Update.de_json(ju))
@@ -811,7 +820,7 @@ class TeleBot:
             apihelper.send_voice(self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
 
-    def send_document(self, chat_id, data,reply_to_message_id=None, caption=None, reply_markup=None,
+    def send_document(self, chat_id, data, reply_to_message_id=None, caption=None, reply_markup=None,
                       parse_mode=None, disable_notification=None, timeout=None, thumb=None):
         """
         Use this method to send general files.
@@ -828,7 +837,7 @@ class TeleBot:
         """
         parse_mode = self.parse_mode if not parse_mode else parse_mode
 
-        return types.Message.de_json( 
+        return types.Message.de_json(
             apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
                                 parse_mode, disable_notification, timeout, caption, thumb))
 
@@ -851,7 +860,8 @@ class TeleBot:
                 disable_notification, timeout))
 
     def send_video(self, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-                   parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, thumb=None, width=None, height=None):
+                   parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, thumb=None,
+                   width=None, height=None):
         """
         Use this method to send video files, Telegram clients support mp4 videos.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
@@ -896,8 +906,9 @@ class TeleBot:
         parse_mode = self.parse_mode if not parse_mode else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
-                                 parse_mode, disable_notification, timeout, thumb))
+            apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id,
+                                     reply_markup,
+                                     parse_mode, disable_notification, timeout, thumb))
 
     def send_video_note(self, chat_id, data, duration=None, length=None,
                         reply_to_message_id=None, reply_markup=None,
@@ -1353,7 +1364,8 @@ class TeleBot:
                      start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
                      need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
                      send_phone_number_to_provider=None, send_email_to_provider=None, is_flexible=None,
-                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None, timeout=None):
+                     disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
+                     timeout=None):
         """
         Sends invoice
         :param chat_id: Unique identifier for the target private chat
