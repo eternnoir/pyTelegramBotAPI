@@ -52,11 +52,11 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     :param files: Optional files.
     :return: The result parsed to a JSON dictionary.
     """
-    if API_URL is None:
-        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
-    else:
+    if API_URL:
         request_url = API_URL.format(token, method_name)
-    
+    else:
+        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
+
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
@@ -67,7 +67,12 @@ def _make_request(token, method_name, method='get', params=None, files=None):
             read_timeout = params.pop('timeout') + 10
         if 'connect-timeout' in params:
             connect_timeout = params.pop('connect-timeout') + 10
-    
+        if 'long_polling_timeout' in params:
+            # For getUpdates: the only function with timeout on the BOT API side
+            params['timeout'] = params.pop('long_polling_timeout')
+
+
+    result = None
     if RETRY_ON_ERROR:
         got_result = False
         current_try = 0
@@ -235,7 +240,7 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
     if limit:
         payload['limit'] = limit
     if timeout:
-        payload['timeout'] = timeout
+        payload['long_polling_timeout'] = timeout
     if allowed_updates:
         payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload)
