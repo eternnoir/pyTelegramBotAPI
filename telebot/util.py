@@ -21,6 +21,15 @@ logger = logging.getLogger('TeleBot')
 
 thread_local = threading.local()
 
+content_type_media = [
+    'text', 'audio', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact', 'dice', 'poll',
+    'venue', 'location'
+]
+
+content_type_service = [
+    'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created',
+    'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message'
+]
 
 class WorkerThread(threading.Thread):
     count = 0
@@ -285,7 +294,6 @@ def chunks(lst, n):
 
 def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
-
 
 def deprecated(func):
     """This is a decorator which can be used to mark functions
