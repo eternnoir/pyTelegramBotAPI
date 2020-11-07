@@ -431,7 +431,7 @@ class TeleBot:
     def infinity_polling(self, timeout=20, long_polling_timeout=20, *args, **kwargs):
         while not self.__stop_polling.is_set():
             try:
-                self.polling(timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
+                self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
             except Exception:
                 time.sleep(3)
                 pass
