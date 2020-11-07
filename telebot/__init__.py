@@ -252,16 +252,17 @@ class TeleBot:
     def remove_webhook(self):
         return self.set_webhook()  # No params resets webhook
 
-    def get_updates(self, offset=None, limit=None, timeout=20, allowed_updates=None):
+    def get_updates(self, offset=None, limit=None, timeout=20, allowed_updates=None, long_polling_timeout = 20):
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :param offset: Integer. Identifier of the first update to be returned.
         :param limit: Integer. Limits the number of updates to be retrieved.
-        :param timeout: Integer. Timeout in seconds for long polling.
+        :param timeout: Integer. Request connection timeout
+        :param long_polling_timeout. Timeout in seconds for long polling.
         :return: array of Updates
         """
-        json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates)
+        json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates, long_polling_timeout)
         ret = []
         for ju in json_updates:
             ret.append(types.Update.de_json(ju))
@@ -273,16 +274,16 @@ class TeleBot:
         :return: total updates skipped
         """
         total = 0
-        updates = self.get_updates(offset=self.last_update_id, timeout=1)
+        updates = self.get_updates(offset=self.last_update_id, long_polling_timeout=1)
         while updates:
             total += len(updates)
             for update in updates:
                 if update.update_id > self.last_update_id:
                     self.last_update_id = update.update_id
-            updates = self.get_updates(offset=self.last_update_id + 1, timeout=1)
+            updates = self.get_updates(offset=self.last_update_id + 1, long_polling_timeout=1)
         return total
 
-    def __retrieve_updates(self, timeout=20):
+    def __retrieve_updates(self, timeout=20, long_polling_timeout=20):
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
@@ -291,7 +292,7 @@ class TeleBot:
         if self.skip_pending:
             logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
             self.skip_pending = False
-        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout)
+        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout, long_polling_timeout = long_polling_timeout)
         self.process_new_updates(updates)
 
     def process_new_updates(self, updates):
@@ -427,16 +428,16 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, *args, **kwargs):
+    def infinity_polling(self, timeout=20, long_polling_timeout=20, *args, **kwargs):
         while not self.__stop_polling.is_set():
             try:
-                self.polling(timeout=timeout, *args, **kwargs)
+                self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
             except Exception:
-                time.sleep(timeout)
+                time.sleep(3)
                 pass
         logger.info("Break infinity polling")
 
-    def polling(self, none_stop=False, interval=0, timeout=20):
+    def polling(self, none_stop=False, interval=0, timeout=20, long_polling_timeout=20):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -446,15 +447,16 @@ class TeleBot:
         Always get updates.
         :param interval:
         :param none_stop: Do not stop polling when an ApiException occurs.
-        :param timeout: Timeout in seconds for long polling.
+        :param timeout: Integer. Request connection timeout
+        :param long_polling_timeout. Timeout in seconds for long polling.
         :return:
         """
         if self.threaded:
-            self.__threaded_polling(none_stop, interval, timeout)
+            self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout)
         else:
-            self.__non_threaded_polling(none_stop, interval, timeout)
+            self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout)
 
-    def __threaded_polling(self, none_stop=False, interval=0, timeout=3):
+    def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -469,7 +471,7 @@ class TeleBot:
         while not self.__stop_polling.wait(interval):
             or_event.clear()
             try:
-                polling_thread.put(self.__retrieve_updates, timeout)
+                polling_thread.put(self.__retrieve_updates, timeout, long_polling_timeout)
 
                 or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
 
@@ -485,7 +487,7 @@ class TeleBot:
 
                 if not handled:
                     logger.error(e)
-                    if not none_stop:
+                    if not non_stop:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
                     else:
@@ -517,14 +519,14 @@ class TeleBot:
         polling_thread.stop()
         logger.info('Stopped polling.')
 
-    def __non_threaded_polling(self, none_stop=False, interval=0, timeout=3):
+    def __non_threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
 
         while not self.__stop_polling.wait(interval):
             try:
-                self.__retrieve_updates(timeout)
+                self.__retrieve_updates(timeout, long_polling_timeout)
                 error_interval = 0.25
             except apihelper.ApiException as e:
                 if self.exception_handler is not None:
@@ -534,7 +536,7 @@ class TeleBot:
 
                 if not handled:
                     logger.error(e)
-                    if not none_stop:
+                    if not non_stop:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
                     else:

@@ -232,7 +232,7 @@ def get_webhook_info(token):
     return _make_request(token, method_url, params=payload)
 
 
-def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=None):
+def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=None, long_polling_timeout = None):
     method_url = r'getUpdates'
     payload = {}
     if offset:
@@ -240,7 +240,9 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
     if limit:
         payload['limit'] = limit
     if timeout:
-        payload['long_polling_timeout'] = timeout
+        payload['timeout'] = timeout
+    if long_polling_timeout:
+        payload['long_polling_timeout'] = long_polling_timeout
     if allowed_updates:
         payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload)
