@@ -433,7 +433,7 @@ class TeleBot:
             try:
                 self.polling(timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
             except Exception:
-                time.sleep(timeout)
+                time.sleep(3)
                 pass
         logger.info("Break infinity polling")
 
@@ -456,7 +456,7 @@ class TeleBot:
         else:
             self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout)
 
-    def __threaded_polling(self, none_stop=False, interval=0, timeout = None, long_polling_timeout = None):
+    def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -487,7 +487,7 @@ class TeleBot:
 
                 if not handled:
                     logger.error(e)
-                    if not none_stop:
+                    if not non_stop:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
                     else:
@@ -519,7 +519,7 @@ class TeleBot:
         polling_thread.stop()
         logger.info('Stopped polling.')
 
-    def __non_threaded_polling(self, none_stop=False, interval=0, timeout = None, long_polling_timeout = None):
+    def __non_threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -536,7 +536,7 @@ class TeleBot:
 
                 if not handled:
                     logger.error(e)
-                    if not none_stop:
+                    if not non_stop:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
                     else:

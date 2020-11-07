@@ -72,7 +72,7 @@ class WorkerThread(threading.Thread):
             except Queue.Empty:
                 pass
             except Exception as e:
-                logger.error(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
+                logger.debug(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
                 self.exception_info = e
                 self.exception_event.set()
 
