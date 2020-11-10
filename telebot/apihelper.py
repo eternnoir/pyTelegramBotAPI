@@ -216,7 +216,7 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
         files = {'certificate': certificate}
     if max_connections:
         payload['max_connections'] = max_connections
-    if allowed_updates:
+    if allowed_updates is not None:  # Empty lists should pass
         payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload, files=files)
 
@@ -243,7 +243,7 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
         payload['timeout'] = timeout
     if long_polling_timeout:
         payload['long_polling_timeout'] = long_polling_timeout
-    if allowed_updates:
+    if allowed_updates is not None:  # Empty lists should pass
         payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload)
 
