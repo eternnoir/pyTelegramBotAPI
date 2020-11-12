@@ -611,6 +611,7 @@ Get help. Discuss. Chat.
 
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
+* [Bus schedule](https://telegram.me/sheduleteikovo_bot) ([source](https://github.com/GRTUBORG/telegram_shedule)) by *GRTUBORG* - A bot that lets you find out the bus schedule.
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
 * [Send to Kindle Bot](https://telegram.me/Send2KindleBot) by *GabrielRF* - Send to Kindle files or links to files.
 * [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) ([source](https://github.com/GabrielRF/telegram-lmgtfy_bot)) by *GabrielRF* - Let me Google that for you.
