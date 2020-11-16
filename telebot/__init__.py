@@ -813,7 +813,7 @@ class TeleBot:
             apihelper.send_voice(self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
                                  parse_mode, disable_notification, timeout))
 
-    def send_document(self, chat_id, data,reply_to_message_id=None, caption=None, reply_markup=None,
+    def send_document(self, chat_id, data, filename='document', reply_to_message_id=None, caption=None, reply_markup=None,
                       parse_mode=None, disable_notification=None, timeout=None, thumb=None):
         """
         Use this method to send general files.
@@ -831,7 +831,7 @@ class TeleBot:
         parse_mode = self.parse_mode if not parse_mode else parse_mode
 
         return types.Message.de_json( 
-            apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
+            apihelper.send_data(self.token, chat_id, data, filename, reply_to_message_id, reply_markup,
                                 parse_mode, disable_notification, timeout, caption, thumb))
 
     def send_sticker(
