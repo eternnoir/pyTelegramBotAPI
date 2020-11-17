@@ -413,6 +413,7 @@ class Message(JsonDeserializable):
 
     def __init__(self, message_id, from_user, date, chat, content_type, options, json_string):
         self.content_type = content_type
+        self.id = message_id           # Lets fix the telegram usability ####up with ID in Message :)
         self.message_id = message_id
         self.from_user = from_user
         self.date = date

@@ -700,9 +700,11 @@ def kick_chat_member(token, chat_id, user_id, until_date=None):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def unban_chat_member(token, chat_id, user_id):
+def unban_chat_member(token, chat_id, user_id, only_if_banned):
     method_url = 'unbanChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
+    if only_if_banned:
+        payload['only_if_banned'] = only_if_banned
     return _make_request(token, method_url, params=payload, method='post')
 
 
