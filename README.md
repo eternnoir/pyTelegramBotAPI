@@ -40,7 +40,7 @@
 
 ## Getting started.
 
-This API is tested with Python Python 3.6-3.8 and Pypy 3.
+This API is tested with Python Python 3.6-3.9 and Pypy 3.
 There are two ways to install the library:
 
 * Installation using pip (a Python package manager)*:
