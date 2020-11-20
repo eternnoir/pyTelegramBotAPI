@@ -1052,14 +1052,15 @@ class TeleBot:
         """
         return apihelper.kick_chat_member(self.token, chat_id, user_id, until_date)
 
-    def unban_chat_member(self, chat_id, user_id):
+    def unban_chat_member(self, chat_id, user_id, only_if_banned = False):
         """
         Removes member from the ban
         :param chat_id:
         :param user_id:
+        :param only_if_banned:
         :return:
         """
-        return apihelper.unban_chat_member(self.token, chat_id, user_id)
+        return apihelper.unban_chat_member(self.token, chat_id, user_id, only_if_banned)
 
     def restrict_chat_member(
             self, chat_id, user_id, until_date=None,
