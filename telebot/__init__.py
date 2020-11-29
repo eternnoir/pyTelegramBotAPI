@@ -1249,7 +1249,7 @@ class TeleBot:
         :param message_id: Int: Identifier of a message to unpin
         :return:
         """
-        return apihelper.unpin_chat_message(self.token, chat_id)
+        return apihelper.unpin_chat_message(self.token, chat_id, message_id)
 
     def unpin_all_chat_messages(self, chat_id):
         """
@@ -1260,7 +1260,7 @@ class TeleBot:
             (in the format @channelusername)
         :return:
         """
-        return apihelper.unpin_all_chat_messages(self.token, chat_id, message_id)
+        return apihelper.unpin_all_chat_messages(self.token, chat_id)
 
     def edit_message_text(self, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
                           disable_web_page_preview=None, reply_markup=None):
