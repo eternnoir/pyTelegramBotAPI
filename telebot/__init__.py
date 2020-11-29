@@ -1239,7 +1239,7 @@ class TeleBot:
         """
         return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
-    def unpin_chat_message(self, chat_id, message_id):
+    def unpin_chat_message(self, chat_id, message_id=None):
         """
         Use this method to unpin specific pinned message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.

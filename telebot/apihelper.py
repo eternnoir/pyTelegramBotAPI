@@ -830,7 +830,7 @@ def pin_chat_message(token, chat_id, message_id, disable_notification=None):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def unpin_chat_message(token, chat_id, message_id):
+def unpin_chat_message(token, chat_id, message_id=None):
     method_url = 'unpinChatMessage'
     payload = {'chat_id': chat_id, 'message_id': message_id}
     return _make_request(token, method_url, params=payload, method='post')
