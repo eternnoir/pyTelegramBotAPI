@@ -687,8 +687,8 @@ class TeleBot:
         """
         Use this method to send text messages.
 
-        Warning: Do not send more than about 5000 characters each message, otherwise you'll risk an HTTP 414 error.
-        If you must send more than 5000 characters, use the split_string function in apihelper.py.
+        Warning: Do not send more than about 4000 characters each message, otherwise you'll risk an HTTP 414 error.
+        If you must send more than 4000 characters, use the split_string function in apihelper.py.
 
         :param chat_id:
         :param text:
@@ -700,7 +700,7 @@ class TeleBot:
         :param timeout:
         :return: API reply.
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
             apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
@@ -763,7 +763,7 @@ class TeleBot:
         :param timeout:
         :return: API reply.
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
             apihelper.send_photo(self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
@@ -788,6 +788,8 @@ class TeleBot:
 	:param thumb:
         :return: Message
         """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
         return types.Message.de_json(
             apihelper.send_audio(self.token, chat_id, audio, caption, duration, performer, title, reply_to_message_id,
                                  reply_markup, parse_mode, disable_notification, timeout, thumb))
@@ -807,7 +809,7 @@ class TeleBot:
         :param timeout:
         :return: Message
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
             apihelper.send_voice(self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
@@ -828,7 +830,7 @@ class TeleBot:
         :param thumb: InputFile or String : Thumbnail of the file sent
         :return: API reply.
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json( 
             apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
@@ -871,7 +873,7 @@ class TeleBot:
         :param height:
         :return:
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
             apihelper.send_video(self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
@@ -895,7 +897,7 @@ class TeleBot:
         :param thumb: InputFile or String : Thumbnail of the file sent
         :return:
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
             apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
@@ -1275,7 +1277,7 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              disable_web_page_preview, reply_markup)
@@ -1430,6 +1432,7 @@ class TeleBot:
         :param timeout:
         :return:
         """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         if isinstance(question, types.Poll):
             raise Exception("The send_poll signature was changed, please see send_poll function details.")
@@ -1485,7 +1488,7 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
-        parse_mode = self.parse_mode if not parse_mode else parse_mode
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
                                                 parse_mode, reply_markup)
