@@ -2293,8 +2293,8 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.kick_chat_member(self, *args, **kwargs)
 
     @util.async_dec()
-    def unban_chat_member(self, *args):
-        return TeleBot.unban_chat_member(self, *args)
+    def unban_chat_member(self, *args, **kwargs):
+        return TeleBot.unban_chat_member(self, *args, **kwargs)
 
     @util.async_dec()
     def restrict_chat_member(self, *args, **kwargs):
