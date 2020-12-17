@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# This is an example echo bot using webhook with Twisted network framework.
+# Updates are received with Twisted web server and processed in reactor thread pool.
+# Relevant docs:
+# https://twistedmatrix.com/documents/current/core/howto/reactor-basics.html
+# https://twistedmatrix.com/documents/current/web/howto/using-twistedweb.html
+
 import logging
 import telebot
 import json
