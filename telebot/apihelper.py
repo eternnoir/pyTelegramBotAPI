@@ -715,25 +715,27 @@ def restrict_chat_member(
         can_add_web_page_previews=None, can_change_info=None,
         can_invite_users=None, can_pin_messages=None):
     method_url = 'restrictChatMember'
-    payload = {'chat_id': chat_id, 'user_id': user_id}
+    permissions = {}
     if until_date is not None:
-        payload['until_date'] = until_date
+        permissions['until_date'] = until_date
     if can_send_messages is not None:
-        payload['can_send_messages'] = can_send_messages
+        permissions['can_send_messages'] = can_send_messages
     if can_send_media_messages is not None:
-        payload['can_send_media_messages'] = can_send_media_messages
+        permissions['can_send_media_messages'] = can_send_media_messages
     if can_send_polls is not None:
-        payload['can_send_polls'] = can_send_polls
+        permissions['can_send_polls'] = can_send_polls
     if can_send_other_messages is not None:
-        payload['can_send_other_messages'] = can_send_other_messages
+        permissions['can_send_other_messages'] = can_send_other_messages
     if can_add_web_page_previews is not None:
-        payload['can_add_web_page_previews'] = can_add_web_page_previews
+        permissions['can_add_web_page_previews'] = can_add_web_page_previews
     if can_change_info is not None:
-        payload['can_change_info'] = can_change_info
+        permissions['can_change_info'] = can_change_info
     if can_invite_users is not None:
-        payload['can_invite_users'] = can_invite_users
+        permissions['can_invite_users'] = can_invite_users
     if can_pin_messages is not None:
-        payload['can_pin_messages'] = can_pin_messages
+        permissions['can_pin_messages'] = can_pin_messages
+    permissions_json = json.dumps(permissions)
+    payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions_json}
     return _make_request(token, method_url, params=payload, method='post')
 
 
