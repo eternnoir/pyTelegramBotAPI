@@ -1432,10 +1432,9 @@ class TeleBot:
         :param timeout:
         :return:
         """
-        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         if isinstance(question, types.Poll):
-            raise Exception("The send_poll signature was changed, please see send_poll function details.")
+            raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
         return types.Message.de_json(
             apihelper.send_poll(
@@ -1759,7 +1758,6 @@ class TeleBot:
 
         def decorator(handler):
             self.add_middleware_handler(handler, update_types)
-
             return handler
 
         return decorator
@@ -1771,6 +1769,9 @@ class TeleBot:
         :param update_types:
         :return:
         """
+        if not apihelper.ENABLE_MIDDLEWARE:
+            raise RuntimeError("Middleware is not enabled. Use apihelper.ENABLE_MIDDLEWARE.")
+
         if update_types:
             for update_type in update_types:
                 self.typed_middleware_handlers[update_type].append(handler)
