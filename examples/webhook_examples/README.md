@@ -37,7 +37,7 @@ There are 5 examples in this directory using different libraries:
   * **Pros:**
     * It's a web application framework
     * Python 3 compatible
-    * Asynchronous, excellent perfomance
+    * Asynchronous, excellent performance
     * Utilizes new async/await syntax
   * **Cons:**
     * Requires Python 3.4.2+, don't work with Python 2
