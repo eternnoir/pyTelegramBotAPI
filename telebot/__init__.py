@@ -472,34 +472,32 @@ class TeleBot:
             or_event.clear()
             try:
                 polling_thread.put(self.__retrieve_updates, timeout, long_polling_timeout)
-
                 or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
-
                 polling_thread.raise_exceptions()
                 self.worker_pool.raise_exceptions()
-
                 error_interval = 0.25
             except apihelper.ApiException as e:
                 if self.exception_handler is not None:
                     handled = self.exception_handler.handle(e)
                 else:
                     handled = False
-
                 if not handled:
                     logger.error(e)
                     if not non_stop:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
                     else:
-                        polling_thread.clear_exceptions()
-                        self.worker_pool.clear_exceptions()
+                        # polling_thread.clear_exceptions()
+                        # self.worker_pool.clear_exceptions()
                         logger.info("Waiting for {0} seconds until retry".format(error_interval))
                         time.sleep(error_interval)
                         error_interval *= 2
                 else:
-                    polling_thread.clear_exceptions()
-                    self.worker_pool.clear_exceptions()
+                    # polling_thread.clear_exceptions()
+                    # self.worker_pool.clear_exceptions()
                     time.sleep(error_interval)
+                polling_thread.clear_exceptions()   #*
+                self.worker_pool.clear_exceptions() #*
             except KeyboardInterrupt:
                 logger.info("KeyboardInterrupt received.")
                 self.__stop_polling.set()
@@ -510,6 +508,9 @@ class TeleBot:
                 else:
                     handled = False
                 if not handled:
+                    polling_thread.stop()
+                    polling_thread.clear_exceptions()   #*
+                    self.worker_pool.clear_exceptions() #*
                     raise e
                 else:
                     polling_thread.clear_exceptions()
@@ -517,6 +518,8 @@ class TeleBot:
                     time.sleep(error_interval)
 
         polling_thread.stop()
+        polling_thread.clear_exceptions()   #*
+        self.worker_pool.clear_exceptions() #*
         logger.info('Stopped polling.')
 
     def __non_threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):

@@ -75,7 +75,6 @@ class WorkerThread(threading.Thread):
                 logger.debug(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
                 self.exception_info = e
                 self.exception_event.set()
-
                 if self.exception_callback:
                     self.exception_callback(self, self.exception_info)
                 self.continue_event.wait()
