@@ -235,17 +235,37 @@ class TeleBot:
         """
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
-    def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None):
-        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates)
+    def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None):
+        """
+        Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
+        update for the bot, we will send an HTTPS POST request to the specified url, containing a JSON-serialized Update.
+        In case of an unsuccessful request, we will give up after a reasonable amount of attempts. Returns True on success.
 
-    def delete_webhook(self):
+        :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
+        :param certificate: Upload your public key certificate so that the root certificate in use can be checked. See our self-signed guide for details.
+        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
+        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). If not specified, the previous setting will be used.
+        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
+        :return:
+        """
+        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address)
+
+    def delete_webhook(self, drop_pending_updates=None):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
+
+        :param drop_pending_updates: Pass True to drop all pending updates
         :return: bool
         """
-        return apihelper.delete_webhook(self.token)
+        return apihelper.delete_webhook(self.token, drop_pending_updates)
 
     def get_webhook_info(self):
+        """
+        Use this method to get current webhook status. Requires no parameters.
+        If the bot is using getUpdates, will return an object with the url field empty.
+
+        :return: On success, returns a WebhookInfo object.
+        """
         result = apihelper.get_webhook_info(self.token)
         return types.WebhookInfo.de_json(result)
 
@@ -432,7 +452,8 @@ class TeleBot:
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
-            except Exception:
+            except Exception as e:
+                logger.error("Infinity polling exception: {}".format(e))
                 time.sleep(3)
                 pass
         logger.info("Break infinity polling")
@@ -1059,11 +1080,16 @@ class TeleBot:
 
     def unban_chat_member(self, chat_id, user_id, only_if_banned = False):
         """
-        Removes member from the ban
-        :param chat_id:
-        :param user_id:
-        :param only_if_banned:
-        :return:
+        Use this method to unban a previously kicked user in a supergroup or channel.
+        The user will not return to the group or channel automatically, but will be able to join via link, etc.
+        The bot must be an administrator for this to work. By default, this method guarantees that after the call
+        the user is not a member of the chat, but will be able to join it. So if the user is a member of the chat
+        they will also be removed from the chat. If you don't want this, use the parameter only_if_banned.
+
+        :param chat_id: Unique identifier for the target group or username of the target supergroup or channel (in the format @username)
+        :param user_id: Unique identifier of the target user
+        :param only_if_banned: Do nothing if the user is not banned
+        :return: True on success
         """
         return apihelper.unban_chat_member(self.token, chat_id, user_id, only_if_banned)
 
@@ -1077,7 +1103,7 @@ class TeleBot:
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
         the appropriate admin rights. Pass True for all boolean parameters to lift restrictions from a user.
-        Returns True on success.
+
         :param chat_id: Int or String : 	Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
@@ -1096,7 +1122,7 @@ class TeleBot:
     	:param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
 	        implies can_invite_users
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
-        :return: types.Message
+        :return: True on success
         """
         return apihelper.restrict_chat_member(
             self.token, chat_id, user_id, until_date,
@@ -1111,7 +1137,8 @@ class TeleBot:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
-        Pass False for all boolean parameters to demote a user. Returns True on success.
+        Pass False for all boolean parameters to demote a user.
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (
             in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
@@ -1125,7 +1152,7 @@ class TeleBot:
         :param can_promote_members: Bool: Pass True, if the administrator can add new administrators with a subset
             of his own privileges or demote administrators that he has promoted, directly or indirectly
             (promoted by administrators that were appointed by him)
-        :return:
+        :return: True on success.
         """
         return apihelper.promote_chat_member(self.token, chat_id, user_id, can_change_info, can_post_messages,
                                              can_edit_messages, can_delete_messages, can_invite_users,
@@ -1134,26 +1161,27 @@ class TeleBot:
     def set_chat_administrator_custom_title(self, chat_id, user_id, custom_title):
         """
         Use this method to set a custom title for an administrator
-            in a supergroup promoted by the bot.
-        Returns True on success.
+        in a supergroup promoted by the bot.
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
         :param custom_title: New custom title for the administrator;
             0-16 characters, emoji are not allowed
-        :return:
+        :return: True on success.
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
     def set_chat_permissions(self, chat_id, permissions):
         """
         Use this method to set default chat permissions for all members.
-            The bot must be an administrator in the group or a supergroup for this to work
-            and must have the can_restrict_members admin rights.
+        The bot must be an administrator in the group or a supergroup for this to work
+        and must have the can_restrict_members admin rights.
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param permissions: New default chat permissions
-        :return:
+        :return: True on success
         """
         return apihelper.set_chat_permissions(self.token, chat_id, permissions)
 
@@ -1161,10 +1189,10 @@ class TeleBot:
         """
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
-        Returns exported invite link as String on success.
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :return:
+        :return: exported invite link as String on success.
         """
         return apihelper.export_chat_invite_link(self.token, chat_id)
 
@@ -1218,15 +1246,15 @@ class TeleBot:
         """
         return apihelper.set_chat_title(self.token, chat_id, title)
 
-    def set_chat_description(self, chat_id, description):
+    def set_chat_description(self, chat_id, description=None):
         """
         Use this method to change the description of a supergroup or a channel.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
-        Returns True on success.
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param description: Str: New chat description, 0-255 characters
-        :return:
+        :return: True on success.
         """
         return apihelper.set_chat_description(self.token, chat_id, description)
 

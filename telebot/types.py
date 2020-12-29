@@ -132,18 +132,20 @@ class WebhookInfo(JsonDeserializable):
         url = obj['url']
         has_custom_certificate = obj['has_custom_certificate']
         pending_update_count = obj['pending_update_count']
+        ip_address = obj.get('ip_address')
         last_error_date = obj.get('last_error_date')
         last_error_message = obj.get('last_error_message')
         max_connections = obj.get('max_connections')
         allowed_updates = obj.get('allowed_updates')
-        return cls(url, has_custom_certificate, pending_update_count, last_error_date, last_error_message,
-                   max_connections, allowed_updates)
+        return cls(url, has_custom_certificate, pending_update_count, ip_address, last_error_date,
+                   last_error_message, max_connections, allowed_updates)
 
-    def __init__(self, url, has_custom_certificate, pending_update_count, last_error_date, last_error_message,
-                 max_connections, allowed_updates):
+    def __init__(self, url, has_custom_certificate, pending_update_count, ip_address, last_error_date,
+                 last_error_message, max_connections, allowed_updates):
         self.url = url
         self.has_custom_certificate = has_custom_certificate
         self.pending_update_count = pending_update_count
+        self.ip_address = ip_address
         self.last_error_date = last_error_date
         self.last_error_message = last_error_message
         self.max_connections = max_connections
@@ -218,8 +220,8 @@ class Chat(JsonDeserializable):
         username = obj.get('username')
         first_name = obj.get('first_name')
         last_name = obj.get('last_name')
-        all_members_are_administrators = obj.get('all_members_are_administrators')
         photo = ChatPhoto.de_json(obj.get('photo'))
+        bio = obj.get('bio')
         description = obj.get('description')
         invite_link = obj.get('invite_link')
         pinned_message = Message.de_json(obj.get('pinned_message'))
@@ -227,25 +229,27 @@ class Chat(JsonDeserializable):
         slow_mode_delay = obj.get('slow_mode_delay')
         sticker_set_name = obj.get('sticker_set_name')
         can_set_sticker_set = obj.get('can_set_sticker_set')
+        linked_chat_id = obj.get('linked_chat_id')
+        location = None # Not implemented
         return cls(
             id, type, title, username, first_name, last_name,
-            all_members_are_administrators, photo, description, invite_link,
+            photo, bio, description, invite_link,
             pinned_message, permissions, slow_mode_delay, sticker_set_name,
-            can_set_sticker_set)
+            can_set_sticker_set, linked_chat_id, location)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
-                 last_name=None, all_members_are_administrators=None,
-                 photo=None, description=None, invite_link=None,
+                 last_name=None, photo=None, bio=None, description=None, invite_link=None,
                  pinned_message=None, permissions=None, slow_mode_delay=None,
-                 sticker_set_name=None, can_set_sticker_set=None):
+                 sticker_set_name=None, can_set_sticker_set=None,
+                 linked_chat_id=None, location=None):
         self.id = id
         self.type = type
         self.title = title
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
-        self.all_members_are_administrators = all_members_are_administrators
         self.photo = photo
+        self.bio = bio
         self.description = description
         self.invite_link = invite_link
         self.pinned_message = pinned_message
@@ -253,6 +257,8 @@ class Chat(JsonDeserializable):
         self.slow_mode_delay = slow_mode_delay
         self.sticker_set_name = sticker_set_name
         self.can_set_sticker_set = can_set_sticker_set
+        self.linked_chat_id = linked_chat_id
+        self.location = location
 
 
 class Message(JsonDeserializable):
@@ -1054,7 +1060,7 @@ class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
             json_dict['forward_text'] = self.forward_text
         if self.bot_username:
             json_dict['bot_username'] = self.bot_username
-        if self.request_write_access:
+        if self.request_write_access is not None:
             json_dict['request_write_access'] = self.request_write_access
         return json_dict
 
@@ -1160,7 +1166,6 @@ class ChatMember(JsonDeserializable):
         user = User.de_json(obj['user'])
         status = obj['status']
         custom_title = obj.get('custom_title')
-        until_date = obj.get('until_date')
         can_be_edited = obj.get('can_be_edited')
         can_post_messages = obj.get('can_post_messages')
         can_edit_messages = obj.get('can_edit_messages')
@@ -1176,23 +1181,23 @@ class ChatMember(JsonDeserializable):
         can_send_polls = obj.get('can_send_polls')
         can_send_other_messages = obj.get('can_send_other_messages')
         can_add_web_page_previews = obj.get('can_add_web_page_previews')
+        until_date = obj.get('until_date')
         return cls(
-            user, status, custom_title, until_date, can_be_edited, can_post_messages,
+            user, status, custom_title, can_be_edited, can_post_messages,
             can_edit_messages, can_delete_messages, can_restrict_members,
             can_promote_members, can_change_info, can_invite_users, can_pin_messages,
             is_member, can_send_messages, can_send_media_messages, can_send_polls,
-            can_send_other_messages, can_add_web_page_previews)
+            can_send_other_messages, can_add_web_page_previews, until_date)
 
-    def __init__(self, user, status, custom_title=None, until_date=None, can_be_edited=None,
+    def __init__(self, user, status, custom_title=None, can_be_edited=None,
                  can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
                  can_restrict_members=None, can_promote_members=None, can_change_info=None,
                  can_invite_users=None,  can_pin_messages=None, is_member=None,
                  can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
-                 can_send_other_messages=None, can_add_web_page_previews=None):
+                 can_send_other_messages=None, can_add_web_page_previews=None, until_date=None):
         self.user = user
         self.status = status
         self.custom_title = custom_title
-        self.until_date = until_date
         self.can_be_edited = can_be_edited
         self.can_post_messages = can_post_messages
         self.can_edit_messages = can_edit_messages
@@ -1208,6 +1213,7 @@ class ChatMember(JsonDeserializable):
         self.can_send_polls = can_send_polls
         self.can_send_other_messages = can_send_other_messages
         self.can_add_web_page_previews = can_add_web_page_previews
+        self.until_date = until_date
 
 
 class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
@@ -2297,14 +2303,16 @@ class StickerSet(JsonDeserializable):
         obj = cls.check_json(json_string)
         name = obj['name']
         title = obj['title']
+        is_animated = obj['is_animated']
         contains_masks = obj['contains_masks']
         stickers = []
         for s in obj['stickers']:
             stickers.append(Sticker.de_json(s))
-        return cls(name, title, contains_masks, stickers)
+        return cls(name, title, is_animated, contains_masks, stickers)
 
-    def __init__(self, name, title, contains_masks, stickers):
+    def __init__(self, name, title, is_animated, contains_masks, stickers):
         self.stickers = stickers
+        self.is_animated = is_animated
         self.contains_masks = contains_masks
         self.title = title
         self.name = name
