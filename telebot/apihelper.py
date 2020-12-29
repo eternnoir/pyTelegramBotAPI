@@ -206,7 +206,7 @@ def send_message(
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None):
+def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None):
     method_url = r'setWebhook'
     payload = {
         'url': url if url else "",
@@ -218,12 +218,17 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
         payload['max_connections'] = max_connections
     if allowed_updates is not None:  # Empty lists should pass
         payload['allowed_updates'] = json.dumps(allowed_updates)
+    if ip_address is not None:       # Empty string should pass
+        payload['ip_address'] = ip_address
     return _make_request(token, method_url, params=payload, files=files)
 
 
-def delete_webhook(token):
+def delete_webhook(token, drop_pending_updates=None):
     method_url = r'deleteWebhook'
-    return _make_request(token, method_url)
+    payload = {}
+    if drop_pending_updates is not None:  # None / True / False
+        payload['drop_pending_updates'] = drop_pending_updates
+    return _make_request(token, method_url, params=payload)
 
 
 def get_webhook_info(token):
@@ -703,7 +708,7 @@ def kick_chat_member(token, chat_id, user_id, until_date=None):
 def unban_chat_member(token, chat_id, user_id, only_if_banned):
     method_url = 'unbanChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
-    if only_if_banned:
+    if only_if_banned is not None:  # None / True / False
         payload['only_if_banned'] = only_if_banned
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -820,7 +825,9 @@ def set_my_commands(token, commands):
 
 def set_chat_description(token, chat_id, description):
     method_url = 'setChatDescription'
-    payload = {'chat_id': chat_id, 'description': description}
+    payload = {'chat_id': chat_id}
+    if description is not None:  # Allow empty strings
+        payload['description'] = description
     return _make_request(token, method_url, params=payload, method='post')
 
 
