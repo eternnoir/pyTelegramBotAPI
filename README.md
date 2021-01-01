@@ -668,5 +668,6 @@ Get help. Discuss. Chat.
 * [Evdembot](https://t.me/Evdembot) by Adem Kavak. A bot that informs you about everything you want.
 * [Frcstbot](https://t.me/frcstbot) ([source](https://github.com/Mrsqd/frcstbot_public)) by [Mrsqd](https://github.com/Mrsqd). A Telegram bot that will always be happy to show you the weather forecast.
 * [Bot Hour](https://t.me/roadtocode_bot) a little bot that say the time in different countries by [@diegop384](https://github.com/diegop384) [repo](https://github.com/diegop384/telegrambothour)
+* [moodforfood_bot](https://t.me/moodforfood_bot) This bot will provide you with a list of food place(s) near your current Telegram location, which you are prompted to share. The API for all this info is from https://foursquare.com/. by [@sophiamarani](https://github.com/sophiamarani)
 
-Want to have your bot listed here? Send a Telegram message to @eternnoir or @pevdh.
+Want to have your bot listed here? Just make a pull requet.
