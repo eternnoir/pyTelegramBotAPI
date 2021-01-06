@@ -114,11 +114,11 @@ class FileHandlerBackend(HandlerBackend):
 
 
 class RedisHandlerBackend(HandlerBackend):
-    def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot'):
+    def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot', password=None):
         super(RedisHandlerBackend, self).__init__(handlers)
         from redis import Redis
         self.prefix = prefix
-        self.redis = Redis(host, port, db)
+        self.redis = Redis(host, port, db, password)
 
     def _key(self, handle_group_id):
         return ':'.join((self.prefix, str(handle_group_id)))
