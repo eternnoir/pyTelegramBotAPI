@@ -206,7 +206,7 @@ def send_message(
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None):
+def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None, timeout=None):
     method_url = r'setWebhook'
     payload = {
         'url': url if url else "",
@@ -220,20 +220,26 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
         payload['allowed_updates'] = json.dumps(allowed_updates)
     if ip_address is not None:       # Empty string should pass
         payload['ip_address'] = ip_address
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files)
 
 
-def delete_webhook(token, drop_pending_updates=None):
+def delete_webhook(token, drop_pending_updates=None, timeout=None):
     method_url = r'deleteWebhook'
     payload = {}
     if drop_pending_updates is not None:  # None / True / False
         payload['drop_pending_updates'] = drop_pending_updates
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
-def get_webhook_info(token):
+def get_webhook_info(token, timeout=None):
     method_url = r'getWebhookInfo'
     payload = {}
+    if timeout:
+        payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
