@@ -235,7 +235,7 @@ class TeleBot:
         """
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
-    def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None):
+    def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None, timeout=None):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
         update for the bot, we will send an HTTPS POST request to the specified url, containing a JSON-serialized Update.
@@ -246,27 +246,30 @@ class TeleBot:
         :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
         :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). If not specified, the previous setting will be used.
         :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
+        :param timeout: Integer. Request connection timeout
         :return:
         """
-        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address)
+        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address, timeout)
 
-    def delete_webhook(self, drop_pending_updates=None):
+    def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
 
         :param drop_pending_updates: Pass True to drop all pending updates
+        :param timeout: Integer. Request connection timeout
         :return: bool
         """
-        return apihelper.delete_webhook(self.token, drop_pending_updates)
+        return apihelper.delete_webhook(self.token, drop_pending_updates, timeout)
 
-    def get_webhook_info(self):
+    def get_webhook_info(self, timeout=None):
         """
         Use this method to get current webhook status. Requires no parameters.
         If the bot is using getUpdates, will return an object with the url field empty.
 
+        :param timeout: Integer. Request connection timeout
         :return: On success, returns a WebhookInfo object.
         """
-        result = apihelper.get_webhook_info(self.token)
+        result = apihelper.get_webhook_info(self.token, timeout)
         return types.WebhookInfo.de_json(result)
 
     def remove_webhook(self):
@@ -455,7 +458,8 @@ class TeleBot:
             except Exception as e:
                 logger.error("Infinity polling exception: {}".format(e))
                 time.sleep(3)
-                pass
+                continue
+            logger.info("Infinity polling: polling exited")
         logger.info("Break infinity polling")
 
     def polling(self, none_stop=False, interval=0, timeout=20, long_polling_timeout=20):
