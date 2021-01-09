@@ -206,7 +206,8 @@ def send_message(
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None, timeout=None):
+def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
+                drop_pending_updates = None, timeout=None):
     method_url = r'setWebhook'
     payload = {
         'url': url if url else "",
@@ -216,10 +217,12 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
         files = {'certificate': certificate}
     if max_connections:
         payload['max_connections'] = max_connections
-    if allowed_updates is not None:  # Empty lists should pass
+    if allowed_updates is not None:       # Empty lists should pass
         payload['allowed_updates'] = json.dumps(allowed_updates)
-    if ip_address is not None:       # Empty string should pass
+    if ip_address is not None:            # Empty string should pass
         payload['ip_address'] = ip_address
+    if drop_pending_updates is not None:  # Any bool value should pass
+        payload['drop_pending_updates'] = drop_pending_updates
     if timeout:
         payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files)
@@ -228,7 +231,7 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
 def delete_webhook(token, drop_pending_updates=None, timeout=None):
     method_url = r'deleteWebhook'
     payload = {}
-    if drop_pending_updates is not None:  # None / True / False
+    if drop_pending_updates is not None:  # Any bool value should pass
         payload['drop_pending_updates'] = drop_pending_updates
     if timeout:
         payload['connect-timeout'] = timeout
