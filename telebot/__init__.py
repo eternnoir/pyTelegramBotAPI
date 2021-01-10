@@ -750,6 +750,24 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout))
 
+    def copy_message(self, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
+                     reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None,
+                     disable_notification=None, timeout=None):
+        # FIXME: rewrite the docstring
+        """
+        Use this method to copy messages of any kind.
+        :param disable_notification:
+        :param chat_id: which chat to forward
+        :param from_chat_id: which chat message from
+        :param message_id: message id
+        :param timeout:
+        :return: API reply.
+        """
+        return types.Message.de_json(
+            apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
+                                   reply_to_message_id, allow_sending_without_reply, reply_markup,
+                                   disable_notification, timeout))
+
     def delete_message(self, chat_id, message_id, timeout=None):
         """
         Use this method to delete message. Returns True on success.
@@ -863,7 +881,7 @@ class TeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        return types.Message.de_json( 
+        return types.Message.de_json(
             apihelper.send_data(self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
                                 parse_mode, disable_notification, timeout, caption, thumb))
 
@@ -2266,6 +2284,11 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def forward_message(self, *args, **kwargs):
         return TeleBot.forward_message(self, *args, **kwargs)
+
+    @util.async_dec()
+    def copy_message(self, *args, **kwargs):
+        return TeleBot.copy_message(self, *args, **kwargs)
+
 
     @util.async_dec()
     def delete_message(self, *args):
