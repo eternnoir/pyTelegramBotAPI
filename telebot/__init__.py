@@ -7,8 +7,6 @@ import sys
 import threading
 import time
 
-from telebot.types import MessageID
-
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
@@ -770,7 +768,7 @@ class TeleBot:
         :param timeout:
         :return: API reply.
         """
-        return MessageID.de_json(
+        return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    reply_to_message_id, allow_sending_without_reply, reply_markup,
                                    disable_notification, timeout))
