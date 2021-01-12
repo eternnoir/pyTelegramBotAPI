@@ -336,11 +336,11 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
     if parse_mode is not None:
         payload['parse_mode'] = parse_mode
     if caption_entities is not None:
-        payload['caption_entities'] = caption_entities
+        payload['caption_entities'] = _convert_entites(caption_entities)
     if reply_to_message_id is not None:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup is not None:
-        payload['reply_markup'] = reply_markup
+        payload['reply_markup'] = _convert_markup(reply_markup)
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if disable_notification is not None:
@@ -1307,6 +1307,12 @@ def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
+
+
+def _convert_entites(entites):
+    if isinstance(entites[0], types.JsonSerializable):
+        return [entity.to_json() for entity in entites]
+    return entites
 
 
 def convert_input_media(media):

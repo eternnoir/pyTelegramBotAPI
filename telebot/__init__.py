@@ -7,6 +7,8 @@ import sys
 import threading
 import time
 
+from telebot.types import MessageID
+
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
@@ -751,19 +753,24 @@ class TeleBot:
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout))
 
     def copy_message(self, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
-                     reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None,
-                     disable_notification=None, timeout=None):
-        # FIXME: rewrite the docstring
+                     disable_notification=None, reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None,
+                     timeout=None):
         """
         Use this method to copy messages of any kind.
-        :param disable_notification:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
+        :param caption:
+        :param parse_mode:
+        :param caption_entities:
+        :param disable_notification:
+        :param reply_to_message_id:
+        :param allow_sending_without_reply:
+        :param reply_markup:
         :param timeout:
         :return: API reply.
         """
-        return types.Message.de_json(
+        return MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    reply_to_message_id, allow_sending_without_reply, reply_markup,
                                    disable_notification, timeout))

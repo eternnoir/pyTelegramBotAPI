@@ -293,6 +293,13 @@ class TestTeleBot:
         ret_msg = tb.forward_message(CHAT_ID, CHAT_ID, msg.message_id)
         assert ret_msg.forward_from
 
+    def test_copy_message(self):
+        text = 'CI copy_message Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        msg = tb.send_message(CHAT_ID, text)
+        ret_msg = tb.copy_message(CHAT_ID, CHAT_ID, msg.message_id)
+        assert ret_msg
+
     def test_forward_message_dis_noti(self):
         text = 'CI forward_message Test Message'
         tb = telebot.TeleBot(TOKEN)
