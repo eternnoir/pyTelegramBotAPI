@@ -670,5 +670,6 @@ Get help. Discuss. Chat.
 * [Bot Hour](https://t.me/roadtocode_bot) a little bot that say the time in different countries by [@diegop384](https://github.com/diegop384) [repo](https://github.com/diegop384/telegrambothour)
 * [moodforfood_bot](https://t.me/moodforfood_bot) This bot will provide you with a list of food place(s) near your current Telegram location, which you are prompted to share. The API for all this info is from https://foursquare.com/. by [@sophiamarani](https://github.com/sophiamarani)
 * [Donation with Amazon](https://t.me/donamazonbot) by [@barbax7](https://github.com/barbax7) This bot donates amazon advertising commissions to the non-profit organization chosen by the user.
+* [COVID-19 Galicia Bot](https://t.me/covid19_galicia_bot) by [@dgarcoe](https://github.com/dgarcoe) This bot provides daily data related to the COVID19 crisis in Galicia (Spain) obtained from official government sources.
 
 Want to have your bot listed here? Just make a pull requet.
