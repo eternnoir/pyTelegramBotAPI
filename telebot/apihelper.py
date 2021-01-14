@@ -254,7 +254,7 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
     if limit:
         payload['limit'] = limit
     if timeout:
-        payload['timeout'] = timeout
+        payload['connect-timeout'] = timeout
     if long_polling_timeout:
         payload['long_polling_timeout'] = long_polling_timeout
     if allowed_updates is not None:  # Empty lists should pass
