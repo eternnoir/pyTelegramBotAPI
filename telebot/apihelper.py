@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
+import datetime
 
 try:
     import ujson as json
@@ -709,7 +710,9 @@ def get_method_by_type(data_type):
 def kick_chat_member(token, chat_id, user_id, until_date=None):
     method_url = 'kickChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
-    if until_date:
+    if isinstance(until_date, datetime.datetime):
+        payload['until_date'] = until_date.timestamp()
+    else:
         payload['until_date'] = until_date
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -730,8 +733,6 @@ def restrict_chat_member(
         can_invite_users=None, can_pin_messages=None):
     method_url = 'restrictChatMember'
     permissions = {}
-    if until_date is not None:
-        permissions['until_date'] = until_date
     if can_send_messages is not None:
         permissions['can_send_messages'] = can_send_messages
     if can_send_media_messages is not None:
@@ -750,6 +751,11 @@ def restrict_chat_member(
         permissions['can_pin_messages'] = can_pin_messages
     permissions_json = json.dumps(permissions)
     payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions_json}
+    if until_date is not None:
+        if isinstance(until_date, datetime.datetime):
+            payload['until_date'] = until_date.timestamp()
+        else:
+            payload['until_date'] = until_date
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1246,7 +1252,10 @@ def send_poll(
     if open_period is not None:
         payload['open_period'] = open_period
     if close_date is not None:
-        payload['close_date'] = close_date
+        if isinstance(close_date, datetime.datetime):
+            payload['close_date'] = close_date.timestamp()
+        else:
+            payload['close_date'] = close_date
     if is_closed is not None:
         payload['is_closed'] = is_closed
 
