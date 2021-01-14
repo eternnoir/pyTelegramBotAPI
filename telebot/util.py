@@ -235,8 +235,10 @@ def or_clear(self):
 
 
 def orify(e, changed_callback):
-    e._set = e.set
-    e._clear = e.clear
+    if not hasattr(e, "_set"):
+        e._set = e.set
+    if not hasattr(e, "_clear"):
+        e._clear = e.clear
     e.changed = changed_callback
     e.set = lambda: or_set(e)
     e.clear = lambda: or_clear(e)
@@ -244,7 +246,7 @@ def orify(e, changed_callback):
 def OrEvent(*events):
     or_event = threading.Event()
     def changed():
-        bools = [e.is_set() for e in events]
+        bools = [ev.is_set() for ev in events]
         if any(bools):
             or_event.set()
         else:

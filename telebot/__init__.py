@@ -6,6 +6,7 @@ import re
 import sys
 import threading
 import time
+import traceback
 
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
@@ -459,7 +460,8 @@ class TeleBot:
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
             except Exception as e:
-                logger.error("Infinity polling exception: {}".format(e))
+                logger.error("Infinity polling exception: %s", str(e))
+                logger.debug("Exception traceback:\n%s", traceback.format_exc())
                 time.sleep(3)
                 continue
             logger.info("Infinity polling: polling exited")
