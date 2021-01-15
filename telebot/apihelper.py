@@ -69,8 +69,11 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         if 'connect-timeout' in params:
             connect_timeout = params.pop('connect-timeout') + 10
         if 'long_polling_timeout' in params:
-            # For getUpdates: the only function with timeout on the BOT API side
+            # For getUpdates
+            # The only function with timeout on the BOT API side
             params['timeout'] = params.pop('long_polling_timeout')
+            # Long polling hangs for given time. Read timeout should be greater that long_polling_timeout
+            read_timeout = max(params['timeout'] + 10, read_timeout)
 
 
     result = None
