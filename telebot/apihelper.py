@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
-import datetime
+from datetime import datetime
 
 try:
     import ujson as json
@@ -29,6 +29,7 @@ FILE_URL = None
 
 CONNECT_TIMEOUT = 3.5
 READ_TIMEOUT = 9999
+SESSION_TIME_TO_LIVE = None  # In seconds. None - live forever, 0 - one-time
 
 RETRY_ON_ERROR = False
 RETRY_TIMEOUT = 2
@@ -40,7 +41,21 @@ ENABLE_MIDDLEWARE = False
 
 
 def _get_req_session(reset=False):
-    return util.per_thread('req_session', lambda: session if session else requests.session(), reset)
+    if SESSION_TIME_TO_LIVE:
+        # If session TTL is set - check time passed
+        creation_date = util.per_thread('req_session_time', lambda: datetime.now(), reset)
+        if (datetime.now() - creation_date).total_seconds() > SESSION_TIME_TO_LIVE:
+            # Force session reset
+            reset = True
+            # Save reset time
+            util.per_thread('req_session_time', lambda: datetime.now(), True)
+
+    if SESSION_TIME_TO_LIVE == 0:
+        # Session is one-time use
+        return requests.sessions.Session()
+    else:
+        # Session lives some time or forever once created. Default
+        return util.per_thread('req_session', lambda: session if session else requests.sessions.Session(), reset)
 
 
 def _make_request(token, method_name, method='get', params=None, files=None):
@@ -713,7 +728,7 @@ def get_method_by_type(data_type):
 def kick_chat_member(token, chat_id, user_id, until_date=None):
     method_url = 'kickChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
-    if isinstance(until_date, datetime.datetime):
+    if isinstance(until_date, datetime):
         payload['until_date'] = until_date.timestamp()
     else:
         payload['until_date'] = until_date
@@ -755,7 +770,7 @@ def restrict_chat_member(
     permissions_json = json.dumps(permissions)
     payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions_json}
     if until_date is not None:
-        if isinstance(until_date, datetime.datetime):
+        if isinstance(until_date, datetime):
             payload['until_date'] = until_date.timestamp()
         else:
             payload['until_date'] = until_date
@@ -1255,7 +1270,7 @@ def send_poll(
     if open_period is not None:
         payload['open_period'] = open_period
     if close_date is not None:
-        if isinstance(close_date, datetime.datetime):
+        if isinstance(close_date, datetime):
             payload['close_date'] = close_date.timestamp()
         else:
             payload['close_date'] = close_date
