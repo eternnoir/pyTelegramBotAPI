@@ -43,10 +43,12 @@ ENABLE_MIDDLEWARE = False
 def _get_req_session(reset=False):
     if SESSION_TIME_TO_LIVE:
         # If session TTL is set - check time passed
-        creation_date = util.per_thread('req_session_time', lambda: datetime(2021, 1, 1), reset)
+        creation_date = util.per_thread('req_session_time', lambda: datetime.now(), reset)
         if (datetime.now() - creation_date).total_seconds() > SESSION_TIME_TO_LIVE:
             # Force session reset
             reset = True
+            # Save reset time
+            util.per_thread('req_session_time', lambda: datetime.now(), True)
 
     if SESSION_TIME_TO_LIVE == 0:
         # Session is one-time use
