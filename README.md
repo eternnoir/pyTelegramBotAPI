@@ -279,7 +279,7 @@ updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
 tb.send_message(chat_id, text)
 
 # editMessageText
-tb.send_message(new_text, chat_id, message_id)
+tb.edit_message_text(new_text, chat_id, message_id)
 
 # forwardMessage
 tb.forward_message(to_chat_id, from_chat_id, message_id)
