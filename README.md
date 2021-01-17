@@ -231,9 +231,11 @@ def  test_callback(call):
 
 A middleware handler is a function that allows you to modify requests or the bot context as they pass through the 
 Telegram to the bot. You can imagine middleware as a chain of logic connection handled before any other handlers are
-executed.
+executed. Middleware processing is disabled by default, enable it by setting `apihelper.ENABLE_MIDDLEWARE = True`. 
 
 ```python
+apihelper.ENABLE_MIDDLEWARE = True
+
 @bot.middleware_handler(update_types=['message'])
 def modify_message(bot_instance, message):
     # modifying the message before it reaches any other handler 
