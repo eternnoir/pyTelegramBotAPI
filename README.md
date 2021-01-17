@@ -34,6 +34,7 @@
   * [F.A.Q.](#faq)
     * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
+    * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [More examples](#more-examples)
   * [Bots using this API](#bots-using-this-api)
@@ -231,9 +232,11 @@ def  test_callback(call):
 
 A middleware handler is a function that allows you to modify requests or the bot context as they pass through the 
 Telegram to the bot. You can imagine middleware as a chain of logic connection handled before any other handlers are
-executed.
+executed. Middleware processing is disabled by default, enable it by setting `apihelper.ENABLE_MIDDLEWARE = True`. 
 
 ```python
+apihelper.ENABLE_MIDDLEWARE = True
+
 @bot.middleware_handler(update_types=['message'])
 def modify_message(bot_instance, message):
     # modifying the message before it reaches any other handler 
@@ -274,6 +277,9 @@ updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
 
 # sendMessage
 tb.send_message(chat_id, text)
+
+# editMessageText
+tb.edit_message_text(new_text, chat_id, message_id)
 
 # forwardMessage
 tb.forward_message(to_chat_id, from_chat_id, message_id)
@@ -597,6 +603,10 @@ if message.chat.type == "channel":
 	# channel message
 
 ```
+
+### How can I handle reocurring ConnectionResetErrors?
+
+Bot instances that were idle for a long time might be rejected by the server when sending a message due to a timeout of the last used session. Add `apihelper.SESSION_TIME_TO_LIVE = 5 * 60` to your initialisation to force recreation after 5 minutes without any activity. 
 
 ## The Telegram Chat Group
 
