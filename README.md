@@ -34,6 +34,7 @@
   * [F.A.Q.](#faq)
     * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
+    * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [More examples](#more-examples)
   * [Bots using this API](#bots-using-this-api)
@@ -602,6 +603,10 @@ if message.chat.type == "channel":
 	# channel message
 
 ```
+
+### How can I handle reocurring ConnectionResetErrors?
+
+Bot instances that were idle for a long time might be rejected by the server when sending a message due to a timeout of the last used session. Add `apihelper.SESSION_TIME_TO_LIVE = 5 * 60` to your initialisation to force recreation after 5 minutes without any activity. 
 
 ## The Telegram Chat Group
 
