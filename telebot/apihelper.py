@@ -73,7 +73,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     else:
         request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
 
-    logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files))
+    logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files).replace(token, "{TOKEN}"))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
     if files and format_header_param:
