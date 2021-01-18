@@ -753,8 +753,8 @@ class TeleBot:
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout))
 
     def copy_message(self, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
-                     disable_notification=None, reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None,
-                     timeout=None):
+                     disable_notification=None, reply_to_message_id=None, allow_sending_without_reply=None,
+                     reply_markup=None, timeout=None):
         """
         Use this method to copy messages of any kind.
         :param chat_id: which chat to forward
@@ -772,8 +772,8 @@ class TeleBot:
         """
         return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
-                                   reply_to_message_id, allow_sending_without_reply, reply_markup,
-                                   disable_notification, timeout))
+                                   disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
+                                   timeout))
 
     def delete_message(self, chat_id, message_id, timeout=None):
         """

@@ -346,24 +346,24 @@ def forward_message(
 
 
 def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
-                 reply_to_message_id=None, allow_sending_without_reply=None, reply_markup=None,
-                 disable_notification=None, timeout=None):
+                 disable_notification=None, reply_to_message_id=None, allow_sending_without_reply=None,
+                 reply_markup=None, timeout=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
         payload['caption'] = caption
-    if parse_mode is not None:
+    if parse_mode:
         payload['parse_mode'] = parse_mode
     if caption_entities is not None:
         payload['caption_entities'] = _convert_entites(caption_entities)
-    if reply_to_message_id is not None:
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if reply_markup is not None:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
-    if disable_notification is not None:
-        payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
     return _make_request(token, method_url, params=payload)
@@ -1337,9 +1337,14 @@ def _convert_markup(markup):
 
 
 def _convert_entites(entites):
-    if isinstance(entites[0], types.JsonSerializable):
+    if entites is None:
+        return None
+    elif len(entites) == 0:
+        return []
+    elif isinstance(entites[0], types.JsonSerializable):
         return [entity.to_json() for entity in entites]
-    return entites
+    else:
+        return entites
 
 
 def convert_input_media(media):
