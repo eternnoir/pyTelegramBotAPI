@@ -261,6 +261,19 @@ class Chat(JsonDeserializable):
         self.location = location
 
 
+class MessageID(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if(json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        message_id = obj['message_id']
+        return cls(message_id)
+
+    def __init__(self, message_id):
+        self.message_id = message_id
+
+
 class Message(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
@@ -548,7 +561,7 @@ class Message(JsonDeserializable):
         return self.__html_text(self.caption, self.caption_entities)
 
 
-class MessageEntity(JsonDeserializable):
+class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if (json_string is None): return None
@@ -568,6 +581,17 @@ class MessageEntity(JsonDeserializable):
         self.url = url
         self.user = user
         self.language = language
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        return {"type": self.type,
+                "offset": self.offset,
+                "length": self.length,
+                "url": self.url,
+                "user": self.user,
+                "language":  self.language}
 
 
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
