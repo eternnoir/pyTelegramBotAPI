@@ -682,5 +682,6 @@ Get help. Discuss. Chat.
 * [Donation with Amazon](https://t.me/donamazonbot) by [@barbax7](https://github.com/barbax7) This bot donates amazon advertising commissions to the non-profit organization chosen by the user.
 * [COVID-19 Galicia Bot](https://t.me/covid19_galicia_bot) by [@dgarcoe](https://github.com/dgarcoe) This bot provides daily data related to the COVID19 crisis in Galicia (Spain) obtained from official government sources.
 * [MineGramBot](https://github.com/ModischFabrications/MineGramBot) by [ModischFabrications](https://github.com/ModischFabrications). This bot can start, stop and monitor a minecraft server.
+* [Tabletop DiceBot](https://github.com/dexpiper/tabletopdicebot) by [dexpiper](https://github.com/dexpiper). This bot can roll multiple dices for RPG-like games, add positive and negative modifiers and show short descriptions to the rolls.
 
 Want to have your bot listed here? Just make a pull requet.
