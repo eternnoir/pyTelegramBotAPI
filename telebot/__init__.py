@@ -455,17 +455,28 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, long_polling_timeout=20, *args, **kwargs):
+    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR, *args, **kwargs):
+        """
+        Wrap polling with infinite loop and exception handling to avoid bot stops polling.
+
+        :param timeout: Request connection timeout
+        :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :param logger_level: Custom logging level for infinity_polling logging. None/NOTSET = no error logging
+        """
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
             except Exception as e:
-                logger.error("Infinity polling exception: %s", str(e))
-                logger.debug("Exception traceback:\n%s", traceback.format_exc())
+                if logger_level and logger_level >= logging.ERROR:
+                    logger.error("Infinity polling exception: %s", str(e))
+                if logger_level and logger_level >= logging.DEBUG:
+                    logger.error("Exception traceback:\n%s", traceback.format_exc())
                 time.sleep(3)
                 continue
-            logger.info("Infinity polling: polling exited")
-        logger.info("Break infinity polling")
+            if logger_level and logger_level >= logging.INFO:
+                logger.error("Infinity polling: polling exited")
+        if logger_level and logger_level >= logging.INFO:
+            logger.error("Break infinity polling")
 
     def polling(self, none_stop=False, interval=0, timeout=20, long_polling_timeout=20):
         """
@@ -475,10 +486,10 @@ class TeleBot:
         Warning: Do not call this function more than once!
 
         Always get updates.
-        :param interval:
+        :param interval: Delay between two update retrivals
         :param none_stop: Do not stop polling when an ApiException occurs.
-        :param timeout: Integer. Request connection timeout
-        :param long_polling_timeout. Timeout in seconds for long polling.
+        :param timeout: Request connection timeout
+        :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :return:
         """
         if self.threaded:
