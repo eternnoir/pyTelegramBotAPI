@@ -1,11 +1,11 @@
-# <p align="center">pyTelegramBotAPI
+# <p align="center">pyTelegramBotAPI</p>
 
-<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
+<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 
-[![PyPi Package Version](https://img.shields.io/pypi/v/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
-[![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
-[![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
+[![PyPI Package Version][PyPI-Package-Version-img]][PyPI-Package-Version-url]
+[![Supported Python versions][Supported-Python-versions-img]][Supported-Python-versions-url]
+[![Build Status][Build-Status-img]][Build-Status-url]
+[![PyPI downloads][PyPI-Downloads-img]][PyPI-Downloads-url]
 
   * [Getting started.](#getting-started)
   * [Writing your first bot](#writing-your-first-bot)
@@ -44,12 +44,12 @@
 This API is tested with Python Python 3.6-3.9 and Pypy 3.
 There are two ways to install the library:
 
-* Installation using pip (a Python package manager)*:
+*Installation using pip (a Python package manager)*:
 
 ```
 $ pip install pyTelegramBotAPI
 ```
-* Installation from source (requires git):
+*Installation from source (requires git)*:
 
 ```
 $ git clone https://github.com/eternnoir/pyTelegramBotAPI.git
@@ -59,14 +59,14 @@ $ python setup.py install
 
 It is generally recommended to use the first option.
 
-**While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling `pip install pytelegrambotapi --upgrade`*
+**While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling**`pip install pytelegrambotapi --upgrade`
 
 ## Writing your first bot
 
 ### Prerequisites
 
-It is presumed that you [have obtained an API token with @BotFather](https://core.telegram.org/bots#botfather). We will call this token `TOKEN`.
-Furthermore, you have basic knowledge of the Python programming language and more importantly [the Telegram Bot API](https://core.telegram.org/bots/api).
+It is presumed that you [have obtained an API token with @BotFather][Telegram-API-BotFather-url]. We will call this token `TOKEN`.
+Furthermore, you have basic knowledge of the Python programming language and more importantly [the Telegram Bot API][Telegram-Bot-API].
 
 ### A simple echo bot
 
@@ -127,7 +127,7 @@ To start the bot, simply open up a terminal and enter `python echo_bot.py` to ru
 
 ### Types
 
-All types are defined in types.py. They are all completely in line with the [Telegram API's definition of the types](https://core.telegram.org/bots/api#available-types), except for the Message's `from` field, which is renamed to `from_user` (because `from` is a Python reserved token). Thus, attributes such as `message_id` can be accessed directly with `message.message_id`. Note that `message.chat` can be either an instance of `User` or `GroupChat` (see [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)).
+All types are defined in types.py. They are all completely in line with the [Telegram API's definition of the types][Telegram-Definition-Types], except for the Message's `from` field, which is renamed to `from_user` (because `from` is a Python reserved token). Thus, attributes such as `message_id` can be accessed directly with `message.message_id`. Note that `message.chat` can be either an instance of `User` or `GroupChat` (see [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)).
 
 The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings:
 `text`, `audio`, `document`, `photo`, `sticker`, `video`, `video_note`, `voice`, `location`, `contact`, `new_chat_members`, `left_chat_member`, `new_chat_title`, `new_chat_photo`, `delete_chat_photo`, `group_chat_created`, `supergroup_chat_created`, `channel_chat_created`, `migrate_to_chat_id`, `migrate_from_chat_id`, `pinned_message`.
@@ -138,7 +138,7 @@ You can use some types in one function. Example:
 
 ### Methods
 
-All [API methods](https://core.telegram.org/bots/api#available-methods) are located in the TeleBot class. They are renamed to follow common Python naming conventions. E.g. `getMe` is renamed to `get_me` and `sendMessage` to `send_message`.
+All [API methods][Telegram-API-Methods] are located in the TeleBot class. They are renamed to follow common Python naming conventions. E.g. `getMe` is renamed to `get_me` and `sendMessage` to `send_message`.
 
 ### General use of the API
 
@@ -160,7 +160,7 @@ TeleBot supports the following filters:
 |name|argument(s)|Condition|
 |:---:|---| ---|
 |content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
-|regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions](https://docs.python.org/2/library/re.html))|
+|regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions][PRE-Python])|
 |commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
 |func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
 
@@ -415,7 +415,7 @@ def query_text(inline_query):
 Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
 command for @Botfather.
 
-More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
+More information : [collecting-feedback][Feedback].
 
 ```python
 @bot.chosen_inline_handler(func=lambda chosen_inline_result: True)
@@ -450,7 +450,7 @@ Attributes:
 Here `num` is the entity number or order of entity in a reply, for if incase there are multiple entities in the reply/message.<br>
 `message.entities` returns a list of entities object. <br>
 `message.entities[0].type` would give the type of the first entity<br>
-Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra details
+Refer [Bot Api][BotAPI] for extra details
 
 ## Advanced use of the API
 
@@ -516,7 +516,7 @@ There are some examples using webhooks in the [examples/webhook_examples](exampl
 ### Logging
 
 You can use the Telebot module logger to log debug info about Telebot. Use `telebot.logger` to get the logger of the TeleBot module.
-It is possible to add custom logging Handlers to the logger. Refer to the [Python logging module page](https://docs.python.org/2/library/logging.html) for more info.
+It is possible to add custom logging Handlers to the logger. Refer to the [Python logging module page][Python-logging] for more info.
 
 ```python
 import logging
@@ -546,25 +546,25 @@ apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 
 _Checking is in progress..._
 
-✅ [Bot API 4.5](https://core.telegram.org/bots/api-changelog#december-31-2019) _- To be checked..._
+✅ [Bot API 4.5][BotAPI-versions-url] _- To be checked..._
 
-* ✔ [Bot API 4.4](https://core.telegram.org/bots/api-changelog#july-29-2019)
-* ✔ [Bot API 4.3](https://core.telegram.org/bots/api-changelog#may-31-2019)
-* ✔ [Bot API 4.2](https://core.telegram.org/bots/api-changelog#april-14-2019)
-* ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018) - No Passport support.
-* ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018)   - No Passport support.
-* ✔ [Bot API 3.6](https://core.telegram.org/bots/api-changelog#february-13-2018)
-* ✔ [Bot API 3.5](https://core.telegram.org/bots/api-changelog#november-17-2017)
-* ✔ [Bot API 3.4](https://core.telegram.org/bots/api-changelog#october-11-2017)
-* ✔ [Bot API 3.3](https://core.telegram.org/bots/api-changelog#august-23-2017)
-* ✔ [Bot API 3.2](https://core.telegram.org/bots/api-changelog#july-21-2017)
-* ✔ [Bot API 3.1](https://core.telegram.org/bots/api-changelog#june-30-2017)
-* ✔ [Bot API 3.0](https://core.telegram.org/bots/api-changelog#may-18-2017)
-* ✔ [Bot API 2.3.1](https://core.telegram.org/bots/api-changelog#december-4-2016)
-* ✔ [Bot API 2.3](https://core.telegram.org/bots/api-changelog#november-21-2016)
-* ✔ [Bot API 2.2](https://core.telegram.org/bots/api-changelog#october-3-2016)
-* ✔ [Bot API 2.1](https://core.telegram.org/bots/api-changelog#may-22-2016)
-* ✔ [Bot API 2.0](https://core.telegram.org/bots/api-changelog#april-9-2016) 
+* ✔ [Bot API 4.4][v4.4]
+* ✔ [Bot API 4.3][v4.3]
+* ✔ [Bot API 4.2][v4.2]
+* ➕ [Bot API 4.1][v4.1] - No Passport support.
+* ➕ [Bot API 4.0][v4.0] - No Passport support.
+* ✔ [Bot API 3.6][v3.6]
+* ✔ [Bot API 3.5][v3.5]
+* ✔ [Bot API 3.4][v3.4]
+* ✔ [Bot API 3.3][v3.3]
+* ✔ [Bot API 3.2][v3.2]
+* ✔ [Bot API 3.1][v3.1]
+* ✔ [Bot API 3.0][v3.0]
+* ✔ [Bot API 2.3.1][v2.3.1]
+* ✔ [Bot API 2.3][v2.3]
+* ✔ [Bot API 2.2][v2.2]
+* ✔ [Bot API 2.1][v2.1]
+* ✔ [Bot API 2.0][v2.0] 
 
 
 ## Change log
@@ -582,7 +582,7 @@ Python2 conformance is not checked any more due to EOL.
 
 April 9,2016 Telegram release new bot 2.0 API, which has a drastic revision especially for the change of method's interface.If you want to update to the latest version, please make sure you've switched bot's code to bot 2.0 method interface.
 
-[More information about pyTelegramBotAPI support bot2.0](https://github.com/eternnoir/pyTelegramBotAPI/issues/130)
+[More information about pyTelegramBotAPI support bot2.0][moreinfo-url]
 
 ### How can I distinguish a User and a GroupChat in message.chat?
 Telegram Bot API support new type Chat for message.chat.
@@ -612,14 +612,14 @@ Bot instances that were idle for a long time might be rejected by the server whe
 
 Get help. Discuss. Chat.
 
-* Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A)
-* We now have a Telegram Channel as well! Keep yourself up to date with API changes, and [join it](https://telegram.me/pytelegrambotapi).
+* Join the [pyTelegramBotAPI Telegram Chat Group][GroupChat-url]
+* We now have a Telegram Channel as well! Keep yourself up to date with API changes, and [join it][JoinIt-url].
 
 ## More examples
 
-* [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
-* [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
-* [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
+* [Echo Bot][Examples-ExoBot]
+* [Deep Linking][Examples-DeepLBot]
+* [next_step_handler Example][Examples-NSHBot]
 
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
@@ -685,3 +685,43 @@ Get help. Discuss. Chat.
 * [Tabletop DiceBot](https://github.com/dexpiper/tabletopdicebot) by [dexpiper](https://github.com/dexpiper). This bot can roll multiple dices for RPG-like games, add positive and negative modifiers and show short descriptions to the rolls.
 
 Want to have your bot listed here? Just make a pull requet.
+
+[PyPI-Package-Version-img]: https://img.shields.io/pypi/v/pyTelegramBotAPI.svg
+[PyPI-Package-Version-url]: https://pypi.python.org/pypi/pyTelegramBotAPI
+[Supported-Python-versions-img]: https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg
+[Supported-Python-versions-url]: https://pypi.python.org/pypi/pyTelegramBotAPI
+[Build-Status-img]: https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master
+[Build-Status-url]: https://travis-ci.org/eternnoir/pyTelegramBotAPI
+[PyPI-Downloads-img]: https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg
+[PyPI-Downloads-url]: https://pypi.org/project/pyTelegramBotAPI/
+[Telegram-API-BotFather-url]: https://core.telegram.org/bots#botfather
+[Telegram-Bot-API]: https://core.telegram.org/bots/api
+[Telegram-Definition-Types]: https://core.telegram.org/bots/api#available-types
+[Telegram-API-Methods]: https://core.telegram.org/bots/api#available-methods
+[PRE-Python]: https://docs.python.org/2/library/re.html
+[Feedback]: https://core.telegram.org/bots/inline#collecting-feedback
+[Python-logging]: https://docs.python.org/2/library/logging.html
+[BotAPI]: https://core.telegram.org/bots/api#messageentity
+[BotAPI-versions-url]: https://core.telegram.org/bots/api-changelog#december-31-2019
+[v4.4]: https://core.telegram.org/bots/api-changelog#july-29-2019
+[v4.3]: https://core.telegram.org/bots/api-changelog#may-31-2019
+[v4.2]: https://core.telegram.org/bots/api-changelog#april-14-2019
+[v4.1]: https://core.telegram.org/bots/api-changelog#august-27-2018
+[v4.0]: https://core.telegram.org/bots/api-changelog#july-26-2018
+[v3.6]: https://core.telegram.org/bots/api-changelog#february-13-2018
+[v3.5]: https://core.telegram.org/bots/api-changelog#november-17-2017
+[v3.4]: https://core.telegram.org/bots/api-changelog#october-11-2017
+[v3.3]: https://core.telegram.org/bots/api-changelog#august-23-2017
+[v3.2]: https://core.telegram.org/bots/api-changelog#july-21-2017
+[v3.1]: https://core.telegram.org/bots/api-changelog#june-30-2017
+[v3.0]: https://core.telegram.org/bots/api-changelog#may-18-2017
+[v2.3.1]: https://core.telegram.org/bots/api-changelog#december-4-2016
+[v2.3]: https://core.telegram.org/bots/api-changelog#november-21-2016
+[v2.2]: https://core.telegram.org/bots/api-changelog#october-3-2016
+[v2.1]: https://core.telegram.org/bots/api-changelog#may-22-2016
+[v2.0]: https://core.telegram.org/bots/api-changelog#april-9-2016
+[moreinfo-url]: https://github.com/eternnoir/pyTelegramBotAPI/issues/130
+[GroupChat-url]: https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A
+[JoinIt-url]: https://telegram.me/pytelegrambotapi
+[Examples-ExoBot]: https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py
+[Examples-DeepLBot]: https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py
