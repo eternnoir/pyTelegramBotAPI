@@ -327,6 +327,13 @@ class TestTeleBot:
 
         tb.process_new_messages([reply_msg])
 
+    def test_answer_to(self):
+        text = 'CI answer_to Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        msg = tb.send_message(CHAT_ID, text)
+        ret_msg = tb.answer_to(msg, text + ' Answer')
+        assert ret_msg.message_id
+
     def test_send_location(self):
         tb = telebot.TeleBot(TOKEN)
         lat = 26.3875591
