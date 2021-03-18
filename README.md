@@ -682,5 +682,6 @@ Get help. Discuss. Chat.
 * [COVID-19 Galicia Bot](https://t.me/covid19_galicia_bot) by [@dgarcoe](https://github.com/dgarcoe) This bot provides daily data related to the COVID19 crisis in Galicia (Spain) obtained from official government sources.
 * [MineGramBot](https://github.com/ModischFabrications/MineGramBot) by [ModischFabrications](https://github.com/ModischFabrications). This bot can start, stop and monitor a minecraft server.
 * [Tabletop DiceBot](https://github.com/dexpiper/tabletopdicebot) by [dexpiper](https://github.com/dexpiper). This bot can roll multiple dices for RPG-like games, add positive and negative modifiers and show short descriptions to the rolls.
-* [BarnameKon](https://t.me/BarnameKonBot) by [Anvaari](https://github.com/anvaari). This Bot make "Add to google calnedar" link for your events. It give information about event and return link. It work for Jalali calendar and in Tehran Time. [Source code](https://github.com/anvaari/BarnameKon)
+* [BarnameKon](https://t.me/BarnameKonBot) by [Anvaari](https://github.com/anvaari). This Bot make "Add to google calendar" link for your events. It give information about event and return link. It work for Jalali calendar and in Tehran Time. [Source code](https://github.com/anvaari/BarnameKon)
+* [Price Tracker](https://t.me/trackokbot) by [@barbax7](https://github.com/barbax7). This bot tracks amazon.it product's prices the user is interested to and notify him when one price go down.
 Want to have your bot listed here? Just make a pull requet.
