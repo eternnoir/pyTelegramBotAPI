@@ -461,7 +461,7 @@ class TeleBot:
 
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
-        :param logger_level: Custom logging level for infinity_polling logging. None/NOTSET = no error logging
+        :param logger_level: Custom logging level for infinity_polling logging. Use logger levels from logging as a value. None/NOTSET = no error logging
         """
         while not self.__stop_polling.is_set():
             try:
