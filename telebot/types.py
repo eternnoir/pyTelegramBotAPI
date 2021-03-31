@@ -413,9 +413,9 @@ class Message(JsonDeserializable):
         if 'voice_chat_ended' in obj:
             opts['voice_chat_ended'] = Duration.de_json(obj['voice_chat_ended'])
             content_type = 'voice_chat_ended'
-        if ' voice_chat_participants_invited' in obj:
-            opts[' voice_chat_participants_invited'] = User.de_json(obj['voice_chat_participants_invited'])
-            content_type = ' voice_chat_participants_invited'
+        if 'voice_chat_participants_invited' in obj:
+            opts['voice_chat_participants_invited'] = User.de_json(obj['voice_chat_participants_invited'])
+            content_type = 'voice_chat_participants_invited'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
