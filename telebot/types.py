@@ -411,10 +411,10 @@ class Message(JsonDeserializable):
             opts['voice_chat_started'] = obj['voice_chat_started']
             content_type = 'voice_chat_started'
         if 'voice_chat_ended' in obj:
-            opts['voice_chat_ended'] = obj['voice_chat_ended']
+            opts['voice_chat_ended'] = Duration.de_json(obj['voice_chat_ended'])
             content_type = 'voice_chat_ended'
         if ' voice_chat_participants_invited' in obj:
-            opts[' voice_chat_participants_invited'] = User.de_json(obj['voice_chat_participants_invited']
+            opts[' voice_chat_participants_invited'] = User.de_json(obj['voice_chat_participants_invited'])
             content_type = ' voice_chat_participants_invited'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -2628,3 +2628,16 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         return {'poll_id': self.poll_id,
                 'user': self.user.to_dict(),
                 'options_ids': self.options_ids}
+
+
+class Duration(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if (json_string is None):
+            return None
+        obj = cls.check_json(json_string)
+        duration = obj['duration']
+        return cls(duration)
+
+    def __init__(self, duration):
+        self.duration = duration
