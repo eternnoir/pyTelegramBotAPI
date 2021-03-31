@@ -488,6 +488,9 @@ class Message(JsonDeserializable):
         self.successful_payment = None
         self.connected_website = None
         self.reply_markup = None
+        self.voice_chat_started = None
+        self.voice_chat_ended = None
+        self.voice_chat_participants_invited = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
