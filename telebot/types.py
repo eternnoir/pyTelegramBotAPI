@@ -183,7 +183,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def full_name(self):
         full_name = self.first_name
         if self.last_name:
-            full_name += f' {self.last_name}'
+            full_name += ' {0}'.format(self.last_name)
         return full_name
 
     def to_json(self):
