@@ -179,6 +179,13 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.can_read_all_group_messages = can_read_all_group_messages
         self.supports_inline_queries = supports_inline_queries
 
+    @property
+    def full_name(self):
+        full_name = self.first_name
+        if self.last_name:
+            full_name += f' {self.last_name}'
+        return full_name
+
     def to_json(self):
         return json.dumps(self.to_dict())
 
