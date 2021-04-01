@@ -6,9 +6,10 @@ from telebot import types
 
 
 def test_json_user():
-    jsonstring = r'{"id":101176298,"first_name":"RDSSBOT","username":"rdss_bot","is_bot":true}'
+    jsonstring = r'{"id":101176298,"first_name":"RDSSBOT","last_name":")))","username":"rdss_bot","is_bot":true}'
     u = types.User.de_json(jsonstring)
     assert u.id == 101176298
+    assert u.full_name == 'RDSSBOT )))'
 
 
 def test_json_message():
