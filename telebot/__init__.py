@@ -350,12 +350,12 @@ class TeleBot:
                     logger.error(str(e))
                     if not self.suppress_middleware_excepions:
                         raise
-                    update.middleware_error = e # for future handling if it needed
+                    else:
+                        if update.update_id > self.last_update_id: self.last_update_id = update.update_id
+                        continue
                     
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
-            if hasattr(update, 'middleware_error'):
-                continue
             if update.message:
                 if new_messages is None: new_messages = []
                 new_messages.append(update.message)
