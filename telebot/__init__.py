@@ -339,13 +339,19 @@ class TeleBot:
         new_pre_checkout_queries = None
         new_polls = None
         new_poll_answers = None
-
+        
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
-                self.process_middlewares(update)
-
+                try:
+                    self.process_middlewares(update)
+                except Exception as e:
+                    logger.error(str(e))
+                    update.middleware_error = e # for future handling if it needed
+                    
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
+            if hasattr(update, 'middleware_error'):
+                continue
             if update.message:
                 if new_messages is None: new_messages = []
                 new_messages.append(update.message)
@@ -443,11 +449,19 @@ class TeleBot:
         for update_type, middlewares in self.typed_middleware_handlers.items():
             if getattr(update, update_type) is not None:
                 for typed_middleware_handler in middlewares:
-                    typed_middleware_handler(self, getattr(update, update_type))
+                    try:
+                        typed_middleware_handler(self, getattr(update, update_type))
+                    except Exception as e:
+                        e.args = (f'Typed middleware handler "{typed_middleware_handler.__qualname__}" raised exception: {str(e)}',)
+                        raise
 
         if len(self.default_middleware_handlers) > 0:
             for default_middleware_handler in self.default_middleware_handlers:
-                default_middleware_handler(self, update)
+                try:
+                    default_middleware_handler(self, update)
+                except Exception as e:
+                    e.args = (f'Default middleware handler "{typed_middleware_handler.__qualname__}" raised exception: {str(e)}',)
+                    raise
 
     def __notify_update(self, new_messages):
         if len(self.update_listener) == 0:
