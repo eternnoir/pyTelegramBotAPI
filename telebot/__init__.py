@@ -95,7 +95,8 @@ class TeleBot:
 
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
-            next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0
+            next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
+            suppress_middleware_excepions=False
     ):
         """
         :param token: bot API token
@@ -107,6 +108,7 @@ class TeleBot:
         self.parse_mode = parse_mode
         self.update_listener = []
         self.skip_pending = skip_pending
+        self.suppress_middleware_excepions = suppress_middleware_excepions
 
         self.__stop_polling = threading.Event()
         self.last_update_id = last_update_id
@@ -346,6 +348,8 @@ class TeleBot:
                     self.process_middlewares(update)
                 except Exception as e:
                     logger.error(str(e))
+                    if not self.suppress_middleware_excepions:
+                        raise
                     update.middleware_error = e # for future handling if it needed
                     
             if update.update_id > self.last_update_id:
