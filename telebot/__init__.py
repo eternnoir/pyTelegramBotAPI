@@ -456,7 +456,7 @@ class TeleBot:
                     try:
                         typed_middleware_handler(self, getattr(update, update_type))
                     except Exception as e:
-                        e.args = (f'Typed middleware handler "{typed_middleware_handler.__qualname__}" raised exception: {str(e)}',)
+                        e.args = e.args + (f'Typed middleware handler "{typed_middleware_handler.__qualname__}"',)
                         raise
 
         if len(self.default_middleware_handlers) > 0:
@@ -464,7 +464,7 @@ class TeleBot:
                 try:
                     default_middleware_handler(self, update)
                 except Exception as e:
-                    e.args = (f'Default middleware handler "{typed_middleware_handler.__qualname__}" raised exception: {str(e)}',)
+                    e.args = e.args + (f'Default middleware handler "{default_middleware_handler.__qualname__}"',)
                     raise
 
     def __notify_update(self, new_messages):
