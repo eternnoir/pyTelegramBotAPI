@@ -95,7 +95,8 @@ class TeleBot:
 
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
-            next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0
+            next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
+            suppress_middleware_excepions=False
     ):
         """
         :param token: bot API token
@@ -107,6 +108,7 @@ class TeleBot:
         self.parse_mode = parse_mode
         self.update_listener = []
         self.skip_pending = skip_pending
+        self.suppress_middleware_excepions = suppress_middleware_excepions
 
         self.__stop_polling = threading.Event()
         self.last_update_id = last_update_id
@@ -339,11 +341,19 @@ class TeleBot:
         new_pre_checkout_queries = None
         new_polls = None
         new_poll_answers = None
-
+        
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
-                self.process_middlewares(update)
-
+                try:
+                    self.process_middlewares(update)
+                except Exception as e:
+                    logger.error(str(e))
+                    if not self.suppress_middleware_excepions:
+                        raise
+                    else:
+                        if update.update_id > self.last_update_id: self.last_update_id = update.update_id
+                        continue
+                    
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
             if update.message:
@@ -443,11 +453,19 @@ class TeleBot:
         for update_type, middlewares in self.typed_middleware_handlers.items():
             if getattr(update, update_type) is not None:
                 for typed_middleware_handler in middlewares:
-                    typed_middleware_handler(self, getattr(update, update_type))
+                    try:
+                        typed_middleware_handler(self, getattr(update, update_type))
+                    except Exception as e:
+                        e.args = e.args + (f'Typed middleware handler "{typed_middleware_handler.__qualname__}"',)
+                        raise
 
         if len(self.default_middleware_handlers) > 0:
             for default_middleware_handler in self.default_middleware_handlers:
-                default_middleware_handler(self, update)
+                try:
+                    default_middleware_handler(self, update)
+                except Exception as e:
+                    e.args = e.args + (f'Default middleware handler "{default_middleware_handler.__qualname__}"',)
+                    raise
 
     def __notify_update(self, new_messages):
         if len(self.update_listener) == 0:
