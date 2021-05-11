@@ -686,4 +686,4 @@ Get help. Discuss. Chat.
 * [Price Tracker](https://t.me/trackokbot) by [@barbax7](https://github.com/barbax7). This bot tracks amazon.it product's prices the user is interested to and notify him when one price go down.
 * [Torrent Hunt](https://t.me/torrenthuntbot) by [@Hemantapkh](https://github.com/hemantapkh/torrenthunt). Torrent Hunt bot is a multilingual bot with inline mode support to search and explore torrents from 1337x.to.
 
-**Want to have your bot listed here? Just make a pull requet.**
+**Want to have your bot listed here? Just make a pull request.**
