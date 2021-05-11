@@ -1898,7 +1898,7 @@ class TeleBot:
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
-        :param content_types: This commands' supported content types. Must be a list. Defaults to ['text'].
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
         """
 
         if content_types is None:
@@ -1906,10 +1906,10 @@ class TeleBot:
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
+                                                    content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
                                                     func=func,
-                                                    content_types=content_types,
                                                     **kwargs)
             self.add_message_handler(handler_dict)
             return handler
