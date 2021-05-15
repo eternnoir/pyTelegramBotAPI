@@ -2527,7 +2527,8 @@ class InputMediaDocument(InputMedia):
         return ret
 
 
-class PollOption(JsonSerializable, JsonDeserializable):
+class PollOption(JsonDeserializable):
+#class PollOption(JsonSerializable, JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if (json_string is None): return None
@@ -2539,10 +2540,10 @@ class PollOption(JsonSerializable, JsonDeserializable):
     def __init__(self, text, voter_count = 0):
         self.text = text
         self.voter_count = voter_count
-
-    def to_json(self):
-        # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
-        return json.dumps(self.text)
+    # Converted in _convert_poll_options
+    # def to_json(self):
+    #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
+    #     return json.dumps(self.text)
 
 
 class Poll(JsonDeserializable):

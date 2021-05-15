@@ -1277,7 +1277,7 @@ def send_poll(
     payload = {
         'chat_id': str(chat_id),
         'question': question,
-        'options': json.dumps(options)}
+        'options': json.dumps(_convert_poll_options(options))}
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
@@ -1345,6 +1345,20 @@ def _convert_entites(entites):
         return [entity.to_json() for entity in entites]
     else:
         return entites
+
+
+def _convert_poll_options(poll_options):
+    if poll_options is None:
+        return None
+    elif len(poll_options) == 0:
+        return []
+    elif isinstance(poll_options[0], str):
+        # Compatibility mode with previous bug when only list of string was accepted as poll_options
+        return poll_options
+    elif isinstance(poll_options[0], types.JsonSerializable):
+        return [option.text for option in poll_options]
+    else:
+        return poll_options
 
 
 def convert_input_media(media):
