@@ -1355,7 +1355,7 @@ def _convert_poll_options(poll_options):
     elif isinstance(poll_options[0], str):
         # Compatibility mode with previous bug when only list of string was accepted as poll_options
         return poll_options
-    elif isinstance(poll_options[0], types.JsonSerializable):
+    elif isinstance(poll_options[0], types.PollOption):
         return [option.text for option in poll_options]
     else:
         return poll_options
