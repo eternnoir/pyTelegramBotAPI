@@ -843,6 +843,50 @@ def set_chat_permissions(token, chat_id, permissions):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def create_chat_invite_link(token, chat_id, expire_date, member_limit):
+    method_url = 'createChatInviteLink'
+    payload = {
+        'chat_id': chat_id
+    }
+
+    if expire_date is not None:
+        payload['expire_date'] = expire_date
+        if isinstance(payload['expire_date'], datetime):
+            payload['expire_date'] = payload['expire_date'].timestamp()
+
+    if member_limit is not None:
+        payload['member_limit'] = member_limit
+
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def edit_chat_invite_link(token, chat_id, invite_link, expire_date, member_limit):
+    method_url = 'editChatInviteLink'
+    payload = {
+        'chat_id': chat_id,
+        'invite_link': invite_link
+    }
+
+    if expire_date is not None:
+        payload['expire_date'] = expire_date
+        if isinstance(payload['expire_date'], datetime):
+            payload['expire_date'] = payload['expire_date'].timestamp()
+
+    if member_limit is not None:
+        payload['member_limit'] = member_limit
+
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def revoke_chat_invite_link(token, chat_id, invite_link):
+    method_url = 'revokeChatInviteLink'
+    payload = {
+        'chat_id': chat_id,
+        'invite_link': invite_link
+    }
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def export_chat_invite_link(token, chat_id):
     method_url = 'exportChatInviteLink'
     payload = {'chat_id': chat_id}

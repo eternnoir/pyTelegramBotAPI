@@ -1246,6 +1246,46 @@ class TeleBot:
         """
         return apihelper.set_chat_permissions(self.token, chat_id, permissions)
 
+    def create_chat_invite_link(self, chat_id, expire_date=None, member_limit=None):
+        """
+        Use this method to create an additional invite link for a chat.
+        The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        :param chat_id: Id: Unique identifier for the target chat or username of the target channel
+            (in the format @channelusername)
+        :expire_date: Point in time (Unix timestamp) when the link will expire
+        :member_limit: Maximum number of users that can be members of the chat simultaneously
+        :return:
+        """
+        return apihelper.create_chat_invite_link(self.token, chat_id, expire_date, member_limit)
+
+    def edit_chat_invite_link(self, chat_id, invite_link, expire_date=None, member_limit=None):
+        """
+        Use this method to edit a non-primary invite link created by the bot.
+        The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        :param chat_id: Id: Unique identifier for the target chat or username of the target channel
+            (in the format @channelusername)
+        :invite_link: The invite link to edit
+        :expire_date: Point in time (Unix timestamp) when the link will expire
+        :member_limit: Maximum number of users that can be members of the chat simultaneously
+        :return:
+        """
+        return apihelper.edit_chat_invite_link(self.token, chat_id, invite_link, expire_date, member_limit)
+
+    def revoke_chat_invite_link(self, chat_id, invite_link):
+        """
+        Use this method to revoke an invite link created by the bot.
+        Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
+            in the chat for this to work and must have the appropriate admin rights.
+
+        :param chat_id: Id: Unique identifier for the target chat or username of the target channel
+            (in the format @channelusername)
+        :invite_link: The invite link to revoke
+        :return:
+        """
+        return apihelper.revoke_chat_invite_link(self.token, chat_id, invite_link)
+
     def export_chat_invite_link(self, chat_id):
         """
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
