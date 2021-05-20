@@ -455,7 +455,7 @@ Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra deta
 ## Advanced use of the API
 
 ### Asynchronous delivery of messages
-There exists an implementation of TeleBot which executes all `send_xyz` and the `get_me` functions asynchronously. This can speed up you bot __significantly__, but it has unwanted side effects if used without caution.
+There exists an implementation of TeleBot which executes all `send_xyz` and the `get_me` functions asynchronously. This can speed up your bot __significantly__, but it has unwanted side effects if used without caution.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
 tb = telebot.AsyncTeleBot("TOKEN")
