@@ -146,7 +146,7 @@ Outlined below are some general use cases of the API.
 
 #### Message handlers
 A message handler is a function that is decorated with the `message_handler` decorator of a TeleBot instance. Message handlers consist of one or multiple filters.
-Each filter much return True for a certain message in order for a message handler to become eligible to handle that message. A message handler is declared in the following way (provided `bot` is an instance of TeleBot):
+Each filter must return True for a certain message in order for a message handler to become eligible to handle that message. A message handler is declared in the following way (provided `bot` is an instance of TeleBot):
 ```python
 @bot.message_handler(filters)
 def function_name(message):
