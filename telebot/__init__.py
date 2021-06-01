@@ -1465,7 +1465,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     def set_game_score(self, user_id, score, force=None, chat_id=None, message_id=None, inline_message_id=None,
-                       edit_message=None):
+                       disable_edit_message=None):
         """
         Sets the value of points in the game to a specific user
         :param user_id:
@@ -1474,11 +1474,11 @@ class TeleBot:
         :param chat_id:
         :param message_id:
         :param inline_message_id:
-        :param edit_message:
+        :param disable_edit_message:
         :return:
         """
-        result = apihelper.set_game_score(self.token, user_id, score, force, chat_id, message_id, inline_message_id,
-                                          edit_message)
+        result = apihelper.set_game_score(self.token, user_id, score, force, disable_edit_message, chat_id, message_id, 
+					  inline_message_id)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
