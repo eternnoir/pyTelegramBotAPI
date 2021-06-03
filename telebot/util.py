@@ -6,10 +6,11 @@ import threading
 import traceback
 import warnings
 import functools
-import time
+from typing import Any, List, Dict
 
 import queue as Queue
 import logging
+from telebot import types
 
 try:
     from PIL import Image
@@ -187,7 +188,7 @@ def pil_image_to_file(image, extension='JPEG', quality='web_low'):
     else:
         raise RuntimeError('PIL module is not imported')
 
-def is_command(text):
+def is_command(text: str) -> bool:
     """
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
     :param text: Text to check.
@@ -197,7 +198,7 @@ def is_command(text):
     return text.startswith('/')
 
 
-def extract_command(text):
+def extract_command(text: str) -> str:
     """
     Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
     If `text` is not a command, this function returns None.
@@ -215,26 +216,24 @@ def extract_command(text):
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
 
 
-def unix_time(seconds=0, minutes=0, hours=0, days=0):
+def extract_arguments(text: str) -> str:
     """
-    Returns UNIX time + given paramenters
-    This is useful to restrict or kick a chat member. Just use it as parameter `until_date`.
-
-    Examples: 
-    bot.kick_chat_member(chat_id, user_id, until_date=unix_time(days=1)): bans a chat member for 1 day
-    bot.kick_chat_member(chat_id, user_id, until_date=unix_time(seconds=45)): bans a chat member for 45 seconds
+    Returns the argument after the command.
     
-    :param seconds: how many seconds from now
-    :param minutes: how many minutes from now
-    :param hours: how many hours from now
-    :param days: how many days from now
-    :return: UNIX time
+    Examples:
+    extract_arguments("/get name"): 'name'
+    extract_arguments("/get"): ''
+    extract_arguments("/get@botName name"): 'name'
+    
+    :param text: String to extract the arguments from a command
+    :return: the arguments if `text` is a command (according to is_command), else None.
     """
-    t = seconds + (60 * minutes) + (3600 * hours) + (86400 * days)
-    return (int(t + time.time()))
+    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
+    result = regexp.match(text)
+    return result.group(2) if is_command(text) else None
 
 
-def split_string(text, chars_per_string):
+def split_string(text: str, chars_per_string: int) -> List[str]:
     """
     Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
     This is very useful for splitting one giant message into multiples.
@@ -246,7 +245,7 @@ def split_string(text, chars_per_string):
     return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
 
 
-def smart_split(text, chars_per_string=MAX_MESSAGE_LENGTH):
+def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str]:
     f"""
     Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
     This is very useful for splitting one giant message into multiples.
@@ -257,7 +256,7 @@ def smart_split(text, chars_per_string=MAX_MESSAGE_LENGTH):
     :param chars_per_string: The number of maximum characters per part the text is split to.
     :return: The splitted text as a list of strings.
     """
-    def _text_before_last(substr):
+    def _text_before_last(substr: str) -> str:
         return substr.join(part.split(substr)[:-1]) + substr
 
     if chars_per_string > MAX_MESSAGE_LENGTH: chars_per_string = MAX_MESSAGE_LENGTH
@@ -276,6 +275,72 @@ def smart_split(text, chars_per_string=MAX_MESSAGE_LENGTH):
 
         parts.append(part)
         text = text[len(part):]
+
+
+def escape(text: str) -> str:
+    """
+    Replaces the following chars in `text` ('&' with '&amp;', '<' with '&lt;' and '>' with '&gt;').
+
+    :param text: the text to escape
+    :return: the escaped text
+    """
+    chars = {"&": "&amp;", "<": "&lt;", ">": "&gt"}
+    for old, new in chars.items(): text = text.replace(old, new)
+    return text
+
+
+def user_link(user: types.User, include_id: bool=False) -> str:
+    """
+    Returns an HTML user link. This is useful for reports.
+    Attention: Don't forget to set parse_mode to 'HTML'!
+
+    Example:
+    bot.send_message(your_user_id, user_link(message.from_user) + ' startet the bot!', parse_mode='HTML')
+
+    :param user: the user (not the user_id)
+    :param include_id: include the user_id
+    :return: HTML user link
+    """
+    name = escape(user.first_name)
+    return (f"<a href='tg://user?id={user.id}'>{name}</a>" 
+        + f" (<pre>{user.id}</pre>)" if include_id else "")
+
+
+def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.InlineKeyboardMarkup:
+    """
+    Returns a reply markup from a dict in this format: {'text': kwargs}
+    This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)' 
+    
+    Example:
+    quick_markup({
+        'Twitter': {'url': 'https://twitter.com'},
+        'Facebook': {'url': 'https://facebook.com'},
+        'Back': {'callback_data': 'whatever'}
+    }, row_width=2): 
+        returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
+        and a back button below
+
+    kwargs can be: 
+    {
+        'url': None, 
+        'callback_data': None, 
+        'switch_inline_query': None,
+        'switch_inline_query_current_chat': None,
+        'callback_game': None,
+        'pay': None,
+        'login_url': None
+    }
+    
+    :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
+    :return: InlineKeyboardMarkup
+    """
+    markup = types.InlineKeyboardMarkup(row_width=row_width)
+    buttons = []
+    for text, kwargs in values.items():
+        buttons.append(types.InlineKeyboardButton(text=text, **kwargs))
+    markup.add(*buttons)
+    return markup
+
 
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
 def or_set(self):
@@ -316,22 +381,6 @@ def OrEvent(*events):
     or_event.wait = busy_wait
     changed()
     return or_event
-
-def extract_arguments(text):
-    """
-    Returns the argument after the command.
-    
-    Examples:
-    extract_arguments("/get name"): 'name'
-    extract_arguments("/get"): ''
-    extract_arguments("/get@botName name"): 'name'
-    
-    :param text: String to extract the arguments from a command
-    :return: the arguments if `text` is a command (according to is_command), else None.
-    """
-    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
-    result = regexp.match(text)
-    return result.group(2) if is_command(text) else None
 
 
 def per_thread(key, construct_value, reset=False):
