@@ -17,6 +17,8 @@ try:
 except:
     pil_imported = False
 
+MAX_MESSAGE_LENGTH = 4096
+
 logger = logging.getLogger('TeleBot')
 
 thread_local = threading.local()
@@ -222,6 +224,38 @@ def split_string(text, chars_per_string):
     :return: The splitted text as a list of strings.
     """
     return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
+
+
+def smart_split(text, chars_per_string=MAX_MESSAGE_LENGTH):
+    f"""
+    Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
+    This is very useful for splitting one giant message into multiples.
+    If `chars_per_string` > {MAX_MESSAGE_LENGTH}: `chars_per_string` = {MAX_MESSAGE_LENGTH}.
+    Splits by '\n', '. ' or ' ' in exactly this priority.
+
+    :param text: The text to split
+    :param chars_per_string: The number of maximum characters per part the text is split to.
+    :return: The splitted text as a list of strings.
+    """
+    def _text_before_last(substr):
+        return substr.join(part.split(substr)[:-1]) + substr
+
+    if chars_per_string > MAX_MESSAGE_LENGTH: chars_per_string = MAX_MESSAGE_LENGTH
+
+    parts = []
+    while True:
+        if len(text) < chars_per_string:
+            parts.append(text)
+            return parts
+
+        part = text[:chars_per_string]
+
+        if ("\n" in part): part = _text_before_last("\n")
+        elif (". " in part): part = _text_before_last(". ")
+        elif (" " in part): part = _text_before_last(" ")
+
+        parts.append(part)
+        text = text[len(part):]
 
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
 def or_set(self):
