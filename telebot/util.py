@@ -6,6 +6,7 @@ import threading
 import traceback
 import warnings
 import functools
+import time
 
 import queue as Queue
 import logging
@@ -212,6 +213,25 @@ def extract_command(text):
     """
     if (text is None): return None
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
+
+
+def unix_time(seconds=0, minutes=0, hours=0, days=0):
+    """
+    Returns UNIX time + given paramenters
+    This is useful to restrict or kick a chat member. Just use it as parameter `until_date`.
+
+    Examples: 
+    bot.kick_chat_member(chat_id, user_id, until_date=unix_time(days=1)): bans a chat member for 1 day
+    bot.kick_chat_member(chat_id, user_id, until_date=unix_time(seconds=45)): bans a chat member for 45 seconds
+    
+    :param seconds: how many seconds from now
+    :param minutes: how many minutes from now
+    :param hours: how many hours from now
+    :param days: how many days from now
+    :return: UNIX time
+    """
+    t = seconds + (60 * minutes) + (3600 * hours) + (86400 * days)
+    return (int(t + time.time()))
 
 
 def split_string(text, chars_per_string):
