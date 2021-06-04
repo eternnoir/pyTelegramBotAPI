@@ -2254,8 +2254,8 @@ class TeleBot:
         """
         test_cases = {
             'content_types': lambda msg: msg.content_type in filter_value,
-            'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
-            'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
+            'regexp': lambda msg: msg.content_type and msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
+            'commands': lambda msg: msg.content_type and msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
             'func': lambda msg: filter_value(msg)
         }
 
