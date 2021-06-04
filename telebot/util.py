@@ -10,7 +10,7 @@ from typing import Any, List, Dict
 
 import queue as Queue
 import logging
-from telebot import types
+# from telebot import types
 
 try:
     from PIL import Image
@@ -289,7 +289,7 @@ def escape(text: str) -> str:
     return text
 
 
-def user_link(user: types.User, include_id: bool=False) -> str:
+def user_link(user, include_id: bool=False) -> str:
     """
     Returns an HTML user link. This is useful for reports.
     Attention: Don't forget to set parse_mode to 'HTML'!
@@ -306,40 +306,41 @@ def user_link(user: types.User, include_id: bool=False) -> str:
         + f" (<pre>{user.id}</pre>)" if include_id else "")
 
 
-def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.InlineKeyboardMarkup:
-    """
-    Returns a reply markup from a dict in this format: {'text': kwargs}
-    This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)' 
-    
-    Example:
-    quick_markup({
-        'Twitter': {'url': 'https://twitter.com'},
-        'Facebook': {'url': 'https://facebook.com'},
-        'Back': {'callback_data': 'whatever'}
-    }, row_width=2): 
-        returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
-        and a back button below
-
-    kwargs can be: 
-    {
-        'url': None, 
-        'callback_data': None, 
-        'switch_inline_query': None,
-        'switch_inline_query_current_chat': None,
-        'callback_game': None,
-        'pay': None,
-        'login_url': None
-    }
-    
-    :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
-    :return: InlineKeyboardMarkup
-    """
-    markup = types.InlineKeyboardMarkup(row_width=row_width)
-    buttons = []
-    for text, kwargs in values.items():
-        buttons.append(types.InlineKeyboardButton(text=text, **kwargs))
-    markup.add(*buttons)
-    return markup
+# def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2):
+#     """
+#     Returns a reply markup from a dict in this format: {'text': kwargs}
+#     This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)'
+#
+#     Example:
+#     quick_markup({
+#         'Twitter': {'url': 'https://twitter.com'},
+#         'Facebook': {'url': 'https://facebook.com'},
+#         'Back': {'callback_data': 'whatever'}
+#     }, row_width=2):
+#         returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
+#         and a back button below
+#
+#     kwargs can be:
+#     {
+#         'url': None,
+#         'callback_data': None,
+#         'switch_inline_query': None,
+#         'switch_inline_query_current_chat': None,
+#         'callback_game': None,
+#         'pay': None,
+#         'login_url': None
+#     }
+#
+#     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
+#     :param row_width:
+#     :return: InlineKeyboardMarkup
+#     """
+#     markup = types.InlineKeyboardMarkup(row_width=row_width)
+#     buttons = []
+#     for text, kwargs in values.items():
+#         buttons.append(types.InlineKeyboardButton(text=text, **kwargs))
+#     markup.add(*buttons)
+#     return markup
 
 
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
