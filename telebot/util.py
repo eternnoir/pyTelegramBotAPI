@@ -303,7 +303,7 @@ def user_link(user: types.User, include_id: bool=False) -> str:
     """
     name = escape(user.first_name)
     return (f"<a href='tg://user?id={user.id}'>{name}</a>" 
-        + f" (<pre>{user.id}</pre>)" if include_id else "")
+        + (f" (<pre>{user.id}</pre>)" if include_id else ""))
 
 
 def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.InlineKeyboardMarkup:
