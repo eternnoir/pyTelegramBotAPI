@@ -685,5 +685,8 @@ Get help. Discuss. Chat.
 * [BarnameKon](https://t.me/BarnameKonBot) by [Anvaari](https://github.com/anvaari). This Bot make "Add to google calendar" link for your events. It give information about event and return link. It work for Jalali calendar and in Tehran Time. [Source code](https://github.com/anvaari/BarnameKon)
 * [Price Tracker](https://t.me/trackokbot) by [@barbax7](https://github.com/barbax7). This bot tracks amazon.it product's prices the user is interested to and notify him when one price go down.
 * [Torrent Hunt](https://t.me/torrenthuntbot) by [@Hemantapkh](https://github.com/hemantapkh/torrenthunt). Torrent Hunt bot is a multilingual bot with inline mode support to search and explore torrents from 1337x.to.
+* Translator bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/translate_text_bot). This bot can be use to translate texts. 
+* Digital Cryptocurrency bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/currencies_bot). With this bot, you can now monitor the prices of more than 12 digital Cryptocurrency. 
+
 
 **Want to have your bot listed here? Just make a pull request.**
