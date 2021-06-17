@@ -165,6 +165,13 @@ def get_me(token):
     method_url = r'getMe'
     return _make_request(token, method_url)
 
+def log_out(token):
+    method_url = r'logOut'
+    return _make_request(token, method_url)
+
+def close(token):
+    method_url = r'close'
+    return _make_request(token, method_url)
 
 def get_file(token, file_id):
     method_url = r'getFile'
