@@ -9,6 +9,9 @@ import time
 import traceback
 from typing import List, Union
 
+import telebot.util
+import telebot.types
+
 logger = logging.getLogger('TeleBot')
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'

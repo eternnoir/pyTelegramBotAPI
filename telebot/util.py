@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# credits: https://adamj.eu/tech/2021/05/13/python-type-hints-how-to-fix-circular-imports/
-from __future__ import annotations
 import random
 import re
 import string
@@ -8,13 +6,12 @@ import threading
 import traceback
 import warnings
 import functools
-from typing import Any, List, Dict, TYPE_CHECKING
+from typing import Any, List, Dict
 
 import queue as Queue
 import logging
-# credits: https://adamj.eu/tech/2021/05/13/python-type-hints-how-to-fix-circular-imports/
-if TYPE_CHECKING:
-    from telebot import types
+
+from telebot import types
 
 try:
     from PIL import Image
@@ -198,7 +195,7 @@ def is_command(text: str) -> bool:
     :param text: Text to check.
     :return: True if `text` is a command, else False.
     """
-    if (text is None): return None
+    if (text is None): return False
     return text.startswith('/')
 
 

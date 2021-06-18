@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import types
 from typing import Dict, List
 
 try:
@@ -159,6 +158,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def de_json(cls, json_string):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
+        print (obj)
         return cls(**obj)
 
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, 
@@ -626,6 +626,8 @@ class Audio(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'thumb' in obj and 'file_id' in obj['thumb']:
             obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        else: 
+            obj['thumb'] = None
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, duration, performer=None, title=None, file_name=None, mime_type=None, 
@@ -663,6 +665,8 @@ class Document(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'thumb' in obj and 'file_id' in obj['thumb']:
             obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        else: 
+            obj['thumb'] = None
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None, **kwargs):
@@ -2221,6 +2225,8 @@ class StickerSet(JsonDeserializable):
         obj['stickers'] = stickers
         if 'thumb' in obj and 'file_id' in obj['thumb']:
             obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        else:
+            obj['thumb'] = None
         return cls(**obj)
 
     def __init__(self, name, title, is_animated, contains_masks, stickers, thumb=None, **kwargs):
@@ -2239,6 +2245,8 @@ class Sticker(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'thumb' in obj and 'file_id' in obj['thumb']:
             obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        else:
+            obj['thumb'] = None
         if 'mask_position' in obj:
             obj['mask_position'] = MaskPosition.de_json(obj['mask_position'])
         return cls(**obj)
@@ -2424,6 +2432,7 @@ class Poll(JsonDeserializable):
     def de_json(cls, json_string):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
+        obj['poll_id'] = obj.pop('id')
         options = []
         for opt in obj['options']:
             options.append(PollOption.de_json(opt))
@@ -2465,6 +2474,7 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
+        obj['options_ids'] = obj.pop('option_ids')
         return cls(**obj)
 
     def __init__(self, poll_id, user, options_ids, **kwargs):
