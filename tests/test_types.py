@@ -219,3 +219,14 @@ def test_KeyboardButtonPollType():
     json_str = markup.to_json()
     assert 'request_poll' in json_str
     assert 'quiz' in json_str
+
+
+def test_json_chat_invite_link():
+    json_string = r'{"invite_link": "https://t.me/joinchat/z-abCdEFghijKlMn", "creator": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "is_primary": false, "is_revoked": false, "expire_date": 1624119999, "member_limit": 10}'
+    invite_link = types.ChatInviteLink.de_json(json_string)
+    assert invite_link.invite_link == 'https://t.me/joinchat/z-abCdEFghijKlMn'
+    assert isinstance(invite_link.creator, types.User)
+    assert not invite_link.is_primary
+    assert not invite_link.is_revoked
+    assert invite_link.expire_date == 1624119999
+    assert invite_link.member_limit == 10

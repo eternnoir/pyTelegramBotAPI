@@ -6,7 +6,7 @@ import threading
 import traceback
 import warnings
 import functools
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Union
 
 import queue as Queue
 import logging
@@ -35,6 +35,7 @@ content_type_service = [
     'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created',
     'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message'
 ]
+
 
 class WorkerThread(threading.Thread):
     count = 0
@@ -170,14 +171,18 @@ def async_dec():
 def is_string(var):
     return isinstance(var, str)
 
+
 def is_dict(var):
     return isinstance(var, dict)
+
 
 def is_bytes(var):
     return isinstance(var, bytes)
 
+
 def is_pil_image(var):
     return pil_imported and isinstance(var, Image.Image)
+
 
 def pil_image_to_file(image, extension='JPEG', quality='web_low'):
     if pil_imported:
@@ -189,17 +194,18 @@ def pil_image_to_file(image, extension='JPEG', quality='web_low'):
     else:
         raise RuntimeError('PIL module is not imported')
 
+
 def is_command(text: str) -> bool:
     """
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
     :param text: Text to check.
     :return: True if `text` is a command, else False.
     """
-    if (text is None): return False
+    if text is None: return False
     return text.startswith('/')
 
 
-def extract_command(text: str) -> str:
+def extract_command(text: str) -> Union[str, None]:
     """
     Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
     If `text` is not a command, this function returns None.
@@ -213,7 +219,7 @@ def extract_command(text: str) -> str:
     :param text: String to extract the command from
     :return: the command if `text` is a command (according to is_command), else None.
     """
-    if (text is None): return None
+    if text is None: return None
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
 
 
@@ -229,7 +235,7 @@ def extract_arguments(text: str) -> str:
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
     """
-    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)",re.IGNORECASE)
+    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
 
@@ -247,16 +253,17 @@ def split_string(text: str, chars_per_string: int) -> List[str]:
 
 
 def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str]:
-    f"""
+    """
     Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
     This is very useful for splitting one giant message into multiples.
-    If `chars_per_string` > {MAX_MESSAGE_LENGTH}: `chars_per_string` = {MAX_MESSAGE_LENGTH}.
+    If `chars_per_string` > 4096: `chars_per_string` = 4096.
     Splits by '\n', '. ' or ' ' in exactly this priority.
 
     :param text: The text to split
     :param chars_per_string: The number of maximum characters per part the text is split to.
     :return: The splitted text as a list of strings.
     """
+
     def _text_before_last(substr: str) -> str:
         return substr.join(part.split(substr)[:-1]) + substr
 
@@ -270,9 +277,9 @@ def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str
 
         part = text[:chars_per_string]
 
-        if ("\n" in part): part = _text_before_last("\n")
-        elif (". " in part): part = _text_before_last(". ")
-        elif (" " in part): part = _text_before_last(" ")
+        if "\n" in part: part = _text_before_last("\n")
+        elif ". " in part: part = _text_before_last(". ")
+        elif " " in part: part = _text_before_last(" ")
 
         parts.append(part)
         text = text[len(part):]
@@ -296,7 +303,7 @@ def user_link(user: types.User, include_id: bool=False) -> str:
     Attention: Don't forget to set parse_mode to 'HTML'!
 
     Example:
-    bot.send_message(your_user_id, user_link(message.from_user) + ' startet the bot!', parse_mode='HTML')
+    bot.send_message(your_user_id, user_link(message.from_user) + ' started the bot!', parse_mode='HTML')
 
     :param user: the user (not the user_id)
     :param include_id: include the user_id
@@ -333,6 +340,7 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
     }
     
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
+    :param row_width: int row width
     :return: InlineKeyboardMarkup
     """
     markup = types.InlineKeyboardMarkup(row_width=row_width)
@@ -363,8 +371,10 @@ def orify(e, changed_callback):
     e.set = lambda: or_set(e)
     e.clear = lambda: or_clear(e)
 
+
 def OrEvent(*events):
     or_event = threading.Event()
+
     def changed():
         bools = [ev.is_set() for ev in events]
         if any(bools):
@@ -391,14 +401,17 @@ def per_thread(key, construct_value, reset=False):
 
     return getattr(thread_local, key)
 
+
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     # https://stackoverflow.com/a/312464/9935473
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
+
 def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
+
 
 def deprecated(func):
     """This is a decorator which can be used to mark functions

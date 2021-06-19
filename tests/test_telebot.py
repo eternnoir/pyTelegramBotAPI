@@ -6,6 +6,7 @@ sys.path.append('../')
 import time
 import pytest
 import os
+from datetime import datetime, timedelta
 
 import telebot
 from telebot import types
@@ -406,6 +407,23 @@ class TestTeleBot:
         tb = telebot.TeleBot(TOKEN)
         cn = tb.get_chat_members_count(GROUP_ID)
         assert cn > 1
+
+    def test_export_chat_invite_link(self):
+        tb = telebot.TeleBot(TOKEN)
+        il = tb.export_chat_invite_link(GROUP_ID)
+        assert isinstance(il, str)
+
+    def test_create_revoke_detailed_chat_invite_link(self):
+        tb = telebot.TeleBot(TOKEN)
+        cil = tb.create_chat_invite_link(GROUP_ID, 
+            (datetime.now() + timedelta(minutes=1)).timestamp(), member_limit=5)
+        assert isinstance(cil.invite_link, str)
+        assert cil.creator.id == tb.get_me().id
+        assert isinstance(cil.expire_date, (float, int))
+        assert cil.member_limit == 5
+        assert not cil.is_revoked
+        rcil = tb.revoke_chat_invite_link(GROUP_ID, cil.invite_link)
+        assert rcil.is_revoked
 
     def test_edit_markup(self):
         text = 'CI Test Message'
