@@ -68,6 +68,8 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     :param files: Optional files.
     :return: The result parsed to a JSON dictionary.
     """
+    if not token:
+        raise Exception('Bot token is not defined')
     if API_URL:
         request_url = API_URL.format(token, method_name)
     else:
