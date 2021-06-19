@@ -9,6 +9,7 @@ import time
 import traceback
 from typing import List, Union
 
+# this imports are used to avoid circular import error
 import telebot.util
 import telebot.types
 
@@ -23,7 +24,7 @@ logger.addHandler(console_output_handler)
 
 logger.setLevel(logging.ERROR)
 
-from telebot import apihelper, types, util
+from telebot import apihelper, util, types
 from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 
 """
@@ -252,19 +253,30 @@ class TeleBot:
                     drop_pending_updates = None, timeout=None):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
-        update for the bot, we will send an HTTPS POST request to the specified url, containing a JSON-serialized Update.
-        In case of an unsuccessful request, we will give up after a reasonable amount of attempts. Returns True on success.
+        update for the bot, we will send an HTTPS POST request to the specified url,
+        containing a JSON-serialized Update.
+        In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
+        Returns True on success.
 
         :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
-        :param certificate: Upload your public key certificate so that the root certificate in use can be checked. See our self-signed guide for details.
-        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
-        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). If not specified, the previous setting will be used.
-        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
+        :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
+            See our self-signed guide for details.
+        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook
+            for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server,
+            and higher values to increase your bot's throughput.
+        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates
+            of these types. See Update for a complete list of available update types.
+            Specify an empty list to receive all updates regardless of type (default).
+            If not specified, the previous setting will be used.
+        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address
+            resolved through DNS
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
         :return:
         """
-        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address, drop_pending_updates, timeout)
+        return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
+                                     drop_pending_updates, timeout)
 
     def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
@@ -330,14 +342,14 @@ class TeleBot:
         if self.skip_pending:
             logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
             self.skip_pending = False
-        updates = self.get_updates(offset=(self.last_update_id + 1), timeout=timeout, long_polling_timeout = long_polling_timeout)
+        updates = self.get_updates(offset=(self.last_update_id + 1),
+                                   timeout=timeout, long_polling_timeout=long_polling_timeout)
         self.process_new_updates(updates)
 
     def process_new_updates(self, updates):
         upd_count = len(updates)
         logger.debug('Received {0} new updates'.format(upd_count))
-        if (upd_count == 0):
-            return
+        if upd_count == 0: return
 
         new_messages = None
         new_edited_messages = None
@@ -488,11 +500,13 @@ class TeleBot:
 
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
-        :param logger_level: Custom logging level for infinity_polling logging. Use logger levels from logging as a value. None/NOTSET = no error logging
+        :param logger_level: Custom logging level for infinity_polling logging.
+            Use logger levels from logging as a value. None/NOTSET = no error logging
         """
         while not self.__stop_polling.is_set():
             try:
-                self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout, *args, **kwargs)
+                self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
+                             *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))
@@ -590,7 +604,7 @@ class TeleBot:
         self.worker_pool.clear_exceptions() #*
         logger.info('Stopped polling.')
 
-    def __non_threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
+    def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -675,7 +689,8 @@ class TeleBot:
     def log_out(self) -> bool:
         """
         Use this method to log out from the cloud Bot API server before launching the bot locally. 
-        You MUST log out the bot before running it locally, otherwise there is no guarantee that the bot will receive updates. 
+        You MUST log out the bot before running it locally, otherwise there is no guarantee
+        that the bot will receive updates.
         After a successful call, you can immediately log in on a local server, 
         but will not be able to log in back to the cloud Bot API server for 10 minutes. 
         Returns True on success.
@@ -685,12 +700,12 @@ class TeleBot:
     def close(self) -> bool:
         """
         Use this method to close the bot instance before moving it from one local server to another. 
-        You need to delete the webhook before calling this method to ensure that the bot isn't launched again after server restart. 
+        You need to delete the webhook before calling this method to ensure that the bot isn't launched again
+        after server restart.
         The method will return error 429 in the first 10 minutes after the bot is launched. 
         Returns True on success.
         """
         return apihelper.close(self.token)
-
 
     def get_user_profile_photos(self, user_id, offset=None, limit=None) -> types.UserProfilePhotos:
         """
@@ -807,7 +822,8 @@ class TeleBot:
             apihelper.send_message(self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
                                    reply_markup, parse_mode, disable_notification, timeout))
 
-    def forward_message(self, chat_id, from_chat_id, message_id, disable_notification=None, timeout=None) -> types.Message:
+    def forward_message(self, chat_id, from_chat_id, message_id,
+                        disable_notification=None, timeout=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
         :param disable_notification:
@@ -897,7 +913,8 @@ class TeleBot:
                    reply_to_message_id=None, reply_markup=None, parse_mode=None, disable_notification=None,
                    timeout=None, thumb=None) -> types.Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .mp3 format.
+        Use this method to send audio files, if you want Telegram clients to display them in the music player.
+        Your audio must be in the .mp3 format.
         :param chat_id:Unique identifier for the message recipient
         :param audio:Audio file to send.
         :param caption:
@@ -909,7 +926,7 @@ class TeleBot:
         :param parse_mode
         :param disable_notification:
         :param timeout:
-	:param thumb:
+        :param thumb:
         :return: Message
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -921,7 +938,8 @@ class TeleBot:
     def send_voice(self, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
                    parse_mode=None, disable_notification=None, timeout=None) -> types.Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+        Use this method to send audio files, if you want Telegram clients to display the file
+        as a playable voice message.
         :param chat_id:Unique identifier for the message recipient.
         :param voice:
         :param caption:
@@ -984,7 +1002,8 @@ class TeleBot:
         """
         Use this method to send video files, Telegram clients support mp4 videos.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param data: InputFile or String : Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram server
+        :param data: InputFile or String : Video to send. You can either pass a file_id as String to resend
+            a video that is already on the Telegram server
         :param duration: Integer : Duration of sent video in seconds
         :param caption: String : Video caption (may also be used when resending videos by file_id).
         :param parse_mode:
@@ -993,7 +1012,7 @@ class TeleBot:
         :param reply_markup:
         :param disable_notification:
         :param timeout:
-	    :param thumb: InputFile or String : Thumbnail of the file sent
+        :param thumb: InputFile or String : Thumbnail of the file sent
         :param width:
         :param height:
         :return:
@@ -1011,7 +1030,8 @@ class TeleBot:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an animation that is already on the Telegram server
+        :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an
+            animation that is already on the Telegram server
         :param duration: Integer : Duration of sent video in seconds
         :param caption: String : Animation caption (may also be used when resending animation by file_id).
         :param parse_mode:
@@ -1025,16 +1045,18 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id, reply_markup,
-                                 parse_mode, disable_notification, timeout, thumb))
+            apihelper.send_animation(self.token, chat_id, animation, duration, caption, reply_to_message_id,
+                                     reply_markup, parse_mode, disable_notification, timeout, thumb))
 
     def send_video_note(self, chat_id, data, duration=None, length=None,
                         reply_to_message_id=None, reply_markup=None,
                         disable_notification=None, timeout=None, thumb=None) -> types.Message:
         """
-        As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send video messages.
+        As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
+            video messages.
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend a video that is already on the Telegram server
+        :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend
+            a video that is already on the Telegram server
         :param duration: Integer : Duration of sent video in seconds
         :param length: Integer : Video width and height, Can't be None and should be in range of (0, 640)
         :param reply_to_message_id:
@@ -1133,7 +1155,8 @@ class TeleBot:
         :param title: String : Name of the venue
         :param address: String : Address of the venue
         :param foursquare_id: String : Foursquare identifier of the venue
-        :param foursquare_type: Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
+        :param foursquare_type: Foursquare type of the venue, if known. (For example, “arts_entertainment/default”,
+            “arts_entertainment/aquarium” or “food/icecream”.)
         :param disable_notification:
         :param reply_to_message_id:
         :param reply_markup:
@@ -1162,7 +1185,8 @@ class TeleBot:
         its typing status).
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
-                        'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note', 'upload_video_note'.
+                        'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note',
+                        'upload_video_note'.
         :param timeout:
         :return: API reply. :type: boolean
         """
@@ -1187,7 +1211,8 @@ class TeleBot:
         the user is not a member of the chat, but will be able to join it. So if the user is a member of the chat
         they will also be removed from the chat. If you don't want this, use the parameter only_if_banned.
 
-        :param chat_id: Unique identifier for the target group or username of the target supergroup or channel (in the format @username)
+        :param chat_id: Unique identifier for the target group or username of the target supergroup or channel
+            (in the format @username)
         :param user_id: Unique identifier of the target user
         :param only_if_banned: Do nothing if the user is not banned
         :return: True on success
@@ -1219,9 +1244,10 @@ class TeleBot:
             use inline bots, implies can_send_media_messages
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
             implies can_send_media_messages
-        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
-    	:param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
-	        implies can_invite_users
+        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
+            Ignored in public supergroups
+        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
+            implies can_invite_users
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """
@@ -1463,9 +1489,13 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
-    def edit_message_media(self, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None) -> Union[types.Message, bool]:
+    def edit_message_media(self, media, chat_id=None, message_id=None,
+                           inline_message_id=None, reply_markup=None) -> Union[types.Message, bool]:
         """
-        Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL.
+        Use this method to edit animation, audio, document, photo, or video messages.
+        If a message is a part of a message album, then it can be edited only to a photo or a video.
+        Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
+        Use previously uploaded file via its file_id or specify a URL.
         :param media:
         :param chat_id:
         :param message_id:
@@ -1478,7 +1508,8 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
-    def edit_message_reply_markup(self, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None) -> Union[types.Message, bool]:
+    def edit_message_reply_markup(self, chat_id=None, message_id=None,
+                                  inline_message_id=None, reply_markup=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
         :param chat_id:
@@ -1523,13 +1554,14 @@ class TeleBot:
         :param disable_edit_message:
         :return:
         """
-        result = apihelper.set_game_score(self.token, user_id, score, force, disable_edit_message, chat_id, message_id, 
-					  inline_message_id)
+        result = apihelper.set_game_score(self.token, user_id, score, force, disable_edit_message, chat_id,
+                                          message_id, inline_message_id)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
 
-    def get_game_high_scores(self, user_id, chat_id=None, message_id=None, inline_message_id=None) -> List[types.GameHighScore]:
+    def get_game_high_scores(self, user_id, chat_id=None,
+                             message_id=None, inline_message_id=None) -> List[types.GameHighScore]:
         """
         Gets top points and game play
         :param user_id:
@@ -1555,12 +1587,17 @@ class TeleBot:
         :param chat_id: Unique identifier for the target private chat
         :param title: Product name
         :param description: Product description
-        :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
+        :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+            use for your internal processes.
         :param provider_token: Payments provider token, obtained via @Botfather
-        :param currency: Three-letter ISO 4217 currency code, see https://core.telegram.org/bots/payments#supported-currencies
-        :param prices: Price breakdown, a list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
-        :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice when used as a start parameter
-        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
+        :param currency: Three-letter ISO 4217 currency code,
+            see https://core.telegram.org/bots/payments#supported-currencies
+        :param prices: Price breakdown, a list of components
+            (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice
+            when used as a start parameter
+        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
+            or a marketing image for a service. People like it better when they see what they are paying for.
         :param photo_size: Photo size
         :param photo_width: Photo width
         :param photo_height: Photo height
@@ -1573,8 +1610,10 @@ class TeleBot:
         :param send_email_to_provider: Pass True, if user's email address should be sent to provider
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
         :param reply_to_message_id: If the message is a reply, ID of the original message
-        :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
-        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
+        :param reply_markup: A JSON-serialized object for an inline keyboard. If empty,
+            one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
+        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
+            A detailed description of required fields should be provided by the payment provider.
         :param timeout:
         :return:
         """
@@ -1651,7 +1690,7 @@ class TeleBot:
         :param ok:
         :param error_message:
         :return:
-	    """
+        """
         return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
     def edit_message_caption(self, caption, chat_id=None, message_id=None, inline_message_id=None,
@@ -1677,7 +1716,7 @@ class TeleBot:
     def reply_to(self, message, text, **kwargs) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
-	    :param message:
+        :param message:
         :param text:
         :param kwargs:
         :return:
@@ -1691,11 +1730,14 @@ class TeleBot:
         No more than 50 results per query are allowed.
         :param inline_query_id: Unique identifier for the answered query
         :param results: Array of results for the inline query
-        :param cache_time: The maximum amount of time in seconds that the result of the inline query may be cached on the server.
-        :param is_personal: Pass True, if results may be cached on the server side only for the user that sent the query.
-        :param next_offset: Pass the offset that a client should send in the next query with the same text to receive more results.
+        :param cache_time: The maximum amount of time in seconds that the result of the inline query
+            may be cached on the server.
+        :param is_personal: Pass True, if results may be cached on the server side only for
+            the user that sent the query.
+        :param next_offset: Pass the offset that a client should send in the next query with the same text
+            to receive more results.
         :param switch_pm_parameter: If passed, clients will display a button with specified text that switches the user
-         to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter
+            to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter
         :param switch_pm_text: 	Parameter for the start message sent to the bot when user presses the switch button
         :return: True means success.
         """
@@ -1973,18 +2015,21 @@ class TeleBot:
             bot.send_message(message.chat.id, 'Did someone call for help?')
 
         # Handle all sent documents of type 'text/plain'.
-        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain', content_types=['document'])
+        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+            content_types=['document'])
         def command_handle_document(message):
             bot.send_message(message.chat.id, 'Document received, sir!')
 
         # Handle all other messages.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document', 'text', 'location', 'contact', 'sticker'])
+        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+            'text', 'location', 'contact', 'sticker'])
         def default_command(message):
             bot.send_message(message.chat.id, "This is the default command handler.")
 
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
-        :param func: Optional lambda function. The lambda receives the message to test as the first parameter. It must return True if the command should handle the message.
+        :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
+            It must return True if the command should handle the message.
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
         """
 
