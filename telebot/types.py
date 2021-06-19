@@ -94,23 +94,24 @@ class Update(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        update_id = obj['update_id']
-        message = Message.de_json(obj.get('message'))
-        edited_message = Message.de_json(obj.get('edited_message'))
-        channel_post = Message.de_json(obj.get('channel_post'))
-        edited_channel_post = Message.de_json(obj.get('edited_channel_post'))
-        inline_query = InlineQuery.de_json(obj.get('inline_query'))
-        chosen_inline_result = ChosenInlineResult.de_json(obj.get('chosen_inline_result'))
-        callback_query = CallbackQuery.de_json(obj.get('callback_query'))
-        shipping_query = ShippingQuery.de_json(obj.get('shipping_query'))
-        pre_checkout_query = PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
-        poll = Poll.de_json(obj.get('poll'))
-        poll_answer = PollAnswer.de_json(obj.get('poll_answer'))
-        return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
-                   chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer)
+        obj['message'] = Message.de_json(obj.get('message'))
+        obj['edited_message'] = Message.de_json(obj.get('edited_message'))
+        obj['channel_post'] = Message.de_json(obj.get('channel_post'))
+        obj['edited_channel_post'] = Message.de_json(obj.get('edited_channel_post'))
+        obj['inline_query'] = InlineQuery.de_json(obj.get('inline_query'))
+        obj['chosen_inline_result'] = ChosenInlineResult.de_json(obj.get('chosen_inline_result'))
+        obj['callback_query'] = CallbackQuery.de_json(obj.get('callback_query'))
+        obj['shipping_query'] = ShippingQuery.de_json(obj.get('shipping_query'))
+        obj['pre_checkout_query'] = PreCheckoutQuery.de_json(obj.get('pre_checkout_query'))
+        obj['poll'] = Poll.de_json(obj.get('poll'))
+        obj['poll_answer'] = PollAnswer.de_json(obj.get('poll_answer'))
+        obj['my_chat_member'] = ChatMemberUpdated.de_json(obj.get('my_chat_member'))
+        obj['chat_member'] = ChatMemberUpdated.de_json(obj.get('chat_member'))
+        return cls(**obj)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
-                 chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer):
+                 chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
+                 my_chat_member, chat_member, **kwargs):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -123,6 +124,29 @@ class Update(JsonDeserializable):
         self.pre_checkout_query = pre_checkout_query
         self.poll = poll
         self.poll_answer = poll_answer
+        self.my_chat_member = my_chat_member
+        self.chat_member = chat_member
+
+
+class ChatMemberUpdated(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
+        obj['from_user'] = User.de_json(obj.pop('from'))
+        obj['old_chat_member'] = ChatMember.de_json(obj['old_chat_member'])
+        obj['new_chat_member'] = ChatMember.de_json(obj['new_chat_member'])
+        obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
+        return cls(**obj)
+    
+    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None, **kwargs):
+        self.chat: Chat = chat
+        self.from_user: User = from_user
+        self.date: int = date
+        self.old_chat_member: ChatMember = old_chat_member
+        self.new_chat_member: ChatMember = new_chat_member
+        self.invite_link: Union[ChatInviteLink, None] = invite_link    
 
 
 class WebhookInfo(JsonDeserializable):
@@ -130,19 +154,11 @@ class WebhookInfo(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        url = obj['url']
-        has_custom_certificate = obj['has_custom_certificate']
-        pending_update_count = obj['pending_update_count']
-        ip_address = obj.get('ip_address')
-        last_error_date = obj.get('last_error_date')
-        last_error_message = obj.get('last_error_message')
-        max_connections = obj.get('max_connections')
-        allowed_updates = obj.get('allowed_updates')
-        return cls(url, has_custom_certificate, pending_update_count, ip_address, last_error_date,
-                   last_error_message, max_connections, allowed_updates)
+        return cls(**obj)
 
-    def __init__(self, url, has_custom_certificate, pending_update_count, ip_address, last_error_date,
-                 last_error_message, max_connections, allowed_updates):
+    def __init__(self, url, has_custom_certificate, pending_update_count, ip_address=None, 
+                 last_error_date=None, last_error_message=None, max_connections=None, 
+                 allowed_updates=None, **kwargs):
         self.url = url
         self.has_custom_certificate = has_custom_certificate
         self.pending_update_count = pending_update_count
@@ -767,7 +783,7 @@ class Venue(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['location'] = Location.de_json(obj.get('location'))
+        obj['location'] = Location.de_json(obj['location'])
         return cls(**obj)
 
     def __init__(self, location, title, address, foursquare_id=None, foursquare_type=None, 
@@ -2473,14 +2489,12 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
-        # Strange name, i think it should be `option_ids` not `options_ids` maybe replace that
-        obj['options_ids'] = obj.pop('option_ids')
         return cls(**obj)
 
-    def __init__(self, poll_id, user, options_ids, **kwargs):
+    def __init__(self, poll_id, user, option_ids, **kwargs):
         self.poll_id: str = poll_id
         self.user: User = user
-        self.options_ids: List[int] = options_ids
+        self.option_ids: List[int] = option_ids
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -2488,8 +2502,7 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     def to_dict(self):
         return {'poll_id': self.poll_id,
                 'user': self.user.to_dict(),
-                #should be `option_ids` not `options_ids` could cause problems here
-                'options_ids': self.options_ids}
+                'option_ids': self.option_ids}
 
 
 class ChatLocation(JsonSerializable, JsonDeserializable, Dictionaryable):

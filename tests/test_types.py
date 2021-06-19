@@ -210,7 +210,7 @@ def test_json_poll_answer():
     poll_answer = types.PollAnswer.de_json(jsonstring)
     assert poll_answer.poll_id == '5895675970559410186'
     assert isinstance(poll_answer.user, types.User)
-    assert poll_answer.options_ids == [1]
+    assert poll_answer.option_ids == [1]
 
 
 def test_KeyboardButtonPollType():
@@ -230,3 +230,13 @@ def test_json_chat_invite_link():
     assert not invite_link.is_revoked
     assert invite_link.expire_date == 1624119999
     assert invite_link.member_limit == 10
+
+def test_chat_member_updated():
+    json_string = r'{"chat": {"id": -1234567890123, "type": "supergroup", "title": "No Real Group", "username": "NoRealGroup"}, "from": {"id": 133869498, "is_bot": false, "first_name": "Vincent"}, "date": 1624119999, "old_chat_member": {"user": {"id": 77777777, "is_bot": false, "first_name": "Pepe"}, "status": "member"}, "new_chat_member": {"user": {"id": 77777777, "is_bot": false, "first_name": "Pepe"}, "status": "administrator"}}'
+    cm_updated = types.ChatMemberUpdated.de_json(json_string)
+    assert cm_updated.chat.id == -1234567890123
+    assert cm_updated.from_user.id == 133869498
+    assert cm_updated.date == 1624119999
+    assert cm_updated.old_chat_member.status == "member"
+    assert cm_updated.new_chat_member.status == "administrator"
+
