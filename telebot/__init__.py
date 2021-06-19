@@ -92,12 +92,13 @@ class TeleBot:
         setMyCommands
         answerInlineQuery
         """
-
     def __init__(
-            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
+            self, token, base_url="", parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
             suppress_middleware_excepions=False
     ):
+        if base_url:
+            apihelper.API_URL = base_url
         """
         :param token: bot API token
         :param parse_mode: default parse_mode

@@ -69,7 +69,8 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     :return: The result parsed to a JSON dictionary.
     """
     if API_URL:
-        request_url = API_URL.format(token, method_name)
+        print("making a request with api url:")
+        request_url = API_URL + f"/bot{token}/{method_name}"
     else:
         request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
 
