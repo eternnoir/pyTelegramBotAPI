@@ -687,6 +687,6 @@ Get help. Discuss. Chat.
 * [Torrent Hunt](https://t.me/torrenthuntbot) by [@Hemantapkh](https://github.com/hemantapkh/torrenthunt). Torrent Hunt bot is a multilingual bot with inline mode support to search and explore torrents from 1337x.to.
 * Translator bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/translate_text_bot). This bot can be use to translate texts. 
 * Digital Cryptocurrency bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/currencies_bot). With this bot, you can now monitor the prices of more than 12 digital Cryptocurrency. 
-
+* [Anti-Tracking Bot](https://t.me/AntiTrackingBot) by [Leon Heess (source)](https://github.com/leonheess/AntiTrackingBot). Send any link, and the bot tries its best to remove all tracking from the link you sent.
 
 **Want to have your bot listed here? Just make a pull request.**
