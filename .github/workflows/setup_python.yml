@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: ActionsSetupPython
+name: Setup
 
 # Controls when the action will run. 
 on:
@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.6','3.7','3.8','3.9', 'pypy-3.6', 'pypy-3.7' ] #'pypy-3.8', 'pypy-3.9' NOT SUPPORTED NOW
-    name: Python ${{ matrix.python-version }} setup and tests
+    name: ${{ matrix.python-version }} and tests
     steps:
       - uses: actions/checkout@v2
       - name: Setup python
