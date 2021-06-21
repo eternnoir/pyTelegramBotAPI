@@ -2121,8 +2121,33 @@ class TeleBot:
         :param mask_position:
         :return:
         """
-        return apihelper.create_new_sticker_set(self.token, user_id, name, title, png_sticker, emojis, 
-                                                contains_masks, mask_position)
+        return apihelper.create_new_sticker_set(
+            self.token, user_id, name, title, png_sticker, emojis, 
+            contains_masks, mask_position, animated=False)
+
+    
+    def create_new_animated_sticker_set(
+            self, user_id: int, name: str, title: str, 
+            tgs_sticker: Union[Any, str], 
+            emojis: str, 
+            contains_masks: Optional[bool]=None,
+            mask_position: Optional[types.MaskPosition]=None) -> bool:
+        """
+        Use this method to create new sticker set owned by a user. 
+        The bot will be able to edit the created sticker set.
+        Returns True on success.
+        :param user_id:
+        :param name:
+        :param title:
+        :param tgs_sticker: 
+        :param emojis:
+        :param contains_masks:
+        :param mask_position:
+        :return:
+        """
+        return apihelper.create_new_sticker_set(
+            self.token, user_id, name, title, tgs_sticker, emojis, 
+            contains_masks, mask_position, animated=True)
                                                 
 
     def add_sticker_to_set(
@@ -2137,7 +2162,25 @@ class TeleBot:
         :param mask_position:
         :return:
         """
-        return apihelper.add_sticker_to_set(self.token, user_id, name, png_sticker, emojis, mask_position)
+        return apihelper.add_sticker_to_set(
+            self.token, user_id, name, png_sticker, emojis, mask_position, animated=False)
+
+
+    def add_sticker_to_animated_set(
+            self, user_id: int, name: str, tgs_sticker: Union[Any, str], 
+            emojis: str, mask_position: Optional[types.MaskPosition]=None) -> bool:
+        """
+        Use this method to add a new sticker to a set created by the bot. Returns True on success.
+        :param user_id:
+        :param name:
+        :param tgs_sticker:
+        :param emojis:
+        :param mask_position:
+        :return:
+        """
+        return apihelper.add_sticker_to_set(
+            self.token, user_id, name, tgs_sticker, emojis, mask_position, animated=True)
+
 
     def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """

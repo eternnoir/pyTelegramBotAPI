@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 try:
     import ujson as json
@@ -146,7 +146,7 @@ class ChatMemberUpdated(JsonDeserializable):
         self.date: int = date
         self.old_chat_member: ChatMember = old_chat_member
         self.new_chat_member: ChatMember = new_chat_member
-        self.invite_link: Union[ChatInviteLink, None] = invite_link    
+        self.invite_link: Optional[ChatInviteLink] = invite_link
 
 
 class WebhookInfo(JsonDeserializable):
@@ -461,49 +461,49 @@ class Message(JsonDeserializable):
         self.from_user: User = from_user
         self.date: int = date
         self.chat: Chat = chat
-        self.forward_from: Union[User, None] = None
-        self.forward_from_chat: Union[Chat, None] = None
-        self.forward_from_message_id: Union[int, None] = None
-        self.forward_signature: Union[str, None] = None
-        self.forward_sender_name: Union[str, None] = None
-        self.forward_date: Union[int, None] = None
-        self.reply_to_message: Union[Message, None] = None
-        self.via_bot: Union[User, None] = None
-        self.edit_date: Union[int, None] = None
-        self.media_group_id: Union[str, None] = None
-        self.author_signature: Union[str, None] = None
-        self.text: Union[str, None] = None
-        self.entities: Union[List[MessageEntity], None] = None
-        self.caption_entities: Union[List[MessageEntity], None] = None
-        self.audio: Union[Audio, None] = None
-        self.document: Union[Document, None] = None
-        self.photo: Union[List[PhotoSize], None] = None
-        self.sticker: Union[Sticker, None] = None
-        self.video: Union[Video, None] = None
-        self.video_note: Union[VideoNote, None] = None
-        self.voice: Union[Voice, None] = None
-        self.caption: Union[str, None] = None
-        self.contact: Union[Contact, None] = None
-        self.location: Union[Location, None] = None
-        self.venue: Union[Venue, None] = None
-        self.animation: Union[Animation, None] = None
-        self.dice: Union[Dice, None] = None
-        self.new_chat_member: Union[User, None] = None  # Deprecated since Bot API 3.0. Not processed anymore
-        self.new_chat_members: Union[List[User], None] = None
-        self.left_chat_member: Union[User, None] = None
-        self.new_chat_title: Union[str, None] = None
-        self.new_chat_photo: Union[List[PhotoSize], None] = None
-        self.delete_chat_photo: Union[bool, None] = None
-        self.group_chat_created: Union[bool, None] = None
-        self.supergroup_chat_created: Union[bool, None] = None
-        self.channel_chat_created: Union[bool, None] = None
-        self.migrate_to_chat_id: Union[int, None] = None
-        self.migrate_from_chat_id: Union[int, None] = None
-        self.pinned_message: Union[Message, None] = None
-        self.invoice: Union[Invoice, None] = None
-        self.successful_payment: Union[SuccessfulPayment, None] = None
-        self.connected_website: Union[str, None] = None
-        self.reply_markup: Union[InlineKeyboardMarkup, None] = None
+        self.forward_from: Optional[User] = None
+        self.forward_from_chat: Optional[Chat] = None
+        self.forward_from_message_id: Optional[int] = None
+        self.forward_signature: Optional[str] = None
+        self.forward_sender_name: Optional[str] = None
+        self.forward_date: Optional[int] = None
+        self.reply_to_message: Optional[Message] = None
+        self.via_bot: Optional[User] = None
+        self.edit_date: Optional[int] = None
+        self.media_group_id: Optional[str] = None
+        self.author_signature: Optional[str] = None
+        self.text: Optional[str] = None
+        self.entities: Optional[List[MessageEntity]] = None
+        self.caption_entities: Optional[List[MessageEntity]] = None
+        self.audio: Optional[Audio] = None
+        self.document: Optional[Document] = None
+        self.photo: Optional[List[PhotoSize]] = None
+        self.sticker: Optional[Sticker] = None
+        self.video: Optional[Video] = None
+        self.video_note: Optional[VideoNote] = None
+        self.voice: Optional[Voice] = None
+        self.caption: Optional[str] = None
+        self.contact: Optional[Contact] = None
+        self.location: Optional[Location] = None
+        self.venue: Optional[Venue] = None
+        self.animation: Optional[Animation] = None
+        self.dice: Optional[Dice] = None
+        self.new_chat_member: Optional[User] = None  # Deprecated since Bot API 3.0. Not processed anymore
+        self.new_chat_members: Optional[List[User]] = None
+        self.left_chat_member: Optional[User] = None
+        self.new_chat_title: Optional[str] = None
+        self.new_chat_photo: Optional[List[PhotoSize]] = None
+        self.delete_chat_photo: Optional[bool] = None
+        self.group_chat_created: Optional[bool] = None
+        self.supergroup_chat_created: Optional[bool] = None
+        self.channel_chat_created: Optional[bool] = None
+        self.migrate_to_chat_id: Optional[int] = None
+        self.migrate_from_chat_id: Optional[int] = None
+        self.pinned_message: Optional[Message] = None
+        self.invoice: Optional[Invoice] = None
+        self.successful_payment: Optional[SuccessfulPayment] = None
+        self.connected_website: Optional[str] = None
+        self.reply_markup: Optional[InlineKeyboardMarkup] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -1314,7 +1314,7 @@ class InputTextMessageContent(Dictionaryable):
             json_dict['parse_mode'] = self.parse_mode
         if self.entities:
             json_dict['entities'] = MessageEntity.to_list_of_dicts(self.entities)
-        if self.disable_web_page_preview:
+        if self.disable_web_page_preview is not None:
             json_dict['disable_web_page_preview'] = self.disable_web_page_preview
         return json_dict
 
@@ -1386,6 +1386,73 @@ class InputContactMessageContent(Dictionaryable):
             json_dict['vcard'] = self.vcard
         return json_dict
 
+
+class InputInvoiceMessageContent(Dictionaryable):
+    def __init__(self, title, description, payload, provider_token, currency, prices,
+            max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
+            photo_url=None, photo_size=None, photo_width=None, photo_height=None,
+            need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
+            send_phone_number_to_provider=None, send_email_to_provider=None,
+            is_flexible=None):
+        self.title: str = title
+        self.description: str = description
+        self.payload: str = payload
+        self.provider_token: str = provider_token
+        self.currency: str = currency
+        self.prices: List[LabeledPrice] = prices
+        self.max_tip_amount: Optional[int] = max_tip_amount
+        self.suggested_tip_amounts: Optional[List[int]] = suggested_tip_amounts
+        self.provider_data: Optional[str] = provider_data
+        self.photo_url: Optional[str] = photo_url
+        self.photo_size: Optional[int] = photo_size
+        self.photo_width: Optional[int] = photo_width
+        self.photo_height: Optional[int] = photo_height
+        self.need_name: Optional[bool] = need_name
+        self.need_phone_number: Optional[bool] = need_phone_number
+        self.need_email: Optional[bool] = need_email
+        self.need_shipping_address: Optional[bool] = need_shipping_address
+        self.send_phone_number_to_provider: Optional[bool] = send_phone_number_to_provider
+        self.send_email_to_provider: Optional[bool] = send_email_to_provider
+        self.is_flexible: Optional[bool] = is_flexible
+    
+    def to_dict(self):
+        json_dict = {
+            'title': self.title, 
+            'description': self.description,
+            'payload': self.payload,
+            'provider_token': self.provider_token,
+            'currency': self.currency,
+            'prices': [LabeledPrice.to_dict(lp) for lp in self.prices]
+        }
+        if self.max_tip_amount:
+            json_dict['max_tip_amount'] = self.max_tip_amount 
+        if self.suggested_tip_amounts:
+            json_dict['suggested_tip_amounts'] = self.suggested_tip_amounts 
+        if self.provider_data:
+            json_dict['provider_data'] = self.provider_data 
+        if self.photo_url:
+            json_dict['photo_url'] = self.photo_url 
+        if self.photo_size:
+            json_dict['photo_size'] = self.photo_size 
+        if self.photo_width:
+            json_dict['photo_width'] = self.photo_width 
+        if self.photo_height:
+            json_dict['photo_height'] = self.photo_height 
+        if self.need_name is not None:
+            json_dict['need_name'] = self.need_name 
+        if self.need_phone_number is not None:
+            json_dict['need_phone_number'] = self.need_phone_number 
+        if self.need_email is not None:
+            json_dict['need_email'] = self.need_email 
+        if self.need_shipping_address is not None:
+            json_dict['need_shipping_address'] = self.need_shipping_address 
+        if self.send_phone_number_to_provider is not None:
+            json_dict['send_phone_number_to_provider'] = self.send_phone_number_to_provider      
+        if self.send_email_to_provider is not None:
+            json_dict['send_email_to_provider'] = self.send_email_to_provider 
+        if self.is_flexible is not None:
+            json_dict['is_flexible'] = self.is_flexible 
+        
 
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
@@ -2135,10 +2202,13 @@ class LabeledPrice(JsonSerializable):
         self.label: str = label
         self.amount: int = amount
 
-    def to_json(self):
-        return json.dumps({
+    def to_dict(self):
+        return {
             'label': self.label, 'amount': self.amount
-        })
+        }
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
 
 class Invoice(JsonDeserializable):

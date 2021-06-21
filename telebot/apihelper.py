@@ -245,7 +245,7 @@ def send_message(
         payload['connect-timeout'] = timeout
     if entities:
         payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -422,7 +422,7 @@ def send_dice(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
-    if 'allow_sending_without_reply':
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
@@ -455,7 +455,7 @@ def send_photo(
         payload['connect-timeout'] = timeout
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -473,7 +473,7 @@ def send_media_group(
         payload['reply_to_message_id'] = reply_to_message_id
     if timeout:
         payload['connect-timeout'] = timeout
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(
         token, method_url, params=payload,
@@ -499,7 +499,7 @@ def send_location(
         payload['proximity_alert_radius'] = proximity_alert_radius
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
@@ -573,7 +573,7 @@ def send_venue(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if google_place_id:
         payload['google_place_id'] = google_place_id
@@ -600,7 +600,7 @@ def send_contact(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
@@ -653,7 +653,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['height'] = height
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -693,7 +693,7 @@ def send_animation(
             payload['thumb'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -724,7 +724,7 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
         payload['connect-timeout'] = timeout
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -760,7 +760,7 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
                 files = {'thumb': thumb}
         else:
             payload['thumb'] = thumb
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -803,7 +803,7 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
             payload['thumb'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -840,7 +840,7 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
             payload['thumb'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -1157,7 +1157,7 @@ def send_game(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
@@ -1290,7 +1290,7 @@ def send_invoice(
         payload['provider_data'] = provider_data
     if timeout:
         payload['connect-timeout'] = timeout
-    if allow_sending_without_reply:
+    if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
@@ -1388,15 +1388,16 @@ def upload_sticker_file(token, user_id, png_sticker):
 
 
 def create_new_sticker_set(
-        token, user_id, name, title, png_sticker, emojis,
-        contains_masks=None, mask_position=None):
+        token, user_id, name, title, sticker, emojis,
+        contains_masks=None, mask_position=None, animated=False):
     method_url = 'createNewStickerSet'
     payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
     files = None
-    if not util.is_string(png_sticker):
-        files = {'png_sticker': png_sticker}
+    stype = 'tgs_sticker' if animated else 'png_sticker'
+    if not util.is_string(sticker):
+        files = {stype: sticker}
     else:
-        payload['png_sticker'] = png_sticker
+        payload[stype] = sticker
     if contains_masks is not None:
         payload['contains_masks'] = contains_masks
     if mask_position:
@@ -1404,14 +1405,15 @@ def create_new_sticker_set(
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def add_sticker_to_set(token, user_id, name, png_sticker, emojis, mask_position):
+def add_sticker_to_set(token, user_id, name, sticker, emojis, mask_position, animated=False):
     method_url = 'addStickerToSet'
     payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
     files = None
-    if not util.is_string(png_sticker):
-        files = {'png_sticker': png_sticker}
+    stype = 'tgs_sticker' if animated else 'png_sticker'
+    if not util.is_string(sticker):
+        files = {stype: sticker}
     else:
-        payload['png_sticker'] = png_sticker
+        payload[stype] = sticker
     if mask_position:
         payload['mask_position'] = mask_position.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
