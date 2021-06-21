@@ -814,7 +814,7 @@ class TeleBot:
     def send_message(
             self, chat_id: Union[int, str], text: str, 
             disable_web_page_preview: Optional[bool]=None, 
-            reply_to_message_id: Optional[bool]=None, 
+            reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None, 
