@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 from datetime import datetime
+from typing import Dict
 
 try:
     import ujson as json
@@ -167,13 +168,21 @@ def get_me(token):
     method_url = r'getMe'
     return _make_request(token, method_url)
 
+
+def get_my_commands(token):
+    method_url = r'getMyCommands'
+    return _make_request(token, method_url)
+
+
 def log_out(token):
     method_url = r'logOut'
     return _make_request(token, method_url)
 
+
 def close(token):
     method_url = r'close'
     return _make_request(token, method_url)
+
 
 def get_file(token, file_id):
     method_url = r'getFile'
@@ -203,7 +212,8 @@ def download_file(token, file_path):
 def send_message(
         token, chat_id, text,
         disable_web_page_preview=None, reply_to_message_id=None, reply_markup=None,
-        parse_mode=None, disable_notification=None, timeout=None):
+        parse_mode=None, disable_notification=None, timeout=None,
+        entities=None, allow_sending_without_reply=None):
     """
     Use this method to send text messages. On success, the sent Message is returned.
     :param token:
@@ -215,6 +225,8 @@ def send_message(
     :param parse_mode:
     :param disable_notification:
     :param timeout:
+    :param entities:
+    :param allow_sending_without_reply:
     :return:
     """
     method_url = r'sendMessage'
@@ -231,6 +243,10 @@ def send_message(
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -324,6 +340,18 @@ def get_chat_members_count(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
+def set_sticker_set_thumb(token, name, user_id, thumb):
+    method_url = r'setStickerSetThumb'
+    payload = {'name': name, 'user_id': user_id}
+    files = {}
+    if thumb:
+        if not isinstance(thumb, str):
+            files['thumb'] = thumb
+        else:
+            payload['thumb'] = thumb
+    return _make_request(token, method_url, params=payload, files=files or None)
+
+
 def set_chat_sticker_set(token, chat_id, sticker_set_name):
     method_url = r'setChatStickerSet'
     payload = {'chat_id': chat_id, 'sticker_set_name': sticker_set_name}
@@ -381,7 +409,7 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
 def send_dice(
         token, chat_id,
         emoji=None, disable_notification=None, reply_to_message_id=None,
-        reply_markup=None, timeout=None):
+        reply_markup=None, timeout=None, allow_sending_without_reply=None):
     method_url = r'sendDice'
     payload = {'chat_id': chat_id}
     if emoji:
@@ -394,13 +422,16 @@ def send_dice(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
+    if 'allow_sending_without_reply':
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
 
 def send_photo(
         token, chat_id, photo,
         caption=None, reply_to_message_id=None, reply_markup=None,
-        parse_mode=None, disable_notification=None, timeout=None):
+        parse_mode=None, disable_notification=None, timeout=None,
+        caption_entities=None, allow_sending_without_reply=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -422,13 +453,17 @@ def send_photo(
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_media_group(
         token, chat_id, media,
         disable_notification=None, reply_to_message_id=None,
-        timeout=None):
+        timeout=None, allow_sending_without_reply=None):
     method_url = r'sendMediaGroup'
     media_json, files = convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
@@ -438,6 +473,8 @@ def send_media_group(
         payload['reply_to_message_id'] = reply_to_message_id
     if timeout:
         payload['connect-timeout'] = timeout
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(
         token, method_url, params=payload,
         method='post' if files else 'get',
@@ -446,14 +483,24 @@ def send_media_group(
 
 def send_location(
         token, chat_id, latitude, longitude,
-        live_period=None, reply_to_message_id=None, reply_markup=None,
-        disable_notification=None, timeout=None):
+        live_period=None, reply_to_message_id=None, 
+        reply_markup=None, disable_notification=None, 
+        timeout=None, horizontal_accuracy=None, heading=None,
+        proximity_alert_radius=None, allow_sending_without_reply=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
         payload['live_period'] = live_period
+    if horizontal_accuracy:
+        payload['horizontal_accuracy'] = horizontal_accuracy
+    if heading:
+        payload['heading'] = heading
+    if proximity_alert_radius:
+        payload['proximity_alert_radius'] = proximity_alert_radius
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if disable_notification is not None:
@@ -463,14 +510,22 @@ def send_location(
     return _make_request(token, method_url, params=payload)
 
 
-def edit_message_live_location(token, latitude, longitude, chat_id=None, message_id=None,
-                               inline_message_id=None, reply_markup=None, timeout=None):
+def edit_message_live_location(
+        token, latitude, longitude, chat_id=None, message_id=None,
+        inline_message_id=None, reply_markup=None, timeout=None,
+        horizontal_accuracy=None, heading=None, proximity_alert_radius=None):
     method_url = r'editMessageLiveLocation'
     payload = {'latitude': latitude, 'longitude': longitude}
     if chat_id:
         payload['chat_id'] = chat_id
     if message_id:
         payload['message_id'] = message_id
+    if horizontal_accuracy:
+        payload['horizontal_accuracy'] = horizontal_accuracy
+    if heading:
+        payload['heading'] = heading
+    if proximity_alert_radius:
+        payload['proximity_alert_radius'] = proximity_alert_radius
     if inline_message_id:
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
@@ -501,7 +556,9 @@ def stop_message_live_location(
 def send_venue(
         token, chat_id, latitude, longitude, title, address,
         foursquare_id=None, foursquare_type=None, disable_notification=None,
-        reply_to_message_id=None, reply_markup=None, timeout=None):
+        reply_to_message_id=None, reply_markup=None, timeout=None,
+        allow_sending_without_reply=None, google_place_id=None,
+        google_place_type=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
@@ -516,12 +573,19 @@ def send_venue(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
+    if google_place_id:
+        payload['google_place_id'] = google_place_id
+    if google_place_type:
+        payload['google_place_type'] = google_place_type
     return _make_request(token, method_url, params=payload)
 
 
 def send_contact(
         token, chat_id, phone_number, first_name, last_name=None, vcard=None,
-        disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None):
+        disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None,
+        allow_sending_without_reply=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
@@ -536,6 +600,8 @@ def send_contact(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
 
@@ -548,7 +614,8 @@ def send_chat_action(token, chat_id, action, timeout=None):
 
 
 def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, thumb=None, width=None, height=None):
+               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, 
+               thumb=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -584,11 +651,17 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['width'] = width
     if height:
         payload['height'] = height
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, disable_notification=None, timeout=None, thumb=None):
+def send_animation(
+        token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
+        parse_mode=None, disable_notification=None, timeout=None, thumb=None, caption_entities=None,
+        allow_sending_without_reply=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -618,11 +691,16 @@ def send_animation(token, chat_id, data, duration=None, caption=None, reply_to_m
                 files = {'thumb': thumb}
         else:
             payload['thumb'] = thumb
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, disable_notification=None, timeout=None):
+               parse_mode=None, disable_notification=None, timeout=None, caption_entities=None,
+               allow_sending_without_reply=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -644,11 +722,15 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['connect-timeout'] = timeout
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                    disable_notification=None, timeout=None, thumb=None):
+                    disable_notification=None, timeout=None, thumb=None, allow_sending_without_reply=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -678,11 +760,14 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
                 files = {'thumb': thumb}
         else:
             payload['thumb'] = thumb
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumb=None):
+               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumb=None,
+               caption_entities=None, allow_sending_without_reply=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -716,11 +801,16 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
                 files = {'thumb': thumb}
         else:
             payload['thumb'] = thumb
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
-              disable_notification=None, timeout=None, caption=None, thumb=None):
+              disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
+              allow_sending_without_reply=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -748,6 +838,10 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
                 files = {'thumb': thumb}
         else:
             payload['thumb'] = thumb
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -758,13 +852,15 @@ def get_method_by_type(data_type):
         return r'sendSticker'
 
 
-def kick_chat_member(token, chat_id, user_id, until_date=None):
+def kick_chat_member(token, chat_id, user_id, until_date=None, revoke_messages=None):
     method_url = 'kickChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if isinstance(until_date, datetime):
         payload['until_date'] = until_date.timestamp()
     else:
         payload['until_date'] = until_date
+    if revoke_messages is not None:
+        payload['revoke_messages'] = revoke_messages
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -813,7 +909,8 @@ def restrict_chat_member(
 def promote_chat_member(
         token, chat_id, user_id, can_change_info=None, can_post_messages=None,
         can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
-        can_restrict_members=None, can_pin_messages=None, can_promote_members=None):
+        can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
+        is_anonymous=None, can_manage_chat=None, can_manage_voice_chats=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -832,6 +929,12 @@ def promote_chat_member(
         payload['can_pin_messages'] = can_pin_messages
     if can_promote_members is not None:
         payload['can_promote_members'] = can_promote_members
+    if is_anonymous is not None:
+        payload['is_anonymous'] = is_anonymous
+    if can_manage_chat is not None:
+        payload['can_manage_chat'] = can_manage_chat
+    if can_manage_voice_chats is not None:
+        payload['can_manage_voice_chats'] = can_manage_voice_chats
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1042,7 +1145,8 @@ def delete_message(token, chat_id, message_id, timeout=None):
 
 def send_game(
         token, chat_id, game_short_name,
-        disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None):
+        disable_notification=None, reply_to_message_id=None, reply_markup=None, timeout=None,
+        allow_sending_without_reply=None):
     method_url = r'sendGame'
     payload = {'chat_id': chat_id, 'game_short_name': game_short_name}
     if disable_notification is not None:
@@ -1053,6 +1157,8 @@ def send_game(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
 
@@ -1117,7 +1223,7 @@ def send_invoice(
         need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
-        timeout=None):
+        timeout=None, allow_sending_without_reply=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1145,6 +1251,7 @@ def send_invoice(
     :param reply_markup: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
     :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
     :param timeout:
+    :param allow_sending_without_reply:
     :return:
     """
     method_url = r'sendInvoice'
@@ -1183,6 +1290,8 @@ def send_invoice(
         payload['provider_data'] = provider_data
     if timeout:
         payload['connect-timeout'] = timeout
+    if allow_sending_without_reply:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
 
 
@@ -1325,7 +1434,8 @@ def send_poll(
         question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
-        disable_notifications=False, reply_to_message_id=None, reply_markup=None, timeout=None):
+        disable_notifications=False, reply_to_message_id=None, allow_sending_without_reply=None,
+        reply_markup=None, timeout=None, explanation_entities=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -1358,10 +1468,15 @@ def send_poll(
         payload['disable_notification'] = disable_notifications
     if reply_to_message_id is not None:
         payload['reply_to_message_id'] = reply_to_message_id
+    if allow_sending_without_reply is not None:
+        payload['allow_sending_without_reply'] = allow_sending_without_reply
     if reply_markup is not None:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['connect-timeout'] = timeout
+    if explanation_entities:
+        payload['explanation_entities'] = json.dumps(
+            types.MessageEntity.to_list_of_dicts(explanation_entities))
     return _make_request(token, method_url, params=payload)
 
 

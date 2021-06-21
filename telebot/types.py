@@ -408,6 +408,27 @@ class Message(JsonDeserializable):
         if 'passport_data' in obj:
             opts['passport_data'] = obj['passport_data']
             content_type = 'passport_data'
+        if 'proximity_alert_triggered' in obj:
+            opts['proximity_alert_triggered'] = ProximityAlertTriggered.de_json(obj[
+                'proximity_alert_triggered'])
+            content_type = 'proximity_alert_triggered'
+        if 'voice_chat_scheduled' in obj:
+            opts['voice_chat_scheduled'] = VoiceChatScheduled.de_json(obj['voice_chat_scheduled'])
+            content_type = 'voice_chat_scheduled'
+        if 'voice_chat_started' in obj:
+            opts['voice_chat_started'] = VoiceChatStarted.de_json(obj['voice_chat_started'])
+            content_type = 'voice_chat_started'
+        if 'voice_chat_ended' in obj:
+            opts['voice_chat_ended'] = VoiceChatEnded.de_json(obj['voice_chat_ended'])
+            content_type = 'voice_chat_ended'
+        if 'voice_chat_participants_invited' in obj:
+            opts['voice_chat_participants_invited'] = VoiceChatParticipantsInvited.de_json(
+                obj['voice_chat_participants_invited'])
+            content_type = 'voice_chat_participants_invited'
+        if 'message_auto_delete_timer_changed' in obj:
+            opts['message_auto_delete_timer_changed'] = MessageAutoDeleteTimerChanged.de_json(
+                obj['message_auto_delete_timer_changed'])
+            content_type = 'message_auto_delete_timer_changed'
         if 'reply_markup' in obj:
             opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1220,7 +1241,13 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         return json_dict
 
 
-class BotCommand(JsonSerializable):
+class BotCommand(JsonSerializable, JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
     def __init__(self, command, description):
         """
         This object represents a bot command.
@@ -1748,13 +1775,14 @@ class InlineQueryResultDocument(JsonSerializable):
 
 
 class InlineQueryResultLocation(JsonSerializable):
-    def __init__(self, id, title, latitude, longitude, live_period=None, reply_markup=None,
+    def __init__(self, id, title, latitude, longitude, horizontal_accuracy, live_period=None, reply_markup=None,
                  input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
         self.type = 'location'
         self.id = id
         self.title = title
         self.latitude = latitude
         self.longitude = longitude
+        self.horizontal_accuracy = horizontal_accuracy
         self.live_period = live_period
         self.reply_markup = reply_markup
         self.input_message_content = input_message_content
@@ -1765,6 +1793,8 @@ class InlineQueryResultLocation(JsonSerializable):
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'latitude': self.latitude, 'longitude': self.longitude,
                      'title': self.title}
+        if self.horizontal_accuracy:
+            json_dict['horizontal_accuracy'] = self.horizontal_accuracy
         if self.live_period:
             json_dict['live_period'] = self.live_period
         if self.thumb_url:
@@ -1782,7 +1812,8 @@ class InlineQueryResultLocation(JsonSerializable):
 
 class InlineQueryResultVenue(JsonSerializable):
     def __init__(self, id, title, latitude, longitude, address, foursquare_id=None, foursquare_type=None,
-                 reply_markup=None, input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None):
+                 reply_markup=None, input_message_content=None, thumb_url=None, 
+                 thumb_width=None, thumb_height=None, google_place_id=None, google_place_type=None):
         self.type = 'venue'
         self.id = id
         self.title = title
@@ -1796,6 +1827,8 @@ class InlineQueryResultVenue(JsonSerializable):
         self.thumb_url = thumb_url
         self.thumb_width = thumb_width
         self.thumb_height = thumb_height
+        self.google_place_id = google_place_id
+        self.google_place_type = google_place_type
 
     def to_json(self):
         json_dict = {'type': self.type, 'id': self.id, 'title': self.title, 'latitude': self.latitude,
@@ -1814,6 +1847,10 @@ class InlineQueryResultVenue(JsonSerializable):
             json_dict['reply_markup'] = self.reply_markup.to_dict()
         if self.input_message_content:
             json_dict['input_message_content'] = self.input_message_content.to_dict()
+        if self.google_place_id:
+            json_dict['google_place_id'] = self.google_place_id
+        if self.google_place_type:
+            json_dict['google_place_type'] = self.google_place_type
         return json.dumps(json_dict)
 
 
@@ -2556,3 +2593,74 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
             "expire_date": self.expire_date,
             "member_limit": self.member_limit
         }
+
+class ProximityAlertTriggered(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, traveler, watcher, distance, **kwargs):
+        self.traveler: User = traveler
+        self.watcher: User = watcher
+        self.distance: int = distance
+
+
+class VoiceChatStarted(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+    
+    def __init__(self):
+        """
+        This object represents a service message about a voice chat started in the chat. 
+        Currently holds no information.
+        """
+        pass
+
+class VoiceChatScheduled(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(obj['start_date'])
+    
+    def __init__(self, start_date):
+        self.start_date: int = start_date
+
+
+class VoiceChatEnded(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(obj['duration'])
+    
+    def __init__(self, duration):
+        self.duration: int = duration
+
+
+class VoiceChatParticipantsInvited(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        users = None
+        if 'users' in obj:
+            users = [User.de_json(u) for u in obj['users']]
+        return cls(users)
+    
+    def __init__(self, users=None):
+        self.users: List[User] = users
+
+
+class MessageAutoDeleteTimerChanged(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(obj['message_auto_delete_time'])
+
+    def __init__(self, message_auto_delete_time):
+        self.message_auto_delete_time = message_auto_delete_time
