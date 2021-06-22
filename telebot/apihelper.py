@@ -810,7 +810,7 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
-              allow_sending_without_reply=None):
+              allow_sending_without_reply=None, disable_content_type_detection=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -842,6 +842,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
+    if method_url == 'sendDocument' and disable_content_type_detection is not None:
+        payload['disable_content_type_detection'] = disable_content_type_detection
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1388,12 +1390,13 @@ def upload_sticker_file(token, user_id, png_sticker):
 
 
 def create_new_sticker_set(
-        token, user_id, name, title, sticker, emojis,
-        contains_masks=None, mask_position=None, animated=False):
+        token, user_id, name, title, emojis, png_sticker, tgs_sticker,
+        contains_masks=None, mask_position=None):
     method_url = 'createNewStickerSet'
     payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
+    stype = 'png_sticker' if png_sticker else 'tgs_sticker'
+    sticker = png_sticker or tgs_sticker
     files = None
-    stype = 'tgs_sticker' if animated else 'png_sticker'
     if not util.is_string(sticker):
         files = {stype: sticker}
     else:
@@ -1405,11 +1408,12 @@ def create_new_sticker_set(
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def add_sticker_to_set(token, user_id, name, sticker, emojis, mask_position, animated=False):
+def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position):
     method_url = 'addStickerToSet'
     payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
+    stype = 'png_sticker' if png_sticker else 'tgs_sticker'
+    sticker = png_sticker or tgs_sticker
     files = None
-    stype = 'tgs_sticker' if animated else 'png_sticker'
     if not util.is_string(sticker):
         files = {stype: sticker}
     else:
