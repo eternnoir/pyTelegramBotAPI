@@ -649,11 +649,11 @@ class PhotoSize(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, width, height, file_size=None, **kwargs):
-        self.file_size: int = file_size
-        self.file_unique_id: str = file_unique_id
-        self.height: int = height
-        self.width: int = width
         self.file_id: str = file_id
+        self.file_unique_id: str = file_unique_id
+        self.width: int = width
+        self.height: int = height
+        self.file_size: int = file_size
 
 
 class Audio(JsonDeserializable):
@@ -2411,11 +2411,12 @@ class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
 # InputMedia
 
 class InputMedia(Dictionaryable, JsonSerializable):
-    def __init__(self, type, media, caption=None, parse_mode=None):
+    def __init__(self, type, media, caption=None, parse_mode=None, caption_entities=None):
         self.type: str = type
         self.media: str = media
-        self.caption: str = caption
-        self.parse_mode: str = parse_mode
+        self.caption: Optional[str] = caption
+        self.parse_mode: Optional[str] = parse_mode
+        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
 
         if util.is_string(self.media):
             self._media_name = ''
@@ -2433,6 +2434,8 @@ class InputMedia(Dictionaryable, JsonSerializable):
             json_dict['caption'] = self.caption
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
+        if self.caption_entities:
+            json_dict['caption_entities'] = [MessageEntity.to_dict(entity) for entity in self.caption_entities]
         return json_dict
 
     def convert_input_media(self):
@@ -2521,14 +2524,17 @@ class InputMediaAudio(InputMedia):
 
 
 class InputMediaDocument(InputMedia):
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None):
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, disable_content_type_detection=None):
         super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
         self.thumb = thumb
+        self.disable_content_type_detection = disable_content_type_detection
 
     def to_dict(self):
         ret = super(InputMediaDocument, self).to_dict()
         if self.thumb:
             ret['thumb'] = self.thumb
+        if self.disable_content_type_detection is not None:
+            ret['disable_content_type_detection'] = self.disable_content_type_detection
         return ret
 
 
