@@ -541,7 +541,7 @@ class TeleBot:
             Use logger levels from logging as a value. None/NOTSET = no error logging
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
-            See util.allowed_updates for a complete list of available update types. 
+            See util.update_types for a complete list of available update types. 
             Specify an empty list to receive all update types except chat_member (default). 
             If not specified, the previous setting will be used.
             
@@ -579,7 +579,7 @@ class TeleBot:
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
-            See util.allowed_updates for a complete list of available update types. 
+            See util.update_types for a complete list of available update types. 
             Specify an empty list to receive all update types except chat_member (default). 
             If not specified, the previous setting will be used.
             
