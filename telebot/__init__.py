@@ -155,6 +155,8 @@ class TeleBot:
         self.pre_checkout_query_handlers = []
         self.poll_handlers = []
         self.poll_answer_handlers = []
+        self.my_chat_member_handlers = []
+        self.chat_member_handlers = []
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -168,6 +170,9 @@ class TeleBot:
                 'shipping_query': [],
                 'pre_checkout_query': [],
                 'poll': [],
+                'poll_answer': [],
+                'my_chat_member': [],
+                'chat_member': []
             }
             self.default_middleware_handlers = []
 
@@ -354,7 +359,8 @@ class TeleBot:
         if self.skip_pending:
             logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
             self.skip_pending = False
-        updates = self.get_updates(offset=(self.last_update_id + 1),
+        updates = self.get_updates(offset=(self.last_update_id + 1), 
+                                   allowed_updates=util.allowed_updates,
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
         self.process_new_updates(updates)
 
@@ -374,6 +380,8 @@ class TeleBot:
         new_pre_checkout_queries = None
         new_polls = None
         new_poll_answers = None
+        new_my_chat_members = None
+        new_chat_members = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -422,6 +430,12 @@ class TeleBot:
             if update.poll_answer:
                 if new_poll_answers is None: new_poll_answers = []
                 new_poll_answers.append(update.poll_answer)
+            if update.my_chat_member:
+                if new_my_chat_members is None: new_my_chat_members = []
+                new_my_chat_members.append(update.my_chat_member)
+            if update.chat_member:
+                if new_chat_members is None: new_chat_members = []
+                new_chat_members.append(update.chat_member)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -445,6 +459,10 @@ class TeleBot:
             self.process_new_poll(new_polls)
         if new_poll_answers:
             self.process_new_poll_answer(new_poll_answers)
+        if new_my_chat_members:
+            self.process_new_my_chat_member(new_my_chat_members)
+        if new_chat_members:
+            self.process_new_chat_member(new_chat_members)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -481,6 +499,12 @@ class TeleBot:
 
     def process_new_poll_answer(self, poll_answers):
         self._notify_command_handlers(self.poll_answer_handlers, poll_answers)
+    
+    def process_new_my_chat_member(self, my_chat_members):
+        self._notify_command_handlers(self.my_chat_member_handlers, my_chat_members)
+
+    def process_new_chat_member(self, chat_members):
+        self._notify_command_handlers(self.chat_member_handlers, chat_members)
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
@@ -2665,6 +2689,53 @@ class TeleBot:
         :return:
         """
         self.poll_answer_handlers.append(handler_dict)
+    
+    def my_chat_member_handler(self, func=None, **kwargs):
+        """
+        my_chat_member handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_my_chat_member_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_my_chat_member_handler(self, handler_dict):
+        """
+        Adds a my_chat_member handler
+        :param handler_dict:
+        :return:
+        """
+        self.my_chat_member_handlers.append(handler_dict)
+
+    def chat_member_handler(self, func=None, **kwargs):
+        """
+        chat_member handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chat_member_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_chat_member_handler(self, handler_dict):
+        """
+        Adds a chat_member handler
+        :param handler_dict:
+        :return:
+        """
+        self.chat_member_handlers.append(handler_dict)
+
 
     def _test_message_handler(self, message_handler, message):
         """
