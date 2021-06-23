@@ -73,29 +73,55 @@ class TeleBot:
         close
         sendMessage
         forwardMessage
+        copyMessage
         deleteMessage
         sendPhoto
         sendAudio
         sendDocument
         sendSticker
         sendVideo
+        sendVenue
         sendAnimation
         sendVideoNote
         sendLocation
         sendChatAction
         sendDice
+        sendContact
+        sendInvoice
+        sendMediaGroup
         getUserProfilePhotos
         getUpdates
         getFile
         sendPoll
+        stopPoll
+        sendGame
+        setGameScore
+        getGameHighScores
+        editMessageText
+        editMessageCaption
+        editMessageMedia
+        editMessageReplyMarkup
+        editMessageLiveLocation
+        stopMessageLiveLocation
         kickChatMember
         unbanChatMember
         restrictChatMember
         promoteChatMember
+        setChatAdministratorCustomTitle
+        setChatPermissions
         createChatInviteLink
         editChatInviteLink
         revokeChatInviteLink
         exportChatInviteLink
+        setChatStickerSet
+        deleteChatStickerSet
+        createNewStickerSet
+        addStickerToSet
+        deleteStickerFromSet
+        setStickerPositionInSet
+        uploadStickerFile
+        setStickerSetThumb
+        getStickerSet
         setChatPhoto
         deleteChatPhoto
         setChatTitle
@@ -111,6 +137,8 @@ class TeleBot:
         getMyCommands
         setMyCommands
         answerInlineQuery
+        answerShippingQuery
+        answerPreCheckoutQuery
         """
 
     def __init__(
@@ -2808,6 +2836,8 @@ class TeleBot:
 class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
         TeleBot.__init__(self, *args, **kwargs)
+    
+    # I'm not sure if `get_updates` should be added here too
 
     @util.async_dec()
     def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
@@ -2836,6 +2866,22 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def get_me(self):
         return TeleBot.get_me(self)
+
+    @util.async_dec()
+    def log_out(self):
+        return TeleBot.log_out(self)
+
+    @util.async_dec()
+    def close(self):
+        return TeleBot.close(self)
+
+    @util.async_dec()
+    def get_my_commands(self):
+        return TeleBot.get_my_commands(self)
+
+    @util.async_dec()
+    def set_my_commands(self, *args, **kwargs):
+        return TeleBot.set_my_commands(self, *args, **kwargs)
 
     @util.async_dec()
     def get_file(self, *args):
@@ -2886,13 +2932,16 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.send_dice(self, *args, **kwargs)
 
     @util.async_dec()
+    def send_animation(self, *args, **kwargs):
+        return TeleBot.send_animation(self, *args, **kwargs)
+
+    @util.async_dec()
     def forward_message(self, *args, **kwargs):
         return TeleBot.forward_message(self, *args, **kwargs)
 
     @util.async_dec()
     def copy_message(self, *args, **kwargs):
         return TeleBot.copy_message(self, *args, **kwargs)
-
 
     @util.async_dec()
     def delete_message(self, *args):
@@ -2969,7 +3018,27 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def promote_chat_member(self, *args, **kwargs):
         return TeleBot.promote_chat_member(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def set_chat_administrator_custom_title(self, *args, **kwargs):
+        return TeleBot.set_chat_administrator_custom_title(self, *args, **kwargs)
 
+    @util.async_dec()
+    def set_chat_permissions(self, *args, **kwargs):
+        return TeleBot.set_chat_permissions(self, *args, **kwargs)
+
+    @util.async_dec()
+    def create_chat_invite_link(self, *args, **kwargs):
+        return TeleBot.create_chat_invite_link(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def edit_chat_invite_link(self, *args, **kwargs):
+        return TeleBot.edit_chat_invite_link(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def revoke_chat_invite_link(self, *args, **kwargs):
+        return TeleBot.revoke_chat_invite_link(self, *args, **kwargs)
+    
     @util.async_dec()
     def export_chat_invite_link(self, *args):
         return TeleBot.export_chat_invite_link(self, *args)
@@ -3073,6 +3142,10 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def delete_sticker_from_set(self, *args, **kwargs):
         return TeleBot.delete_sticker_from_set(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def set_sticker_set_thumb(self, *args, **kwargs):
+        return TeleBot.set_sticker_set_thumb(self, *args, **kwargs)
 
     @util.async_dec()
     def send_poll(self, *args, **kwargs):
