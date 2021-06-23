@@ -350,7 +350,7 @@ class TeleBot:
             updates = self.get_updates(offset=self.last_update_id + 1, long_polling_timeout=1)
         return total
 
-    def __retrieve_updates(self, timeout=20, long_polling_timeout=20):
+    def __retrieve_updates(self, timeout=20, long_polling_timeout=20, allowed_updates=None):
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
@@ -360,7 +360,7 @@ class TeleBot:
             logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), 
-                                   allowed_updates=util.allowed_updates,
+                                   allowed_updates=allowed_updates,
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
         self.process_new_updates(updates)
 
@@ -530,7 +530,8 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR, *args, **kwargs):
+    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR,
+            allowed_updates=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
@@ -538,11 +539,19 @@ class TeleBot:
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param logger_level: Custom logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
+            See util.allowed_updates for a complete list of available update types. 
+            Specify an empty list to receive all update types except chat_member (default). 
+            If not specified, the previous setting will be used.
+            
+            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+            so unwanted updates may be received for a short period of time.
         """
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
-                             *args, **kwargs)
+                             allowed_updates=allowed_updates *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))
@@ -555,7 +564,8 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, none_stop=False, interval=0, timeout=20, long_polling_timeout=20):
+    def polling(self, none_stop: bool=False, interval: int=0, timeout: int=20, 
+            long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -567,14 +577,22 @@ class TeleBot:
         :param none_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
+            See util.allowed_updates for a complete list of available update types. 
+            Specify an empty list to receive all update types except chat_member (default). 
+            If not specified, the previous setting will be used.
+            
+            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+            so unwanted updates may be received for a short period of time.
         :return:
         """
         if self.threaded:
-            self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout)
+            self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
-            self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout)
+            self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
 
-    def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
+    def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None, allowed_updates=None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -589,7 +607,7 @@ class TeleBot:
         while not self.__stop_polling.wait(interval):
             or_event.clear()
             try:
-                polling_thread.put(self.__retrieve_updates, timeout, long_polling_timeout)
+                polling_thread.put(self.__retrieve_updates, timeout, long_polling_timeout, allowed_updates=allowed_updates)
                 or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
                 polling_thread.raise_exceptions()
                 self.worker_pool.raise_exceptions()
@@ -640,14 +658,14 @@ class TeleBot:
         self.worker_pool.clear_exceptions() #*
         logger.info('Stopped polling.')
 
-    def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None):
+    def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None, allowed_updates=None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
 
         while not self.__stop_polling.wait(interval):
             try:
-                self.__retrieve_updates(timeout, long_polling_timeout)
+                self.__retrieve_updates(timeout, long_polling_timeout, allowed_updates=allowed_updates)
                 error_interval = 0.25
             except apihelper.ApiException as e:
                 if self.exception_handler is not None:
