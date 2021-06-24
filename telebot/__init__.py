@@ -73,29 +73,55 @@ class TeleBot:
         close
         sendMessage
         forwardMessage
+        copyMessage
         deleteMessage
         sendPhoto
         sendAudio
         sendDocument
         sendSticker
         sendVideo
+        sendVenue
         sendAnimation
         sendVideoNote
         sendLocation
         sendChatAction
         sendDice
+        sendContact
+        sendInvoice
+        sendMediaGroup
         getUserProfilePhotos
         getUpdates
         getFile
         sendPoll
+        stopPoll
+        sendGame
+        setGameScore
+        getGameHighScores
+        editMessageText
+        editMessageCaption
+        editMessageMedia
+        editMessageReplyMarkup
+        editMessageLiveLocation
+        stopMessageLiveLocation
         kickChatMember
         unbanChatMember
         restrictChatMember
         promoteChatMember
+        setChatAdministratorCustomTitle
+        setChatPermissions
         createChatInviteLink
         editChatInviteLink
         revokeChatInviteLink
         exportChatInviteLink
+        setChatStickerSet
+        deleteChatStickerSet
+        createNewStickerSet
+        addStickerToSet
+        deleteStickerFromSet
+        setStickerPositionInSet
+        uploadStickerFile
+        setStickerSetThumb
+        getStickerSet
         setChatPhoto
         deleteChatPhoto
         setChatTitle
@@ -111,6 +137,8 @@ class TeleBot:
         getMyCommands
         setMyCommands
         answerInlineQuery
+        answerShippingQuery
+        answerPreCheckoutQuery
         """
 
     def __init__(
@@ -155,6 +183,8 @@ class TeleBot:
         self.pre_checkout_query_handlers = []
         self.poll_handlers = []
         self.poll_answer_handlers = []
+        self.my_chat_member_handlers = []
+        self.chat_member_handlers = []
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -168,6 +198,9 @@ class TeleBot:
                 'shipping_query': [],
                 'pre_checkout_query': [],
                 'poll': [],
+                'poll_answer': [],
+                'my_chat_member': [],
+                'chat_member': []
             }
             self.default_middleware_handlers = []
 
@@ -345,7 +378,7 @@ class TeleBot:
             updates = self.get_updates(offset=self.last_update_id + 1, long_polling_timeout=1)
         return total
 
-    def __retrieve_updates(self, timeout=20, long_polling_timeout=20):
+    def __retrieve_updates(self, timeout=20, long_polling_timeout=20, allowed_updates=None):
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
@@ -354,7 +387,8 @@ class TeleBot:
         if self.skip_pending:
             logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
             self.skip_pending = False
-        updates = self.get_updates(offset=(self.last_update_id + 1),
+        updates = self.get_updates(offset=(self.last_update_id + 1), 
+                                   allowed_updates=allowed_updates,
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
         self.process_new_updates(updates)
 
@@ -374,6 +408,8 @@ class TeleBot:
         new_pre_checkout_queries = None
         new_polls = None
         new_poll_answers = None
+        new_my_chat_members = None
+        new_chat_members = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -422,6 +458,12 @@ class TeleBot:
             if update.poll_answer:
                 if new_poll_answers is None: new_poll_answers = []
                 new_poll_answers.append(update.poll_answer)
+            if update.my_chat_member:
+                if new_my_chat_members is None: new_my_chat_members = []
+                new_my_chat_members.append(update.my_chat_member)
+            if update.chat_member:
+                if new_chat_members is None: new_chat_members = []
+                new_chat_members.append(update.chat_member)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -445,6 +487,10 @@ class TeleBot:
             self.process_new_poll(new_polls)
         if new_poll_answers:
             self.process_new_poll_answer(new_poll_answers)
+        if new_my_chat_members:
+            self.process_new_my_chat_member(new_my_chat_members)
+        if new_chat_members:
+            self.process_new_chat_member(new_chat_members)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -481,6 +527,12 @@ class TeleBot:
 
     def process_new_poll_answer(self, poll_answers):
         self._notify_command_handlers(self.poll_answer_handlers, poll_answers)
+    
+    def process_new_my_chat_member(self, my_chat_members):
+        self._notify_command_handlers(self.my_chat_member_handlers, my_chat_members)
+
+    def process_new_chat_member(self, chat_members):
+        self._notify_command_handlers(self.chat_member_handlers, chat_members)
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
@@ -506,7 +558,8 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR, *args, **kwargs):
+    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR,
+            allowed_updates=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
@@ -514,11 +567,19 @@ class TeleBot:
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param logger_level: Custom logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
+            See util.update_types for a complete list of available update types. 
+            Specify an empty list to receive all update types except chat_member (default). 
+            If not specified, the previous setting will be used.
+            
+            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+            so unwanted updates may be received for a short period of time.
         """
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
-                             *args, **kwargs)
+                             allowed_updates=allowed_updates *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))
@@ -531,7 +592,8 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, none_stop=False, interval=0, timeout=20, long_polling_timeout=20):
+    def polling(self, none_stop: bool=False, interval: int=0, timeout: int=20, 
+            long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -543,14 +605,22 @@ class TeleBot:
         :param none_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
+            See util.update_types for a complete list of available update types. 
+            Specify an empty list to receive all update types except chat_member (default). 
+            If not specified, the previous setting will be used.
+            
+            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+            so unwanted updates may be received for a short period of time.
         :return:
         """
         if self.threaded:
-            self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout)
+            self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
-            self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout)
+            self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
 
-    def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None):
+    def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None, allowed_updates=None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -565,7 +635,7 @@ class TeleBot:
         while not self.__stop_polling.wait(interval):
             or_event.clear()
             try:
-                polling_thread.put(self.__retrieve_updates, timeout, long_polling_timeout)
+                polling_thread.put(self.__retrieve_updates, timeout, long_polling_timeout, allowed_updates=allowed_updates)
                 or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
                 polling_thread.raise_exceptions()
                 self.worker_pool.raise_exceptions()
@@ -616,14 +686,14 @@ class TeleBot:
         self.worker_pool.clear_exceptions() #*
         logger.info('Stopped polling.')
 
-    def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None):
+    def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None, allowed_updates=None):
         logger.info('Started polling.')
         self.__stop_polling.clear()
         error_interval = 0.25
 
         while not self.__stop_polling.wait(interval):
             try:
-                self.__retrieve_updates(timeout, long_polling_timeout)
+                self.__retrieve_updates(timeout, long_polling_timeout, allowed_updates=allowed_updates)
                 error_interval = 0.25
             except apihelper.ApiException as e:
                 if self.exception_handler is not None:
@@ -2665,6 +2735,53 @@ class TeleBot:
         :return:
         """
         self.poll_answer_handlers.append(handler_dict)
+    
+    def my_chat_member_handler(self, func=None, **kwargs):
+        """
+        my_chat_member handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_my_chat_member_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_my_chat_member_handler(self, handler_dict):
+        """
+        Adds a my_chat_member handler
+        :param handler_dict:
+        :return:
+        """
+        self.my_chat_member_handlers.append(handler_dict)
+
+    def chat_member_handler(self, func=None, **kwargs):
+        """
+        chat_member handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chat_member_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_chat_member_handler(self, handler_dict):
+        """
+        Adds a chat_member handler
+        :param handler_dict:
+        :return:
+        """
+        self.chat_member_handlers.append(handler_dict)
+
 
     def _test_message_handler(self, message_handler, message):
         """
@@ -2719,6 +2836,8 @@ class TeleBot:
 class AsyncTeleBot(TeleBot):
     def __init__(self, *args, **kwargs):
         TeleBot.__init__(self, *args, **kwargs)
+    
+    # I'm not sure if `get_updates` should be added here too
 
     @util.async_dec()
     def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
@@ -2747,6 +2866,22 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def get_me(self):
         return TeleBot.get_me(self)
+
+    @util.async_dec()
+    def log_out(self):
+        return TeleBot.log_out(self)
+
+    @util.async_dec()
+    def close(self):
+        return TeleBot.close(self)
+
+    @util.async_dec()
+    def get_my_commands(self):
+        return TeleBot.get_my_commands(self)
+
+    @util.async_dec()
+    def set_my_commands(self, *args, **kwargs):
+        return TeleBot.set_my_commands(self, *args, **kwargs)
 
     @util.async_dec()
     def get_file(self, *args):
@@ -2797,13 +2932,16 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.send_dice(self, *args, **kwargs)
 
     @util.async_dec()
+    def send_animation(self, *args, **kwargs):
+        return TeleBot.send_animation(self, *args, **kwargs)
+
+    @util.async_dec()
     def forward_message(self, *args, **kwargs):
         return TeleBot.forward_message(self, *args, **kwargs)
 
     @util.async_dec()
     def copy_message(self, *args, **kwargs):
         return TeleBot.copy_message(self, *args, **kwargs)
-
 
     @util.async_dec()
     def delete_message(self, *args):
@@ -2880,7 +3018,27 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def promote_chat_member(self, *args, **kwargs):
         return TeleBot.promote_chat_member(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def set_chat_administrator_custom_title(self, *args, **kwargs):
+        return TeleBot.set_chat_administrator_custom_title(self, *args, **kwargs)
 
+    @util.async_dec()
+    def set_chat_permissions(self, *args, **kwargs):
+        return TeleBot.set_chat_permissions(self, *args, **kwargs)
+
+    @util.async_dec()
+    def create_chat_invite_link(self, *args, **kwargs):
+        return TeleBot.create_chat_invite_link(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def edit_chat_invite_link(self, *args, **kwargs):
+        return TeleBot.edit_chat_invite_link(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def revoke_chat_invite_link(self, *args, **kwargs):
+        return TeleBot.revoke_chat_invite_link(self, *args, **kwargs)
+    
     @util.async_dec()
     def export_chat_invite_link(self, *args):
         return TeleBot.export_chat_invite_link(self, *args)
@@ -2984,6 +3142,10 @@ class AsyncTeleBot(TeleBot):
     @util.async_dec()
     def delete_sticker_from_set(self, *args, **kwargs):
         return TeleBot.delete_sticker_from_set(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def set_sticker_set_thumb(self, *args, **kwargs):
+        return TeleBot.set_sticker_set_thumb(self, *args, **kwargs)
 
     @util.async_dec()
     def send_poll(self, *args, **kwargs):

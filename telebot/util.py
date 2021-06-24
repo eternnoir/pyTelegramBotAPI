@@ -38,6 +38,11 @@ content_type_service = [
     'voice_chat_participants_invited', 'message_auto_delete_timer_changed'
 ]
 
+update_types = [
+    "update_id", "message", "edited_message", "channel_post", "edited_channel_post", "inline_query", 
+    "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer", 
+    "my_chat_member", "chat_member"
+]
 
 class WorkerThread(threading.Thread):
     count = 0

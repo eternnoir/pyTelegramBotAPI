@@ -1174,7 +1174,9 @@ class ChatMember(JsonDeserializable):
                  can_restrict_members=None, can_promote_members=None, can_change_info=None,
                  can_invite_users=None,  can_pin_messages=None, is_member=None,
                  can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
-                 can_send_other_messages=None, can_add_web_page_previews=None, until_date=None, **kwargs):
+                 can_send_other_messages=None, can_add_web_page_previews=None,  
+                 can_manage_chat=None, can_manage_voice_chats=None, 
+                 until_date=None, **kwargs):
         self.user: User = user
         self.status: str = status
         self.custom_title: str = custom_title
@@ -1194,6 +1196,8 @@ class ChatMember(JsonDeserializable):
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
+        self.can_manage_chat: bool = can_manage_chat
+        self.can_manage_voice_chats: bool = can_manage_voice_chats
         self.until_date: int = until_date
 
 
