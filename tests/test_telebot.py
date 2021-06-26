@@ -546,6 +546,24 @@ class TestTeleBot:
         ret_msg = tb.send_document(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
         assert ret_msg.caption_entities[0].type == 'italic'
 
+    def test_chat_commands(self):
+        tb = telebot.TeleBot(TOKEN)
+        command, description, lang = 'command_1', 'description of command 1', 'en'
+        scope = telebot.types.BotCommandScopeChat(CHAT_ID)
+        ret_msg = tb.set_my_commands([telebot.types.BotCommand(command, description)], scope, lang)
+        assert ret_msg is True
+
+        ret_msg = tb.get_my_commands(scope, lang)
+        assert ret_msg[0].command == command
+        assert ret_msg[0].description == description
+
+        ret_msg = tb.delete_my_commands(scope, lang)
+        assert ret_msg is True
+
+        ret_msg = tb.get_my_commands(scope, lang)
+        assert ret_msg == []
+
+
     def test_typed_middleware_handler(self):
         from telebot import apihelper
 

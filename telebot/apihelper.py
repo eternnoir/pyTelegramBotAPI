@@ -169,11 +169,6 @@ def get_me(token):
     return _make_request(token, method_url)
 
 
-def get_my_commands(token):
-    method_url = r'getMyCommands'
-    return _make_request(token, method_url)
-
-
 def log_out(token):
     method_url = r'logOut'
     return _make_request(token, method_url)
@@ -1032,9 +1027,33 @@ def set_chat_title(token, chat_id, title):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_my_commands(token, commands):
+def get_my_commands(token, scope, language_code):
+    method_url = r'getMyCommands'
+    payload = {}
+    if scope is not None:
+        payload['scope'] = scope.to_json()
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_my_commands(token, commands, scope, language_code):
     method_url = r'setMyCommands'
     payload = {'commands': _convert_list_json_serializable(commands)}
+    if scope is not None:
+        payload['scope'] = scope.to_json()
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def delete_my_commands(token, scope, language_code):
+    method_url = r'deleteMyCommands'
+    payload = {}
+    if scope is not None:
+        payload['scope'] = scope.to_json()
+    if language_code is not None:
+        payload['language_code'] = language_code
     return _make_request(token, method_url, params=payload, method='post')
 
 
