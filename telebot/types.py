@@ -2,6 +2,7 @@
 
 import logging
 from typing import Dict, List, Optional, Union
+from abc import ABC
 
 try:
     import ujson as json
@@ -848,13 +849,16 @@ class File(JsonDeserializable):
 
 
 class ForceReply(JsonSerializable):
-    def __init__(self, selective=None):
+    def __init__(self, selective=None, input_field_placeholder=None):
         self.selective: bool = selective
+        self.input_field_placeholder = input_field_placeholder
 
     def to_json(self):
         json_dict = {'force_reply': True}
         if self.selective:
             json_dict['selective'] = True
+        if self.input_field_placeholder:
+            json_dict['input_field_placeholder'] = self.input_field_placeholder
         return json.dumps(json_dict)
 
 
@@ -872,7 +876,8 @@ class ReplyKeyboardRemove(JsonSerializable):
 class ReplyKeyboardMarkup(JsonSerializable):
     max_row_keys = 12
 
-    def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3):
+    def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3,
+                 input_field_placeholder=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             if not DISABLE_KEYLEN_ERROR:
@@ -883,6 +888,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.one_time_keyboard: bool = one_time_keyboard
         self.selective: bool = selective
         self.row_width: int = row_width
+        self.input_field_placeholder = input_field_placeholder
         self.keyboard: List[List[KeyboardButton]] = []
 
     def add(self, *args, row_width=None):
@@ -926,7 +932,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         :param args: strings
         :return: self, to allow function chaining.
         """
-        
+
         return self.add(*args, row_width=self.max_row_keys)
 
     def to_json(self):
@@ -942,6 +948,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
             json_dict['resize_keyboard'] = True
         if self.selective:
             json_dict['selective'] = True
+        if self.input_field_placeholder:
+            json_dict['input_field_placeholder'] = self.input_field_placeholder
         return json.dumps(json_dict)
 
 
@@ -1268,6 +1276,91 @@ class BotCommand(JsonSerializable, JsonDeserializable):
 
     def to_dict(self):
         return {'command': self.command, 'description': self.description}
+
+
+# BotCommandScopes
+
+class BotCommandScope(ABC, JsonSerializable):
+    def __init__(self, type='default', chat_id=None, user_id=None):
+        """
+        Abstract class.
+        Use BotCommandScopeX classes to set a specific scope type:
+        BotCommandScopeDefault
+        BotCommandScopeAllPrivateChats
+        BotCommandScopeAllGroupChats
+        BotCommandScopeAllChatAdministrators
+        BotCommandScopeChat
+        BotCommandScopeChatAdministrators
+        BotCommandScopeChatMember
+        """
+        self.type: str = type
+        self.chat_id: Optional[Union[int, str]] = chat_id
+        self.user_id: Optional[Union[int, str]] = user_id
+
+    def to_json(self):
+        json_dict = {'type': self.type}
+        if self.chat_id:
+            json_dict['chat_id'] = self.chat_id
+        if self.user_id:
+            json_dict['user_id'] = self.user_id
+        return json.dumps(json_dict)
+
+
+class BotCommandScopeDefault(BotCommandScope):
+    def __init__(self):
+        """
+        Represents the default scope of bot commands.
+        Default commands are used if no commands with a narrower scope are specified for the user.
+        """
+        super(BotCommandScopeDefault, self).__init__(type='default')
+
+
+class BotCommandScopeAllPrivateChats(BotCommandScope):
+    def __init__(self):
+        """
+        Represents the scope of bot commands, covering all private chats.
+        """
+        super(BotCommandScopeAllPrivateChats, self).__init__(type='all_private_chats')
+
+
+class BotCommandScopeAllGroupChats(BotCommandScope):
+    def __init__(self):
+        """
+        Represents the scope of bot commands, covering all group and supergroup chats.
+        """
+        super(BotCommandScopeAllGroupChats, self).__init__(type='all_group_chats')
+
+
+class BotCommandScopeAllChatAdministrators(BotCommandScope):
+    def __init__(self):
+        """
+        Represents the scope of bot commands, covering all group and supergroup chat administrators.
+        """
+        super(BotCommandScopeAllChatAdministrators, self).__init__(type='all_chat_administrators')
+
+
+class BotCommandScopeChat(BotCommandScope):
+    def __init__(self, chat_id=None):
+        super(BotCommandScopeChat, self).__init__(type='chat', chat_id=chat_id)
+
+
+class BotCommandScopeChatAdministrators(BotCommandScope):
+    def __init__(self, chat_id=None):
+        """
+        Represents the scope of bot commands, covering a specific chat.
+        @param chat_id: Unique identifier for the target chat
+        """
+        super(BotCommandScopeChatAdministrators, self).__init__(type='chat_administrators', chat_id=chat_id)
+
+
+class BotCommandScopeChatMember(BotCommandScope):
+    def __init__(self, chat_id=None, user_id=None):
+        """
+        Represents the scope of bot commands, covering all administrators of a specific group or supergroup chat
+        @param chat_id: Unique identifier for the target chat
+        @param user_id: Unique identifier of the target user
+        """
+        super(BotCommandScopeChatMember, self).__init__(type='chat_administrators', chat_id=chat_id, user_id=user_id)
 
 
 # InlineQuery

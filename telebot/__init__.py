@@ -1703,21 +1703,52 @@ class TeleBot:
         """
         return apihelper.delete_chat_photo(self.token, chat_id)
     
-    def get_my_commands(self) -> List[types.BotCommand]:
+    def get_my_commands(self,
+                        scope: Optional[Union[
+                            types.BotCommandScopeDefault, types.BotCommandScopeAllPrivateChats,
+                            types.BotCommandScopeAllGroupChats, types.BotCommandScopeAllChatAdministrators,
+                            types.BotCommandScopeChat,
+                            types.BotCommandScopeChatAdministrators, types.BotCommandScopeChatMember]]=None,
+                        language_code: Optional[str]=None) -> List[types.BotCommand]:
         """
-        Use this method to get the current list of the bot's commands. 
+        Use this method to get the current list of the bot's commands for the given scope and user language
+        :param scope: scope of users for which the commands are relevant
+        :param language_code: A two-letter ISO 639-1 language code
         Returns List of BotCommand on success.
         """
-        result = apihelper.get_my_commands(self.token)
+        result = apihelper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
-    def set_my_commands(self, commands: List[types.BotCommand]) -> bool:
+    def set_my_commands(self, commands: List[types.BotCommand],
+                        scope: Optional[Union[
+                            types.BotCommandScopeDefault, types.BotCommandScopeAllPrivateChats,
+                            types.BotCommandScopeAllGroupChats, types.BotCommandScopeAllChatAdministrators,
+                            types.BotCommandScopeChat,
+                            types.BotCommandScopeChatAdministrators, types.BotCommandScopeChatMember]] = None,
+                        language_code: Optional[str]=None) -> bool:
         """
         Use this method to change the list of the bot's commands.
         :param commands: List of BotCommand. At most 100 commands can be specified.
+        :param scope: scope of users for which the commands are relevant
+        :param language_code: A two-letter ISO 639-1 language code
         :return:
         """
-        return apihelper.set_my_commands(self.token, commands)
+        return apihelper.set_my_commands(self.token, commands, scope, language_code)
+
+    def delete_my_commands(self,
+                           scope: Optional[Union[
+                               types.BotCommandScopeDefault, types.BotCommandScopeAllPrivateChats,
+                               types.BotCommandScopeAllGroupChats, types.BotCommandScopeAllChatAdministrators,
+                               types.BotCommandScopeChat,
+                               types.BotCommandScopeChatAdministrators, types.BotCommandScopeChatMember]]=None,
+                           language_code: Optional[str]=None) -> bool:
+        """
+        Use this method to delete the list of the bot's commands for the given scope and user language.
+        :param scope: scope of users for which the commands are relevant
+        :param language_code: A two-letter ISO 639-1 language code
+        :return:
+        """
+        return apihelper.delete_my_commands(self.token, scope, language_code)
 
     def set_chat_title(self, chat_id: Union[int, str], title: str) -> bool:
         """
