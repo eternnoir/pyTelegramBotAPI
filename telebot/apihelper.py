@@ -810,12 +810,15 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
-              allow_sending_without_reply=None, disable_content_type_detection=None):
+              allow_sending_without_reply=None, disable_content_type_detection=None, file_name=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
     if not util.is_string(data):
-        files = {data_type: data}
+        file_data = data
+        if file_name is not None:
+            file_data = (file_name, data)
+        files = {data_type: file_data}
     else:
         payload[data_type] = data
     if reply_to_message_id:
