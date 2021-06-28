@@ -839,9 +839,7 @@ class TeleBot:
 
     def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
-        Use this method to get the number of members in a chat. Returns Int on success.
-        :param chat_id:
-        :return:
+        This function is deprecated. Use `get_chat_member_count` instead
         """
         logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead.')
         result = apihelper.get_chat_member_count(self.token, chat_id)
@@ -1474,15 +1472,7 @@ class TeleBot:
             until_date:Optional[Union[int, datetime]]=None, 
             revoke_messages: Optional[bool]=None) -> bool:
         """
-        Use this method to kick a user from a group or a supergroup.
-        :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
-        :param user_id: Int : Unique identifier of the target user
-        :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
-               less than 30 seconds from the current time they are considered to be banned forever
-        :param revoke_messages: Bool: Pass True to delete all messages from the chat for the user that is being removed.
-                If False, the user will be able to see messages in the group that were sent before the user was removed. 
-                Always True for supergroups and channels.
-        :return: boolean
+        This function is deprecated. Use `ban_chat_member` instead
         """
         logger.info('kick_chat_member is deprecated. Use ban_chat_member instead.')
         return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
