@@ -849,13 +849,13 @@ class File(JsonDeserializable):
 
 
 class ForceReply(JsonSerializable):
-    def __init__(self, selective=None, input_field_placeholder=None):
+    def __init__(self, selective: Optional[bool]=None, input_field_placeholder: Optional[str]=None):
         self.selective: bool = selective
-        self.input_field_placeholder = input_field_placeholder
+        self.input_field_placeholder: str = input_field_placeholder
 
     def to_json(self):
         json_dict = {'force_reply': True}
-        if self.selective:
+        if self.selective is not None:
             json_dict['selective'] = True
         if self.input_field_placeholder:
             json_dict['input_field_placeholder'] = self.input_field_placeholder
@@ -876,8 +876,8 @@ class ReplyKeyboardRemove(JsonSerializable):
 class ReplyKeyboardMarkup(JsonSerializable):
     max_row_keys = 12
 
-    def __init__(self, resize_keyboard=None, one_time_keyboard=None, selective=None, row_width=3,
-                 input_field_placeholder=None):
+    def __init__(self, resize_keyboard: Optional[bool]=None, one_time_keyboard: Optional[bool]=None, 
+            selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             if not DISABLE_KEYLEN_ERROR:
@@ -888,7 +888,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.one_time_keyboard: bool = one_time_keyboard
         self.selective: bool = selective
         self.row_width: int = row_width
-        self.input_field_placeholder = input_field_placeholder
+        self.input_field_placeholder: str = input_field_placeholder
         self.keyboard: List[List[KeyboardButton]] = []
 
     def add(self, *args, row_width=None):
@@ -942,11 +942,11 @@ class ReplyKeyboardMarkup(JsonSerializable):
         :return:
         """
         json_dict = {'keyboard': self.keyboard}
-        if self.one_time_keyboard:
+        if self.one_time_keyboard is not None:
             json_dict['one_time_keyboard'] = True
-        if self.resize_keyboard:
+        if self.resize_keyboard is not None:
             json_dict['resize_keyboard'] = True
-        if self.selective:
+        if self.selective is not None:
             json_dict['selective'] = True
         if self.input_field_placeholder:
             json_dict['input_field_placeholder'] = self.input_field_placeholder
@@ -954,7 +954,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
 
 
 class KeyboardButton(Dictionaryable, JsonSerializable):
-    def __init__(self, text, request_contact=None, request_location=None, request_poll=None):
+    def __init__(self, text: str, request_contact: Optional[bool]=None, 
+            request_location: Optional[bool]=None, request_poll: Optional[bool]=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
@@ -965,11 +966,11 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
 
     def to_dict(self):
         json_dict = {'text': self.text}
-        if self.request_contact:
+        if self.request_contact is not None:
             json_dict['request_contact'] = self.request_contact
-        if self.request_location:
+        if self.request_location is not None:
             json_dict['request_location'] = self.request_location
-        if self.request_poll:
+        if self.request_poll is not None:
             json_dict['request_poll'] = self.request_poll.to_dict()
         return json_dict
 

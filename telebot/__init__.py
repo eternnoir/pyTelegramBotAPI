@@ -103,7 +103,7 @@ class TeleBot:
         editMessageReplyMarkup
         editMessageLiveLocation
         stopMessageLiveLocation
-        kickChatMember
+        banChatMember
         unbanChatMember
         restrictChatMember
         promoteChatMember
@@ -131,11 +131,12 @@ class TeleBot:
         leaveChat
         getChat
         getChatAdministrators
-        getChatMembersCount
+        getChatMemberCount
         getChatMember
         answerCallbackQuery
         getMyCommands
         setMyCommands
+        deleteMyCommands
         answerInlineQuery
         answerShippingQuery
         answerPreCheckoutQuery
@@ -838,11 +839,19 @@ class TeleBot:
 
     def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
+        This function is deprecated. Use `get_chat_member_count` instead
+        """
+        logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead.')
+        result = apihelper.get_chat_member_count(self.token, chat_id)
+        return result
+    
+    def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
+        """
         Use this method to get the number of members in a chat. Returns Int on success.
         :param chat_id:
         :return:
         """
-        result = apihelper.get_chat_members_count(self.token, chat_id)
+        result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
 
     def set_chat_sticker_set(self, chat_id: Union[int, str], sticker_set_name: str) -> types.StickerSet:
@@ -1463,7 +1472,20 @@ class TeleBot:
             until_date:Optional[Union[int, datetime]]=None, 
             revoke_messages: Optional[bool]=None) -> bool:
         """
-        Use this method to kick a user from a group or a supergroup.
+        This function is deprecated. Use `ban_chat_member` instead
+        """
+        logger.info('kick_chat_member is deprecated. Use ban_chat_member instead.')
+        return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
+
+    def ban_chat_member(
+            self, chat_id: Union[int, str], user_id: int, 
+            until_date:Optional[Union[int, datetime]]=None, 
+            revoke_messages: Optional[bool]=None) -> bool:
+        """
+        Use this method to ban a user in a group, a supergroup or a channel. 
+        In the case of supergroups and channels, the user will not be able to return to the chat on their 
+        own using invite links, etc., unless unbanned first. 
+        Returns True on success.
         :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
@@ -1473,7 +1495,7 @@ class TeleBot:
                 Always True for supergroups and channels.
         :return: boolean
         """
-        return apihelper.kick_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
+        return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     def unban_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
@@ -1699,54 +1721,49 @@ class TeleBot:
             setting is off in the target group.
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :return:
         """
         return apihelper.delete_chat_photo(self.token, chat_id)
     
-    def get_my_commands(self,
-                        scope: Optional[Union[
-                            types.BotCommandScopeDefault, types.BotCommandScopeAllPrivateChats,
-                            types.BotCommandScopeAllGroupChats, types.BotCommandScopeAllChatAdministrators,
-                            types.BotCommandScopeChat,
-                            types.BotCommandScopeChatAdministrators, types.BotCommandScopeChatMember]]=None,
-                        language_code: Optional[str]=None) -> List[types.BotCommand]:
+    def get_my_commands(self, scope: Optional[types.BotCommandScope], 
+            language_code: Optional[str]) -> List[types.BotCommand]:
         """
-        Use this method to get the current list of the bot's commands for the given scope and user language
-        :param scope: scope of users for which the commands are relevant
-        :param language_code: A two-letter ISO 639-1 language code
+        Use this method to get the current list of the bot's commands. 
         Returns List of BotCommand on success.
+        :param scope: The scope of users for which the commands are relevant. 
+            Defaults to BotCommandScopeDefault.
+        :param language_code: A two-letter ISO 639-1 language code. If empty, 
+            commands will be applied to all users from the given scope, 
+            for whose language there are no dedicated commands
         """
         result = apihelper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
-    def set_my_commands(self, commands: List[types.BotCommand],
-                        scope: Optional[Union[
-                            types.BotCommandScopeDefault, types.BotCommandScopeAllPrivateChats,
-                            types.BotCommandScopeAllGroupChats, types.BotCommandScopeAllChatAdministrators,
-                            types.BotCommandScopeChat,
-                            types.BotCommandScopeChatAdministrators, types.BotCommandScopeChatMember]] = None,
-                        language_code: Optional[str]=None) -> bool:
+    def set_my_commands(self, commands: List[types.BotCommand], 
+            scope: Optional[types.BotCommandScope]=None,
+            language_code: Optional[str]=None) -> bool:
         """
         Use this method to change the list of the bot's commands.
         :param commands: List of BotCommand. At most 100 commands can be specified.
-        :param scope: scope of users for which the commands are relevant
-        :param language_code: A two-letter ISO 639-1 language code
+        :param scope: The scope of users for which the commands are relevant. 
+            Defaults to BotCommandScopeDefault.
+        :param language_code: A two-letter ISO 639-1 language code. If empty, 
+            commands will be applied to all users from the given scope, 
+            for whose language there are no dedicated commands
         :return:
         """
         return apihelper.set_my_commands(self.token, commands, scope, language_code)
-
-    def delete_my_commands(self,
-                           scope: Optional[Union[
-                               types.BotCommandScopeDefault, types.BotCommandScopeAllPrivateChats,
-                               types.BotCommandScopeAllGroupChats, types.BotCommandScopeAllChatAdministrators,
-                               types.BotCommandScopeChat,
-                               types.BotCommandScopeChatAdministrators, types.BotCommandScopeChatMember]]=None,
-                           language_code: Optional[str]=None) -> bool:
+    
+    def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
+            language_code: Optional[int]=None) -> bool:
         """
-        Use this method to delete the list of the bot's commands for the given scope and user language.
-        :param scope: scope of users for which the commands are relevant
-        :param language_code: A two-letter ISO 639-1 language code
-        :return:
+        Use this method to delete the list of the bot's commands for the given scope and user language. 
+        After deletion, higher level commands will be shown to affected users. 
+        Returns True on success.
+        :param scope: The scope of users for which the commands are relevant. 
+            Defaults to BotCommandScopeDefault.
+        :param language_code: A two-letter ISO 639-1 language code. If empty, 
+            commands will be applied to all users from the given scope, 
+            for whose language there are no dedicated commands
         """
         return apihelper.delete_my_commands(self.token, scope, language_code)
 
@@ -2907,12 +2924,16 @@ class AsyncTeleBot(TeleBot):
         return TeleBot.close(self)
 
     @util.async_dec()
-    def get_my_commands(self):
-        return TeleBot.get_my_commands(self)
+    def get_my_commands(self, *args, **kwargs): # needed args because new scope and language_code
+        return TeleBot.get_my_commands(self, *args, **kwargs)
 
     @util.async_dec()
     def set_my_commands(self, *args, **kwargs):
         return TeleBot.set_my_commands(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def delete_my_commands(self, *args, **kwargs):
+        return TeleBot.delete_my_commands(self, *args, **kwargs)
 
     @util.async_dec()
     def get_file(self, *args):
@@ -2940,7 +2961,12 @@ class AsyncTeleBot(TeleBot):
 
     @util.async_dec()
     def get_chat_members_count(self, *args):
-        return TeleBot.get_chat_members_count(self, *args)
+        logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead')
+        return TeleBot.get_chat_member_count(self, *args)
+    
+    @util.async_dec()
+    def get_chat_member_count(self, *args):
+        return TeleBot.get_chat_member_count(self, *args)
 
     @util.async_dec()
     def set_chat_sticker_set(self, *args):
@@ -3036,7 +3062,12 @@ class AsyncTeleBot(TeleBot):
 
     @util.async_dec()
     def kick_chat_member(self, *args, **kwargs):
-        return TeleBot.kick_chat_member(self, *args, **kwargs)
+        logger.info('kick_chat_member is deprecated. Use ban_chat_member instead.')
+        return TeleBot.ban_chat_member(self, *args, **kwargs)
+    
+    @util.async_dec()
+    def ban_chat_member(self, *args, **kwargs):
+        return TeleBot.ban_chat_member(self, *args, **kwargs)
 
     @util.async_dec()
     def unban_chat_member(self, *args, **kwargs):
