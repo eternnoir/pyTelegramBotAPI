@@ -330,12 +330,6 @@ def get_chat_administrators(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
-def get_chat_members_count(token, chat_id):
-    method_url = r'getChatMembersCount'
-    payload = {'chat_id': chat_id}
-    return _make_request(token, method_url, params=payload)
-
-
 def get_chat_member_count(token, chat_id):
     method_url = r'getChatMemberCount'
     payload = {'chat_id': chat_id}
@@ -854,18 +848,6 @@ def get_method_by_type(data_type):
         return r'sendDocument'
     if data_type == 'sticker':
         return r'sendSticker'
-
-
-def kick_chat_member(token, chat_id, user_id, until_date=None, revoke_messages=None):
-    method_url = 'kickChatMember'
-    payload = {'chat_id': chat_id, 'user_id': user_id}
-    if isinstance(until_date, datetime):
-        payload['until_date'] = until_date.timestamp()
-    else:
-        payload['until_date'] = until_date
-    if revoke_messages is not None:
-        payload['revoke_messages'] = revoke_messages
-    return _make_request(token, method_url, params=payload, method='post')
 
 
 def ban_chat_member(token, chat_id, user_id, until_date=None, revoke_messages=None):

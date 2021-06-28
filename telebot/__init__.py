@@ -103,7 +103,6 @@ class TeleBot:
         editMessageReplyMarkup
         editMessageLiveLocation
         stopMessageLiveLocation
-        kickChatMember
         banChatMember
         unbanChatMember
         restrictChatMember
@@ -132,7 +131,6 @@ class TeleBot:
         leaveChat
         getChat
         getChatAdministrators
-        getChatMembersCount
         getChatMemberCount
         getChatMember
         answerCallbackQuery
@@ -845,7 +843,8 @@ class TeleBot:
         :param chat_id:
         :return:
         """
-        result = apihelper.get_chat_members_count(self.token, chat_id)
+        logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead.')
+        result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
     
     def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
@@ -1485,7 +1484,8 @@ class TeleBot:
                 Always True for supergroups and channels.
         :return: boolean
         """
-        return apihelper.kick_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
+        logger.info('kick_chat_member is deprecated. Use ban_chat_member instead.')
+        return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     def ban_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
@@ -2971,7 +2971,8 @@ class AsyncTeleBot(TeleBot):
 
     @util.async_dec()
     def get_chat_members_count(self, *args):
-        return TeleBot.get_chat_members_count(self, *args)
+        logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead')
+        return TeleBot.get_chat_member_count(self, *args)
     
     @util.async_dec()
     def get_chat_member_count(self, *args):
@@ -3071,7 +3072,8 @@ class AsyncTeleBot(TeleBot):
 
     @util.async_dec()
     def kick_chat_member(self, *args, **kwargs):
-        return TeleBot.kick_chat_member(self, *args, **kwargs)
+        logger.info('kick_chat_member is deprecated. Use ban_chat_member instead.')
+        return TeleBot.ban_chat_member(self, *args, **kwargs)
     
     @util.async_dec()
     def ban_chat_member(self, *args, **kwargs):
