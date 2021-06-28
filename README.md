@@ -208,26 +208,59 @@ def send_something(message):
 **Important: all handlers are tested in the order in which they were declared**
 
 #### Edited Message handlers
-
-@bot.edited_message_handler(filters)
+Handle edited messages
+`@bot.edited_message_handler(filters) # <- passes a Message type object to your function`
 
 #### channel_post_handler
-
-@bot.channel_post_handler(filters)
+Handle channel post messages
+`@bot.channel_post_handler(filters) # <- passes a Message type object to your function`
 
 #### edited_channel_post_handler
-
-@bot.edited_channel_post_handler(filters)
+Handle edited channel post messages
+`@bot.edited_channel_post_handler(filters) # <- passes a Message type object to your function`
 
 #### Callback Query Handler
-
-In bot2.0 update. You can get `callback_query` in update object. In telebot use `callback_query_handler` to process callback queries.
-
+Handle callback queries
 ```python
 @bot.callback_query_handler(func=lambda call: True)
-def  test_callback(call):
+def  test_callback(call): # <- passes a CallbackQuery type object to your function
     logger.info(call)
 ```
+
+#### Inline Handler
+Handle inline queries
+`@bot.inline_handler() # <- passes a InlineQuery type object to your function` 
+
+#### Chosen Inline Handler
+Handle chosen inline results
+`@bot.chosen_inline_handler() # <- passes a ChosenInlineResult type object to your function`
+
+#### Shipping Query Handler
+Handle shipping queries
+`@bot.shipping_query_handeler() # <- passes a ShippingQuery type object to your function`
+
+#### Pre Checkout Query Handler
+Handle pre checkoupt queries
+`@bot.pre_checkout_query_handler() # <- passes a PreCheckoutQuery type object to your function`
+
+#### Poll Handler
+Handle poll updates
+`@bot.poll_handler() # <- passes a Poll type object to your function`
+
+#### Poll Answer Handler
+Handle poll answers
+`@bot.poll_answer_handler() # <- passes a PollAnswer type object to your function`
+
+#### My Chat Member Handler
+Handle updates of a the bot's member status in a chat
+`@bot.my_chat_member_handler() # <- passes a ChatMemberUpdated type object to your function`
+
+#### Chat Member Handler
+Handle updates of a chat member's status in a chat
+`@bot.chat_member_handler() # <- passes a ChatMemberUpdated type object to your function`
+*Note: "chat_member" updates are not requested by default. If you want to allow all update types, set `allowed_updates` in `bot.polling()` / `bot.infinity_polling()` to `util.update_types`*
+
+
 #### Middleware Handler
 
 A middleware handler is a function that allows you to modify requests or the bot context as they pass through the 
@@ -261,6 +294,7 @@ tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 # - interval: True/False (default False) - The interval between polling requests
 #           Note: Editing this parameter harms the bot's response time
 # - timeout: integer (default 20) - Timeout in seconds for long polling.
+# - allowed_updates: List of Strings (default None) - List of update types to request 
 tb.polling(none_stop=False, interval=0, timeout=20)
 
 # getMe
@@ -454,6 +488,18 @@ Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra deta
 
 ## Advanced use of the API
 
+### Using local Bot API Sever
+Since version 5.0 of the Bot API, you have the possibility to run your own [Local Bot API Server](https://core.telegram.org/bots/api#using-a-local-bot-api-server).
+pyTelegramBotAPI also supports this feature.
+```python
+from telebot import apihelper
+
+apihelper.API_URL = "http://localhost:4200/bot{0}/{1}"
+```
+**Important: Like described [here](https://core.telegram.org/bots/api#logout), you have to log out your bot from the Telegram server before switching to your local API server. in pyTelegramBotAPI use `bot.log_out()`**
+
+*Note: 4200 is an example port*
+
 ### Asynchronous delivery of messages
 There exists an implementation of TeleBot which executes all `send_xyz` and the `get_me` functions asynchronously. This can speed up your bot __significantly__, but it has unwanted side effects if used without caution.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
@@ -481,9 +527,10 @@ Sometimes you must send messages that exceed 5000 characters. The Telegram API c
 from telebot import util
 large_text = open("large_text.txt", "rb").read()
 
-# Split the text each 3000 characters.
-# split_string returns a list with the splitted text.
-splitted_text = util.split_string(large_text, 3000)
+# Splits one string into multiple strings, with a maximum amount of `chars_per_string` (max. 4096)
+# Splits by last '\n', '. ' or ' ' in exactly this priority.
+# smart_split returns a list with the splitted text.
+splitted_text = util.smart_split(large_text, chars_per_string=3000)
 for text in splitted_text:
 	tb.send_message(chat_id, text)
 ```
