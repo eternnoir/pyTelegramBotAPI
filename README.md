@@ -527,6 +527,18 @@ Sometimes you must send messages that exceed 5000 characters. The Telegram API c
 from telebot import util
 large_text = open("large_text.txt", "rb").read()
 
+# Split the text each 3000 characters.
+# split_string returns a list with the splitted text.
+splitted_text = util.split_string(large_text, 3000)
+
+for text in splitted_text:
+	tb.send_message(chat_id, text)
+```
+
+Or you can use the new `smart_split` function to get more meaningful substrings:
+```python
+from telebot import util
+large_text = open("large_text.txt", "rb").read()
 # Splits one string into multiple strings, with a maximum amount of `chars_per_string` (max. 4096)
 # Splits by last '\n', '. ' or ' ' in exactly this priority.
 # smart_split returns a list with the splitted text.
