@@ -420,7 +420,7 @@ def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
 
 
-def deprecated_dec(warn: Optional[bool]=False, alternative: Optional[Callable]=None):
+def deprecated_dec(warn: bool=False, alternative: Optional[Callable]=None):
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.
