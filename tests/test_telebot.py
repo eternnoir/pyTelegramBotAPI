@@ -19,6 +19,14 @@ if not should_skip:
     CHAT_ID = os.environ['CHAT_ID']
     GROUP_ID = os.environ['GROUP_ID']
 
+def _new_test():
+    pass
+
+@util.deprecated(alternative=_new_test)
+def _test():
+    pass
+        
+
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
@@ -615,6 +623,9 @@ class TestTeleBot:
         tb.process_new_updates([update])
         time.sleep(1)
         assert update.message.text == 'got' * 2
+    
+    def test_deprecated_dec(self):
+        _test()
 
     def test_chat_permissions(self):
         return # CHAT_ID is private chat, no permissions can be set
