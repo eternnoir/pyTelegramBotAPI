@@ -6,7 +6,7 @@ import threading
 import traceback
 import warnings
 import functools
-from typing import Any, List, Dict, Union
+from typing import Any, Callable, List, Dict, Optional, Union
 
 import queue as Queue
 import logging
@@ -418,6 +418,26 @@ def chunks(lst, n):
 
 def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
+
+
+def deprecated_dec(warn: Optional[bool]=False, alternative: Optional[Callable]=None):
+    """
+    Use this decorator to mark functions as deprecated.
+    When the function is used, an info (or warning if `warn` is True) is logged.
+    :param warn: If True a warning is logged else an info
+    :param alternative: The new function to use instead
+    """
+    def decorator(function):
+        def wrapper(*args, **kwargs):
+            if not warn:
+                logger.info(f"`{function.__name__}` is deprecated." 
+                    + (f" Use `{alternative.__name__}` instead" if alternative else ""))
+            else:
+                logger.warn(f"`{function.__name__}` is deprecated." 
+                    + (f" Use `{alternative.__name__}` instead" if alternative else ""))
+            return function(*args, **kwargs)
+        return wrapper
+    return decorator
 
 
 def deprecated(func):
