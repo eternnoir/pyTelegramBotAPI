@@ -1123,7 +1123,8 @@ class TeleBot:
             timeout: Optional[int]=None, 
             thumb: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            visible_file_name: Optional[str]=None) -> types.Message:
         """
         Use this method to send general files.
         :param chat_id:
@@ -1137,6 +1138,7 @@ class TeleBot:
         :param thumb: InputFile or String : Thumbnail of the file sent
         :param caption_entities:
         :param allow_sending_without_reply:
+        :param visible_file_name: allows to define file name that will be visible in the Telegram instead of original file name
         :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -1145,7 +1147,7 @@ class TeleBot:
             apihelper.send_data(
                 self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
                 parse_mode, disable_notification, timeout, caption, thumb, caption_entities,
-                allow_sending_without_reply))
+                allow_sending_without_reply, visible_file_name))
 
     def send_sticker(
             self, chat_id: Union[int, str], data: Union[Any, str], 

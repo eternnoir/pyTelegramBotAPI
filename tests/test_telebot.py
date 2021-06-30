@@ -134,6 +134,16 @@ class TestTeleBot:
         ret_msg = tb.send_document(CHAT_ID, ret_msg.document.file_id)
         assert ret_msg.message_id
 
+    def test_send_file_with_filename(self):
+        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        tb = telebot.TeleBot(TOKEN)
+
+        ret_msg = tb.send_document(CHAT_ID, file_data)
+        assert ret_msg.message_id
+
+        ret_msg = tb.send_document(CHAT_ID, file_data, visible_file_name="test.jpg")
+        assert ret_msg.message_id
+        
     def test_send_file_dis_noti(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
