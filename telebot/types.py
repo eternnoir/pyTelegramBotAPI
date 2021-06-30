@@ -148,6 +148,23 @@ class ChatMemberUpdated(JsonDeserializable):
         self.old_chat_member: ChatMember = old_chat_member
         self.new_chat_member: ChatMember = new_chat_member
         self.invite_link: Optional[ChatInviteLink] = invite_link
+    
+    @property
+    def difference(self) -> Dict[str, List]:
+        """
+        Get the difference between `old_chat_member` and `new_chat_member`
+        as a dict in the following format {'parameter': [old_value, new_value]}
+        E.g {'status': ['member', 'kicked'], 'until_date': [None, 1625055092]} 
+        """
+        old: Dict = self.old_chat_member.__dict__
+        new: Dict = self.new_chat_member.__dict__
+        old.pop('user') # User should always be the same
+        new.pop('user') # No need to include
+        dif = {}
+        for key in new:
+            if new[key] != old[key]:
+                dif[key] = [old[key], new[key]]
+        return dif
 
 
 class WebhookInfo(JsonDeserializable):
