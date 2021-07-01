@@ -158,10 +158,9 @@ class ChatMemberUpdated(JsonDeserializable):
         """
         old: Dict = self.old_chat_member.__dict__
         new: Dict = self.new_chat_member.__dict__
-        old.pop('user') # User should always be the same
-        new.pop('user') # No need to include
         dif = {}
         for key in new:
+            if key == 'user': continue
             if new[key] != old[key]:
                 dif[key] = [old[key], new[key]]
         return dif
