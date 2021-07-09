@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
 from datetime import datetime
-from typing import Dict
 
 try:
     import ujson as json
@@ -12,6 +11,7 @@ import requests
 from requests.exceptions import HTTPError, ConnectionError, Timeout
 
 try:
+    # noinspection PyUnresolvedReferences
     from requests.packages.urllib3 import fields
     format_header_param = fields.format_header_param
 except ImportError:
@@ -28,8 +28,11 @@ session = None
 API_URL = None
 FILE_URL = None
 
-CONNECT_TIMEOUT = 3.5
-READ_TIMEOUT = 9999
+CONNECT_TIMEOUT = 15
+READ_TIMEOUT = 30
+
+LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
+
 SESSION_TIME_TO_LIVE = None  # In seconds. None - live forever, 0 - one-time
 
 RETRY_ON_ERROR = False
@@ -45,6 +48,7 @@ def _get_req_session(reset=False):
     if SESSION_TIME_TO_LIVE:
         # If session TTL is set - check time passed
         creation_date = util.per_thread('req_session_time', lambda: datetime.now(), reset)
+        # noinspection PyTypeChecker
         if (datetime.now() - creation_date).total_seconds() > SESSION_TIME_TO_LIVE:
             # Force session reset
             reset = True
@@ -72,6 +76,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     if not token:
         raise Exception('Bot token is not defined')
     if API_URL:
+        # noinspection PyUnresolvedReferences
         request_url = API_URL.format(token, method_name)
     else:
         request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
@@ -83,17 +88,21 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         fields.format_header_param = _no_encode(format_header_param)
     if params:
         if 'timeout' in params:
-            read_timeout = params.pop('timeout') + 10
-        if 'connect-timeout' in params:
-            connect_timeout = params.pop('connect-timeout') + 10
+            read_timeout = params.pop('timeout')
+            connect_timeout = read_timeout
+#        if 'connect-timeout' in params:
+#            connect_timeout = params.pop('connect-timeout') + 10
         if 'long_polling_timeout' in params:
-            # For getUpdates
-            # The only function with timeout on the BOT API side
-            params['timeout'] = params.pop('long_polling_timeout')
-            # Long polling hangs for given time. Read timeout should be greater that long_polling_timeout
-            read_timeout = max(params['timeout'] + 10, read_timeout)
+            # For getUpdates: it's the only function with timeout parameter on the BOT API side
+            long_polling_timeout = params.pop('long_polling_timeout')
+            params['timeout'] = long_polling_timeout
+            # Long polling hangs for a given time. Read timeout should be greater that long_polling_timeout
+            read_timeout = max(long_polling_timeout + 5, read_timeout)
+    # Lets stop suppose that user is stupid and assume that he knows what he do...
+    # read_timeout = read_timeout + 10
+    # connect_timeout = connect_timeout + 10
 
-    params = params or None #set params to None if empty
+    params = params or None # Set params to None if empty
 
     result = None
     if RETRY_ON_ERROR:
@@ -189,13 +198,15 @@ def get_file_url(token, file_id):
     if FILE_URL is None:
         return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)['file_path'])
     else:
+        # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, get_file(token, file_id)['file_path'])
- 
+
 
 def download_file(token, file_path):
     if FILE_URL is None:
         url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
     else:
+        # noinspection PyUnresolvedReferences
         url =  FILE_URL.format(token, file_path)
         
     result = _get_req_session().get(url, proxies=proxy)
@@ -238,7 +249,7 @@ def send_message(
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if entities:
         payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
     if allow_sending_without_reply is not None:
@@ -264,7 +275,7 @@ def set_webhook(token, url=None, certificate=None, max_connections=None, allowed
     if drop_pending_updates is not None:  # Any bool value should pass
         payload['drop_pending_updates'] = drop_pending_updates
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=files)
 
 
@@ -274,7 +285,7 @@ def delete_webhook(token, drop_pending_updates=None, timeout=None):
     if drop_pending_updates is not None:  # Any bool value should pass
         payload['drop_pending_updates'] = drop_pending_updates
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -282,7 +293,7 @@ def get_webhook_info(token, timeout=None):
     method_url = r'getWebhookInfo'
     payload = {}
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -294,9 +305,8 @@ def get_updates(token, offset=None, limit=None, timeout=None, allowed_updates=No
     if limit:
         payload['limit'] = limit
     if timeout:
-        payload['connect-timeout'] = timeout
-    if long_polling_timeout:
-        payload['long_polling_timeout'] = long_polling_timeout
+        payload['timeout'] = timeout
+    payload['long_polling_timeout'] = long_polling_timeout if long_polling_timeout else LONG_POLLING_TIMEOUT
     if allowed_updates is not None:  # Empty lists should pass
         payload['allowed_updates'] = json.dumps(allowed_updates)
     return _make_request(token, method_url, params=payload)
@@ -374,7 +384,7 @@ def forward_message(
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -398,7 +408,7 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -417,7 +427,7 @@ def send_dice(
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
@@ -448,7 +458,7 @@ def send_photo(
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -468,7 +478,7 @@ def send_media_group(
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(
@@ -502,7 +512,7 @@ def send_location(
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -527,7 +537,7 @@ def edit_message_live_location(
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -545,7 +555,7 @@ def stop_message_live_location(
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -568,7 +578,7 @@ def send_venue(
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if google_place_id:
@@ -595,7 +605,7 @@ def send_contact(
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
@@ -605,7 +615,7 @@ def send_chat_action(token, chat_id, action, timeout=None):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload)
 
 
@@ -634,7 +644,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if thumb:
         if not util.is_string(thumb):
             if files:
@@ -678,7 +688,7 @@ def send_animation(
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if thumb:
         if not util.is_string(thumb):
             if files:
@@ -717,7 +727,7 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -747,7 +757,7 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if thumb:
         if not util.is_string(thumb):
             if files:
@@ -788,7 +798,7 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if thumb:
         if not util.is_string(thumb):
             if files:
@@ -826,7 +836,7 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if caption:
         payload['caption'] = caption
     if thumb:
@@ -1162,7 +1172,7 @@ def delete_message(token, chat_id, message_id, timeout=None):
     method_url = r'deleteMessage'
     payload = {'chat_id': chat_id, 'message_id': message_id}
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1181,7 +1191,7 @@ def send_game(
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
@@ -1314,7 +1324,7 @@ def send_invoice(
     if provider_data:
         payload['provider_data'] = provider_data
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     return _make_request(token, method_url, params=payload)
@@ -1458,6 +1468,7 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+# noinspection PyShadowingBuiltins
 def send_poll(
         token, chat_id,
         question, options,
@@ -1502,7 +1513,7 @@ def send_poll(
     if reply_markup is not None:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
-        payload['connect-timeout'] = timeout
+        payload['timeout'] = timeout
     if explanation_entities:
         payload['explanation_entities'] = json.dumps(
             types.MessageEntity.to_list_of_dicts(explanation_entities))
