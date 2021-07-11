@@ -740,7 +740,7 @@ class TeleBot:
 
     def stop_bot(self):
         self.stop_polling()
-        if self.worker_pool:
+        if getattr(self, 'worker_pool', False):
             self.worker_pool.close()
 
     def set_update_listener(self, listener):
