@@ -1258,7 +1258,7 @@ def send_invoice(
         need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
-        timeout=None, allow_sending_without_reply=None,max_tip_amount=None, suggested_tip_amounts=None):
+        timeout=None, allow_sending_without_reply=None, max_tip_amount=None, suggested_tip_amounts=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
