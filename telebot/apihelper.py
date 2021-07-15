@@ -1258,7 +1258,7 @@ def send_invoice(
         need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
-        timeout=None, allow_sending_without_reply=None):
+        timeout=None, allow_sending_without_reply=None,max_tip_amount=None, suggested_tip_amounts=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1287,6 +1287,9 @@ def send_invoice(
     :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
     :param timeout:
     :param allow_sending_without_reply:
+    :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
+        At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
     :return:
     """
     method_url = r'sendInvoice'
@@ -1327,6 +1330,10 @@ def send_invoice(
         payload['timeout'] = timeout
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
+    if max_tip_amount is not None:
+        payload['max_tip_amount'] = max_tip_amount
+    if suggested_tip_amounts is not None:
+        payload['suggested_tip_amounts'] = json.dumps(suggested_tip_amounts)
     return _make_request(token, method_url, params=payload)
 
 

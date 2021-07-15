@@ -1983,7 +1983,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             provider_data: Optional[str]=None, 
             timeout: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            max_tip_amount: Optional[int] = None, suggested_tip_amounts: Optional[list]=None) -> types.Message:
         """
         Sends invoice
         :param chat_id: Unique identifier for the target private chat
@@ -2018,6 +2019,10 @@ class TeleBot:
             A detailed description of required fields should be provided by the payment provider.
         :param timeout:
         :param allow_sending_without_reply:
+        :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
+            units of the currency.  At most 4 suggested tip amounts can be specified. The suggested tip
+            amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
         :return:
         """
         result = apihelper.send_invoice(
@@ -2025,7 +2030,8 @@ class TeleBot:
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
             photo_height, need_name, need_phone_number, need_email, need_shipping_address,
             send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
-            reply_to_message_id, reply_markup, provider_data, timeout, allow_sending_without_reply)
+            reply_to_message_id, reply_markup, provider_data, timeout, allow_sending_without_reply,
+            max_tip_amount, suggested_tip_amounts)
         return types.Message.de_json(result)
 
     def send_poll(
