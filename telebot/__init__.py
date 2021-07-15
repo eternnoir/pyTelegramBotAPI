@@ -1984,7 +1984,8 @@ class TeleBot:
             provider_data: Optional[str]=None, 
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            max_tip_amount: Optional[int] = None, suggested_tip_amounts: Optional[list]=None) -> types.Message:
+            max_tip_amount: Optional[int] = None,
+            suggested_tip_amounts: Optional[list]=None) -> types.Message:
         """
         Sends invoice
         :param chat_id: Unique identifier for the target private chat
