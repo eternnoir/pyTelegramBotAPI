@@ -351,9 +351,10 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
     :return: InlineKeyboardMarkup
     """
     markup = types.InlineKeyboardMarkup(row_width=row_width)
-    buttons = []
-    for text, kwargs in values.items():
-        buttons.append(types.InlineKeyboardButton(text=text, **kwargs))
+    buttons = [
+        types.InlineKeyboardButton(text=text, **kwargs)
+        for text, kwargs in values.items()
+    ]
     markup.add(*buttons)
     return markup
 

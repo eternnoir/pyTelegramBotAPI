@@ -359,10 +359,7 @@ class TeleBot:
         :return: array of Updates
         """
         json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates, long_polling_timeout)
-        ret = []
-        for ju in json_updates:
-            ret.append(types.Update.de_json(ju))
-        return ret
+        return [types.Update.de_json(ju) for ju in json_updates]
 
     def __skip_updates(self):
         """
@@ -832,10 +829,7 @@ class TeleBot:
         :return:
         """
         result = apihelper.get_chat_administrators(self.token, chat_id)
-        ret = []
-        for r in result:
-            ret.append(types.ChatMember.de_json(r))
-        return ret
+        return [types.ChatMember.de_json(r) for r in result]
 
     def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
@@ -1307,10 +1301,7 @@ class TeleBot:
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
             allow_sending_without_reply)
-        ret = []
-        for msg in result:
-            ret.append(types.Message.de_json(msg))
-        return ret
+        return [types.Message.de_json(msg) for msg in result]
 
     def send_location(
             self, chat_id: Union[int, str], 
@@ -1962,10 +1953,7 @@ class TeleBot:
         :return:
         """
         result = apihelper.get_game_high_scores(self.token, user_id, chat_id, message_id, inline_message_id)
-        ret = []
-        for r in result:
-            ret.append(types.GameHighScore.de_json(r))
-        return ret
+        return [types.GameHighScore.de_json(r) for r in result]
 
     def send_invoice(
             self, chat_id: Union[int, str], title: str, description: str, 
