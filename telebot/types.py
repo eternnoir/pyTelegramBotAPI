@@ -81,13 +81,10 @@ class JsonDeserializable(object):
             raise ValueError("json_type should be a json dict or string.")
 
     def __str__(self):
-        d = {}
-        for x, y in self.__dict__.items():
-            if hasattr(y, '__dict__'):
-                d[x] = y.__dict__
-            else:
-                d[x] = y
-
+        d = {
+            x: y.__dict__ if hasattr(y, '__dict__') else y
+            for x, y in self.__dict__.items()
+        }
         return str(d)
 
 
