@@ -49,7 +49,7 @@ class WorkerThread(threading.Thread):
 
     def __init__(self, exception_callback=None, queue=None, name=None):
         if not name:
-            name = "WorkerThread{0}".format(self.__class__.count + 1)
+            name = f"WorkerThread{self.__class__.count + 1}"
             self.__class__.count += 1
         if not queue:
             queue = Queue.Queue()

@@ -383,7 +383,7 @@ class TeleBot:
         :raises ApiException when a call has failed.
         """
         if self.skip_pending:
-            logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
+            logger.debug(f'Skipped {self.__skip_updates()} pending messages')
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), 
                                    allowed_updates=allowed_updates,
@@ -392,7 +392,7 @@ class TeleBot:
 
     def process_new_updates(self, updates):
         upd_count = len(updates)
-        logger.debug('Received {0} new updates'.format(upd_count))
+        logger.debug(f'Received {upd_count} new updates')
         if upd_count == 0: return
 
         new_messages = None
@@ -651,7 +651,7 @@ class TeleBot:
                     else:
                         # polling_thread.clear_exceptions()
                         # self.worker_pool.clear_exceptions()
-                        logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                        logger.info(f"Waiting for {error_interval} seconds until retry")
                         time.sleep(error_interval)
                         error_interval *= 2
                 else:
@@ -705,7 +705,7 @@ class TeleBot:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
                     else:
-                        logger.info("Waiting for {0} seconds until retry".format(error_interval))
+                        logger.info(f"Waiting for {error_interval} seconds until retry")
                         time.sleep(error_interval)
                         error_interval *= 2
                 else:

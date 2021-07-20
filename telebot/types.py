@@ -210,7 +210,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def full_name(self):
         full_name = self.first_name
         if self.last_name:
-            full_name += ' {0}'.format(self.last_name)
+            full_name += f' {self.last_name}'
         return full_name
 
     def to_json(self):
@@ -567,9 +567,9 @@ class Message(JsonDeserializable):
             upd_text = upd_text.decode("utf-16-le")
             if subst_type == "text_mention":
                 subst_type = "text_link"
-                url = "tg://user?id={0}".format(user.id)
+                url = f"tg://user?id={user.id}"
             elif subst_type == "mention":
-                url = "https://t.me/{0}".format(upd_text[1:])
+                url = f"https://t.me/{upd_text[1:]}"
             upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             if not subst_type or not _subs.get(subst_type):
                 return upd_text
@@ -2540,7 +2540,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
             self._media_dic = self.media
         else:
             self._media_name = util.generate_random_token()
-            self._media_dic = 'attach://{0}'.format(self._media_name)
+            self._media_dic = f'attach://{self._media_name}'
 
     def to_json(self):
         return json.dumps(self.to_dict())
