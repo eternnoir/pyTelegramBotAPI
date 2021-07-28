@@ -2116,7 +2116,8 @@ class TeleBot:
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None,
-            parse_mode: Optional[str]=None, 
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages

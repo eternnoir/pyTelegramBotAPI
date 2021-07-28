@@ -1123,7 +1123,7 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
 
 
 def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, reply_markup=None):
+                         parse_mode=None, caption_entities=None,reply_markup=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -1134,6 +1134,8 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
         payload['inline_message_id'] = inline_message_id
     if parse_mode:
         payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = caption_entities
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload, method='post')
