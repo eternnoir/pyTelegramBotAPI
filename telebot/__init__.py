@@ -2116,7 +2116,7 @@ class TeleBot:
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None,
-            parse_mode: Optional[str]=None,
+            parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
@@ -2462,7 +2462,7 @@ class TeleBot:
         else:
             self.default_middleware_handlers.append(handler)
 
-    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, is_private=None, supergroup=None, user_id=None, chat_id=None, **kwargs):
+    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
@@ -2488,32 +2488,12 @@ class TeleBot:
             'text', 'location', 'contact', 'sticker'])
         def default_command(message):
             bot.send_message(message.chat.id, "This is the default command handler.")
-        # Handle all messages in private chat.
-        @bot.message_handler(is_private=True)
-        def default_command(message):
-            bot.send_message(message.chat.id, "You wrote message in private chat")
-        # Handle all messages in group/supergroup.
-        @bot.message_handler(supergroup=True)
-        def default_command(message):
-            bot.send_message(message.chat.id, "You wrote message in supergroup")
-        # Handle all messages from user 11111
-        @bot.message_handler(user_id=[11111])
-        def default_command(message):
-            bot.send_message(message.chat.id, "You wrote me message in special chat")# This doesn't work for other users than '11111'
-        # Handle all messages in specific group/supergroup.
-        @bot.message_handler(chat_id=[1111]])
-        def default_command(message):
-            bot.send_message(message.chat.id, "You wrote message in special supergroup")
 
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
             It must return True if the command should handle the message.
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
-        :param is_private: True/False, only private chats.
-        :param supergroup: True/False, only supergroups/groups.
-        :param user_id: List of user ids, which can use handler.
-        :param chat_id: List of chat_ids where handler is executed.
         """
 
         if content_types is None:
@@ -2524,10 +2504,6 @@ class TeleBot:
                                                     content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
-                                                    is_private=is_private,
-                                                    supergroup=supergroup,
-                                                    user_id=user_id,
-                                                    chat_id = chat_id,
                                                     func=func,
                                                     **kwargs)
             self.add_message_handler(handler_dict)
@@ -2543,17 +2519,13 @@ class TeleBot:
         """
         self.message_handlers.append(handler_dict)
 
-    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, is_private=None, supergroup=None, user_id=None, chat_id=None, **kwargs):
+    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Edit message handler decorator
         :param commands:
         :param regexp:
         :param func:
         :param content_types:
-        :param is_private:
-        :param supergroup:
-        :param user_id:
-        :param chat_id:
         :param kwargs:
         :return:
         """
@@ -2563,14 +2535,10 @@ class TeleBot:
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
-                                                    content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
-                                                    is_private=is_private,
-                                                    supergroup=supergroup,
-                                                    user_id=user_id,
-                                                    chat_id = chat_id,
                                                     func=func,
+                                                    content_types=content_types,
                                                     **kwargs)
             self.add_edited_message_handler(handler_dict)
             return handler
@@ -2585,14 +2553,13 @@ class TeleBot:
         """
         self.edited_message_handlers.append(handler_dict)
 
-    def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_id=None, **kwargs):
+    def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Channel post handler decorator
         :param commands:
         :param regexp:
         :param func:
         :param content_types:
-        :param chat_id:
         :param kwargs:
         :return:
         """
@@ -2602,11 +2569,10 @@ class TeleBot:
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
-                                                    content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
-                                                    chat_id = chat_id,
                                                     func=func,
+                                                    content_types=content_types,
                                                     **kwargs)
             self.add_channel_post_handler(handler_dict)
             return handler
@@ -2621,7 +2587,7 @@ class TeleBot:
         """
         self.channel_post_handlers.append(handler_dict)
 
-    def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, is_private=None, supergroup=None, user_id=None, chat_id=None, **kwargs):
+    def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Edit channel post handler decorator
         :param commands:
@@ -2637,14 +2603,10 @@ class TeleBot:
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
-                                                    content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
-                                                    is_private=is_private,
-                                                    supergroup=supergroup,
-                                                    user_id=user_id,
-                                                    chat_id = chat_id,
                                                     func=func,
+                                                    content_types=content_types,
                                                     **kwargs)
             self.add_edited_channel_post_handler(handler_dict)
             return handler
@@ -2896,10 +2858,6 @@ class TeleBot:
             'content_types': lambda msg: msg.content_type in filter_value,
             'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
             'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
-            'is_private': lambda msg: msg.chat.type == 'private',
-            'supergroup': lambda msg: msg.chat.type == "supergroup",
-            'user_id': lambda msg: msg.from_user.id in filter_value,
-            'chat_id': lambda msg: msg.chat.id in filter_value,
             'func': lambda msg: filter_value(msg)
         }
 
