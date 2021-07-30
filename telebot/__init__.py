@@ -2132,7 +2132,7 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
-                                                parse_mode, reply_markup)
+                                                parse_mode, caption_entities, reply_markup)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)

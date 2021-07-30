@@ -1135,7 +1135,7 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
     if parse_mode:
         payload['parse_mode'] = parse_mode
     if caption_entities:
-        payload['caption_entities'] = caption_entities
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload, method='post')
