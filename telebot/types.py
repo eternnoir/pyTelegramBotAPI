@@ -1569,7 +1569,7 @@ class InputInvoiceMessageContent(Dictionaryable):
             json_dict['send_email_to_provider'] = self.send_email_to_provider 
         if self.is_flexible is not None:
             json_dict['is_flexible'] = self.is_flexible 
-        
+        return json_dict
 
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
