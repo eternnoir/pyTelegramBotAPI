@@ -1571,6 +1571,7 @@ class InputInvoiceMessageContent(Dictionaryable):
             json_dict['is_flexible'] = self.is_flexible 
         return json_dict
 
+
 class ChosenInlineResult(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
