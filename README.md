@@ -749,5 +749,6 @@ Get help. Discuss. Chat.
 * Digital Cryptocurrency bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/currencies_bot). With this bot, you can now monitor the prices of more than 12 digital Cryptocurrency. 
 * [Anti-Tracking Bot](https://t.me/AntiTrackingBot) by [Leon Heess (source)](https://github.com/leonheess/AntiTrackingBot). Send any link, and the bot tries its best to remove all tracking from the link you sent.
 * [Developer Bot](https://t.me/IndDeveloper_bot) by [Vishal Singh](https://github.com/vishal2376) [(source code)](https://github.com/vishal2376/telegram-bot) This telegram bot can do tasks like GitHub search & clone,provide c++ learning resources ,Stackoverflow search, Codeforces(profile visualizer,random problems)
-
+* [oneIPO bot](https://github.com/aaditya2200/IPO-proj) by [Aadithya](https://github.com/aaditya2200) & [Amol Soans](https://github.com/AmolDerickSoans) This Telegram bot provides live updates , data and documents on current and upcoming IPOs(Initial Public Offerings) 
+	
 **Want to have your bot listed here? Just make a pull request.**
