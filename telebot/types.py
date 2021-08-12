@@ -1380,7 +1380,7 @@ class BotCommandScopeChatMember(BotCommandScope):
         @param chat_id: Unique identifier for the target chat
         @param user_id: Unique identifier of the target user
         """
-        super(BotCommandScopeChatMember, self).__init__(type='chat_administrators', chat_id=chat_id, user_id=user_id)
+        super(BotCommandScopeChatMember, self).__init__(type='chat_member', chat_id=chat_id, user_id=user_id)
 
 
 # InlineQuery
