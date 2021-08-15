@@ -143,7 +143,7 @@ class TeleBot:
         """
 
     def __init__(
-            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
+            self, token, parse_mode=None, threaded=True, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
             suppress_middleware_excepions=False # <- Typo in exceptions 
     ):
@@ -156,7 +156,6 @@ class TeleBot:
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
-        self.skip_pending = skip_pending
         self.suppress_middleware_excepions = suppress_middleware_excepions
 
         self.__stop_polling = threading.Event()
@@ -364,17 +363,10 @@ class TeleBot:
     def __skip_updates(self):
         """
         Get and discard all pending updates before first poll of the bot
-        :return: total updates skipped
+        :return:
         """
-        total = 0
-        updates = self.get_updates(offset=self.last_update_id, long_polling_timeout=1)
-        while updates:
-            total += len(updates)
-            for update in updates:
-                if update.update_id > self.last_update_id:
-                    self.last_update_id = update.update_id
-            updates = self.get_updates(offset=self.last_update_id + 1, long_polling_timeout=1)
-        return total
+        logger.debug('Skipped all pending messages')
+        self.get_updates(offset=-1, long_polling_timeout=1)
 
     def __retrieve_updates(self, timeout=20, long_polling_timeout=20, allowed_updates=None):
         """
@@ -382,9 +374,6 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
-        if self.skip_pending:
-            logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
-            self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), 
                                    allowed_updates=allowed_updates,
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
@@ -576,7 +565,7 @@ class TeleBot:
             so unwanted updates may be received for a short period of time.
         """
         if skip_updates:
-            apihelper.get_updates(self.token, -1)
+            self.__skip_updates()
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
@@ -618,7 +607,7 @@ class TeleBot:
         :return:
         """
         if skip_updates:
-            apihelper.get_updates(self.token, -1)
+            self.__skip_updates()
         if self.threaded:
             self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
