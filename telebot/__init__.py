@@ -143,7 +143,7 @@ class TeleBot:
         """
 
     def __init__(
-            self, token, parse_mode=None, threaded=True, num_threads=2,
+            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
             suppress_middleware_excepions=False # <- Typo in exceptions 
     ):
@@ -156,6 +156,7 @@ class TeleBot:
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
+        self.skip_pending = skip_pending
         self.suppress_middleware_excepions = suppress_middleware_excepions
 
         self.__stop_polling = threading.Event()
@@ -365,8 +366,7 @@ class TeleBot:
         Get and discard all pending updates before first poll of the bot
         :return:
         """
-        logger.debug('Skipped all pending messages')
-        self.get_updates(offset=-1, long_polling_timeout=1)
+        self.get_updates(offset=-1)
 
     def __retrieve_updates(self, timeout=20, long_polling_timeout=20, allowed_updates=None):
         """
@@ -374,6 +374,10 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
         :raises ApiException when a call has failed.
         """
+        if self.skip_pending:
+            self.__skip_updates()
+            logger.debug('Skipped all pending messages')
+            self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), 
                                    allowed_updates=allowed_updates,
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
@@ -545,7 +549,7 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, skip_updates=False, long_polling_timeout=20, logger_level=logging.ERROR,
+    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR,
             allowed_updates=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
@@ -554,7 +558,6 @@ class TeleBot:
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param logger_level: Custom logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
-        :param skip_updates: Skip previous updates
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
             See util.update_types for a complete list of available update types. 
@@ -564,8 +567,6 @@ class TeleBot:
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
         """
-        if skip_updates:
-            self.__skip_updates()
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
@@ -582,7 +583,7 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, none_stop: bool=False, skip_updates=False, interval: int=0, timeout: int=20, 
+    def polling(self, none_stop: bool=False, interval: int=0, timeout: int=20, 
             long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
@@ -593,7 +594,6 @@ class TeleBot:
         Always get updates.
         :param interval: Delay between two update retrivals
         :param none_stop: Do not stop polling when an ApiException occurs.
-        :param skip_updates: Skip previous updates
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param allowed_updates: A list of the update types you want your bot to receive.
@@ -606,8 +606,6 @@ class TeleBot:
             so unwanted updates may be received for a short period of time.
         :return:
         """
-        if skip_updates:
-            self.__skip_updates()
         if self.threaded:
             self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
@@ -2112,7 +2110,6 @@ class TeleBot:
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None,
             parse_mode: Optional[str]=None, 
-            caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages
@@ -2127,7 +2124,7 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         result = apihelper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
-                                                parse_mode, caption_entities, reply_markup)
+                                                parse_mode, reply_markup)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
