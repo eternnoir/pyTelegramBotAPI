@@ -549,13 +549,14 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR,
+    def infinity_polling(self, timeout=20, skip_pending=False, long_polling_timeout=20, logger_level=logging.ERROR,
             allowed_updates=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :param skip_pending: skip old updates
         :param logger_level: Custom logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
         :param allowed_updates: A list of the update types you want your bot to receive.
@@ -567,6 +568,9 @@ class TeleBot:
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
         """
+        if skip_pending:
+            self.__skip_updates()
+
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
@@ -583,7 +587,7 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, none_stop: bool=False, interval: int=0, timeout: int=20, 
+    def polling(self, none_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20, 
             long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
@@ -595,6 +599,7 @@ class TeleBot:
         :param interval: Delay between two update retrivals
         :param none_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
+        :param skip_pending: skip old updates
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
@@ -606,6 +611,9 @@ class TeleBot:
             so unwanted updates may be received for a short period of time.
         :return:
         """
+        if skip_pending:
+            self.__skip_updates()
+            
         if self.threaded:
             self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
