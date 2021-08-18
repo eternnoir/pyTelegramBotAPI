@@ -2047,7 +2047,7 @@ class TeleBot:
             open_period: Optional[int]=None, 
             close_date: Optional[Union[int, datetime]]=None, 
             is_closed: Optional[bool]=None,
-            disable_notifications: Optional[bool]=False, 
+            disable_notification: Optional[bool]=False,
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             allow_sending_without_reply: Optional[bool]=None, 
@@ -2067,7 +2067,7 @@ class TeleBot:
         :param open_period:
         :param close_date:
         :param is_closed:
-        :param disable_notifications:
+        :param disable_notification:
         :param reply_to_message_id:
         :param allow_sending_without_reply:
         :param reply_markup:
@@ -2085,7 +2085,7 @@ class TeleBot:
                 question, options,
                 is_anonymous, type, allows_multiple_answers, correct_option_id,
                 explanation, explanation_parse_mode, open_period, close_date, is_closed,
-                disable_notifications, reply_to_message_id, allow_sending_without_reply, 
+                disable_notification, reply_to_message_id, allow_sending_without_reply,
                 reply_markup, timeout, explanation_entities))
 
     def stop_poll(
