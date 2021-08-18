@@ -441,12 +441,10 @@ class Message(JsonDeserializable):
             opts['voice_chat_ended'] = VoiceChatEnded.de_json(obj['voice_chat_ended'])
             content_type = 'voice_chat_ended'
         if 'voice_chat_participants_invited' in obj:
-            opts['voice_chat_participants_invited'] = VoiceChatParticipantsInvited.de_json(
-                obj['voice_chat_participants_invited'])
+            opts['voice_chat_participants_invited'] = VoiceChatParticipantsInvited.de_json(obj['voice_chat_participants_invited'])
             content_type = 'voice_chat_participants_invited'
         if 'message_auto_delete_timer_changed' in obj:
-            opts['message_auto_delete_timer_changed'] = MessageAutoDeleteTimerChanged.de_json(
-                obj['message_auto_delete_timer_changed'])
+            opts['message_auto_delete_timer_changed'] = MessageAutoDeleteTimerChanged.de_json(obj['message_auto_delete_timer_changed'])
             content_type = 'message_auto_delete_timer_changed'
         if 'reply_markup' in obj:
             opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
@@ -1230,6 +1228,29 @@ class ChatMember(JsonDeserializable):
         self.can_manage_chat: bool = can_manage_chat
         self.can_manage_voice_chats: bool = can_manage_voice_chats
         self.until_date: int = until_date
+
+
+class ChatMemberOwner(ChatMember):
+    pass
+
+class ChatMemberAdministrator(ChatMember):
+    pass
+
+
+class ChatMemberMember(ChatMember):
+    pass
+
+
+class ChatMemberRestricted(ChatMember):
+    pass
+
+
+class ChatMemberLeft(ChatMember):
+    pass
+
+
+class ChatMemberBanned(ChatMember):
+    pass
 
 
 class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
@@ -2744,14 +2765,18 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
         return json.dumps(self.to_dict())
     
     def to_dict(self):
-        return {
+        json_dict = {
             "invite_link": self.invite_link,
             "creator": self.creator.to_dict(),
             "is_primary": self.is_primary,
-            "is_revoked": self.is_revoked,
-            "expire_date": self.expire_date,
-            "member_limit": self.member_limit
+            "is_revoked": self.is_revoked
         }
+        if self.expire_date:
+            json_dict["expire_date"] = self.expire_date
+        if self.member_limit:
+            json_dict["member_limit"] = self.member_limit
+        return json_dict
+
 
 class ProximityAlertTriggered(JsonDeserializable):
     @classmethod
@@ -2777,6 +2802,7 @@ class VoiceChatStarted(JsonDeserializable):
         Currently holds no information.
         """
         pass
+
 
 class VoiceChatScheduled(JsonDeserializable):
     @classmethod

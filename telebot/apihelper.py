@@ -973,11 +973,11 @@ def create_chat_invite_link(token, chat_id, expire_date, member_limit):
     }
 
     if expire_date is not None:
-        payload['expire_date'] = expire_date
         if isinstance(payload['expire_date'], datetime):
             payload['expire_date'] = payload['expire_date'].timestamp()
-
-    if member_limit is not None:
+        else:
+            payload['expire_date'] = expire_date
+    if member_limit:
         payload['member_limit'] = member_limit
 
     return _make_request(token, method_url, params=payload, method='post')
@@ -991,9 +991,10 @@ def edit_chat_invite_link(token, chat_id, invite_link, expire_date, member_limit
     }
 
     if expire_date is not None:
-        payload['expire_date'] = expire_date
         if isinstance(payload['expire_date'], datetime):
             payload['expire_date'] = payload['expire_date'].timestamp()
+        else:
+            payload['expire_date'] = expire_date
 
     if member_limit is not None:
         payload['member_limit'] = member_limit
@@ -1258,7 +1259,7 @@ def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_m
 
 def send_invoice(
         token, chat_id, title, description, invoice_payload, provider_token, currency, prices,
-        start_parameter, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
+        start_parameter = None, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
         need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
@@ -1298,8 +1299,10 @@ def send_invoice(
     """
     method_url = r'sendInvoice'
     payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
-               'provider_token': provider_token, 'start_parameter': start_parameter, 'currency': currency,
+               'provider_token': provider_token, 'currency': currency,
                'prices': _convert_list_json_serializable(prices)}
+    if start_parameter:
+        payload['start_parameter'] = start_parameter
     if photo_url:
         payload['photo_url'] = photo_url
     if photo_size:

@@ -4,16 +4,16 @@ import re
 import string
 import threading
 import traceback
-import warnings
-import functools
 from typing import Any, Callable, List, Dict, Optional, Union
 
+# noinspection PyPep8Naming
 import queue as Queue
 import logging
 
 from telebot import types
 
 try:
+    # noinspection PyPackageRequirements
     from PIL import Image
     from io import BytesIO
     pil_imported = True

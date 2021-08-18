@@ -1,11 +1,16 @@
-# <p align="center">pyTelegramBotAPI
-
-<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
 
 [![PyPi Package Version](https://img.shields.io/pypi/v/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
+
+# <p align="center">pyTelegramBotAPI
+
+<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
+
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-25-2021">5.3</a>!
+
+##Contents
 
   * [Getting started.](#getting-started)
   * [Writing your first bot](#writing-your-first-bot)
@@ -603,21 +608,20 @@ apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 
 ## API conformance
 
-_Checking is in progress..._
-
-✅ [Bot API 5.1](https://core.telegram.org/bots/api#march-9-2021) _- To be checked..._
-
+* ➕ [Bot API 5.3](https://core.telegram.org/bots/api#june-25-2021) - ChatMemberXXX classes are full copies of ChatMember
+* ✔ [Bot API 5.2](https://core.telegram.org/bots/api#april-26-2021)
+* ✔ [Bot API 5.1](https://core.telegram.org/bots/api#march-9-2021)
 * ✔ [Bot API 5.0](https://core.telegram.org/bots/api-changelog#november-4-2020)
 * ✔ [Bot API 4.9](https://core.telegram.org/bots/api-changelog#june-4-2020)
 * ✔ [Bot API 4.8](https://core.telegram.org/bots/api-changelog#april-24-2020)
 * ✔ [Bot API 4.7](https://core.telegram.org/bots/api-changelog#march-30-2020)
 * ✔ [Bot API 4.6](https://core.telegram.org/bots/api-changelog#january-23-2020)
-* ➕ [Bot API 4.5](https://core.telegram.org/bots/api-changelog#december-31-2019) - No nested MessageEntities and Markdown2 support.
+* ➕ [Bot API 4.5](https://core.telegram.org/bots/api-changelog#december-31-2019) - No nested MessageEntities and Markdown2 support
 * ✔ [Bot API 4.4](https://core.telegram.org/bots/api-changelog#july-29-2019)
 * ✔ [Bot API 4.3](https://core.telegram.org/bots/api-changelog#may-31-2019)
 * ✔ [Bot API 4.2](https://core.telegram.org/bots/api-changelog#april-14-2019)
-* ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018) - No Passport support.
-* ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018)   - No Passport support.
+* ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018) - No Passport support
+* ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018)   - No Passport support
 * ✔ [Bot API 3.6](https://core.telegram.org/bots/api-changelog#february-13-2018)
 * ✔ [Bot API 3.5](https://core.telegram.org/bots/api-changelog#november-17-2017)
 * ✔ [Bot API 3.4](https://core.telegram.org/bots/api-changelog#october-11-2017)
