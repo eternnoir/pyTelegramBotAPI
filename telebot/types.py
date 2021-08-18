@@ -1723,7 +1723,8 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
 class InlineQueryResultGif(InlineQueryResultBase):
     def __init__(self, id, gif_url, thumb_url, gif_width=None, gif_height=None,
                  title=None, caption=None, caption_entities=None,
-                 reply_markup=None, input_message_content=None, gif_duration=None, parse_mode=None):
+                 reply_markup=None, input_message_content=None, gif_duration=None, parse_mode=None,
+                 thumb_mime_type=None):
         """
         Represents a link to an animated GIF file.
         :param id: Unique identifier for this result, 1-64 bytes.
@@ -1745,6 +1746,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
         self.gif_height = gif_height
         self.thumb_url = thumb_url
         self.gif_duration = gif_duration
+        self.thumb_mime_type = thumb_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -1756,13 +1758,16 @@ class InlineQueryResultGif(InlineQueryResultBase):
         json_dict['thumb_url'] = self.thumb_url
         if self.gif_duration:
             json_dict['gif_duration'] = self.gif_duration
+        if self.thumb_mime_type:
+            json_dict['thumb_mime_type'] = self.thumb_mime_type
         return json_dict
 
 
 class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None,
                  title=None, caption=None, caption_entities=None,
-                 parse_mode=None, reply_markup=None, input_message_content=None, mpeg4_duration=None):
+                 parse_mode=None, reply_markup=None, input_message_content=None, mpeg4_duration=None,
+                 thumb_mime_type=None):
         """
         Represents a link to a video animation (H.264/MPEG-4 AVC video without sound).
         :param id: Unique identifier for this result, 1-64 bytes
@@ -1786,6 +1791,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         self.mpeg4_height = mpeg4_height
         self.thumb_url = thumb_url
         self.mpeg4_duration = mpeg4_duration
+        self.thumb_mime_type = thumb_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -1797,6 +1803,8 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         json_dict['thumb_url'] = self.thumb_url
         if self.mpeg4_duration:
             json_dict['mpeg4_duration '] = self.mpeg4_duration
+        if self.thumb_mime_type:
+            json_dict['thumb_mime_type'] = self.thumb_mime_type
         return json_dict
 
 
