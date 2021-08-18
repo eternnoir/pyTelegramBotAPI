@@ -4,11 +4,11 @@
 [![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
 
-# <p align="center">pyTelegramBotAPI</p>
+# <p align="center">pyTelegramBotAPI
 
-<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
+<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
 
-##<p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-25-2021">5.3</a>!</p>
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-25-2021">5.3</a>!
 
 ##Contents
 
