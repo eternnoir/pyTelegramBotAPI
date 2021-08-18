@@ -591,7 +591,7 @@ You can use proxy for request. `apihelper.proxy` object will use by call `reques
 ```python
 from telebot import apihelper
 
-apihelper.proxy = {'http':'http://10.10.1.10:3128'}
+apihelper.proxy = {'http':'http://127.0.0.1:3128'}
 ```
 
 If you want to use socket5 proxy you need install dependency `pip install requests[socks]` and make sure, that you have the latest version of `gunicorn`, `PySocks`, `pyTelegramBotAPI`, `requests` and `urllib3`.
@@ -605,8 +605,14 @@ apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 
 _Checking is in progress..._
 
-✅ [Bot API 4.5](https://core.telegram.org/bots/api-changelog#december-31-2019) _- To be checked..._
+✅ [Bot API 5.1](https://core.telegram.org/bots/api#march-9-2021) _- To be checked..._
 
+* ✔ [Bot API 5.0](https://core.telegram.org/bots/api-changelog#november-4-2020)
+* ✔ [Bot API 4.9](https://core.telegram.org/bots/api-changelog#june-4-2020)
+* ✔ [Bot API 4.8](https://core.telegram.org/bots/api-changelog#april-24-2020)
+* ✔ [Bot API 4.7](https://core.telegram.org/bots/api-changelog#march-30-2020)
+* ✔ [Bot API 4.6](https://core.telegram.org/bots/api-changelog#january-23-2020)
+* ➕ [Bot API 4.5](https://core.telegram.org/bots/api-changelog#december-31-2019) - No nested MessageEntities and Markdown2 support.
 * ✔ [Bot API 4.4](https://core.telegram.org/bots/api-changelog#july-29-2019)
 * ✔ [Bot API 4.3](https://core.telegram.org/bots/api-changelog#may-31-2019)
 * ✔ [Bot API 4.2](https://core.telegram.org/bots/api-changelog#april-14-2019)

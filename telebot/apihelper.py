@@ -1104,7 +1104,7 @@ def unpin_all_chat_messages(token, chat_id):
 # Updating messages
 
 def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
-                      disable_web_page_preview=None, reply_markup=None):
+                      entities = None, disable_web_page_preview=None, reply_markup=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1115,6 +1115,8 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
         payload['inline_message_id'] = inline_message_id
     if parse_mode:
         payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
     if disable_web_page_preview is not None:
         payload['disable_web_page_preview'] = disable_web_page_preview
     if reply_markup:
@@ -1483,7 +1485,7 @@ def send_poll(
         question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
-        disable_notifications=False, reply_to_message_id=None, allow_sending_without_reply=None,
+        disable_notification=False, reply_to_message_id=None, allow_sending_without_reply=None,
         reply_markup=None, timeout=None, explanation_entities=None):
     method_url = r'sendPoll'
     payload = {
@@ -1513,8 +1515,8 @@ def send_poll(
     if is_closed is not None:
         payload['is_closed'] = is_closed
 
-    if disable_notifications:
-        payload['disable_notification'] = disable_notifications
+    if disable_notification:
+        payload['disable_notification'] = disable_notification
     if reply_to_message_id is not None:
         payload['reply_to_message_id'] = reply_to_message_id
     if allow_sending_without_reply is not None:
