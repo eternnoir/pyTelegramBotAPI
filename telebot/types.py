@@ -273,7 +273,7 @@ class Chat(JsonDeserializable):
         self.pinned_message: Message = pinned_message
         self.permissions: ChatPermissions = permissions
         self.slow_mode_delay: int = slow_mode_delay
-        self.message_auto_delete_time = message_auto_delete_time
+        self.message_auto_delete_time: int = message_auto_delete_time
         self.sticker_set_name: str = sticker_set_name
         self.can_set_sticker_set: bool = can_set_sticker_set
         self.linked_chat_id: int = linked_chat_id
