@@ -145,7 +145,7 @@ class TeleBot:
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
-            suppress_middleware_excepions=False # <- Typo in exceptions 
+            suppress_middleware_excepions=False
     ):
         """
         :param token: bot API token
@@ -590,8 +590,9 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, none_stop: bool=False, interval: int=0, timeout: int=20, 
-            long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None):
+    def polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
+            long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None,
+            none_stop: Optional[bool]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -600,7 +601,7 @@ class TeleBot:
 
         Always get updates.
         :param interval: Delay between two update retrivals
-        :param none_stop: Do not stop polling when an ApiException occurs.
+        :param non_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param allowed_updates: A list of the update types you want your bot to receive.
@@ -611,12 +612,16 @@ class TeleBot:
             
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
+        :param none_stop: Deprecated, use non_stop. Old typo f***up compatibility
         :return:
         """
+        if none_stop is not None:
+            non_stop = none_stop
+
         if self.threaded:
-            self.__threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
+            self.__threaded_polling(non_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
-            self.__non_threaded_polling(none_stop, interval, timeout, long_polling_timeout, allowed_updates)
+            self.__non_threaded_polling(non_stop, interval, timeout, long_polling_timeout, allowed_updates)
 
     def __threaded_polling(self, non_stop=False, interval=0, timeout = None, long_polling_timeout = None, allowed_updates=None):
         logger.info('Started polling.')
@@ -1118,30 +1123,34 @@ class TeleBot:
             thumb: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            visible_file_name: Optional[str]=None) -> types.Message:
+            visible_file_name: Optional[str]=None,
+            disable_content_type_detection: Optional[bool]=None) -> types.Message:
         """
         Use this method to send general files.
-        :param chat_id:
-        :param data:
-        :param reply_to_message_id:
-        :param caption:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param data: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :param caption: Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
         :param reply_markup:
-        :param parse_mode:
-        :param disable_notification:
+        :param parse_mode: Mode for parsing entities in the document caption
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
         :param timeout:
-        :param thumb: InputFile or String : Thumbnail of the file sent
+        :param thumb: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
         :param caption_entities:
         :param allow_sending_without_reply:
         :param visible_file_name: allows to define file name that will be visible in the Telegram instead of original file name
+        :param disable_content_type_detection: Disables automatic server-side content type detection for files uploaded using multipart/form-data
         :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
             apihelper.send_data(
-                self.token, chat_id, data, 'document', reply_to_message_id, reply_markup,
-                parse_mode, disable_notification, timeout, caption, thumb, caption_entities,
-                allow_sending_without_reply, visible_file_name))
+                self.token, chat_id, data, 'document',
+                reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
+                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumb,
+                caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
+                disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name))
 
     def send_sticker(
             self, chat_id: Union[int, str], data: Union[Any, str], 
@@ -1163,7 +1172,7 @@ class TeleBot:
         """
         return types.Message.de_json(
             apihelper.send_data(
-                self.token, chat_id=chat_id, data=data, data_type='sticker', 
+                self.token, chat_id, data, 'sticker',
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
                 allow_sending_without_reply=allow_sending_without_reply))
@@ -1831,7 +1840,8 @@ class TeleBot:
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None, 
             parse_mode: Optional[str]=None,
-            disable_web_page_preview: Optional[bool]=None, 
+            entities: Optional[List[types.MessageEntity]]=None,
+            disable_web_page_preview: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
@@ -1840,6 +1850,7 @@ class TeleBot:
         :param message_id:
         :param inline_message_id:
         :param parse_mode:
+        :param entities:
         :param disable_web_page_preview:
         :param reply_markup:
         :return:
@@ -1847,7 +1858,7 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                             disable_web_page_preview, reply_markup)
+                                             entities, disable_web_page_preview, reply_markup)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -2126,6 +2137,7 @@ class TeleBot:
         :param message_id:
         :param inline_message_id:
         :param parse_mode:
+        :param caption_entities:
         :param reply_markup:
         :return:
         """

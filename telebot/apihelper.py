@@ -1104,7 +1104,7 @@ def unpin_all_chat_messages(token, chat_id):
 # Updating messages
 
 def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
-                      disable_web_page_preview=None, reply_markup=None):
+                      entities = None, disable_web_page_preview=None, reply_markup=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1115,6 +1115,8 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
         payload['inline_message_id'] = inline_message_id
     if parse_mode:
         payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
     if disable_web_page_preview is not None:
         payload['disable_web_page_preview'] = disable_web_page_preview
     if reply_markup:
