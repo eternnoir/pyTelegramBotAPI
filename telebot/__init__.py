@@ -364,17 +364,9 @@ class TeleBot:
     def __skip_updates(self):
         """
         Get and discard all pending updates before first poll of the bot
-        :return: total updates skipped
+        :return:
         """
-        total = 0
-        updates = self.get_updates(offset=self.last_update_id, long_polling_timeout=1)
-        while updates:
-            total += len(updates)
-            for update in updates:
-                if update.update_id > self.last_update_id:
-                    self.last_update_id = update.update_id
-            updates = self.get_updates(offset=self.last_update_id + 1, long_polling_timeout=1)
-        return total
+        self.get_updates(offset=-1)
 
     def __retrieve_updates(self, timeout=20, long_polling_timeout=20, allowed_updates=None):
         """
@@ -383,7 +375,8 @@ class TeleBot:
         :raises ApiException when a call has failed.
         """
         if self.skip_pending:
-            logger.debug('Skipped {0} pending messages'.format(self.__skip_updates()))
+            self.__skip_updates()
+            logger.debug('Skipped all pending messages')
             self.skip_pending = False
         updates = self.get_updates(offset=(self.last_update_id + 1), 
                                    allowed_updates=allowed_updates,
@@ -556,13 +549,14 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, long_polling_timeout=20, logger_level=logging.ERROR,
+    def infinity_polling(self, timeout=20, skip_pending=False, long_polling_timeout=20, logger_level=logging.ERROR,
             allowed_updates=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
         :param timeout: Request connection timeout
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :param skip_pending: skip old updates
         :param logger_level: Custom logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
         :param allowed_updates: A list of the update types you want your bot to receive.
@@ -574,6 +568,9 @@ class TeleBot:
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
         """
+        if skip_pending:
+            self.__skip_updates()
+
         while not self.__stop_polling.is_set():
             try:
                 self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
@@ -590,7 +587,7 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
+    def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
             long_polling_timeout: int=20, allowed_updates: Optional[List[str]]=None,
             none_stop: Optional[bool]=None):
         """
@@ -598,11 +595,12 @@ class TeleBot:
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
 
         Warning: Do not call this function more than once!
-
+        
         Always get updates.
         :param interval: Delay between two update retrivals
         :param non_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
+        :param skip_pending: skip old updates
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
@@ -618,6 +616,9 @@ class TeleBot:
         if none_stop is not None:
             non_stop = none_stop
 
+        if skip_pending:
+            self.__skip_updates()
+            
         if self.threaded:
             self.__threaded_polling(non_stop, interval, timeout, long_polling_timeout, allowed_updates)
         else:
@@ -1646,8 +1647,8 @@ class TeleBot:
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :expire_date: Point in time (Unix timestamp) when the link will expire
-        :member_limit: Maximum number of users that can be members of the chat simultaneously
+        :param expire_date: Point in time (Unix timestamp) when the link will expire
+        :param member_limit: Maximum number of users that can be members of the chat simultaneously
         :return:
         """
         return types.ChatInviteLink.de_json(
@@ -1662,11 +1663,12 @@ class TeleBot:
         Use this method to edit a non-primary invite link created by the bot.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
+        :param invite_link:
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :invite_link: The invite link to edit
-        :expire_date: Point in time (Unix timestamp) when the link will expire
-        :member_limit: Maximum number of users that can be members of the chat simultaneously
+        :param invite_link: The invite link to edit
+        :param expire_date: Point in time (Unix timestamp) when the link will expire
+        :param member_limit: Maximum number of users that can be members of the chat simultaneously
         :return:
         """
         return types.ChatInviteLink.de_json(
@@ -1682,7 +1684,7 @@ class TeleBot:
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :invite_link: The invite link to revoke
+        :param invite_link: The invite link to revoke
         :return:
         """
         return types.ChatInviteLink.de_json(
@@ -2034,6 +2036,7 @@ class TeleBot:
             max_tip_amount, suggested_tip_amounts)
         return types.Message.de_json(result)
 
+    # noinspection PyShadowingBuiltins
     def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[str],
             is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
@@ -2531,6 +2534,23 @@ class TeleBot:
         """
         self.message_handlers.append(handler_dict)
 
+    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+        """
+        Registers message handler.
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    content_types=content_types,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_message_handler(handler_dict)
     def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Edit message handler decorator
@@ -2565,6 +2585,23 @@ class TeleBot:
         """
         self.edited_message_handlers.append(handler_dict)
 
+    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+        """
+        Registers edited message handler.
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    content_types=content_types,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_edited_message_handler(handler_dict)
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Channel post handler decorator
@@ -2598,7 +2635,24 @@ class TeleBot:
         :return:
         """
         self.channel_post_handlers.append(handler_dict)
-
+    
+    def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+        """
+        Registers channel post message handler.
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    content_types=content_types,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_channel_post_handler(handler_dict)
     def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Edit channel post handler decorator
@@ -2633,6 +2687,24 @@ class TeleBot:
         """
         self.edited_channel_post_handlers.append(handler_dict)
 
+    def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+        """
+        Registers edited channel post message handler.
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    content_types=content_types,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_edited_channel_post_handler(handler_dict)
+
     def inline_handler(self, func, **kwargs):
         """
         Inline call handler decorator
@@ -2655,6 +2727,18 @@ class TeleBot:
         :return:
         """
         self.inline_handlers.append(handler_dict)
+
+    def register_inline_handler(self, callback, func, **kwargs):
+        """
+        Registers inline handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_inline_handler(handler_dict)
 
     def chosen_inline_handler(self, func, **kwargs):
         """
@@ -2679,6 +2763,19 @@ class TeleBot:
         """
         self.chosen_inline_handlers.append(handler_dict)
 
+    def register_chosen_inline_handler(self, callback, func, **kwargs):
+        """
+        Registers chosen inline handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_chosen_inline_handler(handler_dict)
+
+
     def callback_query_handler(self, func, **kwargs):
         """
         Callback request handler decorator
@@ -2701,6 +2798,18 @@ class TeleBot:
         :return:
         """
         self.callback_query_handlers.append(handler_dict)
+
+    def register_callback_query_handler(self, callback, func, **kwargs):
+        """
+        Registers callback query handler..
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_callback_query_handler(handler_dict)
 
     def shipping_query_handler(self, func, **kwargs):
         """
@@ -2725,6 +2834,18 @@ class TeleBot:
         """
         self.shipping_query_handlers.append(handler_dict)
 
+    def register_shipping_query_handler(self, callback, func, **kwargs):
+        """
+        Registers shipping query handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_shipping_query_handler(handler_dict)
+
     def pre_checkout_query_handler(self, func, **kwargs):
         """
         Pre-checkout request handler
@@ -2747,6 +2868,18 @@ class TeleBot:
         :return:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
+    
+    def register_pre_checkout_query_handler(self, callback, func, **kwargs):
+        """
+        Registers pre-checkout request handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_pre_checkout_query_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
         """
@@ -2771,6 +2904,18 @@ class TeleBot:
         """
         self.poll_handlers.append(handler_dict)
 
+    def register_poll_handler(self, callback, func, **kwargs):
+        """
+        Registers poll handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_poll_handler(handler_dict)
+
     def poll_answer_handler(self, func=None, **kwargs):
         """
         Poll_answer request handler
@@ -2793,7 +2938,19 @@ class TeleBot:
         :return:
         """
         self.poll_answer_handlers.append(handler_dict)
-    
+
+    def register_poll_answer_handler(self, callback, func, **kwargs):
+        """
+        Registers poll answer handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_poll_answer_handler(handler_dict)
+
     def my_chat_member_handler(self, func=None, **kwargs):
         """
         my_chat_member handler
@@ -2816,6 +2973,18 @@ class TeleBot:
         :return:
         """
         self.my_chat_member_handlers.append(handler_dict)
+
+    def register_my_chat_member_handler(self, callback, func=None, **kwargs):
+        """
+        Registers my chat member handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_my_chat_member_handler(handler_dict)
 
     def chat_member_handler(self, func=None, **kwargs):
         """
@@ -2840,6 +3009,17 @@ class TeleBot:
         """
         self.chat_member_handlers.append(handler_dict)
 
+    def register_chat_member_handler(self, callback, func=None, **kwargs):
+        """
+        Registers chat member handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback,
+                                                    func=func,
+                                                    **kwargs)
+        self.add_chat_member_handler(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
         """
