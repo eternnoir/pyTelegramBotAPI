@@ -10,7 +10,7 @@
 
 ## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-25-2021">5.3</a>!
 
-##Contents
+## Contents
 
   * [Getting started.](#getting-started)
   * [Writing your first bot](#writing-your-first-bot)
@@ -636,22 +636,7 @@ apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 * ✔ [Bot API 2.0](https://core.telegram.org/bots/api-changelog#april-9-2016) 
 
 
-## Change log
-
-27.04.2020 - Poll and Dice are up to date.
-Python2 conformance is not checked any more due to EOL. 
-
-11.04.2020 - Refactoring. new_chat_member is out of support. Bugfix in html_text. Started Bot API conformance checking.
-
-06.06.2019 - Added polls support (Poll). Added functions send_poll, stop_poll
-
 ## F.A.Q.
-
-### Bot 2.0
-
-April 9,2016 Telegram release new bot 2.0 API, which has a drastic revision especially for the change of method's interface.If you want to update to the latest version, please make sure you've switched bot's code to bot 2.0 method interface.
-
-[More information about pyTelegramBotAPI support bot2.0](https://github.com/eternnoir/pyTelegramBotAPI/issues/130)
 
 ### How can I distinguish a User and a GroupChat in message.chat?
 Telegram Bot API support new type Chat for message.chat.
@@ -682,7 +667,6 @@ Bot instances that were idle for a long time might be rejected by the server whe
 Get help. Discuss. Chat.
 
 * Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A)
-* We now have a Telegram Channel as well! Keep yourself up to date with API changes, and [join it](https://telegram.me/pytelegrambotapi).
 
 ## More examples
 

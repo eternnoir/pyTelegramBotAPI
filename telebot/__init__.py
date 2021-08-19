@@ -3040,19 +3040,28 @@ class TeleBot:
     def _test_filter(message_filter, filter_value, message):
         """
         Test filters
-        :param message_filter:
-        :param filter_value:
-        :param message:
-        :return:
+        :param message_filter: Filter type passed in handler
+        :param filter_value: Filter value passed in handler
+        :param message: Message to test
+        :return: True if filter conforms
         """
-        test_cases = {
-            'content_types': lambda msg: msg.content_type in filter_value,
-            'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
-            'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
-            'func': lambda msg: filter_value(msg)
-        }
-
-        return test_cases.get(message_filter, lambda msg: False)(message)
+        #     test_cases = {
+        #         'content_types': lambda msg: msg.content_type in filter_value,
+        #         'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
+        #         'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
+        #         'func': lambda msg: filter_value(msg)
+        #     }
+        #     return test_cases.get(message_filter, lambda msg: False)(message)
+        if message_filter == 'content_types':
+            return message.content_type in filter_value
+        elif message_filter == 'regexp':
+            return message.content_type == 'text' and re.search(filter_value, message.text, re.IGNORECASE)
+        elif message_filter == 'commands':
+            return message.content_type == 'text' and util.extract_command(message.text) in filter_value
+        elif message_filter == 'func':
+            return filter_value(message)
+        else:
+            return False
 
     def _notify_command_handlers(self, handlers, new_messages):
         """
