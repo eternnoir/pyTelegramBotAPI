@@ -2544,11 +2544,11 @@ class TeleBot:
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback,
-                                                    content_types=content_types,
-                                                    commands=commands,
-                                                    regexp=regexp,
-                                                    func=func,
-                                                    **kwargs)
+                                                content_types=content_types,
+                                                commands=commands,
+                                                regexp=regexp,
+                                                func=func,
+                                                **kwargs)
         self.add_message_handler(handler_dict)
     def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -2595,11 +2595,11 @@ class TeleBot:
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback,
-                                                    content_types=content_types,
-                                                    commands=commands,
-                                                    regexp=regexp,
-                                                    func=func,
-                                                    **kwargs)
+                                                content_types=content_types,
+                                                commands=commands,
+                                                regexp=regexp,
+                                                func=func,
+                                                **kwargs)
         self.add_edited_message_handler(handler_dict)
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -2646,11 +2646,11 @@ class TeleBot:
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback,
-                                                    content_types=content_types,
-                                                    commands=commands,
-                                                    regexp=regexp,
-                                                    func=func,
-                                                    **kwargs)
+                                                content_types=content_types,
+                                                commands=commands,
+                                                regexp=regexp,
+                                                func=func,
+                                                **kwargs)
         self.add_channel_post_handler(handler_dict)
     def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -2697,11 +2697,11 @@ class TeleBot:
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback,
-                                                    content_types=content_types,
-                                                    commands=commands,
-                                                    regexp=regexp,
-                                                    func=func,
-                                                    **kwargs)
+                                                content_types=content_types,
+                                                commands=commands,
+                                                regexp=regexp,
+                                                func=func,
+                                                **kwargs)
         self.add_edited_channel_post_handler(handler_dict)
 
     def inline_handler(self, func, **kwargs):
@@ -2734,9 +2734,7 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback,
-                                                    func=func,
-                                                    **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_inline_handler(handler_dict)
 
     def chosen_inline_handler(self, func, **kwargs):
@@ -2769,9 +2767,7 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback,
-                                                    func=func,
-                                                    **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_chosen_inline_handler(handler_dict)
 
 
@@ -2805,9 +2801,7 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback,
-                                                    func=func,
-                                                    **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_callback_query_handler(handler_dict)
 
     def shipping_query_handler(self, func, **kwargs):
@@ -2840,9 +2834,7 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback,
-                                                    func=func,
-                                                    **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_shipping_query_handler(handler_dict)
 
     def pre_checkout_query_handler(self, func, **kwargs):
@@ -2875,9 +2867,7 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback,
-                                                    func=func,
-                                                    **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
@@ -3015,9 +3005,7 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback,
-                                                    func=func,
-                                                    **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_chat_member_handler(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
@@ -3040,19 +3028,28 @@ class TeleBot:
     def _test_filter(message_filter, filter_value, message):
         """
         Test filters
-        :param message_filter:
-        :param filter_value:
-        :param message:
-        :return:
+        :param message_filter: Filter type passed in handler
+        :param filter_value: Filter value passed in handler
+        :param message: Message to test
+        :return: True if filter conforms
         """
-        test_cases = {
-            'content_types': lambda msg: msg.content_type in filter_value,
-            'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
-            'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
-            'func': lambda msg: filter_value(msg)
-        }
-
-        return test_cases.get(message_filter, lambda msg: False)(message)
+        #     test_cases = {
+        #         'content_types': lambda msg: msg.content_type in filter_value,
+        #         'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
+        #         'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
+        #         'func': lambda msg: filter_value(msg)
+        #     }
+        #     return test_cases.get(message_filter, lambda msg: False)(message)
+        if message_filter == 'content_types':
+            return message.content_type in filter_value
+        elif message_filter == 'regexp':
+            return message.content_type == 'text' and re.search(filter_value, message.text, re.IGNORECASE)
+        elif message_filter == 'commands':
+            return message.content_type == 'text' and util.extract_command(message.text) in filter_value
+        elif message_filter == 'func':
+            return filter_value(message)
+        else:
+            return False
 
     def _notify_command_handlers(self, handlers, new_messages):
         """
