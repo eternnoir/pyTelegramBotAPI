@@ -973,8 +973,8 @@ def create_chat_invite_link(token, chat_id, expire_date, member_limit):
     }
 
     if expire_date is not None:
-        if isinstance(payload['expire_date'], datetime):
-            payload['expire_date'] = payload['expire_date'].timestamp()
+        if isinstance(expire_date, datetime):
+            payload['expire_date'] = expire_date.timestamp()
         else:
             payload['expire_date'] = expire_date
     if member_limit:
@@ -991,8 +991,8 @@ def edit_chat_invite_link(token, chat_id, invite_link, expire_date, member_limit
     }
 
     if expire_date is not None:
-        if isinstance(payload['expire_date'], datetime):
-            payload['expire_date'] = payload['expire_date'].timestamp()
+        if isinstance(expire_date, datetime):
+            payload['expire_date'] = expire_date.timestamp()
         else:
             payload['expire_date'] = expire_date
 
