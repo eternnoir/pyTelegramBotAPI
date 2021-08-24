@@ -440,3 +440,18 @@ def deprecated(warn: bool=False, alternative: Optional[Callable]=None):
         return wrapper
     return decorator
 
+
+# Cloud helpers
+def webhook_functions(bot, request):
+    """A webhook endpoint for Google Cloud Functions FaaS."""
+    if request.is_json:
+        try:
+            request_json = request.get_json()
+            update = types.Update.de_json(request_json)
+            bot.process_new_updates([update])
+            return ''
+        except Exception as e:
+            print(e)
+            return 'Bot FAIL', 400
+    else:
+        return 'Bot ON'
