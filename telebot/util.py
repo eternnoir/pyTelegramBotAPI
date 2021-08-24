@@ -305,7 +305,7 @@ def deprecated(func):
 
 
 # Cloud helpers
-def webhook_functions(request):
+def webhook_functions(bot, request):
     """A webhook endpoint for Google Cloud Functions FaaS."""
     if request.is_json:
         try:
