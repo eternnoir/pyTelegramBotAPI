@@ -442,7 +442,7 @@ def deprecated(warn: bool=False, alternative: Optional[Callable]=None):
 
 
 # Cloud helpers
-def webhook_functions(bot, request):
+def webhook_google_functions(bot, request):
     """A webhook endpoint for Google Cloud Functions FaaS."""
     if request.is_json:
         try:
