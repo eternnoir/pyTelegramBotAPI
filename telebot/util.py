@@ -27,7 +27,7 @@ logger = logging.getLogger('TeleBot')
 thread_local = threading.local()
 
 content_type_media = [
-    'text', 'audio', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact', 'dice', 'poll',
+    'text', 'audio', 'animation', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact', 'dice', 'poll',
     'venue', 'location'
 ]
 
