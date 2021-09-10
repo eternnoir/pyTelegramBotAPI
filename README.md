@@ -167,7 +167,7 @@ TeleBot supports the following filters:
 |content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
 |regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions](https://docs.python.org/2/library/re.html))|
 |commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
-|only_private|Private chat|`True` if chat is private
+|chat_types|list of chat types|`True` if `message.chat.type` in your filter
 |func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
 
 Here are some examples of using the filters and message handlers:
