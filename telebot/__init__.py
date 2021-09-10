@@ -2476,7 +2476,7 @@ class TeleBot:
         else:
             self.default_middleware_handlers.append(handler)
 
-    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
+    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, is_private=None, **kwargs):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
@@ -2490,6 +2490,11 @@ class TeleBot:
         @bot.message_handler(regexp='someregexp')
         def command_help(message):
             bot.send_message(message.chat.id, 'Did someone call for help?')
+
+        # Handles messages in private chat
+        @bot.message_handler(is_private=True)
+        def command_help(message):
+            bot.send_message(message.chat.id, 'Private chat detected, sir!')
 
         # Handle all sent documents of type 'text/plain'.
         @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
@@ -2508,6 +2513,7 @@ class TeleBot:
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
             It must return True if the command should handle the message.
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :param is_private: True for private chat
         """
 
         if content_types is None:
@@ -2518,6 +2524,7 @@ class TeleBot:
                                                     content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
+                                                    is_private=is_private,
                                                     func=func,
                                                     **kwargs)
             self.add_message_handler(handler_dict)
@@ -2533,7 +2540,7 @@ class TeleBot:
         """
         self.message_handlers.append(handler_dict)
 
-    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, is_private=None, **kwargs):
         """
         Registers message handler.
         :param callback: function to be called
@@ -2541,6 +2548,7 @@ class TeleBot:
         :param commands: list of commands
         :param regexp:
         :param func:
+        :param is_private: True for private chat
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback,
@@ -2548,15 +2556,17 @@ class TeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                is_private=is_private,
                                                 **kwargs)
         self.add_message_handler(handler_dict)
-    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
+    def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, is_private=None, **kwargs):
         """
         Edit message handler decorator
         :param commands:
         :param regexp:
         :param func:
         :param content_types:
+        :param is_private: True for private chat
         :param kwargs:
         :return:
         """
@@ -2570,6 +2580,7 @@ class TeleBot:
                                                     regexp=regexp,
                                                     func=func,
                                                     content_types=content_types,
+                                                    is_private=is_private,
                                                     **kwargs)
             self.add_edited_message_handler(handler_dict)
             return handler
@@ -2584,7 +2595,7 @@ class TeleBot:
         """
         self.edited_message_handlers.append(handler_dict)
 
-    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, is_private=None, **kwargs):
         """
         Registers edited message handler.
         :param callback: function to be called
@@ -2592,6 +2603,7 @@ class TeleBot:
         :param commands: list of commands
         :param regexp:
         :param func:
+        :param is_private: True for private chat
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback,
@@ -2599,6 +2611,7 @@ class TeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                is_private=is_private,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
@@ -3046,6 +3059,8 @@ class TeleBot:
             return message.content_type == 'text' and re.search(filter_value, message.text, re.IGNORECASE)
         elif message_filter == 'commands':
             return message.content_type == 'text' and util.extract_command(message.text) in filter_value
+        elif message_filter == 'is_private':
+            return message.chat.type == 'private'
         elif message_filter == 'func':
             return filter_value(message)
         else:
