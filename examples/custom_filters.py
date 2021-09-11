@@ -40,7 +40,7 @@ def bye_user(message):
 
 
 # Do not forget to register filters
-bot.add_custom_filter(MainFilter)
-bot.add_custom_filter(IsAdmin)
+bot.add_custom_filter(MainFilter())
+bot.add_custom_filter(IsAdmin())
 
 bot.polling(skip_pending=True,non_stop=True) # Skip old updates
