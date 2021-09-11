@@ -43,4 +43,4 @@ def bye_user(message):
 bot.add_custom_filter(MainFilter)
 bot.add_custom_filter(IsAdmin)
 
-bot.polling(skip_pending=True) # Skip old updates
+bot.polling(skip_pending=True,non_stop=True) # Skip old updates

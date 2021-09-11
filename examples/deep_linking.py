@@ -73,5 +73,4 @@ def send_welcome(message):
         reply = "Please visit me via a provided URL from the website."
     bot.reply_to(message, reply)
 
-
-bot.polling()
+bot.polling(skip_pending=True,non_stop=True) # Skip old updates
