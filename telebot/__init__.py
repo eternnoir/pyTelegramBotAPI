@@ -185,6 +185,7 @@ class TeleBot:
         self.poll_answer_handlers = []
         self.my_chat_member_handlers = []
         self.chat_member_handlers = []
+        self.custom_filters = {}
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -3097,8 +3098,16 @@ class TeleBot:
 
         return True
 
-    @staticmethod
-    def _test_filter(message_filter, filter_value, message):
+    def add_custom_filter(self, custom_filter):
+        """
+        Create custom filter.
+        :params:
+        custom_filter: Class with check(message) method."""
+        self.custom_filters[custom_filter.key] = custom_filter
+            
+
+
+    def _test_filter(self, message_filter, filter_value, message):
         """
         Test filters
         :param message_filter: Filter type passed in handler
@@ -3113,6 +3122,7 @@ class TeleBot:
         #         'func': lambda msg: filter_value(msg)
         #     }
         #     return test_cases.get(message_filter, lambda msg: False)(message)
+        
         if message_filter == 'content_types':
             return message.content_type in filter_value
         elif message_filter == 'regexp':
@@ -3124,7 +3134,22 @@ class TeleBot:
         elif message_filter == 'func':
             return filter_value(message)
         else:
+            return self._check_filter(message_filter,filter_value,message)
+
+    def _check_filter(self, message_filter, filter_value, message):
+        if message_filter in self.custom_filters:
+            filter_check = self.custom_filters.get(message_filter)
+            if isinstance(filter_value, util.SimpleCustomFilter):
+                
+                if filter_value == filter_check.check(message): return True
+                else: return False
+            else:
+                if filter_check.check(message,filter_value) is True: return True
+                else: return False
+        else:
             return False
+
+
 
     def _notify_command_handlers(self, handlers, new_messages):
         """
