@@ -33,7 +33,7 @@ READ_TIMEOUT = 30
 
 LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
 
-SESSION_TIME_TO_LIVE = None  # In seconds. None - live forever, 0 - one-time
+SESSION_TIME_TO_LIVE = 600  # In seconds. None - live forever, 0 - one-time
 
 RETRY_ON_ERROR = False
 RETRY_TIMEOUT = 2
