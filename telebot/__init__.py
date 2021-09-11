@@ -3074,17 +3074,20 @@ class TeleBot:
         elif message_filter == 'func':
             return filter_value(message)
         else:
-            if message_filter in self.custom_filters:
-                filter_check = self.custom_filters.get(message_filter)
-                if type(filter_value) is bool:
-                    
-                    if filter_value == filter_check.check(message): return True
-                    else: return False
-                else:
-                    if filter_check.check(message,filter_value) is True: return True
-                    else: return False
+            return self._check_filter(message_filter,filter_value,message)
+
+    def _check_filter(self, message_filter, filter_value, message):
+        if message_filter in self.custom_filters:
+            filter_check = self.custom_filters.get(message_filter)
+            if isinstance(filter_value, util.SimpleCustomFilter):
+                
+                if filter_value == filter_check.check(message): return True
+                else: return False
             else:
-                return False
+                if filter_check.check(message,filter_value) is True: return True
+                else: return False
+        else:
+            return False
 
 
 

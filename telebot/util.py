@@ -456,3 +456,31 @@ def webhook_google_functions(bot, request):
     else:
         return 'Bot ON'
 
+
+class SimpleCustomFilter:
+    """
+    Simple Custom Filter base class.
+    Create child class with check() method.
+    Accepts only bool.
+    """
+
+    def check(message):
+        """
+        Perform a check.
+        """
+        pass
+
+class AdvancedCustomFilter:
+    """
+    Simple Custom Filter base class.
+    Create child class with check() method.
+    Can accept to parameters.
+    message: Message class
+    text: Filter value given in handler
+    """
+
+    def check(message, text):
+        """
+        Perform a check.
+        """
+        pass
