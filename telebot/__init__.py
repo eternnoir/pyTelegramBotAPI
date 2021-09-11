@@ -3140,9 +3140,9 @@ class TeleBot:
         filter_check = self.custom_filters.get(message_filter)
         if not filter_check:
             return False
-        elif isinstance(filter_check(), util.SimpleCustomFilter):
+        elif isinstance(filter_check, util.SimpleCustomFilter):
             return filter_value == filter_check.check(message)
-        elif isinstance(filter_check(), util.AdvancedCustomFilter):
+        elif isinstance(filter_check, util.AdvancedCustomFilter):
             return filter_check.check(message, filter_value)
         else:
             logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
