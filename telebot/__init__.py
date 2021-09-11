@@ -3038,7 +3038,7 @@ class TeleBot:
 
         return True
 
-    def create_filter(self, custom_filter):
+    def add_custom_filter(self, custom_filter):
         """
         Create custom filter.
         :params:
