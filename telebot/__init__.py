@@ -3075,10 +3075,9 @@ class TeleBot:
             return filter_value(message)
         else:
             if message_filter in self.custom_filters:
-                if message_filter in self.custom_filters:
-                    filter_check = self.custom_filters.get(message_filter)
-                    if filter_value == filter_check.check(message): return True
-                    else: return False
+                filter_check = self.custom_filters.get(message_filter)
+                if filter_value == filter_check.check(message): return True
+                else: return False
             else:
                 return False
 
