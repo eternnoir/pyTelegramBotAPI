@@ -61,7 +61,7 @@ def default_query(inline_query):
 
 
 def main_loop():
-    bot.polling(skip_pending=True) # Skip old updates
+    bot.polling(True)
     while 1:
         time.sleep(3)
 

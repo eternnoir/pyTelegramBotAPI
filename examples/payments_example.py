@@ -78,4 +78,5 @@ def got_payment(message):
                      parse_mode='Markdown')
 
 
-bot.polling(skip_pending=True,non_stop=True) # Skip old updates
+bot.skip_pending = True
+bot.polling(none_stop=True, interval=0)

@@ -25,4 +25,4 @@ def echo_message(message):
     bot.reply_to(message, message.text)
 
 
-bot.polling(skip_pending=True,non_stop=True) # Skip old updates
+bot.polling()
