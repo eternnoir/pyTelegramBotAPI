@@ -2521,6 +2521,14 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
+        if isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
                                                     chat_types=chat_types,
@@ -2553,6 +2561,14 @@ class TeleBot:
         :param chat_types: True for private chat
         :return: decorated function
         """
+        if isinstance(commands, str):
+            logger.warning("register_message_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("register_message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
         handler_dict = self._build_handler_dict(callback,
                                                 chat_types=chat_types,
                                                 content_types=content_types,
@@ -2576,6 +2592,14 @@ class TeleBot:
 
         if content_types is None:
             content_types = ["text"]
+
+        if isinstance(commands, str):
+            logger.warning("edited_message_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("edited_message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
@@ -2609,6 +2633,14 @@ class TeleBot:
         :param chat_types: True for private chat
         :return: decorated function
         """
+        if isinstance(commands, str):
+            logger.warning("register_edited_message_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("register_edited_message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
         handler_dict = self._build_handler_dict(callback,
                                                 chat_types=chat_types,
                                                 content_types=content_types,
@@ -2628,9 +2660,16 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         if content_types is None:
             content_types = ["text"]
+
+        if isinstance(commands, str):
+            logger.warning("channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
@@ -2662,6 +2701,14 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
+        if isinstance(commands, str):
+            logger.warning("register_channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("register_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
         handler_dict = self._build_handler_dict(callback,
                                                 content_types=content_types,
                                                 commands=commands,
@@ -2680,9 +2727,16 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         if content_types is None:
             content_types = ["text"]
+
+        if isinstance(commands, str):
+            logger.warning("edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
@@ -2714,6 +2768,14 @@ class TeleBot:
         :param func:
         :return: decorated function
         """
+        if isinstance(commands, str):
+            logger.warning("register_edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning("register_edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
         handler_dict = self._build_handler_dict(callback,
                                                 content_types=content_types,
                                                 commands=commands,
