@@ -3101,11 +3101,9 @@ class TeleBot:
     def add_custom_filter(self, custom_filter):
         """
         Create custom filter.
-        :params:
-        custom_filter: Class with check(message) method."""
+        custom_filter: Class with check(message) method.
+        """
         self.custom_filters[custom_filter.key] = custom_filter
-            
-
 
     def _test_filter(self, message_filter, filter_value, message):
         """
@@ -3133,23 +3131,22 @@ class TeleBot:
             return message.chat.type in filter_value
         elif message_filter == 'func':
             return filter_value(message)
-        else:
+        elif self.custom_filters and message_filter in self.custom_filters:
             return self._check_filter(message_filter,filter_value,message)
-
-    def _check_filter(self, message_filter, filter_value, message):
-        if message_filter in self.custom_filters:
-            filter_check = self.custom_filters.get(message_filter)
-            if isinstance(filter_value, util.SimpleCustomFilter):
-                
-                if filter_value == filter_check.check(message): return True
-                else: return False
-            else:
-                if filter_check.check(message,filter_value) is True: return True
-                else: return False
         else:
             return False
 
-
+    def _check_filter(self, message_filter, filter_value, message):
+        filter_check = self.custom_filters.get(message_filter)
+        if not filter_check:
+            return False
+        elif isinstance(filter_value, util.SimpleCustomFilter):
+            return filter_value == filter_check.check(message)
+        elif isinstance(filter_value, util.AdvancedCustomFilter):
+            return filter_check.check(message,filter_value)
+        else:
+            logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
+            return False
 
     def _notify_command_handlers(self, handlers, new_messages):
         """
