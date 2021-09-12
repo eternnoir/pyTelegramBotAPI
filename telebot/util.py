@@ -5,7 +5,6 @@ import string
 import threading
 import traceback
 from typing import Any, Callable, List, Dict, Optional, Union
-from abc import ABC
 
 # noinspection PyPep8Naming
 import queue as Queue
@@ -456,34 +455,3 @@ def webhook_google_functions(bot, request):
             return 'Bot FAIL', 400
     else:
         return 'Bot ON'
-
-
-class SimpleCustomFilter(ABC):
-    """
-    Simple Custom Filter base class.
-    Create child class with check() method.
-    Accepts only bool.
-    """
-
-    def check(self, message):
-        """
-        Perform a check.
-        """
-        pass
-
-class AdvancedCustomFilter(ABC):
-    """
-    Simple Custom Filter base class.
-    Create child class with check() method.
-    Can accept to parameters.
-    message: Message class
-    text: Filter value given in handler
-    """
-
-    def check(self, message, text):
-        """
-        Perform a check.
-        """
-        pass
-
-    
