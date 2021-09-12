@@ -289,25 +289,25 @@ def start(message):
 There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
 	
 	
-### Custom filters
+#### Custom filters
 Also, you can use built-in custom filters. Or, you can create your own filter.	
 
-[Example of custom filter](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_filters.py)
+[Example of custom filter](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_filters/general_custom_filters.py)
 	
 Also, we have examples on them. Check this links:
 	
 You can check some built-in filters in source [code](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/telebot/custom_filters.py)
 	
-Example of [filtering by id](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/id_filter_example.py)
+Example of [filtering by id](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_filters/id_filter_example.py)
 	
-Example of [filtering by text](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/text_filter_example.py)
+Example of [filtering by text](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_filters/text_filter_example.py)
 	
 If you want to add some built-in filter, you are welcome to add it in custom_filters.py file.
 	
 Here is example of creating filter-class:
 	
 ```python
-class IsAdmin(util.SimpleCustomFilter):
+class IsAdmin(telebot.custom_filters.SimpleCustomFilter):
     # Class will check whether the user is admin or creator in group or not
     key='is_admin'
     @staticmethod

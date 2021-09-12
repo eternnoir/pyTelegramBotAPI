@@ -15,7 +15,7 @@ def text_filter(message):
     bot.send_message(message.chat.id, "Hi, {name}!".format(name=message.from_user.first_name))
 
 # Do not forget to register filters
-bot.add_custom_filter(custom_filters.TextFilter())
-bot.add_custom_filter(custom_filters.TextStarts())
+bot.add_custom_filter(custom_filters.TextMatchFilter())
+bot.add_custom_filter(custom_filters.TextStartsFilter())
 
 bot.polling(non_stop=True)

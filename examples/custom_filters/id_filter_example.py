@@ -15,7 +15,8 @@ def not_admin(message):
 
 
 # Do not forget to register
-bot.add_custom_filter(custom_filters.UserFilter())
+bot.add_custom_filter(custom_filters.ChatFilter())
 
 
 bot.polling(non_stop=True)
+

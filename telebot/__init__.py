@@ -12,7 +12,7 @@ from typing import Any, Callable, List, Optional, Union
 # this imports are used to avoid circular import error
 import telebot.util
 import telebot.types
-
+from custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
 logger = logging.getLogger('TeleBot')
@@ -3140,9 +3140,9 @@ class TeleBot:
         filter_check = self.custom_filters.get(message_filter)
         if not filter_check:
             return False
-        elif isinstance(filter_check, util.SimpleCustomFilter):
+        elif isinstance(filter_check, SimpleCustomFilter):
             return filter_value == filter_check.check(message)
-        elif isinstance(filter_check, util.AdvancedCustomFilter):
+        elif isinstance(filter_check, AdvancedCustomFilter):
             return filter_check.check(message, filter_value)
         else:
             logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
