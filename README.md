@@ -302,6 +302,8 @@ Example of [filtering by id](https://github.com/eternnoir/pyTelegramBotAPI/blob/
 	
 Example of [filtering by text](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/text_filter_example.py)
 	
+If you want to add some built-in filter, you are welcome to add it in custom_filters.py file.
+	
 
 #### TeleBot
 ```python
