@@ -185,7 +185,7 @@ class TeleBot:
         self.poll_answer_handlers = []
         self.my_chat_member_handlers = []
         self.chat_member_handlers = []
-        self.custom_filters = {'text': util.TextFilter(), 'text_contains': util.TextContains(), 'chat_id': util.UserFilter(), 'text_startswith': util.TextStarts()}
+        self.custom_filters = {}
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {

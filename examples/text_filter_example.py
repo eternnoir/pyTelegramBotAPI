@@ -1,4 +1,5 @@
 import telebot
+from telebot import custom_filters
 
 bot = telebot.TeleBot('TOKEN')
 
@@ -13,5 +14,8 @@ def start_filter(message):
 def text_filter(message):
     bot.send_message(message.chat.id, "Hi, {name}!".format(name=message.from_user.first_name))
 
+# Do not forget to register filters
+bot.add_custom_filter(custom_filters.TextFilter())
+bot.add_custom_filter(custom_filters.TextStarts())
 
 bot.polling(non_stop=True)

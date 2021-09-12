@@ -1,6 +1,7 @@
 import telebot
+from telebot import custom_filters
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot('token')
 
 
 # Chat id can be private or supergroups.
@@ -11,6 +12,10 @@ def admin_rep(message):
 @bot.message_handler(commands=['admin'])
 def not_admin(message):
     bot.send_message(message.chat.id, "You are not allowed to use this command")
+
+
+# Do not forget to register
+bot.add_custom_filter(custom_filters.UserFilter())
 
 
 bot.polling(non_stop=True)
