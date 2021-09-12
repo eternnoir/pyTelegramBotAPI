@@ -21,12 +21,27 @@
     * [Methods](#methods)
     * [General use of the API](#general-use-of-the-api)
       * [Message handlers](#message-handlers)
+      * [Edited Message handler](#edited-message-handler)
+      * [Channel Post handler](#channel-post-handler)
+      * [Edited Channel Post handler](#edited-channel-post-handler)
       * [Callback Query handlers](#callback-query-handler)
-      * [Middleware handlers](#middleware-handler)
+      * [Shipping Query Handler](#shipping-query-handler)
+      * [Pre Checkout Query Handler](#pre-checkout-query-handler)
+      * [Poll Handler](#poll-handler)
+      * [Poll Answer Handler](#poll-answer-handler)
+      * [My Chat Member Handler](#my-chat-member-handler)
+      * [Chat Member Handler](#chat-member-handler)
+    * [Inline Mode](#inline-mode)
+      * [Inline handler](#inline-handler)
+      * [Chosen Inline handler](#chosen-inline-handler)
+      * [Answer Inline Query](#answer-inline-query)
+    * [Additional API features](#additional-api-features)
+      * [Middleware handlers](#middleware-handlers)
+      * [Custom filters](#custom-filters)
       * [TeleBot](#telebot)
       * [Reply markup](#reply-markup)
-      * [Inline Mode](#inline-mode)
   * [Advanced use of the API](#advanced-use-of-the-api)
+    * [Using local Bot API Server](#using-local-bot-api-sever)
     * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
     * [Sending large text messages](#sending-large-text-messages)
     * [Controlling the amount of Threads used by TeleBot](#controlling-the-amount-of-threads-used-by-telebot)
@@ -35,9 +50,7 @@
     * [Logging](#logging)
     * [Proxy](#proxy)
   * [API conformance](#api-conformance)
-  * [Change log](#change-log)
   * [F.A.Q.](#faq)
-    * [Bot 2.0](#bot-20)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
     * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
   * [The Telegram Chat Group](#the-telegram-chat-group)
@@ -46,7 +59,7 @@
 
 ## Getting started.
 
-This API is tested with Python Python 3.6-3.9 and Pypy 3.
+This API is tested with Python 3.6-3.9 and Pypy 3.
 There are two ways to install the library:
 
 * Installation using pip (a Python package manager)*:
@@ -213,15 +226,15 @@ def send_something(message):
 ```
 **Important: all handlers are tested in the order in which they were declared**
 
-#### Edited Message handlers
+#### Edited Message handler
 Handle edited messages
 `@bot.edited_message_handler(filters) # <- passes a Message type object to your function`
 
-#### channel_post_handler
+#### Channel Post handler
 Handle channel post messages
 `@bot.channel_post_handler(filters) # <- passes a Message type object to your function`
 
-#### edited_channel_post_handler
+#### Edited Channel Post handler
 Handle edited channel post messages
 `@bot.edited_channel_post_handler(filters) # <- passes a Message type object to your function`
 
@@ -232,14 +245,6 @@ Handle callback queries
 def  test_callback(call): # <- passes a CallbackQuery type object to your function
     logger.info(call)
 ```
-
-#### Inline Handler
-Handle inline queries
-`@bot.inline_handler() # <- passes a InlineQuery type object to your function` 
-
-#### Chosen Inline Handler
-Handle chosen inline results
-`@bot.chosen_inline_handler() # <- passes a ChosenInlineResult type object to your function`
 
 #### Shipping Query Handler
 Handle shipping queries
@@ -266,8 +271,51 @@ Handle updates of a chat member's status in a chat
 `@bot.chat_member_handler() # <- passes a ChatMemberUpdated type object to your function`
 *Note: "chat_member" updates are not requested by default. If you want to allow all update types, set `allowed_updates` in `bot.polling()` / `bot.infinity_polling()` to `util.update_types`*
 
+### Inline Mode
 
-#### Middleware Handler
+More information about [Inline mode](https://core.telegram.org/bots/inline).
+
+#### Inline handler
+
+Now, you can use inline_handler to get inline queries in telebot.
+
+```python
+
+@bot.inline_handler(lambda query: query.query == 'text')
+def query_text(inline_query):
+    # Query message is text
+```
+
+#### Chosen Inline handler
+
+Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
+command for @Botfather.
+
+More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
+
+```python
+@bot.chosen_inline_handler(func=lambda chosen_inline_result: True)
+def test_chosen(chosen_inline_result):
+    # Process all chosen_inline_result.
+```
+
+#### Answer Inline Query
+
+```python
+@bot.inline_handler(lambda query: query.query == 'text')
+def query_text(inline_query):
+    try:
+        r = types.InlineQueryResultArticle('1', 'Result', types.InputTextMessageContent('Result message.'))
+        r2 = types.InlineQueryResultArticle('2', 'Result2', types.InputTextMessageContent('Result message2.'))
+        bot.answer_inline_query(inline_query.id, [r, r2])
+    except Exception as e:
+        print(e)
+
+```
+
+### Additional API features
+
+#### Middleware Handlers
 
 A middleware handler is a function that allows you to modify requests or the bot context as they pass through the 
 Telegram to the bot. You can imagine middleware as a chain of logic connection handled before any other handlers are
@@ -471,49 +519,8 @@ ForceReply:
 
 ![ForceReply](https://farm4.staticflickr.com/3809/32418726814_d1baec0fc2_o_d.jpg "ForceReply")
 
-### Inline Mode
 
-More information about [Inline mode](https://core.telegram.org/bots/inline).
-
-#### inline_handler
-
-Now, you can use inline_handler to get inline queries in telebot.
-
-```python
-
-@bot.inline_handler(lambda query: query.query == 'text')
-def query_text(inline_query):
-    # Query message is text
-```
-
-
-#### chosen_inline_handler
-
-Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
-command for @Botfather.
-
-More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
-
-```python
-@bot.chosen_inline_handler(func=lambda chosen_inline_result: True)
-def test_chosen(chosen_inline_result):
-    # Process all chosen_inline_result.
-```
-
-#### answer_inline_query
-
-```python
-@bot.inline_handler(lambda query: query.query == 'text')
-def query_text(inline_query):
-    try:
-        r = types.InlineQueryResultArticle('1', 'Result', types.InputTextMessageContent('Result message.'))
-        r2 = types.InlineQueryResultArticle('2', 'Result2', types.InputTextMessageContent('Result message2.'))
-        bot.answer_inline_query(inline_query.id, [r, r2])
-    except Exception as e:
-        print(e)
-
-```
-### Working with entities:
+### Working with entities
 This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
 Attributes:
 * `type`
