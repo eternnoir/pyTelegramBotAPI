@@ -16,10 +16,7 @@ class IsAdmin(util.SimpleCustomFilter):
     key='is_admin'
     @staticmethod
     def check(message: telebot.types.Message):
-        if bot.get_chat_member(message.chat.id,message.from_user.id).status in ['administrator','creator']:
-            return True
-        else:
-            return False
+        return bot.get_chat_member(message.chat.id,message.from_user.id).status in ['administrator','creator']
 
 
 @bot.message_handler(is_admin=True, commands=['admin']) # Check if user is admin

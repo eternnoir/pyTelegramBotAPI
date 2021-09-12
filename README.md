@@ -169,7 +169,7 @@ TeleBot supports the following filters:
 |commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
 |chat_types|list of chat types|`True` if `message.chat.type` in your filter
 |func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
-
+	
 Here are some examples of using the filters and message handlers:
 
 ```python
@@ -287,6 +287,43 @@ def start(message):
     assert message.another_text == message.text + ':changed'
 ```
 There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
+	
+	
+### Custom filters
+Also, you can use built-in custom filters. Or, you can create your own filter.	
+
+[Example of custom filter](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_filters.py)
+	
+Also, we have examples on them. Check this links:
+	
+You can check some built-in filters in source [code](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/telebot/custom_filters.py)
+	
+Example of [filtering by id](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/id_filter_example.py)
+	
+Example of [filtering by text](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/text_filter_example.py)
+	
+If you want to add some built-in filter, you are welcome to add it in custom_filters.py file.
+	
+Here is example of creating filter-class:
+	
+```python
+class IsAdmin(util.SimpleCustomFilter):
+    # Class will check whether the user is admin or creator in group or not
+    key='is_admin'
+    @staticmethod
+    def check(message: telebot.types.Message):
+        return bot.get_chat_member(message.chat.id,message.from_user.id).status in ['administrator','creator']
+	
+# To register filter, you need to use method add_custom_filter.
+bot.add_custom_filter(IsAdmin())
+	
+# Now, you can use it in handler.
+@bot.message_handler(is_admin=True)
+def admin_of_group(message):
+	bot.send_message(message.chat.id, 'You are admin of this group'!)
+	
+```
+	
 
 #### TeleBot
 ```python
