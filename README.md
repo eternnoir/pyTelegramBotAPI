@@ -170,6 +170,15 @@ TeleBot supports the following filters:
 |chat_types|list of chat types|`True` if `message.chat.type` in your filter
 |func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
 
+### Custom filters
+Also, you can use built-in custom filters. Or, you can create your own filter.	
+
+[Example of custom filter](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_filters.py)
+	
+You can check some built-in filters in source [code](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/telebot/custom_filters.py)
+Example of [filtering by id](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/id_filter_example.py)
+Example of [filtering by text](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/text_filter_example.py)
+	
 Here are some examples of using the filters and message handlers:
 
 ```python
