@@ -12,7 +12,7 @@ from typing import Any, Callable, List, Optional, Union
 # this imports are used to avoid circular import error
 import telebot.util
 import telebot.types
-from custom_filters import SimpleCustomFilter, AdvancedCustomFilter
+from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
 logger = logging.getLogger('TeleBot')
