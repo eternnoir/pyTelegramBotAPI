@@ -306,7 +306,7 @@ If you want to add some built-in filter, you are welcome to add it in custom_fil
 	
 Here is example of creating filter-class:
 	
-```
+```python
 class IsAdmin(util.SimpleCustomFilter):
     # Class will check whether the user is admin or creator in group or not
     key='is_admin'
@@ -314,14 +314,10 @@ class IsAdmin(util.SimpleCustomFilter):
     def check(message: telebot.types.Message):
         return bot.get_chat_member(message.chat.id,message.from_user.id).status in ['administrator','creator']
 	
-
     # To register filter, you need to use method add_custom_filter.
-	
     bot.add_custom_filter(IsAdmin())
 	
-
     # Now, you can use it in handler.
-	
     @bot.message_handler(is_admin=True)
 	
 ```
