@@ -84,3 +84,49 @@ class ChatFilter(AdvancedCustomFilter):
     key = 'chat_id'
     def check(self, message, text):
         return message.chat.id in text
+
+class ForwardFilter(SimpleCustomFilter):
+    """
+    Check whether message was forwarded.
+
+    Example:
+
+    @bot.message_handler(is_forwarded=True)
+    """
+
+    key = 'is_forwarded'
+
+    def check(self, message):
+        return message.forward_from_chat is not None
+
+class IsReplyFilter(SimpleCustomFilter):
+    """
+    Check whether message is a reply.
+
+    Example:
+
+    @bot.message_handler(is_reply=True)
+    """
+
+    key = 'is_reply'
+
+    def check(self, message):
+        return message.reply_to_message is not None
+
+
+
+class LanguageFilter(AdvancedCustomFilter):
+    """
+    Check users language_code.
+
+    Example:
+
+    @bot.message_handler(language_code=['ru'])
+    """
+
+    key = 'language_code'
+
+    def check(self, message, text):
+        if type(text) is list:return message.from_user.language_code in text
+        else: return message.from_user.language_code == text
+
