@@ -97,7 +97,7 @@ class ForwardFilter(SimpleCustomFilter):
     key = 'is_forwarded'
 
     def check(self, message):
-        return message.forward_from_chat is not None
+        return message.forward_from is not None
 
 class IsReplyFilter(SimpleCustomFilter):
     """
