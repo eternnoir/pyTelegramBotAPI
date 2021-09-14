@@ -87,7 +87,7 @@ class ChatFilter(AdvancedCustomFilter):
 
 class ForwardFilter(SimpleCustomFilter):
     """
-    Check whether message was forwarded.
+    Check whether message was forwarded from channel or group.
 
     Example:
 
@@ -97,7 +97,7 @@ class ForwardFilter(SimpleCustomFilter):
     key = 'is_forwarded'
 
     def check(self, message):
-        return message.forward_from is not None
+        return message.forward_from_chat is not None
 
 class IsReplyFilter(SimpleCustomFilter):
     """
