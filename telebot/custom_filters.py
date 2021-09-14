@@ -87,7 +87,7 @@ class ChatFilter(AdvancedCustomFilter):
 
 class ForwardFilter(SimpleCustomFilter):
     """
-    Check whether message was forwarded.
+    Check whether message was forwarded from channel or group.
 
     Example:
 
