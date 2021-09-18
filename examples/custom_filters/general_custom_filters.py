@@ -4,14 +4,14 @@ bot = telebot.TeleBot('TOKEN')
 
 
 # AdvancedCustomFilter is for list, string filter values
-class MainFilter(telebot.custom_filters.AdvancedCustomFilter):
+class MainFilter(telebot.AdvancedCustomFilter):
     key='text'
     @staticmethod
     def check(message, text):
         return message.text in text
 
 # SimpleCustomFilter is for boolean values, such as is_admin=True
-class IsAdmin(telebot.custom_filters.SimpleCustomFilter):
+class IsAdmin(telebot.SimpleCustomFilter):
     key='is_admin'
     @staticmethod
     def check(message: telebot.types.Message):
