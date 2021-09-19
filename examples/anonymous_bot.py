@@ -20,7 +20,6 @@ freeid = None
 # `/start` command handler
 #
 # That command only sends you 'Just use /find command!'
-#
 @bot.message_handler(commands=['start'])
 def start(message: types.Message):
     bot.send_message(message.chat.id, 'Just use /find command!')
@@ -41,7 +40,6 @@ def start(message: types.Message):
 #       3.3.2. `users` updated with a {user_in_the_search_chat_id, your_chat_id}
 #       3.3.3. `users` updated with a {your_chat_id, user_in_the_search_id}
 #       3.3.4. `freeid` updated with `None`
-#
 @bot.message_handler(commands=['find'])
 def find(message: types.Message):
     global freeid
@@ -80,7 +78,6 @@ def find(message: types.Message):
 # 4. If you are only in search:
 #   4.1. Bot sends you 'Stopping...'
 #   4.2. `freeid` updated with `None`
-#
 @bot.message_handler(commands=['stop'])
 def stop(message: types.Message):
     global freeid
@@ -108,43 +105,22 @@ def stop(message: types.Message):
 # Otherwise all your messages are sent to your opponent
 #
 # Questions:
-# Is there any way to improve readability like `content_types=['all']`?
-# Is there any way to improve "elif-zone"? Like:
-#   `bot.send_message(users[message.chat.id], message.data)`
-#
-@bot.message_handler(content_types=['animation', 'audio', 'contact', 'dice', 'document', 'location', 'photo', 'sticker', 'text', 'venue', 'video', 'video_note', 'voice'])
+# 1. Is there any way to improve readability like `content_types=['all']`?
+# 2. Is there any way to register this message handler only when i found the opponent?
+@bot.message_handler(content_types=['animation', 'audio', 'contact', 'dice', 'document', 'location', 'photo', 'poll', 'sticker', 'text', 'venue', 'video', 'video_note', 'voice'])
 def chatting(message: types.Message):
-    if message.chat.id in users and users[message.chat.id] != None:
-
-        if message.content_type == 'animation':
-            bot.send_animation(users[message.chat.id], message.animation.file_id)
-        elif message.content_type == 'audio':
-            bot.send_audio(users[message.chat.id], message.audio.file_id)
-        elif message.content_type == 'contact':
-            bot.send_contact(users[message.chat.id], message.contact.phone_number, message.contact.first_name)
-        elif message.content_type == 'dice':
-            bot.send_dice(users[message.chat.id], message.dice.emoji)
-        elif message.content_type == 'document':
-            bot.send_document(users[message.chat.id], message.document.file_id)
-        elif message.content_type == 'location':
-            bot.send_location(users[message.chat.id], message.location.latitude, message.location.longitude)
-        elif message.content_type == 'photo':
-            bot.send_photo(users[message.chat.id], message.photo)
-        elif message.content_type == 'sticker':
-            bot.send_sticker(users[message.chat.id], message.sticker.file_id)
-        elif message.content_type == 'text':
-            bot.send_message(users[message.chat.id], message.text)
-        elif message.content_type == 'venue':
-            bot.send_venue(users[message.chat.id], message.venue.location.latitude, message.venue.location.longitude, message.venue.title, message.venue.address)
-        elif message.content_type == 'video':
-            bot.send_video(users[message.chat.id], message.video.file_id)
-        elif message.content_type == 'video_note':
-            bot.send_video_note(users[message.chat.id], message.video_note.file_id)
-        elif message.content_type == 'voice':
-            bot.send_voice(users[message.chat.id], message.voice.file_id)
-
+    if message.chat.id in users:
+        bot.copy_message(users[message.chat.id], users[users[message.chat.id]], message.id)
     else:
         bot.send_message(message.chat.id, 'No one can hear you...')
 
 # Start retrieving updates
+# Questions:
+# 1. Is there any way not to process messages sent earlier?
+#
+# For example:
+# If the bot is turned off, and i tried to type `/find` nothing will happen, but...
+# When i start the bot, `/find` command will processed, and i will be added to search
+#
+# I tried `skip_pending=True`, but thats was not helpful
 bot.polling()
