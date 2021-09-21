@@ -1,0 +1,41 @@
+!pip install pyTelegramBotAPI
+with open("conf.py", "w", encoding="utf-8") as f:
+    f.write('TOKEN = "%s"' % input("1989893054:AAHI-Scc9rR5qY27WddC8lgOu4PR-9xxCTE"))
+    !wget https://raw.githubusercontent.com/ancatmara/skillfactory/master/data/onegin.txt
+    import re
+import conf
+import random
+import telebot
+
+def random_quote(sents):
+    i = random.randint(0, len(sents)-1)
+    return sents[i]
+
+def get_sentences(path, regex=".*?[.!?]\s"):
+    s = re.compile(regex, re.DOTALL)
+    with open(path, "r", encoding="utf-8") as f:
+        sents = s.findall(f.read())
+    return sents
+    bot = telebot.TeleBot(conf.TOKEN)
+    # указываем, что это обработчик сообщений
+@bot.message_handler(...)
+# определение функции
+def my_function(message):
+    # код, который генерирует ответ
+    reply = 'Привет!'
+    # код для отправки сообщения в чат
+    bot.send_message(message.chat.id, reply)
+    @bot.message_handler(commands=['send'])
+def send_quote(message):
+    bot.send_message(message.chat.id, random_quote(sents))
+    @bot.message_handler(func=lambda m: True)
+def query_quote(message):
+    query = message.text
+    res = [sent for sent in sents if query.lower() in sent.lower()]
+    if len(res) != 0:
+        bot.send_message(message.chat.id, random_quote(res))
+    else:
+        bot.send_message(message.chat.id, "Об этом Пушкин не писал!")
+        if __name__ == '__main__':
+    bot.polling(none_stop=True)
+    
