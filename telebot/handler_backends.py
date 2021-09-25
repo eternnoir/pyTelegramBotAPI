@@ -167,6 +167,9 @@ class StateMachine:
         """Delete a state"""
         return self._states.pop(chat_id)
 
+    def _get_data(self, chat_id):
+        return self._states[chat_id]['data']
+
 
 class State:
     """
@@ -210,7 +213,7 @@ class StateContext:
     def __init__(self , obj: StateMachine, chat_id) -> None:
         self.obj = obj
         self.chat_id = chat_id
-        self.data = obj._states[chat_id]['data']
+        self.data = obj._get_data(chat_id)
 
     def __enter__(self):
         return self.data

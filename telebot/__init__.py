@@ -2468,6 +2468,11 @@ class TeleBot:
             if user_state:
                 for handler in self.state_handlers:
                     if handler['filters']['state'] == user_state:
+                        for message_filter, filter_value in handler['filters'].items():
+                            if filter_value is None:
+                                continue
+                            if not self._test_filter(message_filter, filter_value, message):
+                                return False
                         need_pop = True
                         state = State(self.current_states)
                         self._exec_task(handler["function"], message, state)
@@ -2711,12 +2716,21 @@ class TeleBot:
         self.add_edited_message_handler(handler_dict)
 
 
-    def state_handler(self, state=None, content_types=None, func=None,**kwargs):
-
+    def state_handler(self, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
+        """
+        State handler for getting input from a user.
+        :param state: state of a user
+        :param content_types:
+        :param regexp:
+        :param func:
+        :param chat_types:
+        """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler,
                                                     state=state,
                                                     content_types=content_types,
+                                                    regexp=regexp,
+                                                    chat_types=chat_types,
                                                     func=func,
                                                     **kwargs)
             self.add_state_handler(handler_dict)
@@ -2732,7 +2746,7 @@ class TeleBot:
         """
         self.state_handlers.append(handler_dict)
 
-    def register_state_handler(self, callback, state=None, content_types=None, func=None, **kwargs):
+    def register_state_handler(self, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
         """
         Register a state handler.
         :param callback: function to be called
@@ -2740,9 +2754,11 @@ class TeleBot:
         :param content_types:
         :param func:
         """
-        handler_dict = self._build_handler_dict(callback,
+        handler_dict = self._build_handler_dict(handler,
                                                 state=state,
                                                 content_types=content_types,
+                                                regexp=regexp,
+                                                chat_types=chat_types,
                                                 func=func,
                                                 **kwargs)
         self.add_state_handler(handler_dict)
@@ -3226,6 +3242,8 @@ class TeleBot:
             return message.content_type == 'text' and util.extract_command(message.text) in filter_value
         elif message_filter == 'chat_types':
             return message.chat.type in filter_value
+        elif message_filter == 'state':
+            return True
         elif message_filter == 'func':
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:
