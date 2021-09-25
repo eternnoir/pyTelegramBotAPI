@@ -498,8 +498,8 @@ class TeleBot:
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
-        self._notify_state_handlers(new_messages)
         self._notify_reply_handlers(new_messages)
+        self._notify_state_handlers(new_messages)
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages)
 
@@ -2390,7 +2390,6 @@ class TeleBot:
         """
         return self.current_states.current_state(chat_id)
 
-
     def register_next_step_handler_by_chat_id(
             self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:
         """
@@ -2462,6 +2461,8 @@ class TeleBot:
         :param new_messages:
         :return:
         """
+        if not self.current_states: return
+
         for i, message in enumerate(new_messages):
             need_pop = False
             user_state = self.current_states.current_state(message.from_user.id)
@@ -3242,12 +3243,12 @@ class TeleBot:
             return message.content_type == 'text' and util.extract_command(message.text) in filter_value
         elif message_filter == 'chat_types':
             return message.chat.type in filter_value
-        elif message_filter == 'state':
-            return True
         elif message_filter == 'func':
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:
             return self._check_filter(message_filter,filter_value,message)
+        elif message_filter == 'state':
+            return True
         else:
             return False
 

@@ -143,7 +143,6 @@ class RedisHandlerBackend(HandlerBackend):
         return handlers
 
 
-
 class State:
     def __init__(self):
         self._states = {}
