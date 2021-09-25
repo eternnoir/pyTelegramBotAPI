@@ -2746,7 +2746,7 @@ class TeleBot:
         """
         self.state_handlers.append(handler_dict)
 
-    def register_state_handler(self, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
+    def register_state_handler(self, callback, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
         """
         Register a state handler.
         :param callback: function to be called
@@ -2754,7 +2754,7 @@ class TeleBot:
         :param content_types:
         :param func:
         """
-        handler_dict = self._build_handler_dict(handler,
+        handler_dict = self._build_handler_dict(callback=callback,
                                                 state=state,
                                                 content_types=content_types,
                                                 regexp=regexp,
