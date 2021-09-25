@@ -143,7 +143,6 @@ class RedisHandlerBackend(HandlerBackend):
         return handlers
 
 
-
 class StateMachine:
     def __init__(self):
         self._states = {}
@@ -171,7 +170,6 @@ class StateMachine:
 
     def _get_data(self, chat_id):
         return self._states[chat_id]['data']
-
 
 class State:
     """
