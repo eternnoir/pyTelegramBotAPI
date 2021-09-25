@@ -27,7 +27,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, StateMachine, State
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, State
 
 
 REPLY_MARKUP_TYPES = Union[
@@ -188,7 +188,7 @@ class TeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = StateMachine()
+        self.current_states = State()
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -2474,7 +2474,7 @@ class TeleBot:
                             if not self._test_filter(message_filter, filter_value, message):
                                 return False
                         need_pop = True
-                        state = State(self.current_states)
+                        state = self.current_states
                         self._exec_task(handler["function"], message, state)
             if need_pop:
                 new_messages.pop(i)  # removing message that was detected by states
