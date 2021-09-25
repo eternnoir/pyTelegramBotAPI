@@ -143,7 +143,7 @@ class RedisHandlerBackend(HandlerBackend):
         return handlers
 
 
-class StateMachine:
+class State:
     def __init__(self):
         self._states = {}
 
@@ -155,7 +155,7 @@ class StateMachine:
         """
         if chat_id in self._states:
             
-            self._states[int(chat_id)]['state'] = state
+            self._states[chat_id]['state'] = state
         else:
             self._states[chat_id] = {'state': state,'data': {}}
 
@@ -171,27 +171,20 @@ class StateMachine:
     def _get_data(self, chat_id):
         return self._states[chat_id]['data']
 
-class State:
-    """
-    Base class for state managing.
-    """
-    def __init__(self, obj: StateMachine) -> None:
-        self.obj = obj
-
     def set(self, chat_id, new_state):
         """
         Set a new state for a user.
         :param chat_id:
         :param new_state: new_state of a user
         """
-        self.obj._states[chat_id]['state'] = new_state
+        self.add_state(chat_id,new_state)
 
     def finish(self, chat_id):
         """
         Finish(delete) state of a user.
         :param chat_id:
         """
-        self.obj._states.pop(chat_id)
+        self.delete_state(chat_id)
 
     def retrieve_data(self, chat_id):
         """
@@ -204,13 +197,13 @@ class State:
         Also, at the end of your 'Form' you can get the name:
         data['name']
         """
-        return StateContext(self.obj, chat_id)
+        return StateContext(self, chat_id)
 
 class StateContext:
     """
     Class for data.
     """
-    def __init__(self , obj: StateMachine, chat_id) -> None:
+    def __init__(self , obj: State, chat_id) -> None:
         self.obj = obj
         self.chat_id = chat_id
         self.data = obj._get_data(chat_id)
