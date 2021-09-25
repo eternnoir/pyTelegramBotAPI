@@ -151,6 +151,8 @@ class StateMachine:
     def add_state(self, chat_id, state):
         """
         Add a state.
+        :param chat_id:
+        :param state: new state
         """
         if chat_id in self._states:
             
