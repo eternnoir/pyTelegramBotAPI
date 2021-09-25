@@ -156,7 +156,7 @@ class StateMachine:
         """
         if chat_id in self._states:
             
-            self._states[int(chat_id)]['state'] = state
+            self._states[chat_id]['state'] = state
         else:
             self._states[chat_id] = {'state': state,'data': {}}
 
@@ -186,14 +186,14 @@ class State:
         :param chat_id:
         :param new_state: new_state of a user
         """
-        self.obj._states[chat_id]['state'] = new_state
+        self.obj.add_state(chat_id,new_state)
 
     def finish(self, chat_id):
         """
         Finish(delete) state of a user.
         :param chat_id:
         """
-        self.obj._states.pop(chat_id)
+        self.obj.delete_state(chat_id)
 
     def retrieve_data(self, chat_id):
         """
