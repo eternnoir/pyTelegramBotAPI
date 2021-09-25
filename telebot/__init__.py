@@ -27,7 +27,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, StateMachine, State
 
 
 REPLY_MARKUP_TYPES = Union[
@@ -186,6 +186,9 @@ class TeleBot:
         self.my_chat_member_handlers = []
         self.chat_member_handlers = []
         self.custom_filters = {}
+        self.state_handlers = []
+
+        self.current_states = StateMachine()
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -495,6 +498,7 @@ class TeleBot:
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
+        self._notify_state_handlers(new_messages)
         self._notify_reply_handlers(new_messages)
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages)
@@ -2362,6 +2366,31 @@ class TeleBot:
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
 
+    def set_state(self, chat_id, state):
+        """
+        Sets a new state of a user.
+        :param chat_id:
+        :param state: new state. can be string or integer.
+        """
+        self.current_states.add_state(chat_id, state)
+
+    def delete_state(self, chat_id):
+        """
+        Delete the current state of a user.
+        :param chat_id:
+        :return:
+        """
+        self.current_states.delete_state(chat_id)
+
+    def get_state(self, chat_id):
+        """
+        Get current state of a user.
+        :param chat_id:
+        :return: state of a user
+        """
+        return self.current_states.current_state(chat_id)
+
+
     def register_next_step_handler_by_chat_id(
             self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:
         """
@@ -2425,6 +2454,31 @@ class TeleBot:
                     self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
             if need_pop:
                 new_messages.pop(i)  # removing message that was detected with next_step_handler
+
+
+    def _notify_state_handlers(self, new_messages):
+        """
+        Description: TBD
+        :param new_messages:
+        :return:
+        """
+        for i, message in enumerate(new_messages):
+            need_pop = False
+            user_state = self.current_states.current_state(message.from_user.id)
+            if user_state:
+                for handler in self.state_handlers:
+                    if handler['filters']['state'] == user_state:
+                        for message_filter, filter_value in handler['filters'].items():
+                            if filter_value is None:
+                                continue
+                            if not self._test_filter(message_filter, filter_value, message):
+                                return False
+                        need_pop = True
+                        state = State(self.current_states)
+                        self._exec_task(handler["function"], message, state)
+            if need_pop:
+                new_messages.pop(i)  # removing message that was detected by states
+
 
     @staticmethod
     def _build_handler_dict(handler, **filters):
@@ -2660,6 +2714,55 @@ class TeleBot:
                                                 func=func,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
+
+
+    def state_handler(self, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
+        """
+        State handler for getting input from a user.
+        :param state: state of a user
+        :param content_types:
+        :param regexp:
+        :param func:
+        :param chat_types:
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler,
+                                                    state=state,
+                                                    content_types=content_types,
+                                                    regexp=regexp,
+                                                    chat_types=chat_types,
+                                                    func=func,
+                                                    **kwargs)
+            self.add_state_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_state_handler(self, handler_dict):
+        """
+        Adds the edit message handler
+        :param handler_dict:
+        :return:
+        """
+        self.state_handlers.append(handler_dict)
+
+    def register_state_handler(self, callback, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
+        """
+        Register a state handler.
+        :param callback: function to be called
+        :param state: state to be checked
+        :param content_types:
+        :param func:
+        """
+        handler_dict = self._build_handler_dict(callback=callback,
+                                                state=state,
+                                                content_types=content_types,
+                                                regexp=regexp,
+                                                chat_types=chat_types,
+                                                func=func,
+                                                **kwargs)
+        self.add_state_handler(handler_dict)
+
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -3139,6 +3242,8 @@ class TeleBot:
             return message.content_type == 'text' and util.extract_command(message.text) in filter_value
         elif message_filter == 'chat_types':
             return message.chat.type in filter_value
+        elif message_filter == 'state':
+            return True
         elif message_filter == 'func':
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:

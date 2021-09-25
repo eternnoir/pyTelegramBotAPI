@@ -141,3 +141,84 @@ class RedisHandlerBackend(HandlerBackend):
             handlers = pickle.loads(value)
             self.clear_handlers(handler_group_id)
         return handlers
+
+
+
+class StateMachine:
+    def __init__(self):
+        self._states = {}
+
+    def add_state(self, chat_id, state):
+        """
+        Add a state.
+        :param chat_id:
+        :param state: new state
+        """
+        if chat_id in self._states:
+            
+            self._states[int(chat_id)]['state'] = state
+        else:
+            self._states[chat_id] = {'state': state,'data': {}}
+
+    def current_state(self, chat_id):
+        """Current state"""
+        if chat_id in self._states: return self._states[chat_id]['state']
+        else: return False
+
+    def delete_state(self, chat_id):
+        """Delete a state"""
+        return self._states.pop(chat_id)
+
+    def _get_data(self, chat_id):
+        return self._states[chat_id]['data']
+
+
+class State:
+    """
+    Base class for state managing.
+    """
+    def __init__(self, obj: StateMachine) -> None:
+        self.obj = obj
+
+    def set(self, chat_id, new_state):
+        """
+        Set a new state for a user.
+        :param chat_id:
+        :param new_state: new_state of a user
+        """
+        self.obj._states[chat_id]['state'] = new_state
+
+    def finish(self, chat_id):
+        """
+        Finish(delete) state of a user.
+        :param chat_id:
+        """
+        self.obj._states.pop(chat_id)
+
+    def retrieve_data(self, chat_id):
+        """
+        Save input text.
+
+        Usage:
+        with state.retrieve_data(message.chat.id) as data:
+            data['name'] = message.text
+
+        Also, at the end of your 'Form' you can get the name:
+        data['name']
+        """
+        return StateContext(self.obj, chat_id)
+
+class StateContext:
+    """
+    Class for data.
+    """
+    def __init__(self , obj: StateMachine, chat_id) -> None:
+        self.obj = obj
+        self.chat_id = chat_id
+        self.data = obj._get_data(chat_id)
+
+    def __enter__(self):
+        return self.data
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return

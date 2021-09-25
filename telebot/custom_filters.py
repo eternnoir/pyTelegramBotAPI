@@ -130,3 +130,19 @@ class LanguageFilter(AdvancedCustomFilter):
         if type(text) is list:return message.from_user.language_code in text
         else: return message.from_user.language_code == text
 
+class IsAdminFilter(SimpleCustomFilter):
+    """
+    Check whether the user is administrator / owner of the chat.
+
+    Example:
+    @bot.message_handler(chat_types=['supergroup'], is_chat_admin=True)
+    """
+
+    key = 'is_chat_admin'
+
+    def __init__(self, bot):
+        self._bot = bot
+
+    def check(self, message):
+        return self._bot.get_chat_member(message.chat.id, message.from_user.id).status in ['creator', 'administrator']
+
