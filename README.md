@@ -242,7 +242,7 @@ Handle edited channel post messages
 Handle callback queries
 ```python
 @bot.callback_query_handler(func=lambda call: True)
-def  test_callback(call): # <- passes a CallbackQuery type object to your function
+def test_callback(call): # <- passes a CallbackQuery type object to your function
     logger.info(call)
 ```
 
