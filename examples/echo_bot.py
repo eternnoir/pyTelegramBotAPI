@@ -25,4 +25,4 @@ def echo_message(message):
     bot.reply_to(message, message.text)
 
 
-bot.polling()
+bot.infinity_polling()

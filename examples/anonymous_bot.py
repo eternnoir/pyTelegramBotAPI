@@ -114,13 +114,4 @@ def chatting(message: types.Message):
     else:
         bot.send_message(message.chat.id, 'No one can hear you...')
 
-# Start retrieving updates
-# Questions:
-# 1. Is there any way not to process messages sent earlier?
-#
-# For example:
-# If the bot is turned off, and i tried to type `/find` nothing will happen, but...
-# When i start the bot, `/find` command will processed, and i will be added to search
-#
-# I tried `skip_pending=True`, but thats was not helpful
-bot.polling()
+bot.infinity_polling(skip_pending=True)

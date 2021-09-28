@@ -18,4 +18,4 @@ def text_filter(message):
 bot.add_custom_filter(custom_filters.IsReplyFilter())
 bot.add_custom_filter(custom_filters.ForwardFilter())
 
-bot.polling(non_stop=True)
+bot.infinity_polling()

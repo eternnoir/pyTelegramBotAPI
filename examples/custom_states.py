@@ -31,4 +31,4 @@ def ready_for_answer(message, state: State):
         bot.send_message(message.chat.id, "Ready, take a look:\n<b>Name: {name}\nSurname: {surname}\nAge: {age}</b>".format(name=data['name'], surname=data['surname'], age=message.text), parse_mode="html")
     state.finish(message.chat.id)
 
-bot.polling()
+bot.infinity_polling()

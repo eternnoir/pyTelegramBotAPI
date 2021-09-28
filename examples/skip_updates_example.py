@@ -10,4 +10,4 @@ def send_welcome(message):
 def echo_all(message):
 	bot.reply_to(message, message.text)
 
-bot.polling(skip_pending=True)# Skip pending skips old updates
+bot.infinity_polling(skip_pending=True)# Skip pending skips old updates

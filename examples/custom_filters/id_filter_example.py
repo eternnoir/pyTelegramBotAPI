@@ -13,10 +13,7 @@ def admin_rep(message):
 def not_admin(message):
     bot.send_message(message.chat.id, "You are not allowed to use this command")
 
-
 # Do not forget to register
 bot.add_custom_filter(custom_filters.ChatFilter())
 
-
-bot.polling(non_stop=True)
-
+bot.infinity_polling()

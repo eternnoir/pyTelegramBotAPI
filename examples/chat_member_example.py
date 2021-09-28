@@ -30,4 +30,4 @@ def my_chat_m(message: types.ChatMemberUpdated):
 @bot.message_handler(content_types=util.content_type_service)
 def delall(message: types.Message):
     bot.delete_message(message.chat.id,message.message_id)
-bot.polling(allowed_updates=util.update_types)
+bot.infinity_polling(allowed_updates=util.update_types)

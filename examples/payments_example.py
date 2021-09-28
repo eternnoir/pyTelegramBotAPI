@@ -78,5 +78,4 @@ def got_payment(message):
                      parse_mode='Markdown')
 
 
-bot.skip_pending = True
-bot.polling(none_stop=True, interval=0)
+bot.infinity_polling(skip_pending = True)
