@@ -9,4 +9,4 @@ def answer_for_admin(message):
 
 # Register filter
 bot.add_custom_filter(custom_filters.IsAdminFilter(bot))
-bot.polling()
+bot.infinity_polling()

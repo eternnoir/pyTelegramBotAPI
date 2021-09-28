@@ -121,13 +121,13 @@ This one echoes all incoming text messages back to the sender. It uses a lambda 
 
 We now have a basic bot which replies a static message to "/start" and "/help" commands and which echoes the rest of the sent messages. To start the bot, add the following to our source file:
 ```python
-bot.polling()
+bot.infinity_polling()
 ```
 Alright, that's it! Our source file now looks like this:
 ```python
 import telebot
 
-bot = telebot.TeleBot("TOKEN")
+bot = telebot.TeleBot("YOUR_BOT_TOKEN")
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
@@ -137,7 +137,7 @@ def send_welcome(message):
 def echo_all(message):
 	bot.reply_to(message, message.text)
 
-bot.polling()
+bot.infinity_polling()
 ```
 To start the bot, simply open up a terminal and enter `python echo_bot.py` to run the bot! Test it by sending commands ('/start' and '/help') and arbitrary text messages.
 
@@ -381,12 +381,10 @@ TOKEN = '<token_string>'
 tb = telebot.TeleBot(TOKEN)	#create a new Telegram Bot object
 
 # Upon calling this function, TeleBot starts polling the Telegram servers for new messages.
-# - none_stop: True/False (default False) - Don't stop polling when receiving an error from the Telegram servers
-# - interval: True/False (default False) - The interval between polling requests
-#           Note: Editing this parameter harms the bot's response time
+# - interval: int (default 0) - The interval between polling requests
 # - timeout: integer (default 20) - Timeout in seconds for long polling.
 # - allowed_updates: List of Strings (default None) - List of update types to request 
-tb.polling(none_stop=False, interval=0, timeout=20)
+tb.infinity_polling(interval=0, timeout=20)
 
 # getMe
 user = tb.get_me()
@@ -398,6 +396,7 @@ tb.remove_webhook()
 
 # getUpdates
 updates = tb.get_updates()
+# or
 updates = tb.get_updates(1234,100,20) #get_Updates(offset, limit, timeout):
 
 # sendMessage
@@ -614,7 +613,7 @@ def handle_messages(messages):
 		bot.reply_to(message, 'Hi')
 
 bot.set_update_listener(handle_messages)
-bot.polling()
+bot.infinity_polling()
 ```
 
 ### Using web hooks

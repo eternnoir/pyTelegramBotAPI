@@ -130,4 +130,4 @@ def command_default(m):
     bot.send_message(m.chat.id, "I don't understand \"" + m.text + "\"\nMaybe try the help page at /help")
 
 
-bot.polling()
+bot.infinity_polling()

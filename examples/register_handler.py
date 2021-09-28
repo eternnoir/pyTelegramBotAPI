@@ -18,4 +18,4 @@ bot.register_message_handler(start_executor, commands=['start']) # Start command
 # bot.register_edited_message_handler(*args, **kwargs)
 # And other functions..
 
-bot.polling()
+bot.infinity_polling()

@@ -18,4 +18,4 @@ def text_filter(message):
 bot.add_custom_filter(custom_filters.TextMatchFilter())
 bot.add_custom_filter(custom_filters.TextStartsFilter())
 
-bot.polling(non_stop=True)
+bot.infinity_polling()

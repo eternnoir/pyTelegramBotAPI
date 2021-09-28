@@ -563,8 +563,9 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout=20, skip_pending=False, long_polling_timeout=20, logger_level=logging.ERROR,
-            allowed_updates=None, *args, **kwargs):
+
+    def infinity_polling(self, timeout: int=20, skip_pending: bool=False, long_polling_timeout: int=20, logger_level=logging.ERROR,
+            allowed_updates: Optional[List[str]]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
@@ -673,7 +674,10 @@ class TeleBot:
                         # self.worker_pool.clear_exceptions()
                         logger.info("Waiting for {0} seconds until retry".format(error_interval))
                         time.sleep(error_interval)
-                        error_interval *= 2
+                        if error_interval * 2 < 60:
+                            error_interval *= 2
+                        else:
+                            error_interval = 60
                 else:
                     # polling_thread.clear_exceptions()
                     # self.worker_pool.clear_exceptions()
