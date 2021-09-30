@@ -873,7 +873,7 @@ class ForceReply(JsonSerializable):
     def to_json(self):
         json_dict = {'force_reply': True}
         if self.selective is not None:
-            json_dict['selective'] = True
+            json_dict['selective'] = self.selective
         if self.input_field_placeholder:
             json_dict['input_field_placeholder'] = self.input_field_placeholder
         return json.dumps(json_dict)
@@ -886,7 +886,7 @@ class ReplyKeyboardRemove(JsonSerializable):
     def to_json(self):
         json_dict = {'remove_keyboard': True}
         if self.selective:
-            json_dict['selective'] = True
+            json_dict['selective'] = self.selective
         return json.dumps(json_dict)
 
 
@@ -960,11 +960,11 @@ class ReplyKeyboardMarkup(JsonSerializable):
         """
         json_dict = {'keyboard': self.keyboard}
         if self.one_time_keyboard is not None:
-            json_dict['one_time_keyboard'] = True
+            json_dict['one_time_keyboard'] = self.one_time_keyboard
         if self.resize_keyboard is not None:
-            json_dict['resize_keyboard'] = True
+            json_dict['resize_keyboard'] = self.resize_keyboard
         if self.selective is not None:
-            json_dict['selective'] = True
+            json_dict['selective'] = self.selective
         if self.input_field_placeholder:
             json_dict['input_field_placeholder'] = self.input_field_placeholder
         return json.dumps(json_dict)
