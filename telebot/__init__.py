@@ -2532,7 +2532,7 @@ class TeleBot:
         else:
             self.default_middleware_handlers.append(handler)
 
-    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, state=None, **kwargs):
+    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
