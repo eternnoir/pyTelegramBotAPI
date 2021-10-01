@@ -146,3 +146,30 @@ class IsAdminFilter(SimpleCustomFilter):
     def check(self, message):
         return self._bot.get_chat_member(message.chat.id, message.from_user.id).status in ['creator', 'administrator']
 
+class StateFilter(AdvancedCustomFilter):
+    """
+    Filter to check state.
+
+    Example:
+    @bot.message_handler(state=1)
+    """
+    def __init__(self, bot):
+        self.bot = bot
+    key = 'state'
+
+    def check(self, message, text):
+        if self.bot.current_states.current_state(message.from_user.id) is False:return False
+        elif '*' in text:return True
+        return self.bot.current_states.current_state(message.from_user.id) in text 
+
+class IsDigitFilter(SimpleCustomFilter):
+    """
+    Filter to check whether the string is made up of only digits.
+
+    Example:
+    @bot.message_handler(is_digit=True)
+    """
+    key = 'is_digit'
+
+    def check(self, message):
+        return message.text.isdigit()

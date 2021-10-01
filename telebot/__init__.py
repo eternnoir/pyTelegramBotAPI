@@ -499,7 +499,6 @@ class TeleBot:
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
         self._notify_reply_handlers(new_messages)
-        self._notify_state_handlers(new_messages)
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages)
 
@@ -2386,6 +2385,9 @@ class TeleBot:
         """
         self.current_states.delete_state(chat_id)
 
+    def retrieve_data(self, chat_id):
+        return self.current_states.retrieve_data(chat_id)
+
     def get_state(self, chat_id):
         """
         Get current state of a user.
@@ -2393,6 +2395,14 @@ class TeleBot:
         :return: state of a user
         """
         return self.current_states.current_state(chat_id)
+
+    def add_data(self, chat_id, **kwargs):
+        """
+        Add data to states.
+        :param chat_id:
+        """
+        for key, value in kwargs.items():
+            self.current_states._add_data(chat_id, key, value)
 
     def register_next_step_handler_by_chat_id(
             self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:
@@ -2457,32 +2467,6 @@ class TeleBot:
                     self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
             if need_pop:
                 new_messages.pop(i)  # removing message that was detected with next_step_handler
-
-
-    def _notify_state_handlers(self, new_messages):
-        """
-        Description: TBD
-        :param new_messages:
-        :return:
-        """
-        if not self.current_states: return
-
-        for i, message in enumerate(new_messages):
-            need_pop = False
-            user_state = self.current_states.current_state(message.from_user.id)
-            if user_state:
-                for handler in self.state_handlers:
-                    if handler['filters']['state'] == user_state:
-                        for message_filter, filter_value in handler['filters'].items():
-                            if filter_value is None:
-                                continue
-                            if not self._test_filter(message_filter, filter_value, message):
-                                return False
-                        need_pop = True
-                        state = self.current_states
-                        self._exec_task(handler["function"], message, state)
-            if need_pop:
-                new_messages.pop(i)  # removing message that was detected by states
 
 
     @staticmethod
@@ -2719,54 +2703,6 @@ class TeleBot:
                                                 func=func,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
-
-
-    def state_handler(self, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
-        """
-        State handler for getting input from a user.
-        :param state: state of a user
-        :param content_types:
-        :param regexp:
-        :param func:
-        :param chat_types:
-        """
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler,
-                                                    state=state,
-                                                    content_types=content_types,
-                                                    regexp=regexp,
-                                                    chat_types=chat_types,
-                                                    func=func,
-                                                    **kwargs)
-            self.add_state_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_state_handler(self, handler_dict):
-        """
-        Adds the edit message handler
-        :param handler_dict:
-        :return:
-        """
-        self.state_handlers.append(handler_dict)
-
-    def register_state_handler(self, callback, state, content_types=None, regexp=None, func=None, chat_types=None, **kwargs):
-        """
-        Register a state handler.
-        :param callback: function to be called
-        :param state: state to be checked
-        :param content_types:
-        :param func:
-        """
-        handler_dict = self._build_handler_dict(callback=callback,
-                                                state=state,
-                                                content_types=content_types,
-                                                regexp=regexp,
-                                                chat_types=chat_types,
-                                                func=func,
-                                                **kwargs)
-        self.add_state_handler(handler_dict)
 
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
@@ -3251,8 +3187,6 @@ class TeleBot:
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:
             return self._check_filter(message_filter,filter_value,message)
-        elif message_filter == 'state':
-            return True
         else:
             return False
 

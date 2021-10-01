@@ -179,6 +179,10 @@ class State:
         """
         self.add_state(chat_id,new_state)
 
+    def _add_data(self, chat_id, key, value):
+        result = self._states[chat_id]['data'][key] = value
+        return result
+
     def finish(self, chat_id):
         """
         Finish(delete) state of a user.
