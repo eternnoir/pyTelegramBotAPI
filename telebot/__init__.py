@@ -2575,9 +2575,6 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if type(state) is not list and state is not None:
-            state = [state]
-
         if isinstance(commands, str):
             logger.warning("message_handler: 'commands' filter should be List of strings (commands), not string.")
             commands = [commands]
@@ -2592,7 +2589,6 @@ class TeleBot:
                                                     content_types=content_types,
                                                     commands=commands,
                                                     regexp=regexp,
-                                                    state=state,
                                                     func=func,
                                                     **kwargs)
             self.add_message_handler(handler_dict)
@@ -2608,7 +2604,7 @@ class TeleBot:
         """
         self.message_handlers.append(handler_dict)
 
-    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, state=None, **kwargs):
+    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, **kwargs):
         """
         Registers message handler.
         :param callback: function to be called
@@ -2632,7 +2628,6 @@ class TeleBot:
                                                 content_types=content_types,
                                                 commands=commands,
                                                 regexp=regexp,
-                                                state=state,
                                                 func=func,
                                                 **kwargs)
         self.add_message_handler(handler_dict)
