@@ -719,6 +719,8 @@ Get help. Discuss. Chat.
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
 
 ## Bots using this API
+* [CoronaGraphsBot](https://t.me/CovidGraph_bot) ([source](https://github.com/TrevorWinstral/CoronaGraphsBot)) by *TrevorWinstral* - Gets live COVID Country data, plots it, and briefs the user
+* [ETHLecture Bot](https://t.me/ETHLectureBot) ([source](https://github.com/TrevorWinstral/ETHLectureBot)) by *TrevorWinstral* - Notifies ETH students when their lectures have been uploaded to the video portal
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
 * [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF* - Let me Google that for you.
