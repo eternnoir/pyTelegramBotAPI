@@ -759,5 +759,9 @@ Get help. Discuss. Chat.
 * [Anti-Tracking Bot](https://t.me/AntiTrackingBot) by Leon Heess [(source)](https://github.com/leonheess/AntiTrackingBot). Send any link, and the bot tries its best to remove all tracking from the link you sent.
 * [Developer Bot](https://t.me/IndDeveloper_bot) by [Vishal Singh](https://github.com/vishal2376) [(source code)](https://github.com/vishal2376/telegram-bot) This telegram bot can do tasks like GitHub search & clone,provide c++ learning resources ,Stackoverflow search, Codeforces(profile visualizer,random problems)
 * [oneIPO bot](https://github.com/aaditya2200/IPO-proj) by [Aadithya](https://github.com/aaditya2200) & [Amol Soans](https://github.com/AmolDerickSoans) This Telegram bot provides live updates , data and documents on current and upcoming IPOs(Initial Public Offerings) 
+* [CoronaGraphsBot](https://t.me/CovidGraph_bot) ([source](https://github.com/TrevorWinstral/CoronaGraphsBot)) by *TrevorWinstral* - Gets live COVID Country data, plots it, and briefs the user
+* [ETHLectureBot](https://t.me/ETHLectureBot) ([source](https://github.com/TrevorWinstral/ETHLectureBot)) by *TrevorWinstral* - Notifies ETH students when their lectures have been uploaded
+
+
 	
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
