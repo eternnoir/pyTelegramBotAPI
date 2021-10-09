@@ -43,7 +43,7 @@ CUSTOM_SERIALIZER = None
 
 ENABLE_MIDDLEWARE = False
 
-WAIT_TIME = 0.04
+WAIT_TIME = 0.3
 
 def _get_req_session(reset=False):
     if SESSION_TIME_TO_LIVE:

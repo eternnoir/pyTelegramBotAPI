@@ -35,6 +35,18 @@ REPLY_MARKUP_TYPES = Union[
     types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
     types.ReplyKeyboardRemove, types.ForceReply]
 
+def anti_flood(f):
+    @wraps(f)
+    def wrapper(self, *args, **kwargs):
+        if self.anti_flood == True:
+            if self.last_time >= time.time() - apihelper.WAIT_TIME:
+                time.sleep(self.last_time - (time.time() - apihelper.WAIT_TIME))
+            a = f(self, *args, **kwargs)
+            self.last_time = time.time()
+            return a
+        else:
+            return f(self, *args, **kwargs)
+    return wrapper
 
 """
 Module : telebot
@@ -214,17 +226,6 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
-    
-    def anti_flood(self, f):
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            if self.anti_flood = True:
-                if self.last_time >= time.time() - apihelper.WAIT_TIME:
-                    time.sleep(self.last_time - (time.time() - apihelper.WAIT_TIME))
-                a = f(*args, **kwargs)
-                self.last_time = time.time()
-                return a
-        return wrapper
 
     @property
     def user(self) -> types.User:
@@ -1018,6 +1019,7 @@ class TeleBot:
         """
         return apihelper.delete_message(self.token, chat_id, message_id, timeout)
 
+    @anti_flood
     def send_dice(
             self, chat_id: Union[int, str],
             emoji: Optional[str]=None, disable_notification: Optional[bool]=None, 
@@ -1042,6 +1044,7 @@ class TeleBot:
                 reply_markup, timeout, allow_sending_without_reply)
         )
 
+    @anti_flood
     def send_photo(
             self, chat_id: Union[int, str], photo: Union[Any, str], 
             caption: Optional[str]=None, reply_to_message_id: Optional[int]=None, 
@@ -1072,6 +1075,7 @@ class TeleBot:
                 parse_mode, disable_notification, timeout, caption_entities,
                 allow_sending_without_reply))
 
+    @anti_flood
     def send_audio(
             self, chat_id: Union[int, str], audio: Union[Any, str], 
             caption: Optional[str]=None, duration: Optional[int]=None, 
@@ -1111,6 +1115,7 @@ class TeleBot:
                 reply_markup, parse_mode, disable_notification, timeout, thumb,
                 caption_entities, allow_sending_without_reply))
 
+    @anti_flood
     def send_voice(
             self, chat_id: Union[int, str], voice: Union[Any, str], 
             caption: Optional[str]=None, duration: Optional[int]=None, 
@@ -1145,6 +1150,7 @@ class TeleBot:
                 parse_mode, disable_notification, timeout, caption_entities,
                 allow_sending_without_reply))
 
+    @anti_flood
     def send_document(
             self, chat_id: Union[int, str], data: Union[Any, str],
             reply_to_message_id: Optional[int]=None, 
@@ -1185,6 +1191,7 @@ class TeleBot:
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name))
 
+    @anti_flood
     def send_sticker(
             self, chat_id: Union[int, str], data: Union[Any, str], 
             reply_to_message_id: Optional[int]=None, 
@@ -1210,6 +1217,7 @@ class TeleBot:
                 disable_notification=disable_notification, timeout=timeout, 
                 allow_sending_without_reply=allow_sending_without_reply))
 
+    @anti_flood
     def send_video(
             self, chat_id: Union[int, str], data: Union[Any, str], 
             duration: Optional[int]=None, 
@@ -1253,6 +1261,7 @@ class TeleBot:
                 parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
                 caption_entities, allow_sending_without_reply))
 
+    @anti_flood
     def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
             duration: Optional[int]=None,
@@ -1290,6 +1299,7 @@ class TeleBot:
                 reply_markup, parse_mode, disable_notification, timeout, thumb,
                 caption_entities, allow_sending_without_reply))
 
+    @anti_flood
     def send_video_note(
             self, chat_id: Union[int, str], data: Union[Any, str], 
             duration: Optional[int]=None, 
@@ -1321,6 +1331,7 @@ class TeleBot:
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
                 disable_notification, timeout, thumb, allow_sending_without_reply))
 
+    @anti_flood
     def send_media_group(
             self, chat_id: Union[int, str], 
             media: List[Union[
@@ -1345,6 +1356,7 @@ class TeleBot:
             allow_sending_without_reply)
         return [types.Message.de_json(msg) for msg in result]
 
+    @anti_flood
     def send_location(
             self, chat_id: Union[int, str], 
             latitude: float, longitude: float, 
@@ -1432,6 +1444,7 @@ class TeleBot:
             apihelper.stop_message_live_location(
                 self.token, chat_id, message_id, inline_message_id, reply_markup, timeout))
 
+    @anti_flood
     def send_venue(
             self, chat_id: Union[int, str], 
             latitude: float, longitude: float, 
@@ -1471,6 +1484,7 @@ class TeleBot:
                 allow_sending_without_reply, google_place_id, google_place_type)
         )
 
+    @anti_flood
     def send_contact(
             self, chat_id: Union[int, str], phone_number: str, 
             first_name: str, last_name: Optional[str]=None, 
@@ -1487,6 +1501,7 @@ class TeleBot:
                 allow_sending_without_reply)
         )
 
+    @anti_flood
     def send_chat_action(
             self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None) -> bool:
         """
@@ -2000,6 +2015,7 @@ class TeleBot:
         result = apihelper.get_game_high_scores(self.token, user_id, chat_id, message_id, inline_message_id)
         return [types.GameHighScore.de_json(r) for r in result]
 
+    @anti_flood
     def send_invoice(
             self, chat_id: Union[int, str], title: str, description: str, 
             invoice_payload: str, provider_token: str, currency: str, 
@@ -2069,6 +2085,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     # noinspection PyShadowingBuiltins
+    @anti_flood
     def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[str],
             is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
