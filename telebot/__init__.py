@@ -8,6 +8,7 @@ import threading
 import time
 import traceback
 from typing import Any, Callable, List, Optional, Union
+from functools import wraps
 
 # this imports are used to avoid circular import error
 import telebot.util
@@ -144,7 +145,7 @@ class TeleBot:
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
-            suppress_middleware_excepions=False
+            suppress_middleware_excepions=False, anti_flood = False
     ):
         """
         :param token: bot API token
@@ -157,6 +158,8 @@ class TeleBot:
         self.update_listener = []
         self.skip_pending = skip_pending
         self.suppress_middleware_excepions = suppress_middleware_excepions
+        self.anti_flood = anti_flood
+        self.last_time = 0
 
         self.__stop_polling = threading.Event()
         self.last_update_id = last_update_id
@@ -212,6 +215,17 @@ class TeleBot:
         if self.threaded:
             self.worker_pool = util.ThreadPool(num_threads=num_threads)
     
+    def anti_flood(self, f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if self.anti_flood = True:
+                if self.last_time >= time.time() - apihelper.WAIT_TIME:
+                    time.sleep(self.last_time - (time.time() - apihelper.WAIT_TIME))
+                a = f(*args, **kwargs)
+                self.last_time = time.time()
+                return a
+        return wrapper
+
     @property
     def user(self) -> types.User:
         """
@@ -907,6 +921,7 @@ class TeleBot:
         result = apihelper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
 
+    @anti_flood
     def send_message(
             self, chat_id: Union[int, str], text: str, 
             disable_web_page_preview: Optional[bool]=None, 
