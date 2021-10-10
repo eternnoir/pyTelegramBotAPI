@@ -41,9 +41,9 @@ def anti_flood(f):
         if self.anti_flood == True:
             if self.last_time >= time.time() - apihelper.WAIT_TIME:
                 time.sleep(self.last_time - (time.time() - apihelper.WAIT_TIME))
-            a = f(self, *args, **kwargs)
+            msg = f(self, *args, **kwargs)
             self.last_time = time.time()
-            return a
+            return msg
         else:
             return f(self, *args, **kwargs)
     return wrapper
@@ -1393,7 +1393,8 @@ class TeleBot:
                 reply_to_message_id, reply_markup, disable_notification, timeout, 
                 horizontal_accuracy, heading, proximity_alert_radius, 
                 allow_sending_without_reply))
-
+    
+    @anti_flood
     def edit_message_live_location(
             self, latitude: float, longitude: float, 
             chat_id: Optional[Union[int, str]]=None, 
@@ -1883,6 +1884,7 @@ class TeleBot:
         """
         return apihelper.unpin_all_chat_messages(self.token, chat_id)
 
+    @anti_flood
     def edit_message_text(
             self, text: str, 
             chat_id: Optional[Union[int, str]]=None, 
@@ -1912,6 +1914,7 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
+    @anti_flood
     def edit_message_media(
             self, media: Any, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
@@ -1934,6 +1937,7 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
+    @anti_flood
     def edit_message_reply_markup(
             self, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
@@ -2175,6 +2179,7 @@ class TeleBot:
         """
         return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
+    @anti_flood
     def edit_message_caption(
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None, 
