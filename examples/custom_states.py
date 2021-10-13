@@ -61,4 +61,8 @@ def age_incorrect(message):
 
 bot.add_custom_filter(custom_filters.StateFilter(bot))
 bot.add_custom_filter(custom_filters.IsDigitFilter())
+
+# set saving states into file.
+bot.enable_saving_states() # you can delete this if you do not need to save states
+
 bot.infinity_polling(skip_pending=True)
