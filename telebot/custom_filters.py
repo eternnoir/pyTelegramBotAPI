@@ -158,9 +158,9 @@ class StateFilter(AdvancedCustomFilter):
     key = 'state'
 
     def check(self, message, text):
-        if self.bot.current_states.current_state(message.from_user.id) is False:return False
-        elif text == '*':return True
-        elif type(text) is list:return self.bot.current_states.current_state(message.from_user.id) in text
+        if self.bot.current_states.current_state(message.from_user.id) is False: return False
+        elif text == '*': return True
+        elif type(text) is list: return self.bot.current_states.current_state(message.from_user.id) in text
         return self.bot.current_states.current_state(message.from_user.id) == text
 
 class IsDigitFilter(SimpleCustomFilter):

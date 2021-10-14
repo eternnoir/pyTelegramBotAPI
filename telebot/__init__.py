@@ -27,7 +27,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, State
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, StateMemory, StateFile
 
 
 REPLY_MARKUP_TYPES = Union[
@@ -188,7 +188,8 @@ class TeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = State()
+        self.current_states = StateMemory()
+
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -236,6 +237,17 @@ class TeleBot:
         :param filename: Filename of save file
         """
         self.next_step_backend = FileHandlerBackend(self.next_step_backend.handlers, filename, delay)
+
+    def enable_saving_states(self, filename="./.state-save/states.pkl"):
+        """
+        Enable saving states (by default saving disabled)
+
+        :param filename: Filename of saving file
+
+        """
+
+        self.current_states = StateFile(filename=filename)
+        self.current_states._create_dir()
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
         """
@@ -345,7 +357,7 @@ class TeleBot:
         """
         return apihelper.delete_webhook(self.token, drop_pending_updates, timeout)
 
-    def get_webhook_info(self, timeout=None):
+    def get_webhook_info(self, timeout: Optional[int]=None):
         """
         Use this method to get current webhook status. Requires no parameters.
         If the bot is using getUpdates, will return an object with the url field empty.
@@ -2369,7 +2381,7 @@ class TeleBot:
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
 
-    def set_state(self, chat_id, state):
+    def set_state(self, chat_id: int, state: Union[int, str]):
         """
         Sets a new state of a user.
         :param chat_id:
@@ -2377,7 +2389,7 @@ class TeleBot:
         """
         self.current_states.add_state(chat_id, state)
 
-    def delete_state(self, chat_id):
+    def delete_state(self, chat_id: int):
         """
         Delete the current state of a user.
         :param chat_id:
@@ -2385,10 +2397,10 @@ class TeleBot:
         """
         self.current_states.delete_state(chat_id)
 
-    def retrieve_data(self, chat_id):
+    def retrieve_data(self, chat_id: int):
         return self.current_states.retrieve_data(chat_id)
 
-    def get_state(self, chat_id):
+    def get_state(self, chat_id: int):
         """
         Get current state of a user.
         :param chat_id:
@@ -2396,7 +2408,7 @@ class TeleBot:
         """
         return self.current_states.current_state(chat_id)
 
-    def add_data(self, chat_id, **kwargs):
+    def add_data(self, chat_id: int, **kwargs):
         """
         Add data to states.
         :param chat_id:
