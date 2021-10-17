@@ -1661,4 +1661,5 @@ class ApiTelegramException(ApiException):
             result)
         self.result_json = result_json
         self.error_code = result_json['error_code']
+        self.description = result_json['description']
         
