@@ -455,6 +455,13 @@ class TestTeleBot:
         new_msg = tb.edit_message_reply_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
         assert new_msg.message_id
 
+    def test_antiflood(self):
+        text = "Flooding"
+        tb = telebot.TeleBot(TOKEN)
+        for _ in range(0,100):
+            util.antiflood(tb.send_message, CHAT_ID, text)
+        assert _
+
     @staticmethod
     def create_text_message(text):
         params = {'text': text}

@@ -455,3 +455,25 @@ def webhook_google_functions(bot, request):
             return 'Bot FAIL', 400
     else:
         return 'Bot ON'
+
+def antiflood(function, *args, **kwargs):
+    """
+    Use this function inside loops in order to avoid getting TooManyRequests error.
+    Example:
+
+    from telebot.util import antiflood
+    for chat_id in chat_id_list:
+        msg = antiflood(bot.send_message, chat_id, text)
+        
+    You want get the
+    """
+    from telebot.apihelper import ApiTelegramException
+    from time import sleep
+    try:
+        msg = function(*args, **kwargs)
+    except ApiTelegramException as ex:
+        if ex.error_code == 429:
+            sleep(ex.result_json['parameters']['retry_after'])
+            msg = function(*args, **kwargs)
+    finally:
+        return msg
