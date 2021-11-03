@@ -40,8 +40,10 @@ RETRY_TIMEOUT = 2
 MAX_RETRIES = 15
 
 CUSTOM_SERIALIZER = None
+CUSTOM_REQUEST_SENDER = None
 
 ENABLE_MIDDLEWARE = False
+
 
 
 def _get_req_session(reset=False):
@@ -136,9 +138,14 @@ def _make_request(token, method_name, method='get', params=None, files=None):
                     method, request_url, params=params, files=files,
                     timeout=(connect_timeout, read_timeout), proxies=proxy)
     else:
-        result = _get_req_session().request(
-            method, request_url, params=params, files=files,
-            timeout=(connect_timeout, read_timeout), proxies=proxy)
+        if CUSTOM_REQUEST_SENDER:
+            result = CUSTOM_REQUEST_SENDER(
+                method, request_url, params=params, files=files,
+                timeout=(connect_timeout, read_timeout), proxies=proxy)
+        else:
+            result = _get_req_session().request(
+                method, request_url, params=params, files=files,
+                timeout=(connect_timeout, read_timeout), proxies=proxy)
     
     logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
     

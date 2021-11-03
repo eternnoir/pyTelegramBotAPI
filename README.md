@@ -12,7 +12,7 @@
 
 ## Contents
 
-  * [Getting started.](#getting-started)
+  * [Getting started](#getting-started)
   * [Writing your first bot](#writing-your-first-bot)
     * [Prerequisites](#prerequisites)
     * [A simple echo bot](#a-simple-echo-bot)
@@ -49,6 +49,7 @@
     * [Using web hooks](#using-web-hooks)
     * [Logging](#logging)
     * [Proxy](#proxy)
+    * [Testing](#testing)
   * [API conformance](#api-conformance)
   * [F.A.Q.](#faq)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
@@ -57,7 +58,7 @@
   * [More examples](#more-examples)
   * [Bots using this API](#bots-using-this-api)
 
-## Getting started.
+## Getting started
 
 This API is tested with Python 3.6-3.9 and Pypy 3.
 There are two ways to install the library:
@@ -622,7 +623,6 @@ When using webhooks telegram sends one Update per call, for processing it you sh
 There are some examples using webhooks in the [examples/webhook_examples](examples/webhook_examples) directory.
 
 ### Logging
-
 You can use the Telebot module logger to log debug info about Telebot. Use `telebot.logger` to get the logger of the TeleBot module.
 It is possible to add custom logging Handlers to the logger. Refer to the [Python logging module page](https://docs.python.org/2/library/logging.html) for more info.
 
@@ -634,7 +634,6 @@ telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 ```
 
 ### Proxy
-
 You can use proxy for request. `apihelper.proxy` object will use by call `requests` proxies argument.
 
 ```python
@@ -648,6 +647,33 @@ If you want to use socket5 proxy you need install dependency `pip install reques
 ```python
 apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 ```
+
+### Testing
+You can disable or change the interaction with real Telegram server by using
+```python
+apihelper.CUSTOM_REQUEST_SENDER = your_handler
+```
+parameter. You can pass there your own function that will be called instead of _requests.request_.
+
+For example:
+```python
+def custom_sender(method, url, **kwargs):
+    print("custom_sender. method: {}, url: {}, params: {}".format(method, url, kwargs.get("params")))
+    result = util.CustomRequestResponse('{"ok":true,"result":{"message_id": 1, "date": 1, "chat": {"id": 1, "type": "private"}}}')
+    return result
+```
+
+Then you can use API and proceed requests in your handler code.
+```python
+apihelper.CUSTOM_REQUEST_SENDER = custom_sender
+tb = TeleBot("test")
+res = tb.send_message(123, "Test")
+```
+
+Result will be:
+
+`custom_sender. method: post, url: https://api.telegram.org/botololo/sendMessage, params: {'chat_id': '123', 'text': 'Test'}`
+
 
 
 ## API conformance
