@@ -13,6 +13,11 @@ import logging
 from telebot import types
 
 try:
+    import ujson as json
+except ImportError:
+    import json
+
+try:
     # noinspection PyPackageRequirements
     from PIL import Image
     from io import BytesIO
@@ -163,6 +168,16 @@ class AsyncTask:
             raise self.result
         else:
             return self.result
+
+
+class CustomRequestResponse():
+    def __init__(self, json_text, status_code = 200, reason = ""):
+        self.status_code = status_code
+        self.text = json_text
+        self.reason = reason
+
+    def json(self):
+        return json.loads(self.text)
 
 
 def async_dec():
