@@ -107,6 +107,7 @@ class Update(JsonDeserializable):
         poll_answer = PollAnswer.de_json(obj.get('poll_answer'))
         my_chat_member = ChatMemberUpdated.de_json(obj.get('my_chat_member'))
         chat_member = ChatMemberUpdated.de_json(obj.get('chat_member'))
+        chat_join_request = ChatJoinRequest.de_json(obj.get('chat_join_request'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member)
@@ -166,6 +167,22 @@ class ChatMemberUpdated(JsonDeserializable):
                 dif[key] = [old[key], new[key]]
         return dif
 
+class ChatJoinRequest(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
+        obj['from'] = User.de_json(obj['from'])
+        
+        return cls(**obj)
+    
+    def __init__(self, chat, from_user, date, bio=None, invite_link=None, **kwargs):
+        self.chat = Chat = chat
+        self.from_user: User = from_user
+        self.date: int = date
+        self.bio: Optional[str] = bio
+        self.invite_link: Optional[ChatInviteLink] = invite_link
 
 class WebhookInfo(JsonDeserializable):
     @classmethod
@@ -2752,14 +2769,17 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
         obj['creator'] = User.de_json(obj['creator'])
         return cls(**obj)
     
-    def __init__(self, invite_link, creator, is_primary, is_revoked,
-                 expire_date=None, member_limit=None, **kwargs):
+    def __init__(self, invite_link, creator, creates_join_request , is_primary, is_revoked,
+                name=None, expire_date=None, member_limit=None, pending_join_request_count=None, **kwargs):
         self.invite_link: str = invite_link
         self.creator: User = creator
+        self.creates_join_request: bool = creates_join_request
         self.is_primary: bool = is_primary
         self.is_revoked: bool = is_revoked
+        self.name: str = name
         self.expire_date: int = expire_date
         self.member_limit: int = member_limit
+        self.pending_join_request_count: int = pending_join_request_count
     
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -2769,12 +2789,17 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
             "invite_link": self.invite_link,
             "creator": self.creator.to_dict(),
             "is_primary": self.is_primary,
-            "is_revoked": self.is_revoked
+            "is_revoked": self.is_revoked,
+            "creates_join_request": self.creates_join_request
         }
         if self.expire_date:
             json_dict["expire_date"] = self.expire_date
         if self.member_limit:
             json_dict["member_limit"] = self.member_limit
+        if self.pending_join_request_count:
+            json_dict["pending_join_request_count"] = self.pending_join_request_count
+        if self.name:
+            json_dict["name"] = self.name
         return json_dict
 
 
