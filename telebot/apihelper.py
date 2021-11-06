@@ -986,7 +986,7 @@ def create_chat_invite_link(token, chat_id, name, expire_date, member_limit, cre
             payload['expire_date'] = expire_date
     if member_limit:
         payload['member_limit'] = member_limit
-    if creates_join_request:
+    if creates_join_request is not None:
         payload['creates_join_request'] = creates_join_request
     if name:
         payload['name'] = name
