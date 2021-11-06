@@ -31,6 +31,7 @@
       * [Poll Answer Handler](#poll-answer-handler)
       * [My Chat Member Handler](#my-chat-member-handler)
       * [Chat Member Handler](#chat-member-handler)
+      * [Chat Join request handler](#chat-join-request-handler)
     * [Inline Mode](#inline-mode)
       * [Inline handler](#inline-handler)
       * [Chosen Inline handler](#chosen-inline-handler)
@@ -271,6 +272,10 @@ Handle updates of a the bot's member status in a chat
 Handle updates of a chat member's status in a chat
 `@bot.chat_member_handler() # <- passes a ChatMemberUpdated type object to your function`
 *Note: "chat_member" updates are not requested by default. If you want to allow all update types, set `allowed_updates` in `bot.polling()` / `bot.infinity_polling()` to `util.update_types`*
+
+#### Chat Join Request Handler	
+Handle chat join requests using:
+`@bot.chat_join_request_handler() # <- passes ChatInviteLink type object to your function`
 
 ### Inline Mode
 
