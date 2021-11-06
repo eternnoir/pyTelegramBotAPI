@@ -17,7 +17,7 @@ def start_ex(message):
     """
     Start command. Here we are starting state
     """
-    bot.set_state(message.from_user.id, 1)
+    bot.set_state(message.from_user.id, MyStates.name)
     bot.send_message(message.chat.id, 'Hi, write me a name')
  
 
@@ -36,7 +36,7 @@ def name_get(message):
     State 1. Will process when user's state is 1.
     """
     bot.send_message(message.chat.id, f'Now write me a surname')
-    bot.set_state(message.from_user.id, 2)
+    bot.set_state(message.from_user.id, MyStates.surname)
     with bot.retrieve_data(message.from_user.id) as data:
         data['name'] = message.text
  
@@ -47,7 +47,7 @@ def ask_age(message):
     State 2. Will process when user's state is 2.
     """
     bot.send_message(message.chat.id, "What is your age?")
-    bot.set_state(message.from_user.id, 3)
+    bot.set_state(message.from_user.id, MyStates.age)
     with bot.retrieve_data(message.from_user.id) as data:
         data['surname'] = message.text
  
