@@ -17,7 +17,7 @@ def start_ex(message):
     """
     Start command. Here we are starting state
     """
-    bot.set_state(message.chat.id, 1)
+    bot.set_state(message.from_user.id, 1)
     bot.send_message(message.chat.id, 'Hi, write me a name')
  
 
@@ -28,7 +28,7 @@ def any_state(message):
     Cancel state
     """
     bot.send_message(message.chat.id, "Your state was cancelled.")
-    bot.delete_state(message.chat.id)
+    bot.delete_state(message.from_user.id)
 
 @bot.message_handler(state=MyStates.name)
 def name_get(message):
@@ -36,8 +36,8 @@ def name_get(message):
     State 1. Will process when user's state is 1.
     """
     bot.send_message(message.chat.id, f'Now write me a surname')
-    bot.set_state(message.chat.id, 2)
-    with bot.retrieve_data(message.chat.id) as data:
+    bot.set_state(message.from_user.id, 2)
+    with bot.retrieve_data(message.from_user.id) as data:
         data['name'] = message.text
  
  
@@ -47,16 +47,16 @@ def ask_age(message):
     State 2. Will process when user's state is 2.
     """
     bot.send_message(message.chat.id, "What is your age?")
-    bot.set_state(message.chat.id, 3)
-    with bot.retrieve_data(message.chat.id) as data:
+    bot.set_state(message.from_user.id, 3)
+    with bot.retrieve_data(message.from_user.id) as data:
         data['surname'] = message.text
  
 # result
 @bot.message_handler(state=MyStates.age, is_digit=True)
 def ready_for_answer(message):
-    with bot.retrieve_data(message.chat.id) as data:
+    with bot.retrieve_data(message.from_user.id) as data:
         bot.send_message(message.chat.id, "Ready, take a look:\n<b>Name: {name}\nSurname: {surname}\nAge: {age}</b>".format(name=data['name'], surname=data['surname'], age=message.text), parse_mode="html")
-    bot.delete_state(message.chat.id)
+    bot.delete_state(message.from_user.id)
 
 #incorrect number
 @bot.message_handler(state=MyStates.age, is_digit=False)
