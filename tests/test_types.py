@@ -222,7 +222,7 @@ def test_KeyboardButtonPollType():
 
 
 def test_json_chat_invite_link():
-    json_string = r'{"invite_link": "https://t.me/joinchat/z-abCdEFghijKlMn", "creator": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "is_primary": false, "is_revoked": false, "expire_date": 1624119999, "member_limit": 10}'
+    json_string = r'{"invite_link":{"invite_link":"https://t.me/joinchat/MeASP-Wi...","creator":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"ru"},"pending_join_request_count":1,"creates_join_request":true,"is_primary":false,"is_revoked":false }}'
     invite_link = types.ChatInviteLink.de_json(json_string)
     assert invite_link.invite_link == 'https://t.me/joinchat/z-abCdEFghijKlMn'
     assert isinstance(invite_link.creator, types.User)
