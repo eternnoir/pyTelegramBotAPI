@@ -514,7 +514,7 @@ class TeleBot:
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
         if chat_join_request:
-            self.process_chat_join_request(chat_join_request)
+            self.process_new_chat_join_request(chat_join_request)
         
 
     def process_new_messages(self, new_messages):
@@ -559,7 +559,7 @@ class TeleBot:
     def process_new_chat_member(self, chat_members):
         self._notify_command_handlers(self.chat_member_handlers, chat_members)
 
-    def process_chat_join_request(self, chat_join_request):
+    def process_new_chat_join_request(self, chat_join_request):
         self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request)
 
     def process_middlewares(self, update):
