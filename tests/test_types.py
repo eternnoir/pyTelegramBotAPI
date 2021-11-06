@@ -222,14 +222,19 @@ def test_KeyboardButtonPollType():
 
 
 def test_json_chat_invite_link():
-    json_string = r'{"invite_link": "https://t.me/joinchat/z-abCdEFghijKlMn", "creator": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "is_primary": false, "is_revoked": false, "expire_date": 1624119999, "member_limit": 10}'
+    json_string = r'{"invite_link":"https://t.me/joinchat/MeASP-Wi...","creator":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"ru"},"pending_join_request_count":1,"creates_join_request":true,"is_primary":false,"is_revoked":false}'
     invite_link = types.ChatInviteLink.de_json(json_string)
-    assert invite_link.invite_link == 'https://t.me/joinchat/z-abCdEFghijKlMn'
+    assert invite_link.invite_link == 'https://t.me/joinchat/MeASP-Wi...'
     assert isinstance(invite_link.creator, types.User)
     assert not invite_link.is_primary
     assert not invite_link.is_revoked
-    assert invite_link.expire_date == 1624119999
-    assert invite_link.member_limit == 10
+    assert invite_link.expire_date is None
+    assert invite_link.member_limit is None
+    assert invite_link.name is None
+    assert invite_link.creator.id == 927266710
+    assert invite_link.pending_join_request_count == 1
+    assert invite_link.creates_join_request
+
 
 def test_chat_member_updated():
     json_string = r'{"chat": {"id": -1234567890123, "type": "supergroup", "title": "No Real Group", "username": "NoRealGroup"}, "from": {"id": 133869498, "is_bot": false, "first_name": "Vincent"}, "date": 1624119999, "old_chat_member": {"user": {"id": 77777777, "is_bot": false, "first_name": "Pepe"}, "status": "member"}, "new_chat_member": {"user": {"id": 77777777, "is_bot": false, "first_name": "Pepe"}, "status": "administrator"}}'

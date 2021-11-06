@@ -185,6 +185,7 @@ class TeleBot:
         self.poll_answer_handlers = []
         self.my_chat_member_handlers = []
         self.chat_member_handlers = []
+        self.chat_join_request_handlers = []
         self.custom_filters = {}
         self.state_handlers = []
 
@@ -205,7 +206,8 @@ class TeleBot:
                 'poll': [],
                 'poll_answer': [],
                 'my_chat_member': [],
-                'chat_member': []
+                'chat_member': [],
+                'chat_join_request': []
             }
             self.default_middleware_handlers = []
 
@@ -426,6 +428,7 @@ class TeleBot:
         new_poll_answers = None
         new_my_chat_members = None
         new_chat_members = None
+        chat_join_request = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -480,6 +483,9 @@ class TeleBot:
             if update.chat_member:
                 if new_chat_members is None: new_chat_members = []
                 new_chat_members.append(update.chat_member)
+            if update.chat_join_request:
+                if chat_join_request is None: chat_join_request = []
+                chat_join_request.append(update.chat_join_request)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -507,6 +513,9 @@ class TeleBot:
             self.process_new_my_chat_member(new_my_chat_members)
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
+        if chat_join_request:
+            self.process_new_chat_join_request(chat_join_request)
+        
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -549,6 +558,9 @@ class TeleBot:
 
     def process_new_chat_member(self, chat_members):
         self._notify_command_handlers(self.chat_member_handlers, chat_members)
+
+    def process_new_chat_join_request(self, chat_join_request):
+        self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request)
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
@@ -1667,9 +1679,11 @@ class TeleBot:
         return apihelper.set_chat_permissions(self.token, chat_id, permissions)
 
     def create_chat_invite_link(
-            self, chat_id: Union[int, str], 
+            self, chat_id: Union[int, str],
+            name: Optional[str]=None,
             expire_date: Optional[Union[int, datetime]]=None, 
-            member_limit: Optional[int]=None) -> types.ChatInviteLink:
+            member_limit: Optional[int]=None,
+            creates_join_request: Optional[bool]=None) -> types.ChatInviteLink:
         """
         Use this method to create an additional invite link for a chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -1681,13 +1695,15 @@ class TeleBot:
         :return:
         """
         return types.ChatInviteLink.de_json(
-            apihelper.create_chat_invite_link(self.token, chat_id, expire_date, member_limit)
+            apihelper.create_chat_invite_link(self.token, chat_id, name, expire_date, member_limit, creates_join_request)
         )
 
     def edit_chat_invite_link(
-            self, chat_id: Union[int, str], invite_link: str, 
+            self, chat_id: Union[int, str], name: Optional[str]=None,
+            invite_link: Optional[str] = None, 
             expire_date: Optional[Union[int, datetime]]=None, 
-            member_limit: Optional[int]=None) -> types.ChatInviteLink:
+            member_limit: Optional[int]=None ,
+            creates_join_request: Optional[bool]=None) -> types.ChatInviteLink:
         """
         Use this method to edit a non-primary invite link created by the bot.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -1701,7 +1717,7 @@ class TeleBot:
         :return:
         """
         return types.ChatInviteLink.de_json(
-            apihelper.edit_chat_invite_link(self.token, chat_id, invite_link, expire_date, member_limit)
+            apihelper.edit_chat_invite_link(self.token, chat_id, name, invite_link, expire_date, member_limit, creates_join_request)
         )
 
     def revoke_chat_invite_link(
@@ -1730,6 +1746,32 @@ class TeleBot:
         :return: exported invite link as String on success.
         """
         return apihelper.export_chat_invite_link(self.token, chat_id)
+
+    def approve_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
+        """
+        Use this method to approve a chat join request. 
+        The bot must be an administrator in the chat for this to work and must have
+        the can_invite_users administrator right. Returns True on success.
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :param user_id: Unique identifier of the target user
+        :return: True on success.
+        """
+        return apihelper.approve_chat_join_request(self.token, chat_id, user_id)
+
+    def decline_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
+        """
+        Use this method to decline a chat join request. 
+        The bot must be an administrator in the chat for this to work and must have
+        the can_invite_users administrator right. Returns True on success.
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :param user_id: Unique identifier of the target user
+        :return: True on success.
+        """
+        return apihelper.decline_chat_join_request(self.token, chat_id, user_id)
 
     def set_chat_photo(self, chat_id: Union[int, str], photo: Any) -> bool:
         """
@@ -3147,6 +3189,39 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
         self.add_chat_member_handler(handler_dict)
+
+    def chat_join_request_handler(self, func=None, **kwargs):
+        """
+        chat_join_request handler
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chat_join_request_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_chat_join_request_handler(self, handler_dict):
+        """
+        Adds a chat_join_request handler
+        :param handler_dict:
+        :return:
+        """
+        self.chat_join_request_handlers.append(handler_dict)
+
+    def register_chat_join_request_handler(self, callback, func=None, **kwargs):
+        """
+        Registers chat join request handler.
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        self.add_chat_join_request_handler(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
         """

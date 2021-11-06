@@ -485,9 +485,10 @@ class TestTeleBot:
         poll_answer = None
         my_chat_member = None
         chat_member = None
+        chat_join_request = None
         return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
                             chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                            my_chat_member, chat_member)
+                            my_chat_member, chat_member, chat_join_request)
 
     def test_is_string_unicode(self):
         s1 = u'string'
