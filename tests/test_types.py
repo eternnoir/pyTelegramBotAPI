@@ -235,6 +235,7 @@ def test_json_chat_invite_link():
     assert invite_link.pending_join_request_count == 1
     assert invite_link.creates_join_request
 
+
 def test_chat_member_updated():
     json_string = r'{"chat": {"id": -1234567890123, "type": "supergroup", "title": "No Real Group", "username": "NoRealGroup"}, "from": {"id": 133869498, "is_bot": false, "first_name": "Vincent"}, "date": 1624119999, "old_chat_member": {"user": {"id": 77777777, "is_bot": false, "first_name": "Pepe"}, "status": "member"}, "new_chat_member": {"user": {"id": 77777777, "is_bot": false, "first_name": "Pepe"}, "status": "administrator"}}'
     cm_updated = types.ChatMemberUpdated.de_json(json_string)
