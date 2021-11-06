@@ -1031,7 +1031,20 @@ def export_chat_invite_link(token, chat_id):
     payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload, method='post')
 
-
+def approve_chat_join_request(token, chat_id, user_id):
+    method_url = 'approveChatJoinRequest'
+    payload = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+    return _make_request(token, method_url, params=payload, method='post')
+def decline_chat_join_request(token, chat_id, user_id):
+    method_url = 'declineChatJoinRequest'
+    payload = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+    return _make_request(token, method_url, params=payload, method='post')
 def set_chat_photo(token, chat_id, photo):
     method_url = 'setChatPhoto'
     payload = {'chat_id': chat_id}

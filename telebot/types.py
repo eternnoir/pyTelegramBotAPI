@@ -110,11 +110,11 @@ class Update(JsonDeserializable):
         chat_join_request = ChatJoinRequest.de_json(obj.get('chat_join_request'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member)
+                   my_chat_member, chat_member, chat_join_request)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member):
+                 my_chat_member, chat_member, chat_join_request):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -129,6 +129,7 @@ class Update(JsonDeserializable):
         self.poll_answer = poll_answer
         self.my_chat_member = my_chat_member
         self.chat_member = chat_member
+        self.chat_join_request = chat_join_request
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -173,7 +174,7 @@ class ChatJoinRequest(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
-        obj['from'] = User.de_json(obj['from'])
+        obj['from_user'] = User.de_json(obj['from'])
         
         return cls(**obj)
     

@@ -484,6 +484,7 @@ class TeleBot:
                 if new_chat_members is None: new_chat_members = []
                 new_chat_members.append(update.chat_member)
             if update.chat_join_request:
+                print('we received1')
                 if chat_join_request is None: chat_join_request = []
                 chat_join_request.append(update.chat_join_request)
 
@@ -514,6 +515,7 @@ class TeleBot:
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
         if chat_join_request:
+            print('we received2')
             self.process_chat_join_request(chat_join_request)
         
 
@@ -1746,6 +1748,32 @@ class TeleBot:
         :return: exported invite link as String on success.
         """
         return apihelper.export_chat_invite_link(self.token, chat_id)
+
+    def approve_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
+        """
+        Use this method to approve a chat join request. 
+        The bot must be an administrator in the chat for this to work and must have
+        the can_invite_users administrator right. Returns True on success.
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :param user_id: Unique identifier of the target user
+        :return: True on success.
+        """
+        return apihelper.approve_chat_join_request(self.token, chat_id, user_id)
+
+    def decline_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
+        """
+        Use this method to decline a chat join request. 
+        The bot must be an administrator in the chat for this to work and must have
+        the can_invite_users administrator right. Returns True on success.
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :param user_id: Unique identifier of the target user
+        :return: True on success.
+        """
+        return apihelper.decline_chat_join_request(self.token, chat_id, user_id)
 
     def set_chat_photo(self, chat_id: Union[int, str], photo: Any) -> bool:
         """
