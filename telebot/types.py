@@ -175,6 +175,7 @@ class ChatJoinRequest(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['from_user'] = User.de_json(obj['from'])
+        obj['invite_link'] = ChatInviteLink.de_json(obj['invite_link'])
         
         return cls(**obj)
     

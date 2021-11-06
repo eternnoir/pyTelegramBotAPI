@@ -484,7 +484,6 @@ class TeleBot:
                 if new_chat_members is None: new_chat_members = []
                 new_chat_members.append(update.chat_member)
             if update.chat_join_request:
-                print('we received1')
                 if chat_join_request is None: chat_join_request = []
                 chat_join_request.append(update.chat_join_request)
 
@@ -515,7 +514,6 @@ class TeleBot:
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
         if chat_join_request:
-            print('we received2')
             self.process_chat_join_request(chat_join_request)
         
 
