@@ -175,16 +175,15 @@ class ChatJoinRequest(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['from_user'] = User.de_json(obj['from'])
-        obj['invite_link'] = ChatInviteLink.de_json(obj['invite_link'])
-        
+        obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
     
     def __init__(self, chat, from_user, date, bio=None, invite_link=None, **kwargs):
-        self.chat = Chat = chat
-        self.from_user: User = from_user
-        self.date: int = date
-        self.bio: Optional[str] = bio
-        self.invite_link: Optional[ChatInviteLink] = invite_link
+        self.chat = chat
+        self.from_user = from_user
+        self.date = date
+        self.bio = bio
+        self.invite_link = invite_link
 
 class WebhookInfo(JsonDeserializable):
     @classmethod
