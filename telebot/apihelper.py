@@ -978,7 +978,7 @@ def set_chat_permissions(token, chat_id, permissions):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def create_chat_invite_link(token, chat_id, expire_date, member_limit):
+def create_chat_invite_link(token, chat_id, name, expire_date, member_limit, creates_join_request):
     method_url = 'createChatInviteLink'
     payload = {
         'chat_id': chat_id
@@ -991,11 +991,15 @@ def create_chat_invite_link(token, chat_id, expire_date, member_limit):
             payload['expire_date'] = expire_date
     if member_limit:
         payload['member_limit'] = member_limit
+    if creates_join_request is not None:
+        payload['creates_join_request'] = creates_join_request
+    if name:
+        payload['name'] = name
 
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def edit_chat_invite_link(token, chat_id, invite_link, expire_date, member_limit):
+def edit_chat_invite_link(token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request):
     method_url = 'editChatInviteLink'
     payload = {
         'chat_id': chat_id,
@@ -1010,6 +1014,10 @@ def edit_chat_invite_link(token, chat_id, invite_link, expire_date, member_limit
 
     if member_limit is not None:
         payload['member_limit'] = member_limit
+    if name:
+        payload['name'] = name
+    if creates_join_request:
+        payload['creates_join_request'] = creates_join_request
 
     return _make_request(token, method_url, params=payload, method='post')
 
@@ -1028,7 +1036,20 @@ def export_chat_invite_link(token, chat_id):
     payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload, method='post')
 
-
+def approve_chat_join_request(token, chat_id, user_id):
+    method_url = 'approveChatJoinRequest'
+    payload = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+    return _make_request(token, method_url, params=payload, method='post')
+def decline_chat_join_request(token, chat_id, user_id):
+    method_url = 'declineChatJoinRequest'
+    payload = {
+        'chat_id': chat_id,
+        'user_id': user_id
+    }
+    return _make_request(token, method_url, params=payload, method='post')
 def set_chat_photo(token, chat_id, photo):
     method_url = 'setChatPhoto'
     payload = {'chat_id': chat_id}
@@ -1673,4 +1694,5 @@ class ApiTelegramException(ApiException):
             result)
         self.result_json = result_json
         self.error_code = result_json['error_code']
+        self.description = result_json['description']
         

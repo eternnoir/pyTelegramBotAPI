@@ -31,6 +31,7 @@
       * [Poll Answer Handler](#poll-answer-handler)
       * [My Chat Member Handler](#my-chat-member-handler)
       * [Chat Member Handler](#chat-member-handler)
+      * [Chat Join request handler](#chat-join-request-handler)
     * [Inline Mode](#inline-mode)
       * [Inline handler](#inline-handler)
       * [Chosen Inline handler](#chosen-inline-handler)
@@ -271,6 +272,10 @@ Handle updates of a the bot's member status in a chat
 Handle updates of a chat member's status in a chat
 `@bot.chat_member_handler() # <- passes a ChatMemberUpdated type object to your function`
 *Note: "chat_member" updates are not requested by default. If you want to allow all update types, set `allowed_updates` in `bot.polling()` / `bot.infinity_polling()` to `util.update_types`*
+
+#### Chat Join Request Handler	
+Handle chat join requests using:
+`@bot.chat_join_request_handler() # <- passes ChatInviteLink type object to your function`
 
 ### Inline Mode
 
@@ -787,6 +792,8 @@ Get help. Discuss. Chat.
 * [oneIPO bot](https://github.com/aaditya2200/IPO-proj) by [Aadithya](https://github.com/aaditya2200) & [Amol Soans](https://github.com/AmolDerickSoans) This Telegram bot provides live updates , data and documents on current and upcoming IPOs(Initial Public Offerings) 
 * [CoronaGraphsBot](https://t.me/CovidGraph_bot) ([source](https://github.com/TrevorWinstral/CoronaGraphsBot)) by *TrevorWinstral* - Gets live COVID Country data, plots it, and briefs the user
 * [ETHLectureBot](https://t.me/ETHLectureBot) ([source](https://github.com/TrevorWinstral/ETHLectureBot)) by *TrevorWinstral* - Notifies ETH students when their lectures have been uploaded
+* [Vlun Finder Bot](https://github.com/resinprotein2333/Vlun-Finder-bot) by [Resinprotein2333](https://github.com/resinprotein2333). This bot can help you to find The information of CVE vulnerabilities.
+* [ETHGasFeeTrackerBot](https://t.me/ETHGasFeeTrackerBot) ([Source](https://github.com/DevAdvik/ETHGasFeeTrackerBot]) by *DevAdvik* - Get Live Ethereum Gas Fees in GWEI
 
 
 	

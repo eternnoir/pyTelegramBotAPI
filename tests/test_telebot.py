@@ -455,6 +455,13 @@ class TestTeleBot:
         new_msg = tb.edit_message_reply_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
         assert new_msg.message_id
 
+    def test_antiflood(self):
+        text = "Flooding"
+        tb = telebot.TeleBot(TOKEN)
+        for _ in range(0,100):
+            util.antiflood(tb.send_message, CHAT_ID, text)
+        assert _
+
     @staticmethod
     def create_text_message(text):
         params = {'text': text}
@@ -478,9 +485,10 @@ class TestTeleBot:
         poll_answer = None
         my_chat_member = None
         chat_member = None
+        chat_join_request = None
         return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
                             chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                            my_chat_member, chat_member)
+                            my_chat_member, chat_member, chat_join_request)
 
     def test_is_string_unicode(self):
         s1 = u'string'
