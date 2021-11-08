@@ -8,7 +8,7 @@
 
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-25-2021">5.3</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#november-5-2021">5.4</a>!
 
 ## Contents
 
