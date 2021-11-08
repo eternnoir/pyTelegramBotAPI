@@ -245,7 +245,6 @@ class TeleBot:
         Enable saving states (by default saving disabled)
 
         :param filename: Filename of saving file
-
         """
 
         self.current_states = StateFile(filename=filename)
@@ -1690,8 +1689,10 @@ class TeleBot:
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :param name: Invite link name; 0-32 characters
         :param expire_date: Point in time (Unix timestamp) when the link will expire
         :param member_limit: Maximum number of users that can be members of the chat simultaneously
+        :param creates_join_request: True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified
         :return:
         """
         return types.ChatInviteLink.de_json(
@@ -1699,21 +1700,23 @@ class TeleBot:
         )
 
     def edit_chat_invite_link(
-            self, chat_id: Union[int, str], name: Optional[str]=None,
-            invite_link: Optional[str] = None, 
-            expire_date: Optional[Union[int, datetime]]=None, 
-            member_limit: Optional[int]=None ,
+            self, chat_id: Union[int, str],
+            invite_link: Optional[str] = None,
+            name: Optional[str]=None,
+            expire_date: Optional[Union[int, datetime]]=None,
+            member_limit: Optional[int]=None,
             creates_join_request: Optional[bool]=None) -> types.ChatInviteLink:
         """
         Use this method to edit a non-primary invite link created by the bot.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
-        :param invite_link:
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :param name: Invite link name; 0-32 characters
         :param invite_link: The invite link to edit
         :param expire_date: Point in time (Unix timestamp) when the link will expire
         :param member_limit: Maximum number of users that can be members of the chat simultaneously
+        :param creates_join_request: True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified
         :return:
         """
         return types.ChatInviteLink.de_json(

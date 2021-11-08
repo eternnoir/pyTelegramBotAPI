@@ -683,6 +683,7 @@ Result will be:
 
 ## API conformance
 
+* ✔ [Bot API 5.4](https://core.telegram.org/bots/api#november-5-2021)
 * ➕ [Bot API 5.3](https://core.telegram.org/bots/api#june-25-2021) - ChatMemberXXX classes are full copies of ChatMember
 * ✔ [Bot API 5.2](https://core.telegram.org/bots/api#april-26-2021)
 * ✔ [Bot API 5.1](https://core.telegram.org/bots/api#march-9-2021)

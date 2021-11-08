@@ -1016,7 +1016,7 @@ def edit_chat_invite_link(token, chat_id, invite_link, name, expire_date, member
         payload['member_limit'] = member_limit
     if name:
         payload['name'] = name
-    if creates_join_request:
+    if creates_join_request is not None:
         payload['creates_join_request'] = creates_join_request
 
     return _make_request(token, method_url, params=payload, method='post')
@@ -1036,6 +1036,7 @@ def export_chat_invite_link(token, chat_id):
     payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload, method='post')
 
+
 def approve_chat_join_request(token, chat_id, user_id):
     method_url = 'approveChatJoinRequest'
     payload = {
@@ -1043,6 +1044,8 @@ def approve_chat_join_request(token, chat_id, user_id):
         'user_id': user_id
     }
     return _make_request(token, method_url, params=payload, method='post')
+
+
 def decline_chat_join_request(token, chat_id, user_id):
     method_url = 'declineChatJoinRequest'
     payload = {
@@ -1050,6 +1053,8 @@ def decline_chat_join_request(token, chat_id, user_id):
         'user_id': user_id
     }
     return _make_request(token, method_url, params=payload, method='post')
+
+
 def set_chat_photo(token, chat_id, photo):
     method_url = 'setChatPhoto'
     payload = {'chat_id': chat_id}
