@@ -3488,8 +3488,8 @@ class AsyncTeleBot:
 
                     continue
                 except Exception as e:
-                    print('Cause exception while getting updates.')
-                    logger.critical(str(e))
+                    logger.error('Cause exception while getting updates.')
+                    logger.error(str(e))
                     await asyncio.sleep(3)
                     continue              
 
@@ -3512,7 +3512,7 @@ class AsyncTeleBot:
                         await self._loop_create_task(message_handler['function'](message))
                         break
                     except Exception as e:
-                        print(str(e))
+                        logger.error(str(e))
 
     # update handling
     async def process_new_updates(self, updates):
