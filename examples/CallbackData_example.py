@@ -7,7 +7,7 @@ from telebot.callback_data import CallbackData, CallbackDataFilter
 from telebot import types, TeleBot
 from telebot.custom_filters import AdvancedCustomFilter
 
-API_TOKEN = '1802978815:AAG6ju32eC-O3s8WRg57BRCT64VkJhQiHNk'
+API_TOKEN = ''
 PRODUCTS = [
     {'id': '0', 'name': 'xiaomi mi 10', 'price': 400},
     {'id': '1', 'name': 'samsung s20', 'price': 800},
