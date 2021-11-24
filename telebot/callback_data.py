@@ -8,6 +8,12 @@ class CallbackDataFilter:
         self.factory = factory
 
     def check(self, query):
+        """
+        Checks if query.data appropriates to specified config
+        :param query: telebot.types.CallbackQuery
+        :return: bool
+        """
+
         try:
             data = self.factory.parse(query.data)
         except ValueError:
@@ -25,6 +31,7 @@ class CallbackDataFilter:
 class CallbackData:
     """
     Callback data factory
+    This class will help you to work with CallbackQuery
     """
 
     def __init__(self, *parts, prefix: str, sep=':'):
@@ -43,6 +50,9 @@ class CallbackData:
     def new(self, *args, **kwargs) -> str:
         """
         Generate callback data
+        :param args: positional parameters of CallbackData instance parts
+        :param kwargs: named parameters
+        :return: str
         """
         args = list(args)
 
@@ -77,6 +87,8 @@ class CallbackData:
     def parse(self, callback_data: str) -> typing.Dict[str, str]:
         """
         Parse data from the callback data
+        :param callback_data: string, use to telebot.types.CallbackQuery to parse it from string to a dict
+        :return: dict parsed from callback data
         """
 
         prefix, *parts = callback_data.split(self.sep)
@@ -92,6 +104,9 @@ class CallbackData:
     def filter(self, **config) -> CallbackDataFilter:
         """
         Generate filter
+
+        :param config: specified named parameters will be checked with CallbackQury.data
+        :return: CallbackDataFilter class
         """
 
         for key in config.keys():
