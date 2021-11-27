@@ -61,7 +61,7 @@
 
 ## Getting started
 
-This API is tested with Python 3.6-3.9 and Pypy 3.
+This API is tested with Python 3.6-3.10 and Pypy 3.
 There are two ways to install the library:
 
 * Installation using pip (a Python package manager)*:
@@ -796,7 +796,6 @@ Get help. Discuss. Chat.
 * [Vlun Finder Bot](https://github.com/resinprotein2333/Vlun-Finder-bot) by [Resinprotein2333](https://github.com/resinprotein2333). This bot can help you to find The information of CVE vulnerabilities.
 * [ETHGasFeeTrackerBot](https://t.me/ETHGasFeeTrackerBot) ([Source](https://github.com/DevAdvik/ETHGasFeeTrackerBot]) by *DevAdvik* - Get Live Ethereum Gas Fees in GWEI
 * [Google Sheet Bot](https://github.com/JoachimStanislaus/Tele_Sheet_bot) by [JoachimStanislaus](https://github.com/JoachimStanislaus). This bot can help you to track your expenses by uploading your bot entries to your google sheet.
-
-
+* [GrandQuiz Bot](https://github.com/Carlosma7/TFM-GrandQuiz) by [Carlosma7](https://github.com/Carlosma7). This bot is a trivia game that allows you to play with people from different ages. This project addresses the use of a system through chatbots to carry out a social and intergenerational game as an alternative to traditional game development.
 	
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
