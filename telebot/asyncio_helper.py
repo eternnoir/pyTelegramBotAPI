@@ -1,28 +1,19 @@
-import asyncio
+import asyncio # for future uses
 from time import time
 import aiohttp
 from telebot import types
 import json
-import logging
 
 try:
     import ujson as json
 except ImportError:
     import json
 
-import requests
-from requests.exceptions import HTTPError, ConnectionError, Timeout
-
-try:
-    # noinspection PyUnresolvedReferences
-    from requests.packages.urllib3 import fields
-    format_header_param = fields.format_header_param
-except ImportError:
-    format_header_param = None
-
 API_URL = 'https://api.telegram.org/bot{0}/{1}'
 
 from datetime import datetime
+
+import telebot
 from telebot import util
 
 class SessionBase:
@@ -44,19 +35,16 @@ READ_TIMEOUT = 30
 
 LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
 
+logger = telebot.logger
 
 RETRY_ON_ERROR = False
 RETRY_TIMEOUT = 2
 MAX_RETRIES = 15
 
-CUSTOM_SERIALIZER = None
-CUSTOM_REQUEST_SENDER = None
-
-ENABLE_MIDDLEWARE = False
-
-async def _process_request(token, url, method='get', params=None, files=None):
+async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
     async with await session_manager._get_new_session() as session:
-        async with session.get(API_URL.format(token, url), params=params, data=files) as response:
+        async with session.get(API_URL.format(token, url), params=params, data=files, timeout=request_timeout) as response:
+            logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout).replace(token, token.split(':')[0] + ":{TOKEN}"))
             json_result = await _check_result(url, response)
             if json_result:
                 return json_result['result']
@@ -155,7 +143,7 @@ async def get_webhook_info(token, timeout=None):
 
 
 async def get_updates(token, offset=None, limit=None,
-        timeout=None, allowed_updates=None, long_polling_timeout=None):
+        timeout=None, allowed_updates=None, request_timeout=None):
     method_name = 'getUpdates'
     params = {}
     if offset:
@@ -166,8 +154,7 @@ async def get_updates(token, offset=None, limit=None,
         params['timeout'] = timeout
     elif allowed_updates:
         params['allowed_updates'] = allowed_updates
-    params['long_polling_timeout'] = long_polling_timeout if long_polling_timeout else LONG_POLLING_TIMEOUT
-    return await _process_request(token, method_name, params=params)
+    return await _process_request(token, method_name, params=params, request_timeout=request_timeout)
 
 async def _check_result(method_name, result):
     """
