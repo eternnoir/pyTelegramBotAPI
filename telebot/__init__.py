@@ -68,30 +68,6 @@ class ExceptionHandler:
         return False
 
 
-class SkipHandler:
-    """
-    Class for skipping handlers.
-    Just return instance of this class 
-    in middleware to skip handler.
-    Update will go to post_process,
-    but will skip execution of handler.
-    """
-
-    def __init__(self) -> None:
-        pass
-
-class CancelUpdate:
-    """
-    Class for canceling updates.
-    Just return instance of this class 
-    in middleware to skip update.
-    Update will skip handler and execution
-    of post_process in middlewares.
-    """
-
-    def __init__(self) -> None:
-        pass
-
 class TeleBot:
     """ This is TeleBot Class
     Methods:
