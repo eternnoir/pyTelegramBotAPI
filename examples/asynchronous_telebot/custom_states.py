@@ -1,7 +1,6 @@
 import telebot
 from telebot import asyncio_filters
 from telebot.async_telebot import AsyncTeleBot
-import asyncio
 bot = AsyncTeleBot('TOKEN')
 
 
@@ -72,4 +71,4 @@ bot.add_custom_filter(asyncio_filters.IsDigitFilter())
 # set saving states into file.
 bot.enable_saving_states() # you can delete this if you do not need to save states
 
-asyncio.run(bot.polling())
+bot.polling()

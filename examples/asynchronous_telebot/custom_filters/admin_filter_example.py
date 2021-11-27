@@ -1,4 +1,3 @@
-import asyncio
 from telebot.async_telebot import AsyncTeleBot
 from telebot import asyncio_filters
 bot = AsyncTeleBot('TOKEN')
@@ -10,4 +9,4 @@ async def answer_for_admin(message):
 
 # Register filter
 bot.add_custom_filter(asyncio_filters.IsAdminFilter(bot))
-asyncio.run(bot.polling())
+bot.polling()

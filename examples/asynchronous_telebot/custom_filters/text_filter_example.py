@@ -1,6 +1,5 @@
 from telebot.async_telebot import AsyncTeleBot
 import telebot
-import asyncio
 bot = AsyncTeleBot('TOKEN')
 
 
@@ -18,4 +17,4 @@ async def text_filter(message):
 bot.add_custom_filter(telebot.asyncio_filters.TextMatchFilter())
 bot.add_custom_filter(telebot.asyncio_filters.TextStartsFilter())
 
-asyncio.run(bot.polling())
+bot.polling()

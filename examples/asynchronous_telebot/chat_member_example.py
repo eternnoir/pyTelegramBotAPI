@@ -1,6 +1,6 @@
 from telebot import types,util
 from telebot.async_telebot import AsyncTeleBot
-import asyncio
+
 bot = AsyncTeleBot('TOKEN')
 
 #chat_member_handler. When status changes, telegram gives update. check status from old_chat_member and new_chat_member.
@@ -30,4 +30,4 @@ async def my_chat_m(message: types.ChatMemberUpdated):
 @bot.message_handler(content_types=util.content_type_service)
 async def delall(message: types.Message):
     await bot.delete_message(message.chat.id,message.message_id)
-asyncio.run(bot.polling())
+bot.polling()
