@@ -1,5 +1,4 @@
 from telebot.async_telebot import AsyncTeleBot
-import asyncio
 bot = AsyncTeleBot('TOKEN')
 
 async def start_executor(message):
@@ -16,4 +15,4 @@ bot.register_message_handler(start_executor, commands=['start']) # Start command
 # bot.register_edited_message_handler(*args, **kwargs)
 # And other functions..
 
-asyncio.run(bot.polling(skip_pending=True))
+bot.polling(skip_pending=True)

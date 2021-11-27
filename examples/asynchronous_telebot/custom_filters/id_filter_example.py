@@ -1,6 +1,5 @@
 from telebot.async_telebot import AsyncTeleBot
 import telebot
-import asyncio
 bot = AsyncTeleBot('TOKEN')
 
 
@@ -15,5 +14,4 @@ async def not_admin(message):
 
 # Do not forget to register
 bot.add_custom_filter(telebot.asyncio_filters.ChatFilter())
-
-asyncio.run(bot.polling())
+bot.polling()

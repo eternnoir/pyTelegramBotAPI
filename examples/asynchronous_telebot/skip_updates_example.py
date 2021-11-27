@@ -1,5 +1,5 @@
 from telebot.async_telebot import AsyncTeleBot
-import asyncio
+
 bot = AsyncTeleBot('TOKEN')
 
 @bot.message_handler(commands=['start', 'help'])
@@ -10,4 +10,4 @@ async def send_welcome(message):
 async def echo_all(message):
 	await bot.reply_to(message, message.text)
 
-asyncio.run(bot.polling(skip_pending=True))# Skip pending skips old updates
+bot.polling(skip_pending=True)# Skip pending skips old updates

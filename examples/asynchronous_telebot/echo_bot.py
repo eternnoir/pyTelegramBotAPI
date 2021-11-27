@@ -4,7 +4,6 @@
 # It echoes any incoming text messages.
 
 from telebot.async_telebot import AsyncTeleBot
-import asyncio
 bot = AsyncTeleBot('TOKEN')
 
 
@@ -24,4 +23,4 @@ async def echo_message(message):
     await bot.reply_to(message, message.text)
 
 
-asyncio.run(bot.polling())
+bot.polling()
