@@ -144,7 +144,8 @@ class IsAdminFilter(SimpleCustomFilter):
         self._bot = bot
 
     async def check(self, message):
-        return self._bot.get_chat_member(message.chat.id, message.from_user.id).status in ['creator', 'administrator']
+        result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
+        return result.status in ['creator', 'administrator']
 
 class StateFilter(AdvancedCustomFilter):
     """
@@ -158,10 +159,11 @@ class StateFilter(AdvancedCustomFilter):
     key = 'state'
 
     async def check(self, message, text):
-        if await self.bot.current_states.current_state(message.from_user.id) is False: return False
+        result = await self.bot.current_states.current_state(message.from_user.id)
+        if result is False: return False
         elif text == '*': return True
-        elif type(text) is list: return await self.bot.current_states.current_state(message.from_user.id) in text
-        return await self.bot.current_states.current_state(message.from_user.id) == text
+        elif type(text) is list: return result in text
+        return result == text
 
 class IsDigitFilter(SimpleCustomFilter):
     """

@@ -94,11 +94,11 @@ class StateFile:
 
     async def delete_state(self, chat_id):
         """Delete a state"""
-        states_data = await self._read_data()
+        states_data = self._read_data()
         states_data.pop(chat_id)
         await self._save_data(states_data)
 
-    async def _read_data(self):
+    def _read_data(self):
         """
         Read the data from file.
         """
@@ -107,7 +107,7 @@ class StateFile:
         file.close()
         return states_data
 
-    async def _create_dir(self):
+    def _create_dir(self):
         """
         Create directory .save-handlers.
         """
@@ -152,7 +152,7 @@ class StateFile:
         """
         await self.delete_state(chat_id)
 
-    async def retrieve_data(self, chat_id):
+    def retrieve_data(self, chat_id):
         """
         Save input text.
 
@@ -195,7 +195,7 @@ class StateFileContext:
         return self.data
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        old_data = await self.obj._read_data()
+        old_data = self.obj._read_data()
         for i in self.data:
             old_data[self.chat_id]['data'][i] = self.data.get(i)
         await self.obj._save_data(old_data)
