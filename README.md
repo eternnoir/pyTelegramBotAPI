@@ -43,7 +43,7 @@
       * [Reply markup](#reply-markup)
   * [Advanced use of the API](#advanced-use-of-the-api)
     * [Using local Bot API Server](#using-local-bot-api-sever)
-    * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
+    * [Asynchronous TeleBot](#asynchronous-telebot)
     * [Sending large text messages](#sending-large-text-messages)
     * [Controlling the amount of Threads used by TeleBot](#controlling-the-amount-of-threads-used-by-telebot)
     * [The listener mechanism](#the-listener-mechanism)
@@ -555,26 +555,26 @@ apihelper.API_URL = "http://localhost:4200/bot{0}/{1}"
 
 *Note: 4200 is an example port*
 
-### Asynchronous delivery of messages
-There exists an implementation of TeleBot which executes all `send_xyz` and the `get_me` functions asynchronously. This can speed up your bot __significantly__, but it has unwanted side effects if used without caution.
+### Asynchronous TeleBot
+New: There is an asynchronous implementation of telebot. It is more flexible.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
 tb = telebot.AsyncTeleBot("TOKEN")
 ```
-Now, every function that calls the Telegram API is executed in a separate Thread. The functions are modified to return an AsyncTask instance (defined in util.py). Using AsyncTeleBot allows you to do the following:
+Now, every function that calls the Telegram API is executed in a separate asynchronous task.
+Using AsyncTeleBot allows you to do the following:
 ```python
 import telebot
 
 tb = telebot.AsyncTeleBot("TOKEN")
-task = tb.get_me() # Execute an API call
-# Do some other operations...
-a = 0
-for a in range(100):
-	a += 10
 
-result = task.wait() # Get the result of the execution
+@tb.message_handler(commands=['start'])
+async def start_message(message):
+	await bot.send_message(message.chat.id, 'Hello'!)
+	
 ```
-*Note: if you execute send_xyz functions after eachother without calling wait(), the order in which messages are delivered might be wrong.*
+
+See more in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot)
 
 ### Sending large text messages
 Sometimes you must send messages that exceed 5000 characters. The Telegram API can not handle that many characters in one request, so we need to split the message in multiples. Here is how to do that using the API:
