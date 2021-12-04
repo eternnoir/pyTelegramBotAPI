@@ -4,7 +4,7 @@ from telebot.async_telebot import AsyncTeleBot
 
 
 
-bot = AsyncTeleBot('1297441208:AAH-Z-YbiK_pQ1jTuHXYa-hA_PLZQVQ6qsw')
+bot = AsyncTeleBot('TOKEN')
 
 
 @bot.message_handler(commands=['photo'])
