@@ -7,7 +7,7 @@
 # <p align="center">pyTelegramBotAPI
 
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
-<p align="center">Supports both sync and async ways.</a>
+Supports both sync and async ways.</p>
 
 ## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#november-5-2021">5.4</a>!
 
@@ -53,7 +53,7 @@
     * [Proxy](#proxy)
     * [Testing](#testing)
   * [API conformance](#api-conformance)
-  * [Asynchronous TeleBot](#asynctelebot)
+  * [AsyncTeleBot](#asynctelebot)
   * [F.A.Q.](#faq)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
     * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
@@ -184,8 +184,8 @@ TeleBot supports the following filters:
 |content_types|list of strings (default `['text']`)|`True` if message.content_type is in the list of strings.|
 |regexp|a regular expression as a string|`True` if `re.search(regexp_arg)` returns `True` and `message.content_type == 'text'` (See [Python Regular Expressions](https://docs.python.org/2/library/re.html))|
 |commands|list of strings|`True` if `message.content_type == 'text'` and `message.text` starts with a command that is in the list of strings.|
-|chat_types|list of chat types|`True` if `message.chat.type` in your filter
-|func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`
+|chat_types|list of chat types|`True` if `message.chat.type` in your filter|
+|func|a function (lambda or function reference)|`True` if the lambda or function reference returns `True`|
 	
 Here are some examples of using the filters and message handlers:
 
@@ -376,8 +376,8 @@ bot.add_custom_filter(IsAdmin())
 # Now, you can use it in handler.
 @bot.message_handler(is_admin=True)
 def admin_of_group(message):
-	bot.send_message(message.chat.id, 'You are admin of this group'!)
-	
+	bot.send_message(message.chat.id, 'You are admin of this group!')
+
 ```
 	
 
@@ -558,7 +558,7 @@ apihelper.API_URL = "http://localhost:4200/bot{0}/{1}"
 *Note: 4200 is an example port*
 
 ### Asynchronous TeleBot
-New: There is an asynchronous implementation of telebot. It is more flexible.
+New: There is an asynchronous implementation of telebot.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
 tb = telebot.AsyncTeleBot("TOKEN")
@@ -572,8 +572,8 @@ tb = telebot.AsyncTeleBot("TOKEN")
 
 @tb.message_handler(commands=['start'])
 async def start_message(message):
-	await bot.send_message(message.chat.id, 'Hello'!)
-	
+	await bot.send_message(message.chat.id, 'Hello!')
+
 ```
 
 See more in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot)
@@ -769,7 +769,7 @@ Telegram Bot API support new type Chat for message.chat.
 -
 ```python
 if message.chat.type == "private":
-	# private chat message
+    # private chat message
 
 if message.chat.type == "group":
 	# group chat message
