@@ -558,7 +558,7 @@ apihelper.API_URL = "http://localhost:4200/bot{0}/{1}"
 *Note: 4200 is an example port*
 
 ### Asynchronous TeleBot
-New: There is an asynchronous implementation of telebot. It is more flexible.
+New: There is an asynchronous implementation of telebot.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
 tb = telebot.AsyncTeleBot("TOKEN")
