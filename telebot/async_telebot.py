@@ -97,16 +97,15 @@ class AsyncTeleBot:
     
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset=None,
-                exception_handler=None,suppress_middleware_excepions=False) -> None: # TODO: ADD TYPEHINTS
+                exception_handler=None) -> None: # TODO: ADD TYPEHINTS
         self.token = token
 
         self.offset = offset
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
-        self.suppress_middleware_excepions = suppress_middleware_excepions
 
-        self.exc_info = None
+
 
         self.exception_handler = exception_handler
 
@@ -234,13 +233,23 @@ class AsyncTeleBot:
                 try:
                     
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
+                    if updates:
+                        self.offset = updates[-1].update_id + 1
+                        self._loop_create_task(self.process_new_updates(updates)) # Seperate task for processing updates
+                    if interval: await asyncio.sleep(interval)
+
+                except KeyboardInterrupt:
+                    return
                 except asyncio.CancelledError:
                     return
 
                 except asyncio_helper.ApiTelegramException as e:
                     logger.error(str(e))
 
-                    continue
+                    if non_stop:
+                        continue
+                    else:
+                        break
                 except Exception as e:
                     logger.error('Cause exception while getting updates.')
                     if non_stop:
@@ -249,10 +258,6 @@ class AsyncTeleBot:
                         continue
                     else:
                         raise e     
-                if updates:
-                    self.offset = updates[-1].update_id + 1
-                    self._loop_create_task(self.process_new_updates(updates)) # Seperate task for processing updates
-                if interval: await asyncio.sleep(interval)  
 
         finally:
             self._polling = False
@@ -297,7 +302,12 @@ class AsyncTeleBot:
                         break
                 except Exception as e:
                     handler_error = e
-                    logger.info(str(e))
+
+                    if not middleware:
+                        if self.exception_handler:
+                            return self.exception_handler.handle(e)
+                        logging.error(str(e))
+                        return
 
         if middleware:
             await middleware.post_process(message, data, handler_error)
@@ -448,7 +458,7 @@ class AsyncTeleBot:
         if len(self.update_listener) == 0:
             return
         for listener in self.update_listener:
-            self._loop_create_task(listener, new_messages)
+            self._loop_create_task(listener(new_messages))
 
     async def _test_message_handler(self, message_handler, message):
         """
@@ -465,6 +475,9 @@ class AsyncTeleBot:
                 return False
 
         return True
+
+    def set_update_listener(self, func):
+        self.update_listener.append(func)
 
     def add_custom_filter(self, custom_filter):
         """

@@ -8,7 +8,7 @@ try:
     import ujson as json
 except ImportError:
     import json
-
+import os
 API_URL = 'https://api.telegram.org/bot{0}/{1}'
 
 from datetime import datetime
@@ -42,13 +42,54 @@ RETRY_TIMEOUT = 2
 MAX_RETRIES = 15
 
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
+    params = compose_data(params, files)
     async with await session_manager._get_new_session() as session:
-        async with session.get(API_URL.format(token, url), params=params, data=files, timeout=request_timeout) as response:
+        async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=request_timeout) as response:
             logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout).replace(token, token.split(':')[0] + ":{TOKEN}"))
             json_result = await _check_result(url, response)
             if json_result:
                 return json_result['result']
 
+
+def guess_filename(obj):
+    """
+    Get file name from object
+
+    :param obj:
+    :return:
+    """
+    name = getattr(obj, 'name', None)
+    if name and isinstance(name, str) and name[0] != '<' and name[-1] != '>':
+        return os.path.basename(name)
+
+
+def compose_data(params=None, files=None):
+    """
+    Prepare request data
+
+    :param params:
+    :param files:
+    :return:
+    """
+    data = aiohttp.formdata.FormData(quote_fields=False)
+
+    if params:
+        for key, value in params.items():
+            data.add_field(key, str(value))
+
+    if files:
+        for key, f in files.items():
+            if isinstance(f, tuple):
+                if len(f) == 2:
+                    filename, fileobj = f
+                else:
+                    raise ValueError('Tuple must have exactly 2 elements: filename, fileobj')
+            else:
+                filename, fileobj = guess_filename(f) or key, f
+
+            data.add_field(key, fileobj, filename=filename)
+
+    return data
 
 async def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
@@ -731,7 +772,7 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
 async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
               allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None):
-    method_url = get_method_by_type(data_type)
+    method_url = await get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
     if not util.is_string(data):
