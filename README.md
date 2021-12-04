@@ -6,10 +6,10 @@
 
 # <p align="center">pyTelegramBotAPI
 
-<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
-Supports both sync and async ways.</p>
+<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
+<p align="center">Supports both sync and async ways.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#november-5-2021">5.4</a>!
+## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#november-5-2021">5.4</a>!
 
 ## Contents
 
