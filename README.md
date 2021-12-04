@@ -7,6 +7,7 @@
 # <p align="center">pyTelegramBotAPI
 
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.
+<p align="center">Supports both sync and async ways.</a>
 
 ## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#november-5-2021">5.4</a>!
 
@@ -43,7 +44,7 @@
       * [Reply markup](#reply-markup)
   * [Advanced use of the API](#advanced-use-of-the-api)
     * [Using local Bot API Server](#using-local-bot-api-sever)
-    * [Asynchronous delivery of messages](#asynchronous-delivery-of-messages)
+    * [Asynchronous TeleBot](#asynchronous-telebot)
     * [Sending large text messages](#sending-large-text-messages)
     * [Controlling the amount of Threads used by TeleBot](#controlling-the-amount-of-threads-used-by-telebot)
     * [The listener mechanism](#the-listener-mechanism)
@@ -52,6 +53,7 @@
     * [Proxy](#proxy)
     * [Testing](#testing)
   * [API conformance](#api-conformance)
+  * [Asynchronous TeleBot](#asynctelebot)
   * [F.A.Q.](#faq)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
     * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
@@ -555,26 +557,26 @@ apihelper.API_URL = "http://localhost:4200/bot{0}/{1}"
 
 *Note: 4200 is an example port*
 
-### Asynchronous delivery of messages
-There exists an implementation of TeleBot which executes all `send_xyz` and the `get_me` functions asynchronously. This can speed up your bot __significantly__, but it has unwanted side effects if used without caution.
+### Asynchronous TeleBot
+New: There is an asynchronous implementation of telebot. It is more flexible.
 To enable this behaviour, create an instance of AsyncTeleBot instead of TeleBot.
 ```python
 tb = telebot.AsyncTeleBot("TOKEN")
 ```
-Now, every function that calls the Telegram API is executed in a separate Thread. The functions are modified to return an AsyncTask instance (defined in util.py). Using AsyncTeleBot allows you to do the following:
+Now, every function that calls the Telegram API is executed in a separate asynchronous task.
+Using AsyncTeleBot allows you to do the following:
 ```python
 import telebot
 
 tb = telebot.AsyncTeleBot("TOKEN")
-task = tb.get_me() # Execute an API call
-# Do some other operations...
-a = 0
-for a in range(100):
-	a += 10
 
-result = task.wait() # Get the result of the execution
+@tb.message_handler(commands=['start'])
+async def start_message(message):
+	await bot.send_message(message.chat.id, 'Hello'!)
+	
 ```
-*Note: if you execute send_xyz functions after eachother without calling wait(), the order in which messages are delivered might be wrong.*
+
+See more in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot)
 
 ### Sending large text messages
 Sometimes you must send messages that exceed 5000 characters. The Telegram API can not handle that many characters in one request, so we need to split the message in multiples. Here is how to do that using the API:
@@ -711,6 +713,52 @@ Result will be:
 * ✔ [Bot API 2.1](https://core.telegram.org/bots/api-changelog#may-22-2016)
 * ✔ [Bot API 2.0](https://core.telegram.org/bots/api-changelog#april-9-2016) 
 
+
+## AsyncTeleBot
+### Asynchronous version of telebot
+We have a fully asynchronous version of TeleBot.
+This class is not controlled by threads. Asyncio tasks are created to execute all the stuff.
+
+### EchoBot
+Echo Bot example on AsyncTeleBot:
+	
+```python
+# This is a simple echo bot using the decorator mechanism.
+# It echoes any incoming text messages.
+
+from telebot.async_telebot import AsyncTeleBot
+bot = AsyncTeleBot('TOKEN')
+
+
+
+# Handle '/start' and '/help'
+@bot.message_handler(commands=['help', 'start'])
+async def send_welcome(message):
+    await bot.reply_to(message, """\
+Hi there, I am EchoBot.
+I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
+""")
+
+
+# Handle all other messages with content_type 'text' (content_types defaults to ['text'])
+@bot.message_handler(func=lambda message: True)
+async def echo_message(message):
+    await bot.reply_to(message, message.text)
+
+
+bot.polling()
+```
+As you can see here, keywords are await and async. 
+	
+### Why should I use async?
+Asynchronous tasks depend on processor performance. Many asynchronous tasks can run parallelly, while thread tasks will block each other.
+
+### Differences in AsyncTeleBot
+AsyncTeleBot has different middlewares. See example on [middlewares](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot/middleware)
+	
+### Examples
+See more examples in our [examples](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot) folder
+	
 
 ## F.A.Q.
 
