@@ -52,6 +52,7 @@
     * [Proxy](#proxy)
     * [Testing](#testing)
   * [API conformance](#api-conformance)
+  * [Asynchronous TeleBot](#asynctelebot)
   * [F.A.Q.](#faq)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
     * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
@@ -711,6 +712,52 @@ Result will be:
 * ✔ [Bot API 2.1](https://core.telegram.org/bots/api-changelog#may-22-2016)
 * ✔ [Bot API 2.0](https://core.telegram.org/bots/api-changelog#april-9-2016) 
 
+
+## AsyncTeleBot
+### Asynchronous version of telebot
+We have a fully asynchronous version of TeleBot.
+This class is not controlled by threads. Asyncio tasks are created to execute all the stuff.
+
+### EchoBot
+Echo Bot example on AsyncTeleBot:
+	
+```python
+# This is a simple echo bot using the decorator mechanism.
+# It echoes any incoming text messages.
+
+from telebot.async_telebot import AsyncTeleBot
+bot = AsyncTeleBot('TOKEN')
+
+
+
+# Handle '/start' and '/help'
+@bot.message_handler(commands=['help', 'start'])
+async def send_welcome(message):
+    await bot.reply_to(message, """\
+Hi there, I am EchoBot.
+I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
+""")
+
+
+# Handle all other messages with content_type 'text' (content_types defaults to ['text'])
+@bot.message_handler(func=lambda message: True)
+async def echo_message(message):
+    await bot.reply_to(message, message.text)
+
+
+bot.polling()
+```
+As you can see here, keywords are await and async. 
+	
+### Why should I use async?
+Asynchronous tasks depend on processor performance. Many asynchronous tasks can run parallelly, while thread tasks will block each other.
+
+### Differences in AsyncTeleBot
+AsyncTeleBot has different middlewares. See example on [middlewares](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot)
+	
+### Examples
+See more examples in our [examples](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot) folder
+	
 
 ## F.A.Q.
 
