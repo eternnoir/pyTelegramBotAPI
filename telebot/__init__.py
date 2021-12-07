@@ -1667,6 +1667,41 @@ class TeleBot:
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
+    
+    def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str],
+        until_date:Optional[Union[int, datetime]]=None) -> bool:
+        """
+        Use this method to ban a channel chat in a supergroup or a channel.
+        The owner of the chat will not be able to send messages and join live 
+        streams on behalf of the chat, unless it is unbanned first. 
+        The bot must be an administrator in the supergroup or channel 
+        for this to work and must have the appropriate administrator rights. 
+        Returns True on success.
+
+        :params:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param sender_chat_id: Unique identifier of the target sender chat
+        :param until_date: Date when the sender chat will be unbanned, unix time. If the chat is banned for more than 366 days
+        or less than 30 seconds from the current time they are considered to be banned forever.
+        :return: True on success.
+        """
+        return apihelper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id, until_date)
+
+    def unban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to unban a previously banned channel chat in a supergroup or channel. 
+        The bot must be an administrator for this to work and must have the appropriate 
+        administrator rights.
+        Returns True on success.
+
+        :params:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param sender_chat_id: Unique identifier of the target sender chat
+        :return: True on success.
+        """
+        return apihelper.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
+
+
     def set_chat_permissions(
             self, chat_id: Union[int, str], permissions: types.ChatPermissions) -> bool:
         """
