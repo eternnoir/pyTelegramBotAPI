@@ -50,7 +50,7 @@ def test_json_message_with_dice():
 
 
 def test_json_message_group():
-    json_string = r'{"message_id":10,"from":{"id":12345,"first_name":"g","last_name":"G","username":"GG","is_bot":true},"chat":{"id":-866,"type":"private","title":"\u4ea4"},"date":1435303157,"text":"HIHI"}'
+    json_string = r'{"message_id":10,"from":{"id":12345,"first_name":"g","last_name":"G","username":"GG","is_bot":true},"chat":{"id":-866,"type":"private","title":"\u4ea4"},"date":1435303157,"text":"HIHI","has_protected_content":true}'
     msg = types.Message.de_json(json_string)
     assert msg.text == 'HIHI'
     assert len(msg.chat.title) != 0
