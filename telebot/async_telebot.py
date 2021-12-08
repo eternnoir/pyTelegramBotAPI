@@ -94,7 +94,66 @@ class CancelUpdate:
         pass
 
 class AsyncTeleBot:
-    
+    """ This is AsyncTeleBot Class
+    Methods:
+        getMe
+        logOut
+        close
+        sendMessage
+        Formatting options
+        forwardMessage
+        copyMessage
+        sendPhoto
+        sendAudio
+        sendDocument
+        sendVideo
+        sendAnimation
+        sendVoice
+        sendVideoNote
+        sendMediaGroup
+        sendLocation
+        editMessageLiveLocation
+        stopMessageLiveLocation
+        sendVenue
+        sendContact
+        sendPoll
+        sendDice
+        sendChatAction
+        getUserProfilePhotos
+        getFile
+        banChatMember
+        unbanChatMember
+        restrictChatMember
+        promoteChatMember
+        setChatAdministratorCustomTitle
+        banChatSenderChat
+        unbanChatSenderChat
+        setChatPermissions
+        exportChatInviteLink
+        createChatInviteLink
+        editChatInviteLink
+        revokeChatInviteLink
+        approveChatJoinRequest
+        declineChatJoinRequest
+        setChatPhoto
+        deleteChatPhoto
+        setChatTitle
+        setChatDescription
+        pinChatMessage
+        unpinChatMessage
+        unpinAllChatMessages
+        leaveChat
+        getChat
+        getChatAdministrators
+        getChatMemberCount
+        getChatMember
+        setChatStickerSet
+        deleteChatStickerSet
+        answerCallbackQuery
+        setMyCommands
+        deleteMyCommands
+        getMyCommands
+        """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset=None,
                 exception_handler=None) -> None: # TODO: ADD TYPEHINTS

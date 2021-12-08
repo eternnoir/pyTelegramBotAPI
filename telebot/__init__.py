@@ -75,74 +75,59 @@ class TeleBot:
         logOut
         close
         sendMessage
+        Formatting options
         forwardMessage
         copyMessage
-        deleteMessage
         sendPhoto
         sendAudio
         sendDocument
-        sendSticker
         sendVideo
-        sendVenue
         sendAnimation
+        sendVoice
         sendVideoNote
-        sendLocation
-        sendChatAction
-        sendDice
-        sendContact
-        sendInvoice
         sendMediaGroup
-        getUserProfilePhotos
-        getUpdates
-        getFile
-        sendPoll
-        stopPoll
-        sendGame
-        setGameScore
-        getGameHighScores
-        editMessageText
-        editMessageCaption
-        editMessageMedia
-        editMessageReplyMarkup
+        sendLocation
         editMessageLiveLocation
         stopMessageLiveLocation
+        sendVenue
+        sendContact
+        sendPoll
+        sendDice
+        sendChatAction
+        getUserProfilePhotos
+        getFile
         banChatMember
         unbanChatMember
         restrictChatMember
         promoteChatMember
         setChatAdministratorCustomTitle
+        banChatSenderChat
+        unbanChatSenderChat
         setChatPermissions
+        exportChatInviteLink
         createChatInviteLink
         editChatInviteLink
         revokeChatInviteLink
-        exportChatInviteLink
-        setChatStickerSet
-        deleteChatStickerSet
-        createNewStickerSet
-        addStickerToSet
-        deleteStickerFromSet
-        setStickerPositionInSet
-        uploadStickerFile
-        setStickerSetThumb
-        getStickerSet
+        approveChatJoinRequest
+        declineChatJoinRequest
         setChatPhoto
         deleteChatPhoto
         setChatTitle
         setChatDescription
         pinChatMessage
         unpinChatMessage
+        unpinAllChatMessages
         leaveChat
         getChat
         getChatAdministrators
         getChatMemberCount
         getChatMember
+        setChatStickerSet
+        deleteChatStickerSet
         answerCallbackQuery
-        getMyCommands
         setMyCommands
         deleteMyCommands
-        answerInlineQuery
-        answerShippingQuery
-        answerPreCheckoutQuery
+        getMyCommands
         """
 
     def __init__(
