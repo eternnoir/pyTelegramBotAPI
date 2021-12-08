@@ -912,11 +912,9 @@ async def set_chat_administrator_custom_title(token, chat_id, user_id, custom_ti
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def ban_chat_sender_chat(token, chat_id, sender_chat_id, until_date=None):
+async def ban_chat_sender_chat(token, chat_id, sender_chat_id):
     method_url = 'banChatSenderChat'
     payload = {'chat_id': chat_id, 'sender_chat_id': sender_chat_id}
-    if until_date:
-        payload['until_date'] = until_date
     return await _process_request(token, method_url, params=payload, method='post')
 
 

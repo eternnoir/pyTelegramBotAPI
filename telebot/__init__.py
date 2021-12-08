@@ -1668,8 +1668,7 @@ class TeleBot:
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
     
-    def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str],
-        until_date:Optional[Union[int, datetime]]=None) -> bool:
+    def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
         Use this method to ban a channel chat in a supergroup or a channel.
         The owner of the chat will not be able to send messages and join live 
@@ -1685,7 +1684,7 @@ class TeleBot:
         or less than 30 seconds from the current time they are considered to be banned forever.
         :return: True on success.
         """
-        return apihelper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id, until_date)
+        return apihelper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
     def unban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """

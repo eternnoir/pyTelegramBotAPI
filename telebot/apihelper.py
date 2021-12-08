@@ -969,11 +969,9 @@ def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def ban_chat_sender_chat(token, chat_id, sender_chat_id, until_date=None):
+def ban_chat_sender_chat(token, chat_id, sender_chat_id):
     method_url = 'banChatSenderChat'
     payload = {'chat_id': chat_id, 'sender_chat_id': sender_chat_id}
-    if until_date:
-        payload['until_date'] = until_date
     return _make_request(token, method_url, params=payload, method='post')
 
 

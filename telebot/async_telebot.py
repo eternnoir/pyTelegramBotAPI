@@ -2136,8 +2136,7 @@ class AsyncTeleBot:
         return await asyncio_helper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
 
-    async def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str],
-        until_date:Optional[Union[int, datetime]]=None) -> bool:
+    async def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
         Use this method to ban a channel chat in a supergroup or a channel.
         The owner of the chat will not be able to send messages and join live 
@@ -2153,7 +2152,7 @@ class AsyncTeleBot:
         or less than 30 seconds from the current time they are considered to be banned forever.
         :return: True on success.
         """
-        return await asyncio_helper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id, until_date)
+        return await asyncio_helper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
     async def unban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
