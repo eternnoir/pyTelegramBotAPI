@@ -1680,8 +1680,6 @@ class TeleBot:
         :params:
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param sender_chat_id: Unique identifier of the target sender chat
-        :param until_date: Date when the sender chat will be unbanned, unix time. If the chat is banned for more than 366 days
-        or less than 30 seconds from the current time they are considered to be banned forever.
         :return: True on success.
         """
         return apihelper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id)
