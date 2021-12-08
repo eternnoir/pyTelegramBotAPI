@@ -9,7 +9,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Supports both sync and async ways.</p>
 
-## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#november-5-2021">5.4</a>!
+## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#december-7-2021">5.5</a>!
 
 ## Contents
 
@@ -685,8 +685,9 @@ Result will be:
 
 ## API conformance
 
+* ✔ [Bot API 5.5](https://core.telegram.org/bots/api#december-7-2021)
 * ✔ [Bot API 5.4](https://core.telegram.org/bots/api#november-5-2021)
-* ➕ [Bot API 5.3](https://core.telegram.org/bots/api#june-25-2021) - ChatMemberXXX classes are full copies of ChatMember
+* ➕ [Bot API 5.3](https://core.telegram.org/bots/api#june-25-2021) - ChatMember* classes are full copies of ChatMember
 * ✔ [Bot API 5.2](https://core.telegram.org/bots/api#april-26-2021)
 * ✔ [Bot API 5.1](https://core.telegram.org/bots/api#march-9-2021)
 * ✔ [Bot API 5.0](https://core.telegram.org/bots/api-changelog#november-4-2020)
@@ -700,18 +701,6 @@ Result will be:
 * ✔ [Bot API 4.2](https://core.telegram.org/bots/api-changelog#april-14-2019)
 * ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018) - No Passport support
 * ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018)   - No Passport support
-* ✔ [Bot API 3.6](https://core.telegram.org/bots/api-changelog#february-13-2018)
-* ✔ [Bot API 3.5](https://core.telegram.org/bots/api-changelog#november-17-2017)
-* ✔ [Bot API 3.4](https://core.telegram.org/bots/api-changelog#october-11-2017)
-* ✔ [Bot API 3.3](https://core.telegram.org/bots/api-changelog#august-23-2017)
-* ✔ [Bot API 3.2](https://core.telegram.org/bots/api-changelog#july-21-2017)
-* ✔ [Bot API 3.1](https://core.telegram.org/bots/api-changelog#june-30-2017)
-* ✔ [Bot API 3.0](https://core.telegram.org/bots/api-changelog#may-18-2017)
-* ✔ [Bot API 2.3.1](https://core.telegram.org/bots/api-changelog#december-4-2016)
-* ✔ [Bot API 2.3](https://core.telegram.org/bots/api-changelog#november-21-2016)
-* ✔ [Bot API 2.2](https://core.telegram.org/bots/api-changelog#october-3-2016)
-* ✔ [Bot API 2.1](https://core.telegram.org/bots/api-changelog#may-22-2016)
-* ✔ [Bot API 2.0](https://core.telegram.org/bots/api-changelog#april-9-2016) 
 
 
 ## AsyncTeleBot
