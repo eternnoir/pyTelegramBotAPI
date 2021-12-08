@@ -969,6 +969,18 @@ def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def ban_chat_sender_chat(token, chat_id, sender_chat_id):
+    method_url = 'banChatSenderChat'
+    payload = {'chat_id': chat_id, 'sender_chat_id': sender_chat_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def unban_chat_sender_chat(token, chat_id, sender_chat_id):
+    method_url = 'unbanChatSenderChat'
+    payload = {'chat_id': chat_id, 'sender_chat_id': sender_chat_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def set_chat_permissions(token, chat_id, permissions):
     method_url = 'setChatPermissions'
     payload = {

@@ -274,10 +274,11 @@ class Chat(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
-                 last_name=None, photo=None, bio=None, description=None, invite_link=None,
-                 pinned_message=None, permissions=None, slow_mode_delay=None,
-                 message_auto_delete_time=None, sticker_set_name=None, can_set_sticker_set=None,
-                 linked_chat_id=None, location=None, **kwargs):
+                 last_name=None, photo=None, bio=None, has_private_forwards=None,
+                 description=None, invite_link=None, pinned_message=None, 
+                 permissions=None, slow_mode_delay=None,
+                 message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
+                 can_set_sticker_set=None, linked_chat_id=None, location=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -286,12 +287,14 @@ class Chat(JsonDeserializable):
         self.last_name: str = last_name
         self.photo: ChatPhoto = photo
         self.bio: str = bio
+        self.has_private_forwards: bool = has_private_forwards
         self.description: str = description
         self.invite_link: str = invite_link
         self.pinned_message: Message = pinned_message
         self.permissions: ChatPermissions = permissions
         self.slow_mode_delay: int = slow_mode_delay
         self.message_auto_delete_time: int = message_auto_delete_time
+        self.has_protected_content: bool = has_protected_content
         self.sticker_set_name: str = sticker_set_name
         self.can_set_sticker_set: bool = can_set_sticker_set
         self.linked_chat_id: int = linked_chat_id
@@ -334,12 +337,16 @@ class Message(JsonDeserializable):
             opts['forward_sender_name'] = obj.get('forward_sender_name')
         if 'forward_date' in obj:
             opts['forward_date'] = obj.get('forward_date')
+        if 'is_automatic_forward' in obj:
+            opts['is_automatic_forward'] = obj.get('is_automatic_forward')
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'via_bot' in obj:
             opts['via_bot'] = User.de_json(obj['via_bot'])
         if 'edit_date' in obj:
             opts['edit_date'] = obj.get('edit_date')
+        if 'has_protected_content' in obj:
+            opts['has_protected_content'] = obj.get('has_protected_content')
         if 'media_group_id' in obj:
             opts['media_group_id'] = obj.get('media_group_id')
         if 'author_signature' in obj:
@@ -503,9 +510,11 @@ class Message(JsonDeserializable):
         self.forward_signature: Optional[str] = None
         self.forward_sender_name: Optional[str] = None
         self.forward_date: Optional[int] = None
+        self.is_automatic_forward: Optional[bool] = None
         self.reply_to_message: Optional[Message] = None
         self.via_bot: Optional[User] = None
         self.edit_date: Optional[int] = None
+        self.has_protected_content: Optional[bool] = None
         self.media_group_id: Optional[str] = None
         self.author_signature: Optional[str] = None
         self.text: Optional[str] = None
