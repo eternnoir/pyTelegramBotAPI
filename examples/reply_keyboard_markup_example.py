@@ -12,31 +12,31 @@ def keyboard(key_type="Normal"):
     markup = ReplyKeyboardMarkup(row_width=10)
     if key_type == "Normal":
         row = [KeyboardButton(x) for x in keys[:10]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+        markup.add(*row)
         row = [KeyboardButton(x) for x in keys[10:20]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+        markup.add(*row)
         row = [KeyboardButton(x) for x in keys[20:29]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8])
+        markup.add(*row)
         row = [KeyboardButton(x) for x in keys[29:]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6])
+        markup.add(*row)
         markup.add(KeyboardButton("Caps Lock"),KeyboardButton("Symbols"),KeyboardButton("🔙Delete"),KeyboardButton("✅Done"))
     elif key_type == "Symbols":
         row = [KeyboardButton(x) for x in symbols[:10]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+        markup.add(*row)
         row = [KeyboardButton(x) for x in symbols[10:20]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+        markup.add(*row)
         row = [KeyboardButton(x) for x in symbols[20:]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7])
+        markup.add(*row)
         markup.add(KeyboardButton("Caps Lock"),KeyboardButton("Normal"),KeyboardButton("🔙Delete"),KeyboardButton("✅Done"))
     else:
         row = [KeyboardButton(x.upper()) for x in keys[:10]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+        markup.add(*row)
         row = [KeyboardButton(x.upper()) for x in keys[10:20]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9])
+        markup.add(*row)
         row = [KeyboardButton(x.upper()) for x in keys[20:29]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8])
+        markup.add(*row)
         row = [KeyboardButton(x.upper()) for x in keys[29:]]
-        markup.add(row[0],row[1],row[2],row[3],row[4],row[5],row[6])
+        markup.add(*row)
         markup.add(KeyboardButton("Normal"),KeyboardButton("Symbols"),KeyboardButton("🔙Delete"),KeyboardButton("✅Done"))
     return markup
 
