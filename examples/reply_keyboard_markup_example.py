@@ -60,4 +60,4 @@ def all_messages(message):
     else:
         bot.send_message(message.chat.id,message.text)
 
-bot.polling()
+bot.infinity_polling()
