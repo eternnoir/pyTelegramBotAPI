@@ -6,6 +6,7 @@ sys.path.append('../')
 import time
 import pytest
 import os
+from datetime import datetime, timedelta
 
 import telebot
 from telebot import types
@@ -17,6 +18,14 @@ if not should_skip:
     TOKEN = os.environ['TOKEN']
     CHAT_ID = os.environ['CHAT_ID']
     GROUP_ID = os.environ['GROUP_ID']
+
+def _new_test():
+    pass
+
+@util.deprecated(alternative=_new_test)
+def _test():
+    pass
+        
 
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
@@ -48,6 +57,7 @@ class TestTeleBot:
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'https://web.telegram.org/')
 
+        # noinspection PyUnusedLocal
         @bot.message_handler(regexp=r'((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
         def command_url(message):
             msg.text = 'got'
@@ -60,6 +70,7 @@ class TestTeleBot:
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'lambda_text')
 
+        # noinspection PyUnusedLocal
         @bot.message_handler(func=lambda message: r'lambda' in message.text)
         def command_url(message):
             msg.text = 'got'
@@ -72,6 +83,7 @@ class TestTeleBot:
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'text')
 
+        # noinspection PyUnusedLocal
         @bot.message_handler(func=lambda message: r'lambda' in message.text)
         def command_url(message):
             msg.text = 'got'
@@ -84,6 +96,7 @@ class TestTeleBot:
         bot = telebot.TeleBot('')
         msg = self.create_text_message(r'web.telegram.org/')
 
+        # noinspection PyUnusedLocal
         @bot.message_handler(regexp=r'((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)')
         def command_url(message):
             msg.text = 'got'
@@ -121,6 +134,16 @@ class TestTeleBot:
         ret_msg = tb.send_document(CHAT_ID, ret_msg.document.file_id)
         assert ret_msg.message_id
 
+    def test_send_file_with_filename(self):
+        file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
+        tb = telebot.TeleBot(TOKEN)
+
+        ret_msg = tb.send_document(CHAT_ID, file_data)
+        assert ret_msg.message_id
+
+        ret_msg = tb.send_document(CHAT_ID, file_data, visible_file_name="test.jpg")
+        assert ret_msg.message_id
+        
     def test_send_file_dis_noti(self):
         file_data = open('../examples/detailed_example/kitten.jpg', 'rb')
         tb = telebot.TeleBot(TOKEN)
@@ -289,6 +312,13 @@ class TestTeleBot:
         ret_msg = tb.forward_message(CHAT_ID, CHAT_ID, msg.message_id)
         assert ret_msg.forward_from
 
+    def test_copy_message(self):
+        text = 'CI copy_message Test Message'
+        tb = telebot.TeleBot(TOKEN)
+        msg = tb.send_message(CHAT_ID, text)
+        ret_msg = tb.copy_message(CHAT_ID, CHAT_ID, msg.message_id)
+        assert ret_msg
+
     def test_forward_message_dis_noti(self):
         text = 'CI forward_message Test Message'
         tb = telebot.TeleBot(TOKEN)
@@ -396,6 +426,23 @@ class TestTeleBot:
         cn = tb.get_chat_members_count(GROUP_ID)
         assert cn > 1
 
+    def test_export_chat_invite_link(self):
+        tb = telebot.TeleBot(TOKEN)
+        il = tb.export_chat_invite_link(GROUP_ID)
+        assert isinstance(il, str)
+
+    def test_create_revoke_detailed_chat_invite_link(self):
+        tb = telebot.TeleBot(TOKEN)
+        cil = tb.create_chat_invite_link(GROUP_ID, 
+            (datetime.now() + timedelta(minutes=1)).timestamp(), member_limit=5)
+        assert isinstance(cil.invite_link, str)
+        assert cil.creator.id == tb.get_me().id
+        assert isinstance(cil.expire_date, (float, int))
+        assert cil.member_limit == 5
+        assert not cil.is_revoked
+        rcil = tb.revoke_chat_invite_link(GROUP_ID, cil.invite_link)
+        assert rcil.is_revoked
+
     def test_edit_markup(self):
         text = 'CI Test Message'
         tb = telebot.TeleBot(TOKEN)
@@ -407,6 +454,13 @@ class TestTeleBot:
         markup.add(types.InlineKeyboardButton("Yahoo2", url="http://www.yahoo.com"))
         new_msg = tb.edit_message_reply_markup(chat_id=CHAT_ID, message_id=ret_msg.message_id, reply_markup=markup)
         assert new_msg.message_id
+
+    def test_antiflood(self):
+        text = "Flooding"
+        tb = telebot.TeleBot(TOKEN)
+        for _ in range(0,100):
+            util.antiflood(tb.send_message, CHAT_ID, text)
+        assert _
 
     @staticmethod
     def create_text_message(text):
@@ -429,8 +483,12 @@ class TestTeleBot:
         pre_checkout_query = None
         poll = None
         poll_answer = None
+        my_chat_member = None
+        chat_member = None
+        chat_join_request = None
         return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
-                            chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer)
+                            chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
+                            my_chat_member, chat_member, chat_join_request)
 
     def test_is_string_unicode(self):
         s1 = u'string'
@@ -514,6 +572,24 @@ class TestTeleBot:
         ret_msg = tb.send_document(CHAT_ID, file_data, caption='_italic_', parse_mode='Markdown')
         assert ret_msg.caption_entities[0].type == 'italic'
 
+    def test_chat_commands(self):
+        tb = telebot.TeleBot(TOKEN)
+        command, description, lang = 'command_1', 'description of command 1', 'en'
+        scope = telebot.types.BotCommandScopeChat(CHAT_ID)
+        ret_msg = tb.set_my_commands([telebot.types.BotCommand(command, description)], scope, lang)
+        assert ret_msg is True
+
+        ret_msg = tb.get_my_commands(scope, lang)
+        assert ret_msg[0].command == command
+        assert ret_msg[0].description == description
+
+        ret_msg = tb.delete_my_commands(scope, lang)
+        assert ret_msg is True
+
+        ret_msg = tb.get_my_commands(scope, lang)
+        assert ret_msg == []
+
+
     def test_typed_middleware_handler(self):
         from telebot import apihelper
 
@@ -522,6 +598,7 @@ class TestTeleBot:
         tb = telebot.TeleBot('')
         update = self.create_message_update('/help')
 
+        # noinspection PyUnusedLocal
         @tb.middleware_handler(update_types=['message'])
         def middleware(tb_instance, message):
             message.text = 'got'
@@ -542,9 +619,10 @@ class TestTeleBot:
         tb = telebot.TeleBot('')
         update = self.create_message_update('/help')
 
+        # noinspection PyUnusedLocal
         @tb.middleware_handler()
-        def middleware(tb_instance, update):
-            update.message.text = 'got'
+        def middleware(tb_instance, mw_update):
+            mw_update.message.text = 'got'
 
         @tb.message_handler(func=lambda m: m.text == 'got')
         def command_handler(message):
@@ -553,9 +631,12 @@ class TestTeleBot:
         tb.process_new_updates([update])
         time.sleep(1)
         assert update.message.text == 'got' * 2
+    
+    def test_deprecated_dec(self):
+        _test()
 
     def test_chat_permissions(self):
         return # CHAT_ID is private chat, no permissions can be set
-        tb = telebot.TeleBot(TOKEN)
-        permissions = types.ChatPermissions(can_send_messages=True, can_send_polls=False)
-        msg = tb.set_chat_permissions(CHAT_ID, permissions)
+        #tb = telebot.TeleBot(TOKEN)
+        #permissions = types.ChatPermissions(can_send_messages=True, can_send_polls=False)
+        #msg = tb.set_chat_permissions(CHAT_ID, permissions)

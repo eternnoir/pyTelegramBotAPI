@@ -68,7 +68,7 @@ def process_sex_step(message):
         if (sex == u'Male') or (sex == u'Female'):
             user.sex = sex
         else:
-            raise Exception()
+            raise Exception("Unknown sex")
         bot.send_message(chat_id, 'Nice to meet you ' + user.name + '\n Age:' + str(user.age) + '\n Sex:' + user.sex)
     except Exception as e:
         bot.reply_to(message, 'oooops')
@@ -83,4 +83,4 @@ bot.enable_save_next_step_handlers(delay=2)
 # WARNING It will work only if enable_save_next_step_handlers was called!
 bot.load_next_step_handlers()
 
-bot.polling()
+bot.infinity_polling()

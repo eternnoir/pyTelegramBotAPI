@@ -25,6 +25,7 @@ var/
 
 .idea/
 venv/
+.venv/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -62,3 +63,4 @@ testMain.py
 
 #VS Code
 .vscode/
+.DS_Store
