@@ -1,6 +1,6 @@
 # Webhook examples using pyTelegramBotAPI
 
-There are 4 examples in this directory using different libraries:
+There are 5 examples in this directory using different libraries:
 
 * **Python (CPython):** *webhook_cpython_echo_bot.py*
   * **Pros:**
@@ -37,9 +37,18 @@ There are 4 examples in this directory using different libraries:
   * **Pros:**
     * It's a web application framework
     * Python 3 compatible
-    * Asynchronous, excellent perfomance
+    * Asynchronous, excellent performance
     * Utilizes new async/await syntax
   * **Cons:**
     * Requires Python 3.4.2+, don't work with Python 2
 
-*Latest update of this document: 2017-01-30*
+* **Twisted (20.3.0):** *webhook_twisted_echo_bot.py*
+  * **Pros:**
+    * Asynchronous event-driven networking engine
+    * Very high performance
+    * Built-in support for many internet protocols
+  * **Cons:**
+    * Twisted is low-level, which may be good or bad depending on use case
+    * Considerable learning curve - reading docs is a must.
+
+*Latest update of this document: 2020-12-17*

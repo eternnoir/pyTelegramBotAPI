@@ -32,10 +32,13 @@ class MemoryHandlerBackend(HandlerBackend):
             self.handlers[handler_group_id] = [handler]
 
     def clear_handlers(self, handler_group_id):
-        self.handlers.pop(handler_group_id, [])
+        self.handlers.pop(handler_group_id, None)
 
     def get_handlers(self, handler_group_id):
-        return self.handlers.pop(handler_group_id, [])
+        return self.handlers.pop(handler_group_id, None)
+
+    def load_handlers(self, filename, del_file_after_loading):
+        raise NotImplementedError()
 
 
 class FileHandlerBackend(HandlerBackend):
@@ -50,19 +53,15 @@ class FileHandlerBackend(HandlerBackend):
             self.handlers[handler_group_id].append(handler)
         else:
             self.handlers[handler_group_id] = [handler]
-
         self.start_save_timer()
 
     def clear_handlers(self, handler_group_id):
-        self.handlers.pop(handler_group_id, [])
-
+        self.handlers.pop(handler_group_id, None)
         self.start_save_timer()
 
     def get_handlers(self, handler_group_id):
-        handlers = self.handlers.pop(handler_group_id, [])
-
+        handlers = self.handlers.pop(handler_group_id, None)
         self.start_save_timer()
-
         return handlers
 
     def start_save_timer(self):
@@ -115,11 +114,11 @@ class FileHandlerBackend(HandlerBackend):
 
 
 class RedisHandlerBackend(HandlerBackend):
-    def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot'):
+    def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot', password=None):
         super(RedisHandlerBackend, self).__init__(handlers)
         from redis import Redis
         self.prefix = prefix
-        self.redis = Redis(host, port, db)
+        self.redis = Redis(host, port, db, password)
 
     def _key(self, handle_group_id):
         return ':'.join((self.prefix, str(handle_group_id)))
@@ -136,10 +135,208 @@ class RedisHandlerBackend(HandlerBackend):
         self.redis.delete(self._key(handler_group_id))
 
     def get_handlers(self, handler_group_id):
-        handlers = []
+        handlers = None
         value = self.redis.get(self._key(handler_group_id))
         if value:
             handlers = pickle.loads(value)
             self.clear_handlers(handler_group_id)
-
         return handlers
+
+
+class StateMemory:
+    def __init__(self):
+        self._states = {}
+
+    def add_state(self, chat_id, state):
+        """
+        Add a state.
+        :param chat_id:
+        :param state: new state
+        """
+        if chat_id in self._states:
+            
+            self._states[chat_id]['state'] = state
+        else:
+            self._states[chat_id] = {'state': state,'data': {}}
+
+    def current_state(self, chat_id):
+        """Current state"""
+        if chat_id in self._states: return self._states[chat_id]['state']
+        else: return False
+
+    def delete_state(self, chat_id):
+        """Delete a state"""
+        self._states.pop(chat_id)
+
+    def _get_data(self, chat_id):
+        return self._states[chat_id]['data']
+
+    def set(self, chat_id, new_state):
+        """
+        Set a new state for a user.
+        :param chat_id:
+        :param new_state: new_state of a user
+        """
+        self.add_state(chat_id,new_state)
+
+    def _add_data(self, chat_id, key, value):
+        result = self._states[chat_id]['data'][key] = value
+        return result
+
+    def finish(self, chat_id):
+        """
+        Finish(delete) state of a user.
+        :param chat_id:
+        """
+        self.delete_state(chat_id)
+
+    def retrieve_data(self, chat_id):
+        """
+        Save input text.
+
+        Usage:
+        with bot.retrieve_data(message.chat.id) as data:
+            data['name'] = message.text
+
+        Also, at the end of your 'Form' you can get the name:
+        data['name']
+        """
+        return StateContext(self, chat_id)
+
+
+class StateFile:
+    """
+    Class to save states in a file.
+    """
+    def __init__(self, filename):
+        self.file_path = filename
+
+    def add_state(self, chat_id, state):
+        """
+        Add a state.
+        :param chat_id:
+        :param state: new state
+        """
+        states_data = self._read_data()
+        if chat_id in states_data:
+            states_data[chat_id]['state'] = state
+            return self._save_data(states_data)
+        else:
+            new_data = states_data[chat_id] = {'state': state,'data': {}}
+            return self._save_data(states_data)
+
+
+    def current_state(self, chat_id):
+        """Current state."""
+        states_data = self._read_data()
+        if chat_id in states_data: return states_data[chat_id]['state']
+        else: return False
+
+    def delete_state(self, chat_id):
+        """Delete a state"""
+        states_data = self._read_data()
+        states_data.pop(chat_id)
+        self._save_data(states_data)
+
+    def _read_data(self):
+        """
+        Read the data from file.
+        """
+        file = open(self.file_path, 'rb')
+        states_data = pickle.load(file)
+        file.close()
+        return states_data
+
+    def _create_dir(self):
+        """
+        Create directory .save-handlers.
+        """
+        dirs = self.file_path.rsplit('/', maxsplit=1)[0]
+        os.makedirs(dirs, exist_ok=True)
+        if not os.path.isfile(self.file_path):
+            with open(self.file_path,'wb') as file:
+                pickle.dump({}, file)
+        
+    def _save_data(self, new_data):
+        """
+        Save data after editing.
+        :param new_data:
+        """
+        with open(self.file_path, 'wb+') as state_file:
+            pickle.dump(new_data, state_file, protocol=pickle.HIGHEST_PROTOCOL)
+        return True
+
+    def _get_data(self, chat_id):
+        return self._read_data()[chat_id]['data']
+
+    def set(self, chat_id, new_state):
+        """
+        Set a new state for a user.
+        :param chat_id:
+        :param new_state: new_state of a user
+        
+        """
+        self.add_state(chat_id,new_state)
+
+    def _add_data(self, chat_id, key, value):
+        states_data = self._read_data()
+        result = states_data[chat_id]['data'][key] = value
+        self._save_data(result)
+
+        return result
+
+    def finish(self, chat_id):
+        """
+        Finish(delete) state of a user.
+        :param chat_id:
+        """
+        self.delete_state(chat_id)
+
+    def retrieve_data(self, chat_id):
+        """
+        Save input text.
+
+        Usage:
+        with bot.retrieve_data(message.chat.id) as data:
+            data['name'] = message.text
+
+        Also, at the end of your 'Form' you can get the name:
+        data['name']
+        """
+        return StateFileContext(self, chat_id)
+
+
+class StateContext:
+    """
+    Class for data.
+    """
+    def __init__(self , obj: StateMemory, chat_id) -> None:
+        self.obj = obj
+        self.chat_id = chat_id
+        self.data = obj._get_data(chat_id)
+
+    def __enter__(self):
+        return self.data
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        return
+
+class StateFileContext:
+    """
+    Class for data.
+    """
+    def __init__(self , obj: StateFile, chat_id) -> None:
+        self.obj = obj
+        self.chat_id = chat_id
+        self.data = self.obj._get_data(self.chat_id)
+
+    def __enter__(self):
+        return self.data
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        old_data = self.obj._read_data()
+        for i in self.data:
+            old_data[self.chat_id]['data'][i] = self.data.get(i)
+        self.obj._save_data(old_data)
+
+        return

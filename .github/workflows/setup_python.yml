@@ -1,0 +1,35 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Setup
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  #workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  all-setups:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.6','3.7','3.8','3.9', 'pypy-3.6', 'pypy-3.7' ] #'pypy-3.8', 'pypy-3.9' NOT SUPPORTED NOW
+    name: ${{ matrix.python-version }} and tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - run: |
+          pip3 install -r requirements.txt
+          python setup.py install
+          cd tests && py.test

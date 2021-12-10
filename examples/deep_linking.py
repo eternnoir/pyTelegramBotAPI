@@ -74,4 +74,4 @@ def send_welcome(message):
     bot.reply_to(message, reply)
 
 
-bot.polling()
+bot.infinity_polling()
