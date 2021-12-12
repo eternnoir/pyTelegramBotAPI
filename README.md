@@ -717,6 +717,7 @@ Echo Bot example on AsyncTeleBot:
 # It echoes any incoming text messages.
 
 from telebot.async_telebot import AsyncTeleBot
+import asyncio
 bot = AsyncTeleBot('TOKEN')
 
 
@@ -736,7 +737,7 @@ async def echo_message(message):
     await bot.reply_to(message, message.text)
 
 
-bot.polling()
+asyncio.run(bot.polling())
 ```
 As you can see here, keywords are await and async. 
 	
