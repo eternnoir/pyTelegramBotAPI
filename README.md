@@ -58,6 +58,7 @@
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
     * [How can I handle reocurring ConnectionResetErrors?](#how-can-i-handle-reocurring-connectionreseterrors)
   * [The Telegram Chat Group](#the-telegram-chat-group)
+  * [Telegram Channel](#telegram-channel)
   * [More examples](#more-examples)
   * [Bots using this API](#bots-using-this-api)
 
@@ -780,7 +781,11 @@ Bot instances that were idle for a long time might be rejected by the server whe
 Get help. Discuss. Chat.
 
 * Join the [pyTelegramBotAPI Telegram Chat Group](https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A)
+	
+## Telegram Channel
 
+Join the [News channel](https://t.me/pyTelegramBotAPI). Here we will post releases and updates.
+	
 ## More examples
 
 * [Echo Bot](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/echo_bot.py)
