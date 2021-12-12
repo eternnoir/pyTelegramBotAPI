@@ -71,4 +71,5 @@ bot.add_custom_filter(asyncio_filters.IsDigitFilter())
 # set saving states into file.
 bot.enable_saving_states() # you can delete this if you do not need to save states
 
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

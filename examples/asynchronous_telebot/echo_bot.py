@@ -23,4 +23,5 @@ async def echo_message(message):
     await bot.reply_to(message, message.text)
 
 
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

@@ -211,7 +211,7 @@ class AsyncTeleBot:
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
-    def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
+    async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
             request_timeout: int=20, allowed_updates: Optional[List[str]]=None,
             none_stop: Optional[bool]=None):
         """
@@ -240,10 +240,10 @@ class AsyncTeleBot:
             non_stop = none_stop
 
         if skip_pending:
-            asyncio.run(self.skip_updates())
-        asyncio.run(self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates))
+            await self.skip_updates()
+        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates)
 
-    def infinity_polling(self, timeout: int=20, skip_pending: bool=False, request_timeout: int=20, logger_level=logging.ERROR,
+    async def infinity_polling(self, timeout: int=20, skip_pending: bool=False, request_timeout: int=20, logger_level=logging.ERROR,
             allowed_updates: Optional[List[str]]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
@@ -263,12 +263,12 @@ class AsyncTeleBot:
             so unwanted updates may be received for a short period of time.
         """
         if skip_pending:
-            asyncio.run(self.skip_updates())
+            await self.skip_updates()
         self._polling = True
         while self._polling:
             try:
-                asyncio.run( self._process_polling(non_stop=True, timeout=timeout, request_timeout=request_timeout,
-                             allowed_updates=allowed_updates, *args, **kwargs) )
+                await self._process_polling(non_stop=True, timeout=timeout, request_timeout=request_timeout,
+                             allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))

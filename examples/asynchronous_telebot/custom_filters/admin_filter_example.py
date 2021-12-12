@@ -9,4 +9,6 @@ async def answer_for_admin(message):
 
 # Register filter
 bot.add_custom_filter(asyncio_filters.IsAdminFilter(bot))
-bot.polling()
+
+import asyncio
+asyncio.run(bot.polling())

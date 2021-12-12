@@ -11,4 +11,6 @@ async def update_listener(messages):
 
 bot.set_update_listener(update_listener)
 
-bot.polling()
+
+import asyncio
+asyncio.run(bot.polling())

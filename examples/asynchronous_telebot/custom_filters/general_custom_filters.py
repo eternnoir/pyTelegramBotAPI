@@ -40,4 +40,5 @@ async def bye_user(message):
 bot.add_custom_filter(MainFilter())
 bot.add_custom_filter(IsAdmin())
 
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

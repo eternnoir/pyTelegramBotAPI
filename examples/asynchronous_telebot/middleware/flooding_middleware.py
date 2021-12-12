@@ -36,4 +36,5 @@ bot.setup_middleware(SimpleMiddleware(2))
 async def start(message):
     await bot.send_message(message.chat.id, 'Hello!')
 
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())
