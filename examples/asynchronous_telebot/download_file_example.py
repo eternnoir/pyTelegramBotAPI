@@ -17,4 +17,5 @@ async def new_message(message: telebot.types.Message):
     await bot.edit_message_text(chat_id=message.chat.id, message_id=result_message.id, text='<i>Done!</i>', parse_mode='HTML')
 
 
-bot.polling(skip_pending=True)
+import asyncio
+asyncio.run(bot.polling())

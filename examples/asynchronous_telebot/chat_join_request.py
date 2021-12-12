@@ -8,4 +8,5 @@ async def make_some(message: telebot.types.ChatJoinRequest):
     await bot.send_message(message.chat.id, 'I accepted a new user!')
     await bot.approve_chat_join_request(message.chat.id, message.from_user.id)
 
-bot.polling(skip_pending=True)
+import asyncio
+asyncio.run(bot.polling())

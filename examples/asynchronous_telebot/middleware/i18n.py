@@ -45,4 +45,5 @@ async def start(message, data: dict):
     await bot.send_message(message.chat.id, data['response'])
 
 
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

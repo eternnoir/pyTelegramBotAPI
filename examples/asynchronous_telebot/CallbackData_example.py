@@ -84,4 +84,5 @@ async def back_callback(call: types.CallbackQuery):
 
 
 bot.add_custom_filter(ProductsCallbackFilter())
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

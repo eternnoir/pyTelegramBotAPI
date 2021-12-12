@@ -17,4 +17,5 @@ async def text_filter(message):
 bot.add_custom_filter(telebot.asyncio_filters.TextMatchFilter())
 bot.add_custom_filter(telebot.asyncio_filters.TextStartsFilter())
 
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

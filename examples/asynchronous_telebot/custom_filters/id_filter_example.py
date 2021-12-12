@@ -14,4 +14,5 @@ async def not_admin(message):
 
 # Do not forget to register
 bot.add_custom_filter(telebot.asyncio_filters.ChatFilter())
-bot.polling()
+import asyncio
+asyncio.run(bot.polling())

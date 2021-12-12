@@ -24,4 +24,5 @@ async def photo_send(message: telebot.types.Message):
     
 
 
-bot.polling(skip_pending=True)
+import asyncio
+asyncio.run(bot.polling())

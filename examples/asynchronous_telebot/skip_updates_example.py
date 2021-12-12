@@ -10,4 +10,6 @@ async def send_welcome(message):
 async def echo_all(message):
 	await bot.reply_to(message, message.text)
 
-bot.polling(skip_pending=True)# Skip pending skips old updates
+
+import asyncio
+asyncio.run(bot.polling(skip_pending=True)) # to skip updates
