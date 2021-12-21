@@ -1,11 +1,14 @@
-
-[![PyPi Package Version](https://img.shields.io/pypi/v/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
-[![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
-[![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
-
 # <p align="center">pyTelegramBotAPI
 
+<p align="center">
+	<a href="https://pypi.python.org/pypi/pyTelegramBotAPI"><img src="https://img.shields.io/pypi/v/pyTelegramBotAPI.svg" alt="PyPi Package Version"/></a>
+	<a href="https://pypi.python.org/pypi/pyTelegramBotAPI">
+		<img src="https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg" alt="Supported Python versions"/></a>
+	<a href="https://travis-ci.org/eternnoir/pyTelegramBotAPI">
+		<img src="https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master" alt="Build Status"/></a>
+	<a href="https://pypi.org/project/pyTelegramBotAPI/">
+		<img src="https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg" alt="PyPi downloads"/></a>
+	</p>
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Supports both sync and async ways.</p>
 
