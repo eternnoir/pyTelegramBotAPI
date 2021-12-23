@@ -841,5 +841,6 @@ Join the [News channel](https://t.me/pyTelegramBotAPI). Here we will post releas
 * [Google Sheet Bot](https://github.com/JoachimStanislaus/Tele_Sheet_bot) by [JoachimStanislaus](https://github.com/JoachimStanislaus). This bot can help you to track your expenses by uploading your bot entries to your google sheet.
 * [GrandQuiz Bot](https://github.com/Carlosma7/TFM-GrandQuiz) by [Carlosma7](https://github.com/Carlosma7). This bot is a trivia game that allows you to play with people from different ages. This project addresses the use of a system through chatbots to carry out a social and intergenerational game as an alternative to traditional game development.
 * [Diccionario de la RAE](https://t.me/dleraebot) ([source](https://github.com/studentenherz/dleraebot)) This bot lets you find difinitions of words in Spanish using [RAE's dictionary](https://dle.rae.es/). It features direct message and inline search.
+* [remoteTelegramShell](https://github.com/EnriqueMoran/remoteTelegramShell) by [EnriqueMoran](https://github.com/EnriqueMoran). Control your LinuxOS computer through Telegram.
 	
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
