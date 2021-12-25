@@ -317,6 +317,14 @@ class AsyncTeleBot:
                 except asyncio.CancelledError:
                     return
 
+                except asyncio_helper.RequestTimeout as e:
+                    logger.error(str(e))
+                    if non_stop:
+                        await asyncio.sleep(2)
+                        continue
+                    else:
+                        return
+
                 except asyncio_helper.ApiTelegramException as e:
                     logger.error(str(e))
 
