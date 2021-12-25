@@ -6,7 +6,7 @@ import re
 import sys
 import time
 import traceback
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 # this imports are used to avoid circular import error
 import telebot.util
@@ -207,7 +207,7 @@ class AsyncTeleBot:
 
 
     async def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
-        timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> types.Update:
+        timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
@@ -249,7 +249,7 @@ class AsyncTeleBot:
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
         :param timeout: Request connection timeout
-        :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :param request_timeout: Timeout in seconds for long polling (see API docs)
         :param skip_pending: skip old updates
         :param logger_level: Custom logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
@@ -1708,7 +1708,7 @@ class AsyncTeleBot:
                 allow_sending_without_reply))
 
     async def send_document(
-            self, chat_id: Union[int, str], data: Union[Any, str],
+            self, chat_id: Union[int, str], document: Union[Any, str],
             reply_to_message_id: Optional[int]=None, 
             caption: Optional[str]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
@@ -1719,11 +1719,12 @@ class AsyncTeleBot:
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             visible_file_name: Optional[str]=None,
-            disable_content_type_detection: Optional[bool]=None) -> types.Message:
+            disable_content_type_detection: Optional[bool]=None,
+            data: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send general files.
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-        :param data: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
+        :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
         :param reply_to_message_id: If the message is a reply, ID of the original message
         :param caption: Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
         :param reply_markup:
@@ -1735,13 +1736,17 @@ class AsyncTeleBot:
         :param allow_sending_without_reply:
         :param visible_file_name: allows to async define file name that will be visible in the Telegram instead of original file name
         :param disable_content_type_detection: Disables automatic server-side content type detection for files uploaded using multipart/form-data
+        :param data: function typo compatibility: do not use it
         :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        if data and not(document):
+            # function typo miss compatibility
+            document = data
 
         return types.Message.de_json(
             await asyncio_helper.send_data(
-                self.token, chat_id, data, 'document',
+                self.token, chat_id, document, 'document',
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
                 disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumb,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
