@@ -34,21 +34,32 @@ CONNECT_TIMEOUT = 15
 READ_TIMEOUT = 30
 
 LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
-
+REQUEST_TIMEOUT = 10
+MAX_RETRIES = 3
 logger = telebot.logger
-
-RETRY_ON_ERROR = False
-RETRY_TIMEOUT = 2
-MAX_RETRIES = 15
 
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
     params = compose_data(params, files)
+    if request_timeout is None:
+        request_timeout = REQUEST_TIMEOUT
+    timeout = aiohttp.ClientTimeout(total=request_timeout)
+    got_result = False
+    current_try=0
     async with await session_manager._get_new_session() as session:
-        async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=request_timeout) as response:
-            logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout).replace(token, token.split(':')[0] + ":{TOKEN}"))
-            json_result = await _check_result(url, response)
-            if json_result:
-                return json_result['result']
+        while not got_result and current_try<MAX_RETRIES-1:
+            current_try +=1
+            try:
+                response = await session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout)
+                logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
+                json_result = await _check_result(url, response)
+                if json_result:
+                    return json_result['result']
+            except:
+                pass
+        if not got_result:
+            raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
+        
+
 
 
 def guess_filename(obj):
@@ -1644,3 +1655,9 @@ class ApiTelegramException(ApiException):
             result)
         self.result_json = result_json
         self.error_code = result_json['error_code']
+
+class RequestTimeout(Exception):
+    """
+    This class represents a request timeout.
+    """
+    pass
