@@ -9,7 +9,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Supports both sync and async ways.</p>
 
-## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#december-7-2021">5.5</a>!
+## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#december-30-2021">5.6</a>!
 
 ## Contents
 
@@ -686,6 +686,7 @@ Result will be:
 
 ## API conformance
 
+* ✔ [Bot API 5.6](https://core.telegram.org/bots/api#december-30-2021)
 * ✔ [Bot API 5.5](https://core.telegram.org/bots/api#december-7-2021)
 * ✔ [Bot API 5.4](https://core.telegram.org/bots/api#november-5-2021)
 * ➕ [Bot API 5.3](https://core.telegram.org/bots/api#june-25-2021) - ChatMember* classes are full copies of ChatMember
