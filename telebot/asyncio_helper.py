@@ -39,7 +39,7 @@ MAX_RETRIES = 3
 logger = telebot.logger
 
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
-    params = compose_data(params, files)
+    params = prepare_data(params, files)
     if request_timeout is None:
         request_timeout = REQUEST_TIMEOUT
     timeout = aiohttp.ClientTimeout(total=request_timeout)
@@ -54,6 +54,8 @@ async def _process_request(token, url, method='get', params=None, files=None, re
                 json_result = await _check_result(url, response)
                 if json_result:
                     return json_result['result']
+            except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
+                raise e
             except:
                 pass
         if not got_result:
@@ -62,9 +64,9 @@ async def _process_request(token, url, method='get', params=None, files=None, re
 
 
 
-def guess_filename(obj):
+def prepare_file(obj):
     """
-    Get file name from object
+    returns os.path.basename for a given file
 
     :param obj:
     :return:
@@ -74,9 +76,9 @@ def guess_filename(obj):
         return os.path.basename(name)
 
 
-def compose_data(params=None, files=None):
+def prepare_data(params=None, files=None):
     """
-    Prepare request data
+    prepare data for request.
 
     :param params:
     :param files:
@@ -96,7 +98,7 @@ def compose_data(params=None, files=None):
                 else:
                     raise ValueError('Tuple must have exactly 2 elements: filename, fileobj')
             else:
-                filename, fileobj = guess_filename(f) or key, f
+                filename, fileobj = prepare_file(f) or key, f
 
             data.add_field(key, fileobj, filename=filename)
 
