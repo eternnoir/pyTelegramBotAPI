@@ -936,32 +936,35 @@ class TeleBot:
 
     def send_message(
             self, chat_id: Union[int, str], text: str, 
-            disable_web_page_preview: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             parse_mode: Optional[str]=None, 
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None,
             entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            disable_web_page_preview: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None, 
+            protect_content: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None, 
+            allow_sending_without_reply: Optional[bool]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to send text messages.
+
 
         Warning: Do not send more than about 4000 characters each message, otherwise you'll risk an HTTP 414 error.
         If you must send more than 4000 characters, 
         use the `split_string` or `smart_split` function in util.py.
 
-        :param chat_id:
-        :param text:
-        :param disable_web_page_preview:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param parse_mode:
-        :param disable_notification: Boolean, Optional. Sends the message silently.
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param text: Text of the message to be sent
+        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+        :param entities: List of special entities that appear in message text, which can be specified instead of parse_mode
+        :param disable_web_page_preview: Disables link previews for links in this message
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :param protect_content: If True, the message content will be hidden for all users except for the target user
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
         :param timeout:
-        :param entities:
-        :param allow_sending_without_reply:
-        :return: API reply.
+        :return:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -969,11 +972,12 @@ class TeleBot:
             apihelper.send_message(
                 self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
                 reply_markup, parse_mode, disable_notification, timeout,
-                entities, allow_sending_without_reply))
+                entities, allow_sending_without_reply, protect_content=protect_content))
 
     def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
-            message_id: int, disable_notification: Optional[bool]=None, 
+            message_id: int, disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
@@ -981,11 +985,12 @@ class TeleBot:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
+        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
         :param timeout:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout))
+            apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout, protect_content))
 
     def copy_message(
             self, chat_id: Union[int, str], 
@@ -995,6 +1000,7 @@ class TeleBot:
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None, 
+            protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None, 
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
@@ -1008,6 +1014,7 @@ class TeleBot:
         :param parse_mode:
         :param caption_entities:
         :param disable_notification:
+        :param protect_content:
         :param reply_to_message_id:
         :param allow_sending_without_reply:
         :param reply_markup:
@@ -1017,7 +1024,7 @@ class TeleBot:
         return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
-                                   timeout))
+                                   timeout, protect_content))
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
             timeout: Optional[int]=None) -> bool:
@@ -1036,7 +1043,8 @@ class TeleBot:
             reply_to_message_id: Optional[int]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send dices.
         :param chat_id:
@@ -1046,35 +1054,39 @@ class TeleBot:
         :param reply_markup:
         :param timeout:
         :param allow_sending_without_reply:
+        :param protect_content:
         :return: Message
         """
         return types.Message.de_json(
             apihelper.send_dice(
                 self.token, chat_id, emoji, disable_notification, reply_to_message_id,
-                reply_markup, timeout, allow_sending_without_reply)
+                reply_markup, timeout, allow_sending_without_reply, protect_content)
         )
 
     def send_photo(
             self, chat_id: Union[int, str], photo: Union[Any, str], 
-            caption: Optional[str]=None, reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            parse_mode: Optional[str]=None, disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None,
+            caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None, 
+            allow_sending_without_reply: Optional[bool]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            timeout: Optional[int]=None,) -> types.Message:
         """
-        Use this method to send photos.
+        Use this method to send photos. On success, the sent Message is returned.
         :param chat_id:
         :param photo:
         :param caption:
         :param parse_mode:
+        :param caption_entities:
         :param disable_notification:
+        :param protect_content:
         :param reply_to_message_id:
+        :param allow_sending_without_reply:
         :param reply_markup:
         :param timeout:
-        :param caption_entities:
-        :param allow_sending_without_reply:
-        :return: API reply.
+        :return: Message
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1082,8 +1094,9 @@ class TeleBot:
             apihelper.send_photo(
                 self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                allow_sending_without_reply))
+                allow_sending_without_reply, protect_content))
 
+    # TODO: Rewrite this method like in API.
     def send_audio(
             self, chat_id: Union[int, str], audio: Union[Any, str], 
             caption: Optional[str]=None, duration: Optional[int]=None, 
@@ -1095,7 +1108,8 @@ class TeleBot:
             timeout: Optional[int]=None, 
             thumb: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .mp3 format.
@@ -1113,6 +1127,7 @@ class TeleBot:
         :param thumb:
         :param caption_entities:
         :param allow_sending_without_reply:
+        :param protect_content:
         :return: Message
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -1121,8 +1136,9 @@ class TeleBot:
             apihelper.send_audio(
                 self.token, chat_id, audio, caption, duration, performer, title, reply_to_message_id,
                 reply_markup, parse_mode, disable_notification, timeout, thumb,
-                caption_entities, allow_sending_without_reply))
+                caption_entities, allow_sending_without_reply, protect_content))
 
+    # TODO: Rewrite this method like in API.
     def send_voice(
             self, chat_id: Union[int, str], voice: Union[Any, str], 
             caption: Optional[str]=None, duration: Optional[int]=None, 
@@ -1132,7 +1148,8 @@ class TeleBot:
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file
         as a playable voice message.
@@ -1147,6 +1164,7 @@ class TeleBot:
         :param timeout:
         :param caption_entities:
         :param allow_sending_without_reply:
+        :param protect_content:
         :return: Message
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -1155,8 +1173,9 @@ class TeleBot:
             apihelper.send_voice(
                 self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                allow_sending_without_reply))
+                allow_sending_without_reply, protect_content))
 
+    # TODO: Rewrite this method like in API.
     def send_document(
             self, chat_id: Union[int, str], document: Union[Any, str],
             reply_to_message_id: Optional[int]=None, 
@@ -1170,7 +1189,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             visible_file_name: Optional[str]=None,
             disable_content_type_detection: Optional[bool]=None,
-            data: Optional[Union[Any, str]]=None) -> types.Message:
+            data: Optional[Union[Any, str]]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send general files.
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1187,6 +1207,7 @@ class TeleBot:
         :param visible_file_name: allows to define file name that will be visible in the Telegram instead of original file name
         :param disable_content_type_detection: Disables automatic server-side content type detection for files uploaded using multipart/form-data
         :param data: function typo miss compatibility: do not use it
+        :param protect_content:
         :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -1200,15 +1221,18 @@ class TeleBot:
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
                 disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumb,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
-                disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name))
+                disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content))
 
+    # TODO: Rewrite this method like in API.
     def send_sticker(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
+            self, chat_id: Union[int, str], sticker: Union[Any, str], 
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content:Optional[bool]=None,
+            data: Union[Any, str]=None) -> types.Message:
         """
         Use this method to send .webp stickers.
         :param chat_id:
@@ -1218,83 +1242,98 @@ class TeleBot:
         :param disable_notification: to disable the notification
         :param timeout: timeout
         :param allow_sending_without_reply:
+        :param protect_content:
+        :param data: function typo miss compatibility: do not use it
         :return: API reply.
         """
+        if data and not(sticker):
+            # function typo miss compatibility
+            sticker = data
         return types.Message.de_json(
             apihelper.send_data(
-                self.token, chat_id, data, 'sticker',
+                self.token, chat_id, sticker, 'sticker',
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
-                allow_sending_without_reply=allow_sending_without_reply))
+                allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content))
 
     def send_video(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
-            duration: Optional[int]=None, 
-            caption: Optional[str]=None, 
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            parse_mode: Optional[str]=None, 
-            supports_streaming: Optional[bool]=None, 
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None, 
-            width: Optional[int]=None, 
+            self, chat_id: Union[int, str], video: Union[Any, str], 
+            duration: Optional[int]=None,
+            width: Optional[int]=None,
             height: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None, 
+            caption: Optional[str]=None, 
+            parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            supports_streaming: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None, 
+            allow_sending_without_reply: Optional[bool]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            timeout: Optional[int]=None,
+            data: Optional[Union[Any, str]]=None) -> types.Message:
         """
-        Use this method to send video files, Telegram clients support mp4 videos.
-        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param data: InputFile or String : Video to send. You can either pass a file_id as String to resend
-            a video that is already on the Telegram server
-        :param duration: Integer : Duration of sent video in seconds
-        :param caption: String : Video caption (may also be used when resending videos by file_id).
-        :param parse_mode:
-        :param supports_streaming:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param disable_notification:
-        :param timeout:
-        :param thumb: InputFile or String : Thumbnail of the file sent
-        :param width:
-        :param height:
+        Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
+        :param duration: Duration of sent video in seconds
+        :param width: Video width
+        :param height: Video height
+        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
+        :param parse_mode: Mode for parsing entities in the video caption
         :param caption_entities:
+        :param supports_streaming: Pass True, if the uploaded video is suitable for streaming
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :param protect_content:
+        :param reply_to_message_id: If the message is a reply, ID of the original message
         :param allow_sending_without_reply:
-        :return:
+        :param reply_markup:
+        :param timeout:
+        :param data: function typo miss compatibility: do not use it
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        if data and not(video):
+            # function typo miss compatibility
+            video = data
 
         return types.Message.de_json(
             apihelper.send_video(
-                self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
+                self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
-                caption_entities, allow_sending_without_reply))
+                caption_entities, allow_sending_without_reply, protect_content))
 
     def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
             duration: Optional[int]=None,
-            caption: Optional[str]=None, 
-            reply_to_message_id: Optional[int]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            parse_mode: Optional[str]=None,
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None, 
+            width: Optional[int]=None,
+            height: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
+            caption: Optional[str]=None, 
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            timeout: Optional[int]=None, ) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an
             animation that is already on the Telegram server
         :param duration: Integer : Duration of sent video in seconds
+        :param width: Integer : Video width
+        :param height: Integer : Video height
+        :param thumb: InputFile or String : Thumbnail of the file sent
         :param caption: String : Animation caption (may also be used when resending animation by file_id).
         :param parse_mode:
         :param reply_to_message_id:
         :param reply_markup:
         :param disable_notification:
         :param timeout:
-        :param thumb: InputFile or String : Thumbnail of the file sent
         :param caption_entities:
         :param allow_sending_without_reply:
         :return:
@@ -1305,8 +1344,9 @@ class TeleBot:
             apihelper.send_animation(
                 self.token, chat_id, animation, duration, caption, reply_to_message_id,
                 reply_markup, parse_mode, disable_notification, timeout, thumb,
-                caption_entities, allow_sending_without_reply))
+                caption_entities, allow_sending_without_reply, protect_content, width, height))
 
+    # TODO: Rewrite this method like in API.
     def send_video_note(
             self, chat_id: Union[int, str], data: Union[Any, str], 
             duration: Optional[int]=None, 
@@ -1316,7 +1356,8 @@ class TeleBot:
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None, 
             thumb: Optional[Union[Any, str]]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
             video messages.
@@ -1331,12 +1372,13 @@ class TeleBot:
         :param timeout:
         :param thumb: InputFile or String : Thumbnail of the file sent
         :param allow_sending_without_reply:
+        :param protect_content:
         :return:
         """
         return types.Message.de_json(
             apihelper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
-                disable_notification, timeout, thumb, allow_sending_without_reply))
+                disable_notification, timeout, thumb, allow_sending_without_reply, protect_content))
 
     def send_media_group(
             self, chat_id: Union[int, str], 
@@ -1344,6 +1386,7 @@ class TeleBot:
                 types.InputMediaAudio, types.InputMediaDocument, 
                 types.InputMediaPhoto, types.InputMediaVideo]],
             disable_notification: Optional[bool]=None, 
+            protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None, 
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None) -> List[types.Message]:
@@ -1352,6 +1395,7 @@ class TeleBot:
         :param chat_id:
         :param media:
         :param disable_notification:
+        :param protect_content:
         :param reply_to_message_id:
         :param timeout:
         :param allow_sending_without_reply:
@@ -1359,9 +1403,11 @@ class TeleBot:
         """
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
-            allow_sending_without_reply)
+            allow_sending_without_reply, protect_content)
         return [types.Message.de_json(msg) for msg in result]
 
+
+    # TODO: Rewrite this method like in API.
     def send_location(
             self, chat_id: Union[int, str], 
             latitude: float, longitude: float, 
@@ -1373,7 +1419,8 @@ class TeleBot:
             horizontal_accuracy: Optional[float]=None, 
             heading: Optional[int]=None, 
             proximity_alert_radius: Optional[int]=None, 
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
 
             
         """
@@ -1390,6 +1437,7 @@ class TeleBot:
         :param heading:
         :param proximity_alert_radius:
         :param allow_sending_without_reply:
+        :param protect_content:
         :return: API reply.
         """
         return types.Message.de_json(
@@ -1397,7 +1445,7 @@ class TeleBot:
                 self.token, chat_id, latitude, longitude, live_period, 
                 reply_to_message_id, reply_markup, disable_notification, timeout, 
                 horizontal_accuracy, heading, proximity_alert_radius, 
-                allow_sending_without_reply))
+                allow_sending_without_reply, protect_content))
 
     def edit_message_live_location(
             self, latitude: float, longitude: float, 
@@ -1449,6 +1497,7 @@ class TeleBot:
             apihelper.stop_message_live_location(
                 self.token, chat_id, message_id, inline_message_id, reply_markup, timeout))
 
+    # TODO: Rewrite this method like in API.
     def send_venue(
             self, chat_id: Union[int, str], 
             latitude: float, longitude: float, 
@@ -1461,7 +1510,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             google_place_id: Optional[str]=None,
-            google_place_type: Optional[str]=None) -> types.Message:
+            google_place_type: Optional[str]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send information about a venue.
         :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
@@ -1479,15 +1529,16 @@ class TeleBot:
         :param allow_sending_without_reply:
         :param google_place_id:
         :param google_place_type:
+        :param protect_content:
         :return:
         """
         return types.Message.de_json(
             apihelper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
                 disable_notification, reply_to_message_id, reply_markup, timeout,
-                allow_sending_without_reply, google_place_id, google_place_type)
-        )
+                allow_sending_without_reply, google_place_id, google_place_type, protect_content))
 
+    # TODO: Rewrite this method like in API.
     def send_contact(
             self, chat_id: Union[int, str], phone_number: str, 
             first_name: str, last_name: Optional[str]=None, 
@@ -1496,13 +1547,13 @@ class TeleBot:
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
                 disable_notification, reply_to_message_id, reply_markup, timeout,
-                allow_sending_without_reply)
-        )
+                allow_sending_without_reply, protect_content))
 
     def send_chat_action(
             self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None) -> bool:
@@ -2026,7 +2077,8 @@ class TeleBot:
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> types.Message:
+            allow_sending_without_reply: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Used to send the game
         :param chat_id:
@@ -2036,12 +2088,13 @@ class TeleBot:
         :param reply_markup:
         :param timeout:
         :param allow_sending_without_reply:
+        :param protect_content:
         :return:
         """
         result = apihelper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
             reply_to_message_id, reply_markup, timeout, 
-            allow_sending_without_reply)
+            allow_sending_without_reply, protect_content)
         return types.Message.de_json(result)
 
     def set_game_score(
@@ -2083,6 +2136,7 @@ class TeleBot:
         result = apihelper.get_game_high_scores(self.token, user_id, chat_id, message_id, inline_message_id)
         return [types.GameHighScore.de_json(r) for r in result]
 
+    # TODO: rewrite this method like in API
     def send_invoice(
             self, chat_id: Union[int, str], title: str, description: str, 
             invoice_payload: str, provider_token: str, currency: str, 
@@ -2101,7 +2155,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             max_tip_amount: Optional[int] = None,
-            suggested_tip_amounts: Optional[List[int]]=None) -> types.Message:
+            suggested_tip_amounts: Optional[List[int]]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Sends invoice
         :param chat_id: Unique identifier for the target private chat
@@ -2140,6 +2195,7 @@ class TeleBot:
         :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
             units of the currency.  At most 4 suggested tip amounts can be specified. The suggested tip
             amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+        :param protect_content:
         :return:
         """
         result = apihelper.send_invoice(
@@ -2148,10 +2204,11 @@ class TeleBot:
             photo_height, need_name, need_phone_number, need_email, need_shipping_address,
             send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
             reply_to_message_id, reply_markup, provider_data, timeout, allow_sending_without_reply,
-            max_tip_amount, suggested_tip_amounts)
+            max_tip_amount, suggested_tip_amounts, protect_content)
         return types.Message.de_json(result)
 
     # noinspection PyShadowingBuiltins
+    # TODO: rewrite this method like in API
     def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[str],
             is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
@@ -2167,7 +2224,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             allow_sending_without_reply: Optional[bool]=None, 
             timeout: Optional[int]=None,
-            explanation_entities: Optional[List[types.MessageEntity]]=None) -> types.Message:
+            explanation_entities: Optional[List[types.MessageEntity]]=None,
+            protect_content: Optional[bool]=None) -> types.Message:
         """
         Send polls
         :param chat_id:
@@ -2188,6 +2246,7 @@ class TeleBot:
         :param reply_markup:
         :param timeout:
         :param explanation_entities:
+        :param protect_content:
         :return:
         """
 
@@ -2201,7 +2260,7 @@ class TeleBot:
                 is_anonymous, type, allows_multiple_answers, correct_option_id,
                 explanation, explanation_parse_mode, open_period, close_date, is_closed,
                 disable_notification, reply_to_message_id, allow_sending_without_reply,
-                reply_markup, timeout, explanation_entities))
+                reply_markup, timeout, explanation_entities, protect_content))
 
     def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 

@@ -582,7 +582,8 @@ class Message(JsonDeserializable):
             # "url": "<a href=\"{url}\">{text}</a>", # @badiboy plain URLs have no text and do not need tags
             "text_link": "<a href=\"{url}\">{text}</a>",
             "strikethrough": "<s>{text}</s>",
-            "underline":     "<u>{text}</u>"
+            "underline":     "<u>{text}</u>",
+            "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
         }
          
         if hasattr(self, "custom_subs"):
