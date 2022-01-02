@@ -955,11 +955,11 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param text: Text of the message to be sent
-        :param parse_mode: Mode for parsing entities in the message text.
-        :param entities: A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+        :param entities: List of special entities that appear in message text, which can be specified instead of parse_mode
         :param disable_web_page_preview: Disables link previews for links in this message
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
-        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+        :param protect_content: If True, the message content will be hidden for all users except for the target user
         :param reply_to_message_id: If the message is a reply, ID of the original message
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -1074,18 +1074,19 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,) -> types.Message:
         """
-        Use this method to send photos.
+        Use this method to send photos. On success, the sent Message is returned.
         :param chat_id:
         :param photo:
         :param caption:
         :param parse_mode:
+        :param caption_entities:
         :param disable_notification:
+        :param protect_content:
         :param reply_to_message_id:
+        :param allow_sending_without_reply:
         :param reply_markup:
         :param timeout:
-        :param caption_entities:
-        :param allow_sending_without_reply:
-        :return: API reply.
+        :return: Message
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1224,13 +1225,14 @@ class TeleBot:
 
     # TODO: Rewrite this method like in API.
     def send_sticker(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
+            self, chat_id: Union[int, str], sticker: Union[Any, str], 
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            protect_content:Optional[bool]=None) -> types.Message:
+            protect_content:Optional[bool]=None,
+            data: Union[Any, str]=None) -> types.Message:
         """
         Use this method to send .webp stickers.
         :param chat_id:
@@ -1241,8 +1243,12 @@ class TeleBot:
         :param timeout: timeout
         :param allow_sending_without_reply:
         :param protect_content:
+        :param data: function typo miss compatibility: do not use it
         :return: API reply.
         """
+        if data and not(sticker):
+            # function typo miss compatibility
+            sticker = data
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, data, 'sticker',
@@ -1251,7 +1257,7 @@ class TeleBot:
                 allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content))
 
     def send_video(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
+            self, chat_id: Union[int, str], video: Union[Any, str], 
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
@@ -1265,32 +1271,36 @@ class TeleBot:
             reply_to_message_id: Optional[int]=None, 
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            timeout: Optional[int]=None,) -> types.Message:
+            timeout: Optional[int]=None,
+            data: Optional[Union[Any, str]]=None) -> types.Message:
         """
-        Use this method to send video files, Telegram clients support mp4 videos.
-        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param data: InputFile or String : Video to send. You can either pass a file_id as String to resend
-            a video that is already on the Telegram server
-        :param duration: Integer : Duration of sent video in seconds
-        :param caption: String : Video caption (may also be used when resending videos by file_id).
-        :param parse_mode:
-        :param supports_streaming:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param disable_notification:
-        :param timeout:
-        :param thumb: InputFile or String : Thumbnail of the file sent
-        :param width:
-        :param height:
+        Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
+        :param duration: Duration of sent video in seconds
+        :param width: Video width
+        :param height: Video height
+        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
+        :param parse_mode: Mode for parsing entities in the video caption
         :param caption_entities:
+        :param supports_streaming: Pass True, if the uploaded video is suitable for streaming
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :param protect_content:
+        :param reply_to_message_id: If the message is a reply, ID of the original message
         :param allow_sending_without_reply:
-        :return:
+        :param reply_markup:
+        :param timeout:
+        :param data: function typo miss compatibility: do not use it
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        if data and not(video):
+            # function typo miss compatibility
+            video = data
 
         return types.Message.de_json(
             apihelper.send_video(
-                self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
+                self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
                 caption_entities, allow_sending_without_reply, protect_content))
 
