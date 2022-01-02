@@ -1251,7 +1251,7 @@ class TeleBot:
             sticker = data
         return types.Message.de_json(
             apihelper.send_data(
-                self.token, chat_id, data, 'sticker',
+                self.token, chat_id, sticker, 'sticker',
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
                 allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content))

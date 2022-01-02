@@ -1772,17 +1772,18 @@ class AsyncTeleBot:
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content))
 
     async def send_sticker(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
+            self, chat_id: Union[int, str], sticker: Union[Any, str], 
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            protect_content: Optional[bool]=None) -> types.Message:
+            protect_content: Optional[bool]=None,
+            data: Union[Any, str]=None) -> types.Message:
         """
         Use this method to send .webp stickers.
         :param chat_id:
-        :param data:
+        :param sticker:
         :param reply_to_message_id:
         :param reply_markup:
         :param disable_notification: to disable the notification
@@ -1791,9 +1792,12 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        if data and not(sticker):
+            # function typo miss compatibility
+            sticker = data
         return types.Message.de_json(
             await asyncio_helper.send_data(
-                self.token, chat_id, data, 'sticker',
+                self.token, chat_id, sticker, 'sticker',
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
                 allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content))
