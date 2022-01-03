@@ -50,5 +50,12 @@ There are 5 examples in this directory using different libraries:
   * **Cons:**
     * Twisted is low-level, which may be good or bad depending on use case
     * Considerable learning curve - reading docs is a must.
+* **FastAPI(0.70.1)
+  * **Pros:**
+    * Can be written for both sync and async
+    * Good documentation
+  * **Cons:**
+    * Requires python 3.6+
+    
 
-*Latest update of this document: 2020-12-17*
+*Latest update of this document: 01-03-2022
