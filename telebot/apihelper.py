@@ -861,7 +861,8 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
-              allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None):
+              allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None,
+              protect_content=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -898,6 +899,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if method_url == 'sendDocument' and disable_content_type_detection is not None:
         payload['disable_content_type_detection'] = disable_content_type_detection
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
