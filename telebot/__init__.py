@@ -1929,7 +1929,7 @@ class TeleBot:
         return apihelper.set_my_commands(self.token, commands, scope, language_code)
     
     def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
-            language_code: Optional[int]=None) -> bool:
+            language_code: Optional[str]=None) -> bool:
         """
         Use this method to delete the list of the bot's commands for the given scope and user language. 
         After deletion, higher level commands will be shown to affected users. 
