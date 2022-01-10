@@ -276,7 +276,7 @@ class StateFile:
         """
         self.add_state(chat_id,new_state)
 
-    def _add_data(self, chat_id, key, value):
+    def add_data(self, chat_id, key, value):
         states_data = self.read_data()
         result = states_data[chat_id]['data'][key] = value
         self.save_data(result)

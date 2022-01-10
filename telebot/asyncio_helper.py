@@ -1,8 +1,6 @@
 import asyncio # for future uses
-from time import time
 import aiohttp
 from telebot import types
-import json
 
 try:
     import ujson as json
@@ -853,6 +851,8 @@ async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, r
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
     if method_url == 'sendDocument' and disable_content_type_detection is not None:
         payload['disable_content_type_detection'] = disable_content_type_detection
     return await _process_request(token, method_url, params=payload, files=files, method='post')

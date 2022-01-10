@@ -4,6 +4,7 @@ import re
 import string
 import threading
 import traceback
+import warnings
 from typing import Any, Callable, List, Dict, Optional, Union
 
 # noinspection PyPep8Naming
@@ -436,7 +437,7 @@ def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
 
 
-def deprecated(warn: bool=False, alternative: Optional[Callable]=None):
+def deprecated(warn: bool=True, alternative: Optional[Callable]=None):
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.
@@ -445,12 +446,11 @@ def deprecated(warn: bool=False, alternative: Optional[Callable]=None):
     """
     def decorator(function):
         def wrapper(*args, **kwargs):
+            info = f"`{function.__name__}` is deprecated." + (f" Use `{alternative.__name__}` instead" if alternative else "")
             if not warn:
-                logger.info(f"`{function.__name__}` is deprecated." 
-                    + (f" Use `{alternative.__name__}` instead" if alternative else ""))
+                logger.info(info)
             else:
-                logger.warning(f"`{function.__name__}` is deprecated."
-                    + (f" Use `{alternative.__name__}` instead" if alternative else ""))
+                logger.warning(info)
             return function(*args, **kwargs)
         return wrapper
     return decorator

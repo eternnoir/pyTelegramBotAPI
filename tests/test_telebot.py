@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import warnings
 
 sys.path.append('../')
 
@@ -19,14 +20,19 @@ if not should_skip:
     CHAT_ID = os.environ['CHAT_ID']
     GROUP_ID = os.environ['GROUP_ID']
 
-def _new_test():
-    pass
 
-@util.deprecated(alternative=_new_test)
-def _test():
-    pass
-        
+def deprecated1_new_function():
+    print("deprecated1_new_function")
+def deprecated1_old_function():
+    print("deprecated1_old_function")
+    warnings.warn("The 'deprecated1_old_function' is deprecated. Use `deprecated1_new_function` instead", DeprecationWarning, 2)
+    deprecated1_new_function()
 
+def deprecated2_new_function():
+    print("deprecated2_new_function")
+@util.deprecated(alternative=deprecated2_new_function)
+def deprecated2_old_function():
+    print("deprecated2_old_function")
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
@@ -633,7 +639,8 @@ class TestTeleBot:
         assert update.message.text == 'got' * 2
     
     def test_deprecated_dec(self):
-        _test()
+        deprecated1_old_function()
+        deprecated2_old_function()
 
     def test_chat_permissions(self):
         return # CHAT_ID is private chat, no permissions can be set

@@ -1335,7 +1335,7 @@ class AsyncTeleBot:
         """
 
         self.current_states = asyncio_handler_backends.StateFile(filename=filename)
-        self.current_states._create_dir()
+        self.current_states.create_dir()
 
     async def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
                     drop_pending_updates = None, timeout=None):
@@ -1790,6 +1790,7 @@ class AsyncTeleBot:
         :param timeout: timeout
         :param allow_sending_without_reply:
         :param protect_content:
+        :param data: deprecated, for backward compatibility
         :return: API reply.
         """
         if data and not(sticker):
@@ -1837,13 +1838,16 @@ class AsyncTeleBot:
         :param allow_sending_without_reply:
         :param reply_markup:
         :param timeout:
-        :param data: function typo miss compatibility: do not use it
+        :param data: deprecated, for backward compatibility
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        if data and not(video):
+            # function typo miss compatibility
+            video = data
 
         return types.Message.de_json(
             await asyncio_helper.send_video(
-                self.token, chat_id, data, duration, caption, reply_to_message_id, reply_markup,
+                self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
                 caption_entities, allow_sending_without_reply, protect_content))
 
@@ -1873,6 +1877,7 @@ class AsyncTeleBot:
         :param thumb: InputFile or String : Thumbnail of the file sent
         :param caption: String : Animation caption (may also be used when resending animation by file_id).
         :param parse_mode:
+        :param protect_content:
         :param reply_to_message_id:
         :param reply_markup:
         :param disable_notification:
@@ -3057,4 +3062,4 @@ class AsyncTeleBot:
         :param chat_id:
         """
         for key, value in kwargs.items():
-            await self.current_states._add_data(chat_id, key, value)
+            await self.current_states.add_data(chat_id, key, value)
