@@ -252,7 +252,7 @@ class TeleBot:
         """
 
         self.current_states = StateFile(filename=filename)
-        self.current_states._create_dir()
+        self.current_states.create_dir()
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
         """
@@ -1221,11 +1221,13 @@ class TeleBot:
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
                 disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumb,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
-                disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content))
+                disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name,
+                protect_content = protect_content))
 
     # TODO: Rewrite this method like in API.
     def send_sticker(
-            self, chat_id: Union[int, str], sticker: Union[Any, str], 
+            self, chat_id: Union[int, str],
+            sticker: Union[Any, str],
             reply_to_message_id: Optional[int]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
@@ -1236,6 +1238,7 @@ class TeleBot:
         """
         Use this method to send .webp stickers.
         :param chat_id:
+        :param sticker:
         :param data:
         :param reply_to_message_id:
         :param reply_markup:
@@ -1254,7 +1257,8 @@ class TeleBot:
                 self.token, chat_id, sticker, 'sticker',
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
-                allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content))
+                allow_sending_without_reply=allow_sending_without_reply,
+                protect_content=protect_content))
 
     def send_video(
             self, chat_id: Union[int, str], video: Union[Any, str], 
@@ -1330,6 +1334,7 @@ class TeleBot:
         :param thumb: InputFile or String : Thumbnail of the file sent
         :param caption: String : Animation caption (may also be used when resending animation by file_id).
         :param parse_mode:
+        :param protect_content:
         :param reply_to_message_id:
         :param reply_markup:
         :param disable_notification:
@@ -1924,7 +1929,7 @@ class TeleBot:
         return apihelper.set_my_commands(self.token, commands, scope, language_code)
     
     def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
-            language_code: Optional[int]=None) -> bool:
+            language_code: Optional[str]=None) -> bool:
         """
         Use this method to delete the list of the bot's commands for the given scope and user language. 
         After deletion, higher level commands will be shown to affected users. 
@@ -2559,7 +2564,7 @@ class TeleBot:
         :param chat_id:
         """
         for key, value in kwargs.items():
-            self.current_states._add_data(chat_id, key, value)
+            self.current_states.add_data(chat_id, key, value)
 
     def register_next_step_handler_by_chat_id(
             self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:

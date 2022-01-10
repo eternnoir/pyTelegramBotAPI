@@ -28,7 +28,7 @@ class StateMemory:
         """Delete a state"""
         self._states.pop(chat_id)
 
-    def _get_data(self, chat_id):
+    def get_data(self, chat_id):
         return self._states[chat_id]['data']
 
     async def set(self, chat_id, new_state):
@@ -39,7 +39,7 @@ class StateMemory:
         """
         await self.add_state(chat_id,new_state)
 
-    async def _add_data(self, chat_id, key, value):
+    async def add_data(self, chat_id, key, value):
         result = self._states[chat_id]['data'][key] = value
         return result
 
@@ -77,28 +77,28 @@ class StateFile:
         :param chat_id:
         :param state: new state
         """
-        states_data = self._read_data()
+        states_data = self.read_data()
         if chat_id in states_data:
             states_data[chat_id]['state'] = state
-            return await self._save_data(states_data)
+            return await self.save_data(states_data)
         else:
-            new_data = states_data[chat_id] = {'state': state,'data': {}}
-            return await self._save_data(states_data)
+            states_data[chat_id] = {'state': state,'data': {}}
+            return await self.save_data(states_data)
 
 
     async def current_state(self, chat_id):
         """Current state."""
-        states_data = self._read_data()
+        states_data = self.read_data()
         if chat_id in states_data: return states_data[chat_id]['state']
         else: return False
 
     async def delete_state(self, chat_id):
         """Delete a state"""
-        states_data = self._read_data()
+        states_data = self.read_data()
         states_data.pop(chat_id)
-        await self._save_data(states_data)
+        await self.save_data(states_data)
 
-    def _read_data(self):
+    def read_data(self):
         """
         Read the data from file.
         """
@@ -107,7 +107,7 @@ class StateFile:
         file.close()
         return states_data
 
-    def _create_dir(self):
+    def create_dir(self):
         """
         Create directory .save-handlers.
         """
@@ -117,7 +117,7 @@ class StateFile:
             with open(self.file_path,'wb') as file:
                 pickle.dump({}, file)
         
-    async def _save_data(self, new_data):
+    async def save_data(self, new_data):
         """
         Save data after editing.
         :param new_data:
@@ -126,8 +126,8 @@ class StateFile:
             pickle.dump(new_data, state_file, protocol=pickle.HIGHEST_PROTOCOL)
         return True
 
-    def _get_data(self, chat_id):
-        return self._read_data()[chat_id]['data']
+    def get_data(self, chat_id):
+        return self.read_data()[chat_id]['data']
 
     async def set(self, chat_id, new_state):
         """
@@ -138,10 +138,10 @@ class StateFile:
         """
         await self.add_state(chat_id,new_state)
 
-    async def _add_data(self, chat_id, key, value):
-        states_data = self._read_data()
+    async def add_data(self, chat_id, key, value):
+        states_data = self.read_data()
         result = states_data[chat_id]['data'][key] = value
-        await self._save_data(result)
+        await self.save_data(result)
 
         return result
 
@@ -173,7 +173,7 @@ class StateContext:
     def __init__(self , obj: StateMemory, chat_id) -> None:
         self.obj = obj
         self.chat_id = chat_id
-        self.data = obj._get_data(chat_id)
+        self.data = obj.get_data(chat_id)
 
     async def __aenter__(self):
         return self.data
@@ -191,14 +191,14 @@ class StateFileContext:
         self.data = None
 
     async def __aenter__(self):
-        self.data = self.obj._get_data(self.chat_id)
+        self.data = self.obj.get_data(self.chat_id)
         return self.data
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        old_data = self.obj._read_data()
+        old_data = self.obj.read_data()
         for i in self.data:
             old_data[self.chat_id]['data'][i] = self.data.get(i)
-        await self.obj._save_data(old_data)
+        await self.obj.save_data(old_data)
 
         return
 

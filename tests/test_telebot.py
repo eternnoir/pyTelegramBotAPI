@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import warnings
 
 sys.path.append('../')
 
@@ -19,14 +20,19 @@ if not should_skip:
     CHAT_ID = os.environ['CHAT_ID']
     GROUP_ID = os.environ['GROUP_ID']
 
-def _new_test():
-    pass
 
-@util.deprecated(alternative=_new_test)
-def _test():
-    pass
-        
+def deprecated1_new_function():
+    print("deprecated1_new_function")
+def deprecated1_old_function():
+    print("deprecated1_old_function")
+    warnings.warn("The 'deprecated1_old_function' is deprecated. Use `deprecated1_new_function` instead", DeprecationWarning, 2)
+    deprecated1_new_function()
 
+def deprecated2_new_function():
+    print("deprecated2_new_function")
+@util.deprecated(alternative=deprecated2_new_function)
+def deprecated2_old_function():
+    print("deprecated2_old_function")
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
@@ -216,7 +222,7 @@ class TestTeleBot:
     def test_send_audio(self):
         file_data = open('./test_data/record.mp3', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_audio(CHAT_ID, file_data, 1, performer='eternnoir', title='pyTelegram')
+        ret_msg = tb.send_audio(CHAT_ID, file_data, duration = 1, performer='eternnoir', title='pyTelegram')
         assert ret_msg.content_type == 'audio'
         assert ret_msg.audio.performer == 'eternnoir'
         assert ret_msg.audio.title == 'pyTelegram'
@@ -224,7 +230,7 @@ class TestTeleBot:
     def test_send_audio_dis_noti(self):
         file_data = open('./test_data/record.mp3', 'rb')
         tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_audio(CHAT_ID, file_data, 1, performer='eternnoir', title='pyTelegram',
+        ret_msg = tb.send_audio(CHAT_ID, file_data, duration = 1, performer='eternnoir', title='pyTelegram',
                                 disable_notification=True)
         assert ret_msg.content_type == 'audio'
         assert ret_msg.audio.performer == 'eternnoir'
@@ -433,8 +439,10 @@ class TestTeleBot:
 
     def test_create_revoke_detailed_chat_invite_link(self):
         tb = telebot.TeleBot(TOKEN)
-        cil = tb.create_chat_invite_link(GROUP_ID, 
-            (datetime.now() + timedelta(minutes=1)).timestamp(), member_limit=5)
+        cil = tb.create_chat_invite_link(
+            GROUP_ID,
+            expire_date = datetime.now() + timedelta(minutes=1),
+            member_limit=5)
         assert isinstance(cil.invite_link, str)
         assert cil.creator.id == tb.get_me().id
         assert isinstance(cil.expire_date, (float, int))
@@ -458,9 +466,10 @@ class TestTeleBot:
     def test_antiflood(self):
         text = "Flooding"
         tb = telebot.TeleBot(TOKEN)
-        for _ in range(0,100):
+        i = -1
+        for i in range(0,100):
             util.antiflood(tb.send_message, CHAT_ID, text)
-        assert _
+        assert i
 
     @staticmethod
     def create_text_message(text):
@@ -579,14 +588,14 @@ class TestTeleBot:
         ret_msg = tb.set_my_commands([telebot.types.BotCommand(command, description)], scope, lang)
         assert ret_msg is True
 
-        ret_msg = tb.get_my_commands(scope, lang)
+        ret_msg = tb.get_my_commands(scope = scope, language_code = lang)
         assert ret_msg[0].command == command
         assert ret_msg[0].description == description
 
-        ret_msg = tb.delete_my_commands(scope, lang)
+        ret_msg = tb.delete_my_commands(scope = scope, language_code = lang)
         assert ret_msg is True
 
-        ret_msg = tb.get_my_commands(scope, lang)
+        ret_msg = tb.get_my_commands(scope = scope, language_code = lang)
         assert ret_msg == []
 
 
@@ -633,7 +642,8 @@ class TestTeleBot:
         assert update.message.text == 'got' * 2
     
     def test_deprecated_dec(self):
-        _test()
+        deprecated1_old_function()
+        deprecated2_old_function()
 
     def test_chat_permissions(self):
         return # CHAT_ID is private chat, no permissions can be set
