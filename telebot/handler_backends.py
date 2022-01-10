@@ -168,7 +168,7 @@ class StateMemory:
         """Delete a state"""
         self._states.pop(chat_id)
 
-    def _get_data(self, chat_id):
+    def get_data(self, chat_id):
         return self._states[chat_id]['data']
 
     def set(self, chat_id, new_state):
@@ -179,7 +179,7 @@ class StateMemory:
         """
         self.add_state(chat_id,new_state)
 
-    def _add_data(self, chat_id, key, value):
+    def add_data(self, chat_id, key, value):
         result = self._states[chat_id]['data'][key] = value
         return result
 
@@ -217,28 +217,27 @@ class StateFile:
         :param chat_id:
         :param state: new state
         """
-        states_data = self._read_data()
+        states_data = self.read_data()
         if chat_id in states_data:
             states_data[chat_id]['state'] = state
-            return self._save_data(states_data)
+            return self.save_data(states_data)
         else:
-            new_data = states_data[chat_id] = {'state': state,'data': {}}
-            return self._save_data(states_data)
-
+            states_data[chat_id] = {'state': state,'data': {}}
+            return self.save_data(states_data)
 
     def current_state(self, chat_id):
         """Current state."""
-        states_data = self._read_data()
+        states_data = self.read_data()
         if chat_id in states_data: return states_data[chat_id]['state']
         else: return False
 
     def delete_state(self, chat_id):
         """Delete a state"""
-        states_data = self._read_data()
+        states_data = self.read_data()
         states_data.pop(chat_id)
-        self._save_data(states_data)
+        self.save_data(states_data)
 
-    def _read_data(self):
+    def read_data(self):
         """
         Read the data from file.
         """
@@ -247,7 +246,7 @@ class StateFile:
         file.close()
         return states_data
 
-    def _create_dir(self):
+    def create_dir(self):
         """
         Create directory .save-handlers.
         """
@@ -257,7 +256,7 @@ class StateFile:
             with open(self.file_path,'wb') as file:
                 pickle.dump({}, file)
         
-    def _save_data(self, new_data):
+    def save_data(self, new_data):
         """
         Save data after editing.
         :param new_data:
@@ -266,23 +265,21 @@ class StateFile:
             pickle.dump(new_data, state_file, protocol=pickle.HIGHEST_PROTOCOL)
         return True
 
-    def _get_data(self, chat_id):
-        return self._read_data()[chat_id]['data']
+    def get_data(self, chat_id):
+        return self.read_data()[chat_id]['data']
 
     def set(self, chat_id, new_state):
         """
         Set a new state for a user.
         :param chat_id:
         :param new_state: new_state of a user
-        
         """
         self.add_state(chat_id,new_state)
 
     def _add_data(self, chat_id, key, value):
-        states_data = self._read_data()
+        states_data = self.read_data()
         result = states_data[chat_id]['data'][key] = value
-        self._save_data(result)
-
+        self.save_data(result)
         return result
 
     def finish(self, chat_id):
@@ -313,13 +310,14 @@ class StateContext:
     def __init__(self , obj: StateMemory, chat_id) -> None:
         self.obj = obj
         self.chat_id = chat_id
-        self.data = obj._get_data(chat_id)
+        self.data = obj.get_data(chat_id)
 
     def __enter__(self):
         return self.data
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         return
+
 
 class StateFileContext:
     """
@@ -328,15 +326,14 @@ class StateFileContext:
     def __init__(self , obj: StateFile, chat_id) -> None:
         self.obj = obj
         self.chat_id = chat_id
-        self.data = self.obj._get_data(self.chat_id)
+        self.data = self.obj.get_data(self.chat_id)
 
     def __enter__(self):
         return self.data
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        old_data = self.obj._read_data()
+        old_data = self.obj.read_data()
         for i in self.data:
             old_data[self.chat_id]['data'][i] = self.data.get(i)
-        self.obj._save_data(old_data)
-
+        self.obj.save_data(old_data)
         return

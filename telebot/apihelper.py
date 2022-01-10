@@ -144,6 +144,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
             method, request_url, params=params, files=files,
             timeout=(connect_timeout, read_timeout), proxies=proxy)
     elif CUSTOM_REQUEST_SENDER:
+        # noinspection PyCallingNonCallable
         result = CUSTOM_REQUEST_SENDER(
             method, request_url, params=params, files=files,
             timeout=(connect_timeout, read_timeout), proxies=proxy)
@@ -246,6 +247,7 @@ def send_message(
     :param timeout:
     :param entities:
     :param allow_sending_without_reply:
+    :param protect_content:
     :return:
     """
     method_url = r'sendMessage'
@@ -861,7 +863,8 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
-              allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None):
+              allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None,
+              protect_content = None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -896,6 +899,8 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
     if method_url == 'sendDocument' and disable_content_type_detection is not None:
         payload['disable_content_type_detection'] = disable_content_type_detection
     return _make_request(token, method_url, params=payload, files=files, method='post')
@@ -1382,6 +1387,7 @@ def send_invoice(
     :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
     :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
         At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+    :param protect_content:
     :return:
     """
     method_url = r'sendInvoice'

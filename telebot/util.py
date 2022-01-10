@@ -449,7 +449,7 @@ def deprecated(warn: bool=False, alternative: Optional[Callable]=None):
                 logger.info(f"`{function.__name__}` is deprecated." 
                     + (f" Use `{alternative.__name__}` instead" if alternative else ""))
             else:
-                logger.warn(f"`{function.__name__}` is deprecated." 
+                logger.warning(f"`{function.__name__}` is deprecated."
                     + (f" Use `{alternative.__name__}` instead" if alternative else ""))
             return function(*args, **kwargs)
         return wrapper
@@ -484,6 +484,7 @@ def antiflood(function, *args, **kwargs):
     """
     from telebot.apihelper import ApiTelegramException
     from time import sleep
+    msg = None
     try:
         msg = function(*args, **kwargs)
     except ApiTelegramException as ex:
