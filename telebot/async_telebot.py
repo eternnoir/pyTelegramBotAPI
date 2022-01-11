@@ -17,16 +17,6 @@ from inspect import signature
 
 from telebot import logger
 
-formatter = logging.Formatter(
-    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
-)
-
-console_output_handler = logging.StreamHandler(sys.stderr)
-console_output_handler.setFormatter(formatter)
-logger.addHandler(console_output_handler)
-
-logger.setLevel(logging.ERROR)
-
 from telebot import util, types, asyncio_helper
 import asyncio
 from telebot import asyncio_handler_backends
