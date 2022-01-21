@@ -5,7 +5,7 @@
 # https://schedule.readthedocs.io
 
 import asyncio
-import os, aioschedule
+import aioschedule
 from telebot.async_telebot import AsyncTeleBot
 
 API_TOKEN = '<api_token>'

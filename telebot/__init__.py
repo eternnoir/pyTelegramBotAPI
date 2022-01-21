@@ -1899,8 +1899,8 @@ class TeleBot:
         """
         return apihelper.delete_chat_photo(self.token, chat_id)
     
-    def get_my_commands(self, scope: Optional[types.BotCommandScope], 
-            language_code: Optional[str]) -> List[types.BotCommand]:
+    def get_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
+            language_code: Optional[str]=None) -> List[types.BotCommand]:
         """
         Use this method to get the current list of the bot's commands. 
         Returns List of BotCommand on success.

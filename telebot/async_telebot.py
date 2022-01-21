@@ -2443,8 +2443,8 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.delete_chat_photo(self.token, chat_id)
     
-    async def get_my_commands(self, scope: Optional[types.BotCommandScope], 
-            language_code: Optional[str]) -> List[types.BotCommand]:
+    async def get_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
+            language_code: Optional[str]=None) -> List[types.BotCommand]:
         """
         Use this method to get the current list of the bot's commands. 
         Returns List of BotCommand on success.

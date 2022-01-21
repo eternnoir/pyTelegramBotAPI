@@ -3,7 +3,7 @@
 # This is a simple bot with schedule timer
 # https://schedule.readthedocs.io
 
-import os, time, threading, schedule
+import time, threading, schedule
 from telebot import TeleBot
 
 API_TOKEN = '<api_token>'
