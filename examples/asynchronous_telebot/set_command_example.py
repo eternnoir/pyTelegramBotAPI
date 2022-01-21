@@ -6,7 +6,6 @@
 # Important, command for chat_id and for group have a higher priority than for all
 
 import asyncio
-import os
 import telebot
 from telebot.async_telebot import AsyncTeleBot
 
