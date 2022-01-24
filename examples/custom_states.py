@@ -58,7 +58,7 @@ def any_state(message):
 @bot.message_handler(state=MyStates.name)
 def name_get(message):
     """
-    State 1. Will process when user's state is 1.
+    State 1. Will process when user's state is MyStates.name.
     """
     bot.send_message(message.chat.id, f'Now write me a surname')
     bot.set_state(message.from_user.id, MyStates.surname, message.chat.id)
@@ -69,7 +69,7 @@ def name_get(message):
 @bot.message_handler(state=MyStates.surname)
 def ask_age(message):
     """
-    State 2. Will process when user's state is 2.
+    State 2. Will process when user's state is MyStates.surname.
     """
     bot.send_message(message.chat.id, "What is your age?")
     bot.set_state(message.from_user.id, MyStates.age, message.chat.id)
@@ -79,6 +79,9 @@ def ask_age(message):
 # result
 @bot.message_handler(state=MyStates.age, is_digit=True)
 def ready_for_answer(message):
+    """
+    State 3. Will process when user's state is MyStates.age.
+    """
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         bot.send_message(message.chat.id, "Ready, take a look:\n<b>Name: {name}\nSurname: {surname}\nAge: {age}</b>".format(name=data['name'], surname=data['surname'], age=message.text), parse_mode="html")
     bot.delete_state(message.from_user.id, message.chat.id)
@@ -86,6 +89,9 @@ def ready_for_answer(message):
 #incorrect number
 @bot.message_handler(state=MyStates.age, is_digit=False)
 def age_incorrect(message):
+    """
+    Wrong response for MyStates.age
+    """
     bot.send_message(message.chat.id, 'Looks like you are submitting a string in the field age. Please enter a number')
 
 # register filters
