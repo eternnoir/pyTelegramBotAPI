@@ -159,11 +159,21 @@ class StateFilter(AdvancedCustomFilter):
     key = 'state'
 
     async def check(self, message, text):
-        result = await self.bot.current_states.current_state(message.from_user.id)
-        if result is False: return False
-        elif text == '*': return True
-        elif type(text) is list: return result in text
-        return result == text
+        if text == '*': return True
+        if message.chat.type == 'group':
+            group_state = await self.bot.current_states.get_state(message.chat.id, message.from_user.id)
+            if group_state == text:
+                return True
+            elif group_state in text and type(text) is list:
+                return True
+            
+            
+        else:
+            user_state = await self.bot.current_states.get_state(message.chat.id,message.from_user.id)
+            if user_state == text:
+                return True
+            elif type(text) is list and user_state in text:
+                return True
 
 class IsDigitFilter(SimpleCustomFilter):
     """

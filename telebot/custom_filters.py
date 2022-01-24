@@ -158,11 +158,21 @@ class StateFilter(AdvancedCustomFilter):
     key = 'state'
 
     def check(self, message, text):
-        if self.bot.current_states.current_state(message.from_user.id) is False: return False
-        elif text == '*': return True
-        elif type(text) is list: return self.bot.current_states.current_state(message.from_user.id) in text
-        return self.bot.current_states.current_state(message.from_user.id) == text
-
+        if text == '*': return True
+        if message.chat.type == 'group':
+            group_state = self.bot.current_states.get_state(message.chat.id, message.from_user.id)
+            if group_state == text:
+                return True
+            elif group_state in text and type(text) is list:
+                return True
+            
+            
+        else:
+            user_state = self.bot.current_states.get_state(message.chat.id,message.from_user.id)
+            if user_state == text:
+                return True
+            elif type(text) is list and user_state in text:
+                return True
 class IsDigitFilter(SimpleCustomFilter):
     """
     Filter to check whether the string is made up of only digits.
