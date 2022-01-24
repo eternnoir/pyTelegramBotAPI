@@ -164,7 +164,7 @@ class AsyncTeleBot:
         """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset=None,
-                exception_handler=None, states_storage=StateMemoryStorage()) -> None: # TODO: ADD TYPEHINTS
+                exception_handler=None, state_storage=StateMemoryStorage()) -> None: # TODO: ADD TYPEHINTS
         self.token = token
 
         self.offset = offset
@@ -193,7 +193,7 @@ class AsyncTeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = states_storage
+        self.current_states = state_storage
 
 
         self.middlewares = []

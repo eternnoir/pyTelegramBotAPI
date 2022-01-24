@@ -8,7 +8,8 @@ from telebot.asyncio_storage import StateRedisStorage,StateMemoryStorage,StatePi
 # new feature for states.
 from telebot.asyncio_handler_backends import State, StatesGroup
 
-bot = AsyncTeleBot('TOKEN')
+# default state storage is statememorystorage
+bot = AsyncTeleBot('TOKEN', states_storage=StateMemoryStorage())
 
 
 # Just create different statesgroup
