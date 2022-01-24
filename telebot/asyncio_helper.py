@@ -43,6 +43,7 @@ class SessionManager:
         if self.session.closed:
             self.session = await self.create_session()
 
+        # noinspection PyProtectedMember
         if not self.session._loop.is_running():
             await self.session.close()
             self.session = await self.create_session()

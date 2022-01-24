@@ -1,8 +1,3 @@
-import os
-import pickle
-
-
-
 class BaseMiddleware:
     """
     Base class for middleware.
@@ -32,4 +27,3 @@ class StatesGroup:
             if not name.startswith('__') and not callable(value) and isinstance(value, State):
                 # change value of that variable
                 value.name = ':'.join((cls.__name__, name))
-

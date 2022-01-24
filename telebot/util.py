@@ -4,7 +4,6 @@ import re
 import string
 import threading
 import traceback
-import warnings
 from typing import Any, Callable, List, Dict, Optional, Union
 
 # noinspection PyPep8Naming
@@ -408,6 +407,7 @@ def OrEvent(*events):
 
     def busy_wait():
         while not or_event.is_set():
+            # noinspection PyProtectedMember
             or_event._wait(3)
 
     for e in events:

@@ -1,9 +1,8 @@
-import telebot
 from telebot import asyncio_filters
 from telebot.async_telebot import AsyncTeleBot
 
 # list of storages, you can use any storage
-from telebot.asyncio_storage import StateRedisStorage,StateMemoryStorage,StatePickleStorage
+from telebot.asyncio_storage import StateMemoryStorage
 
 # new feature for states.
 from telebot.asyncio_handler_backends import State, StatesGroup

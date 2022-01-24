@@ -6,6 +6,7 @@ import pickle
 
 
 class StatePickleStorage(StateStorageBase):
+    # noinspection PyMissingConstructor
     def __init__(self, file_path="./.state-save/states.pkl") -> None:
         self.file_path = file_path
         self.create_dir()
@@ -109,4 +110,4 @@ class StatePickleStorage(StateStorageBase):
 
     def save(self, chat_id, user_id, data):
         self.data[chat_id][user_id]['data'] = data
-        self.update_data() 
+        self.update_data()

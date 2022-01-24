@@ -4,7 +4,7 @@ from telebot import custom_filters
 from telebot.handler_backends import State, StatesGroup #States
 
 # States storage
-from telebot.storage import StateRedisStorage, StatePickleStorage, StateMemoryStorage
+from telebot.storage import StateMemoryStorage
 
 
 # Beginning from version 4.4.0+, we support storages.

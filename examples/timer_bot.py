@@ -18,7 +18,6 @@ def send_welcome(message):
 def beep(chat_id) -> None:
     """Send the beep message."""
     bot.send_message(chat_id, text='Beep!')
-    return schedule.CancelJob  # Run a job once
 
 
 @bot.message_handler(commands=['set'])

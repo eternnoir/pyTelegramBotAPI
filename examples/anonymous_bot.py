@@ -9,7 +9,7 @@ import telebot
 from telebot import types
 
 # Initialize bot with your token
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot('TOKEN')
 
 # The `users` variable is needed to contain chat ids that are either in the search or in the active dialog, like {chat_id, chat_id}
 users = {}
@@ -47,7 +47,7 @@ def find(message: types.Message):
     if message.chat.id not in users:
         bot.send_message(message.chat.id, 'Finding...')
 
-        if freeid == None:
+        if freeid is None:
             freeid = message.chat.id
         else:
             # Question:
