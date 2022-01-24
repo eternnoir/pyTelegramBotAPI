@@ -13,7 +13,8 @@ from typing import Any, Callable, List, Optional, Union
 import telebot.util
 import telebot.types
 
-
+# storage
+from telebot.storage import StatePickleStorage, StateMemoryStorage
 
 logger = logging.getLogger('TeleBot')
 
@@ -28,7 +29,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, StateMemory, StateFile
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
@@ -148,7 +149,7 @@ class TeleBot:
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
-            suppress_middleware_excepions=False
+            suppress_middleware_excepions=False, state_storage=StateMemoryStorage()
     ):
         """
         :param token: bot API token
@@ -193,7 +194,7 @@ class TeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = StateMemory()
+        self.current_states = state_storage
 
 
         if apihelper.ENABLE_MIDDLEWARE:
@@ -251,7 +252,7 @@ class TeleBot:
         :param filename: Filename of saving file
         """
 
-        self.current_states = StateFile(filename=filename)
+        self.current_states = StatePickleStorage(filename=filename)
         self.current_states.create_dir()
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
@@ -777,6 +778,13 @@ class TeleBot:
         logger.info('Stopped polling.')
 
     def _exec_task(self, task, *args, **kwargs):
+        if kwargs.get('task_type') == 'handler':
+            pass_bot = kwargs.get('pass_bot')
+            kwargs.pop('pass_bot')
+            kwargs.pop('task_type')
+            if pass_bot:
+                kwargs['bot'] = self
+        
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
         else:
@@ -2531,40 +2539,59 @@ class TeleBot:
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
 
-    def set_state(self, chat_id: int, state: Union[int, str]):
+    def set_state(self, user_id: int, state: Union[int, str], chat_id: int=None) -> None:
         """
         Sets a new state of a user.
         :param chat_id:
         :param state: new state. can be string or integer.
         """
-        self.current_states.add_state(chat_id, state)
+        if chat_id is None:
+            chat_id = user_id
+        self.current_states.set_state(chat_id, user_id, state)
 
-    def delete_state(self, chat_id: int):
+    def reset_data(self, user_id: int, chat_id: int=None):
+        """
+        Reset data for a user in chat.
+        :param user_id:
+        :param chat_id:
+        """
+        if chat_id is None:
+            chat_id = user_id
+        self.current_states.reset_data(chat_id, user_id)
+    def delete_state(self, user_id: int, chat_id: int=None) -> None:
         """
         Delete the current state of a user.
         :param chat_id:
         :return:
         """
-        self.current_states.delete_state(chat_id)
+        if chat_id is None:
+            chat_id = user_id
+        self.current_states.delete_state(chat_id, user_id)
 
-    def retrieve_data(self, chat_id: int):
-        return self.current_states.retrieve_data(chat_id)
+    def retrieve_data(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
+        if chat_id is None:
+            chat_id = user_id
+        return self.current_states.get_interactive_data(chat_id, user_id)
 
-    def get_state(self, chat_id: int):
+    def get_state(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
         """
         Get current state of a user.
         :param chat_id:
         :return: state of a user
         """
-        return self.current_states.current_state(chat_id)
+        if chat_id is None:
+            chat_id = user_id
+        return self.current_states.get_state(chat_id, user_id)
 
-    def add_data(self, chat_id: int, **kwargs):
+    def add_data(self, user_id: int, chat_id:int=None, **kwargs):
         """
         Add data to states.
         :param chat_id:
         """
+        if chat_id is None:
+            chat_id = user_id
         for key, value in kwargs.items():
-            self.current_states.add_data(chat_id, key, value)
+            self.current_states.set_data(chat_id, user_id, key, value)
 
     def register_next_step_handler_by_chat_id(
             self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:
@@ -2632,7 +2659,7 @@ class TeleBot:
 
 
     @staticmethod
-    def _build_handler_dict(handler, **filters):
+    def _build_handler_dict(handler, pass_bot=False, **filters):
         """
         Builds a dictionary for a handler
         :param handler:
@@ -2641,6 +2668,7 @@ class TeleBot:
         """
         return {
             'function': handler,
+            'pass_bot': pass_bot,
             'filters': {ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None}
             # Remove None values, they are skipped in _test_filter anyway
             #'filters': filters
@@ -2686,13 +2714,34 @@ class TeleBot:
         :return:
         """
         if not apihelper.ENABLE_MIDDLEWARE:
-            raise RuntimeError("Middleware is not enabled. Use apihelper.ENABLE_MIDDLEWARE.")
+            raise RuntimeError("Middleware is not enabled. Use apihelper.ENABLE_MIDDLEWARE before initialising TeleBot.")
 
         if update_types:
             for update_type in update_types:
                 self.typed_middleware_handlers[update_type].append(handler)
         else:
             self.default_middleware_handlers.append(handler)
+
+    # function register_middleware_handler
+    def register_middleware_handler(self, callback, update_types=None):
+        """
+        Middleware handler decorator.
+
+        This function will create a decorator that can be used to decorate functions that must be handled as middlewares before entering any other
+        message handlers
+        But, be careful and check type of the update inside the handler if more than one update_type is given
+
+        Example:
+
+        bot = TeleBot('TOKEN')
+
+        bot.register_middleware_handler(print_channel_post_text, update_types=['channel_post', 'edited_channel_post'])
+
+        :param update_types: Optional list of update types that can be passed into the middleware handler.
+
+        """
+
+        self.add_middleware_handler(callback, update_types)
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
@@ -2766,7 +2815,7 @@ class TeleBot:
         """
         self.message_handlers.append(handler_dict)
 
-    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, **kwargs):
+    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers message handler.
         :param callback: function to be called
@@ -2775,6 +2824,7 @@ class TeleBot:
         :param regexp:
         :param func:
         :param chat_types: True for private chat
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
         if isinstance(commands, str):
@@ -2791,6 +2841,7 @@ class TeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_message_handler(handler_dict)
 
@@ -2838,7 +2889,7 @@ class TeleBot:
         """
         self.edited_message_handlers.append(handler_dict)
 
-    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, **kwargs):
+    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers edited message handler.
         :param callback: function to be called
@@ -2847,6 +2898,7 @@ class TeleBot:
         :param regexp:
         :param func:
         :param chat_types: True for private chat
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
         if isinstance(commands, str):
@@ -2863,6 +2915,7 @@ class TeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
 
@@ -2908,7 +2961,7 @@ class TeleBot:
         """
         self.channel_post_handlers.append(handler_dict)
     
-    def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+    def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers channel post message handler.
         :param callback: function to be called
@@ -2916,6 +2969,7 @@ class TeleBot:
         :param commands: list of commands
         :param regexp:
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
         if isinstance(commands, str):
@@ -2931,6 +2985,7 @@ class TeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_channel_post_handler(handler_dict)
 
@@ -2975,7 +3030,7 @@ class TeleBot:
         """
         self.edited_channel_post_handlers.append(handler_dict)
 
-    def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+    def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers edited channel post message handler.
         :param callback: function to be called
@@ -2983,6 +3038,7 @@ class TeleBot:
         :param commands: list of commands
         :param regexp:
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
         if isinstance(commands, str):
@@ -2998,6 +3054,7 @@ class TeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_channel_post_handler(handler_dict)
 
@@ -3024,14 +3081,15 @@ class TeleBot:
         """
         self.inline_handlers.append(handler_dict)
 
-    def register_inline_handler(self, callback, func, **kwargs):
+    def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers inline handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_inline_handler(handler_dict)
 
     def chosen_inline_handler(self, func, **kwargs):
@@ -3057,14 +3115,15 @@ class TeleBot:
         """
         self.chosen_inline_handlers.append(handler_dict)
 
-    def register_chosen_inline_handler(self, callback, func, **kwargs):
+    def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers chosen inline handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chosen_inline_handler(handler_dict)
 
     def callback_query_handler(self, func, **kwargs):
@@ -3090,14 +3149,15 @@ class TeleBot:
         """
         self.callback_query_handlers.append(handler_dict)
 
-    def register_callback_query_handler(self, callback, func, **kwargs):
+    def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers callback query handler..
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_callback_query_handler(handler_dict)
 
     def shipping_query_handler(self, func, **kwargs):
@@ -3123,14 +3183,15 @@ class TeleBot:
         """
         self.shipping_query_handlers.append(handler_dict)
 
-    def register_shipping_query_handler(self, callback, func, **kwargs):
+    def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers shipping query handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_shipping_query_handler(handler_dict)
 
     def pre_checkout_query_handler(self, func, **kwargs):
@@ -3156,14 +3217,15 @@ class TeleBot:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
     
-    def register_pre_checkout_query_handler(self, callback, func, **kwargs):
+    def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers pre-checkout request handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
@@ -3189,14 +3251,15 @@ class TeleBot:
         """
         self.poll_handlers.append(handler_dict)
 
-    def register_poll_handler(self, callback, func, **kwargs):
+    def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_handler(handler_dict)
 
     def poll_answer_handler(self, func=None, **kwargs):
@@ -3222,14 +3285,15 @@ class TeleBot:
         """
         self.poll_answer_handlers.append(handler_dict)
 
-    def register_poll_answer_handler(self, callback, func, **kwargs):
+    def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll answer handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_answer_handler(handler_dict)
 
     def my_chat_member_handler(self, func=None, **kwargs):
@@ -3255,14 +3319,15 @@ class TeleBot:
         """
         self.my_chat_member_handlers.append(handler_dict)
 
-    def register_my_chat_member_handler(self, callback, func=None, **kwargs):
+    def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers my chat member handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_my_chat_member_handler(handler_dict)
 
     def chat_member_handler(self, func=None, **kwargs):
@@ -3288,14 +3353,15 @@ class TeleBot:
         """
         self.chat_member_handlers.append(handler_dict)
 
-    def register_chat_member_handler(self, callback, func=None, **kwargs):
+    def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat member handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_member_handler(handler_dict)
 
     def chat_join_request_handler(self, func=None, **kwargs):
@@ -3321,14 +3387,15 @@ class TeleBot:
         """
         self.chat_join_request_handlers.append(handler_dict)
 
-    def register_chat_join_request_handler(self, callback, func=None, **kwargs):
+    def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat join request handler.
         :param callback: function to be called
         :param func:
+        :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_join_request_handler(handler_dict)
 
     def _test_message_handler(self, message_handler, message):
@@ -3409,7 +3476,7 @@ class TeleBot:
         for message in new_messages:
             for message_handler in handlers:
                 if self._test_message_handler(message_handler, message):
-                    self._exec_task(message_handler['function'], message)
+                    self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
                     break
 
 

@@ -13,6 +13,9 @@ import telebot.util
 import telebot.types
 
 
+# storages
+from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
+
 from inspect import signature
 
 from telebot import logger
@@ -161,7 +164,7 @@ class AsyncTeleBot:
         """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset=None,
-                exception_handler=None) -> None: # TODO: ADD TYPEHINTS
+                exception_handler=None, states_storage=StateMemoryStorage()) -> None: # TODO: ADD TYPEHINTS
         self.token = token
 
         self.offset = offset
@@ -190,12 +193,13 @@ class AsyncTeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = asyncio_handler_backends.StateMemory()
+        self.current_states = states_storage
 
 
         self.middlewares = []
 
-
+    async def close_session(self):
+        await asyncio_helper.session_manager.session.close()
     async def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
         timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
@@ -299,7 +303,7 @@ class AsyncTeleBot:
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
                     if updates:
                         self.offset = updates[-1].update_id + 1
-                        self._loop_create_task(self.process_new_updates(updates)) # Seperate task for processing updates
+                        asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
                     if interval: await asyncio.sleep(interval)
 
                 except KeyboardInterrupt:
@@ -322,6 +326,8 @@ class AsyncTeleBot:
                         continue
                     else:
                         break
+                except KeyboardInterrupt:
+                    return
                 except Exception as e:
                     logger.error('Cause exception while getting updates.')
                     if non_stop:
@@ -333,6 +339,7 @@ class AsyncTeleBot:
 
         finally:
             self._polling = False
+            await self.close_session()
             logger.warning('Polling is stopped.')
 
 
@@ -346,31 +353,47 @@ class AsyncTeleBot:
         :param messages:
         :return:
         """
+        tasks = []
         for message in messages:
             middleware = await self.process_middlewares(message, update_type)
-            self._loop_create_task(self._run_middlewares_and_handlers(handlers, message, middleware))
+            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
+        asyncio.gather(*tasks)
 
 
     async def _run_middlewares_and_handlers(self, handlers, message, middleware):
         handler_error = None
         data = {}
-        for message_handler in handlers:
-            process_update = await self._test_message_handler(message_handler, message)
+        process_handler = True
+        middleware_result = await middleware.pre_process(message, data)
+        if isinstance(middleware_result, SkipHandler):
+            await middleware.post_process(message, data, handler_error)
+            process_handler = False
+        if isinstance(middleware_result, CancelUpdate):
+            return
+        for handler in handlers:
+            if not process_handler:
+                break
+
+            process_update = await self._test_message_handler(handler, message)
             if not process_update:
                 continue
             elif process_update:
-                if middleware:
-                    middleware_result = await middleware.pre_process(message, data)
-                    if isinstance(middleware_result, SkipHandler):
-                        await middleware.post_process(message, data, handler_error)
-                        break
-                    if isinstance(middleware_result, CancelUpdate):
-                        return
                 try:
-                    if "data" in signature(message_handler['function']).parameters:
-                        await message_handler['function'](message, data)
-                    else:
-                        await message_handler['function'](message)
+                    params = []
+
+                    for i in signature(handler['function']).parameters:
+                        params.append(i)
+                    if len(params) == 1:
+                        await handler['function'](message)
+                        break
+                    if params[1] == 'data' and handler.get('pass_bot') is True:
+                        await handler['function'](message, data, self)
+                        break
+                    elif params[1] == 'data' and handler.get('pass_bot') is False:
+                        await handler['function'](message, data)
+                        break
+                    elif params[1] != 'data' and handler.get('pass_bot') is True:
+                        await handler['function'](message, self)
                         break
                 except Exception as e:
                     handler_error = e
@@ -687,7 +710,7 @@ class AsyncTeleBot:
         """
         self.message_handlers.append(handler_dict)
 
-    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, **kwargs):
+    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers message handler.
         :param callback: function to be called
@@ -696,8 +719,11 @@ class AsyncTeleBot:
         :param regexp:
         :param func:
         :param chat_types: True for private chat
+        :param pass_bot: True if you want to get TeleBot instance in your handler
         :return: decorated function
         """
+        if content_types is None:
+            content_types = ["text"]
         if isinstance(commands, str):
             logger.warning("register_message_handler: 'commands' filter should be List of strings (commands), not string.")
             commands = [commands]
@@ -712,6 +738,7 @@ class AsyncTeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_message_handler(handler_dict)
 
@@ -759,7 +786,7 @@ class AsyncTeleBot:
         """
         self.edited_message_handlers.append(handler_dict)
 
-    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, **kwargs):
+    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers edited message handler.
         :param callback: function to be called
@@ -784,6 +811,7 @@ class AsyncTeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
 
@@ -829,7 +857,7 @@ class AsyncTeleBot:
         """
         self.channel_post_handlers.append(handler_dict)
     
-    def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+    def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers channel post message handler.
         :param callback: function to be called
@@ -852,6 +880,7 @@ class AsyncTeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_channel_post_handler(handler_dict)
 
@@ -896,7 +925,7 @@ class AsyncTeleBot:
         """
         self.edited_channel_post_handlers.append(handler_dict)
 
-    def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, **kwargs):
+    def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers edited channel post message handler.
         :param callback: function to be called
@@ -919,6 +948,7 @@ class AsyncTeleBot:
                                                 commands=commands,
                                                 regexp=regexp,
                                                 func=func,
+                                                pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_channel_post_handler(handler_dict)
 
@@ -945,14 +975,14 @@ class AsyncTeleBot:
         """
         self.inline_handlers.append(handler_dict)
 
-    def register_inline_handler(self, callback, func, **kwargs):
+    def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers inline handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_inline_handler(handler_dict)
 
     def chosen_inline_handler(self, func, **kwargs):
@@ -978,14 +1008,14 @@ class AsyncTeleBot:
         """
         self.chosen_inline_handlers.append(handler_dict)
 
-    def register_chosen_inline_handler(self, callback, func, **kwargs):
+    def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers chosen inline handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chosen_inline_handler(handler_dict)
 
     def callback_query_handler(self, func, **kwargs):
@@ -1011,14 +1041,14 @@ class AsyncTeleBot:
         """
         self.callback_query_handlers.append(handler_dict)
 
-    def register_callback_query_handler(self, callback, func, **kwargs):
+    def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers callback query handler..
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_callback_query_handler(handler_dict)
 
     def shipping_query_handler(self, func, **kwargs):
@@ -1044,14 +1074,14 @@ class AsyncTeleBot:
         """
         self.shipping_query_handlers.append(handler_dict)
 
-    def register_shipping_query_handler(self, callback, func, **kwargs):
+    def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers shipping query handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_shipping_query_handler(handler_dict)
 
     def pre_checkout_query_handler(self, func, **kwargs):
@@ -1077,14 +1107,14 @@ class AsyncTeleBot:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
     
-    def register_pre_checkout_query_handler(self, callback, func, **kwargs):
+    def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers pre-checkout request handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
@@ -1110,14 +1140,14 @@ class AsyncTeleBot:
         """
         self.poll_handlers.append(handler_dict)
 
-    def register_poll_handler(self, callback, func, **kwargs):
+    def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_handler(handler_dict)
 
     def poll_answer_handler(self, func=None, **kwargs):
@@ -1143,14 +1173,14 @@ class AsyncTeleBot:
         """
         self.poll_answer_handlers.append(handler_dict)
 
-    def register_poll_answer_handler(self, callback, func, **kwargs):
+    def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll answer handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_answer_handler(handler_dict)
 
     def my_chat_member_handler(self, func=None, **kwargs):
@@ -1176,14 +1206,14 @@ class AsyncTeleBot:
         """
         self.my_chat_member_handlers.append(handler_dict)
 
-    def register_my_chat_member_handler(self, callback, func=None, **kwargs):
+    def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers my chat member handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_my_chat_member_handler(handler_dict)
 
     def chat_member_handler(self, func=None, **kwargs):
@@ -1209,14 +1239,14 @@ class AsyncTeleBot:
         """
         self.chat_member_handlers.append(handler_dict)
 
-    def register_chat_member_handler(self, callback, func=None, **kwargs):
+    def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat member handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_member_handler(handler_dict)
 
     def chat_join_request_handler(self, func=None, **kwargs):
@@ -1242,18 +1272,18 @@ class AsyncTeleBot:
         """
         self.chat_join_request_handlers.append(handler_dict)
 
-    def register_chat_join_request_handler(self, callback, func=None, **kwargs):
+    def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat join request handler.
         :param callback: function to be called
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_join_request_handler(handler_dict)
 
     @staticmethod
-    def _build_handler_dict(handler, **filters):
+    def _build_handler_dict(handler, pass_bot=False, **filters):
         """
         Builds a dictionary for a handler
         :param handler:
@@ -1262,6 +1292,7 @@ class AsyncTeleBot:
         """
         return {
             'function': handler,
+            'pass_bot': pass_bot,
             'filters': {ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None}
             # Remove None values, they are skipped in _test_filter anyway
             #'filters': filters
@@ -1324,8 +1355,7 @@ class AsyncTeleBot:
         :param filename: Filename of saving file
         """
 
-        self.current_states = asyncio_handler_backends.StateFile(filename=filename)
-        self.current_states.create_dir()
+        self.current_states = StatePickleStorage(file_path=filename)
 
     async def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
                     drop_pending_updates = None, timeout=None):
@@ -1356,6 +1386,8 @@ class AsyncTeleBot:
         return await asyncio_helper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
                                      drop_pending_updates, timeout)
 
+
+
     async def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
@@ -1365,6 +1397,12 @@ class AsyncTeleBot:
         :return: bool
         """
         return await asyncio_helper.delete_webhook(self.token, drop_pending_updates, timeout)
+
+    async def remove_webhook(self):
+        """
+        Alternative for delete_webhook but uses set_webhook
+        """
+        self.set_webhook()
 
     async def get_webhook_info(self, timeout=None):
         """
@@ -3019,37 +3057,57 @@ class AsyncTeleBot:
         return await asyncio_helper.delete_sticker_from_set(self.token, sticker)
 
 
-    async def set_state(self, chat_id, state):
+    async def set_state(self, user_id: int, state: str, chat_id: int=None):
         """
         Sets a new state of a user.
         :param chat_id:
         :param state: new state. can be string or integer.
         """
-        await self.current_states.add_state(chat_id, state)
+        if not chat_id:
+            chat_id = user_id
+        await self.current_states.set_state(chat_id, user_id, state)
 
-    async def delete_state(self, chat_id):
+    async def reset_data(self, user_id: int, chat_id: int=None):
+        """
+        Reset data for a user in chat.
+        :param user_id:
+        :param chat_id:
+        """
+        if chat_id is None:
+            chat_id = user_id
+        await self.current_states.reset_data(chat_id, user_id)
+
+    async def delete_state(self, user_id: int, chat_id:int=None):
         """
         Delete the current state of a user.
         :param chat_id:
         :return:
         """
-        await self.current_states.delete_state(chat_id)
+        if not chat_id:
+            chat_id = user_id
+        await self.current_states.delete_state(chat_id, user_id)
 
-    def retrieve_data(self, chat_id):
-        return self.current_states.retrieve_data(chat_id)
+    def retrieve_data(self, user_id: int, chat_id: int=None):
+        if not chat_id:
+            chat_id = user_id
+        return self.current_states.get_interactive_data(chat_id, user_id)
 
-    async def get_state(self, chat_id):
+    async def get_state(self, user_id, chat_id: int=None):
         """
         Get current state of a user.
         :param chat_id:
         :return: state of a user
         """
-        return await self.current_states.current_state(chat_id)
+        if not chat_id:
+            chat_id = user_id
+        return await self.current_states.get_state(chat_id, user_id)
 
-    async def add_data(self, chat_id, **kwargs):
+    async def add_data(self, user_id: int, chat_id: int=None, **kwargs):
         """
         Add data to states.
         :param chat_id:
         """
+        if not chat_id:
+            chat_id = user_id
         for key, value in kwargs.items():
-            await self.current_states.add_data(chat_id, key, value)
+            await self.current_states.set_data(chat_id, user_id, key, value)

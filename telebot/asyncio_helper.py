@@ -12,16 +12,8 @@ API_URL = 'https://api.telegram.org/bot{0}/{1}'
 from datetime import datetime
 
 import telebot
-from telebot import util
+from telebot import util, logger
 
-class SessionBase:
-    def __init__(self) -> None:
-        self.session = None
-    async def _get_new_session(self):
-        self.session = aiohttp.ClientSession()
-        return self.session
-
-session_manager = SessionBase()
 
 proxy = None
 session = None
@@ -36,6 +28,29 @@ REQUEST_TIMEOUT = 10
 MAX_RETRIES = 3
 logger = telebot.logger
 
+
+REQUEST_LIMIT = 50
+
+class SessionManager:
+    def __init__(self) -> None:
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
+
+    async def create_session(self):
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
+        return self.session
+
+    async def get_session(self):
+        if self.session.closed:
+            self.session = await self.create_session()
+
+        if not self.session._loop.is_running():
+            await self.session.close()
+            self.session = await self.create_session()
+        return self.session
+
+
+session_manager = SessionManager()
+
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
     params = prepare_data(params, files)
     if request_timeout is None:
@@ -43,19 +58,21 @@ async def _process_request(token, url, method='get', params=None, files=None, re
     timeout = aiohttp.ClientTimeout(total=request_timeout)
     got_result = False
     current_try=0
-    async with await session_manager._get_new_session() as session:
-        while not got_result and current_try<MAX_RETRIES-1:
-            current_try +=1
-            try:
-                response = await session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout)
+    session = await session_manager.get_session()
+    while not got_result and current_try<MAX_RETRIES-1:
+        current_try +=1
+        try:
+            async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout) as resp:
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
-                json_result = await _check_result(url, response)
+                json_result = await _check_result(url, resp)
                 if json_result:
                     return json_result['result']
-            except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
-                raise e
-            except:
-                pass
+        except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
+            raise e
+        except aiohttp.ClientError as e:
+            logger.error('Aiohttp ClientError: {0}'.format(e.__class__.__name__))
+        except Exception as e:
+            logger.error(f'Unkown error: {e.__class__.__name__}')
         if not got_result:
             raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
         
@@ -143,8 +160,7 @@ async def download_file(token, file_path):
     else:
         # noinspection PyUnresolvedReferences
         url =  FILE_URL.format(token, file_path)
-    # TODO: rewrite this method
-    async with await session_manager._get_new_session() as session:
+    async with await session_manager.get_session() as session:
         async with session.get(url, proxy=proxy) as response:
             result = await response.read()
             if response.status != 200:
@@ -279,7 +295,7 @@ async def send_message(
     
     return await _process_request(token, method_name, params=params)
 
-# here shit begins
+# methods
 
 async def get_user_profile_photos(token, user_id, offset=None, limit=None):
     method_url = r'getUserProfilePhotos'
