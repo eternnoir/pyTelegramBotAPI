@@ -796,8 +796,12 @@ Join the [News channel](https://t.me/pyTelegramBotAPI). Here we will post releas
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
 
 ## Code Template
+Template is a ready folder that contains architecture of basic project.
+Here are some examples of template:
+	
 * [AsyncTeleBot template](https://github.com/coder2020official/asynctelebot_template)
 * [TeleBot template](https://github.com/coder2020official/telebot_template)
+	
 	
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
