@@ -60,6 +60,7 @@
   * [The Telegram Chat Group](#the-telegram-chat-group)
   * [Telegram Channel](#telegram-channel)
   * [More examples](#more-examples)
+  * [Code Template](#code-template)
   * [Bots using this API](#bots-using-this-api)
 
 ## Getting started
@@ -749,7 +750,7 @@ Asynchronous tasks depend on processor performance. Many asynchronous tasks can 
 AsyncTeleBot has different middlewares. See example on [middlewares](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot/middleware)
 	
 ### Examples
-See more examples in our [examples](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot) folder
+See more examples in our [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot) folder
 	
 
 ## F.A.Q.
@@ -794,6 +795,10 @@ Join the [News channel](https://t.me/pyTelegramBotAPI). Here we will post releas
 * [Deep Linking](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/deep_linking.py)
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
 
+## Code Template
+* [AsyncTeleBot template](https://github.com/coder2020official/asynctelebot_template)
+* [TeleBot template](https://github.com/coder2020official/telebot_template)
+	
 ## Bots using this API
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
