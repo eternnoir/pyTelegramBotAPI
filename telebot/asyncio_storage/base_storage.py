@@ -43,9 +43,8 @@ class StateStorageBase:
     async def get_state(self, chat_id, user_id):
         raise NotImplementedError
         
-    async def save(chat_id, user_id, data):
+    async def save(self, chat_id, user_id, data):
         raise NotImplementedError
-
 
 
 class StateContext:

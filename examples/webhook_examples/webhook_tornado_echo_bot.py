@@ -5,6 +5,7 @@
 # Documenation to Tornado: http://tornadoweb.org
 
 import signal
+from typing import Optional, Awaitable
 
 import tornado.httpserver
 import tornado.ioloop
@@ -33,12 +34,18 @@ bot = telebot.TeleBot(API_TOKEN)
 
 
 class Root(tornado.web.RequestHandler):
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        pass
+
     def get(self):
         self.write("Hi! This is webhook example!")
         self.finish()
 
 
-class webhook_serv(tornado.web.RequestHandler):
+class WebhookServ(tornado.web.RequestHandler):
+    def data_received(self, chunk: bytes) -> Optional[Awaitable[None]]:
+        pass
+
     def get(self):
         self.write("What are you doing here?")
         self.finish()
@@ -93,7 +100,7 @@ tornado.options.parse_command_line()
 signal.signal(signal.SIGINT, signal_handler)
 application = tornado.web.Application([
     (r"/", Root),
-    (r"/" + WEBHOOK_SECRET, webhook_serv)
+    (r"/" + WEBHOOK_SECRET, WebhookServ)
 ])
 
 http_server = tornado.httpserver.HTTPServer(application, ssl_options={

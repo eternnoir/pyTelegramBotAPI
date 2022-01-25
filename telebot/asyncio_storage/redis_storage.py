@@ -1,4 +1,3 @@
-from pickle import FALSE
 from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
 import json
 
@@ -93,7 +92,6 @@ class StateRedisStorage(StateStorageBase):
                 return True
         return False
 
-
     async def get_value(self, chat_id, user_id, key):
         """
         Get value for a data of a user in a chat.
@@ -105,7 +103,6 @@ class StateRedisStorage(StateStorageBase):
                 if key in response[user_id]['data']:
                     return response[user_id]['data'][key]
         return None
-    
 
     async def get_state(self, chat_id, user_id):
         """
@@ -119,7 +116,6 @@ class StateRedisStorage(StateStorageBase):
 
         return None
 
-
     async def get_data(self, chat_id, user_id):
         """
         Get data of particular user in a particular chat.
@@ -130,7 +126,6 @@ class StateRedisStorage(StateStorageBase):
             if user_id in response:
                 return response[user_id]['data']
         return None
-
 
     async def reset_data(self, chat_id, user_id):
         """
@@ -143,9 +138,6 @@ class StateRedisStorage(StateStorageBase):
                 response[user_id]['data'] = {}
                 await self.set_record(chat_id, response)
                 return True
-
-       
-
 
     async def set_data(self, chat_id, user_id, key, value):
         """
@@ -175,4 +167,3 @@ class StateRedisStorage(StateStorageBase):
                 response[user_id]['data'] = dict(data, **response[user_id]['data'])
                 await self.set_record(chat_id, response)
                 return True
-    

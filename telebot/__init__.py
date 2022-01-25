@@ -9,7 +9,7 @@ import time
 import traceback
 from typing import Any, Callable, List, Optional, Union
 
-# this imports are used to avoid circular import error
+# these imports are used to avoid circular import error
 import telebot.util
 import telebot.types
 
@@ -33,11 +33,9 @@ from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
-
 REPLY_MARKUP_TYPES = Union[
     types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
     types.ReplyKeyboardRemove, types.ForceReply]
-
 
 
 """
@@ -156,7 +154,6 @@ class TeleBot:
         :param parse_mode: default parse_mode
         :return: Telebot object.
         """
-
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
@@ -195,7 +192,6 @@ class TeleBot:
         self.state_handlers = []
 
         self.current_states = state_storage
-
 
         if apihelper.ENABLE_MIDDLEWARE:
             self.typed_middleware_handlers = {
@@ -251,8 +247,7 @@ class TeleBot:
 
         :param filename: Filename of saving file
         """
-
-        self.current_states = StatePickleStorage(filename=filename)
+        self.current_states = StatePickleStorage(file_path=filename)
         self.current_states.create_dir()
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
@@ -519,7 +514,6 @@ class TeleBot:
             self.process_new_chat_member(new_chat_members)
         if chat_join_request:
             self.process_new_chat_join_request(chat_join_request)
-        
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -589,7 +583,6 @@ class TeleBot:
             return
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
-
 
     def infinity_polling(self, timeout: int=20, skip_pending: bool=False, long_polling_timeout: int=20, logger_level=logging.ERROR,
             allowed_updates: Optional[List[str]]=None, *args, **kwargs):
@@ -778,7 +771,7 @@ class TeleBot:
         logger.info('Stopped polling.')
 
     def _exec_task(self, task, *args, **kwargs):
-        if kwargs.get('task_type') == 'handler':
+        if kwargs and kwargs.get('task_type') == 'handler':
             pass_bot = kwargs.get('pass_bot')
             kwargs.pop('pass_bot')
             kwargs.pop('task_type')
@@ -955,7 +948,6 @@ class TeleBot:
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to send text messages.
-
 
         Warning: Do not send more than about 4000 characters each message, otherwise you'll risk an HTTP 414 error.
         If you must send more than 4000 characters, 
@@ -1419,7 +1411,6 @@ class TeleBot:
             allow_sending_without_reply, protect_content)
         return [types.Message.de_json(msg) for msg in result]
 
-
     # TODO: Rewrite this method like in API.
     def send_location(
             self, chat_id: Union[int, str], 
@@ -1434,8 +1425,6 @@ class TeleBot:
             proximity_alert_radius: Optional[int]=None, 
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
-
-            
         """
         Use this method to send point on the map.
         :param chat_id:
@@ -1735,7 +1724,6 @@ class TeleBot:
         :return: True on success.
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
-
     
     def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
@@ -1766,7 +1754,6 @@ class TeleBot:
         :return: True on success.
         """
         return apihelper.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
-
 
     def set_chat_permissions(
             self, chat_id: Union[int, str], permissions: types.ChatPermissions) -> bool:
@@ -2262,7 +2249,6 @@ class TeleBot:
         :param protect_content:
         :return:
         """
-
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
@@ -2445,7 +2431,6 @@ class TeleBot:
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
             contains_masks, mask_position)
 
-
     def add_sticker_to_set(
             self, user_id: int, name: str, emojis: str,
             png_sticker: Optional[Union[Any, str]]=None, 
@@ -2465,7 +2450,6 @@ class TeleBot:
         """
         return apihelper.add_sticker_to_set(
             self.token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position)
-
 
     def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """
@@ -2542,8 +2526,9 @@ class TeleBot:
     def set_state(self, user_id: int, state: Union[int, str], chat_id: int=None) -> None:
         """
         Sets a new state of a user.
-        :param chat_id:
+        :param user_id:
         :param state: new state. can be string or integer.
+        :param chat_id:
         """
         if chat_id is None:
             chat_id = user_id
@@ -2557,10 +2542,12 @@ class TeleBot:
         """
         if chat_id is None:
             chat_id = user_id
+
         self.current_states.reset_data(chat_id, user_id)
     def delete_state(self, user_id: int, chat_id: int=None) -> None:
         """
         Delete the current state of a user.
+        :param user_id:
         :param chat_id:
         :return:
         """
@@ -2576,6 +2563,7 @@ class TeleBot:
     def get_state(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
         """
         Get current state of a user.
+        :param user_id:
         :param chat_id:
         :return: state of a user
         """
@@ -2586,6 +2574,7 @@ class TeleBot:
     def add_data(self, user_id: int, chat_id:int=None, **kwargs):
         """
         Add data to states.
+        :param user_id:
         :param chat_id:
         """
         if chat_id is None:
@@ -2655,8 +2644,8 @@ class TeleBot:
                     need_pop = True
                     self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
             if need_pop:
-                new_messages.pop(i)  # removing message that was detected with next_step_handler
-
+                # removing message that was detected with next_step_handler
+                new_messages.pop(i)
 
     @staticmethod
     def _build_handler_dict(handler, pass_bot=False, **filters):
@@ -2697,9 +2686,7 @@ class TeleBot:
             print(update.update_id)
 
         :param update_types: Optional list of update types that can be passed into the middleware handler.
-
         """
-
         def decorator(handler):
             self.add_middleware_handler(handler, update_types)
             return handler
@@ -2737,10 +2724,9 @@ class TeleBot:
 
         bot.register_middleware_handler(print_channel_post_text, update_types=['channel_post', 'edited_channel_post'])
 
+        :param callback:
         :param update_types: Optional list of update types that can be passed into the middleware handler.
-
         """
-
         self.add_middleware_handler(callback, update_types)
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
@@ -2782,7 +2768,6 @@ class TeleBot:
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
         :param chat_types: list of chat types
         """
-
         if content_types is None:
             content_types = ["text"]
 
@@ -2856,7 +2841,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         if content_types is None:
             content_types = ["text"]
 
@@ -3065,7 +3049,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_inline_handler(handler_dict)
@@ -3099,7 +3082,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_chosen_inline_handler(handler_dict)
@@ -3133,7 +3115,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_callback_query_handler(handler_dict)
@@ -3167,7 +3148,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_shipping_query_handler(handler_dict)
@@ -3201,7 +3181,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_pre_checkout_query_handler(handler_dict)
@@ -3235,7 +3214,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_poll_handler(handler_dict)
@@ -3269,7 +3247,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_poll_answer_handler(handler_dict)
@@ -3303,7 +3280,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_my_chat_member_handler(handler_dict)
@@ -3337,7 +3313,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_chat_member_handler(handler_dict)
@@ -3371,7 +3346,6 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_chat_join_request_handler(handler_dict)
@@ -3429,14 +3403,6 @@ class TeleBot:
         :param message: Message to test
         :return: True if filter conforms
         """
-        #     test_cases = {
-        #         'content_types': lambda msg: msg.content_type in filter_value,
-        #         'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
-        #         'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
-        #         'func': lambda msg: filter_value(msg)
-        #     }
-        #     return test_cases.get(message_filter, lambda msg: False)(message)
-        
         if message_filter == 'content_types':
             return message.content_type in filter_value
         elif message_filter == 'regexp':
@@ -3478,8 +3444,3 @@ class TeleBot:
                 if self._test_message_handler(message_handler, message):
                     self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
                     break
-
-
-
-
-        

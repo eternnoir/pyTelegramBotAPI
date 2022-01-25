@@ -3,7 +3,6 @@ from datetime import datetime
 
 import logging
 import re
-import sys
 import time
 import traceback
 from typing import Any, List, Optional, Union
@@ -22,15 +21,12 @@ from telebot import logger
 
 from telebot import util, types, asyncio_helper
 import asyncio
-from telebot import asyncio_handler_backends
 from telebot import asyncio_filters
-
 
 
 REPLY_MARKUP_TYPES = Union[
     types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
     types.ReplyKeyboardRemove, types.ForceReply]
-
 
 
 """
@@ -42,7 +38,6 @@ class Handler:
     """
     Class for (next step|reply) handlers
     """
-
     def __init__(self, callback, *args, **kwargs):
         self.callback = callback
         self.args = args
@@ -310,7 +305,6 @@ class AsyncTeleBot:
                     return
                 except asyncio.CancelledError:
                     return
-
                 except asyncio_helper.RequestTimeout as e:
                     logger.error(str(e))
                     if non_stop:
@@ -318,16 +312,12 @@ class AsyncTeleBot:
                         continue
                     else:
                         return
-
                 except asyncio_helper.ApiTelegramException as e:
                     logger.error(str(e))
-
                     if non_stop:
                         continue
                     else:
                         break
-                except KeyboardInterrupt:
-                    return
                 except Exception as e:
                     logger.error('Cause exception while getting updates.')
                     if non_stop:
@@ -335,13 +325,11 @@ class AsyncTeleBot:
                         await asyncio.sleep(3)
                         continue
                     else:
-                        raise e     
-
+                        raise e
         finally:
             self._polling = False
             await self.close_session()
             logger.warning('Polling is stopped.')
-
 
     def _loop_create_task(self, coro):
         return asyncio.create_task(coro)
@@ -357,8 +345,7 @@ class AsyncTeleBot:
         for message in messages:
             middleware = await self.process_middlewares(message, update_type)
             tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
-        asyncio.gather(*tasks)
-
+        await asyncio.gather(*tasks)
 
     async def _run_middlewares_and_handlers(self, handlers, message, middleware):
         handler_error = None
@@ -790,6 +777,7 @@ class AsyncTeleBot:
     def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers edited message handler.
+        :param pass_bot:
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -861,6 +849,7 @@ class AsyncTeleBot:
     def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers channel post message handler.
+        :param pass_bot:
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -929,6 +918,7 @@ class AsyncTeleBot:
     def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers edited channel post message handler.
+        :param pass_bot:
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -979,6 +969,7 @@ class AsyncTeleBot:
     def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers inline handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1012,6 +1003,7 @@ class AsyncTeleBot:
     def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers chosen inline handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1045,6 +1037,7 @@ class AsyncTeleBot:
     def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers callback query handler..
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1078,6 +1071,7 @@ class AsyncTeleBot:
     def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers shipping query handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1111,6 +1105,7 @@ class AsyncTeleBot:
     def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers pre-checkout request handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1144,6 +1139,7 @@ class AsyncTeleBot:
     def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1177,6 +1173,7 @@ class AsyncTeleBot:
     def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll answer handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1210,6 +1207,7 @@ class AsyncTeleBot:
     def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers my chat member handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1243,6 +1241,7 @@ class AsyncTeleBot:
     def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat member handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1276,6 +1275,7 @@ class AsyncTeleBot:
     def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat join request handler.
+        :param pass_bot:
         :param callback: function to be called
         :param func:
         :return: decorated function
@@ -1403,7 +1403,7 @@ class AsyncTeleBot:
         """
         Alternative for delete_webhook but uses set_webhook
         """
-        self.set_webhook()
+        await self.set_webhook()
 
     async def get_webhook_info(self, timeout=None):
         """
@@ -3061,6 +3061,7 @@ class AsyncTeleBot:
     async def set_state(self, user_id: int, state: str, chat_id: int=None):
         """
         Sets a new state of a user.
+        :param user_id:
         :param chat_id:
         :param state: new state. can be string or integer.
         """
@@ -3081,6 +3082,7 @@ class AsyncTeleBot:
     async def delete_state(self, user_id: int, chat_id:int=None):
         """
         Delete the current state of a user.
+        :param user_id:
         :param chat_id:
         :return:
         """
@@ -3096,6 +3098,7 @@ class AsyncTeleBot:
     async def get_state(self, user_id, chat_id: int=None):
         """
         Get current state of a user.
+        :param user_id:
         :param chat_id:
         :return: state of a user
         """
@@ -3106,6 +3109,7 @@ class AsyncTeleBot:
     async def add_data(self, user_id: int, chat_id: int=None, **kwargs):
         """
         Add data to states.
+        :param user_id:
         :param chat_id:
         """
         if not chat_id:
