@@ -223,7 +223,7 @@ class TeleBot:
         Equivalent to bot.get_me() but the result is cached so only one API call is needed
         """
         if not hasattr(self, "_user"):
-            self._user = types.User.de_json(self.get_me())
+            self._user = self.get_me()
         return self._user
 
     def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
