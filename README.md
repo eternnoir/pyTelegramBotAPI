@@ -80,6 +80,10 @@ $ git clone https://github.com/eternnoir/pyTelegramBotAPI.git
 $ cd pyTelegramBotAPI
 $ python setup.py install
 ```
+or:
+```
+$ pip install git+https://github.com/eternnoir/pyTelegramBotAPI.git
+```
 
 It is generally recommended to use the first option.
 
