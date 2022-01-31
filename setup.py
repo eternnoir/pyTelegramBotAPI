@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 from io import open
 import re
 
@@ -19,7 +19,7 @@ setup(name='pyTelegramBotAPI',
       author='eternnoir',
       author_email='eternnoir@gmail.com',
       url='https://github.com/eternnoir/pyTelegramBotAPI',
-      packages=['telebot'],
+      packages = find_packages(),
       license='GPL2',
       keywords='telegram bot api tools',
       install_requires=['requests'],
@@ -33,5 +33,6 @@ setup(name='pyTelegramBotAPI',
           'Programming Language :: Python :: 3',
           'Environment :: Console',
           'License :: OSI Approved :: GNU General Public License v2 (GPLv2)',
-      ]
+      ],
+      
       )
