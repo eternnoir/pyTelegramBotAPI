@@ -9,7 +9,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Supports both sync and async ways.</p>
 
-## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#december-30-2021">5.6</a>!
+## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#january-31-2022">5.7</a>!
 
 ## Contents
 
@@ -690,7 +690,8 @@ Result will be:
 
 
 ## API conformance
-
+	
+* ✔ [Bot API 5.7](https://core.telegram.org/bots/api#january-31-2022)
 * ✔ [Bot API 5.6](https://core.telegram.org/bots/api#december-30-2021)
 * ✔ [Bot API 5.5](https://core.telegram.org/bots/api#december-7-2021)
 * ✔ [Bot API 5.4](https://core.telegram.org/bots/api#november-5-2021)
