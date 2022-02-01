@@ -2508,7 +2508,7 @@ class Sticker(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, width, height, is_animated, 
-                is_video=None, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, **kwargs):
+                is_video, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
