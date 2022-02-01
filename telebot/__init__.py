@@ -214,7 +214,7 @@ class TeleBot:
 
         self.threaded = threaded
         if self.threaded:
-            self.worker_pool = util.ThreadPool(num_threads=num_threads)
+            self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
     
     @property
     def user(self) -> types.User:
@@ -781,7 +781,15 @@ class TeleBot:
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
         else:
-            task(*args, **kwargs)
+            try:
+                task(*args, **kwargs)
+            except Exception as e:
+                if self.exception_handler is not None:
+                    handled = self.exception_handler.handle(e)
+                else:
+                    handled = False
+                if not handled:
+                    raise e
 
     def stop_polling(self):
         self.__stop_polling.set()

@@ -114,7 +114,8 @@ class WorkerThread(threading.Thread):
 
 class ThreadPool:
 
-    def __init__(self, num_threads=2):
+    def __init__(self, telebot, num_threads=2):
+        self.telebot = telebot
         self.tasks = Queue.Queue()
         self.workers = [WorkerThread(self.on_exception, self.tasks) for _ in range(num_threads)]
         self.num_threads = num_threads
@@ -126,8 +127,13 @@ class ThreadPool:
         self.tasks.put((func, args, kwargs))
 
     def on_exception(self, worker_thread, exc_info):
-        self.exception_info = exc_info
-        self.exception_event.set()
+        if self.telebot.exception_handler is not None:
+            handled = self.telebot.exception_handler.handle(exc_info)
+        else:
+            handled = False
+        if not handled:
+            self.exception_info = exc_info
+            self.exception_event.set()
         worker_thread.continue_event.set()
 
     def raise_exceptions(self):
