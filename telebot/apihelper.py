@@ -1533,7 +1533,7 @@ def upload_sticker_file(token, user_id, png_sticker):
 
 def create_new_sticker_set(
         token, user_id, name, title, emojis, png_sticker, tgs_sticker,
-        contains_masks=None, mask_position=None):
+        contains_masks=None, mask_position=None, webm_sticker=None):
     method_url = 'createNewStickerSet'
     payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
     stype = 'png_sticker' if png_sticker else 'tgs_sticker'
@@ -1547,10 +1547,12 @@ def create_new_sticker_set(
         payload['contains_masks'] = contains_masks
     if mask_position:
         payload['mask_position'] = mask_position.to_json()
+    if webm_sticker:
+        payload['webm_sticker'] = webm_sticker
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position):
+def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
     method_url = 'addStickerToSet'
     payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
     stype = 'png_sticker' if png_sticker else 'tgs_sticker'
@@ -1562,6 +1564,8 @@ def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, m
         payload[stype] = sticker
     if mask_position:
         payload['mask_position'] = mask_position.to_json()
+    if webm_sticker:
+        payload['webm_sticker'] = webm_sticker
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 

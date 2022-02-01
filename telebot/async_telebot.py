@@ -2996,8 +2996,9 @@ class AsyncTeleBot:
     async def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 
             emojis: str, 
-            png_sticker: Union[Any, str], 
-            tgs_sticker: Union[Any, str], 
+            png_sticker: Union[Any, str]=None, 
+            tgs_sticker: Union[Any, str]=None, 
+            webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
             mask_position: Optional[types.MaskPosition]=None) -> bool:
         """
@@ -3010,19 +3011,21 @@ class AsyncTeleBot:
         :param emojis:
         :param png_sticker: 
         :param tgs_sticker:
+        :webm_sticker:
         :param contains_masks:
         :param mask_position:
         :return:
         """
         return await asyncio_helper.create_new_sticker_set(
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
-            contains_masks, mask_position)
+            contains_masks, mask_position, webm_sticker)
 
 
     async def add_sticker_to_set(
             self, user_id: int, name: str, emojis: str,
             png_sticker: Optional[Union[Any, str]]=None, 
             tgs_sticker: Optional[Union[Any, str]]=None,  
+            webm_sticker: Optional[Union[Any, str]]=None,
             mask_position: Optional[types.MaskPosition]=None) -> bool:
         """
         Use this method to add a new sticker to a set created by the bot. 
@@ -3033,11 +3036,12 @@ class AsyncTeleBot:
         :param emojis:
         :param png_sticker: Required if `tgs_sticker` is None
         :param tgs_sticker: Required if `png_sticker` is None
+        :webm_sticker:
         :param mask_position:
         :return:
         """
         return await asyncio_helper.add_sticker_to_set(
-            self.token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position)
+            self.token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker)
 
 
     async def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
