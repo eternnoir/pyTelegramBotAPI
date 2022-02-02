@@ -8,6 +8,8 @@ class StateMemoryStorage(StateStorageBase):
     
     
     def set_state(self, chat_id, user_id, state):
+        if isinstance(state, object):
+            state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:
                 self.data[chat_id][user_id]['state'] = state
@@ -31,6 +33,7 @@ class StateMemoryStorage(StateStorageBase):
 
     
     def get_state(self, chat_id, user_id):
+
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
                 return self.data[chat_id][user_id]['state']

@@ -65,6 +65,8 @@ class StateRedisStorage(StateStorageBase):
         """
         response = await self.get_record(chat_id)
         user_id = str(user_id)
+        if isinstance(state, object):
+            state = state.name
         if response:
             if user_id in response:
                 response[user_id]['state'] = state
