@@ -160,6 +160,13 @@ class StateFilter(AdvancedCustomFilter):
 
     async def check(self, message, text):
         if text == '*': return True
+
+        if isinstance(text, list):
+            new_text = [i.name for i in text]
+            text = new_text
+        elif isinstance(text, object):
+            text = text.name
+            
         if message.chat.type == 'group':
             group_state = await self.bot.current_states.get_state(message.chat.id, message.from_user.id)
             if group_state == text:
