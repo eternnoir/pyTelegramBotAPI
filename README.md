@@ -68,7 +68,7 @@
 This API is tested with Python 3.6-3.10 and Pypy 3.
 There are two ways to install the library:
 
-* Installation using pip (a Python package manager)*:
+* Installation using pip (a Python package manager):
 
 ```
 $ pip install pyTelegramBotAPI
@@ -87,7 +87,10 @@ $ pip install git+https://github.com/eternnoir/pyTelegramBotAPI.git
 
 It is generally recommended to use the first option.
 
-**While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling `pip install pytelegrambotapi --upgrade`*
+*While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling*
+```
+pip install pytelegrambotapi --upgrade
+```
 
 ## Writing your first bot
 
