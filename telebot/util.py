@@ -320,7 +320,7 @@ def escape(text: str) -> str:
     :param text: the text to escape
     :return: the escaped text
     """
-    chars = {"&": "&amp;", "<": "&lt;", ">": "&gt"}
+    chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;"}
     for old, new in chars.items(): text = text.replace(old, new)
     return text
 
