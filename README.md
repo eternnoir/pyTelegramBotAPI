@@ -860,5 +860,6 @@ Here are some examples of template:
 * [GrandQuiz Bot](https://github.com/Carlosma7/TFM-GrandQuiz) by [Carlosma7](https://github.com/Carlosma7). This bot is a trivia game that allows you to play with people from different ages. This project addresses the use of a system through chatbots to carry out a social and intergenerational game as an alternative to traditional game development.
 * [Diccionario de la RAE](https://t.me/dleraebot) ([source](https://github.com/studentenherz/dleraebot)) This bot lets you find difinitions of words in Spanish using [RAE's dictionary](https://dle.rae.es/). It features direct message and inline search.
 * [remoteTelegramShell](https://github.com/EnriqueMoran/remoteTelegramShell) by [EnriqueMoran](https://github.com/EnriqueMoran). Control your LinuxOS computer through Telegram.
+* [Pyfram-telegram-bot](https://github.com/skelly37/pyfram-telegram-bot) Query wolframalpha.com and make use of its API through Telegram.
 	
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
