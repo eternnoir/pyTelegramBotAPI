@@ -88,6 +88,24 @@ def poll_question_handler_ignore_case(poll: types.Poll):
     print(poll.question + ' ignore case')
 
 
+# either hi or contains one of (привет, salom)
+@bot.message_handler(text=TextFilter(equals="hi", contains=('привет', 'salom'), ignore_case=True))
+def multiple_patterns_handler(message: types.Message):
+    bot.send_message(message.chat.id, message.text)
+
+
+# starts with one of (mi, mea) for ex. minor, milk, meal, meat
+@bot.message_handler(text=TextFilter(starts_with=['mi', 'mea'], ignore_case=True))
+def multiple_starts_with_handler(message: types.Message):
+    bot.send_message(message.chat.id, message.text)
+
+
+# ends with one of (es, on) for ex. Jones, Davies, Johnson, Wilson
+@bot.message_handler(text=TextFilter(ends_with=['es', 'on'], ignore_case=True))
+def multiple_ends_with_handler(message: types.Message):
+    bot.send_message(message.chat.id, message.text)
+
+
 if __name__ == '__main__':
     bot.add_custom_filter(TextMatchFilter())
     bot.infinity_polling()
