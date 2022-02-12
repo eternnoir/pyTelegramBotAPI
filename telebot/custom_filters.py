@@ -50,7 +50,7 @@ class TextFilter:
 
         """
         :param equals: string, True if object's text is equal to passed string
-        :param contains: list[str] or tuple[str], True if object's text is in list or tuple
+        :param contains: list[str] or tuple[str], True if any string element of iterable is in text
         :param starts_with: string, True if object's text starts with passed string
         :param ends_with: string, True if object's text starts with passed string
         :param ignore_case: bool (default False), case insensitive
@@ -62,9 +62,12 @@ class TextFilter:
         elif to_check > 1:
             raise ValueError('Only one check mode can be specified')
         elif contains:
-            for i in contains:
-                if not isinstance(i, str):
-                    raise ValueError(f"Invalid value '{i}' is in contains")
+            if not isinstance(contains, str) and not isinstance(contains, list) and not isinstance(contains, tuple):
+                raise ValueError("Incorrect contains value")
+            elif isinstance(contains, str):
+                contains = [contains]
+            elif isinstance(contains, list) or isinstance(contains, tuple):
+                contains = [i for i in contains if isinstance(i, str)]
         elif starts_with and not isinstance(starts_with, str):
             raise ValueError("starts_with has to be a string")
         elif ends_with and not isinstance(ends_with, str):
@@ -105,7 +108,7 @@ class TextFilter:
             return self.equals == text
 
         if self.contains:
-            return text in self.contains
+            return any([i in text for i in self.contains])
 
         if self.starts_with:
             return text.startswith(self.starts_with)
@@ -149,7 +152,14 @@ class TextContainsFilter(AdvancedCustomFilter):
     key = 'text_contains'
 
     def check(self, message, text):
-        return text in message.text
+        if not isinstance(text, str) and not isinstance(text, list) and not isinstance(text, tuple):
+            raise ValueError("Incorrect text_contains value")
+        elif isinstance(text, str):
+            text = [text]
+        elif isinstance(text, list) or isinstance(text, tuple):
+            text = [i for i in text if isinstance(i, str)]
+
+        return any([i in message.text for i in text])
 
 
 class TextStartsFilter(AdvancedCustomFilter):
