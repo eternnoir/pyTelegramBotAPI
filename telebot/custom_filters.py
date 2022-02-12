@@ -89,24 +89,28 @@ class TextFilter:
         else:
             return False
 
+        if self.ignore_case:
+            text = text.lower()
+
+            if self.equals:
+                self.equals = self.equals.lower()
+            elif self.contains:
+                self.contains = tuple(i.lower() for i in self.contains)
+            elif self.starts_with:
+                self.starts_with = self.starts_with.lower()
+            elif self.ends_with:
+                self.ends_with = self.ends_with.lower()
+
         if self.equals:
-            if self.ignore_case:
-                return self.equals.lower() == text.lower()
             return self.equals == text
 
         if self.contains:
-            if self.ignore_case:
-                return text.lower() in (i.lower() for i in self.contains)
             return text in self.contains
 
         if self.starts_with:
-            if self.ignore_case:
-                return text.lower().startswith(self.starts_with)
             return text.startswith(self.starts_with)
 
         if self.ends_with:
-            if self.ignore_case:
-                return text.lower().endswith(self.ends_with)
             return text.endswith(self.ends_with)
 
         return False
