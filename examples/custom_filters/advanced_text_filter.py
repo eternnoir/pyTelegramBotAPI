@@ -8,7 +8,7 @@ with (message_handler, callback_query_handler, poll_handler)
 from telebot import TeleBot, types
 from telebot.custom_filters import TextFilter, AdvancedCustomFilter
 
-bot = TeleBot("1254795383:AAE7gbj1aas4lEDHB1eVuZZhSGPWcH1B5ds")
+bot = TeleBot("")
 
 
 class TextFilterKey(AdvancedCustomFilter):
