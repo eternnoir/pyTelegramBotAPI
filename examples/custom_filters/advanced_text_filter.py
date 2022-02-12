@@ -6,16 +6,9 @@ with (message_handler, callback_query_handler, poll_handler)
 """
 
 from telebot import TeleBot, types
-from telebot.custom_filters import TextFilter, AdvancedCustomFilter
+from telebot.custom_filters import TextFilter, TextMatchFilter
 
 bot = TeleBot("")
-
-
-class TextFilterKey(AdvancedCustomFilter):
-    key = 'text'
-
-    def check(self, message, config: TextFilter):
-        return config.check(message)
 
 
 @bot.message_handler(text=TextFilter(equals='hello'))
@@ -96,5 +89,5 @@ def poll_question_handler_ignore_case(poll: types.Poll):
 
 
 if __name__ == '__main__':
-    bot.add_custom_filter(TextFilterKey())
+    bot.add_custom_filter(TextMatchFilter())
     bot.infinity_polling()

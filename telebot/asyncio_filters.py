@@ -1,5 +1,8 @@
 from abc import ABC
 
+from telebot.custom_filters import TextFilter
+
+
 class SimpleCustomFilter(ABC):
     """
     Simple Custom Filter base class.
@@ -42,8 +45,13 @@ class TextMatchFilter(AdvancedCustomFilter):
     key = 'text'
 
     async def check(self, message, text):
-        if type(text) is list:return message.text in text
-        else: return text == message.text
+        if isinstance(text, TextFilter):
+            return text.check(message)
+        elif type(text) is list:
+            return message.text in text
+        else:
+            return text == message.text
+
 
 class TextContainsFilter(AdvancedCustomFilter):
     """
@@ -60,6 +68,7 @@ class TextContainsFilter(AdvancedCustomFilter):
     async def check(self, message, text):
         return text in message.text
 
+
 class TextStartsFilter(AdvancedCustomFilter):
     """
     Filter to check whether message starts with some text.
@@ -70,8 +79,10 @@ class TextStartsFilter(AdvancedCustomFilter):
     """
 
     key = 'text_startswith'
+
     async def check(self, message, text):
-        return message.text.startswith(text) 
+        return message.text.startswith(text)
+
 
 class ChatFilter(AdvancedCustomFilter):
     """
@@ -82,8 +93,10 @@ class ChatFilter(AdvancedCustomFilter):
     """
 
     key = 'chat_id'
+
     async def check(self, message, text):
         return message.chat.id in text
+
 
 class ForwardFilter(SimpleCustomFilter):
     """
@@ -98,6 +111,7 @@ class ForwardFilter(SimpleCustomFilter):
 
     async def check(self, message):
         return message.forward_from_chat is not None
+
 
 class IsReplyFilter(SimpleCustomFilter):
     """
@@ -114,7 +128,6 @@ class IsReplyFilter(SimpleCustomFilter):
         return message.reply_to_message is not None
 
 
-
 class LanguageFilter(AdvancedCustomFilter):
     """
     Check users language_code.
@@ -127,8 +140,11 @@ class LanguageFilter(AdvancedCustomFilter):
     key = 'language_code'
 
     async def check(self, message, text):
-        if type(text) is list:return message.from_user.language_code in text
-        else: return message.from_user.language_code == text
+        if type(text) is list:
+            return message.from_user.language_code in text
+        else:
+            return message.from_user.language_code == text
+
 
 class IsAdminFilter(SimpleCustomFilter):
     """
@@ -147,6 +163,7 @@ class IsAdminFilter(SimpleCustomFilter):
         result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
         return result.status in ['creator', 'administrator']
 
+
 class StateFilter(AdvancedCustomFilter):
     """
     Filter to check state.
@@ -154,8 +171,10 @@ class StateFilter(AdvancedCustomFilter):
     Example:
     @bot.message_handler(state=1)
     """
+
     def __init__(self, bot):
         self.bot = bot
+
     key = 'state'
 
     async def check(self, message, text):
@@ -166,21 +185,22 @@ class StateFilter(AdvancedCustomFilter):
             text = new_text
         elif isinstance(text, object):
             text = text.name
-            
+
         if message.chat.type == 'group':
             group_state = await self.bot.current_states.get_state(message.chat.id, message.from_user.id)
             if group_state == text:
                 return True
             elif group_state in text and type(text) is list:
                 return True
-            
-            
+
+
         else:
-            user_state = await self.bot.current_states.get_state(message.chat.id,message.from_user.id)
+            user_state = await self.bot.current_states.get_state(message.chat.id, message.from_user.id)
             if user_state == text:
                 return True
             elif type(text) is list and user_state in text:
                 return True
+
 
 class IsDigitFilter(SimpleCustomFilter):
     """

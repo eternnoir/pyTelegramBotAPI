@@ -128,7 +128,9 @@ class TextMatchFilter(AdvancedCustomFilter):
     key = 'text'
 
     def check(self, message, text):
-        if type(text) is list:
+        if isinstance(text, TextFilter):
+            return text.check(message)
+        elif type(text) is list:
             return message.text in text
         else:
             return text == message.text

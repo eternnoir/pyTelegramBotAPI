@@ -9,16 +9,9 @@ import asyncio
 from telebot.async_telebot import AsyncTeleBot
 from telebot import types
 from telebot.custom_filters import TextFilter
-from telebot.asyncio_filters import AdvancedCustomFilter
+from telebot.asyncio_filters import TextMatchFilter
 
-bot = AsyncTeleBot("1254795383:AAE7gbj1aas4lEDHB1eVuZZhSGPWcH1B5ds")
-
-
-class TextFilterKey(AdvancedCustomFilter):
-    key = 'text'
-
-    async def check(self, message, config: TextFilter):
-        return config.check(message)
+bot = AsyncTeleBot("")
 
 
 @bot.message_handler(text=TextFilter(equals='hello'))
@@ -99,5 +92,5 @@ async def poll_question_handler_ignore_case(poll: types.Poll):
 
 
 if __name__ == '__main__':
-    bot.add_custom_filter(TextFilterKey())
+    bot.add_custom_filter(TextMatchFilter())
     asyncio.run(bot.polling())
