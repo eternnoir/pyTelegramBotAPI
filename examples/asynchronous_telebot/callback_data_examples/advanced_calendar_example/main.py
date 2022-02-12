@@ -11,7 +11,7 @@ from keyboards import generate_calendar_days, generate_calendar_months, EMTPY_FI
 from telebot import types
 from telebot.async_telebot import AsyncTeleBot
 
-API_TOKEN = '1254795383:AAE7gbj1aas4lEDHB1eVuZZhSGPWcH1B5ds'
+API_TOKEN = ''
 bot = AsyncTeleBot(API_TOKEN)
 
 
