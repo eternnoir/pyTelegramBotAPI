@@ -32,7 +32,7 @@ def set_timer(message):
 
 @bot.message_handler(commands=['unset'])
 def unset_timer(message):
-    schedule.clean(message.chat.id)
+    schedule.clear(message.chat.id)
 
 
 if __name__ == '__main__':
