@@ -2783,9 +2783,25 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, str):
-            logger.warning("message_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2824,9 +2840,25 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, str):
-            logger.warning("register_message_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("register_message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2856,9 +2888,25 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, str):
-            logger.warning("edited_message_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("edited_message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2897,9 +2945,25 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, str):
-            logger.warning("register_edited_message_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("register_edited_message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2929,9 +2993,25 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, str):
-            logger.warning("channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2968,9 +3048,25 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, str):
-            logger.warning("register_channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("register_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2998,9 +3094,25 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, str):
-            logger.warning("edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -3037,9 +3149,25 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, str):
-            logger.warning("register_edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
+        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+            if any(not isinstance(item, (str, int, float)) for item in commands):
+                logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
+            elif all(isinstance(item, str) for item in commands):
+                commands = list(commands)
+            else:
+                logger.warning("message_handler: 'commands' filter should be list of strings (commands), not list of different types. Converting non-strings to strings.")
+                commands = [str(item) if not isinstance(item,str) else item for item in commands]
+        elif isinstance(commands, str):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not string. Converting to list of string.")
             commands = [commands]
+        elif isinstance(commands, (int, float)):
+            logger.warning("message_handler: 'commands' filter should be list of strings (commands), not numeric. Converting to the list of string.")
+            commands = [str(commands)]
+        elif not isinstance(commands, type(None)): 
+            logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter. Not able to use.")
+        
+        if not isinstance(regexp, (str, type(None))):
+            logger.warning("message_handler: regex filter should be string. Not able to use the supplied type.")
 
         if isinstance(content_types, str):
             logger.warning("register_edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
