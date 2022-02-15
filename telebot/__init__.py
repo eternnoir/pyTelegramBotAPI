@@ -2783,7 +2783,7 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -2840,7 +2840,7 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -2888,7 +2888,7 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -2945,7 +2945,7 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -2993,7 +2993,7 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -3048,7 +3048,7 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -3094,7 +3094,7 @@ class TeleBot:
         if content_types is None:
             content_types = ["text"]
 
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
@@ -3149,7 +3149,7 @@ class TeleBot:
         :param pass_bot: Pass TeleBot to handler.
         :return: decorated function
         """
-        if isinstance(commands, list) or isinstance(commands, set) or isinstance(commands, tuple):
+        if isinstance(commands, (list, set, tuple)):
             if any(not isinstance(item, (str, int, float)) for item in commands):
                 logger.warning("message_handler: commands' filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use.")
             elif all(isinstance(item, str) for item in commands):
