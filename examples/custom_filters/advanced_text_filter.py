@@ -6,7 +6,7 @@ with (message_handler, callback_query_handler, poll_handler)
 """
 
 from telebot import TeleBot, types
-from telebot.custom_filters import TextFilter, TextMatchFilter
+from telebot.custom_filters import TextFilter, TextMatchFilter, IsReplyFilter
 
 bot = TeleBot("")
 
@@ -106,6 +106,20 @@ def multiple_ends_with_handler(message: types.Message):
     bot.send_message(message.chat.id, message.text)
 
 
+# !ban /ban .ban !бан /бан .бан
+@bot.message_handler(is_reply=True,
+                     text=TextFilter(starts_with=('!', '/', '.'), ends_with=['ban', 'бан'], ignore_case=True))
+def ban_command_handler(message: types.Message):
+    if len(message.text) == 4 and message.chat.type != 'private':
+        try:
+            bot.ban_chat_member(message.chat.id, message.reply_to_message.from_user.id)
+            bot.reply_to(message.reply_to_message, 'Banned.')
+        except Exception as err:
+            print(err.args)
+            return
+
+
 if __name__ == '__main__':
     bot.add_custom_filter(TextMatchFilter())
+    bot.add_custom_filter(IsReplyFilter())
     bot.infinity_polling()
