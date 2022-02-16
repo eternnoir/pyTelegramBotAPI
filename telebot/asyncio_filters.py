@@ -1,4 +1,8 @@
 from abc import ABC
+from typing import Optional, Union
+
+from telebot import types
+
 
 class SimpleCustomFilter(ABC):
     """
@@ -30,6 +34,101 @@ class AdvancedCustomFilter(ABC):
         pass
 
 
+class TextFilter:
+    """
+    Advanced text filter to check (types.Message, types.CallbackQuery, types.InlineQuery, types.Poll)
+
+    example of usage is in examples/custom_filters/advanced_text_filter.py
+    """
+
+    def __init__(self,
+                 equals: Optional[str] = None,
+                 contains: Optional[Union[list, tuple]] = None,
+                 starts_with: Optional[Union[str, list, tuple]] = None,
+                 ends_with: Optional[Union[str, list, tuple]] = None,
+                 ignore_case: bool = False):
+
+        """
+        :param equals: string, True if object's text is equal to passed string
+        :param contains: list[str] or tuple[str], True if any string element of iterable is in text
+        :param starts_with: string, True if object's text starts with passed string
+        :param ends_with: string, True if object's text starts with passed string
+        :param ignore_case: bool (default False), case insensitive
+        """
+
+        to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
+        if to_check == 0:
+            raise ValueError('None of the check modes was specified')
+
+        self.equals = equals
+        self.contains = self._check_iterable(contains, filter_name='contains')
+        self.starts_with = self._check_iterable(starts_with, filter_name='starts_with')
+        self.ends_with = self._check_iterable(ends_with, filter_name='ends_with')
+        self.ignore_case = ignore_case
+
+    def _check_iterable(self, iterable, filter_name):
+        if not iterable:
+            pass
+        elif not isinstance(iterable, str) and not isinstance(iterable, list) and not isinstance(iterable, tuple):
+            raise ValueError(f"Incorrect value of {filter_name!r}")
+        elif isinstance(iterable, str):
+            iterable = [iterable]
+        elif isinstance(iterable, list) or isinstance(iterable, tuple):
+            iterable = [i for i in iterable if isinstance(i, str)]
+        return iterable
+
+    async def check(self, obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll]):
+
+        if isinstance(obj, types.Poll):
+            text = obj.question
+        elif isinstance(obj, types.Message):
+            text = obj.text or obj.caption
+        elif isinstance(obj, types.CallbackQuery):
+            text = obj.data
+        elif isinstance(obj, types.InlineQuery):
+            text = obj.query
+        else:
+            return False
+
+        if self.ignore_case:
+            text = text.lower()
+
+            if self.equals:
+                self.equals = self.equals.lower()
+            elif self.contains:
+                self.contains = tuple(map(str.lower, self.contains))
+            elif self.starts_with:
+                self.starts_with = tuple(map(str.lower, self.starts_with))
+            elif self.ends_with:
+                self.ends_with = tuple(map(str.lower, self.ends_with))
+
+        if self.equals:
+            result = self.equals == text
+            if result:
+                return True
+            elif not result and not any((self.contains, self.starts_with, self.ends_with)):
+                return False
+
+        if self.contains:
+            result = any([i in text for i in self.contains])
+            if result:
+                return True
+            elif not result and not any((self.starts_with, self.ends_with)):
+                return False
+
+        if self.starts_with:
+            result = any([text.startswith(i) for i in self.starts_with])
+            if result:
+                return True
+            elif not result and not self.ends_with:
+                return False
+
+        if self.ends_with:
+            return any([text.endswith(i) for i in self.ends_with])
+
+        return False
+
+
 class TextMatchFilter(AdvancedCustomFilter):
     """
     Filter to check Text message.
@@ -42,8 +141,13 @@ class TextMatchFilter(AdvancedCustomFilter):
     key = 'text'
 
     async def check(self, message, text):
-        if type(text) is list:return message.text in text
-        else: return text == message.text
+        if isinstance(text, TextFilter):
+            return await text.check(message)
+        elif type(text) is list:
+            return message.text in text
+        else:
+            return text == message.text
+
 
 class TextContainsFilter(AdvancedCustomFilter):
     """
@@ -58,7 +162,15 @@ class TextContainsFilter(AdvancedCustomFilter):
     key = 'text_contains'
 
     async def check(self, message, text):
-        return text in message.text
+        if not isinstance(text, str) and not isinstance(text, list) and not isinstance(text, tuple):
+            raise ValueError("Incorrect text_contains value")
+        elif isinstance(text, str):
+            text = [text]
+        elif isinstance(text, list) or isinstance(text, tuple):
+            text = [i for i in text if isinstance(i, str)]
+
+        return any([i in message.text for i in text])
+
 
 class TextStartsFilter(AdvancedCustomFilter):
     """
@@ -70,8 +182,10 @@ class TextStartsFilter(AdvancedCustomFilter):
     """
 
     key = 'text_startswith'
+
     async def check(self, message, text):
-        return message.text.startswith(text) 
+        return message.text.startswith(text)
+
 
 class ChatFilter(AdvancedCustomFilter):
     """
@@ -82,8 +196,10 @@ class ChatFilter(AdvancedCustomFilter):
     """
 
     key = 'chat_id'
+
     async def check(self, message, text):
         return message.chat.id in text
+
 
 class ForwardFilter(SimpleCustomFilter):
     """
@@ -98,6 +214,7 @@ class ForwardFilter(SimpleCustomFilter):
 
     async def check(self, message):
         return message.forward_from_chat is not None
+
 
 class IsReplyFilter(SimpleCustomFilter):
     """
@@ -114,7 +231,6 @@ class IsReplyFilter(SimpleCustomFilter):
         return message.reply_to_message is not None
 
 
-
 class LanguageFilter(AdvancedCustomFilter):
     """
     Check users language_code.
@@ -127,8 +243,11 @@ class LanguageFilter(AdvancedCustomFilter):
     key = 'language_code'
 
     async def check(self, message, text):
-        if type(text) is list:return message.from_user.language_code in text
-        else: return message.from_user.language_code == text
+        if type(text) is list:
+            return message.from_user.language_code in text
+        else:
+            return message.from_user.language_code == text
+
 
 class IsAdminFilter(SimpleCustomFilter):
     """
@@ -147,6 +266,7 @@ class IsAdminFilter(SimpleCustomFilter):
         result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
         return result.status in ['creator', 'administrator']
 
+
 class StateFilter(AdvancedCustomFilter):
     """
     Filter to check state.
@@ -154,8 +274,10 @@ class StateFilter(AdvancedCustomFilter):
     Example:
     @bot.message_handler(state=1)
     """
+
     def __init__(self, bot):
         self.bot = bot
+
     key = 'state'
 
     async def check(self, message, text):
@@ -166,21 +288,22 @@ class StateFilter(AdvancedCustomFilter):
             text = new_text
         elif isinstance(text, object):
             text = text.name
-            
+
         if message.chat.type == 'group':
             group_state = await self.bot.current_states.get_state(message.chat.id, message.from_user.id)
             if group_state == text:
                 return True
             elif group_state in text and type(text) is list:
                 return True
-            
-            
+
+
         else:
-            user_state = await self.bot.current_states.get_state(message.chat.id,message.from_user.id)
+            user_state = await self.bot.current_states.get_state(message.chat.id, message.from_user.id)
             if user_state == text:
                 return True
             elif type(text) is list and user_state in text:
                 return True
+
 
 class IsDigitFilter(SimpleCustomFilter):
     """
