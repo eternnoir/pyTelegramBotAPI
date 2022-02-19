@@ -2456,7 +2456,7 @@ class TeleBot:
         :param emojis:
         :param png_sticker: Required if `tgs_sticker` is None
         :param tgs_sticker: Required if `png_sticker` is None
-        :webm_sticker:
+        :param webm_sticker:
         :param mask_position:
         :return:
         """
@@ -2741,13 +2741,15 @@ class TeleBot:
         """
         self.add_middleware_handler(callback, update_types)
 
-    def __check_commands_input(self, commands, method_name):
+    @staticmethod
+    def check_commands_input(commands, method_name):
         if not isinstance(commands, list) or not all(isinstance(item, str) for item in commands):
             logger.error(f"{method_name}: Commands filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use the supplied type.")
-    
-    def __check_regexp_input(self, regexp, method_name):
+
+    @staticmethod
+    def check_regexp_input(regexp, method_name):
         if not isinstance(regexp, str):
-            logger.error(f"{method_name}: Regexp filter should be string. Not able to use the supplied type.")    
+            logger.error(f"{method_name}: Regexp filter should be string. Not able to use the supplied type.")
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
@@ -2794,10 +2796,12 @@ class TeleBot:
         method_name = "message_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2839,10 +2843,12 @@ class TeleBot:
         method_name = "register_message_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("register_message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2875,10 +2881,12 @@ class TeleBot:
         method_name = "edited_message_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("edited_message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2920,10 +2928,12 @@ class TeleBot:
         method_name = "register_edited_message_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("register_edited_message_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2956,10 +2966,12 @@ class TeleBot:
         method_name = "channel_post_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -2999,10 +3011,12 @@ class TeleBot:
         method_name = "register_channel_post_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("register_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -3033,10 +3047,12 @@ class TeleBot:
         method_name = "edited_channel_post_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
@@ -3076,10 +3092,12 @@ class TeleBot:
         method_name = "register_edited_channel_post_handler"
 
         if commands is not None:
-            self.__check_commands_input(commands, method_name)
-        
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
         if regexp is not None:
-            self.__check_regexp_input(regexp, method_name)
+            self.check_regexp_input(regexp, method_name)
 
         if isinstance(content_types, str):
             logger.warning("register_edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string.")
