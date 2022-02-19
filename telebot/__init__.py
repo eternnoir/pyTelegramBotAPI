@@ -2456,7 +2456,7 @@ class TeleBot:
         :param emojis:
         :param png_sticker: Required if `tgs_sticker` is None
         :param tgs_sticker: Required if `png_sticker` is None
-        :webm_sticker:
+        :param webm_sticker:
         :param mask_position:
         :return:
         """
