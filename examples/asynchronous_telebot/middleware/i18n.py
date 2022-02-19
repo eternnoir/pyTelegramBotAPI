@@ -7,7 +7,6 @@
 # But this example just to show the work of middlewares.
 
 import telebot
-import telebot.asyncio_middlewares
 from telebot.async_telebot import AsyncTeleBot
 from telebot import asyncio_handler_backends
 import logging
@@ -28,7 +27,7 @@ TRANSLATIONS = {
 bot = AsyncTeleBot('TOKEN')
 
 
-class LanguageMiddleware(telebot.asyncio_middlewares.BaseMiddleware):
+class LanguageMiddleware(asyncio_handler_backends.BaseMiddleware):
     def __init__(self):
         self.update_types = ['message'] # Update types that will be handled by this middleware.
     async def pre_process(self, message, data):

@@ -56,7 +56,7 @@ import keyboards
 from telebot import types
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_filters import TextMatchFilter, TextFilter
-from telebot.asyncio_middlewares import I18N
+from i18n_base_midddleware import I18N
 from telebot.asyncio_storage.memory_storage import StateMemoryStorage
 
 
@@ -87,7 +87,7 @@ class I18NMiddleware(I18N):
 
 
 storage = StateMemoryStorage()
-bot = AsyncTeleBot("", state_storage=storage)
+bot = AsyncTeleBot("1254795383:AAE7gbj1aas4lEDHB1eVuZZhSGPWcH1B5ds", state_storage=storage)
 
 i18n = I18NMiddleware(translations_path='locales', domain_name='messages')
 _ = i18n.gettext  # for singular translations

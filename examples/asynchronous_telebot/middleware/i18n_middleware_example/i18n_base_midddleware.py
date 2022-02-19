@@ -1,4 +1,8 @@
 import contextvars
+import gettext
+import os
+
+from telebot.asyncio_handler_backends import BaseMiddleware
 
 try:
     from babel.support import LazyProxy
@@ -6,25 +10,6 @@ try:
     babel_imported = True
 except ImportError:
     babel_imported = False
-
-from telebot import util
-
-
-class BaseMiddleware:
-    """
-    Base class for middleware.
-
-    Your middlewares should be inherited from this class.
-    """
-
-    def __init__(self):
-        pass
-
-    async def pre_process(self, message, data):
-        raise NotImplementedError
-
-    async def post_process(self, message, data, exception):
-        raise NotImplementedError
 
 
 class I18N(BaseMiddleware):
@@ -41,7 +26,7 @@ class I18N(BaseMiddleware):
 
         self.path = translations_path
         self.domain = domain_name
-        self.translations = util.find_translations(self.path, self.domain)
+        self.translations = self.find_translations()
 
     @property
     def available_translations(self):
@@ -107,3 +92,29 @@ class I18N(BaseMiddleware):
 
     async def post_process(self, message, data, exception):
         pass
+
+    def find_translations(self):
+        """
+        Looks for translations with passed 'domain' in passed 'path'
+        """
+        if not os.path.exists(self.path):
+            raise RuntimeError(f"Translations directory by path: {self.path!r} was not found")
+
+        result = {}
+
+        for name in os.listdir(self.path):
+            translations_path = os.path.join(self.path, name, 'LC_MESSAGES')
+
+            if not os.path.isdir(translations_path):
+                continue
+
+            po_file = os.path.join(translations_path, self.domain + '.po')
+            mo_file = po_file[:-2] + 'mo'
+
+            if os.path.isfile(po_file) and not os.path.isfile(mo_file):
+                raise FileNotFoundError(f"Translations for: {name!r} were not compiled!")
+
+            with open(mo_file, 'rb') as file:
+                result[name] = gettext.GNUTranslations(file)
+
+        return result
