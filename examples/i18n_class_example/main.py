@@ -53,7 +53,7 @@ from functools import wraps
 import keyboards
 from telebot import TeleBot, types, custom_filters
 from telebot.storage.memory_storage import StateMemoryStorage
-from telebot.util import I18N
+from i18n_class import I18N
 
 storage = StateMemoryStorage()
 bot = TeleBot("", state_storage=storage)
@@ -71,6 +71,7 @@ def get_user_language(func):
     """
     This decorator will pass to your handler current user's language
     """
+
     @wraps(func)
     def inner(*args, **kwargs):
         obj = args[0]
