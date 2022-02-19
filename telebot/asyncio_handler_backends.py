@@ -1,9 +1,13 @@
+from telebot.asyncio_middlewares import BaseMiddleware
+
+
 class State:
     def __init__(self) -> None:
         self.name = None
+
     def __str__(self) -> str:
         return self.name
-    
+
 
 class StatesGroup:
     def __init_subclass__(cls) -> None:
