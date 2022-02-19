@@ -11,6 +11,8 @@
 
 ## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#january-31-2022">5.7</a>!
 
+<h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
+	
 ## Contents
 
   * [Getting started](#getting-started)
