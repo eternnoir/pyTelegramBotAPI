@@ -41,6 +41,12 @@ When you delete/update your texts you also need to update them in .po files:
     pybabel update -i locales/{domain_name}.pot -d locales
     - translate
     pybabel compile -d locales
+
+If you have any exceptions check:
+    - you have installed babel
+    - translations are ready, so you just compiled it
+    - in the commands above you replaced {domain_name} to messages
+    - you are writing commands from correct path in terminal
 """
 
 from functools import wraps

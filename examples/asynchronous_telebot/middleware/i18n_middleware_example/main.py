@@ -41,6 +41,12 @@ When you delete/update your texts you also need to update them in .po files:
     pybabel update -i locales/{domain_name}.pot -d locales
     - translate
     pybabel compile -d locales
+
+If you have any exceptions check:
+    - you have installed babel
+    - translations are ready, so you just compiled it
+    - in the commands above you replaced {domain_name} to messages
+    - you are writing commands from correct path in terminal
 """
 
 import asyncio
@@ -81,7 +87,7 @@ class I18NMiddleware(I18N):
 
 
 storage = StateMemoryStorage()
-bot = AsyncTeleBot("1254795383:AAE7gbj1aas4lEDHB1eVuZZhSGPWcH1B5ds", state_storage=storage)
+bot = AsyncTeleBot("", state_storage=storage)
 
 i18n = I18NMiddleware(translations_path='locales', domain_name='messages')
 _ = i18n.gettext  # for singular translations
