@@ -87,7 +87,7 @@ class I18NMiddleware(I18N):
 
 
 storage = StateMemoryStorage()
-bot = AsyncTeleBot("1254795383:AAE7gbj1aas4lEDHB1eVuZZhSGPWcH1B5ds", state_storage=storage)
+bot = AsyncTeleBot("", state_storage=storage)
 
 i18n = I18NMiddleware(translations_path='locales', domain_name='messages')
 _ = i18n.gettext  # for singular translations
