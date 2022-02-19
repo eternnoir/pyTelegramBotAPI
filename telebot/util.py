@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import gettext
-import os
 import random
 import re
 import string
