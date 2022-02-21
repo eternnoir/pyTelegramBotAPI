@@ -209,6 +209,6 @@ async def missed_message(message: types.Message):
 
 
 if __name__ == '__main__':
-    bot.middlewares.append(i18n)
+    bot.setup_middleware(i18n)
     bot.add_custom_filter(TextMatchFilter())
     asyncio.run(bot.infinity_polling())
