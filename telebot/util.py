@@ -21,6 +21,7 @@ try:
     # noinspection PyPackageRequirements
     from PIL import Image
     from io import BytesIO
+
     pil_imported = True
 except:
     pil_imported = False
@@ -39,15 +40,16 @@ content_type_media = [
 content_type_service = [
     'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created',
     'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message',
-    'proximity_alert_triggered', 'voice_chat_scheduled', 'voice_chat_started', 'voice_chat_ended', 
+    'proximity_alert_triggered', 'voice_chat_scheduled', 'voice_chat_started', 'voice_chat_ended',
     'voice_chat_participants_invited', 'message_auto_delete_timer_changed'
 ]
 
 update_types = [
-    "update_id", "message", "edited_message", "channel_post", "edited_channel_post", "inline_query", 
-    "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer", 
+    "update_id", "message", "edited_message", "channel_post", "edited_channel_post", "inline_query",
+    "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer",
     "my_chat_member", "chat_member", "chat_join_request"
 ]
+
 
 class WorkerThread(threading.Thread):
     count = 0
@@ -217,7 +219,7 @@ def pil_image_to_file(image, extension='JPEG', quality='web_low'):
         photoBuffer = BytesIO()
         image.convert('RGB').save(photoBuffer, extension, quality=quality)
         photoBuffer.seek(0)
-        
+
         return photoBuffer
     else:
         raise RuntimeError('PIL module is not imported')
@@ -338,7 +340,7 @@ def user_link(user: types.User, include_id: bool=False) -> str:
     :return: HTML user link
     """
     name = escape(user.first_name)
-    return (f"<a href='tg://user?id={user.id}'>{name}</a>" 
+    return (f"<a href='tg://user?id={user.id}'>{name}</a>"
         + (f" (<pre>{user.id}</pre>)" if include_id else ""))
 
 
@@ -476,6 +478,7 @@ def webhook_google_functions(bot, request):
             return 'Bot FAIL', 400
     else:
         return 'Bot ON'
+
 
 def antiflood(function, *args, **kwargs):
     """
