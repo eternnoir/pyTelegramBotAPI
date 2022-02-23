@@ -278,7 +278,10 @@ class StateFilter(AdvancedCustomFilter):
         if text == '*': return True
 
         if isinstance(text, list):
-            new_text = [i.name for i in text]
+            new_text = []
+            for i in text:
+                if isclass(i): i = i.name
+                new_text.append(i)
             text = new_text
         elif isinstance(text, object):
             text = text.name
