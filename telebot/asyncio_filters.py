@@ -281,7 +281,7 @@ class StateFilter(AdvancedCustomFilter):
         if isinstance(text, list):
             new_text = []
             for i in text:
-                if isinstance(text, State): i = i.name
+                if isinstance(i, State): i = i.name
                 new_text.append(i)
             text = new_text
         elif isinstance(text, State):
