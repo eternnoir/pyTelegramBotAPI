@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Optional, Union
+from telebot.handler_backends import State
 
 from telebot import types
 
@@ -284,10 +285,10 @@ class StateFilter(AdvancedCustomFilter):
         if isinstance(text, list):
             new_text = []
             for i in text:
-                if isclass(i): i = i.name
+                if isinstance(text, State): i = i.name
                 new_text.append(i)
             text = new_text
-        elif isinstance(text, object):
+        elif isinstance(text, State):
             text = text.name
         if message.chat.type == 'group':
             group_state = self.bot.current_states.get_state(message.chat.id, message.from_user.id)
