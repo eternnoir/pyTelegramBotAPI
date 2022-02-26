@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import Optional, Union
+from telebot.asyncio_handler_backends import State
 
 from telebot import types
 
@@ -280,10 +281,10 @@ class StateFilter(AdvancedCustomFilter):
         if isinstance(text, list):
             new_text = []
             for i in text:
-                if isclass(i): i = i.name
+                if isinstance(i, State): i = i.name
                 new_text.append(i)
             text = new_text
-        elif isinstance(text, object):
+        elif isinstance(text, State):
             text = text.name
 
         if message.chat.type == 'group':
