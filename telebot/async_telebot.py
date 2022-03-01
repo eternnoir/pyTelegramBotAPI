@@ -5,6 +5,7 @@ import logging
 import re
 import time
 import traceback
+import inspect
 from typing import Any, List, Optional, Union
 
 # this imports are used to avoid circular import error
@@ -593,6 +594,8 @@ class AsyncTeleBot:
         elif message_filter == 'chat_types':
             return message.chat.type in filter_value
         elif message_filter == 'func':
+            if inspect.iscoroutinefunction(filter_value):
+                return await filter_value(message)
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:
             return await self._check_filter(message_filter,filter_value,message)
