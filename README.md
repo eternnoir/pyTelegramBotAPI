@@ -769,7 +769,6 @@ See more examples in our [examples](https://github.com/eternnoir/pyTelegramBotAP
 Telegram Bot API support new type Chat for message.chat.
 
 - Check the ```type``` attribute in ```Chat``` object:
--
 ```python
 if message.chat.type == "private":
     # private chat message

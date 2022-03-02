@@ -28,7 +28,9 @@ By cloning repository
 Directly using pip
 ------------------
 .. code-block:: bash
+
     $ pip install git+https://github.com/eternnoir/pyTelegramBotAPI.git
+
 
 It is generally recommended to use the first option.
 
