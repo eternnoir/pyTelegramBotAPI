@@ -73,10 +73,12 @@ class ExceptionHandler:
 
 class TeleBot:
     """
-    This is the main class to deal with bot.
+    This is the main synchronous class for Bot.
+
     It allows you to add handlers for different kind of updates.
 
     Usage:
+
     .. code-block:: python
 
         from telebot import TeleBot
