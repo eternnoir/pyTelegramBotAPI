@@ -340,6 +340,8 @@ class TeleBot:
         In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setwebhook
+
         :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
         :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
             See our self-signed guide for details.
@@ -355,7 +357,7 @@ class TeleBot:
             resolved through DNS
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
-        :return:
+        :return: API reply.
         """
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
                                      drop_pending_updates, timeout)
@@ -363,6 +365,8 @@ class TeleBot:
     def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletewebhook
 
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
@@ -374,6 +378,8 @@ class TeleBot:
         """
         Use this method to get current webhook status. Requires no parameters.
         If the bot is using getUpdates, will return an object with the url field empty.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo
 
         :param timeout: Integer. Request connection timeout
         :return: On success, returns a WebhookInfo object.
@@ -389,6 +395,8 @@ class TeleBot:
             long_polling_timeout: int=20) -> List[types.Update]:
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getupdates
 
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :param offset: Integer. Identifier of the first update to be returned.
@@ -827,6 +835,8 @@ class TeleBot:
     def get_me(self) -> types.User:
         """
         Returns basic information about the bot in form of a User object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getme
         """
         result = apihelper.get_me(self.token)
         return types.User.de_json(result)
@@ -838,6 +848,8 @@ class TeleBot:
         On success, a File object is returned. 
         It is guaranteed that the link will be valid for at least 1 hour. 
         When the link expires, a new one can be requested by calling get_file again.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getfile
 
         :param file_id: File identifier
         """
@@ -862,6 +874,8 @@ class TeleBot:
         After a successful call, you can immediately log in on a local server, 
         but will not be able to log in back to the cloud Bot API server for 10 minutes. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#logout
         """
         return apihelper.log_out(self.token)
     
@@ -872,6 +886,8 @@ class TeleBot:
         after server restart.
         The method will return error 429 in the first 10 minutes after the bot is launched. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#close
         """
         return apihelper.close(self.token)
 
@@ -879,7 +895,8 @@ class TeleBot:
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Retrieves the user profile photos of the person with 'user_id'
-        See https://core.telegram.org/bots/api#getuserprofilephotos
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuserprofilephotos
 
         :param user_id: Integer - Unique identifier of the target user
         :param offset:
@@ -894,8 +911,10 @@ class TeleBot:
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#getchat
+
         :param chat_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat(self.token, chat_id)
         return types.Chat.de_json(result)
@@ -904,8 +923,10 @@ class TeleBot:
         """
         Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#leavechat
+
         :param chat_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.leave_chat(self.token, chat_id)
         return result
@@ -916,9 +937,11 @@ class TeleBot:
         On success, returns an Array of ChatMember objects that contains
             information about all chat administrators except other bots.
 
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
+
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
@@ -935,8 +958,10 @@ class TeleBot:
         """
         Use this method to get the number of members in a chat. Returns Int on success.
         
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmembercount
+
         :param chat_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
@@ -948,10 +973,12 @@ class TeleBot:
         Use the field can_set_sticker_set optionally returned in getChat requests to check
         if the bot can use this method. Returns True on success.
         
+        Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
         (in the format @supergroupusername)
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
-        :return:
+        :return: API reply.
         """
         result = apihelper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
         return result
@@ -962,9 +989,11 @@ class TeleBot:
         for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
         optionally returned in getChat requests to check if the bot can use this method. Returns True on success.
         
+        Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
+
         :param chat_id:	Unique identifier for the target chat or username of the target supergroup
         (in the format @supergroupusername)
-        :return:
+        :return: API reply.
         """
         result = apihelper.delete_chat_sticker_set(self.token, chat_id)
         return result
@@ -973,9 +1002,11 @@ class TeleBot:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
         
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmember
+
         :param chat_id:
         :param user_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
@@ -998,6 +1029,8 @@ class TeleBot:
         If you must send more than 4000 characters, 
         use the `split_string` or `smart_split` function in util.py.
 
+        Telegram documentation: https://core.telegram.org/bots/api#sendmessage
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param text: Text of the message to be sent
         :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
@@ -1009,7 +1042,7 @@ class TeleBot:
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
         :param timeout:
-        :return:
+        :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1026,6 +1059,8 @@ class TeleBot:
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
+
+        Telegram documentation: https://core.telegram.org/bots/api#forwardmessage
 
         :param disable_notification:
         :param chat_id: which chat to forward
@@ -1054,6 +1089,8 @@ class TeleBot:
         """
         Use this method to copy messages of any kind.
 
+        Telegram documentation: https://core.telegram.org/bots/api#copymessage
+
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
@@ -1078,6 +1115,8 @@ class TeleBot:
         """
         Use this method to delete message. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessage
+
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :param timeout:
@@ -1095,6 +1134,8 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send dices.
+
+        Telegram documentation: https://core.telegram.org/bots/api#senddice
 
         :param chat_id:
         :param emoji:
@@ -1124,6 +1165,8 @@ class TeleBot:
             timeout: Optional[int]=None,) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendphoto
         
         :param chat_id:
         :param photo:
@@ -1163,6 +1206,8 @@ class TeleBot:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .mp3 format.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendaudio
         
         :param chat_id:Unique identifier for the message recipient
         :param audio:Audio file to send.
@@ -1204,11 +1249,13 @@ class TeleBot:
         """
         Use this method to send audio files, if you want Telegram clients to display the file
         as a playable voice message.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvoice
         
-        :param chat_id:Unique identifier for the message recipient.
+        :param chat_id: Unique identifier for the message recipient.
         :param voice:
         :param caption:
-        :param duration:Duration of sent audio in seconds
+        :param duration: Duration of sent audio in seconds
         :param reply_to_message_id:
         :param reply_markup:
         :param parse_mode
@@ -1245,6 +1292,8 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send general files.
+
+        Telegram documentation: https://core.telegram.org/bots/api#senddocument
         
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
@@ -1291,6 +1340,8 @@ class TeleBot:
         """
         Use this method to send .webp stickers.
 
+        Telegram documentation: https://core.telegram.org/bots/api#sendsticker
+
         :param chat_id:
         :param sticker:
         :param data:
@@ -1334,6 +1385,8 @@ class TeleBot:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
+        Telegram documentation: https://core.telegram.org/bots/api#sendvideo
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
         :param duration: Duration of sent video in seconds
@@ -1381,6 +1434,8 @@ class TeleBot:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         
+        Telegram documentation: https://core.telegram.org/bots/api#sendanimation
+
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an
             animation that is already on the Telegram server
@@ -1422,6 +1477,8 @@ class TeleBot:
         """
         As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
             video messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
         
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend
@@ -1455,6 +1512,8 @@ class TeleBot:
         """
         Send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
         
+        Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
+
         :param chat_id:
         :param media:
         :param disable_notification:
@@ -1485,6 +1544,8 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send point on the map.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendlocation
 
         :param chat_id:
         :param latitude:
@@ -1521,6 +1582,8 @@ class TeleBot:
         """
         Use this method to edit live location.
 
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagelivelocation
+
         :param latitude:
         :param longitude:
         :param chat_id:
@@ -1548,6 +1611,8 @@ class TeleBot:
         """
         Use this method to stop updating a live location message sent by the bot
         or via the bot (for inline bots) before live_period expires
+
+        Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
         
         :param chat_id:
         :param message_id:
@@ -1578,6 +1643,8 @@ class TeleBot:
         """
         Use this method to send information about a venue.
         
+        Telegram documentation: https://core.telegram.org/bots/api#sendvenue
+
         :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
         :param latitude: Float : Latitude of the venue
         :param longitude: Float : Longitude of the venue
@@ -1613,6 +1680,25 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
+        """
+        Use this method to send phone contacts.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendcontact
+
+        :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
+        :param phone_number: String : Contact's phone number
+        :param first_name: String : Contact's first name
+        :param last_name: String : Contact's last name
+        :param vcard: String : Additional data about the contact in the form of a vCard, 0-2048 bytes
+        :param disable_notification:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :param timeout:
+        :param allow_sending_without_reply:
+        :param protect_content:
+        :return:
+        """
+        
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
@@ -1625,6 +1711,8 @@ class TeleBot:
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
         its typing status).
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendchataction
 
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
@@ -1655,6 +1743,8 @@ class TeleBot:
         own using invite links, etc., unless unbanned first. 
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#banchatmember
+
         :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
@@ -1675,6 +1765,8 @@ class TeleBot:
         The bot must be an administrator for this to work. By default, this method guarantees that after the call
         the user is not a member of the chat, but will be able to join it. So if the user is a member of the chat
         they will also be removed from the chat. If you don't want this, use the parameter only_if_banned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unbanchatmember
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup or channel
             (in the format @username)
@@ -1699,6 +1791,8 @@ class TeleBot:
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
         the appropriate admin rights. Pass True for all boolean parameters to lift restrictions from a user.
+
+        Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
 
         :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
@@ -1746,6 +1840,8 @@ class TeleBot:
         in the chat for this to work and must have the appropriate admin rights.
         Pass False for all boolean parameters to demote a user.
 
+        Telegram documentation: https://core.telegram.org/bots/api#promotechatmember
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (
             in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
@@ -1780,6 +1876,8 @@ class TeleBot:
         Use this method to set a custom title for an administrator
         in a supergroup promoted by the bot.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setchatadministratorcustomtitle
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
@@ -1798,6 +1896,8 @@ class TeleBot:
         for this to work and must have the appropriate administrator rights. 
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#banchatsenderchat
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
@@ -1810,6 +1910,8 @@ class TeleBot:
         The bot must be an administrator for this to work and must have the appropriate 
         administrator rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unbanchatsenderchat
 
         :params:
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1824,6 +1926,8 @@ class TeleBot:
         Use this method to set default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
         and must have the can_restrict_members admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatpermissions
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
@@ -1841,6 +1945,8 @@ class TeleBot:
         """
         Use this method to create an additional invite link for a chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createchatinvitelink
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -1865,6 +1971,8 @@ class TeleBot:
         Use this method to edit a non-primary invite link created by the bot.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
+        Telegram documentation: https://core.telegram.org/bots/api#editchatinvitelink
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param name: Invite link name; 0-32 characters
@@ -1885,6 +1993,8 @@ class TeleBot:
         Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
             in the chat for this to work and must have the appropriate admin rights.
 
+        Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param invite_link: The invite link to revoke
@@ -1899,6 +2009,8 @@ class TeleBot:
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
 
+        Telegram documentation: https://core.telegram.org/bots/api#exportchatinvitelink
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :return: exported invite link as String on success.
@@ -1910,6 +2022,8 @@ class TeleBot:
         Use this method to approve a chat join request. 
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#approvechatjoinrequest
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
@@ -1923,6 +2037,8 @@ class TeleBot:
         Use this method to decline a chat join request. 
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#declinechatjoinrequest
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
@@ -1939,6 +2055,8 @@ class TeleBot:
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
             setting is off in the target group.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setchatphoto
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
@@ -1954,6 +2072,8 @@ class TeleBot:
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
             setting is off in the target group.
 
+        Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         """
@@ -1964,6 +2084,8 @@ class TeleBot:
         """
         Use this method to get the current list of the bot's commands. 
         Returns List of BotCommand on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmycommands
 
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
@@ -1979,6 +2101,8 @@ class TeleBot:
             language_code: Optional[str]=None) -> bool:
         """
         Use this method to change the list of the bot's commands.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmycommands
 
         :param commands: List of BotCommand. At most 100 commands can be specified.
         :param scope: The scope of users for which the commands are relevant. 
@@ -1996,6 +2120,8 @@ class TeleBot:
         Use this method to delete the list of the bot's commands for the given scope and user language. 
         After deletion, higher level commands will be shown to affected users. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemycommands
         
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
@@ -2013,6 +2139,8 @@ class TeleBot:
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
             setting is off in the target group.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setchattitle
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param title: New chat title, 1-255 characters
@@ -2024,6 +2152,8 @@ class TeleBot:
         """
         Use this method to change the description of a supergroup or a channel.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatdescription
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -2040,6 +2170,8 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#pinchatmessage
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param message_id: Int: Identifier of a message to pin
@@ -2055,6 +2187,8 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#unpinchatmessage
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param message_id: Int: Identifier of a message to unpin
@@ -2067,6 +2201,8 @@ class TeleBot:
         Use this method to unpin a all pinned messages in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinallchatmessages
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -2085,6 +2221,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagetext
 
         :param text:
         :param chat_id:
@@ -2115,6 +2253,8 @@ class TeleBot:
         Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
         Use previously uploaded file via its file_id or specify a URL.
 
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagemedia
+
         :param media:
         :param chat_id:
         :param message_id:
@@ -2134,6 +2274,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagereplymarkup
 
         :param chat_id:
         :param message_id:
@@ -2155,7 +2297,9 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Used to send the game
+        Used to send the game.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendgame
 
         :param chat_id:
         :param game_short_name:
@@ -2183,6 +2327,8 @@ class TeleBot:
         """
         Sets the value of points in the game to a specific user.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setgamecore
+
         :param user_id:
         :param score:
         :param force:
@@ -2203,7 +2349,9 @@ class TeleBot:
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None) -> List[types.GameHighScore]:
         """
-        Gets top points and game play
+        Gets top points and game play.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getgamehighscores
 
         :param user_id:
         :param chat_id:
@@ -2237,6 +2385,8 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Sends invoice.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendinvoice
 
         :param chat_id: Unique identifier for the target private chat
         :param title: Product name
@@ -2308,6 +2458,8 @@ class TeleBot:
         """
         Sends a poll.
 
+        Telegram documentation: https://core.telegram.org/bots/api#sendpoll
+
         :param chat_id:
         :param question:
         :param options: array of str with answers
@@ -2347,6 +2499,8 @@ class TeleBot:
         """
         Stops a poll.
 
+        Telegram documentation: https://core.telegram.org/bots/api#stoppoll
+
         :param chat_id:
         :param message_id:
         :param reply_markup:
@@ -2361,6 +2515,8 @@ class TeleBot:
         """
         Asks for an answer to a shipping question.
 
+        Telegram documentation: https://core.telegram.org/bots/api#answershippingquery
+
         :param shipping_query_id:
         :param ok:
         :param shipping_options:
@@ -2374,6 +2530,8 @@ class TeleBot:
             error_message: Optional[str]=None) -> bool:
         """
         Response to a request for pre-inspection.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerprecheckoutquery
 
         :param pre_checkout_query_id:
         :param ok:
@@ -2391,6 +2549,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagecaption
 
         :param caption:
         :param chat_id:
@@ -2432,6 +2592,8 @@ class TeleBot:
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
 
+        Telegram documentation: https://core.telegram.org/bots/api#answerinlinequery
+
         :param inline_query_id: Unique identifier for the answered query
         :param results: Array of results for the inline query
         :param cache_time: The maximum amount of time in seconds that the result of the inline query
@@ -2456,6 +2618,8 @@ class TeleBot:
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
         the user as a notification at the top of the chat screen or as an alert.
 
+        Telegram documentation: https://core.telegram.org/bots/api#answercallbackquery
+
         :param callback_query_id:
         :param text:
         :param show_alert:
@@ -2471,6 +2635,8 @@ class TeleBot:
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
+
         :param name: Sticker set name
         :param user_id: User identifier
         :param thumb:
@@ -2481,6 +2647,8 @@ class TeleBot:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
         
+        Telegram documentation: https://core.telegram.org/bots/api#getstickerset
+
         :param name:
         :return:
         """
@@ -2492,6 +2660,8 @@ class TeleBot:
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
         
+        Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
+
         :param user_id:
         :param png_sticker:
         :return:
@@ -2511,6 +2681,8 @@ class TeleBot:
         Use this method to create new sticker set owned by a user. 
         The bot will be able to edit the created sticker set.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createnewstickerset
 
         :param user_id:
         :param name:
@@ -2538,6 +2710,8 @@ class TeleBot:
         It's required to pass `png_sticker` or `tgs_sticker`.
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
+
         :param user_id:
         :param name:
         :param emojis:
@@ -2554,6 +2728,8 @@ class TeleBot:
         """
         Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
         
+        Telegram documentation: https://core.telegram.org/bots/api#setstickerpositioninset
+
         :param sticker:
         :param position:
         :return:
@@ -2564,6 +2740,8 @@ class TeleBot:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on success.
        
+        Telegram documentation: https://core.telegram.org/bots/api#deletestickerfromset
+
         :param sticker:
         :return:
         """
@@ -3206,6 +3384,7 @@ class TeleBot:
     def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers edited channel post message handler.
+
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
