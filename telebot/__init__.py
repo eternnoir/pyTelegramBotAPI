@@ -3675,8 +3675,9 @@ class TeleBot:
         :param message:
         :return:
         """
-        if self.middlewares: middlewares = [i for i in self.middlewares if update_type in i.update_types]
-        if not middlewares: return
+        middlewares = None
+        if self.middlewares: 
+            middlewares = [i for i in self.middlewares if update_type in i.update_types]
         return middlewares
 
     def _run_middlewares_and_handler(self, message, handlers, middlewares, *args, **kwargs):
