@@ -72,81 +72,20 @@ class ExceptionHandler:
 
 
 class TeleBot:
-    """ This is TeleBot Class
-    Methods:
-        getMe
-        logOut
-        close
-        sendMessage
-        forwardMessage
-        copyMessage
-        deleteMessage
-        sendPhoto
-        sendAudio
-        sendDocument
-        sendSticker
-        sendVideo
-        sendVenue
-        sendAnimation
-        sendVideoNote
-        sendLocation
-        sendChatAction
-        sendDice
-        sendContact
-        sendInvoice
-        sendMediaGroup
-        getUserProfilePhotos
-        getUpdates
-        getFile
-        sendPoll
-        stopPoll
-        sendGame
-        setGameScore
-        getGameHighScores
-        editMessageText
-        editMessageCaption
-        editMessageMedia
-        editMessageReplyMarkup
-        editMessageLiveLocation
-        stopMessageLiveLocation
-        banChatMember
-        unbanChatMember
-        restrictChatMember
-        promoteChatMember
-        setChatAdministratorCustomTitle
-        setChatPermissions
-        createChatInviteLink
-        editChatInviteLink
-        revokeChatInviteLink
-        exportChatInviteLink
-        setChatStickerSet
-        deleteChatStickerSet
-        createNewStickerSet
-        addStickerToSet
-        deleteStickerFromSet
-        setStickerPositionInSet
-        uploadStickerFile
-        setStickerSetThumb
-        getStickerSet
-        setChatPhoto
-        deleteChatPhoto
-        setChatTitle
-        setChatDescription
-        pinChatMessage
-        unpinChatMessage
-        leaveChat
-        getChat
-        getChatAdministrators
-        getChatMemberCount
-        getChatMember
-        answerCallbackQuery
-        getMyCommands
-        setMyCommands
-        deleteMyCommands
-        answerInlineQuery
-        answerShippingQuery
-        answerPreCheckoutQuery
-        """
+    """
+    This is the main class to deal with bot.
+    It allows you to add handlers for different kind of updates.
+
+    Usage:
+    .. code-block:: python
+
+        from telebot import TeleBot
+        bot = TeleBot('token') # get token from @BotFather
+
+    See more examples in examples/ directory:
+    https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
+
+    """
 
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
