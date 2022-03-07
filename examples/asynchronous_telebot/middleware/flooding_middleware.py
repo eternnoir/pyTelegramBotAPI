@@ -1,8 +1,7 @@
 # Just a little example of middleware handlers
 
-from telebot.asyncio_handler_backends import BaseMiddleware
+from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate
 from telebot.async_telebot import AsyncTeleBot
-from telebot.async_telebot import CancelUpdate
 bot = AsyncTeleBot('TOKEN')
 
 
