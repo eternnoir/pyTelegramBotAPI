@@ -268,21 +268,23 @@ class AsyncTeleBot:
         """
         tasks = []
         for message in messages:
-            middleware = await self.process_middlewares(message, update_type)
+            middleware = await self.process_middlewares(update_type)
             tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
         await asyncio.gather(*tasks)
 
-    async def _run_middlewares_and_handlers(self, handlers, message, middleware):
+    async def _run_middlewares_and_handlers(self, handlers, message, middlewares):
         handler_error = None
         data = {}
         process_handler = True
-        if middleware:
-            middleware_result = await middleware.pre_process(message, data)
-            if isinstance(middleware_result, SkipHandler):
-                await middleware.post_process(message, data, handler_error)
-                process_handler = False
-            if isinstance(middleware_result, CancelUpdate):
-                return
+        
+        if middlewares:
+            for middleware in middlewares:
+                middleware_result = await middleware.pre_process(message, data)
+                if isinstance(middleware_result, SkipHandler):
+                    await middleware.post_process(message, data, handler_error)
+                    process_handler = False
+                if isinstance(middleware_result, CancelUpdate):
+                    return
         for handler in handlers:
             if not process_handler:
                 break
@@ -299,15 +301,20 @@ class AsyncTeleBot:
                     if len(params) == 1:
                         await handler['function'](message)
                         break
-                    if params[1] == 'data' and handler.get('pass_bot') is True:
-                        await handler['function'](message, data, self)
-                        break
-                    elif params[1] == 'data' and handler.get('pass_bot') is False:
-                        await handler['function'](message, data)
-                        break
-                    elif params[1] != 'data' and handler.get('pass_bot') is True:
-                        await handler['function'](message, self)
-                        break
+                    elif len(params) == 2:
+                        if handler['pass_bot']:
+                            await handler['function'](message, self)
+                            break
+                        else:
+                            await handler['function'](message, data)
+                            break
+                    elif len(params) == 3:
+                        if handler['pass_bot'] and params[1] == 'bot':
+                            await handler['function'](message, self, data)
+                            break
+                        else:
+                            await handler['function'](message, data)
+                            break
                 except Exception as e:
                     handler_error = e
 
@@ -317,8 +324,9 @@ class AsyncTeleBot:
                         logging.error(str(e))
                         return
 
-        if middleware:
-            await middleware.post_process(message, data, handler_error)
+        if middlewares:
+            for middleware in middlewares:
+                await middleware.post_process(message, data, handler_error)
     # update handling
     async def process_new_updates(self, updates):
         """
@@ -463,10 +471,10 @@ class AsyncTeleBot:
     async def process_chat_join_request(self, chat_join_request):
         await self._process_updates(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
-    async def process_middlewares(self, update, update_type):
-        for middleware in self.middlewares:
-            if update_type in middleware.update_types:
-                return middleware
+    async def process_middlewares(self, update_type):
+        if self.middlewares:
+            middlewares = [middleware for middleware in self.middlewares if update_type in middleware.update_types]
+            return middlewares
         return None
     
     async def __notify_update(self, new_messages):

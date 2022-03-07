@@ -3088,6 +3088,8 @@ class TeleBot:
             logger.warning("register_message_handler: 'content_types' filter should be List of strings (content types), not string.")
             content_types = [content_types]
 
+        
+
         handler_dict = self._build_handler_dict(callback,
                                                 chat_types=chat_types,
                                                 content_types=content_types,
