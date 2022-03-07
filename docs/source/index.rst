@@ -25,7 +25,7 @@ Pypi: `Pypi <https://pypi.org/project/pyTelegramBotAPI/>`__
 Source: `Github repository <https://github.com/eternnoir/pyTelegramBotAPI>`__
 
 Some features:
--------------
+--------------
 Easy to learn and use.
 
 Easy to understand.

@@ -5,7 +5,6 @@ import logging
 import re
 import time
 import traceback
-import inspect
 from typing import Any, List, Optional, Union
 
 # this imports are used to avoid circular import error
@@ -15,6 +14,7 @@ import telebot.types
 
 # storages
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
+from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler
 
 from inspect import signature
 
@@ -58,106 +58,23 @@ class ExceptionHandler:
         return False
 
 
-class SkipHandler:
-    """
-    Class for skipping handlers.
-    Just return instance of this class 
-    in middleware to skip handler.
-    Update will go to post_process,
-    but will skip execution of handler.
-    """
-
-    def __init__(self) -> None:
-        pass
-
-class CancelUpdate:
-    """
-    Class for canceling updates.
-    Just return instance of this class 
-    in middleware to skip update.
-    Update will skip handler and execution
-    of post_process in middlewares.
-    """
-
-    def __init__(self) -> None:
-        pass
-
 class AsyncTeleBot:
-    """ This is AsyncTeleBot Class
-    Methods:
-        getMe
-        logOut
-        close
-        sendMessage
-        forwardMessage
-        copyMessage
-        deleteMessage
-        sendPhoto
-        sendAudio
-        sendDocument
-        sendSticker
-        sendVideo
-        sendVenue
-        sendAnimation
-        sendVideoNote
-        sendLocation
-        sendChatAction
-        sendDice
-        sendContact
-        sendInvoice
-        sendMediaGroup
-        getUserProfilePhotos
-        getUpdates
-        getFile
-        sendPoll
-        stopPoll
-        sendGame
-        setGameScore
-        getGameHighScores
-        editMessageText
-        editMessageCaption
-        editMessageMedia
-        editMessageReplyMarkup
-        editMessageLiveLocation
-        stopMessageLiveLocation
-        banChatMember
-        unbanChatMember
-        restrictChatMember
-        promoteChatMember
-        setChatAdministratorCustomTitle
-        setChatPermissions
-        createChatInviteLink
-        editChatInviteLink
-        revokeChatInviteLink
-        exportChatInviteLink
-        setChatStickerSet
-        deleteChatStickerSet
-        createNewStickerSet
-        addStickerToSet
-        deleteStickerFromSet
-        setStickerPositionInSet
-        uploadStickerFile
-        setStickerSetThumb
-        getStickerSet
-        setChatPhoto
-        deleteChatPhoto
-        setChatTitle
-        setChatDescription
-        pinChatMessage
-        unpinChatMessage
-        leaveChat
-        getChat
-        getChatAdministrators
-        getChatMemberCount
-        getChatMember
-        answerCallbackQuery
-        getMyCommands
-        setMyCommands
-        deleteMyCommands
-        answerInlineQuery
-        answerShippingQuery
-        answerPreCheckoutQuery
-        """
+    """
+    This is the main asynchronous class for Bot.
+
+    It allows you to add handlers for different kind of updates.
+
+    Usage:
+
+    .. code-block:: python
+
+        from telebot.async_telebot import AsyncTeleBot
+        bot = AsyncTeleBot('token') # get token from @BotFather
+
+    See more examples in examples/ directory:
+    https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
+
+    """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset=None,
                 exception_handler=None, state_storage=StateMemoryStorage()) -> None: # TODO: ADD TYPEHINTS
@@ -195,6 +112,10 @@ class AsyncTeleBot:
         self.middlewares = []
 
     async def close_session(self):
+        """
+        Closes existing session of aiohttp.
+        Use this function if you stop polling.
+        """
         await asyncio_helper.session_manager.session.close()
     async def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
         timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
@@ -210,6 +131,7 @@ class AsyncTeleBot:
         Warning: Do not call this function more than once!
         
         Always get updates.
+
         :param interval: Delay between two update retrivals
         :param non_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
@@ -275,6 +197,7 @@ class AsyncTeleBot:
             request_timeout: int=20, allowed_updates: Optional[List[str]]=None):
         """
         Function to process polling.
+
         :param non_stop: Do not stop polling when an ApiException occurs.
         :param interval: Delay between two update retrivals
         :param timeout: Request connection timeout
@@ -338,27 +261,30 @@ class AsyncTeleBot:
     async def _process_updates(self, handlers, messages, update_type):
         """
         Process updates.
+
         :param handlers:
         :param messages:
         :return:
         """
         tasks = []
         for message in messages:
-            middleware = await self.process_middlewares(message, update_type)
+            middleware = await self.process_middlewares(update_type)
             tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
         await asyncio.gather(*tasks)
 
-    async def _run_middlewares_and_handlers(self, handlers, message, middleware):
+    async def _run_middlewares_and_handlers(self, handlers, message, middlewares):
         handler_error = None
         data = {}
         process_handler = True
-        if middleware:
-            middleware_result = await middleware.pre_process(message, data)
-            if isinstance(middleware_result, SkipHandler):
-                await middleware.post_process(message, data, handler_error)
-                process_handler = False
-            if isinstance(middleware_result, CancelUpdate):
-                return
+        
+        if middlewares:
+            for middleware in middlewares:
+                middleware_result = await middleware.pre_process(message, data)
+                if isinstance(middleware_result, SkipHandler):
+                    await middleware.post_process(message, data, handler_error)
+                    process_handler = False
+                if isinstance(middleware_result, CancelUpdate):
+                    return
         for handler in handlers:
             if not process_handler:
                 break
@@ -375,15 +301,20 @@ class AsyncTeleBot:
                     if len(params) == 1:
                         await handler['function'](message)
                         break
-                    if params[1] == 'data' and handler.get('pass_bot') is True:
-                        await handler['function'](message, data, self)
-                        break
-                    elif params[1] == 'data' and handler.get('pass_bot') is False:
-                        await handler['function'](message, data)
-                        break
-                    elif params[1] != 'data' and handler.get('pass_bot') is True:
-                        await handler['function'](message, self)
-                        break
+                    elif len(params) == 2:
+                        if handler['pass_bot']:
+                            await handler['function'](message, self)
+                            break
+                        else:
+                            await handler['function'](message, data)
+                            break
+                    elif len(params) == 3:
+                        if handler['pass_bot'] and params[1] == 'bot':
+                            await handler['function'](message, self, data)
+                            break
+                        else:
+                            await handler['function'](message, data)
+                            break
                 except Exception as e:
                     handler_error = e
 
@@ -393,10 +324,18 @@ class AsyncTeleBot:
                         logging.error(str(e))
                         return
 
-        if middleware:
-            await middleware.post_process(message, data, handler_error)
+        if middlewares:
+            for middleware in middlewares:
+                await middleware.post_process(message, data, handler_error)
     # update handling
     async def process_new_updates(self, updates):
+        """
+        Process new updates.
+        Just pass list of updates - each update should be
+        instance of Update object.
+
+        :param updates: list of updates
+        """
         upd_count = len(updates)
         logger.info('Received {0} new updates'.format(upd_count))
         if upd_count == 0: return
@@ -532,10 +471,10 @@ class AsyncTeleBot:
     async def process_chat_join_request(self, chat_join_request):
         await self._process_updates(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
-    async def process_middlewares(self, update, update_type):
-        for middleware in self.middlewares:
-            if update_type in middleware.update_types:
-                return middleware
+    async def process_middlewares(self, update_type):
+        if self.middlewares:
+            middlewares = [middleware for middleware in self.middlewares if update_type in middleware.update_types]
+            return middlewares
         return None
     
     async def __notify_update(self, new_messages):
@@ -546,7 +485,8 @@ class AsyncTeleBot:
 
     async def _test_message_handler(self, message_handler, message):
         """
-        Test message handler
+        Test message handler.
+
         :param message_handler:
         :param message:
         :return:
@@ -561,18 +501,25 @@ class AsyncTeleBot:
         return True
 
     def set_update_listener(self, func):
+        """
+        Update listener is a function that gets any update.
+
+        :param func: function that should get update.
+        """
         self.update_listener.append(func)
 
     def add_custom_filter(self, custom_filter):
         """
         Create custom filter.
+
         custom_filter: Class with check(message) method.
         """
         self.custom_filters[custom_filter.key] = custom_filter
 
     async def _test_filter(self, message_filter, filter_value, message):
         """
-        Test filters
+        Test filters.
+
         :param message_filter: Filter type passed in handler
         :param filter_value: Filter value passed in handler
         :param message: Message to test
@@ -594,8 +541,6 @@ class AsyncTeleBot:
         elif message_filter == 'chat_types':
             return message.chat.type in filter_value
         elif message_filter == 'func':
-            if inspect.iscoroutinefunction(filter_value):
-                return await filter_value(message)
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:
             return await self._check_filter(message_filter,filter_value,message)
@@ -604,7 +549,8 @@ class AsyncTeleBot:
 
     async def _check_filter(self, message_filter, filter_value, message):
         """
-        Check up the filter
+        Check up the filter.
+
         :param message_filter:
         :param filter_value:
         :param message:
@@ -623,8 +569,9 @@ class AsyncTeleBot:
 
     def setup_middleware(self, middleware):
         """
-        Setup middleware
-        :param middleware:
+        Setup middleware.
+
+        :param middleware: Middleware-class.
         :return:
         """
         self.middlewares.append(middleware)
@@ -637,29 +584,31 @@ class AsyncTeleBot:
 
         Example:
 
-        bot = TeleBot('TOKEN')
+        .. code-block:: python
 
-        # Handles all messages which text matches regexp.
-        @bot.message_handler(regexp='someregexp')
-        async def command_help(message):
-            bot.send_message(message.chat.id, 'Did someone call for help?')
+            bot = TeleBot('TOKEN')
 
-        # Handles messages in private chat
-        @bot.message_handler(chat_types=['private']) # You can add more chat types
-        async def command_help(message):
-            bot.send_message(message.chat.id, 'Private chat detected, sir!')
+            # Handles all messages which text matches regexp.
+            @bot.message_handler(regexp='someregexp')
+            async def command_help(message):
+                bot.send_message(message.chat.id, 'Did someone call for help?')
 
-        # Handle all sent documents of type 'text/plain'.
-        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
-            content_types=['document'])
-        async def command_handle_document(message):
-            bot.send_message(message.chat.id, 'Document received, sir!')
+            # Handles messages in private chat
+            @bot.message_handler(chat_types=['private']) # You can add more chat types
+            async def command_help(message):
+                bot.send_message(message.chat.id, 'Private chat detected, sir!')
 
-        # Handle all other messages.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
-            'text', 'location', 'contact', 'sticker'])
-        async def async default_command(message):
-            bot.send_message(message.chat.id, "This is the async default command handler.")
+            # Handle all sent documents of type 'text/plain'.
+            @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+                content_types=['document'])
+            async def command_handle_document(message):
+                bot.send_message(message.chat.id, 'Document received, sir!')
+
+            # Handle all other messages.
+            @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+                'text', 'location', 'contact', 'sticker'])
+            async def async default_command(message):
+                bot.send_message(message.chat.id, "This is the async default command handler.")
 
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
@@ -695,7 +644,9 @@ class AsyncTeleBot:
 
     def add_message_handler(self, handler_dict):
         """
-        Adds a message handler
+        Adds a message handler.
+        Note that you should use register_message_handler to add message_handler.
+
         :param handler_dict:
         :return:
         """
@@ -704,6 +655,7 @@ class AsyncTeleBot:
     def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers message handler.
+
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -735,7 +687,8 @@ class AsyncTeleBot:
 
     def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
-        Edit message handler decorator
+        Edit message handler decorator.
+
         :param commands:
         :param regexp:
         :param func:
@@ -771,7 +724,9 @@ class AsyncTeleBot:
 
     def add_edited_message_handler(self, handler_dict):
         """
-        Adds the edit message handler
+        Adds the edit message handler.
+        Note that you should use register_edited_message_handler to add edited_message_handler.
+
         :param handler_dict:
         :return:
         """
@@ -780,6 +735,7 @@ class AsyncTeleBot:
     def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers edited message handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param content_types: list of content_types
@@ -810,7 +766,8 @@ class AsyncTeleBot:
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
-        Channel post handler decorator
+        Channel post handler decorator.
+
         :param commands:
         :param regexp:
         :param func:
@@ -843,7 +800,9 @@ class AsyncTeleBot:
 
     def add_channel_post_handler(self, handler_dict):
         """
-        Adds channel post handler
+        Adds channel post handler.
+        Note that you should use register_channel_post_handler to add channel_post_handler.
+
         :param handler_dict:
         :return:
         """
@@ -852,6 +811,7 @@ class AsyncTeleBot:
     def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers channel post message handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param content_types: list of content_types
@@ -879,7 +839,8 @@ class AsyncTeleBot:
 
     def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
-        Edit channel post handler decorator
+        Edit channel post handler decorator.
+
         :param commands:
         :param regexp:
         :param func:
@@ -912,7 +873,9 @@ class AsyncTeleBot:
 
     def add_edited_channel_post_handler(self, handler_dict):
         """
-        Adds the edit channel post handler
+        Adds the edit channel post handler.
+        Note that you should use register_edited_channel_post_handler to add edited_channel_post_handler.
+
         :param handler_dict:
         :return:
         """
@@ -921,6 +884,7 @@ class AsyncTeleBot:
     def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers edited channel post message handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param content_types: list of content_types
@@ -948,7 +912,8 @@ class AsyncTeleBot:
 
     def inline_handler(self, func, **kwargs):
         """
-        Inline call handler decorator
+        Inline call handler decorator.
+
         :param func:
         :param kwargs:
         :return:
@@ -963,7 +928,9 @@ class AsyncTeleBot:
 
     def add_inline_handler(self, handler_dict):
         """
-        Adds inline call handler
+        Adds inline call handler.
+        Note that you should use register_inline_handler to add inline_handler.
+
         :param handler_dict:
         :return:
         """
@@ -972,6 +939,7 @@ class AsyncTeleBot:
     def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers inline handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -982,7 +950,9 @@ class AsyncTeleBot:
 
     def chosen_inline_handler(self, func, **kwargs):
         """
+
         Description: TBD
+        
         :param func:
         :param kwargs:
         :return:
@@ -998,6 +968,8 @@ class AsyncTeleBot:
     def add_chosen_inline_handler(self, handler_dict):
         """
         Description: TBD
+        Note that you should use register_chosen_inline_handler to add chosen_inline_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1006,6 +978,7 @@ class AsyncTeleBot:
     def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers chosen inline handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1016,7 +989,8 @@ class AsyncTeleBot:
 
     def callback_query_handler(self, func, **kwargs):
         """
-        Callback request handler decorator
+        Callback request handler decorator.
+
         :param func:
         :param kwargs:
         :return:
@@ -1031,7 +1005,9 @@ class AsyncTeleBot:
 
     def add_callback_query_handler(self, handler_dict):
         """
-        Adds a callback request handler
+        Adds a callback request handler.
+        Note that you should use register_callback_query_handler to add callback_query_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1039,7 +1015,8 @@ class AsyncTeleBot:
 
     def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
-        Registers callback query handler..
+        Registers callback query handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1050,7 +1027,8 @@ class AsyncTeleBot:
 
     def shipping_query_handler(self, func, **kwargs):
         """
-        Shipping request handler
+        Shipping request handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1065,7 +1043,9 @@ class AsyncTeleBot:
 
     def add_shipping_query_handler(self, handler_dict):
         """
-        Adds a shipping request handler
+        Adds a shipping request handler.
+        Note that you should use register_shipping_query_handler to add shipping_query_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1074,6 +1054,7 @@ class AsyncTeleBot:
     def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers shipping query handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1084,7 +1065,8 @@ class AsyncTeleBot:
 
     def pre_checkout_query_handler(self, func, **kwargs):
         """
-        Pre-checkout request handler
+        Pre-checkout request handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1099,7 +1081,9 @@ class AsyncTeleBot:
 
     def add_pre_checkout_query_handler(self, handler_dict):
         """
-        Adds a pre-checkout request handler
+        Adds a pre-checkout request handler.
+        Note that you should use register_pre_checkout_query_handler to add pre_checkout_query_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1108,6 +1092,7 @@ class AsyncTeleBot:
     def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers pre-checkout request handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1118,7 +1103,8 @@ class AsyncTeleBot:
 
     def poll_handler(self, func, **kwargs):
         """
-        Poll request handler
+        Poll request handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1133,7 +1119,9 @@ class AsyncTeleBot:
 
     def add_poll_handler(self, handler_dict):
         """
-        Adds a poll request handler
+        Adds a poll request handler.
+        Note that you should use register_poll_handler to add poll_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1142,6 +1130,7 @@ class AsyncTeleBot:
     def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1152,7 +1141,8 @@ class AsyncTeleBot:
 
     def poll_answer_handler(self, func=None, **kwargs):
         """
-        Poll_answer request handler
+        Poll_answer request handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1167,7 +1157,9 @@ class AsyncTeleBot:
 
     def add_poll_answer_handler(self, handler_dict):
         """
-        Adds a poll_answer request handler
+        Adds a poll_answer request handler.
+        Note that you should use register_poll_answer_handler to add poll_answer_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1176,6 +1168,7 @@ class AsyncTeleBot:
     def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll answer handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1186,7 +1179,8 @@ class AsyncTeleBot:
 
     def my_chat_member_handler(self, func=None, **kwargs):
         """
-        my_chat_member handler
+        my_chat_member handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1201,7 +1195,9 @@ class AsyncTeleBot:
 
     def add_my_chat_member_handler(self, handler_dict):
         """
-        Adds a my_chat_member handler
+        Adds a my_chat_member handler.
+        Note that you should use register_my_chat_member_handler to add my_chat_member_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1210,6 +1206,7 @@ class AsyncTeleBot:
     def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers my chat member handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1220,7 +1217,8 @@ class AsyncTeleBot:
 
     def chat_member_handler(self, func=None, **kwargs):
         """
-        chat_member handler
+        chat_member handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1235,7 +1233,9 @@ class AsyncTeleBot:
 
     def add_chat_member_handler(self, handler_dict):
         """
-        Adds a chat_member handler
+        Adds a chat_member handler.
+        Note that you should use register_chat_member_handler to add chat_member_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1244,6 +1244,7 @@ class AsyncTeleBot:
     def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat member handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1254,7 +1255,8 @@ class AsyncTeleBot:
 
     def chat_join_request_handler(self, func=None, **kwargs):
         """
-        chat_join_request handler
+        chat_join_request handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -1269,7 +1271,9 @@ class AsyncTeleBot:
 
     def add_chat_join_request_handler(self, handler_dict):
         """
-        Adds a chat_join_request handler
+        Adds a chat_join_request handler.
+        Note that you should use register_chat_join_request_handler to add chat_join_request_handler.
+
         :param handler_dict:
         :return:
         """
@@ -1278,6 +1282,7 @@ class AsyncTeleBot:
     def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat join request handler.
+
         :param pass_bot:
         :param callback: function to be called
         :param func:
@@ -1289,7 +1294,8 @@ class AsyncTeleBot:
     @staticmethod
     def _build_handler_dict(handler, pass_bot=False, **filters):
         """
-        Builds a dictionary for a handler
+        Builds a dictionary for a handler.
+
         :param handler:
         :param filters:
         :return:
@@ -1303,6 +1309,10 @@ class AsyncTeleBot:
         }
 
     async def skip_updates(self):
+        """
+        Skip existing updates.
+        Only last update will remain on server.
+        """
         await self.get_updates(-1)
         return True
 
@@ -1311,6 +1321,8 @@ class AsyncTeleBot:
     async def get_me(self) -> types.User:
         """
         Returns basic information about the bot in form of a User object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getme
         """
         result = await asyncio_helper.get_me(self.token)
         return types.User.de_json(result)
@@ -1322,10 +1334,15 @@ class AsyncTeleBot:
         On success, a File object is returned. 
         It is guaranteed that the link will be valid for at least 1 hour. 
         When the link expires, a new one can be requested by calling get_file again.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getfile
+
+        :param file_id: 
         """
         return types.File.de_json(await asyncio_helper.get_file(self.token, file_id))
 
     async def get_file_url(self, file_id: str) -> str:
+        
         return await asyncio_helper.get_file_url(self.token, file_id)
 
     async def download_file(self, file_path: str) -> bytes:
@@ -1339,6 +1356,8 @@ class AsyncTeleBot:
         After a successful call, you can immediately log in on a local server, 
         but will not be able to log in back to the cloud Bot API server for 10 minutes. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#logout
         """
         return await asyncio_helper.log_out(self.token)
     
@@ -1349,6 +1368,8 @@ class AsyncTeleBot:
         after server restart.
         The method will return error 429 in the first 10 minutes after the bot is launched. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#close
         """
         return await asyncio_helper.close(self.token)
 
@@ -1369,6 +1390,8 @@ class AsyncTeleBot:
         containing a JSON-serialized Update.
         In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setwebhook
 
         :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
         :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
@@ -1396,6 +1419,8 @@ class AsyncTeleBot:
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
 
+        Telegram documentation: https://core.telegram.org/bots/api#deletewebhook
+
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
         :return: bool
@@ -1413,6 +1438,8 @@ class AsyncTeleBot:
         Use this method to get current webhook status. Requires no parameters.
         If the bot is using getUpdates, will return an object with the url field empty.
 
+        Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo
+
         :param timeout: Integer. Request connection timeout
         :return: On success, returns a WebhookInfo object.
         """
@@ -1423,7 +1450,9 @@ class AsyncTeleBot:
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Retrieves the user profile photos of the person with 'user_id'
-        See https://core.telegram.org/bots/api#getuserprofilephotos
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuserprofilephotos
+
         :param user_id:
         :param offset:
         :param limit:
@@ -1436,6 +1465,9 @@ class AsyncTeleBot:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchat
+
         :param chat_id:
         :return:
         """
@@ -1445,6 +1477,9 @@ class AsyncTeleBot:
     async def leave_chat(self, chat_id: Union[int, str]) -> bool:
         """
         Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#leavechat
+
         :param chat_id:
         :return:
         """
@@ -1455,10 +1490,12 @@ class AsyncTeleBot:
         """
         Use this method to get a list of administrators in a chat.
         On success, returns an Array of ChatMember objects that contains
-            information about all chat administrators except other bots.
-        :param chat_id: Unique identifier for the target chat or username
-            of the target supergroup or channel (in the format @channelusername)
-        :return:
+        information about all chat administrators except other bots.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :return: API reply.
         """
         result = await asyncio_helper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
@@ -1474,6 +1511,9 @@ class AsyncTeleBot:
     async def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
         """
         Use this method to get the number of members in a chat. Returns Int on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmemberscount
+
         :param chat_id:
         :return:
         """
@@ -1486,10 +1526,12 @@ class AsyncTeleBot:
         in the chat for this to work and must have the appropriate admin rights.
         Use the field can_set_sticker_set optionally returned in getChat requests to check
         if the bot can use this method. Returns True on success.
-        :param chat_id: Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
-        :return:
+        :return: API reply.
         """
         result = await asyncio_helper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
         return result
@@ -1499,9 +1541,11 @@ class AsyncTeleBot:
         Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
         optionally returned in getChat requests to check if the bot can use this method. Returns True on success.
-        :param chat_id:	Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
-        :return:
+        
+        Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
+        
+        :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+        :return: API reply.
         """
         result = await asyncio_helper.delete_chat_sticker_set(self.token, chat_id)
         return result
@@ -1509,9 +1553,12 @@ class AsyncTeleBot:
     async def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmember
+
         :param chat_id:
         :param user_id:
-        :return:
+        :return: API reply.
         """
         result = await asyncio_helper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
@@ -1535,6 +1582,8 @@ class AsyncTeleBot:
         Warning: Do not send more than about 4000 characters each message, otherwise you'll risk an HTTP 414 error.
         If you must send more than 4000 characters, 
         use the `split_string` or `smart_split` function in util.py.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendmessage
 
         :param chat_id:
         :param text:
@@ -1564,6 +1613,9 @@ class AsyncTeleBot:
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
+
+        Telegram documentation: https://core.telegram.org/bots/api#forwardmessage
+
         :param disable_notification:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
@@ -1590,6 +1642,9 @@ class AsyncTeleBot:
             timeout: Optional[int]=None) -> int:
         """
         Use this method to copy messages of any kind.
+
+        Telegram documentation: https://core.telegram.org/bots/api#copymessage
+
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
@@ -1613,6 +1668,9 @@ class AsyncTeleBot:
             timeout: Optional[int]=None) -> bool:
         """
         Use this method to delete message. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessage
+
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :param timeout:
@@ -1630,6 +1688,9 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send dices.
+
+        Telegram documentation: https://core.telegram.org/bots/api#senddice
+
         :param chat_id:
         :param emoji:
         :param disable_notification:
@@ -1658,6 +1719,9 @@ class AsyncTeleBot:
             timeout: Optional[int]=None,) -> types.Message:
         """
         Use this method to send photos.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendphoto
+
         :param chat_id:
         :param photo:
         :param caption:
@@ -1695,15 +1759,18 @@ class AsyncTeleBot:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .mp3 format.
-        :param chat_id:Unique identifier for the message recipient
-        :param audio:Audio file to send.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendaudio
+
+        :param chat_id: Unique identifier for the message recipient
+        :param audio: Audio file to send.
         :param caption:
-        :param duration:Duration of the audio in seconds
-        :param performer:Performer
-        :param title:Track name
-        :param reply_to_message_id:If the message is a reply, ID of the original message
+        :param duration: Duration of the audio in seconds
+        :param performer: Performer
+        :param title: Track name
+        :param reply_to_message_id: If the message is a reply, ID of the original message
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param thumb:
@@ -1734,13 +1801,16 @@ class AsyncTeleBot:
         """
         Use this method to send audio files, if you want Telegram clients to display the file
         as a playable voice message.
-        :param chat_id:Unique identifier for the message recipient.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvoice
+
+        :param chat_id: Unique identifier for the message recipient.
         :param voice:
         :param caption:
-        :param duration:Duration of sent audio in seconds
+        :param duration: Duration of sent audio in seconds
         :param reply_to_message_id:
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param caption_entities:
@@ -1773,6 +1843,9 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send general files.
+
+        Telegram documentation: https://core.telegram.org/bots/api#senddocument
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
         :param reply_to_message_id: If the message is a reply, ID of the original message
@@ -1814,6 +1887,9 @@ class AsyncTeleBot:
             data: Union[Any, str]=None) -> types.Message:
         """
         Use this method to send .webp stickers.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendsticker
+
         :param chat_id:
         :param sticker:
         :param reply_to_message_id:
@@ -1854,6 +1930,9 @@ class AsyncTeleBot:
             data: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendvideo
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
         :param duration: Duration of sent video in seconds
@@ -1900,6 +1979,9 @@ class AsyncTeleBot:
             timeout: Optional[int]=None, ) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendanimation
+        
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an
             animation that is already on the Telegram server
@@ -1940,6 +2022,9 @@ class AsyncTeleBot:
         """
         As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
             video messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
+
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend
             a video that is already on the Telegram server
@@ -1971,6 +2056,9 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None) -> List[types.Message]:
         """
         send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
+        
         :param chat_id:
         :param media:
         :param disable_notification:
@@ -2002,6 +2090,9 @@ class AsyncTeleBot:
             
         """
         Use this method to send point on the map.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendlocation
+
         :param chat_id:
         :param latitude:
         :param longitude:
@@ -2035,7 +2126,10 @@ class AsyncTeleBot:
             heading: Optional[int]=None, 
             proximity_alert_radius: Optional[int]=None) -> types.Message:
         """
-        Use this method to edit live location
+        Use this method to edit live location.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagelivelocation
+
         :param latitude:
         :param longitude:
         :param chat_id:
@@ -2062,7 +2156,10 @@ class AsyncTeleBot:
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to stop updating a live location message sent by the bot
-        or via the bot (for inline bots) before live_period expires
+        or via the bot (for inline bots) before live_period expires.
+
+        Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
+
         :param chat_id:
         :param message_id:
         :param inline_message_id:
@@ -2090,6 +2187,9 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send information about a venue.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvenue
+
         :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
         :param latitude: Float : Latitude of the venue
         :param longitude: Float : Longitude of the venue
@@ -2127,6 +2227,9 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send phone contacts.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendcontact
+
         :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
         :param phone_number: String : Contact's phone number
         :param first_name: String : Contact's first name
@@ -2152,6 +2255,9 @@ class AsyncTeleBot:
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
         its typing status).
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendchataction
+
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
                         'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note',
@@ -2180,6 +2286,9 @@ class AsyncTeleBot:
         In the case of supergroups and channels, the user will not be able to return to the chat on their 
         own using invite links, etc., unless unbanned first. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#banchatmember
+
         :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
@@ -2200,6 +2309,8 @@ class AsyncTeleBot:
         The bot must be an administrator for this to work. By async default, this method guarantees that after the call
         the user is not a member of the chat, but will be able to join it. So if the user is a member of the chat
         they will also be removed from the chat. If you don't want this, use the parameter only_if_banned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unbanchatmember
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup or channel
             (in the format @username)
@@ -2225,24 +2336,22 @@ class AsyncTeleBot:
         The bot must be an administrator in the supergroup for this to work and must have
         the appropriate admin rights. Pass True for all boolean parameters to lift restrictions from a user.
 
-        :param chat_id: Int or String : 	Unique identifier for the target group or username of the target supergroup
-            or channel (in the format @channelusername)
+        Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
+
+        :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup or channel (in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
         :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
-        :param can_send_media_messages Pass True, if the user can send audios, documents, photos, videos, video notes
+        :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
             and voice notes, implies can_send_messages
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
         :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
             use inline bots, implies can_send_media_messages
-        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
-            implies can_send_media_messages
-        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
-            Ignored in public supergroups
-        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
-            implies can_invite_users
+        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages, implies can_send_media_messages
+        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
+        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat, implies can_invite_users
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """
@@ -2270,6 +2379,8 @@ class AsyncTeleBot:
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
         Pass False for all boolean parameters to demote a user.
+
+        Telegram documentation: https://core.telegram.org/bots/api#promotechatmember
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (
             in the format @channelusername)
@@ -2305,6 +2416,8 @@ class AsyncTeleBot:
         Use this method to set a custom title for an administrator
         in a supergroup promoted by the bot.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setchatadministratorcustomtitle
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
@@ -2324,7 +2437,8 @@ class AsyncTeleBot:
         for this to work and must have the appropriate administrator rights. 
         Returns True on success.
 
-        :params:
+        Telegram documentation: https://core.telegram.org/bots/api#banchatsenderchat
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
@@ -2337,6 +2451,8 @@ class AsyncTeleBot:
         The bot must be an administrator for this to work and must have the appropriate 
         administrator rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unbanchatsenderchat
 
         :params:
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -2351,6 +2467,8 @@ class AsyncTeleBot:
         Use this method to set async default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
         and must have the can_restrict_members admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatpermissions
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
@@ -2368,6 +2486,8 @@ class AsyncTeleBot:
         """
         Use this method to create an additional invite link for a chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createchatinvitelink
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -2392,6 +2512,8 @@ class AsyncTeleBot:
         Use this method to edit a non-primary invite link created by the bot.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
+        Telegram documentation: https://core.telegram.org/bots/api#editchatinvitelink
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param name: Invite link name; 0-32 characters
@@ -2410,12 +2532,13 @@ class AsyncTeleBot:
         """
         Use this method to revoke an invite link created by the bot.
         Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
-            in the chat for this to work and must have the appropriate admin rights.
+        in the chat for this to work and must have the appropriate admin rights.
 
-        :param chat_id: Id: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
+        Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
+
+        :param chat_id: Id: Unique identifier for the target chat or username of the target channel(in the format @channelusername)
         :param invite_link: The invite link to revoke
-        :return:
+        :return: API reply.
         """
         return types.ChatInviteLink.de_json(
             await asyncio_helper.revoke_chat_invite_link(self.token, chat_id, invite_link)
@@ -2425,6 +2548,8 @@ class AsyncTeleBot:
         """
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#exportchatinvitelink
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -2439,6 +2564,8 @@ class AsyncTeleBot:
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#approvechatjoinrequest
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
@@ -2452,6 +2579,8 @@ class AsyncTeleBot:
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#declinechatjoinrequest
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
@@ -2464,10 +2593,11 @@ class AsyncTeleBot:
         Use this method to set a new profile photo for the chat. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
-        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
+        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatphoto
+
+        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
         :return:
         """
@@ -2479,7 +2609,10 @@ class AsyncTeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         """
@@ -2490,6 +2623,9 @@ class AsyncTeleBot:
         """
         Use this method to get the current list of the bot's commands. 
         Returns List of BotCommand on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmycommands
+
         :param scope: The scope of users for which the commands are relevant. 
             async defaults to BotCommandScopeasync default.
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
@@ -2504,6 +2640,9 @@ class AsyncTeleBot:
             language_code: Optional[str]=None) -> bool:
         """
         Use this method to change the list of the bot's commands.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmycommands
+
         :param commands: List of BotCommand. At most 100 commands can be specified.
         :param scope: The scope of users for which the commands are relevant. 
             async defaults to BotCommandScopeasync default.
@@ -2520,6 +2659,9 @@ class AsyncTeleBot:
         Use this method to delete the list of the bot's commands for the given scope and user language. 
         After deletion, higher level commands will be shown to affected users. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemycommands
+
         :param scope: The scope of users for which the commands are relevant. 
             async defaults to BotCommandScopeasync default.
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
@@ -2534,7 +2676,10 @@ class AsyncTeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchattitle
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param title: New chat title, 1-255 characters
@@ -2546,6 +2691,8 @@ class AsyncTeleBot:
         """
         Use this method to change the description of a supergroup or a channel.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatdescription
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -2561,6 +2708,9 @@ class AsyncTeleBot:
         Use this method to pin a message in a supergroup.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#pinchatmessage
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param message_id: Int: Identifier of a message to pin
@@ -2575,6 +2725,9 @@ class AsyncTeleBot:
         Use this method to unpin specific pinned message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinchatmessage
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param message_id: Int: Identifier of a message to unpin
@@ -2587,6 +2740,9 @@ class AsyncTeleBot:
         Use this method to unpin a all pinned messages in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinallchatmessages
+        
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :return:
@@ -2604,6 +2760,9 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagetext
+
         :param text:
         :param chat_id:
         :param message_id:
@@ -2632,6 +2791,9 @@ class AsyncTeleBot:
         If a message is a part of a message album, then it can be edited only to a photo or a video.
         Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
         Use previously uploaded file via its file_id or specify a URL.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagemedia
+
         :param media:
         :param chat_id:
         :param message_id:
@@ -2651,6 +2813,9 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagereplymarkup
+
         :param chat_id:
         :param message_id:
         :param inline_message_id:
@@ -2671,7 +2836,10 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Used to send the game
+        Used to send the game.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendgame
+
         :param chat_id:
         :param game_short_name:
         :param disable_notification:
@@ -2696,7 +2864,10 @@ class AsyncTeleBot:
             inline_message_id: Optional[str]=None,
             disable_edit_message: Optional[bool]=None) -> Union[types.Message, bool]:
         """
-        Sets the value of points in the game to a specific user
+        Sets the value of points in the game to a specific user.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setgamescore
+
         :param user_id:
         :param score:
         :param force:
@@ -2717,7 +2888,10 @@ class AsyncTeleBot:
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None) -> List[types.GameHighScore]:
         """
-        Gets top points and game play
+        Gets top points and game play.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getgamehighscores
+
         :param user_id:
         :param chat_id:
         :param message_id:
@@ -2748,7 +2922,10 @@ class AsyncTeleBot:
             suggested_tip_amounts: Optional[List[int]]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Sends invoice
+        Sends invoice.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendinvoice
+
         :param chat_id: Unique identifier for the target private chat
         :param title: Product name
         :param description: Product description
@@ -2816,7 +2993,10 @@ class AsyncTeleBot:
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Send polls
+        Send polls.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendpoll
+
         :param chat_id:
         :param question:
         :param options: array of str with answers
@@ -2855,7 +3035,10 @@ class AsyncTeleBot:
             self, chat_id: Union[int, str], message_id: int, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Poll:
         """
-        Stops poll
+        Stops poll.
+
+        Telegram documentation: https://core.telegram.org/bots/api#stoppoll
+
         :param chat_id:
         :param message_id:
         :param reply_markup:
@@ -2868,7 +3051,10 @@ class AsyncTeleBot:
             shipping_options: Optional[List[types.ShippingOption]]=None, 
             error_message: Optional[str]=None) -> bool:
         """
-        Asks for an answer to a shipping question
+        Asks for an answer to a shipping question.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answershippingquery
+
         :param shipping_query_id:
         :param ok:
         :param shipping_options:
@@ -2881,7 +3067,10 @@ class AsyncTeleBot:
             self, pre_checkout_query_id: int, ok: bool, 
             error_message: Optional[str]=None) -> bool:
         """
-        Response to a request for pre-inspection
+        Response to a request for pre-inspection.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerprecheckoutquery
+
         :param pre_checkout_query_id:
         :param ok:
         :param error_message:
@@ -2897,7 +3086,10 @@ class AsyncTeleBot:
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
-        Use this method to edit captions of messages
+        Use this method to edit captions of messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagecaption
+
         :param caption:
         :param chat_id:
         :param message_id:
@@ -2918,6 +3110,7 @@ class AsyncTeleBot:
     async def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
+        
         :param message:
         :param text:
         :param kwargs:
@@ -2936,6 +3129,9 @@ class AsyncTeleBot:
         """
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#answerinlinequery
+        
         :param inline_query_id: Unique identifier for the answered query
         :param results: Array of results for the inline query
         :param cache_time: The maximum amount of time in seconds that the result of the inline query
@@ -2959,6 +3155,9 @@ class AsyncTeleBot:
         """
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
         the user as a notification at the top of the chat screen or as an alert.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#answercallbackquery
+
         :param callback_query_id:
         :param text:
         :param show_alert:
@@ -2973,12 +3172,24 @@ class AsyncTeleBot:
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
+
+        :param name: Sticker set name
+        :param user_id: User identifier 
+        :param thumb: A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height
+            exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size;
+            see https://core.telegram.org/animated_stickers#technical-requirements
+        
         """
         return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
 
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getstickerset
+
         :param name:
         :return:
         """
@@ -2989,6 +3200,10 @@ class AsyncTeleBot:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
+        
+
+        Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
+
         :param user_id:
         :param png_sticker:
         :return:
@@ -3008,6 +3223,9 @@ class AsyncTeleBot:
         Use this method to create new sticker set owned by a user. 
         The bot will be able to edit the created sticker set.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createnewstickerset
+
         :param user_id:
         :param name:
         :param title:
@@ -3034,6 +3252,9 @@ class AsyncTeleBot:
         Use this method to add a new sticker to a set created by the bot. 
         It's required to pass `png_sticker` or `tgs_sticker`.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
+
         :param user_id:
         :param name:
         :param emojis:
@@ -3050,6 +3271,9 @@ class AsyncTeleBot:
     async def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """
         Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setstickerpositioninset
+
         :param sticker:
         :param position:
         :return:
@@ -3059,6 +3283,9 @@ class AsyncTeleBot:
     async def delete_sticker_from_set(self, sticker: str) -> bool:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletestickerfromset
+
         :param sticker:
         :return:
         """
@@ -3068,6 +3295,7 @@ class AsyncTeleBot:
     async def set_state(self, user_id: int, state: str, chat_id: int=None):
         """
         Sets a new state of a user.
+
         :param user_id:
         :param chat_id:
         :param state: new state. can be string or integer.
@@ -3079,6 +3307,7 @@ class AsyncTeleBot:
     async def reset_data(self, user_id: int, chat_id: int=None):
         """
         Reset data for a user in chat.
+
         :param user_id:
         :param chat_id:
         """
@@ -3089,6 +3318,7 @@ class AsyncTeleBot:
     async def delete_state(self, user_id: int, chat_id:int=None):
         """
         Delete the current state of a user.
+
         :param user_id:
         :param chat_id:
         :return:
@@ -3105,6 +3335,7 @@ class AsyncTeleBot:
     async def get_state(self, user_id, chat_id: int=None):
         """
         Get current state of a user.
+
         :param user_id:
         :param chat_id:
         :return: state of a user
@@ -3116,6 +3347,7 @@ class AsyncTeleBot:
     async def add_data(self, user_id: int, chat_id: int=None, **kwargs):
         """
         Add data to states.
+
         :param user_id:
         :param chat_id:
         """

@@ -16,11 +16,15 @@ import telebot.types
 # storage
 from telebot.storage import StatePickleStorage, StateMemoryStorage
 
+
+
 logger = logging.getLogger('TeleBot')
 
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
 )
+
+import inspect
 
 console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
@@ -29,7 +33,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
@@ -68,86 +72,27 @@ class ExceptionHandler:
 
 
 class TeleBot:
-    """ This is TeleBot Class
-    Methods:
-        getMe
-        logOut
-        close
-        sendMessage
-        forwardMessage
-        copyMessage
-        deleteMessage
-        sendPhoto
-        sendAudio
-        sendDocument
-        sendSticker
-        sendVideo
-        sendVenue
-        sendAnimation
-        sendVideoNote
-        sendLocation
-        sendChatAction
-        sendDice
-        sendContact
-        sendInvoice
-        sendMediaGroup
-        getUserProfilePhotos
-        getUpdates
-        getFile
-        sendPoll
-        stopPoll
-        sendGame
-        setGameScore
-        getGameHighScores
-        editMessageText
-        editMessageCaption
-        editMessageMedia
-        editMessageReplyMarkup
-        editMessageLiveLocation
-        stopMessageLiveLocation
-        banChatMember
-        unbanChatMember
-        restrictChatMember
-        promoteChatMember
-        setChatAdministratorCustomTitle
-        setChatPermissions
-        createChatInviteLink
-        editChatInviteLink
-        revokeChatInviteLink
-        exportChatInviteLink
-        setChatStickerSet
-        deleteChatStickerSet
-        createNewStickerSet
-        addStickerToSet
-        deleteStickerFromSet
-        setStickerPositionInSet
-        uploadStickerFile
-        setStickerSetThumb
-        getStickerSet
-        setChatPhoto
-        deleteChatPhoto
-        setChatTitle
-        setChatDescription
-        pinChatMessage
-        unpinChatMessage
-        leaveChat
-        getChat
-        getChatAdministrators
-        getChatMemberCount
-        getChatMember
-        answerCallbackQuery
-        getMyCommands
-        setMyCommands
-        deleteMyCommands
-        answerInlineQuery
-        answerShippingQuery
-        answerPreCheckoutQuery
-        """
+    """
+    This is the main synchronous class for Bot.
+
+    It allows you to add handlers for different kind of updates.
+
+    Usage:
+
+    .. code-block:: python
+
+        from telebot import TeleBot
+        bot = TeleBot('token') # get token from @BotFather
+
+    See more examples in examples/ directory:
+    https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
+
+    """
 
     def __init__(
             self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
             next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
-            suppress_middleware_excepions=False, state_storage=StateMemoryStorage()
+            suppress_middleware_excepions=False, state_storage=StateMemoryStorage(), use_class_middlewares=False
     ):
         """
         :param token: bot API token
@@ -193,7 +138,8 @@ class TeleBot:
 
         self.current_states = state_storage
 
-        if apihelper.ENABLE_MIDDLEWARE:
+        self.use_class_middlewares = use_class_middlewares
+        if apihelper.ENABLE_MIDDLEWARE and not use_class_middlewares:
             self.typed_middleware_handlers = {
                 'message': [],
                 'edited_message': [],
@@ -211,6 +157,13 @@ class TeleBot:
                 'chat_join_request': []
             }
             self.default_middleware_handlers = []
+        if apihelper.ENABLE_MIDDLEWARE and use_class_middlewares:
+            logger.warning(
+                'You are using class based middlewares, but you have '
+                'ENABLE_MIDDLEWARE set to True. This is not recommended.'
+            )
+        self.middlewares = [] if use_class_middlewares else None
+
 
         self.threaded = threaded
         if self.threaded:
@@ -328,6 +281,8 @@ class TeleBot:
         In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
         Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setwebhook
+
         :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
         :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
             See our self-signed guide for details.
@@ -343,7 +298,7 @@ class TeleBot:
             resolved through DNS
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
-        :return:
+        :return: API reply.
         """
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
                                      drop_pending_updates, timeout)
@@ -351,6 +306,8 @@ class TeleBot:
     def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletewebhook
 
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
@@ -362,6 +319,8 @@ class TeleBot:
         """
         Use this method to get current webhook status. Requires no parameters.
         If the bot is using getUpdates, will return an object with the url field empty.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo
 
         :param timeout: Integer. Request connection timeout
         :return: On success, returns a WebhookInfo object.
@@ -377,11 +336,14 @@ class TeleBot:
             long_polling_timeout: int=20) -> List[types.Update]:
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getupdates
+
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :param offset: Integer. Identifier of the first update to be returned.
         :param limit: Integer. Limits the number of updates to be retrieved.
         :param timeout: Integer. Request connection timeout
-        :param long_polling_timeout. Timeout in seconds for long polling.
+        :param long_polling_timeout: Timeout in seconds for long polling.
         :return: array of Updates
         """
         json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates, long_polling_timeout)
@@ -390,6 +352,7 @@ class TeleBot:
     def __skip_updates(self):
         """
         Get and discard all pending updates before first poll of the bot
+
         :return:
         """
         self.get_updates(offset=-1)
@@ -398,6 +361,7 @@ class TeleBot:
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
+        
         :raises ApiException when a call has failed.
         """
         if self.skip_pending:
@@ -410,6 +374,11 @@ class TeleBot:
         self.process_new_updates(updates)
 
     def process_new_updates(self, updates):
+        """
+        Processes new updates. Just pass list of subclasses of Update to this method.
+
+        :param updates: List of Update objects
+        """
         upd_count = len(updates)
         logger.debug('Received {0} new updates'.format(upd_count))
         if upd_count == 0: return
@@ -440,6 +409,7 @@ class TeleBot:
                     else:
                         if update.update_id > self.last_update_id: self.last_update_id = update.update_id
                         continue
+            
                     
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
@@ -519,46 +489,46 @@ class TeleBot:
         self._notify_next_handlers(new_messages)
         self._notify_reply_handlers(new_messages)
         self.__notify_update(new_messages)
-        self._notify_command_handlers(self.message_handlers, new_messages)
+        self._notify_command_handlers(self.message_handlers, new_messages, 'message')
 
     def process_new_edited_messages(self, edited_message):
-        self._notify_command_handlers(self.edited_message_handlers, edited_message)
+        self._notify_command_handlers(self.edited_message_handlers, edited_message, 'edited_message')
 
     def process_new_channel_posts(self, channel_post):
-        self._notify_command_handlers(self.channel_post_handlers, channel_post)
+        self._notify_command_handlers(self.channel_post_handlers, channel_post, 'channel_post')
 
     def process_new_edited_channel_posts(self, edited_channel_post):
-        self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post)
+        self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post, 'edited_channel_post')
 
     def process_new_inline_query(self, new_inline_querys):
-        self._notify_command_handlers(self.inline_handlers, new_inline_querys)
+        self._notify_command_handlers(self.inline_handlers, new_inline_querys, 'inline_query')
 
     def process_new_chosen_inline_query(self, new_chosen_inline_querys):
-        self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_querys)
+        self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_querys, 'chosen_inline_query')
 
     def process_new_callback_query(self, new_callback_querys):
-        self._notify_command_handlers(self.callback_query_handlers, new_callback_querys)
+        self._notify_command_handlers(self.callback_query_handlers, new_callback_querys, 'callback_query')
 
     def process_new_shipping_query(self, new_shipping_querys):
-        self._notify_command_handlers(self.shipping_query_handlers, new_shipping_querys)
+        self._notify_command_handlers(self.shipping_query_handlers, new_shipping_querys, 'shipping_query')
 
     def process_new_pre_checkout_query(self, pre_checkout_querys):
-        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys)
+        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys, 'pre_checkout_query')
 
     def process_new_poll(self, polls):
-        self._notify_command_handlers(self.poll_handlers, polls)
+        self._notify_command_handlers(self.poll_handlers, polls, 'poll')
 
     def process_new_poll_answer(self, poll_answers):
-        self._notify_command_handlers(self.poll_answer_handlers, poll_answers)
+        self._notify_command_handlers(self.poll_answer_handlers, poll_answers, 'poll_answer')
     
     def process_new_my_chat_member(self, my_chat_members):
-        self._notify_command_handlers(self.my_chat_member_handlers, my_chat_members)
+        self._notify_command_handlers(self.my_chat_member_handlers, my_chat_members, 'my_chat_member')
 
     def process_new_chat_member(self, chat_members):
-        self._notify_command_handlers(self.chat_member_handlers, chat_members)
+        self._notify_command_handlers(self.chat_member_handlers, chat_members, 'chat_member')
 
     def process_new_chat_join_request(self, chat_join_request):
-        self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request)
+        self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
     def process_middlewares(self, update):
         for update_type, middlewares in self.typed_middleware_handlers.items():
@@ -632,6 +602,7 @@ class TeleBot:
         Warning: Do not call this function more than once!
         
         Always get updates.
+
         :param interval: Delay between two update retrivals
         :param non_stop: Do not stop polling when an ApiException occurs.
         :param timeout: Request connection timeout
@@ -805,6 +776,8 @@ class TeleBot:
     def get_me(self) -> types.User:
         """
         Returns basic information about the bot in form of a User object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getme
         """
         result = apihelper.get_me(self.token)
         return types.User.de_json(result)
@@ -816,10 +789,19 @@ class TeleBot:
         On success, a File object is returned. 
         It is guaranteed that the link will be valid for at least 1 hour. 
         When the link expires, a new one can be requested by calling get_file again.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getfile
+
+        :param file_id: File identifier
         """
         return types.File.de_json(apihelper.get_file(self.token, file_id))
 
     def get_file_url(self, file_id: str) -> str:
+        """
+        Get a valid URL for downloading a file.
+
+        :param file_id: File identifier to get download URL for.
+        """
         return apihelper.get_file_url(self.token, file_id)
 
     def download_file(self, file_path: str) -> bytes:
@@ -833,6 +815,8 @@ class TeleBot:
         After a successful call, you can immediately log in on a local server, 
         but will not be able to log in back to the cloud Bot API server for 10 minutes. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#logout
         """
         return apihelper.log_out(self.token)
     
@@ -843,6 +827,8 @@ class TeleBot:
         after server restart.
         The method will return error 429 in the first 10 minutes after the bot is launched. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#close
         """
         return apihelper.close(self.token)
 
@@ -850,8 +836,10 @@ class TeleBot:
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Retrieves the user profile photos of the person with 'user_id'
-        See https://core.telegram.org/bots/api#getuserprofilephotos
-        :param user_id:
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuserprofilephotos
+
+        :param user_id: Integer - Unique identifier of the target user
         :param offset:
         :param limit:
         :return: API reply.
@@ -863,8 +851,11 @@ class TeleBot:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchat
+
         :param chat_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat(self.token, chat_id)
         return types.Chat.de_json(result)
@@ -872,8 +863,11 @@ class TeleBot:
     def leave_chat(self, chat_id: Union[int, str]) -> bool:
         """
         Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#leavechat
+
         :param chat_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.leave_chat(self.token, chat_id)
         return result
@@ -882,10 +876,13 @@ class TeleBot:
         """
         Use this method to get a list of administrators in a chat.
         On success, returns an Array of ChatMember objects that contains
-            information about all chat administrators except other bots.
+        information about all chat administrators except other bots.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
+
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
@@ -901,8 +898,11 @@ class TeleBot:
     def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
         """
         Use this method to get the number of members in a chat. Returns Int on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmembercount
+
         :param chat_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
@@ -913,10 +913,12 @@ class TeleBot:
         in the chat for this to work and must have the appropriate admin rights.
         Use the field can_set_sticker_set optionally returned in getChat requests to check
         if the bot can use this method. Returns True on success.
-        :param chat_id: Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
+        
+        Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
-        :return:
+        :return: API reply.
         """
         result = apihelper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
         return result
@@ -926,9 +928,11 @@ class TeleBot:
         Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
         optionally returned in getChat requests to check if the bot can use this method. Returns True on success.
-        :param chat_id:	Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
-        :return:
+        
+        Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
+
+        :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+        :return: API reply.
         """
         result = apihelper.delete_chat_sticker_set(self.token, chat_id)
         return result
@@ -936,9 +940,12 @@ class TeleBot:
     def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmember
+
         :param chat_id:
         :param user_id:
-        :return:
+        :return: API reply.
         """
         result = apihelper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
@@ -961,6 +968,8 @@ class TeleBot:
         If you must send more than 4000 characters, 
         use the `split_string` or `smart_split` function in util.py.
 
+        Telegram documentation: https://core.telegram.org/bots/api#sendmessage
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param text: Text of the message to be sent
         :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
@@ -972,7 +981,7 @@ class TeleBot:
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
         :param timeout:
-        :return:
+        :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -989,6 +998,9 @@ class TeleBot:
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
+
+        Telegram documentation: https://core.telegram.org/bots/api#forwardmessage
+
         :param disable_notification:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
@@ -1015,6 +1027,9 @@ class TeleBot:
             timeout: Optional[int]=None) -> int:
         """
         Use this method to copy messages of any kind.
+
+        Telegram documentation: https://core.telegram.org/bots/api#copymessage
+
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
@@ -1038,6 +1053,9 @@ class TeleBot:
             timeout: Optional[int]=None) -> bool:
         """
         Use this method to delete message. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessage
+
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
         :param timeout:
@@ -1055,6 +1073,9 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send dices.
+
+        Telegram documentation: https://core.telegram.org/bots/api#senddice
+
         :param chat_id:
         :param emoji:
         :param disable_notification:
@@ -1083,6 +1104,9 @@ class TeleBot:
             timeout: Optional[int]=None,) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendphoto
+        
         :param chat_id:
         :param photo:
         :param caption:
@@ -1121,6 +1145,9 @@ class TeleBot:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .mp3 format.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendaudio
+        
         :param chat_id:Unique identifier for the message recipient
         :param audio:Audio file to send.
         :param caption:
@@ -1161,13 +1188,16 @@ class TeleBot:
         """
         Use this method to send audio files, if you want Telegram clients to display the file
         as a playable voice message.
-        :param chat_id:Unique identifier for the message recipient.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvoice
+        
+        :param chat_id: Unique identifier for the message recipient.
         :param voice:
         :param caption:
-        :param duration:Duration of sent audio in seconds
+        :param duration: Duration of sent audio in seconds
         :param reply_to_message_id:
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param caption_entities:
@@ -1201,6 +1231,9 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send general files.
+
+        Telegram documentation: https://core.telegram.org/bots/api#senddocument
+        
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
         :param reply_to_message_id: If the message is a reply, ID of the original message
@@ -1245,6 +1278,9 @@ class TeleBot:
             data: Union[Any, str]=None) -> types.Message:
         """
         Use this method to send .webp stickers.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendsticker
+
         :param chat_id:
         :param sticker:
         :param data:
@@ -1287,6 +1323,9 @@ class TeleBot:
             data: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendvideo
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
         :param duration: Duration of sent video in seconds
@@ -1333,6 +1372,9 @@ class TeleBot:
             timeout: Optional[int]=None, ) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendanimation
+
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an
             animation that is already on the Telegram server
@@ -1374,6 +1416,9 @@ class TeleBot:
         """
         As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
             video messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
+        
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
         :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend
             a video that is already on the Telegram server
@@ -1404,7 +1449,10 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None) -> List[types.Message]:
         """
-        send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+        Send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
+
         :param chat_id:
         :param media:
         :param disable_notification:
@@ -1435,6 +1483,9 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send point on the map.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendlocation
+
         :param chat_id:
         :param latitude:
         :param longitude:
@@ -1468,7 +1519,10 @@ class TeleBot:
             heading: Optional[int]=None, 
             proximity_alert_radius: Optional[int]=None) -> types.Message:
         """
-        Use this method to edit live location
+        Use this method to edit live location.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagelivelocation
+
         :param latitude:
         :param longitude:
         :param chat_id:
@@ -1496,6 +1550,9 @@ class TeleBot:
         """
         Use this method to stop updating a live location message sent by the bot
         or via the bot (for inline bots) before live_period expires
+
+        Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
+        
         :param chat_id:
         :param message_id:
         :param inline_message_id:
@@ -1524,6 +1581,9 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send information about a venue.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#sendvenue
+
         :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
         :param latitude: Float : Latitude of the venue
         :param longitude: Float : Longitude of the venue
@@ -1559,6 +1619,25 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
+        """
+        Use this method to send phone contacts.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendcontact
+
+        :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
+        :param phone_number: String : Contact's phone number
+        :param first_name: String : Contact's first name
+        :param last_name: String : Contact's last name
+        :param vcard: String : Additional data about the contact in the form of a vCard, 0-2048 bytes
+        :param disable_notification:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :param timeout:
+        :param allow_sending_without_reply:
+        :param protect_content:
+        :return:
+        """
+        
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
@@ -1571,6 +1650,9 @@ class TeleBot:
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
         its typing status).
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendchataction
+
         :param chat_id:
         :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
                         'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note',
@@ -1579,7 +1661,7 @@ class TeleBot:
         :return: API reply. :type: boolean
         """
         return apihelper.send_chat_action(self.token, chat_id, action, timeout)
-
+    
     def kick_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
             until_date:Optional[Union[int, datetime]]=None, 
@@ -1599,6 +1681,9 @@ class TeleBot:
         In the case of supergroups and channels, the user will not be able to return to the chat on their 
         own using invite links, etc., unless unbanned first. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#banchatmember
+
         :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
@@ -1619,6 +1704,8 @@ class TeleBot:
         The bot must be an administrator for this to work. By default, this method guarantees that after the call
         the user is not a member of the chat, but will be able to join it. So if the user is a member of the chat
         they will also be removed from the chat. If you don't want this, use the parameter only_if_banned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unbanchatmember
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup or channel
             (in the format @username)
@@ -1644,18 +1731,19 @@ class TeleBot:
         The bot must be an administrator in the supergroup for this to work and must have
         the appropriate admin rights. Pass True for all boolean parameters to lift restrictions from a user.
 
-        :param chat_id: Int or String : 	Unique identifier for the target group or username of the target supergroup
+        Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
+
+        :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
         :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
-        :param can_send_media_messages Pass True, if the user can send audios, documents, photos, videos, video notes
+        :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
             and voice notes, implies can_send_messages
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
-        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
-            use inline bots, implies can_send_media_messages
+        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
             implies can_send_media_messages
         :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
@@ -1689,6 +1777,8 @@ class TeleBot:
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
         Pass False for all boolean parameters to demote a user.
+
+        Telegram documentation: https://core.telegram.org/bots/api#promotechatmember
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (
             in the format @channelusername)
@@ -1724,6 +1814,8 @@ class TeleBot:
         Use this method to set a custom title for an administrator
         in a supergroup promoted by the bot.
 
+        Telegram documentation: https://core.telegram.org/bots/api#setchatadministratorcustomtitle
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
@@ -1742,7 +1834,8 @@ class TeleBot:
         for this to work and must have the appropriate administrator rights. 
         Returns True on success.
 
-        :params:
+        Telegram documentation: https://core.telegram.org/bots/api#banchatsenderchat
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
@@ -1755,6 +1848,8 @@ class TeleBot:
         The bot must be an administrator for this to work and must have the appropriate 
         administrator rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unbanchatsenderchat
 
         :params:
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -1769,6 +1864,8 @@ class TeleBot:
         Use this method to set default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
         and must have the can_restrict_members admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatpermissions
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
@@ -1786,6 +1883,8 @@ class TeleBot:
         """
         Use this method to create an additional invite link for a chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createchatinvitelink
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -1810,6 +1909,8 @@ class TeleBot:
         Use this method to edit a non-primary invite link created by the bot.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
+        Telegram documentation: https://core.telegram.org/bots/api#editchatinvitelink
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param name: Invite link name; 0-32 characters
@@ -1828,7 +1929,9 @@ class TeleBot:
         """
         Use this method to revoke an invite link created by the bot.
         Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
-            in the chat for this to work and must have the appropriate admin rights.
+        in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -1844,6 +1947,8 @@ class TeleBot:
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
 
+        Telegram documentation: https://core.telegram.org/bots/api#exportchatinvitelink
+
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :return: exported invite link as String on success.
@@ -1855,6 +1960,8 @@ class TeleBot:
         Use this method to approve a chat join request. 
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#approvechatjoinrequest
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
@@ -1869,6 +1976,8 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#declinechatjoinrequest
+
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
         :param user_id: Unique identifier of the target user
@@ -1882,7 +1991,10 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatphoto
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
@@ -1895,8 +2007,10 @@ class TeleBot:
         Use this method to delete a chat photo. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
-        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         """
@@ -1907,6 +2021,9 @@ class TeleBot:
         """
         Use this method to get the current list of the bot's commands. 
         Returns List of BotCommand on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmycommands
+
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
@@ -1921,6 +2038,9 @@ class TeleBot:
             language_code: Optional[str]=None) -> bool:
         """
         Use this method to change the list of the bot's commands.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmycommands
+
         :param commands: List of BotCommand. At most 100 commands can be specified.
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
@@ -1937,6 +2057,9 @@ class TeleBot:
         Use this method to delete the list of the bot's commands for the given scope and user language. 
         After deletion, higher level commands will be shown to affected users. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemycommands
+        
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
@@ -1951,7 +2074,10 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchattitle
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param title: New chat title, 1-255 characters
@@ -1963,6 +2089,8 @@ class TeleBot:
         """
         Use this method to change the description of a supergroup or a channel.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatdescription
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
@@ -1978,6 +2106,9 @@ class TeleBot:
         Use this method to pin a message in a supergroup.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#pinchatmessage
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param message_id: Int: Identifier of a message to pin
@@ -1992,6 +2123,9 @@ class TeleBot:
         Use this method to unpin specific pinned message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinchatmessage
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :param message_id: Int: Identifier of a message to unpin
@@ -2004,6 +2138,9 @@ class TeleBot:
         Use this method to unpin a all pinned messages in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinallchatmessages
+
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         :return:
@@ -2021,6 +2158,9 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagetext
+
         :param text:
         :param chat_id:
         :param message_id:
@@ -2049,6 +2189,9 @@ class TeleBot:
         If a message is a part of a message album, then it can be edited only to a photo or a video.
         Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded.
         Use previously uploaded file via its file_id or specify a URL.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagemedia
+
         :param media:
         :param chat_id:
         :param message_id:
@@ -2068,6 +2211,9 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagereplymarkup
+
         :param chat_id:
         :param message_id:
         :param inline_message_id:
@@ -2088,7 +2234,10 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Used to send the game
+        Used to send the game.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendgame
+
         :param chat_id:
         :param game_short_name:
         :param disable_notification:
@@ -2113,7 +2262,10 @@ class TeleBot:
             inline_message_id: Optional[str]=None,
             disable_edit_message: Optional[bool]=None) -> Union[types.Message, bool]:
         """
-        Sets the value of points in the game to a specific user
+        Sets the value of points in the game to a specific user.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setgamecore
+
         :param user_id:
         :param score:
         :param force:
@@ -2134,7 +2286,10 @@ class TeleBot:
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None) -> List[types.GameHighScore]:
         """
-        Gets top points and game play
+        Gets top points and game play.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getgamehighscores
+
         :param user_id:
         :param chat_id:
         :param message_id:
@@ -2166,7 +2321,10 @@ class TeleBot:
             suggested_tip_amounts: Optional[List[int]]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Sends invoice
+        Sends invoice.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendinvoice
+
         :param chat_id: Unique identifier for the target private chat
         :param title: Product name
         :param description: Product description
@@ -2235,7 +2393,10 @@ class TeleBot:
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Send polls
+        Sends a poll.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendpoll
+
         :param chat_id:
         :param question:
         :param options: array of str with answers
@@ -2273,7 +2434,10 @@ class TeleBot:
             self, chat_id: Union[int, str], message_id: int, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Poll:
         """
-        Stops poll
+        Stops a poll.
+
+        Telegram documentation: https://core.telegram.org/bots/api#stoppoll
+
         :param chat_id:
         :param message_id:
         :param reply_markup:
@@ -2286,7 +2450,10 @@ class TeleBot:
             shipping_options: Optional[List[types.ShippingOption]]=None, 
             error_message: Optional[str]=None) -> bool:
         """
-        Asks for an answer to a shipping question
+        Asks for an answer to a shipping question.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answershippingquery
+
         :param shipping_query_id:
         :param ok:
         :param shipping_options:
@@ -2299,7 +2466,10 @@ class TeleBot:
             self, pre_checkout_query_id: int, ok: bool, 
             error_message: Optional[str]=None) -> bool:
         """
-        Response to a request for pre-inspection
+        Response to a request for pre-inspection.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerprecheckoutquery
+
         :param pre_checkout_query_id:
         :param ok:
         :param error_message:
@@ -2315,7 +2485,10 @@ class TeleBot:
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
         """
-        Use this method to edit captions of messages
+        Use this method to edit captions of messages.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagecaption
+
         :param caption:
         :param chat_id:
         :param message_id:
@@ -2336,6 +2509,7 @@ class TeleBot:
     def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
+        
         :param message:
         :param text:
         :param kwargs:
@@ -2354,6 +2528,9 @@ class TeleBot:
         """
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerinlinequery
+
         :param inline_query_id: Unique identifier for the answered query
         :param results: Array of results for the inline query
         :param cache_time: The maximum amount of time in seconds that the result of the inline query
@@ -2377,6 +2554,9 @@ class TeleBot:
         """
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
         the user as a notification at the top of the chat screen or as an alert.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answercallbackquery
+
         :param callback_query_id:
         :param text:
         :param show_alert:
@@ -2391,12 +2571,21 @@ class TeleBot:
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
+
+        :param name: Sticker set name
+        :param user_id: User identifier
+        :param thumb:
         """
         return apihelper.set_sticker_set_thumb(self.token, name, user_id, thumb)
 
     def get_sticker_set(self, name: str) -> types.StickerSet:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getstickerset
+
         :param name:
         :return:
         """
@@ -2407,6 +2596,9 @@ class TeleBot:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
+
         :param user_id:
         :param png_sticker:
         :return:
@@ -2426,6 +2618,9 @@ class TeleBot:
         Use this method to create new sticker set owned by a user. 
         The bot will be able to edit the created sticker set.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createnewstickerset
+
         :param user_id:
         :param name:
         :param title:
@@ -2451,6 +2646,9 @@ class TeleBot:
         Use this method to add a new sticker to a set created by the bot. 
         It's required to pass `png_sticker` or `tgs_sticker`.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
+
         :param user_id:
         :param name:
         :param emojis:
@@ -2466,6 +2664,9 @@ class TeleBot:
     def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """
         Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#setstickerpositioninset
+
         :param sticker:
         :param position:
         :return:
@@ -2475,6 +2676,9 @@ class TeleBot:
     def delete_sticker_from_set(self, sticker: str) -> bool:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on success.
+       
+        Telegram documentation: https://core.telegram.org/bots/api#deletestickerfromset
+
         :param sticker:
         :return:
         """
@@ -2510,6 +2714,7 @@ class TeleBot:
     def _notify_reply_handlers(self, new_messages) -> None:
         """
         Notify handlers of the answers
+
         :param new_messages:
         :return:
         """
@@ -2535,9 +2740,25 @@ class TeleBot:
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
 
+
+    def setup_middleware(self, middleware: BaseMiddleware):
+        """
+        Register middleware
+
+        :param middleware: Subclass of `telebot.handler_backends.BaseMiddleware`
+        :return: None
+        """
+        if not self.use_class_middlewares:
+            logger.warning('Middleware is not enabled. Pass use_class_middlewares=True to enable it.')
+            return
+        self.middlewares.append(middleware)
+        
+
+
     def set_state(self, user_id: int, state: Union[int, str], chat_id: int=None) -> None:
         """
         Sets a new state of a user.
+
         :param user_id:
         :param state: new state. can be string or integer.
         :param chat_id:
@@ -2549,6 +2770,7 @@ class TeleBot:
     def reset_data(self, user_id: int, chat_id: int=None):
         """
         Reset data for a user in chat.
+
         :param user_id:
         :param chat_id:
         """
@@ -2559,6 +2781,7 @@ class TeleBot:
     def delete_state(self, user_id: int, chat_id: int=None) -> None:
         """
         Delete the current state of a user.
+
         :param user_id:
         :param chat_id:
         :return:
@@ -2575,6 +2798,7 @@ class TeleBot:
     def get_state(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
         """
         Get current state of a user.
+
         :param user_id:
         :param chat_id:
         :return: state of a user
@@ -2586,6 +2810,7 @@ class TeleBot:
     def add_data(self, user_id: int, chat_id:int=None, **kwargs):
         """
         Add data to states.
+
         :param user_id:
         :param chat_id:
         """
@@ -2645,6 +2870,7 @@ class TeleBot:
     def _notify_next_handlers(self, new_messages):
         """
         Description: TBD
+
         :param new_messages:
         :return:
         """
@@ -2663,6 +2889,7 @@ class TeleBot:
     def _build_handler_dict(handler, pass_bot=False, **filters):
         """
         Builds a dictionary for a handler
+
         :param handler:
         :param filters:
         :return:
@@ -2685,17 +2912,19 @@ class TeleBot:
 
         Example:
 
-        bot = TeleBot('TOKEN')
+        .. code-block:: python3
 
-        # Print post message text before entering to any post_channel handlers
-        @bot.middleware_handler(update_types=['channel_post', 'edited_channel_post'])
-        def print_channel_post_text(bot_instance, channel_post):
-            print(channel_post.text)
+            bot = TeleBot('TOKEN')
 
-        # Print update id before entering to any handlers
-        @bot.middleware_handler()
-        def print_channel_post_text(bot_instance, update):
-            print(update.update_id)
+            # Print post message text before entering to any post_channel handlers
+            @bot.middleware_handler(update_types=['channel_post', 'edited_channel_post'])
+            def print_channel_post_text(bot_instance, channel_post):
+                print(channel_post.text)
+
+            # Print update id before entering to any handlers
+            @bot.middleware_handler()
+            def print_channel_post_text(bot_instance, update):
+                print(update.update_id)
 
         :param update_types: Optional list of update types that can be passed into the middleware handler.
         """
@@ -2759,29 +2988,31 @@ class TeleBot:
 
         Example:
 
-        bot = TeleBot('TOKEN')
+        .. code-block:: python
 
-        # Handles all messages which text matches regexp.
-        @bot.message_handler(regexp='someregexp')
-        def command_help(message):
-            bot.send_message(message.chat.id, 'Did someone call for help?')
+            bot = TeleBot('TOKEN')
 
-        # Handles messages in private chat
-        @bot.message_handler(chat_types=['private']) # You can add more chat types
-        def command_help(message):
-            bot.send_message(message.chat.id, 'Private chat detected, sir!')
+            # Handles all messages which text matches regexp.
+            @bot.message_handler(regexp='someregexp')
+            def command_help(message):
+                bot.send_message(message.chat.id, 'Did someone call for help?')
 
-        # Handle all sent documents of type 'text/plain'.
-        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
-            content_types=['document'])
-        def command_handle_document(message):
-            bot.send_message(message.chat.id, 'Document received, sir!')
+            # Handles messages in private chat
+            @bot.message_handler(chat_types=['private']) # You can add more chat types
+            def command_help(message):
+                bot.send_message(message.chat.id, 'Private chat detected, sir!')
 
-        # Handle all other messages.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
-            'text', 'location', 'contact', 'sticker'])
-        def default_command(message):
-            bot.send_message(message.chat.id, "This is the default command handler.")
+            # Handle all sent documents of type 'text/plain'.
+            @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+                content_types=['document'])
+            def command_handle_document(message):
+                bot.send_message(message.chat.id, 'Document received, sir!')
+
+            # Handle all other messages.
+            @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+                'text', 'location', 'contact', 'sticker'])
+            def default_command(message):
+                bot.send_message(message.chat.id, "This is the default command handler.")
 
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
@@ -2823,6 +3054,8 @@ class TeleBot:
     def add_message_handler(self, handler_dict):
         """
         Adds a message handler
+        Note that you should use register_message_handler to add message_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -2831,6 +3064,7 @@ class TeleBot:
     def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers message handler.
+
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -2854,6 +3088,8 @@ class TeleBot:
             logger.warning("register_message_handler: 'content_types' filter should be List of strings (content types), not string.")
             content_types = [content_types]
 
+        
+
         handler_dict = self._build_handler_dict(callback,
                                                 chat_types=chat_types,
                                                 content_types=content_types,
@@ -2867,6 +3103,7 @@ class TeleBot:
     def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
         Edit message handler decorator
+
         :param commands:
         :param regexp:
         :param func:
@@ -2908,6 +3145,7 @@ class TeleBot:
     def add_edited_message_handler(self, handler_dict):
         """
         Adds the edit message handler
+        Note that you should use register_edited_message_handler to add edited_message_handler to the bot.
         :param handler_dict:
         :return:
         """
@@ -2916,6 +3154,7 @@ class TeleBot:
     def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
         """
         Registers edited message handler.
+
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -2953,6 +3192,7 @@ class TeleBot:
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Channel post handler decorator
+
         :param commands:
         :param regexp:
         :param func:
@@ -2992,6 +3232,8 @@ class TeleBot:
     def add_channel_post_handler(self, handler_dict):
         """
         Adds channel post handler
+        Note that you should use register_channel_post_handler to add channel_post_handler to the bot.
+        
         :param handler_dict:
         :return:
         """
@@ -3000,6 +3242,7 @@ class TeleBot:
     def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers channel post message handler.
+
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -3034,6 +3277,7 @@ class TeleBot:
     def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Edit channel post handler decorator
+
         :param commands:
         :param regexp:
         :param func:
@@ -3073,6 +3317,8 @@ class TeleBot:
     def add_edited_channel_post_handler(self, handler_dict):
         """
         Adds the edit channel post handler
+        Note that you should use register_edited_channel_post_handler to add edited_channel_post_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3081,6 +3327,7 @@ class TeleBot:
     def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
         """
         Registers edited channel post message handler.
+
         :param callback: function to be called
         :param content_types: list of content_types
         :param commands: list of commands
@@ -3115,6 +3362,7 @@ class TeleBot:
     def inline_handler(self, func, **kwargs):
         """
         Inline call handler decorator
+
         :param func:
         :param kwargs:
         :return:
@@ -3129,6 +3377,8 @@ class TeleBot:
     def add_inline_handler(self, handler_dict):
         """
         Adds inline call handler
+        Note that you should use register_inline_handler to add inline_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3137,6 +3387,7 @@ class TeleBot:
     def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers inline handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3148,6 +3399,7 @@ class TeleBot:
     def chosen_inline_handler(self, func, **kwargs):
         """
         Description: TBD
+
         :param func:
         :param kwargs:
         :return:
@@ -3162,6 +3414,8 @@ class TeleBot:
     def add_chosen_inline_handler(self, handler_dict):
         """
         Description: TBD
+        Note that you should use register_chosen_inline_handler to add chosen_inline_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3181,6 +3435,7 @@ class TeleBot:
     def callback_query_handler(self, func, **kwargs):
         """
         Callback request handler decorator
+
         :param func:
         :param kwargs:
         :return:
@@ -3195,6 +3450,8 @@ class TeleBot:
     def add_callback_query_handler(self, handler_dict):
         """
         Adds a callback request handler
+        Note that you should use register_callback_query_handler to add callback_query_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3202,7 +3459,8 @@ class TeleBot:
 
     def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
-        Registers callback query handler..
+        Registers callback query handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3214,6 +3472,7 @@ class TeleBot:
     def shipping_query_handler(self, func, **kwargs):
         """
         Shipping request handler
+
         :param func:
         :param kwargs:
         :return:
@@ -3227,7 +3486,9 @@ class TeleBot:
 
     def add_shipping_query_handler(self, handler_dict):
         """
-        Adds a shipping request handler
+        Adds a shipping request handler.
+        Note that you should use register_shipping_query_handler to add shipping_query_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3236,6 +3497,7 @@ class TeleBot:
     def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers shipping query handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3247,6 +3509,7 @@ class TeleBot:
     def pre_checkout_query_handler(self, func, **kwargs):
         """
         Pre-checkout request handler
+
         :param func:
         :param kwargs:
         :return:
@@ -3261,6 +3524,8 @@ class TeleBot:
     def add_pre_checkout_query_handler(self, handler_dict):
         """
         Adds a pre-checkout request handler
+        Note that you should use register_pre_checkout_query_handler to add pre_checkout_query_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3269,6 +3534,7 @@ class TeleBot:
     def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers pre-checkout request handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3280,6 +3546,7 @@ class TeleBot:
     def poll_handler(self, func, **kwargs):
         """
         Poll request handler
+
         :param func:
         :param kwargs:
         :return:
@@ -3294,6 +3561,8 @@ class TeleBot:
     def add_poll_handler(self, handler_dict):
         """
         Adds a poll request handler
+        Note that you should use register_poll_handler to add poll_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3302,6 +3571,7 @@ class TeleBot:
     def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3313,6 +3583,7 @@ class TeleBot:
     def poll_answer_handler(self, func=None, **kwargs):
         """
         Poll_answer request handler
+
         :param func:
         :param kwargs:
         :return:
@@ -3326,7 +3597,9 @@ class TeleBot:
 
     def add_poll_answer_handler(self, handler_dict):
         """
-        Adds a poll_answer request handler
+        Adds a poll_answer request handler.
+        Note that you should use register_poll_answer_handler to add poll_answer_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3335,6 +3608,7 @@ class TeleBot:
     def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers poll answer handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3345,7 +3619,8 @@ class TeleBot:
 
     def my_chat_member_handler(self, func=None, **kwargs):
         """
-        my_chat_member handler
+        my_chat_member handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -3359,7 +3634,9 @@ class TeleBot:
 
     def add_my_chat_member_handler(self, handler_dict):
         """
-        Adds a my_chat_member handler
+        Adds a my_chat_member handler.
+        Note that you should use register_my_chat_member_handler to add my_chat_member_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3368,6 +3645,7 @@ class TeleBot:
     def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers my chat member handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3378,7 +3656,8 @@ class TeleBot:
 
     def chat_member_handler(self, func=None, **kwargs):
         """
-        chat_member handler
+        chat_member handler.
+
         :param func:
         :param kwargs:
         :return:
@@ -3392,7 +3671,9 @@ class TeleBot:
 
     def add_chat_member_handler(self, handler_dict):
         """
-        Adds a chat_member handler
+        Adds a chat_member handler.
+        Note that you should use register_chat_member_handler to add chat_member_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3401,6 +3682,7 @@ class TeleBot:
     def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat member handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3412,6 +3694,7 @@ class TeleBot:
     def chat_join_request_handler(self, func=None, **kwargs):
         """
         chat_join_request handler
+
         :param func:
         :param kwargs:
         :return:
@@ -3425,7 +3708,9 @@ class TeleBot:
 
     def add_chat_join_request_handler(self, handler_dict):
         """
-        Adds a chat_join_request handler
+        Adds a chat_join_request handler.
+        Note that you should use register_chat_join_request_handler to add chat_join_request_handler to the bot.
+
         :param handler_dict:
         :return:
         """
@@ -3445,6 +3730,7 @@ class TeleBot:
     def _test_message_handler(self, message_handler, message):
         """
         Test message handler
+
         :param message_handler:
         :param message:
         :return:
@@ -3458,16 +3744,19 @@ class TeleBot:
 
         return True
 
-    def add_custom_filter(self, custom_filter):
+    def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):
         """
         Create custom filter.
+
         custom_filter: Class with check(message) method.
+        :param custom_filter: Custom filter class with key.
         """
         self.custom_filters[custom_filter.key] = custom_filter
 
     def _test_filter(self, message_filter, filter_value, message):
         """
         Test filters
+
         :param message_filter: Filter type passed in handler
         :param filter_value: Filter value passed in handler
         :param message: Message to test
@@ -3500,17 +3789,99 @@ class TeleBot:
             logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
             return False
 
-    def _notify_command_handlers(self, handlers, new_messages):
+    # middleware check-up method
+    def _check_middleware(self, update_type):
         """
-        Notifies command handlers
+        Check middleware
+
+        :param message:
+        :return:
+        """
+        middlewares = None
+        if self.middlewares: 
+            middlewares = [i for i in self.middlewares if update_type in i.update_types]
+        return middlewares
+
+    def _run_middlewares_and_handler(self, message, handlers, middlewares, *args, **kwargs):
+        """
+        This class is made to run handler and middleware in queue.
+
+        :param handler: handler that should be executed.
+        :param middleware: middleware that should be executed.
+        :return:
+        """
+        data = {}
+        params =[]
+        handler_error = None
+        skip_handler = False
+        if middlewares:
+            for middleware in middlewares:
+                result = middleware.pre_process(message, data)
+                # We will break this loop if CancelUpdate is returned
+                # Also, we will not run other middlewares
+                if isinstance(result, CancelUpdate):
+                    return
+                elif isinstance(result, SkipHandler) and skip_handler is False:
+                    skip_handler = True
+
+        try:
+            if handlers and not skip_handler:
+                for handler in handlers:
+                    process_handler = self._test_message_handler(handler, message)
+                    if not process_handler: continue
+                    else:
+                        for i in inspect.signature(handler['function']).parameters:
+                            params.append(i)
+                        if len(params) == 1:
+                            handler['function'](message)
+                
+                        elif len(params) == 2:
+                            if handler.get('pass_bot') is True:
+                                handler['function'](message, self)
+                                
+                            elif handler.get('pass_bot') is False:
+                                handler['function'](message, data)
+                                
+                        elif len(params) == 3:
+                            if params[2] == 'bot' and handler.get('pass_bot') is True:
+                                handler['function'](message, data, self)
+                                
+                            else:
+                                handler['function'](message, self, data)
+                    
+        except Exception as e:
+            handler_error = e
+
+            if not middlewares:
+                if self.exception_handler:
+                    return self.exception_handler.handle(e)
+                logging.error(str(e))
+                return
+        if middlewares:
+            for middleware in middlewares:
+                middleware.post_process(message, data, handler_error)
+
+        
+
+
+    def _notify_command_handlers(self, handlers, new_messages, update_type):
+        """
+        Notifies command handlers.
+
         :param handlers:
         :param new_messages:
         :return:
         """
-        if len(handlers) == 0:
+        if len(handlers) == 0 and not self.use_class_middlewares:
             return
+
         for message in new_messages:
-            for message_handler in handlers:
-                if self._test_message_handler(message_handler, message):
-                    self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
-                    break
+            if self.use_class_middlewares:
+                middleware = self._check_middleware(update_type)
+                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware)
+                return
+            else:
+                for message_handler in handlers:
+                    if self._test_message_handler(message_handler, message):
+                        self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
+                        break
