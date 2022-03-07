@@ -32,3 +32,4 @@ With this type middleware, you can retrieve update immediately after update came
 - If there is an exception in handler, you will get exception parameter with exception class in post_process.
 - Has post_process -> method which works after the handler's execution.
 
+## Take a look at examples for more.
