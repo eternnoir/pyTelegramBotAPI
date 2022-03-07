@@ -356,7 +356,9 @@ def start(message):
     assert message.another_text == message.text + ':changed'
 ```
 There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
-	
+
+#### Class-based middlewares
+There are class-based middlewares. Check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
 	
 #### Custom filters
 Also, you can use built-in custom filters. Or, you can create your own filter.	
@@ -759,7 +761,7 @@ As you can see here, keywords are await and async.
 Asynchronous tasks depend on processor performance. Many asynchronous tasks can run parallelly, while thread tasks will block each other.
 
 ### Differences in AsyncTeleBot
-AsyncTeleBot has different middlewares. See example on [middlewares](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot/middleware)
+AsyncTeleBot is asynchronous. It uses aiohttp instead of requests module.
 	
 ### Examples
 See more examples in our [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot) folder
