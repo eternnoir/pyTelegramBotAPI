@@ -283,7 +283,7 @@ def split_string(text: str, chars_per_string: int) -> List[str]:
 
 
 def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str]:
-    """
+    r"""
     Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
     This is very useful for splitting one giant message into multiples.
     If `chars_per_string` > 4096: `chars_per_string` = 4096.

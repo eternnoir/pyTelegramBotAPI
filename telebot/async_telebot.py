@@ -2344,17 +2344,14 @@ class AsyncTeleBot:
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
         :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
-        :param can_send_media_messages Pass True, if the user can send audios, documents, photos, videos, video notes
-        and voice notes, implies can_send_messages
+        :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
+            and voice notes, implies can_send_messages
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
         :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
-        use inline bots, implies can_send_media_messages
-        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
-        implies can_send_media_messages
-        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
-        Ignored in public supergroups
-        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
-        implies can_invite_users
+            use inline bots, implies can_send_media_messages
+        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages, implies can_send_media_messages
+        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
+        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat, implies can_invite_users
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """

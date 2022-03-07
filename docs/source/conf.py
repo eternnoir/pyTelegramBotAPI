@@ -16,13 +16,14 @@
 
 
 # -- Project information -----------------------------------------------------
+import telebot
 
 project = 'pyTelegramBotAPI'
 copyright = '2022, coder2020official'
 author = 'coder2020official'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = telebot.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,6 +37,7 @@ extensions = [
     'sphinx.ext.autodoc',
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
+    "sphinx_copybutton",
     
 ]
 
@@ -53,14 +55,18 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'furo'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-html_logo = 'logo.png'
+#html_logo = 'logo.png'
 html_theme_options = {
-    'logo_only': True,
-    'display_version': False,
+    "light_css_variables": {
+        "color-brand-primary": "#7C4DFF",
+        "color-brand-content": "#7C4DFF",
+    },
+    "light_logo": "logo.png",
+    "dark_logo": "logo2.png",
 }

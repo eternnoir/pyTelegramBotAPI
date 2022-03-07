@@ -46,6 +46,8 @@ REPLY_MARKUP_TYPES = Union[
 Module : telebot
 """
 
+__version__ = '4.4.0'
+
 
 class Handler:
     """
@@ -916,8 +918,7 @@ class TeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
 
-        :param chat_id: Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
         :return: API reply.
         """
@@ -2913,17 +2914,19 @@ class TeleBot:
 
         Example:
 
-        bot = TeleBot('TOKEN')
+        .. code-block:: python3
 
-        # Print post message text before entering to any post_channel handlers
-        @bot.middleware_handler(update_types=['channel_post', 'edited_channel_post'])
-        def print_channel_post_text(bot_instance, channel_post):
-            print(channel_post.text)
+            bot = TeleBot('TOKEN')
 
-        # Print update id before entering to any handlers
-        @bot.middleware_handler()
-        def print_channel_post_text(bot_instance, update):
-            print(update.update_id)
+            # Print post message text before entering to any post_channel handlers
+            @bot.middleware_handler(update_types=['channel_post', 'edited_channel_post'])
+            def print_channel_post_text(bot_instance, channel_post):
+                print(channel_post.text)
+
+            # Print update id before entering to any handlers
+            @bot.middleware_handler()
+            def print_channel_post_text(bot_instance, update):
+                print(update.update_id)
 
         :param update_types: Optional list of update types that can be passed into the middleware handler.
         """
@@ -2986,7 +2989,7 @@ class TeleBot:
         All message handlers are tested in the order they were added.
 
         Example:
-        
+
         .. code-block:: python
 
             bot = TeleBot('TOKEN')
