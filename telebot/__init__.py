@@ -3876,11 +3876,12 @@ class TeleBot:
             return
 
         for message in new_messages:
-            middleware = self._check_middleware(update_type)
-            if self.use_class_middlewares and middleware:
+            if self.use_class_middlewares:
+                middleware = self._check_middleware(update_type)
                 self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware)
                 return
-            for message_handler in handlers:
-                if self._test_message_handler(message_handler, message):
-                    self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
-                    break
+            else:
+                for message_handler in handlers:
+                    if self._test_message_handler(message_handler, message):
+                        self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
+                        break
