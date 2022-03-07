@@ -159,7 +159,6 @@ class State:
 
 class StatesGroup:
     def __init_subclass__(cls) -> None:
-        # print all variables of a subclass
         for name, value in cls.__dict__.items():
             if not name.startswith('__') and not callable(value) and isinstance(value, State):
                 # change value of that variable
