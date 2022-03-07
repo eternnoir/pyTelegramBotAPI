@@ -1,4 +1,4 @@
-pytest==3.0.2
+pytest
 requests==2.20.0
 wheel==0.24.0
 aiohttp>=3.8.0,<3.9.0
