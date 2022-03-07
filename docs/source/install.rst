@@ -3,8 +3,6 @@ Installation Guide
 ==================
 
 
-:toctree
-
 Using PIP
 ----------
 .. code-block:: bash

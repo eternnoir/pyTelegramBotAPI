@@ -584,29 +584,31 @@ class AsyncTeleBot:
 
         Example:
 
-        bot = TeleBot('TOKEN')
+        .. code-block:: python
 
-        # Handles all messages which text matches regexp.
-        @bot.message_handler(regexp='someregexp')
-        async def command_help(message):
-            bot.send_message(message.chat.id, 'Did someone call for help?')
+            bot = TeleBot('TOKEN')
 
-        # Handles messages in private chat
-        @bot.message_handler(chat_types=['private']) # You can add more chat types
-        async def command_help(message):
-            bot.send_message(message.chat.id, 'Private chat detected, sir!')
+            # Handles all messages which text matches regexp.
+            @bot.message_handler(regexp='someregexp')
+            async def command_help(message):
+                bot.send_message(message.chat.id, 'Did someone call for help?')
 
-        # Handle all sent documents of type 'text/plain'.
-        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
-            content_types=['document'])
-        async def command_handle_document(message):
-            bot.send_message(message.chat.id, 'Document received, sir!')
+            # Handles messages in private chat
+            @bot.message_handler(chat_types=['private']) # You can add more chat types
+            async def command_help(message):
+                bot.send_message(message.chat.id, 'Private chat detected, sir!')
 
-        # Handle all other messages.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
-            'text', 'location', 'contact', 'sticker'])
-        async def async default_command(message):
-            bot.send_message(message.chat.id, "This is the async default command handler.")
+            # Handle all sent documents of type 'text/plain'.
+            @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+                content_types=['document'])
+            async def command_handle_document(message):
+                bot.send_message(message.chat.id, 'Document received, sir!')
+
+            # Handle all other messages.
+            @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+                'text', 'location', 'contact', 'sticker'])
+            async def async default_command(message):
+                bot.send_message(message.chat.id, "This is the async default command handler.")
 
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
@@ -950,6 +952,7 @@ class AsyncTeleBot:
         """
 
         Description: TBD
+        
         :param func:
         :param kwargs:
         :return:
@@ -1487,13 +1490,12 @@ class AsyncTeleBot:
         """
         Use this method to get a list of administrators in a chat.
         On success, returns an Array of ChatMember objects that contains
-            information about all chat administrators except other bots.
+        information about all chat administrators except other bots.
 
         Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
 
-        :param chat_id: Unique identifier for the target chat or username
-            of the target supergroup or channel (in the format @channelusername)
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :return: API reply.
         """
         result = await asyncio_helper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
@@ -1527,10 +1529,9 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
 
-        :param chat_id: Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
-        :return:
+        :return: API reply.
         """
         result = await asyncio_helper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
         return result
@@ -1543,8 +1544,7 @@ class AsyncTeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
         
-        :param chat_id:	Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
+        :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :return: API reply.
         """
         result = await asyncio_helper.delete_chat_sticker_set(self.token, chat_id)
@@ -1767,10 +1767,10 @@ class AsyncTeleBot:
         :param caption:
         :param duration: Duration of the audio in seconds
         :param performer: Performer
-        :param title:Track name
+        :param title: Track name
         :param reply_to_message_id: If the message is a reply, ID of the original message
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param thumb:
@@ -1810,7 +1810,7 @@ class AsyncTeleBot:
         :param duration: Duration of sent audio in seconds
         :param reply_to_message_id:
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param caption_entities:
@@ -2338,24 +2338,23 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
 
-        :param chat_id: Int or String : 	Unique identifier for the target group or username of the target supergroup
-            or channel (in the format @channelusername)
+        :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup or channel (in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
         :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
         :param can_send_media_messages Pass True, if the user can send audios, documents, photos, videos, video notes
-            and voice notes, implies can_send_messages
+        and voice notes, implies can_send_messages
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
         :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
-            use inline bots, implies can_send_media_messages
+        use inline bots, implies can_send_media_messages
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
-            implies can_send_media_messages
+        implies can_send_media_messages
         :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
-            Ignored in public supergroups
+        Ignored in public supergroups
         :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
-            implies can_invite_users
+        implies can_invite_users
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """
@@ -2536,14 +2535,13 @@ class AsyncTeleBot:
         """
         Use this method to revoke an invite link created by the bot.
         Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
-            in the chat for this to work and must have the appropriate admin rights.
+        in the chat for this to work and must have the appropriate admin rights.
 
         Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
 
-        :param chat_id: Id: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
+        :param chat_id: Id: Unique identifier for the target chat or username of the target channel(in the format @channelusername)
         :param invite_link: The invite link to revoke
-        :return:
+        :return: API reply.
         """
         return types.ChatInviteLink.de_json(
             await asyncio_helper.revoke_chat_invite_link(self.token, chat_id, invite_link)
@@ -2598,13 +2596,11 @@ class AsyncTeleBot:
         Use this method to set a new profile photo for the chat. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
-        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatphoto
 
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
+        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
         :return:
         """
@@ -2616,7 +2612,7 @@ class AsyncTeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto
 
@@ -2683,7 +2679,7 @@ class AsyncTeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchattitle
 

@@ -350,24 +350,27 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
     This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)' 
     
     Example:
-    quick_markup({
-        'Twitter': {'url': 'https://twitter.com'},
-        'Facebook': {'url': 'https://facebook.com'},
-        'Back': {'callback_data': 'whatever'}
-    }, row_width=2): 
-        returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
-        and a back button below
 
-    kwargs can be: 
-    {
-        'url': None, 
-        'callback_data': None, 
-        'switch_inline_query': None,
-        'switch_inline_query_current_chat': None,
-        'callback_game': None,
-        'pay': None,
-        'login_url': None
-    }
+    .. code-block:: python
+
+        quick_markup({
+            'Twitter': {'url': 'https://twitter.com'},
+            'Facebook': {'url': 'https://facebook.com'},
+            'Back': {'callback_data': 'whatever'}
+        }, row_width=2): 
+            # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
+            # and a back button below
+
+        # kwargs can be: 
+        {
+            'url': None, 
+            'callback_data': None, 
+            'switch_inline_query': None,
+            'switch_inline_query_current_chat': None,
+            'callback_game': None,
+            'pay': None,
+            'login_url': None
+        }
     
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
     :param row_width: int row width
@@ -484,12 +487,17 @@ def antiflood(function, *args, **kwargs):
     """
     Use this function inside loops in order to avoid getting TooManyRequests error.
     Example:
-
-    from telebot.util import antiflood
-    for chat_id in chat_id_list:
+    
+    .. code-block:: python3
+    
+        from telebot.util import antiflood
+        for chat_id in chat_id_list:
         msg = antiflood(bot.send_message, chat_id, text)
         
-    You want get the
+    :param function:
+    :param args:
+    :param kwargs:
+    :return: None
     """
     from telebot.apihelper import ApiTelegramException
     from time import sleep

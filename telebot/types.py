@@ -1041,9 +1041,9 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     def __init__(self, keyboard=None, row_width=3):
         """
         This object represents an inline keyboard that appears
-            right next to the message it belongs to.
+        right next to the message it belongs to.
         
-        :return:
+        :return: None
         """
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
@@ -1058,10 +1058,10 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         This method adds buttons to the keyboard without exceeding row_width.
 
         E.g. InlineKeyboardMarkup.add("A", "B", "C") yields the json result:
-            {keyboard: [["A"], ["B"], ["C"]]}
+        {keyboard: [["A"], ["B"], ["C"]]}
         when row_width is set to 1.
         When row_width is set to 2, the result:
-            {keyboard: [["A", "B"], ["C"]]}
+        {keyboard: [["A", "B"], ["C"]]}
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
         
         :param args: Array of InlineKeyboardButton to append to the keyboard
@@ -1085,10 +1085,10 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     def row(self, *args):
         """
         Adds a list of InlineKeyboardButton to the keyboard.
-            This method does not consider row_width.
+        This method does not consider row_width.
 
         InlineKeyboardMarkup.row("A").row("B", "C").to_json() outputs:
-            '{keyboard: [["A"], ["B", "C"]]}'
+        '{keyboard: [["A"], ["B", "C"]]}'
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
         
         :param args: Array of InlineKeyboardButton to append to the keyboard
@@ -1100,7 +1100,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     def to_json(self):
         """
         Converts this object to its json representation
-            following the Telegram API guidelines described here:
+        following the Telegram API guidelines described here:
         https://core.telegram.org/bots/api#inlinekeyboardmarkup
         :return:
         """

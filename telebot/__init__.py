@@ -343,7 +343,7 @@ class TeleBot:
         :param offset: Integer. Identifier of the first update to be returned.
         :param limit: Integer. Limits the number of updates to be retrieved.
         :param timeout: Integer. Request connection timeout
-        :param long_polling_timeout. Timeout in seconds for long polling.
+        :param long_polling_timeout: Timeout in seconds for long polling.
         :return: array of Updates
         """
         json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates, long_polling_timeout)
@@ -876,7 +876,7 @@ class TeleBot:
         """
         Use this method to get a list of administrators in a chat.
         On success, returns an Array of ChatMember objects that contains
-            information about all chat administrators except other bots.
+        information about all chat administrators except other bots.
 
         Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
 
@@ -932,8 +932,7 @@ class TeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
 
-        :param chat_id:	Unique identifier for the target chat or username of the target supergroup
-        (in the format @supergroupusername)
+        :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :return: API reply.
         """
         result = apihelper.delete_chat_sticker_set(self.token, chat_id)
@@ -1199,7 +1198,7 @@ class TeleBot:
         :param duration: Duration of sent audio in seconds
         :param reply_to_message_id:
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param caption_entities:
@@ -1663,7 +1662,7 @@ class TeleBot:
         :return: API reply. :type: boolean
         """
         return apihelper.send_chat_action(self.token, chat_id, action, timeout)
-
+    
     def kick_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
             until_date:Optional[Union[int, datetime]]=None, 
@@ -1742,11 +1741,10 @@ class TeleBot:
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
         :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
-        :param can_send_media_messages Pass True, if the user can send audios, documents, photos, videos, video notes
+        :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
             and voice notes, implies can_send_messages
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
-        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
-            use inline bots, implies can_send_media_messages
+        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
             implies can_send_media_messages
         :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
@@ -1932,7 +1930,7 @@ class TeleBot:
         """
         Use this method to revoke an invite link created by the bot.
         Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
-            in the chat for this to work and must have the appropriate admin rights.
+        in the chat for this to work and must have the appropriate admin rights.
 
         Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
 
@@ -1994,7 +1992,7 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatphoto
 
@@ -2010,8 +2008,7 @@ class TeleBot:
         Use this method to delete a chat photo. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
-        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto
 
@@ -2078,7 +2075,7 @@ class TeleBot:
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
         Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-            setting is off in the target group.
+        setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchattitle
 
@@ -2989,30 +2986,32 @@ class TeleBot:
         All message handlers are tested in the order they were added.
 
         Example:
+        
+        .. code-block:: python
 
-        bot = TeleBot('TOKEN')
+            bot = TeleBot('TOKEN')
 
-        # Handles all messages which text matches regexp.
-        @bot.message_handler(regexp='someregexp')
-        def command_help(message):
-            bot.send_message(message.chat.id, 'Did someone call for help?')
+            # Handles all messages which text matches regexp.
+            @bot.message_handler(regexp='someregexp')
+            def command_help(message):
+                bot.send_message(message.chat.id, 'Did someone call for help?')
 
-        # Handles messages in private chat
-        @bot.message_handler(chat_types=['private']) # You can add more chat types
-        def command_help(message):
-            bot.send_message(message.chat.id, 'Private chat detected, sir!')
+            # Handles messages in private chat
+            @bot.message_handler(chat_types=['private']) # You can add more chat types
+            def command_help(message):
+                bot.send_message(message.chat.id, 'Private chat detected, sir!')
 
-        # Handle all sent documents of type 'text/plain'.
-        @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
-            content_types=['document'])
-        def command_handle_document(message):
-            bot.send_message(message.chat.id, 'Document received, sir!')
+            # Handle all sent documents of type 'text/plain'.
+            @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+                content_types=['document'])
+            def command_handle_document(message):
+                bot.send_message(message.chat.id, 'Document received, sir!')
 
-        # Handle all other messages.
-        @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
-            'text', 'location', 'contact', 'sticker'])
-        def default_command(message):
-            bot.send_message(message.chat.id, "This is the default command handler.")
+            # Handle all other messages.
+            @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+                'text', 'location', 'contact', 'sticker'])
+            def default_command(message):
+                bot.send_message(message.chat.id, "This is the default command handler.")
 
         :param commands: Optional list of strings (commands to handle).
         :param regexp: Optional regular expression.
