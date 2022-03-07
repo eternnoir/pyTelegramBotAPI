@@ -16,14 +16,13 @@
 
 
 # -- Project information -----------------------------------------------------
-import telebot
 
 project = 'pyTelegramBotAPI'
 copyright = '2022, coder2020official'
 author = 'coder2020official'
 
 # The full version, including alpha/beta/rc tags
-release = telebot.__version__
+release = '4.4.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,7 +31,6 @@ release = telebot.__version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_rtd_theme',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.autodoc',
     "sphinx.ext.autosummary",
