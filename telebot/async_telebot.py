@@ -318,7 +318,7 @@ class AsyncTeleBot:
                 except Exception as e:
                     handler_error = e
 
-                    if not middleware:
+                    if not middlewares:
                         if self.exception_handler:
                             return self.exception_handler.handle(e)
                         logging.error(str(e))
