@@ -687,6 +687,12 @@ Get help. Discuss. Chat.
 * [Torrent Hunt](https://t.me/torrenthuntbot) by [@Hemantapkh](https://github.com/hemantapkh/torrenthunt). Torrent Hunt bot is a multilingual bot with inline mode support to search and explore torrents from 1337x.to.
 * Translator bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/translate_text_bot). This bot can be use to translate texts. 
 * Digital Cryptocurrency bot by [Areeg Fahad (source)](https://github.com/AREEG94FAHAD/currencies_bot). With this bot, you can now monitor the prices of more than 12 digital Cryptocurrency. 
+* [Resize your image](https://github.com/AREEG94FAHAD/resizeimage_bot) by Areeg Fahad:A Telegram bot for adjusting the size of an image to any size. It can be used to resize the photographs to be suitable for uploading on social media, or any other site.
+* [A Lorem ipsum](https://github.com/AREEG94FAHAD/lorem_ip_bot) by Areeg Fahad:A Lorem ipsum bot supports three languages.
+* [Remaining days](https://github.com/AREEG94FAHAD/remaining_days_bot) by Areeg Fahad: Calculates the number of the days between today and a date.
+* [Convert voice to text]((https://github.com/AREEG94FAHAD/co-voice-txt-and-tran) by Areeg Fahad:A Telegram bot to convert voice to text and translate it.
+* [Photo compressor](https://github.com/AREEG94FAHAD/compression_img_bot) by Areeg Fahad:Compress your photos.
+
 
 
 **Want to have your bot listed here? Just make a pull request.**
