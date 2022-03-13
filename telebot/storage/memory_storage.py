@@ -19,14 +19,14 @@ class StateMemoryStorage(StateStorageBase):
                 return True
         self.data[chat_id] = {user_id: {'state': state, 'data': {}}}
         return True
-    
-    def delete_state(self, chat_id, user_id):
+
+    def delete_state(self, chat_id, user_id, with_data: bool = False):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
-                del self.data[chat_id][user_id]
-                if chat_id == user_id:
-                    del self.data[chat_id]
-                    
+                self.data[chat_id][user_id]['state'] = None
+                if with_data:
+                    self.data[chat_id][user_id]['data'].clear()
+
                 return True
 
         return False

@@ -2556,7 +2556,7 @@ class TeleBot:
             chat_id = user_id
 
         self.current_states.reset_data(chat_id, user_id)
-    def delete_state(self, user_id: int, chat_id: int=None) -> None:
+    def delete_state(self, user_id: int, chat_id: int=None, with_data: bool = False) -> None:
         """
         Delete the current state of a user.
         :param user_id:
@@ -2565,7 +2565,7 @@ class TeleBot:
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.delete_state(chat_id, user_id)
+        self.current_states.delete_state(chat_id, user_id, with_data)
 
     def retrieve_data(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
         if chat_id is None:
