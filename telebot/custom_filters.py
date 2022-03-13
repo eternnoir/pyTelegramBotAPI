@@ -198,6 +198,8 @@ class ChatFilter(AdvancedCustomFilter):
     key = 'chat_id'
 
     def check(self, message, text):
+        if isinstance(text, (str, int)):
+            return str(message.chat.id) == str(text)
         return message.chat.id in text
 
 
