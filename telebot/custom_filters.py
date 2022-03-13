@@ -198,9 +198,15 @@ class ChatFilter(AdvancedCustomFilter):
     key = 'chat_id'
 
     def check(self, message, text):
+        if isinstance(message, types.Message):
+            chat_id = message.chat.id
+        elif isinstance(message, types.CallbackQuery):
+            call = message
+            chat_id = call.message.chat.id
+
         if isinstance(text, (str, int)):
-            return str(message.chat.id) == str(text)
-        return message.chat.id in text
+            return str(chat_id) == str(text)
+        return chat_id in text
 
 
 class ForwardFilter(SimpleCustomFilter):
