@@ -38,7 +38,8 @@ class StateMemoryStorage(StateStorageBase):
             if self.data[chat_id].get(user_id):
                 return self.data[chat_id][user_id]['state']
 
-        return None
+        self.data[chat_id] = {user_id: {'state': None, 'data': {}}}
+        return self.data[chat_id][user_id]['state']
 
     def get_data(self, chat_id, user_id):
         if self.data.get(chat_id):
