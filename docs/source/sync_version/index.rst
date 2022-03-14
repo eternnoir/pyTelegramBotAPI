@@ -33,11 +33,3 @@ handler_backends file
    :undoc-members:
    :show-inheritance:
 
-apihelper
-------------------------
-
-.. automodule:: telebot.apihelper
-   :members:
-   :undoc-members:
-   :show-inheritance:
-

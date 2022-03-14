@@ -31,4 +31,4 @@ async def my_chat_m(message: types.ChatMemberUpdated):
 async def delall(message: types.Message):
     await bot.delete_message(message.chat.id,message.message_id)
 import asyncio
-asyncio.run(bot.polling())
+asyncio.run(bot.polling(allowed_updates=util.update_types))

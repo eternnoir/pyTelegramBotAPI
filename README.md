@@ -1,15 +1,17 @@
 
 [![PyPi Package Version](https://img.shields.io/pypi/v/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
+[![Documentation Status](https://readthedocs.org/projects/pytba/badge/?version=latest)](https://pytba.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/eternnoir/pyTelegramBotAPI.svg?branch=master)](https://travis-ci.org/eternnoir/pyTelegramBotAPI)
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
+[![PyPi status](https://img.shields.io/pypi/status/pytelegrambotapi.svg?style=flat-square)](https://pypi.python.org/pypi/pytelegrambotapi)
 
 # <p align="center">pyTelegramBotAPI
 
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
-<p align="center">Supports both sync and async ways.</p>
+<p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supporting Bot API version: <a href="https://core.telegram.org/bots/api#january-31-2022">5.7</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#january-31-2022">5.7</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 	
@@ -354,7 +356,9 @@ def start(message):
     assert message.another_text == message.text + ':changed'
 ```
 There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
-	
+
+#### Class-based middlewares
+There are class-based middlewares. Check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
 	
 #### Custom filters
 Also, you can use built-in custom filters. Or, you can create your own filter.	
@@ -757,7 +761,7 @@ As you can see here, keywords are await and async.
 Asynchronous tasks depend on processor performance. Many asynchronous tasks can run parallelly, while thread tasks will block each other.
 
 ### Differences in AsyncTeleBot
-AsyncTeleBot has different middlewares. See example on [middlewares](https://github.com/coder2020official/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot/middleware)
+AsyncTeleBot is asynchronous. It uses aiohttp instead of requests module.
 	
 ### Examples
 See more examples in our [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/asynchronous_telebot) folder
@@ -769,7 +773,6 @@ See more examples in our [examples](https://github.com/eternnoir/pyTelegramBotAP
 Telegram Bot API support new type Chat for message.chat.
 
 - Check the ```type``` attribute in ```Chat``` object:
--
 ```python
 if message.chat.type == "private":
     # private chat message
@@ -863,5 +866,6 @@ Here are some examples of template:
 * [Diccionario de la RAE](https://t.me/dleraebot) ([source](https://github.com/studentenherz/dleraebot)) This bot lets you find difinitions of words in Spanish using [RAE's dictionary](https://dle.rae.es/). It features direct message and inline search.
 * [remoteTelegramShell](https://github.com/EnriqueMoran/remoteTelegramShell) by [EnriqueMoran](https://github.com/EnriqueMoran). Control your LinuxOS computer through Telegram.
 * [Pyfram-telegram-bot](https://github.com/skelly37/pyfram-telegram-bot) Query wolframalpha.com and make use of its API through Telegram.
-	
+* [TranslateThisVideoBot](https://gitlab.com/WuerfelDev/translatethisvideo) This Bot can understand spoken text in videos and translate it to English
+
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**

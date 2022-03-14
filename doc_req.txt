@@ -1,1 +1,3 @@
 pytelegrambotapi
+furo
+sphinx_copybutton

@@ -24,8 +24,33 @@ class State:
 
 class StatesGroup:
     def __init_subclass__(cls) -> None:
-        # print all variables of a subclass
+
         for name, value in cls.__dict__.items():
             if not name.startswith('__') and not callable(value) and isinstance(value, State):
                 # change value of that variable
                 value.name = ':'.join((cls.__name__, name))
+
+
+class SkipHandler:
+    """
+    Class for skipping handlers.
+    Just return instance of this class 
+    in middleware to skip handler.
+    Update will go to post_process,
+    but will skip execution of handler.
+    """
+
+    def __init__(self) -> None:
+        pass
+
+class CancelUpdate:
+    """
+    Class for canceling updates.
+    Just return instance of this class 
+    in middleware to skip update.
+    Update will skip handler and execution
+    of post_process in middlewares.
+    """
+
+    def __init__(self) -> None:
+        pass

@@ -28,14 +28,6 @@ Asynchronous storage for states
    :undoc-members:
    :show-inheritance:
 
-asyncio_helper file
--------------------
-
-.. automodule:: telebot.asyncio_helper
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Asyncio handler backends
 ------------------------
