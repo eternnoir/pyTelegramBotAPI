@@ -1,4 +1,5 @@
-pytelegrambotapi
+-r requirements.txt
+
 furo
 sphinx_copybutton
-aiohttp
+git+https://github.com/eternnoir/pyTelegramBotAPI.git
