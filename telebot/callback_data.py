@@ -10,6 +10,7 @@ class CallbackDataFilter:
     def check(self, query):
         """
         Checks if query.data appropriates to specified config
+
         :param query: telebot.types.CallbackQuery
         :return: bool
         """
@@ -50,6 +51,7 @@ class CallbackData:
     def new(self, *args, **kwargs) -> str:
         """
         Generate callback data
+
         :param args: positional parameters of CallbackData instance parts
         :param kwargs: named parameters
         :return: str
@@ -87,6 +89,7 @@ class CallbackData:
     def parse(self, callback_data: str) -> typing.Dict[str, str]:
         """
         Parse data from the callback data
+        
         :param callback_data: string, use to telebot.types.CallbackQuery to parse it from string to a dict
         :return: dict parsed from callback data
         """

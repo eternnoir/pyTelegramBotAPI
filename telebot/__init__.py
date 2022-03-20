@@ -1148,15 +1148,15 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendaudio
         
-        :param chat_id:Unique identifier for the message recipient
-        :param audio:Audio file to send.
+        :param chat_id: Unique identifier for the message recipient
+        :param audio: Audio file to send.
         :param caption:
-        :param duration:Duration of the audio in seconds
-        :param performer:Performer
-        :param title:Track name
-        :param reply_to_message_id:If the message is a reply, ID of the original message
+        :param duration: Duration of the audio in seconds
+        :param performer: Performer
+        :param title: Track name
+        :param reply_to_message_id: If the message is a reply, ID of the original message
         :param reply_markup:
-        :param parse_mode
+        :param parse_mode:
         :param disable_notification:
         :param timeout:
         :param thumb:
@@ -2936,7 +2936,8 @@ class TeleBot:
 
     def add_middleware_handler(self, handler, update_types=None):
         """
-        Add middleware handler
+        Add middleware handler.
+
         :param handler:
         :param update_types:
         :return:
@@ -3146,6 +3147,7 @@ class TeleBot:
         """
         Adds the edit message handler
         Note that you should use register_edited_message_handler to add edited_message_handler to the bot.
+        
         :param handler_dict:
         :return:
         """
@@ -3424,6 +3426,7 @@ class TeleBot:
     def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers chosen inline handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3719,6 +3722,7 @@ class TeleBot:
     def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat join request handler.
+
         :param callback: function to be called
         :param func:
         :param pass_bot: Pass TeleBot to handler.
@@ -3748,7 +3752,7 @@ class TeleBot:
         """
         Create custom filter.
 
-        custom_filter: Class with check(message) method.
+        :param custom_filter: Class with check(message) method.
         :param custom_filter: Custom filter class with key.
         """
         self.custom_filters[custom_filter.key] = custom_filter

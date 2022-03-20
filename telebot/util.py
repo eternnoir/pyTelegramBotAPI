@@ -226,8 +226,9 @@ def pil_image_to_file(image, extension='JPEG', quality='web_low'):
 
 
 def is_command(text: str) -> bool:
-    """
+    r"""
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
+    
     :param text: Text to check.
     :return: True if `text` is a command, else False.
     """
@@ -452,6 +453,7 @@ def deprecated(warn: bool=True, alternative: Optional[Callable]=None):
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.
+    
     :param warn: If True a warning is logged else an info
     :param alternative: The new function to use instead
     """

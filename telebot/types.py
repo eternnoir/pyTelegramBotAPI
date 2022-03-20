@@ -69,6 +69,7 @@ class JsonDeserializable(object):
         """
         Checks whether json_type is a dict or a string. If it is already a dict, it is returned as-is.
         If it is not, it is converted to a dict by means of json.loads(json_type)
+        
         :param json_type: input json or parsed dict
         :param dict_copy: if dict is passed and it is changed outside - should be True!
         :return: Dictionary parsed from json or original dict
@@ -943,6 +944,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         when row_width is set to 1.
         When row_width is set to 2, the following is the result of this function: {keyboard: [["A", "B"], ["C"]]}
         See https://core.telegram.org/bots/api#replykeyboardmarkup
+
         :param args: KeyboardButton to append to the keyboard
         :param row_width: width of row
         :return: self, to allow function chaining.
@@ -974,6 +976,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         Adds a list of KeyboardButton to the keyboard. This function does not consider row_width.
         ReplyKeyboardMarkup#row("A")#row("B", "C")#to_json() outputs '{keyboard: [["A"], ["B", "C"]]}'
         See https://core.telegram.org/bots/api#replykeyboardmarkup
+
         :param args: strings
         :return: self, to allow function chaining.
         """
@@ -2399,6 +2402,7 @@ class ShippingOption(JsonSerializable):
     def add_price(self, *args):
         """
         Add LabeledPrice to ShippingOption
+        
         :param args: LabeledPrices
         """
         for price in args:
