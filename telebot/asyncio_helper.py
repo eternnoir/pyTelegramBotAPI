@@ -1200,7 +1200,7 @@ async def edit_message_caption(token, caption, chat_id=None, message_id=None, in
 
 async def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
     method_url = r'editMessageMedia'
-    media_json, file = convert_input_media(media)
+    media_json, file = await convert_input_media(media)
     payload = {'media': media_json}
     if chat_id:
         payload['chat_id'] = chat_id
