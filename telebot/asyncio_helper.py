@@ -67,6 +67,7 @@ async def _process_request(token, url, method='get', params=None, files=None, re
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
                 json_result = await _check_result(url, resp)
                 if json_result:
+                    got_result = True
                     return json_result['result']
         except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
             raise e

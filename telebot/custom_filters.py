@@ -311,7 +311,7 @@ class StateFilter(AdvancedCustomFilter):
             group_state = self.bot.current_states.get_state(user_id, chat_id)
             if group_state == text:
                 return True
-            elif group_state in text and type(text) is list:
+            elif type(text) is list and group_state in text:
                 return True
 
 
