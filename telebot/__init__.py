@@ -3849,6 +3849,9 @@ class TeleBot:
                         elif len(params) == 3:
                             if params[2] == 'bot' and handler.get('pass_bot') is True:
                                 handler['function'](message, data, self)
+                            
+                            elif not handler.get('pass_bot'):
+                                raise RuntimeError('Your handler accepts 3 parameters but pass_bot is False. Please re-check your handler.')
                                 
                             else:
                                 handler['function'](message, self, data)
