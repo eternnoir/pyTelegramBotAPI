@@ -7,7 +7,7 @@ from telebot.handler_backends import State, StatesGroup #States
 from telebot.storage import StateMemoryStorage
 
 
-# Beginning from version 4.4.0+, we support storages.
+# Starting from version 4.4.0+, we support storages.
 # StateRedisStorage -> Redis-based storage.
 # StatePickleStorage -> Pickle-based storage.
 # For redis, you will need to install redis.
