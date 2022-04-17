@@ -971,7 +971,7 @@ def promote_chat_member(
         token, chat_id, user_id, can_change_info=None, can_post_messages=None,
         can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
         can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
-        is_anonymous=None, can_manage_chat=None, can_manage_voice_chats=None):
+        is_anonymous=None, can_manage_chat=None, can_manage_video_chats=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -994,8 +994,8 @@ def promote_chat_member(
         payload['is_anonymous'] = is_anonymous
     if can_manage_chat is not None:
         payload['can_manage_chat'] = can_manage_chat
-    if can_manage_voice_chats is not None:
-        payload['can_manage_voice_chats'] = can_manage_voice_chats
+    if can_manage_video_chats is not None:
+        payload['can_manage_video_chats'] = can_manage_video_chats
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1138,6 +1138,43 @@ def get_my_commands(token, scope=None, language_code=None):
     if language_code:
         payload['language_code'] = language_code
     return _make_request(token, method_url, params=payload)
+
+def set_chat_menu_button(token, chat_id=None, menu_button=None):
+    method_url = r'setChatMenuButton'
+    payload = {}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if menu_button:
+        payload['menu_button'] = menu_button.to_json()
+
+    return _make_request(token, method_url, params=payload, method='post')
+
+def get_chat_menu_button(token, chat_id=None):
+    method_url = r'getChatMenuButton'
+    payload = {}
+    if chat_id:
+        payload['chat_id'] = chat_id
+
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_my_default_administrator_rights(token, rights=None, for_channels=None):
+    method_url = r'setMyDefaultAdministratorRights'
+    payload = {}
+    if rights:
+        payload['rights'] = rights.to_json()
+    if for_channels:
+        payload['for_channels'] = for_channels
+
+    return _make_request(token, method_url, params=payload, method='post')
+
+def get_my_default_administrator_rights(token, for_channels=None):
+    method_url = r'getMyDefaultAdministratorRights'
+    payload = {}
+    if for_channels:
+        payload['for_channels'] = for_channels
+
+    return _make_request(token, method_url, params=payload, method='post')
 
 
 def set_my_commands(token, commands, scope=None, language_code=None):
@@ -1590,6 +1627,11 @@ def delete_sticker_from_set(token, sticker):
     payload = {'sticker': sticker}
     return _make_request(token, method_url, params=payload, method='post')
 
+def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
+    method_url = 'answerWebAppQuery'
+    result = result.to_json()
+    payload = {'query_id': web_app_query_id, 'result': result}
+    return _make_request(token, method_url, params=payload, method='post')
 
 # noinspection PyShadowingBuiltins
 def send_poll(
@@ -1661,6 +1703,7 @@ def _convert_list_json_serializable(results):
     if len(ret) > 0:
         ret = ret[:-1]
     return '[' + ret + ']'
+
 
 
 def _convert_markup(markup):

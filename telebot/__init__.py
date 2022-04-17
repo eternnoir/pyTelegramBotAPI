@@ -1772,6 +1772,7 @@ class TeleBot:
             can_promote_members: Optional[bool]=None,
             is_anonymous: Optional[bool]=None, 
             can_manage_chat: Optional[bool]=None, 
+            can_manage_video_chats: Optional[bool]=None,
             can_manage_voice_chats: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
@@ -1798,15 +1799,20 @@ class TeleBot:
             message statistics in channels, see channel members, 
             see anonymous administrators in supergroups and ignore slow mode. 
             Implied by any other administrator privilege
-        :param can_manage_voice_chats: Bool: Pass True, if the administrator can manage voice chats
+        :param can_manage_video_chats: Bool: Pass True, if the administrator can manage voice chats
             For now, bots can use this privilege only for passing to other administrators.
+        :param can_manage_voice_chats: Deprecated, use can_manage_video_chats.
+
         :return: True on success.
         """
+        if can_manage_voice_chats and not can_manage_video_chats is None:
+            can_manage_video_chats = can_manage_voice_chats
+
         return apihelper.promote_chat_member(
             self.token, chat_id, user_id, can_change_info, can_post_messages,
             can_edit_messages, can_delete_messages, can_invite_users,
             can_restrict_members, can_pin_messages, can_promote_members,
-            is_anonymous, can_manage_chat, can_manage_voice_chats)
+            is_anonymous, can_manage_chat, can_manage_video_chats)
 
     def set_chat_administrator_custom_title(
             self, chat_id: Union[int, str], user_id: int, custom_title: str) -> bool:
@@ -2032,6 +2038,71 @@ class TeleBot:
         """
         result = apihelper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
+
+    def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
+                menu_button: types.MenuButton=None) -> bool:
+        """
+        Use this method to change the bot's menu button in a private chat, 
+        or the default menu button. 
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatmenubutton
+
+        :param chat_id: Unique identifier for the target private chat. 
+        If not specified, default bot's menu button will be changed
+        :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
+
+        """
+        return apihelper.set_chat_menu_button(self.token, chat_id, menu_button)
+
+
+    def get_chat_menu_button(self, chat_id: Union[int, str]=None) -> types.MenuButton:
+        """
+        Use this method to get the current value of the bot's menu button
+        in a private chat, or the default menu button.
+        Returns MenuButton on success.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#getchatmenubutton
+
+        :param chat_id: Unique identifier for the target private chat.
+        If not specified, default bot's menu button will be returned
+        :return: types.MenuButton
+
+        """
+        return types.MenuButton.de_json(apihelper.get_chat_menu_button(self.token, chat_id))
+
+
+    def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None, 
+                                    for_channels: bool=None) -> bool:
+        """
+        Use this method to change the default administrator rights requested by the bot
+        when it's added as an administrator to groups or channels.
+        These rights will be suggested to users, but they are are free to modify
+        the list before adding the bot. 
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmydefaultadministratorrights
+
+        :param rights: A JSON-serialized object describing new default administrator rights. If not specified, the default administrator rights will be cleared.
+        :param for_channels: Pass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
+        """
+
+        return apihelper.set_my_default_administrator_rights(self.token, rights, for_channels)
+        
+
+    def get_my_default_administrator_rights(self, for_channels: bool=None) -> types.ChatAdministratorRights:
+        """
+        Use this method to get the current default administrator rights of the bot.
+        Returns ChatAdministratorRights on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmydefaultadministratorrights
+
+        :param for_channels: Pass True to get the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be returned.
+        :return: types.ChatAdministratorRights
+        """
+        
+        return types.ChatAdministratorRights.de_json(apihelper.get_my_default_administrator_rights(self.token, for_channels))
+        
 
     def set_my_commands(self, commands: List[types.BotCommand], 
             scope: Optional[types.BotCommandScope]=None,
@@ -2683,6 +2754,22 @@ class TeleBot:
         :return:
         """
         return apihelper.delete_sticker_from_set(self.token, sticker)
+
+    def answer_web_app_query(self, web_app_query_id: str, result: types.InlineQueryResultBase) -> types.SentWebAppMessage:
+        """
+        Use this method to set the result of an interaction with a Web App and
+        send a corresponding message on behalf of the user to the chat from which
+        the query originated. 
+        On success, a SentWebAppMessage object is returned.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#answerwebappquery
+
+        :param web_app_query_id: Unique identifier for the query to be answered
+        :param result: A JSON-serialized object describing the message to be sent
+        :return:
+        """
+
+        return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
 
     def register_for_reply(
             self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
