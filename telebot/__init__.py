@@ -2049,7 +2049,7 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#setchatmenubutton
 
         :param chat_id: Unique identifier for the target private chat. 
-        If not specified, default bot's menu button will be changed
+            If not specified, default bot's menu button will be changed.
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
 
         """
@@ -2065,7 +2065,7 @@ class TeleBot:
         Telegram Documentation: https://core.telegram.org/bots/api#getchatmenubutton
 
         :param chat_id: Unique identifier for the target private chat.
-        If not specified, default bot's menu button will be returned
+            If not specified, default bot's menu button will be returned.
         :return: types.MenuButton
 
         """
@@ -2100,7 +2100,7 @@ class TeleBot:
         :param for_channels: Pass True to get the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be returned.
         :return: types.ChatAdministratorRights
         """
-        
+
         return types.ChatAdministratorRights.de_json(apihelper.get_my_default_administrator_rights(self.token, for_channels))
         
 

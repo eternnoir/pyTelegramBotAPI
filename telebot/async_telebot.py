@@ -2667,7 +2667,7 @@ class AsyncTeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#setchatmenubutton
 
         :param chat_id: Unique identifier for the target private chat. 
-        If not specified, default bot's menu button will be changed
+            If not specified, default bot's menu button will be changed.
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
 
         """
@@ -2683,7 +2683,7 @@ class AsyncTeleBot:
         Telegram Documentation: https://core.telegram.org/bots/api#getchatmenubutton
 
         :param chat_id: Unique identifier for the target private chat.
-        If not specified, default bot's menu button will be returned
+            If not specified, default bot's menu button will be returned.
         :return: types.MenuButton
 
         """
