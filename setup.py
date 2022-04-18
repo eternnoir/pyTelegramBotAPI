@@ -22,7 +22,7 @@ setup(name='pyTelegramBotAPI',
       packages = find_packages(exclude = ['tests', 'examples']),
       license='GPL2',
       keywords='telegram bot api tools',
-      install_requires=['requests'],
+      install_requires=['aiohttp', 'requests'],
       extras_require={
           'json': 'ujson',
           'PIL': 'Pillow',
