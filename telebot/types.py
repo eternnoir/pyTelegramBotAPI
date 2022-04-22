@@ -1189,7 +1189,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         if self.callback_data:
             json_dict['callback_data'] = self.callback_data
         if self.web_app:
-            json_dict['web_url'] = self.web_app.to_dict()
+            json_dict['web_app'] = self.web_app.to_dict()
         if self.switch_inline_query is not None:
             json_dict['switch_inline_query'] = self.switch_inline_query
         if self.switch_inline_query_current_chat is not None:
