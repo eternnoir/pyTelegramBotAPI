@@ -1501,11 +1501,11 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
 
+    @util.deprecated(deprecation_text="Use get_chat_member_count instead")
     async def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
         This function is deprecated. Use `get_chat_member_count` instead
         """
-        logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead.')
         result = await asyncio_helper.get_chat_member_count(self.token, chat_id)
         return result
     
@@ -1513,7 +1513,7 @@ class AsyncTeleBot:
         """
         Use this method to get the number of members in a chat. Returns Int on success.
 
-        Telegram documentation: https://core.telegram.org/bots/api#getchatmemberscount
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmembercount
 
         :param chat_id:
         :return:
