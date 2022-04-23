@@ -39,7 +39,7 @@ class TextFilter:
     """
     Advanced text filter to check (types.Message, types.CallbackQuery, types.InlineQuery, types.Poll)
 
-    example of usage is in examples/custom_filters/advanced_text_filter.py
+    example of usage is in examples/asynchronous_telebot/custom_filters/advanced_text_filter.py
     """
 
     def __init__(self,
