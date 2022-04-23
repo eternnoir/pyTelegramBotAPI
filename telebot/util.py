@@ -40,8 +40,8 @@ content_type_media = [
 content_type_service = [
     'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created',
     'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message',
-    'proximity_alert_triggered', 'voice_chat_scheduled', 'voice_chat_started', 'voice_chat_ended',
-    'voice_chat_participants_invited', 'message_auto_delete_timer_changed'
+    'proximity_alert_triggered', 'video_chat_scheduled', 'video_chat_started', 'video_chat_ended',
+    'video_chat_participants_invited', 'message_auto_delete_timer_changed'
 ]
 
 update_types = [
@@ -449,17 +449,22 @@ def generate_random_token():
     return ''.join(random.sample(string.ascii_letters, 16))
 
 
-def deprecated(warn: bool=True, alternative: Optional[Callable]=None):
+def deprecated(warn: bool=True, alternative: Optional[Callable]=None, deprecation_text=None):
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.
     
     :param warn: If True a warning is logged else an info
     :param alternative: The new function to use instead
+    :param deprecation_text: Custom deprecation text
     """
     def decorator(function):
         def wrapper(*args, **kwargs):
-            info = f"`{function.__name__}` is deprecated." + (f" Use `{alternative.__name__}` instead" if alternative else "")
+            info = f"`{function.__name__}` is deprecated."
+            if alternative:
+                info += f" Use `{alternative.__name__}` instead"
+            if deprecation_text:
+                info += " " + deprecation_text
             if not warn:
                 logger.info(info)
             else:
