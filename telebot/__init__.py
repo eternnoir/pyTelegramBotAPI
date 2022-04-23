@@ -179,7 +179,6 @@ class TeleBot:
             self._user = self.get_me()
         return self._user
 
-    @util.deprecated(warn=False, deprecation_text="Most probably this function will be removed in future major releases")
     def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
         """
         Enable saving next step handlers (by default saving disabled)
@@ -202,7 +201,6 @@ class TeleBot:
         self.current_states = StatePickleStorage(file_path=filename)
         self.current_states.create_dir()
 
-    @util.deprecated(warn=False, deprecation_text="Most probably this function will be removed in future major releases")
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
         """
         Enable saving reply handlers (by default saving disable)
@@ -216,7 +214,6 @@ class TeleBot:
         """
         self.reply_backend = FileHandlerBackend(self.reply_backend.handlers, filename, delay)
 
-    @util.deprecated(warn=False, deprecation_text="Most probably this function will be removed in future major releases")
     def disable_save_next_step_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
@@ -227,7 +224,6 @@ class TeleBot:
         """
         self.next_step_backend = MemoryHandlerBackend(self.next_step_backend.handlers)
 
-    @util.deprecated(warn=False, deprecation_text="Most probably this function will be removed in future major releases")
     def disable_save_reply_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
@@ -238,7 +234,6 @@ class TeleBot:
         """
         self.reply_backend = MemoryHandlerBackend(self.reply_backend.handlers)
 
-    @util.deprecated(warn=False, deprecation_text="Most probably this function will be removed in future major releases")
     def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
         """
         Load next step handlers from save file
@@ -252,7 +247,6 @@ class TeleBot:
         """
         self.next_step_backend.load_handlers(filename, del_file_after_loading)
 
-    @util.deprecated(warn=False, deprecation_text="Most probably this function will be removed in future major releases")
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
         """
         Load reply handlers from save file
