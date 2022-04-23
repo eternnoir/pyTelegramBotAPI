@@ -1,0 +1,80 @@
+# Uzbek (Latin) translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-02-19 18:37+0500\n"
+"PO-Revision-Date: 2022-02-18 16:22+0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: uz_Latn\n"
+"Language-Team: uz_Latn <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: keyboards.py:20
+msgid "click"
+msgstr "clik"
+
+#: keyboards.py:29
+msgid "My user id"
+msgstr "Mani user id"
+
+#: keyboards.py:30
+msgid "My user name"
+msgstr "Mani user name"
+
+#: keyboards.py:31
+msgid "My first name"
+msgstr "Mani first name"
+
+#: main.py:97
+msgid ""
+"Hello, {user_fist_name}!\n"
+"This is the example of multilanguage bot.\n"
+"Available commands:\n"
+"\n"
+"/lang - change your language\n"
+"/plural - pluralization example\n"
+"/menu - text menu example"
+msgstr ""
+"Salom, {user_fist_name}!\n"
+"Bu multilanguage bot misoli.\n"
+"Mavjud buyruqlar:\n"
+"\n"
+"/lang - tilni ozgartirish\n"
+"/plural - pluralizatsiya misoli\n"
+"/menu - text menu misoli"
+
+#: main.py:121
+msgid "Language has been changed"
+msgstr "Til ozgartirildi"
+
+#: main.py:130 main.py:150
+msgid "You have {number} click"
+msgid_plural "You have {number} clicks"
+msgstr[0] "Sizda {number}ta clik"
+msgstr[1] "Sizda {number}ta clik"
+
+#: main.py:135 main.py:155
+msgid ""
+"This is clicker.\n"
+"\n"
+msgstr ""
+"Bu clicker.\n"
+"\n"
+
+#: main.py:163
+msgid "This is ReplyKeyboardMarkup menu example in multilanguage bot."
+msgstr "Bu multilanguage bot da replykeyboardmarkup menyu misoli."
+
+#: main.py:203
+msgid "Seems you confused language"
+msgstr "Tilni adashtirdiz"
+
