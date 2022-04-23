@@ -194,14 +194,15 @@ class WebhookInfo(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, url, has_custom_certificate, pending_update_count, ip_address=None, 
-                 last_error_date=None, last_error_message=None, max_connections=None, 
-                 allowed_updates=None, **kwargs):
+                 last_error_date=None, last_error_message=None, last_synchronization_error_date=None,
+                 max_connections=None, allowed_updates=None, **kwargs):
         self.url = url
         self.has_custom_certificate = has_custom_certificate
         self.pending_update_count = pending_update_count
         self.ip_address = ip_address
         self.last_error_date = last_error_date
         self.last_error_message = last_error_message
+        self.last_synchronization_error_date = last_synchronization_error_date
         self.max_connections = max_connections
         self.allowed_updates = allowed_updates
 
@@ -311,6 +312,20 @@ class MessageID(JsonDeserializable):
 
     def __init__(self, message_id, **kwargs):
         self.message_id = message_id
+
+
+class WebAppData(JsonDeserializable):
+    def __init__(self, data, button_text):
+        self.data = data
+        self.button_text = button_text
+    def to_dict(self):
+        return {'data': self.data, 'button_text': self.button_text}
+        
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
 
 
 class Message(JsonDeserializable):
@@ -457,18 +472,25 @@ class Message(JsonDeserializable):
             opts['proximity_alert_triggered'] = ProximityAlertTriggered.de_json(obj[
                 'proximity_alert_triggered'])
             content_type = 'proximity_alert_triggered'
-        if 'voice_chat_scheduled' in obj:
-            opts['voice_chat_scheduled'] = VoiceChatScheduled.de_json(obj['voice_chat_scheduled'])
-            content_type = 'voice_chat_scheduled'
-        if 'voice_chat_started' in obj:
-            opts['voice_chat_started'] = VoiceChatStarted.de_json(obj['voice_chat_started'])
-            content_type = 'voice_chat_started'
-        if 'voice_chat_ended' in obj:
-            opts['voice_chat_ended'] = VoiceChatEnded.de_json(obj['voice_chat_ended'])
-            content_type = 'voice_chat_ended'
-        if 'voice_chat_participants_invited' in obj:
-            opts['voice_chat_participants_invited'] = VoiceChatParticipantsInvited.de_json(obj['voice_chat_participants_invited'])
-            content_type = 'voice_chat_participants_invited'
+        if 'video_chat_scheduled' in obj:
+            opts['video_chat_scheduled'] = VoiceChatScheduled.de_json(obj['video_chat_scheduled'])
+            opts['voice_chat_scheduled'] = opts['video_chat_scheduled']
+            content_type = 'video_chat_scheduled'
+        if 'video_chat_started' in obj:
+            opts['video_chat_started'] = VoiceChatStarted.de_json(obj['video_chat_started'])
+            opts['voice_chat_started'] = opts['video_chat_started']
+            content_type = 'video_chat_started'
+        if 'video_chat_ended' in obj:
+            opts['video_chat_ended'] = VoiceChatEnded.de_json(obj['video_chat_ended'])
+            opts['voice_chat_ended'] = opts['video_chat_ended']
+            content_type = 'video_chat_ended'
+        if 'video_chat_participants_invited' in obj:
+            opts['video_chat_participants_invited'] = VoiceChatParticipantsInvited.de_json(obj['video_chat_participants_invited'])
+            opts['voice_chat_participants_invited'] = opts['video_chat_participants_invited']
+            content_type = 'video_chat_participants_invited'
+        if 'web_app_data' in obj:
+            opts['web_app_data'] = WebAppData.de_json(obj['web_app_data'])
+            content_type = 'web_app_data'
         if 'message_auto_delete_timer_changed' in obj:
             opts['message_auto_delete_timer_changed'] = MessageAutoDeleteTimerChanged.de_json(obj['message_auto_delete_timer_changed'])
             content_type = 'message_auto_delete_timer_changed'
@@ -919,6 +941,20 @@ class ReplyKeyboardRemove(JsonSerializable):
         return json.dumps(json_dict)
 
 
+class WebAppInfo(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, url, **kwargs):
+        self.url: str = url
+
+    def to_dict(self):
+        return {'url': self.url}
+    
+
 class ReplyKeyboardMarkup(JsonSerializable):
     max_row_keys = 12
 
@@ -1011,11 +1047,13 @@ class KeyboardButtonPollType(Dictionaryable):
 
 class KeyboardButton(Dictionaryable, JsonSerializable):
     def __init__(self, text: str, request_contact: Optional[bool]=None, 
-            request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None):
+            request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
+            web_app: WebAppInfo=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
         self.request_poll: KeyboardButtonPollType = request_poll
+        self.web_app: WebAppInfo = web_app
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1028,6 +1066,8 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['request_location'] = self.request_location
         if self.request_poll is not None:
             json_dict['request_poll'] = self.request_poll.to_dict()
+        if self.web_app is not None:
+            json_dict['web_app'] = self.web_app.to_dict()
         return json_dict
 
 
@@ -1122,13 +1162,17 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         obj = cls.check_json(json_string)
         if 'login_url' in obj:
             obj['login_url'] = LoginUrl.de_json(obj.get('login_url'))
+        if 'web_app' in obj:
+            obj['web_app'] = WebAppInfo.de_json(obj.get('web_app'))
+        
         return cls(**obj)
 
-    def __init__(self, text, url=None, callback_data=None, switch_inline_query=None,
+    def __init__(self, text, url=None, callback_data=None, web_app=None, switch_inline_query=None,
                  switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None, **kwargs):
         self.text: str = text
         self.url: str = url
         self.callback_data: str = callback_data
+        self.web_app: WebAppInfo = web_app
         self.switch_inline_query: str = switch_inline_query
         self.switch_inline_query_current_chat: str = switch_inline_query_current_chat
         self.callback_game = callback_game # Not Implemented
@@ -1144,6 +1188,8 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             json_dict['url'] = self.url
         if self.callback_data:
             json_dict['callback_data'] = self.callback_data
+        if self.web_app:
+            json_dict['web_app'] = self.web_app.to_dict()
         if self.switch_inline_query is not None:
             json_dict['switch_inline_query'] = self.switch_inline_query
         if self.switch_inline_query_current_chat is not None:
@@ -1235,7 +1281,7 @@ class ChatMember(JsonDeserializable):
                  can_invite_users=None,  can_pin_messages=None, is_member=None,
                  can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
                  can_send_other_messages=None, can_add_web_page_previews=None,  
-                 can_manage_chat=None, can_manage_voice_chats=None, 
+                 can_manage_chat=None, can_manage_video_chats=None, 
                  until_date=None, **kwargs):
         self.user: User = user
         self.status: str = status
@@ -1257,7 +1303,8 @@ class ChatMember(JsonDeserializable):
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
         self.can_manage_chat: bool = can_manage_chat
-        self.can_manage_voice_chats: bool = can_manage_voice_chats
+        self.can_manage_video_chats: bool = can_manage_video_chats
+        self.can_manage_voice_chats: bool = self.can_manage_video_chats
         self.until_date: int = until_date
 
 
@@ -1687,6 +1734,23 @@ class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
         if self.parse_mode:
             json_dict['parse_mode'] = self.parse_mode
         return json_dict
+
+
+class SentWebAppMessage(JsonDeserializable):
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, inline_message_id):
+        self.inline_message_id = inline_message_id
+
+    def to_dict(self):
+        return {'inline_message_id': self.inline_message_id}
+
+    
+
 
 
 class InlineQueryResultArticle(InlineQueryResultBase):
@@ -2890,3 +2954,111 @@ class MessageAutoDeleteTimerChanged(JsonDeserializable):
 
     def __init__(self, message_auto_delete_time, **kwargs):
         self.message_auto_delete_time = message_auto_delete_time
+
+
+class MenuButton(JsonDeserializable, JsonSerializable):
+    """
+    Base class for MenuButtons.
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        map = {
+            'commands': MenuButtonCommands,
+            'web_app': MenuButtonWebApp,
+            'default': MenuButtonDefault
+        }
+        return map[obj['type']](**obj)
+    
+    def to_json(self):
+        raise NotImplementedError
+        
+
+class MenuButtonCommands(MenuButton):
+
+    def __init__(self, type):
+        self.type = type
+
+    def to_dict(self):
+        return {'type': self.type}
+    
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+class MenuButtonWebApp(MenuButton):
+
+    def __init__(self, type, text, web_app):
+        self.type: str = type
+        self.text: str = text
+        self.web_app: WebAppInfo = web_app
+
+    def to_dict(self):
+        return {'type': self.type, 'text': self.text, 'web_app': self.web_app.to_dict()}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+class MenuButtonDefault(MenuButton):
+
+    def __init__(self, type):
+        self.type: str = type
+
+    def to_dict(self):
+        return {'type': self.type}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    
+class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
+    """
+    Class representation of:
+    https://core.telegram.org/bots/api#chatadministratorrights
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, is_anonymous: bool, can_manage_chat: bool, 
+        can_delete_messages: bool, can_manage_video_chats: bool, can_restrict_members: bool,
+        can_promote_members: bool, can_change_info: bool, can_invite_users: bool,
+        can_post_messages: bool=None, can_edit_messages: bool=None,
+        can_pin_messages: bool=None) -> None:
+        
+        self.is_anonymous: bool = is_anonymous
+        self.can_manage_chat: bool = can_manage_chat
+        self.can_delete_messages: bool = can_delete_messages
+        self.can_manage_video_chats: bool = can_manage_video_chats
+        self.can_restrict_members: bool = can_restrict_members
+        self.can_promote_members: bool = can_promote_members
+        self.can_change_info: bool = can_change_info
+        self.can_invite_users: bool = can_invite_users
+        self.can_post_messages: bool = can_post_messages
+        self.can_edit_messages: bool = can_edit_messages
+        self.can_pin_messages: bool = can_pin_messages
+
+    def to_dict(self):
+        data = {
+            'is_anonymous': self.is_anonymous,
+            'can_manage_chat': self.can_manage_chat,
+            'can_delete_messages': self.can_delete_messages,
+            'can_manage_video_chats': self.can_manage_video_chats,
+            'can_restrict_members': self.can_restrict_members,
+            'can_promote_members': self.can_promote_members,
+            'can_change_info': self.can_change_info,
+            'can_invite_users': self.can_invite_users,
+            'can_post_messages': self.can_post_messages,
+            'can_edit_messages': self.can_edit_messages,
+            'can_pin_messages': self.can_pin_messages
+        }
+        return data
+    
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+
+

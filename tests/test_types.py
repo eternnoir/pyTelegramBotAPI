@@ -245,3 +245,26 @@ def test_chat_member_updated():
     assert cm_updated.old_chat_member.status == "member"
     assert cm_updated.new_chat_member.status == "administrator"
 
+
+def test_webhook_info():
+    json_string = r'{"url": "https://example.com/webhook", "has_custom_certificate": true, "pending_update_count": 1, "last_error_date": 0, "last_error_message": "", "last_synchronization_error_date": 489309, "max_connections": 40, "allowed_updates": ["message"]}'
+    webhook_info = types.WebhookInfo.de_json(json_string)
+    print(webhook_info)
+    assert webhook_info.url == 'https://example.com/webhook'
+    assert webhook_info.has_custom_certificate is True
+    assert webhook_info.pending_update_count == 1
+    assert webhook_info.last_error_date == 0
+    assert webhook_info.last_error_message == ''
+    assert webhook_info.max_connections == 40
+    assert webhook_info.last_synchronization_error_date == 489309
+    assert webhook_info.allowed_updates == ['message']
+    
+
+def test_sent_web_app_message():
+    json_string = r'{"inline_message_id": "29430"}'
+    sent_web_app_message = types.SentWebAppMessage.de_json(json_string)
+    assert sent_web_app_message.inline_message_id == '29430'
+    
+
+
+

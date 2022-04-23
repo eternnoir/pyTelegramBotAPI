@@ -356,6 +356,12 @@ async def delete_chat_sticker_set(token, chat_id):
     payload = {'chat_id': chat_id}
     return await _process_request(token, method_url, params=payload)
 
+async def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
+    method_url = 'answerWebAppQuery'
+    result = result.to_json()
+    payload = {'query_id': web_app_query_id, 'result': result}
+    return await _process_request(token, method_url, params=payload, method='post')
+
 
 async def get_chat_member(token, chat_id, user_id):
     method_url = r'getChatMember'
@@ -941,7 +947,7 @@ async def promote_chat_member(
         token, chat_id, user_id, can_change_info=None, can_post_messages=None,
         can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
         can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
-        is_anonymous=None, can_manage_chat=None, can_manage_voice_chats=None):
+        is_anonymous=None, can_manage_chat=None, can_manage_video_chats=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -964,8 +970,8 @@ async def promote_chat_member(
         payload['is_anonymous'] = is_anonymous
     if can_manage_chat is not None:
         payload['can_manage_chat'] = can_manage_chat
-    if can_manage_voice_chats is not None:
-        payload['can_manage_voice_chats'] = can_manage_voice_chats
+    if can_manage_video_chats is not None:
+        payload['can_manage_video_chats'] = can_manage_video_chats
     return await _process_request(token, method_url, params=payload, method='post')
 
 
@@ -1106,6 +1112,42 @@ async def get_my_commands(token, scope=None, language_code=None):
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload)
 
+async def set_chat_menu_button(token, chat_id=None, menu_button=None):
+    method_url = r'setChatMenuButton'
+    payload = {}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if menu_button:
+        payload['menu_button'] = menu_button.to_json()
+
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_chat_menu_button(token, chat_id=None):
+    method_url = r'getChatMenuButton'
+    payload = {}
+    if chat_id:
+        payload['chat_id'] = chat_id
+
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def set_my_default_administrator_rights(token, rights=None, for_channels=None):
+    method_url = r'setMyDefaultAdministratorRights'
+    payload = {}
+    if rights:
+        payload['rights'] = rights.to_json()
+    if for_channels:
+        payload['for_channels'] = for_channels
+
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_my_default_administrator_rights(token, for_channels=None):
+    method_url = r'getMyDefaultAdministratorRights'
+    payload = {}
+    if for_channels:
+        payload['for_channels'] = for_channels
+
+    return await _process_request(token, method_url, params=payload, method='post')
 
 async def set_my_commands(token, commands, scope=None, language_code=None):
     method_url = r'setMyCommands'
