@@ -11,7 +11,6 @@ API_URL = 'https://api.telegram.org/bot{0}/{1}'
 
 from datetime import datetime
 
-import telebot
 from telebot import util, logger
 
 
@@ -26,8 +25,6 @@ READ_TIMEOUT = 30
 LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
 REQUEST_TIMEOUT = 10
 MAX_RETRIES = 3
-logger = telebot.logger
-
 
 REQUEST_LIMIT = 50
 
@@ -1136,7 +1133,7 @@ async def set_my_default_administrator_rights(token, rights=None, for_channels=N
     payload = {}
     if rights:
         payload['rights'] = rights.to_json()
-    if for_channels:
+    if for_channels is not None:
         payload['for_channels'] = for_channels
 
     return await _process_request(token, method_url, params=payload, method='post')
@@ -1543,7 +1540,6 @@ async def create_new_sticker_set(
         contains_masks=None, mask_position=None, webm_sticker=None):
     method_url = 'createNewStickerSet'
     payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
-    stype = None
     if png_sticker:
         stype = 'png_sticker'
     elif webm_sticker:
@@ -1568,7 +1564,6 @@ async def create_new_sticker_set(
 async def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
     method_url = 'addStickerToSet'
     payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
-    stype = None
     if png_sticker:
         stype = 'png_sticker'
     elif webm_sticker:

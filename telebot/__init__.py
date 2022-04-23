@@ -187,8 +187,6 @@ class TeleBot:
         compatibility whose purpose was to enable file saving capability for handlers. And the same
         implementation is now available with FileHandlerBackend
 
-        Most probably this function should be deprecated in future major releases
-
         :param delay: Delay between changes in handlers and saving
         :param filename: Filename of save file
         """
@@ -211,8 +209,6 @@ class TeleBot:
         compatibility whose purpose was to enable file saving capability for handlers. And the same
         implementation is now available with FileHandlerBackend
 
-        Most probably this function should be deprecated in future major releases
-
         :param delay: Delay between changes in handlers and saving
         :param filename: Filename of save file
         """
@@ -225,8 +221,6 @@ class TeleBot:
         This function is left to keep backward compatibility whose purpose was to disable file saving capability
         for handlers. For the same purpose, MemoryHandlerBackend is reassigned as a new next_step_backend backend
         instead of FileHandlerBackend.
-
-        Most probably this function should be deprecated in future major releases
         """
         self.next_step_backend = MemoryHandlerBackend(self.next_step_backend.handlers)
 
@@ -237,8 +231,6 @@ class TeleBot:
         This function is left to keep backward compatibility whose purpose was to disable file saving capability
         for handlers. For the same purpose, MemoryHandlerBackend is reassigned as a new reply_backend backend
         instead of FileHandlerBackend.
-
-        Most probably this function should be deprecated in future major releases
         """
         self.reply_backend = MemoryHandlerBackend(self.reply_backend.handlers)
 
@@ -249,8 +241,6 @@ class TeleBot:
         This function is left to keep backward compatibility whose purpose was to load handlers from file with the
         help of FileHandlerBackend and is only recommended to use if next_step_backend was assigned as
         FileHandlerBackend before entering this function
-
-        Most probably this function should be deprecated in future major releases
 
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
@@ -264,8 +254,6 @@ class TeleBot:
         This function is left to keep backward compatibility whose purpose was to load handlers from file with the
         help of FileHandlerBackend and is only recommended to use if reply_backend was assigned as
         FileHandlerBackend before entering this function
-
-        Most probably this function should be deprecated in future major releases
 
         :param filename: Filename of the file where handlers was saved
         :param del_file_after_loading: Is passed True, after loading save file will be deleted
@@ -620,6 +608,7 @@ class TeleBot:
         :return:
         """
         if none_stop is not None:
+            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
             non_stop = none_stop
 
         if skip_pending:
@@ -887,11 +876,11 @@ class TeleBot:
         result = apihelper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
 
+    @util.deprecated(deprecation_text="Use get_chat_member_count instead")
     def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
         This function is deprecated. Use `get_chat_member_count` instead
         """
-        logger.info('get_chat_members_count is deprecated. Use get_chat_member_count instead.')
         result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
     
@@ -1662,6 +1651,7 @@ class TeleBot:
         """
         return apihelper.send_chat_action(self.token, chat_id, action, timeout)
     
+    @util.deprecated(deprecation_text="Use ban_chat_member instead")
     def kick_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
             until_date:Optional[Union[int, datetime]]=None, 
@@ -1669,7 +1659,6 @@ class TeleBot:
         """
         This function is deprecated. Use `ban_chat_member` instead
         """
-        logger.info('kick_chat_member is deprecated. Use ban_chat_member instead.')
         return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     def ban_chat_member(
@@ -1805,8 +1794,10 @@ class TeleBot:
 
         :return: True on success.
         """
-        if can_manage_voice_chats and not can_manage_video_chats is None:
-            can_manage_video_chats = can_manage_voice_chats
+        if can_manage_voice_chats is not None:
+            logger.warning("promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead.")
+            if can_manage_video_chats is None:
+                can_manage_video_chats = can_manage_voice_chats
 
         return apihelper.promote_chat_member(
             self.token, chat_id, user_id, can_change_info, can_post_messages,

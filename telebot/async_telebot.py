@@ -149,6 +149,7 @@ class AsyncTeleBot:
         :return:
         """
         if none_stop is not None:
+            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
             non_stop = none_stop
 
         if skip_pending:
@@ -1919,7 +1920,9 @@ class AsyncTeleBot:
         """
         if data and not(sticker):
             # function typo miss compatibility
+            logger.warning("send_sticker: data parameter is deprecated. Use sticker instead.")
             sticker = data
+
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, sticker, 'sticker',
@@ -1970,6 +1973,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         if data and not(video):
             # function typo miss compatibility
+            logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
             video = data
 
         return types.Message.de_json(
@@ -2423,8 +2427,10 @@ class AsyncTeleBot:
         :return: True on success.
         """
 
-        if can_manage_voice_chats and not can_manage_video_chats is None:
-            can_manage_video_chats = can_manage_voice_chats
+        if can_manage_voice_chats is not None:
+            logger.warning("promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead.")
+            if can_manage_video_chats is None:
+                can_manage_video_chats = can_manage_voice_chats
 
         return await asyncio_helper.promote_chat_member(
             self.token, chat_id, user_id, can_change_info, can_post_messages,

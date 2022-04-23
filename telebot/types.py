@@ -473,20 +473,20 @@ class Message(JsonDeserializable):
                 'proximity_alert_triggered'])
             content_type = 'proximity_alert_triggered'
         if 'video_chat_scheduled' in obj:
-            opts['video_chat_scheduled'] = VoiceChatScheduled.de_json(obj['video_chat_scheduled'])
-            opts['voice_chat_scheduled'] = opts['video_chat_scheduled']
+            opts['video_chat_scheduled'] = VideoChatScheduled.de_json(obj['video_chat_scheduled'])
+            opts['voice_chat_scheduled'] = opts['video_chat_scheduled']  # deprecated, for backward compatibility
             content_type = 'video_chat_scheduled'
         if 'video_chat_started' in obj:
-            opts['video_chat_started'] = VoiceChatStarted.de_json(obj['video_chat_started'])
-            opts['voice_chat_started'] = opts['video_chat_started']
+            opts['video_chat_started'] = VideoChatStarted.de_json(obj['video_chat_started'])
+            opts['voice_chat_started'] = opts['video_chat_started']  # deprecated, for backward compatibility
             content_type = 'video_chat_started'
         if 'video_chat_ended' in obj:
-            opts['video_chat_ended'] = VoiceChatEnded.de_json(obj['video_chat_ended'])
-            opts['voice_chat_ended'] = opts['video_chat_ended']
+            opts['video_chat_ended'] = VideoChatEnded.de_json(obj['video_chat_ended'])
+            opts['voice_chat_ended'] = opts['video_chat_ended']  # deprecated, for backward compatibility
             content_type = 'video_chat_ended'
         if 'video_chat_participants_invited' in obj:
-            opts['video_chat_participants_invited'] = VoiceChatParticipantsInvited.de_json(obj['video_chat_participants_invited'])
-            opts['voice_chat_participants_invited'] = opts['video_chat_participants_invited']
+            opts['video_chat_participants_invited'] = VideoChatParticipantsInvited.de_json(obj['video_chat_participants_invited'])
+            opts['voice_chat_participants_invited'] = opts['video_chat_participants_invited']  # deprecated, for backward compatibility
             content_type = 'video_chat_participants_invited'
         if 'web_app_data' in obj:
             opts['web_app_data'] = WebAppData.de_json(obj['web_app_data'])
@@ -1304,7 +1304,7 @@ class ChatMember(JsonDeserializable):
         self.can_add_web_page_previews: bool = can_add_web_page_previews
         self.can_manage_chat: bool = can_manage_chat
         self.can_manage_video_chats: bool = can_manage_video_chats
-        self.can_manage_voice_chats: bool = self.can_manage_video_chats
+        self.can_manage_voice_chats: bool = self.can_manage_video_chats   # deprecated, for backward compatibility
         self.until_date: int = until_date
 
 
@@ -1743,11 +1743,14 @@ class SentWebAppMessage(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, inline_message_id):
+    def __init__(self, inline_message_id=None):
         self.inline_message_id = inline_message_id
 
     def to_dict(self):
-        return {'inline_message_id': self.inline_message_id}
+        json_dict = {}
+        if self.inline_message_id:
+            json_dict['inline_message_id'] = self.inline_message_id
+        return json_dict
 
     
 
@@ -2897,7 +2900,7 @@ class ProximityAlertTriggered(JsonDeserializable):
         self.distance: int = distance
 
 
-class VoiceChatStarted(JsonDeserializable):
+class VideoChatStarted(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         return cls()
@@ -2909,8 +2912,13 @@ class VoiceChatStarted(JsonDeserializable):
         """
         pass
 
+class VoiceChatStarted(VideoChatStarted):
+    def __init__(self):
+        logger.warning('VoiceChatStarted is deprecated. Use VideoChatStarted instead.')
+        super().__init__()
 
-class VoiceChatScheduled(JsonDeserializable):
+
+class VideoChatScheduled(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -2920,8 +2928,13 @@ class VoiceChatScheduled(JsonDeserializable):
     def __init__(self, start_date, **kwargs):
         self.start_date: int = start_date
 
+class VoiceChatScheduled(VideoChatScheduled):
+    def __init__(self, *args, **kwargs):
+        logger.warning('VoiceChatScheduled is deprecated. Use VideoChatScheduled instead.')
+        super().__init__(*args, **kwargs)
 
-class VoiceChatEnded(JsonDeserializable):
+
+class VideoChatEnded(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -2931,8 +2944,14 @@ class VoiceChatEnded(JsonDeserializable):
     def __init__(self, duration, **kwargs):
         self.duration: int = duration
 
+class VoiceChatEnded(VideoChatEnded):
+    def __init__(self, *args, **kwargs):
+        logger.warning('VoiceChatEnded is deprecated. Use VideoChatEnded instead.')
+        super().__init__(*args, **kwargs)
 
-class VoiceChatParticipantsInvited(JsonDeserializable):
+
+
+class VideoChatParticipantsInvited(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -2943,6 +2962,11 @@ class VoiceChatParticipantsInvited(JsonDeserializable):
     
     def __init__(self, users=None, **kwargs):
         self.users: List[User] = users
+
+class VoiceChatParticipantsInvited(VideoChatParticipantsInvited):
+    def __init__(self, *args, **kwargs):
+        logger.warning('VoiceChatParticipantsInvited is deprecated. Use VideoChatParticipantsInvited instead.')
+        super().__init__(*args, **kwargs)
 
 
 class MessageAutoDeleteTimerChanged(JsonDeserializable):
@@ -3042,7 +3066,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
         self.can_pin_messages: bool = can_pin_messages
 
     def to_dict(self):
-        data = {
+        json_dict = {
             'is_anonymous': self.is_anonymous,
             'can_manage_chat': self.can_manage_chat,
             'can_delete_messages': self.can_delete_messages,
@@ -3051,11 +3075,14 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
             'can_promote_members': self.can_promote_members,
             'can_change_info': self.can_change_info,
             'can_invite_users': self.can_invite_users,
-            'can_post_messages': self.can_post_messages,
-            'can_edit_messages': self.can_edit_messages,
-            'can_pin_messages': self.can_pin_messages
         }
-        return data
+        if 'can_post_messages' is not None:
+            json_dict['can_post_messages'] = self.can_post_messages
+        if 'can_edit_messages' is not None:
+            json_dict['can_edit_messages'] = self.can_edit_messages
+        if 'can_pin_messages' is not None:
+            json_dict['can_pin_messages'] = self.can_pin_messages
+        return json_dict
     
     def to_json(self):
         return json.dumps(self.to_dict())

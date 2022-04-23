@@ -47,7 +47,6 @@ CUSTOM_REQUEST_SENDER = None
 ENABLE_MIDDLEWARE = False
 
 
-
 def _get_req_session(reset=False):
     if SESSION_TIME_TO_LIVE:
         # If session TTL is set - check time passed
@@ -94,20 +93,14 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         if 'timeout' in params:
             read_timeout = params.pop('timeout')
             connect_timeout = read_timeout
-#        if 'connect-timeout' in params:
-#            connect_timeout = params.pop('connect-timeout') + 10
         if 'long_polling_timeout' in params:
-            # For getUpdates: it's the only function with timeout parameter on the BOT API side
+            # For getUpdates. It's the only function with timeout parameter on the BOT API side
             long_polling_timeout = params.pop('long_polling_timeout')
             params['timeout'] = long_polling_timeout
             # Long polling hangs for a given time. Read timeout should be greater that long_polling_timeout
             read_timeout = max(long_polling_timeout + 5, read_timeout)
-    # Lets stop suppose that user is stupid and assume that he knows what he do...
-    # read_timeout = read_timeout + 10
-    # connect_timeout = connect_timeout + 10
 
     params = params or None # Set params to None if empty
-
     result = None
     if RETRY_ON_ERROR and RETRY_ENGINE == 1:
         got_result = False
@@ -134,6 +127,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
                     timeout=(connect_timeout, read_timeout), proxies=proxy)
     elif RETRY_ON_ERROR and RETRY_ENGINE == 2:
         http = _get_req_session()
+        # noinspection PyUnresolvedReferences
         retry_strategy = requests.packages.urllib3.util.retry.Retry(
             total=MAX_RETRIES,
         )
@@ -1146,7 +1140,6 @@ def set_chat_menu_button(token, chat_id=None, menu_button=None):
         payload['chat_id'] = chat_id
     if menu_button:
         payload['menu_button'] = menu_button.to_json()
-
     return _make_request(token, method_url, params=payload, method='post')
 
 def get_chat_menu_button(token, chat_id=None):
@@ -1154,7 +1147,6 @@ def get_chat_menu_button(token, chat_id=None):
     payload = {}
     if chat_id:
         payload['chat_id'] = chat_id
-
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1163,17 +1155,16 @@ def set_my_default_administrator_rights(token, rights=None, for_channels=None):
     payload = {}
     if rights:
         payload['rights'] = rights.to_json()
-    if for_channels:
+    if for_channels is not None:
         payload['for_channels'] = for_channels
-
     return _make_request(token, method_url, params=payload, method='post')
+
 
 def get_my_default_administrator_rights(token, for_channels=None):
     method_url = r'getMyDefaultAdministratorRights'
     payload = {}
     if for_channels:
         payload['for_channels'] = for_channels
-
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1326,7 +1317,6 @@ def send_game(
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if protect_content is not None:
         payload['protect_content'] = protect_content
-    
     return _make_request(token, method_url, params=payload)
 
 
@@ -1573,7 +1563,6 @@ def create_new_sticker_set(
         contains_masks=None, mask_position=None, webm_sticker=None):
     method_url = 'createNewStickerSet'
     payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
-    stype = None
     if png_sticker:
         stype = 'png_sticker'
     elif webm_sticker:
@@ -1598,7 +1587,6 @@ def create_new_sticker_set(
 def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
     method_url = 'addStickerToSet'
     payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
-    stype = None
     if png_sticker:
         stype = 'png_sticker'
     elif webm_sticker:
@@ -1705,7 +1693,6 @@ def _convert_list_json_serializable(results):
     return '[' + ret + ']'
 
 
-
 def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
@@ -1778,7 +1765,8 @@ class ApiException(Exception):
         super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
-    
+
+
 class ApiHTTPException(ApiException):
     """
     This class represents an Exception thrown when a call to the 
@@ -1790,7 +1778,8 @@ class ApiHTTPException(ApiException):
             .format(result.status_code, result.reason, result.text.encode('utf8')),
             function_name,
             result)
-    
+
+
 class ApiInvalidJSONException(ApiException):
     """
     This class represents an Exception thrown when a call to the 
@@ -1802,7 +1791,8 @@ class ApiInvalidJSONException(ApiException):
             .format(result.text.encode('utf8')),
             function_name,
             result)
-    
+
+
 class ApiTelegramException(ApiException):
     """
     This class represents an Exception thrown when a Telegram API returns error code.
@@ -1816,4 +1806,3 @@ class ApiTelegramException(ApiException):
         self.result_json = result_json
         self.error_code = result_json['error_code']
         self.description = result_json['description']
-        
