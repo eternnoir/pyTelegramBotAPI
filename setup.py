@@ -26,7 +26,8 @@ setup(name='pyTelegramBotAPI',
       extras_require={
           'json': 'ujson',
           'PIL': 'Pillow',
-          'redis': 'redis>=3.4.1'
+          'redis': 'redis>=3.4.1',
+          'aiohttp': 'aiohttp',
       },
       classifiers=[
           'Development Status :: 5 - Production/Stable',
