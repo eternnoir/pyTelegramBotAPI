@@ -3076,11 +3076,11 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
             'can_change_info': self.can_change_info,
             'can_invite_users': self.can_invite_users,
         }
-        if 'can_post_messages' is not None:
+        if self.can_post_messages is not None:
             json_dict['can_post_messages'] = self.can_post_messages
-        if 'can_edit_messages' is not None:
+        if self.can_edit_messages is not None:
             json_dict['can_edit_messages'] = self.can_edit_messages
-        if 'can_pin_messages' is not None:
+        if self.can_pin_messages is not None:
             json_dict['can_pin_messages'] = self.can_pin_messages
         return json_dict
     
