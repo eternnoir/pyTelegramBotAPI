@@ -1615,11 +1615,12 @@ def delete_sticker_from_set(token, sticker):
     payload = {'sticker': sticker}
     return _make_request(token, method_url, params=payload, method='post')
 
+
 def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
     method_url = 'answerWebAppQuery'
-    result = result.to_json()
-    payload = {'query_id': web_app_query_id, 'result': result}
+    payload = {'web_app_query_id': web_app_query_id, 'result': result.to_json()}
     return _make_request(token, method_url, params=payload, method='post')
+
 
 # noinspection PyShadowingBuiltins
 def send_poll(
