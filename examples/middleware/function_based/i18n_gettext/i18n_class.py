@@ -1,5 +1,6 @@
 import gettext
 import os
+import threading
 
 
 class I18N:
@@ -7,6 +8,8 @@ class I18N:
     This class provides high-level tool for internationalization
     It is based on gettext util.
     """
+
+    context_lang = threading.local()
 
     def __init__(self, translations_path, domain_name: str):
         self.path = translations_path
@@ -21,7 +24,11 @@ class I18N:
         """
         Singular translations
         """
-        if not lang or lang not in self.translations:
+
+        if lang is None:
+            lang = self.context_lang.language
+
+        if lang not in self.translations:
             return text
 
         translator = self.translations[lang]
@@ -31,13 +38,17 @@ class I18N:
         """
         Plural translations
         """
-        if not lang or lang not in self.translations:
+        if lang is None:
+            lang = self.context_lang.language
+
+        if lang not in self.translations:
             if n == 1:
                 return singular
             return plural
 
         translator = self.translations[lang]
         return translator.ngettext(singular, plural, n)
+
 
     def find_translations(self):
         """

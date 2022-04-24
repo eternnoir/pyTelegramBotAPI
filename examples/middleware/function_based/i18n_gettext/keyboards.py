@@ -13,11 +13,11 @@ def languages_keyboard():
     )
 
 
-def clicker_keyboard(_, lang):
+def clicker_keyboard(_):
     return InlineKeyboardMarkup(
         keyboard=[
             [
-                InlineKeyboardButton(text=_("click", lang=lang), callback_data='click'),
+                InlineKeyboardButton(text=_("click"), callback_data='click'),
             ]
         ]
     )

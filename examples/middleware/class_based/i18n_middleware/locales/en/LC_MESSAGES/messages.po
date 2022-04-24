@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-02-18 17:54+0500\n"
+"POT-Creation-Date: 2022-02-19 18:37+0500\n"
 "PO-Revision-Date: 2022-02-18 16:22+0500\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -22,30 +22,60 @@ msgstr ""
 msgid "click"
 msgstr ""
 
-#: main.py:78
+#: keyboards.py:29
+msgid "My user id"
+msgstr ""
+
+#: keyboards.py:30
+msgid "My user name"
+msgstr ""
+
+#: keyboards.py:31
+msgid "My first name"
+msgstr ""
+
+#: main.py:97
 msgid ""
 "Hello, {user_fist_name}!\n"
 "This is the example of multilanguage bot.\n"
 "Available commands:\n"
 "\n"
 "/lang - change your language\n"
-"/plural - pluralization example"
+"/plural - pluralization example\n"
+"/menu - text menu example"
 msgstr ""
 
-#: main.py:102
+#: main.py:121
 msgid "Language has been changed"
 msgstr ""
 
-#: main.py:114
+#: main.py:130 main.py:150
 #, fuzzy
 msgid "You have {number} click"
 msgid_plural "You have {number} clicks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: main.py:120
+#: main.py:135 main.py:155
 msgid ""
 "This is clicker.\n"
 "\n"
 msgstr ""
+
+#: main.py:163
+msgid "This is ReplyKeyboardMarkup menu example in multilanguage bot."
+msgstr ""
+
+#: main.py:203
+msgid "Seems you confused language"
+msgstr ""
+
+#~ msgid ""
+#~ "Hello, {user_fist_name}!\n"
+#~ "This is the example of multilanguage bot.\n"
+#~ "Available commands:\n"
+#~ "\n"
+#~ "/lang - change your language\n"
+#~ "/plural - pluralization example"
+#~ msgstr ""
 

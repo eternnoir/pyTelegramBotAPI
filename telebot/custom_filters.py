@@ -69,7 +69,7 @@ class TextFilter:
         self.ends_with = self._check_iterable(ends_with, filter_name='ends_with')
         self.ignore_case = ignore_case
 
-    def _check_iterable(self, iterable, filter_name: str):
+    def _check_iterable(self, iterable, filter_name):
         if not iterable:
             pass
         elif not isinstance(iterable, str) and not isinstance(iterable, list) and not isinstance(iterable, tuple):
@@ -95,39 +95,33 @@ class TextFilter:
 
         if self.ignore_case:
             text = text.lower()
-
-            if self.equals:
-                self.equals = self.equals.lower()
-            elif self.contains:
-                self.contains = tuple(map(str.lower, self.contains))
-            elif self.starts_with:
-                self.starts_with = tuple(map(str.lower, self.starts_with))
-            elif self.ends_with:
-                self.ends_with = tuple(map(str.lower, self.ends_with))
+            prepare_func = lambda string: str(string).lower()
+        else:
+            prepare_func = str
 
         if self.equals:
-            result = self.equals == text
+            result = prepare_func(self.equals) == text
             if result:
                 return True
             elif not result and not any((self.contains, self.starts_with, self.ends_with)):
                 return False
 
         if self.contains:
-            result = any([i in text for i in self.contains])
+            result = any([prepare_func(i) in text for i in self.contains])
             if result:
                 return True
             elif not result and not any((self.starts_with, self.ends_with)):
                 return False
 
         if self.starts_with:
-            result = any([text.startswith(i) for i in self.starts_with])
+            result = any([text.startswith(prepare_func(i)) for i in self.starts_with])
             if result:
                 return True
             elif not result and not self.ends_with:
                 return False
 
         if self.ends_with:
-            return any([text.endswith(i) for i in self.ends_with])
+            return any([text.endswith(prepare_func(i)) for i in self.ends_with])
 
         return False
 

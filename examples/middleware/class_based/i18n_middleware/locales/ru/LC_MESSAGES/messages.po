@@ -1,0 +1,82 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-02-19 18:37+0500\n"
+"PO-Revision-Date: 2022-02-18 16:22+0500\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: keyboards.py:20
+msgid "click"
+msgstr "Клик"
+
+#: keyboards.py:29
+msgid "My user id"
+msgstr "Мой user id"
+
+#: keyboards.py:30
+msgid "My user name"
+msgstr "Мой user name"
+
+#: keyboards.py:31
+msgid "My first name"
+msgstr "Мой first name"
+
+#: main.py:97
+msgid ""
+"Hello, {user_fist_name}!\n"
+"This is the example of multilanguage bot.\n"
+"Available commands:\n"
+"\n"
+"/lang - change your language\n"
+"/plural - pluralization example\n"
+"/menu - text menu example"
+msgstr ""
+"Привет, {user_fist_name}!\n"
+"Это пример мультиязычного бота.\n"
+"Доступные команды:\n"
+"\n"
+"/lang - изменить язык\n"
+"/plural - пример плюрализации\n"
+"/menu - Пример текстового меню"
+
+#: main.py:121
+msgid "Language has been changed"
+msgstr "Язык был сменён"
+
+#: main.py:130 main.py:150
+msgid "You have {number} click"
+msgid_plural "You have {number} clicks"
+msgstr[0] "У вас {number} клик"
+msgstr[1] "У вас {number} клика"
+msgstr[2] "У вас {number} кликов"
+
+#: main.py:135 main.py:155
+msgid ""
+"This is clicker.\n"
+"\n"
+msgstr ""
+"Это кликер.\n"
+"\n"
+
+#: main.py:163
+msgid "This is ReplyKeyboardMarkup menu example in multilanguage bot."
+msgstr "Это пример ReplyKeyboardMarkup меню в мультиязычном боте."
+
+#: main.py:203
+msgid "Seems you confused language"
+msgstr "Кажется, вы перепутали язык"
+
