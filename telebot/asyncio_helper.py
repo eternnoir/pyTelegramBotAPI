@@ -353,10 +353,10 @@ async def delete_chat_sticker_set(token, chat_id):
     payload = {'chat_id': chat_id}
     return await _process_request(token, method_url, params=payload)
 
+
 async def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
     method_url = 'answerWebAppQuery'
-    result = result.to_json()
-    payload = {'query_id': web_app_query_id, 'result': result}
+    payload = {'web_app_query_id': web_app_query_id, 'result': result.to_json()}
     return await _process_request(token, method_url, params=payload, method='post')
 
 

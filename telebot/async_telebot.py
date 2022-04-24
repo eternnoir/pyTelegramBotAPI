@@ -1580,8 +1580,6 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
 
-
-
     async def send_message(
             self, chat_id: Union[int, str], text: str, 
             parse_mode: Optional[str]=None, 
