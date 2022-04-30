@@ -645,7 +645,7 @@ class TeleBot:
                 else:
                     handled = False
                 if not handled:
-                    logger.error(e)
+                    logger.error(traceback.format_exc())
                     if not non_stop:
                         self.__stop_polling.set()
                         logger.info("Exception occurred. Stopping.")
