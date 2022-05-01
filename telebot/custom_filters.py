@@ -12,7 +12,11 @@ class SimpleCustomFilter(ABC):
     Simple Custom Filter base class.
     Create child class with check() method.
     Accepts only message, returns bool value, that is compared with given in handler.
+
+    Child classes should have .key property.
     """
+
+    key: str = None
 
     def check(self, message):
         """
@@ -28,7 +32,11 @@ class AdvancedCustomFilter(ABC):
     Accepts two parameters, returns bool: True - filter passed, False - filter failed.
     message: Message class
     text: Filter value given in handler
+
+    Child classes should have .key property.
     """
+
+    key: str = None
 
     def check(self, message, text):
         """
