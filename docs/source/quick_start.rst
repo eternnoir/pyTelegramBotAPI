@@ -3,6 +3,10 @@
 Quick start
 ===========
 
+.. meta::
+   :description: Quickstart guide
+   :keywords: ptba, pytba, pyTelegramBotAPI, quickstart, guide
+
 Synchronous TeleBot
 -------------------
 .. literalinclude:: ../../examples/echo_bot.py

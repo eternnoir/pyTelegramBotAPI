@@ -2,6 +2,10 @@
 Installation Guide
 ==================
 
+.. meta::
+   :description: Installation of pyTelegramBotAPI
+   :keywords: ptba, pytba, pyTelegramBotAPI, installation, guide
+
 
 Using PIP
 ----------
