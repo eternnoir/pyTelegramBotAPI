@@ -60,7 +60,7 @@ async def _process_request(token, url, method='get', params=None, files=None, re
     while not got_result and current_try<MAX_RETRIES-1:
         current_try +=1
         try:
-            async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout) as resp:
+            async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
                 json_result = await _check_result(url, resp)
                 if json_result:
@@ -71,7 +71,7 @@ async def _process_request(token, url, method='get', params=None, files=None, re
         except aiohttp.ClientError as e:
             logger.error('Aiohttp ClientError: {0}'.format(e.__class__.__name__))
         except Exception as e:
-            logger.error(f'Unkown error: {e.__class__.__name__}')
+            logger.error(f'Unknown error: {e.__class__.__name__}')
         if not got_result:
             raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
         

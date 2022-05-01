@@ -656,6 +656,8 @@ telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 ```
 
 ### Proxy
+For sync:
+
 You can use proxy for request. `apihelper.proxy` object will use by call `requests` proxies argument.
 
 ```python
@@ -669,6 +671,14 @@ If you want to use socket5 proxy you need install dependency `pip install reques
 ```python
 apihelper.proxy = {'https':'socks5://userproxy:password@proxy_address:port'}
 ```
+
+For async:
+```python
+from telebot import asyncio_helper
+
+asyncio_helper.proxy = 'http://127.0.0.1:3128' #url
+```
+
 
 ### Testing
 You can disable or change the interaction with real Telegram server by using
