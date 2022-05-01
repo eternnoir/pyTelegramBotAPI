@@ -1,7 +1,7 @@
 from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
 import os
 
-
+from telebot.asyncio_handler_backends import State
 import pickle
 
 
@@ -47,7 +47,7 @@ class StatePickleStorage(StateStorageBase):
         file.close()
 
     async def set_state(self, chat_id, user_id, state):
-        if isinstance(state, object):
+        if isinstance(state, State):
             state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:

@@ -1,6 +1,6 @@
 from telebot.storage.base_storage import StateStorageBase, StateContext
 import os
-
+from telebot.handler_backends import State
 
 import pickle
 
@@ -53,7 +53,7 @@ class StatePickleStorage(StateStorageBase):
         file.close()
 
     def set_state(self, chat_id, user_id, state):
-        if isinstance(state, object):
+        if isinstance(state, State):
             state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:
