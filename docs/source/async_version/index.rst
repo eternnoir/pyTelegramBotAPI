@@ -2,6 +2,12 @@
 AsyncTeleBot
 ====================
 
+
+.. meta::
+   :description: Asynchronous pyTelegramBotAPI
+   :keywords: ptba, pytba, pyTelegramBotAPI, asynctelebot, documentation
+
+
 AsyncTeleBot methods
 --------------------
 

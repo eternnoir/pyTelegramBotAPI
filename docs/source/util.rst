@@ -2,6 +2,10 @@
 Utils
 ============
 
+.. meta::
+   :description: Utils in pyTelegramBotAPI
+   :keywords: ptba, pytba, pyTelegramBotAPI, utils, guide
+
 
 util file
 -------------------

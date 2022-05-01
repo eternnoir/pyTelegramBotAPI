@@ -2,6 +2,10 @@
 TeleBot version
 ===============
 
+.. meta::
+   :description: Synchronous pyTelegramBotAPI documentation
+   :keywords: ptba, pytba, pyTelegramBotAPI, methods, guide, files, sync
+
 TeleBot methods
 ---------------
 .. automodule:: telebot

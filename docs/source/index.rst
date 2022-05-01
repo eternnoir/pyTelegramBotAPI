@@ -7,6 +7,11 @@
 Welcome to pyTelegramBotAPI's documentation!
 ============================================
 
+.. meta::
+   :description: Official documentation of pyTelegramBotAPI
+   :keywords: ptba, pytba, pyTelegramBotAPI, documentation, guide
+
+
 =======
 TeleBot
 =======

@@ -3,6 +3,10 @@
 Callback data factory
 =====================
 
+.. meta::
+   :description: Callback data factory in pyTelegramBotAPI
+   :keywords: ptba, pytba, pyTelegramBotAPI, callbackdatafactory, guide, callbackdata, factory
+
 
 callback\_data file
 -----------------------------
