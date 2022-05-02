@@ -1,7 +1,5 @@
 from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
 
-from telebot.asyncio_handler_backends import State
-
 class StateMemoryStorage(StateStorageBase):
     def __init__(self) -> None:
         self.data = {}
@@ -10,7 +8,7 @@ class StateMemoryStorage(StateStorageBase):
     
     
     async def set_state(self, chat_id, user_id, state):
-        if isinstance(state, State):
+        if hasattr(state, 'name'):
             state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:

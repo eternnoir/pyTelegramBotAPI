@@ -1,7 +1,6 @@
 from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
 import json
 
-from telebot.asyncio_handler_backends import State
 
 redis_installed = True
 try:
@@ -67,7 +66,7 @@ class StateRedisStorage(StateStorageBase):
         """
         response = await self.get_record(chat_id)
         user_id = str(user_id)
-        if isinstance(state, State):
+        if hasattr(state, 'name'):
             state = state.name
         if response:
             if user_id in response:
