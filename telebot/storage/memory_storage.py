@@ -1,5 +1,6 @@
 from telebot.storage.base_storage import StateStorageBase, StateContext
 
+
 class StateMemoryStorage(StateStorageBase):
     def __init__(self) -> None:
         self.data = {}
@@ -8,7 +9,7 @@ class StateMemoryStorage(StateStorageBase):
     
     
     def set_state(self, chat_id, user_id, state):
-        if isinstance(state, object):
+        if hasattr(state, 'name'):
             state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:

@@ -65,7 +65,7 @@ class StateRedisStorage(StateStorageBase):
         """
         response = self.get_record(chat_id)
         user_id = str(user_id)
-        if isinstance(state, object):
+        if hasattr(state, 'name'):
             state = state.name
 
         if response:

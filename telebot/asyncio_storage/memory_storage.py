@@ -8,7 +8,7 @@ class StateMemoryStorage(StateStorageBase):
     
     
     async def set_state(self, chat_id, user_id, state):
-        if isinstance(state, object):
+        if hasattr(state, 'name'):
             state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:
