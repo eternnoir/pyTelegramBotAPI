@@ -1,4 +1,3 @@
-from pyclbr import Class
 from telebot.storage.base_storage import StateStorageBase, StateContext
 import json
 
