@@ -877,5 +877,6 @@ Here are some examples of template:
 * [remoteTelegramShell](https://github.com/EnriqueMoran/remoteTelegramShell) by [EnriqueMoran](https://github.com/EnriqueMoran). Control your LinuxOS computer through Telegram.
 * [Pyfram-telegram-bot](https://github.com/skelly37/pyfram-telegram-bot) Query wolframalpha.com and make use of its API through Telegram.
 * [TranslateThisVideoBot](https://gitlab.com/WuerfelDev/translatethisvideo) This Bot can understand spoken text in videos and translate it to English
+* [Zyprexa](https://t.me/mathemathicsBot) [(source)](https://github.com/atif5/zyprexa) Zyprexa can solve, help you seolve any mathematical problem you encounter and convert your regular mathematical expressions into beautiful imagery using LaTeX.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
