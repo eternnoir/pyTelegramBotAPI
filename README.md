@@ -65,7 +65,7 @@
   * [Telegram Channel](#telegram-channel)
   * [More examples](#more-examples)
   * [Code Template](#code-template)
-  * [Bots using this API](#bots-using-this-api)
+  * [Bots using this library](#bots-using-this-library)
 
 ## Getting started
 
@@ -826,7 +826,7 @@ Here are some examples of template:
 * [TeleBot template](https://github.com/coder2020official/telebot_template)
 	
 	
-## Bots using this API
+## Bots using this library
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
 * [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF* - Let me Google that for you.
