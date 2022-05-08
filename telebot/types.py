@@ -909,7 +909,7 @@ class File(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, file_size, file_path, **kwargs):
+    def __init__(self, file_id, file_unique_id, file_size=None, file_path=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.file_size: int = file_size
