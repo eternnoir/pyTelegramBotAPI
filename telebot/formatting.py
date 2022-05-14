@@ -49,7 +49,7 @@ def escape_markdown(content: str) -> str:
     return reparse 
 
 
-def mbold(content: str, escape: bool=False) -> str:
+def mbold(content: str, escape: bool=True) -> str:
     """
     Returns a Markdown-formatted bold string.
 
@@ -59,7 +59,7 @@ def mbold(content: str, escape: bool=False) -> str:
     return '*{}*'.format(escape_markdown(content) if escape else content)
 
 
-def hbold(content: str, escape: bool=False) -> str:
+def hbold(content: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted bold string.
 
@@ -69,7 +69,7 @@ def hbold(content: str, escape: bool=False) -> str:
     return '<b>{}</b>'.format(escape_html(content) if escape else content)
 
 
-def mitalic(content: str, escape: bool=False) -> str:
+def mitalic(content: str, escape: bool=True) -> str:
     """
     Returns a Markdown-formatted italic string.
 
@@ -79,7 +79,7 @@ def mitalic(content: str, escape: bool=False) -> str:
     return '_{}_\r'.format(escape_markdown(content) if escape else content)
 
 
-def hitalic(content: str, escape: bool=False) -> str:
+def hitalic(content: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted italic string.
 
@@ -89,7 +89,7 @@ def hitalic(content: str, escape: bool=False) -> str:
     return '<i>{}</i>'.format(escape_html(content) if escape else content)
 
 
-def munderline(content: str, escape: bool=False) -> str:
+def munderline(content: str, escape: bool=True) -> str:
     """
     Returns a Markdown-formatted underline string.
 
@@ -99,7 +99,7 @@ def munderline(content: str, escape: bool=False) -> str:
     return '__{}__'.format(escape_markdown(content) if escape else content)
 
 
-def hunderline(content: str, escape: bool=False) -> str:
+def hunderline(content: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted underline string.
 
@@ -109,7 +109,7 @@ def hunderline(content: str, escape: bool=False) -> str:
     return '<u>{}</u>'.format(escape_html(content) if escape else content)
 
 
-def mstrikethrough(content: str, escape: bool=False) -> str:
+def mstrikethrough(content: str, escape: bool=True) -> str:
     """
     Returns a Markdown-formatted strikethrough string.
 
@@ -119,7 +119,7 @@ def mstrikethrough(content: str, escape: bool=False) -> str:
     return '~{}~'.format(escape_markdown(content) if escape else content)
 
 
-def hstrikethrough(content: str, escape: bool=False) -> str:
+def hstrikethrough(content: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted strikethrough string.
 
@@ -129,7 +129,7 @@ def hstrikethrough(content: str, escape: bool=False) -> str:
     return '<s>{}</s>'.format(escape_html(content) if escape else content)
 
 
-def mspoiler(content: str, escape: bool=False) -> str:
+def mspoiler(content: str, escape: bool=True) -> str:
     """
     Returns a Markdown-formatted spoiler string.
 
@@ -139,7 +139,7 @@ def mspoiler(content: str, escape: bool=False) -> str:
     return '||{}||'.format(escape_markdown(content) if escape else content)
 
 
-def hspoiler(content: str, escape: bool=False) -> str:
+def hspoiler(content: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted spoiler string.
 
@@ -149,7 +149,7 @@ def hspoiler(content: str, escape: bool=False) -> str:
     return '<tg-spoiler>{}</tg-spoiler>'.format(escape_html(content) if escape else content)
 
 
-def mlink(content: str, url: str, escape: bool=False) -> str:
+def mlink(content: str, url: str, escape: bool=True) -> str:
     """
     Returns a Markdown-formatted link string.
 
@@ -160,7 +160,7 @@ def mlink(content: str, url: str, escape: bool=False) -> str:
     return '[{}]({})'.format(escape_markdown(content), escape_markdown(url) if escape else content)
 
 
-def hlink(content: str, url: str, escape: bool=False) -> str:
+def hlink(content: str, url: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted link string.
 
@@ -171,7 +171,7 @@ def hlink(content: str, url: str, escape: bool=False) -> str:
     return '<a href="{}">{}</a>'.format(escape_html(url), escape_html(content) if escape else content)
 
 
-def mcode(content: str, language: str="", escape: bool=False) -> str:
+def mcode(content: str, language: str="", escape: bool=True) -> str:
     """
     Returns a Markdown-formatted code string.
 
@@ -181,7 +181,7 @@ def mcode(content: str, language: str="", escape: bool=False) -> str:
     return '```{}\n{}```'.format(language, escape_markdown(content) if escape else content)
 
 
-def hcode(content: str, escape: bool=False) -> str:
+def hcode(content: str, escape: bool=True) -> str:
     """
     Returns an HTML-formatted code string.
 
@@ -191,7 +191,7 @@ def hcode(content: str, escape: bool=False) -> str:
     return '<code>{}</code>'.format(escape_html(content) if escape else content)
 
 
-def hpre(content: str, escape: bool=False, language: str="") -> str:
+def hpre(content: str, escape: bool=True, language: str="") -> str:
     """
     Returns an HTML-formatted preformatted string.
 
