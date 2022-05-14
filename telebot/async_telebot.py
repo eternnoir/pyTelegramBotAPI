@@ -1654,7 +1654,7 @@ class AsyncTeleBot:
             reply_to_message_id: Optional[int]=None, 
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            timeout: Optional[int]=None) -> int:
+            timeout: Optional[int]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
 
