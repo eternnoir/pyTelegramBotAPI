@@ -10,6 +10,5 @@ OS:
 
 ## Checklist:
 - [ ] I added/edited example on new feature/change (if exists)
-- [ ] My changes won't break backend compatibility
-- [ ] I made changes for async and sync
-
+- [ ] My changes won't break backward compatibility
+- [ ] I made changes both for sync and async
