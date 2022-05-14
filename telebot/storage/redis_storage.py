@@ -28,7 +28,7 @@ class StateRedisStorage(StateStorageBase):
         """
         Function to get record from database.
         It has nothing to do with states.
-        Made for backend compatibility
+        Made for backward compatibility
         """
         connection = Redis(connection_pool=self.redis)
         result = connection.get(self.prefix+str(key))
@@ -40,7 +40,7 @@ class StateRedisStorage(StateStorageBase):
         """
         Function to set record to database.
         It has nothing to do with states.
-        Made for backend compatibility
+        Made for backward compatibility
         """
         connection = Redis(connection_pool=self.redis)
         connection.set(self.prefix+str(key), json.dumps(value))
@@ -51,7 +51,7 @@ class StateRedisStorage(StateStorageBase):
         """
         Function to delete record from database.
         It has nothing to do with states.
-        Made for backend compatibility
+        Made for backward compatibility
         """
         connection = Redis(connection_pool=self.redis)
         connection.delete(self.prefix+str(key))

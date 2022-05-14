@@ -2774,23 +2774,29 @@ class Poll(JsonDeserializable):
             obj['explanation_entities'] = Message.parse_entities(obj['explanation_entities'])
         return cls(**obj)
 
+    # noinspection PyShadowingBuiltins
     def __init__(
             self,
             question, options,
-            poll_id=None, total_voter_count=None, is_closed=None, is_anonymous=None, poll_type=None,
+            poll_id=None, total_voter_count=None, is_closed=None, is_anonymous=None, type=None,
             allows_multiple_answers=None, correct_option_id=None, explanation=None, explanation_entities=None,
-            open_period=None, close_date=None, **kwargs):
+            open_period=None, close_date=None, poll_type=None, **kwargs):
         self.id: str = poll_id
         self.question: str = question
         self.options: List[PollOption] = options
         self.total_voter_count: int = total_voter_count
         self.is_closed: bool = is_closed
         self.is_anonymous: bool = is_anonymous
-        self.type: str = poll_type
+        self.type: str = type
+        if poll_type is not None:
+            # Wrong param name backward compatibility
+            logger.warning("Poll: poll_type parameter is deprecated. Use type instead.")
+            if type is None:
+                self.type: str = poll_type
         self.allows_multiple_answers: bool = allows_multiple_answers
         self.correct_option_id: int = correct_option_id
         self.explanation: str = explanation
-        self.explanation_entities: List[MessageEntity] = explanation_entities # Default state of entities is None. if (explanation_entities is not None) else []
+        self.explanation_entities: List[MessageEntity] = explanation_entities
         self.open_period: int = open_period
         self.close_date: int = close_date
 

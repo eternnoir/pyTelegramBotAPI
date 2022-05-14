@@ -35,7 +35,7 @@ class StateRedisStorage(StateStorageBase):
         """
         Function to get record from database.
         It has nothing to do with states.
-        Made for backend compatibility
+        Made for backward compatibility
         """
         result = await self.redis.get(self.prefix+str(key))
         if result: return json.loads(result)
@@ -45,7 +45,7 @@ class StateRedisStorage(StateStorageBase):
         """
         Function to set record to database.
         It has nothing to do with states.
-        Made for backend compatibility
+        Made for backward compatibility
         """
     
         await self.redis.set(self.prefix+str(key), json.dumps(value))
@@ -55,7 +55,7 @@ class StateRedisStorage(StateStorageBase):
         """
         Function to delete record from database.
         It has nothing to do with states.
-        Made for backend compatibility
+        Made for backward compatibility
         """
         await self.redis.delete(self.prefix+str(key))
         return True
