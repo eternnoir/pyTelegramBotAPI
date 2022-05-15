@@ -566,7 +566,7 @@ class TeleBot:
 
         while not self.__stop_polling.is_set():
             try:
-                self.polling(none_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
+                self.polling(non_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
                              logger_level=logger_level, allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
