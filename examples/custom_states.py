@@ -60,7 +60,7 @@ def name_get(message):
     """
     State 1. Will process when user's state is MyStates.name.
     """
-    bot.send_message(message.chat.id, f'Now write me a surname')
+    bot.send_message(message.chat.id, 'Now write me a surname')
     bot.set_state(message.from_user.id, MyStates.surname, message.chat.id)
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['name'] = message.text
@@ -83,7 +83,11 @@ def ready_for_answer(message):
     State 3. Will process when user's state is MyStates.age.
     """
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-        bot.send_message(message.chat.id, "Ready, take a look:\n<b>Name: {name}\nSurname: {surname}\nAge: {age}</b>".format(name=data['name'], surname=data['surname'], age=message.text), parse_mode="html")
+        msg = ("Ready, take a look:\n<b>"
+               f"Name: {data['name']}\n"
+               f"Surname: {data['surname']}\n"
+               f"Age: {message.text}</b>")
+        bot.send_message(message.chat.id, msg, parse_mode="html")
     bot.delete_state(message.from_user.id, message.chat.id)
 
 #incorrect number
