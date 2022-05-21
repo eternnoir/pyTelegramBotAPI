@@ -7,17 +7,16 @@ try:
 except ImportError:
     import json
 import os
+
 API_URL = 'https://api.telegram.org/bot{0}/{1}'
+FILE_URL = None
 
 from datetime import datetime
 
 from telebot import util, logger
 
-
 proxy = None
 session = None
-
-FILE_URL = None
 
 CONNECT_TIMEOUT = 15
 READ_TIMEOUT = 30

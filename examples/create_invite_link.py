@@ -1,7 +1,7 @@
 import telebot, threading
 from time import sleep, time
-from telebot import InlineKeyboardMarkup as ikm #Only for creating Inline Buttons, not necessary for creating Invite Links
-from telebot import InlineKeyboardButton as ikb #Only for creating Inline Buttons, not necessary for creating Invite Links
+from telebot.types import InlineKeyboardMarkup as ikm #Only for creating Inline Buttons, not necessary for creating Invite Links
+from telebot.types import InlineKeyboardButton as ikb #Only for creating Inline Buttons, not necessary for creating Invite Links
 
 Token = "api_token" #Your Bot Access Token
 Group_ID = -1234567890 #Group ID for which invite link is to be created
@@ -21,16 +21,13 @@ def newmember(msg):
     InviteLink = invite.invite_link #Get the actual invite link from 'invite' class
     mrkplink = ikm() #Created Inline Markup Keyboard
     mrkplink.add(ikb("Join our group 🚀", url=InviteLink)) #Added Invite Link to Inline Markup Keyboard
-    bot.send_message(msg.chat.id, f"Hey there {msg.from_user.first_name}, Click the link below to join our Official Group." reply_markup=mrkplink)
+    bot.send_message(msg.chat.id, f"Hey there {msg.from_user.first_name}, Click the link below to join our Official Group.", reply_markup=mrkplink)
     
     #This will send a message with the newly-created invite link as markup button.
     #The member limit will be 1 and expiring time will be 45 sec.
-
-
-
 
 while True:
     try:
         bot.infinity_polling()
     except:
-        sleep(0.04)
+        sleep(1)

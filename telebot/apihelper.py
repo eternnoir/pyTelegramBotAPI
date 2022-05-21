@@ -26,7 +26,7 @@ logger = telebot.logger
 proxy = None
 session = None
 
-API_URL = None
+API_URL = 'https://api.telegram.org/bot{0}/{1}'
 FILE_URL = None
 
 CONNECT_TIMEOUT = 15
@@ -78,11 +78,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     """
     if not token:
         raise Exception('Bot token is not defined')
-    if API_URL:
-        # noinspection PyUnresolvedReferences
-        request_url = API_URL.format(token, method_name)
-    else:
-        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
+    request_url = API_URL.format(token, method_name)
 
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files).replace(token, token.split(':')[0] + ":{TOKEN}"))
     read_timeout = READ_TIMEOUT
