@@ -1674,6 +1674,8 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
         return types.MessageID.de_json(
             await asyncio_helper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
@@ -3111,6 +3113,8 @@ class AsyncTeleBot:
 
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
+
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         return types.Message.de_json(
             await asyncio_helper.send_poll(
