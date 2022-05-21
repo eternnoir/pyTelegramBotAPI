@@ -1,6 +1,7 @@
 import asyncio # for future uses
 import aiohttp
 from telebot import types
+import ssl, certifi
 
 try:
     import ujson as json
@@ -19,21 +20,23 @@ session = None
 
 FILE_URL = None
 
-CONNECT_TIMEOUT = 15
-READ_TIMEOUT = 30
-
-LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
-REQUEST_TIMEOUT = 10
+REQUEST_TIMEOUT = None
 MAX_RETRIES = 3
 
 REQUEST_LIMIT = 50
 
 class SessionManager:
     def __init__(self) -> None:
-        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
+        self.ssl_context = ssl.create_default_context(cafile=certifi.where())
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(
+            limit=REQUEST_LIMIT, ssl=self.ssl_context
+        ))
+
 
     async def create_session(self):
-        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(
+            limit=REQUEST_LIMIT, ssl=self.ssl_context
+        ))
         return self.session
 
     async def get_session(self):
@@ -61,10 +64,11 @@ async def _process_request(token, url, method='get', params=None, files=None, re
         current_try +=1
         try:
             async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
+                got_result = True
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
+                
                 json_result = await _check_result(url, resp)
                 if json_result:
-                    got_result = True
                     return json_result['result']
         except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
             raise e
