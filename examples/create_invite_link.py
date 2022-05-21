@@ -1,7 +1,7 @@
-import telebot, threading
+import telebot
 from time import sleep, time
-from telebot import InlineKeyboardMarkup as ikm #Only for creating Inline Buttons, not necessary for creating Invite Links
-from telebot import InlineKeyboardButton as ikb #Only for creating Inline Buttons, not necessary for creating Invite Links
+from telebot.types import InlineKeyboardMarkup as ikm #Only for creating Inline Buttons, not necessary for creating Invite Links
+from telebot.types import InlineKeyboardButton as ikb #Only for creating Inline Buttons, not necessary for creating Invite Links
 
 Token = "api_token" #Your Bot Access Token
 Group_ID = -1234567890 #Group ID for which invite link is to be created
