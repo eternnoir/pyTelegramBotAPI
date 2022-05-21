@@ -29,8 +29,4 @@ def newmember(msg):
 
 
 
-while True:
-    try:
-        bot.infinity_polling()
-    except:
-        sleep(0.04)
+bot.infinity_polling()
