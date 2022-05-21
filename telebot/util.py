@@ -370,7 +370,8 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
             'switch_inline_query_current_chat': None,
             'callback_game': None,
             'pay': None,
-            'login_url': None
+            'login_url': None,
+            'web_app': None
         }
     
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
