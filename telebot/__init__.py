@@ -2510,6 +2510,8 @@ class TeleBot:
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
+
         return types.Message.de_json(
             apihelper.send_poll(
                 self.token, chat_id,

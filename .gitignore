@@ -64,6 +64,7 @@ testMain.py
 #VS Code
 .vscode/
 .DS_Store
+*.code-workspace
 
 # documentation
 _build/
