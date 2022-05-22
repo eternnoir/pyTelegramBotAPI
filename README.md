@@ -358,7 +358,25 @@ def start(message):
 There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
 
 #### Class-based middlewares
-There are class-based middlewares. Check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
+There are class-based middlewares. 
+Basic class-based middleware looks like this:
+```python
+class Middleware(BaseMiddleware):
+    def __init__(self):
+        self.update_types = ['message']
+    def pre_process(self, message, data):
+        data['foo'] = 'Hello' # just for example
+        # we edited the data. now, this data is passed to handler.
+        # return SkipHandler() -> this will skip handler
+        # return CancelUpdate() -> this will cancel update
+    def post_process(self, message, data, exception=None):
+        print(data['foo'])
+        if exception: # check for exception
+            print(exception)
+```
+Class-based middleware should have to functions: post and pre process.
+So, as you can see, class-based middlewares work before and after handler execution.
+For more, check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
 	
 #### Custom filters
 Also, you can use built-in custom filters. Or, you can create your own filter.	
