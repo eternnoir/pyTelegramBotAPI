@@ -1,7 +1,6 @@
 import telebot
 from time import sleep, time
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton #Only for creating Inline Buttons, not necessary for creating Invite Links
-mrkplink = InlineKeyboardMarkup() #Created Inline Keyboard Markup
 
 Token = "api_token" #Your Bot Access Token
 Group_ID = -1234567890 #Group ID for which invite link is to be created
@@ -20,6 +19,7 @@ def newmember(msg):
     invite = bot.create_chat_invite_link(Group_ID, member_limit=1, expire_date=int(time())+45) #Here, the link will auto-expire in 45 seconds
     InviteLink = invite.invite_link #Get the actual invite link from 'invite' class
     
+    mrkplink = InlineKeyboardMarkup() #Created Inline Keyboard Markup
     mrkplink.add(InlineKeyboardButton("Join our group 🚀", url=InviteLink)) #Added Invite Link to Inline Keyboard
     
     bot.send_message(msg.chat.id, f"Hey there {msg.from_user.first_name}, Click the link below to join our Official Group.", reply_markup=mrkplink)
