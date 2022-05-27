@@ -16,7 +16,7 @@ class SimpleCustomFilter(ABC):
 
     key: str = None
 
-    def check(self, message):
+    async def check(self, message):
         """
         Perform a check.
         """
@@ -36,7 +36,7 @@ class AdvancedCustomFilter(ABC):
 
     key: str = None
 
-    def check(self, message, text):
+    async def check(self, message, text):
         """
         Perform a check.
         """
@@ -47,7 +47,7 @@ class TextFilter:
     """
     Advanced text filter to check (types.Message, types.CallbackQuery, types.InlineQuery, types.Poll)
 
-    example of usage is in examples/custom_filters/advanced_text_filter.py
+    example of usage is in examples/asynchronous_telebot/custom_filters/advanced_text_filter.py
     """
 
     def __init__(
@@ -82,7 +82,7 @@ class TextFilter:
         self.ends_with = self._check_iterable(ends_with, filter_name="ends_with")
         self.ignore_case = ignore_case
 
-    def _check_iterable(self, iterable, filter_name: str):
+    def _check_iterable(self, iterable, filter_name):
         if not iterable:
             pass
         elif (
@@ -97,7 +97,7 @@ class TextFilter:
             iterable = [i for i in iterable if isinstance(i, str)]
         return iterable
 
-    def check(
+    async def check(
         self,
         obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll],
     ):
@@ -115,18 +115,12 @@ class TextFilter:
 
         if self.ignore_case:
             text = text.lower()
-
-            if self.equals:
-                self.equals = self.equals.lower()
-            elif self.contains:
-                self.contains = tuple(map(str.lower, self.contains))
-            elif self.starts_with:
-                self.starts_with = tuple(map(str.lower, self.starts_with))
-            elif self.ends_with:
-                self.ends_with = tuple(map(str.lower, self.ends_with))
+            prepare_func = lambda string: str(string).lower()
+        else:
+            prepare_func = str
 
         if self.equals:
-            result = self.equals == text
+            result = prepare_func(self.equals) == text
             if result:
                 return True
             elif not result and not any(
@@ -135,21 +129,21 @@ class TextFilter:
                 return False
 
         if self.contains:
-            result = any([i in text for i in self.contains])
+            result = any([prepare_func(i) in text for i in self.contains])
             if result:
                 return True
             elif not result and not any((self.starts_with, self.ends_with)):
                 return False
 
         if self.starts_with:
-            result = any([text.startswith(i) for i in self.starts_with])
+            result = any([text.startswith(prepare_func(i)) for i in self.starts_with])
             if result:
                 return True
             elif not result and not self.ends_with:
                 return False
 
         if self.ends_with:
-            return any([text.endswith(i) for i in self.ends_with])
+            return any([text.endswith(prepare_func(i)) for i in self.ends_with])
 
         return False
 
@@ -165,9 +159,9 @@ class TextMatchFilter(AdvancedCustomFilter):
 
     key = "text"
 
-    def check(self, message, text):
+    async def check(self, message, text):
         if isinstance(text, TextFilter):
-            return text.check(message)
+            return await text.check(message)
         elif type(text) is list:
             return message.text in text
         else:
@@ -186,7 +180,7 @@ class TextContainsFilter(AdvancedCustomFilter):
 
     key = "text_contains"
 
-    def check(self, message, text):
+    async def check(self, message, text):
         if (
             not isinstance(text, str)
             and not isinstance(text, list)
@@ -212,7 +206,7 @@ class TextStartsFilter(AdvancedCustomFilter):
 
     key = "text_startswith"
 
-    def check(self, message, text):
+    async def check(self, message, text):
         return message.text.startswith(text)
 
 
@@ -226,7 +220,7 @@ class ChatFilter(AdvancedCustomFilter):
 
     key = "chat_id"
 
-    def check(self, message, text):
+    async def check(self, message, text):
         return message.chat.id in text
 
 
@@ -241,7 +235,7 @@ class ForwardFilter(SimpleCustomFilter):
 
     key = "is_forwarded"
 
-    def check(self, message):
+    async def check(self, message):
         return message.forward_from_chat is not None
 
 
@@ -256,7 +250,7 @@ class IsReplyFilter(SimpleCustomFilter):
 
     key = "is_reply"
 
-    def check(self, message):
+    async def check(self, message):
         return message.reply_to_message is not None
 
 
@@ -271,7 +265,7 @@ class LanguageFilter(AdvancedCustomFilter):
 
     key = "language_code"
 
-    def check(self, message, text):
+    async def check(self, message, text):
         if type(text) is list:
             return message.from_user.language_code in text
         else:
@@ -291,10 +285,9 @@ class IsAdminFilter(SimpleCustomFilter):
     def __init__(self, bot):
         self._bot = bot
 
-    def check(self, message):
-        return self._bot.get_chat_member(
-            message.chat.id, message.from_user.id
-        ).status in ["creator", "administrator"]
+    async def check(self, message):
+        result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
+        return result.status in ["creator", "administrator"]
 
 
 class StateFilter(AdvancedCustomFilter):
@@ -310,7 +303,7 @@ class StateFilter(AdvancedCustomFilter):
 
     key = "state"
 
-    def check(self, message, text):
+    async def check(self, message, text):
         if text == "*":
             return True
 
@@ -336,14 +329,14 @@ class StateFilter(AdvancedCustomFilter):
             text = text.name
 
         if message.chat.type == "group":
-            group_state = self.bot.current_states.get_state(user_id, chat_id)
+            group_state = await self.bot.current_states.get_state(user_id, chat_id)
             if group_state == text:
                 return True
             elif type(text) is list and group_state in text:
                 return True
 
         else:
-            user_state = self.bot.current_states.get_state(user_id, chat_id)
+            user_state = await self.bot.current_states.get_state(user_id, chat_id)
             if user_state == text:
                 return True
             elif type(text) is list and user_state in text:
@@ -360,5 +353,5 @@ class IsDigitFilter(SimpleCustomFilter):
 
     key = "is_digit"
 
-    def check(self, message):
+    async def check(self, message):
         return message.text.isdigit()

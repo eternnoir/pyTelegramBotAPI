@@ -1,6 +1,6 @@
 import json
 
-from telebot.asyncio_storage.base_storage import StateContext, StateStorageBase
+from telebot.storages.base_storage import StateContext, StateStorageBase
 
 redis_installed = True
 try:

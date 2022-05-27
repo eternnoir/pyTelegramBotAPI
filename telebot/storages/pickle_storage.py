@@ -1,22 +1,16 @@
 import os
 import pickle
 
-from telebot.storage.base_storage import StateContext, StateStorageBase
+from telebot.storages.base_storage import StateContext, StateStorageBase
 
 
 class StatePickleStorage(StateStorageBase):
-    # noinspection PyMissingConstructor
     def __init__(self, file_path="./.state-save/states.pkl") -> None:
         self.file_path = file_path
         self.create_dir()
         self.data = self.read()
 
-    def convert_old_to_new(self):
-        """
-        Use this function to convert old storage to new storage.
-        This function is for people who was using pickle storage
-        that was in version <=4.3.1.
-        """
+    async def convert_old_to_new(self):
         # old looks like:
         # {1: {'state': 'start', 'data': {'name': 'John'}}
         # we should update old version pickle to new.
@@ -51,7 +45,7 @@ class StatePickleStorage(StateStorageBase):
         pickle.dump(self.data, file, protocol=pickle.HIGHEST_PROTOCOL)
         file.close()
 
-    def set_state(self, chat_id, user_id, state):
+    async def set_state(self, chat_id, user_id, state):
         if hasattr(state, "name"):
             state = state.name
         if chat_id in self.data:
@@ -65,7 +59,7 @@ class StatePickleStorage(StateStorageBase):
         self.update_data()
         return True
 
-    def delete_state(self, chat_id, user_id):
+    async def delete_state(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
                 del self.data[chat_id][user_id]
@@ -76,21 +70,21 @@ class StatePickleStorage(StateStorageBase):
 
         return False
 
-    def get_state(self, chat_id, user_id):
+    async def get_state(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
                 return self.data[chat_id][user_id]["state"]
 
         return None
 
-    def get_data(self, chat_id, user_id):
+    async def get_data(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
                 return self.data[chat_id][user_id]["data"]
 
         return None
 
-    def reset_data(self, chat_id, user_id):
+    async def reset_data(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
                 self.data[chat_id][user_id]["data"] = {}
@@ -98,7 +92,7 @@ class StatePickleStorage(StateStorageBase):
                 return True
         return False
 
-    def set_data(self, chat_id, user_id, key, value):
+    async def set_data(self, chat_id, user_id, key, value):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
                 self.data[chat_id][user_id]["data"][key] = value
@@ -111,6 +105,6 @@ class StatePickleStorage(StateStorageBase):
     def get_interactive_data(self, chat_id, user_id):
         return StateContext(self, chat_id, user_id)
 
-    def save(self, chat_id, user_id, data):
+    async def save(self, chat_id, user_id, data):
         self.data[chat_id][user_id]["data"] = data
         self.update_data()

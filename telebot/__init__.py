@@ -10,9 +10,9 @@ from typing import Any, List, Optional, Union
 
 import telebot.types
 import telebot.util
-from telebot import asyncio_filters, asyncio_helper, logger, types, util
-from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler
-from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
+from telebot import api, filters, logger, types, util
+from telebot.handler_backends import CancelUpdate, SkipHandler
+from telebot.storages import StateMemoryStorage, StatePickleStorage
 
 logger = logging.getLogger("TeleBot")
 
@@ -87,7 +87,7 @@ class AsyncTeleBot:
         Closes existing session of aiohttp.
         Use this function if you stop polling.
         """
-        await asyncio_helper.session_manager.session.close()
+        await api.session_manager.session.close()
 
     async def get_updates(
         self,
@@ -97,7 +97,7 @@ class AsyncTeleBot:
         allowed_updates: Optional[List] = None,
         request_timeout: Optional[int] = None,
     ) -> List[types.Update]:
-        json_updates = await asyncio_helper.get_updates(
+        json_updates = await api.get_updates(
             self.token, offset, limit, timeout, allowed_updates, request_timeout
         )
         return [types.Update.de_json(ju) for ju in json_updates]
@@ -249,14 +249,14 @@ class AsyncTeleBot:
                     return
                 except asyncio.CancelledError:
                     return
-                except asyncio_helper.RequestTimeout as e:
+                except api.RequestTimeout as e:
                     logger.error(str(e))
                     if non_stop:
                         await asyncio.sleep(2)
                         continue
                     else:
                         return
-                except asyncio_helper.ApiTelegramException as e:
+                except api.ApiTelegramException as e:
                     logger.error(str(e))
                     if non_stop:
                         continue
@@ -632,9 +632,9 @@ class AsyncTeleBot:
         filter_check = self.custom_filters.get(message_filter)
         if not filter_check:
             return False
-        elif isinstance(filter_check, asyncio_filters.SimpleCustomFilter):
+        elif isinstance(filter_check, filters.SimpleCustomFilter):
             return filter_value == await filter_check.check(message)
-        elif isinstance(filter_check, asyncio_filters.AdvancedCustomFilter):
+        elif isinstance(filter_check, filters.AdvancedCustomFilter):
             return await filter_check.check(message, filter_value)
         else:
             logger.error(
@@ -1534,7 +1534,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getme
         """
-        result = await asyncio_helper.get_me(self.token)
+        result = await api.get_me(self.token)
         return types.User.de_json(result)
 
     async def get_file(self, file_id: str) -> types.File:
@@ -1549,14 +1549,14 @@ class AsyncTeleBot:
 
         :param file_id:
         """
-        return types.File.de_json(await asyncio_helper.get_file(self.token, file_id))
+        return types.File.de_json(await api.get_file(self.token, file_id))
 
     async def get_file_url(self, file_id: str) -> str:
 
-        return await asyncio_helper.get_file_url(self.token, file_id)
+        return await api.get_file_url(self.token, file_id)
 
     async def download_file(self, file_path: str) -> bytes:
-        return await asyncio_helper.download_file(self.token, file_path)
+        return await api.download_file(self.token, file_path)
 
     async def log_out(self) -> bool:
         """
@@ -1569,7 +1569,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#logout
         """
-        return await asyncio_helper.log_out(self.token)
+        return await api.log_out(self.token)
 
     async def close(self) -> bool:
         """
@@ -1581,7 +1581,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#close
         """
-        return await asyncio_helper.close(self.token)
+        return await api.close(self.token)
 
     def enable_saving_states(self, filename="./.state-save/states.pkl"):
         """
@@ -1628,7 +1628,7 @@ class AsyncTeleBot:
         :param timeout: Integer. Request connection timeout
         :return:
         """
-        return await asyncio_helper.set_webhook(
+        return await api.set_webhook(
             self.token,
             url,
             certificate,
@@ -1649,7 +1649,7 @@ class AsyncTeleBot:
         :param timeout: Integer. Request connection timeout
         :return: bool
         """
-        return await asyncio_helper.delete_webhook(
+        return await api.delete_webhook(
             self.token, drop_pending_updates, timeout
         )
 
@@ -1669,7 +1669,7 @@ class AsyncTeleBot:
         :param timeout: Integer. Request connection timeout
         :return: On success, returns a WebhookInfo object.
         """
-        result = await asyncio_helper.get_webhook_info(self.token, timeout)
+        result = await api.get_webhook_info(self.token, timeout)
         return types.WebhookInfo.de_json(result)
 
     async def get_user_profile_photos(
@@ -1685,7 +1685,7 @@ class AsyncTeleBot:
         :param limit:
         :return: API reply.
         """
-        result = await asyncio_helper.get_user_profile_photos(
+        result = await api.get_user_profile_photos(
             self.token, user_id, offset, limit
         )
         return types.UserProfilePhotos.de_json(result)
@@ -1700,7 +1700,7 @@ class AsyncTeleBot:
         :param chat_id:
         :return:
         """
-        result = await asyncio_helper.get_chat(self.token, chat_id)
+        result = await api.get_chat(self.token, chat_id)
         return types.Chat.de_json(result)
 
     async def leave_chat(self, chat_id: Union[int, str]) -> bool:
@@ -1712,7 +1712,7 @@ class AsyncTeleBot:
         :param chat_id:
         :return:
         """
-        result = await asyncio_helper.leave_chat(self.token, chat_id)
+        result = await api.leave_chat(self.token, chat_id)
         return result
 
     async def get_chat_administrators(
@@ -1728,7 +1728,7 @@ class AsyncTeleBot:
         :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
         :return: API reply.
         """
-        result = await asyncio_helper.get_chat_administrators(self.token, chat_id)
+        result = await api.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
 
     @util.deprecated(deprecation_text="Use get_chat_member_count instead")
@@ -1736,7 +1736,7 @@ class AsyncTeleBot:
         """
         This function is deprecated. Use `get_chat_member_count` instead
         """
-        result = await asyncio_helper.get_chat_member_count(self.token, chat_id)
+        result = await api.get_chat_member_count(self.token, chat_id)
         return result
 
     async def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
@@ -1748,7 +1748,7 @@ class AsyncTeleBot:
         :param chat_id:
         :return:
         """
-        result = await asyncio_helper.get_chat_member_count(self.token, chat_id)
+        result = await api.get_chat_member_count(self.token, chat_id)
         return result
 
     async def set_chat_sticker_set(
@@ -1766,7 +1766,7 @@ class AsyncTeleBot:
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
         :return: API reply.
         """
-        result = await asyncio_helper.set_chat_sticker_set(
+        result = await api.set_chat_sticker_set(
             self.token, chat_id, sticker_set_name
         )
         return result
@@ -1782,7 +1782,7 @@ class AsyncTeleBot:
         :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :return: API reply.
         """
-        result = await asyncio_helper.delete_chat_sticker_set(self.token, chat_id)
+        result = await api.delete_chat_sticker_set(self.token, chat_id)
         return result
 
     async def answer_web_app_query(
@@ -1801,7 +1801,7 @@ class AsyncTeleBot:
         :return:
         """
 
-        return await asyncio_helper.answer_web_app_query(
+        return await api.answer_web_app_query(
             self.token, web_app_query_id, result
         )
 
@@ -1817,7 +1817,7 @@ class AsyncTeleBot:
         :param user_id:
         :return: API reply.
         """
-        result = await asyncio_helper.get_chat_member(self.token, chat_id, user_id)
+        result = await api.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
 
     async def send_message(
@@ -1859,7 +1859,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            await asyncio_helper.send_message(
+            await api.send_message(
                 self.token,
                 chat_id,
                 text,
@@ -1898,7 +1898,7 @@ class AsyncTeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            await asyncio_helper.forward_message(
+            await api.forward_message(
                 self.token,
                 chat_id,
                 from_chat_id,
@@ -1946,7 +1946,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.MessageID.de_json(
-            await asyncio_helper.copy_message(
+            await api.copy_message(
                 self.token,
                 chat_id,
                 from_chat_id,
@@ -1976,7 +1976,7 @@ class AsyncTeleBot:
         :param timeout:
         :return: API reply.
         """
-        return await asyncio_helper.delete_message(
+        return await api.delete_message(
             self.token, chat_id, message_id, timeout
         )
 
@@ -2007,7 +2007,7 @@ class AsyncTeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            await asyncio_helper.send_dice(
+            await api.send_dice(
                 self.token,
                 chat_id,
                 emoji,
@@ -2055,7 +2055,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            await asyncio_helper.send_photo(
+            await api.send_photo(
                 self.token,
                 chat_id,
                 photo,
@@ -2115,7 +2115,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            await asyncio_helper.send_audio(
+            await api.send_audio(
                 self.token,
                 chat_id,
                 audio,
@@ -2173,7 +2173,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            await asyncio_helper.send_voice(
+            await api.send_voice(
                 self.token,
                 chat_id,
                 voice,
@@ -2236,7 +2236,7 @@ class AsyncTeleBot:
             document = data
 
         return types.Message.de_json(
-            await asyncio_helper.send_data(
+            await api.send_data(
                 self.token,
                 chat_id,
                 document,
@@ -2292,7 +2292,7 @@ class AsyncTeleBot:
             sticker = data
 
         return types.Message.de_json(
-            await asyncio_helper.send_data(
+            await api.send_data(
                 self.token,
                 chat_id,
                 sticker,
@@ -2358,7 +2358,7 @@ class AsyncTeleBot:
             video = data
 
         return types.Message.de_json(
-            await asyncio_helper.send_video(
+            await api.send_video(
                 self.token,
                 chat_id,
                 video,
@@ -2423,7 +2423,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            await asyncio_helper.send_animation(
+            await api.send_animation(
                 self.token,
                 chat_id,
                 animation,
@@ -2478,7 +2478,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.Message.de_json(
-            await asyncio_helper.send_video_note(
+            await api.send_video_note(
                 self.token,
                 chat_id,
                 data,
@@ -2525,7 +2525,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
-        result = await asyncio_helper.send_media_group(
+        result = await api.send_media_group(
             self.token,
             chat_id,
             media,
@@ -2575,7 +2575,7 @@ class AsyncTeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            await asyncio_helper.send_location(
+            await api.send_location(
                 self.token,
                 chat_id,
                 latitude,
@@ -2624,7 +2624,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.Message.de_json(
-            await asyncio_helper.edit_message_live_location(
+            await api.edit_message_live_location(
                 self.token,
                 latitude,
                 longitude,
@@ -2661,7 +2661,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.Message.de_json(
-            await asyncio_helper.stop_message_live_location(
+            await api.stop_message_live_location(
                 self.token,
                 chat_id,
                 message_id,
@@ -2713,7 +2713,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.Message.de_json(
-            await asyncio_helper.send_venue(
+            await api.send_venue(
                 self.token,
                 chat_id,
                 latitude,
@@ -2765,7 +2765,7 @@ class AsyncTeleBot:
         :param protect_content:
         """
         return types.Message.de_json(
-            await asyncio_helper.send_contact(
+            await api.send_contact(
                 self.token,
                 chat_id,
                 phone_number,
@@ -2798,7 +2798,7 @@ class AsyncTeleBot:
         :param timeout:
         :return: API reply. :type: boolean
         """
-        return await asyncio_helper.send_chat_action(
+        return await api.send_chat_action(
             self.token, chat_id, action, timeout
         )
 
@@ -2813,7 +2813,7 @@ class AsyncTeleBot:
         This function is deprecated. Use `ban_chat_member` instead
         """
         logger.info("kick_chat_member is deprecated. Use ban_chat_member instead.")
-        return await asyncio_helper.ban_chat_member(
+        return await api.ban_chat_member(
             self.token, chat_id, user_id, until_date, revoke_messages
         )
 
@@ -2841,7 +2841,7 @@ class AsyncTeleBot:
                 Always True for supergroups and channels.
         :return: boolean
         """
-        return await asyncio_helper.ban_chat_member(
+        return await api.ban_chat_member(
             self.token, chat_id, user_id, until_date, revoke_messages
         )
 
@@ -2866,7 +2866,7 @@ class AsyncTeleBot:
         :param only_if_banned: Do nothing if the user is not banned
         :return: True on success
         """
-        return await asyncio_helper.unban_chat_member(
+        return await api.unban_chat_member(
             self.token, chat_id, user_id, only_if_banned
         )
 
@@ -2908,7 +2908,7 @@ class AsyncTeleBot:
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """
-        return await asyncio_helper.restrict_chat_member(
+        return await api.restrict_chat_member(
             self.token,
             chat_id,
             user_id,
@@ -2978,7 +2978,7 @@ class AsyncTeleBot:
             if can_manage_video_chats is None:
                 can_manage_video_chats = can_manage_voice_chats
 
-        return await asyncio_helper.promote_chat_member(
+        return await api.promote_chat_member(
             self.token,
             chat_id,
             user_id,
@@ -3011,7 +3011,7 @@ class AsyncTeleBot:
             0-16 characters, emoji are not allowed
         :return: True on success.
         """
-        return await asyncio_helper.set_chat_administrator_custom_title(
+        return await api.set_chat_administrator_custom_title(
             self.token, chat_id, user_id, custom_title
         )
 
@@ -3032,7 +3032,7 @@ class AsyncTeleBot:
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
         """
-        return await asyncio_helper.ban_chat_sender_chat(
+        return await api.ban_chat_sender_chat(
             self.token, chat_id, sender_chat_id
         )
 
@@ -3052,7 +3052,7 @@ class AsyncTeleBot:
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
         """
-        return await asyncio_helper.unban_chat_sender_chat(
+        return await api.unban_chat_sender_chat(
             self.token, chat_id, sender_chat_id
         )
 
@@ -3071,7 +3071,7 @@ class AsyncTeleBot:
         :param permissions: New async default chat permissions
         :return: True on success
         """
-        return await asyncio_helper.set_chat_permissions(
+        return await api.set_chat_permissions(
             self.token, chat_id, permissions
         )
 
@@ -3098,7 +3098,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.ChatInviteLink.de_json(
-            await asyncio_helper.create_chat_invite_link(
+            await api.create_chat_invite_link(
                 self.token,
                 chat_id,
                 name,
@@ -3133,7 +3133,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.ChatInviteLink.de_json(
-            await asyncio_helper.edit_chat_invite_link(
+            await api.edit_chat_invite_link(
                 self.token,
                 chat_id,
                 name,
@@ -3159,7 +3159,7 @@ class AsyncTeleBot:
         :return: API reply.
         """
         return types.ChatInviteLink.de_json(
-            await asyncio_helper.revoke_chat_invite_link(
+            await api.revoke_chat_invite_link(
                 self.token, chat_id, invite_link
             )
         )
@@ -3175,7 +3175,7 @@ class AsyncTeleBot:
             (in the format @channelusername)
         :return: exported invite link as String on success.
         """
-        return await asyncio_helper.export_chat_invite_link(self.token, chat_id)
+        return await api.export_chat_invite_link(self.token, chat_id)
 
     async def approve_chat_join_request(
         self, chat_id: Union[str, int], user_id: Union[int, str]
@@ -3192,7 +3192,7 @@ class AsyncTeleBot:
         :param user_id: Unique identifier of the target user
         :return: True on success.
         """
-        return await asyncio_helper.approve_chat_join_request(
+        return await api.approve_chat_join_request(
             self.token, chat_id, user_id
         )
 
@@ -3211,7 +3211,7 @@ class AsyncTeleBot:
         :param user_id: Unique identifier of the target user
         :return: True on success.
         """
-        return await asyncio_helper.decline_chat_join_request(
+        return await api.decline_chat_join_request(
             self.token, chat_id, user_id
         )
 
@@ -3228,7 +3228,7 @@ class AsyncTeleBot:
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
         :return:
         """
-        return await asyncio_helper.set_chat_photo(self.token, chat_id, photo)
+        return await api.set_chat_photo(self.token, chat_id, photo)
 
     async def delete_chat_photo(self, chat_id: Union[int, str]) -> bool:
         """
@@ -3243,7 +3243,7 @@ class AsyncTeleBot:
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         """
-        return await asyncio_helper.delete_chat_photo(self.token, chat_id)
+        return await api.delete_chat_photo(self.token, chat_id)
 
     async def get_my_commands(
         self, scope: Optional[types.BotCommandScope], language_code: Optional[str]
@@ -3260,7 +3260,7 @@ class AsyncTeleBot:
             commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         """
-        result = await asyncio_helper.get_my_commands(self.token, scope, language_code)
+        result = await api.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
     async def set_chat_menu_button(
@@ -3278,7 +3278,7 @@ class AsyncTeleBot:
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
 
         """
-        return await asyncio_helper.set_chat_menu_button(
+        return await api.set_chat_menu_button(
             self.token, chat_id, menu_button
         )
 
@@ -3298,7 +3298,7 @@ class AsyncTeleBot:
 
         """
         return types.MenuButton.de_json(
-            await asyncio_helper.get_chat_menu_button(self.token, chat_id)
+            await api.get_chat_menu_button(self.token, chat_id)
         )
 
     async def set_my_default_administrator_rights(
@@ -3317,7 +3317,7 @@ class AsyncTeleBot:
         :param for_channels: Pass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
         """
 
-        return await asyncio_helper.set_my_default_administrator_rights(
+        return await api.set_my_default_administrator_rights(
             self.token, rights, for_channels
         )
 
@@ -3335,7 +3335,7 @@ class AsyncTeleBot:
         """
 
         return types.ChatAdministratorRights.de_json(
-            await asyncio_helper.get_my_default_administrator_rights(
+            await api.get_my_default_administrator_rights(
                 self.token, for_channels
             )
         )
@@ -3359,7 +3359,7 @@ class AsyncTeleBot:
             for whose language there are no dedicated commands
         :return:
         """
-        return await asyncio_helper.set_my_commands(
+        return await api.set_my_commands(
             self.token, commands, scope, language_code
         )
 
@@ -3381,7 +3381,7 @@ class AsyncTeleBot:
             commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         """
-        return await asyncio_helper.delete_my_commands(self.token, scope, language_code)
+        return await api.delete_my_commands(self.token, scope, language_code)
 
     async def set_chat_title(self, chat_id: Union[int, str], title: str) -> bool:
         """
@@ -3398,7 +3398,7 @@ class AsyncTeleBot:
         :param title: New chat title, 1-255 characters
         :return:
         """
-        return await asyncio_helper.set_chat_title(self.token, chat_id, title)
+        return await api.set_chat_title(self.token, chat_id, title)
 
     async def set_chat_description(
         self, chat_id: Union[int, str], description: Optional[str] = None
@@ -3414,7 +3414,7 @@ class AsyncTeleBot:
         :param description: Str: New chat description, 0-255 characters
         :return: True on success.
         """
-        return await asyncio_helper.set_chat_description(
+        return await api.set_chat_description(
             self.token, chat_id, description
         )
 
@@ -3438,7 +3438,7 @@ class AsyncTeleBot:
             to all group members about the new pinned message
         :return:
         """
-        return await asyncio_helper.pin_chat_message(
+        return await api.pin_chat_message(
             self.token, chat_id, message_id, disable_notification
         )
 
@@ -3457,7 +3457,7 @@ class AsyncTeleBot:
         :param message_id: Int: Identifier of a message to unpin
         :return:
         """
-        return await asyncio_helper.unpin_chat_message(self.token, chat_id, message_id)
+        return await api.unpin_chat_message(self.token, chat_id, message_id)
 
     async def unpin_all_chat_messages(self, chat_id: Union[int, str]) -> bool:
         """
@@ -3471,7 +3471,7 @@ class AsyncTeleBot:
             (in the format @channelusername)
         :return:
         """
-        return await asyncio_helper.unpin_all_chat_messages(self.token, chat_id)
+        return await api.unpin_all_chat_messages(self.token, chat_id)
 
     async def edit_message_text(
         self,
@@ -3501,7 +3501,7 @@ class AsyncTeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        result = await asyncio_helper.edit_message_text(
+        result = await api.edit_message_text(
             self.token,
             text,
             chat_id,
@@ -3539,7 +3539,7 @@ class AsyncTeleBot:
         :param reply_markup:
         :return:
         """
-        result = await asyncio_helper.edit_message_media(
+        result = await api.edit_message_media(
             self.token, media, chat_id, message_id, inline_message_id, reply_markup
         )
         if type(result) == bool:  # if edit inline message return is bool not Message.
@@ -3564,7 +3564,7 @@ class AsyncTeleBot:
         :param reply_markup:
         :return:
         """
-        result = await asyncio_helper.edit_message_reply_markup(
+        result = await api.edit_message_reply_markup(
             self.token, chat_id, message_id, inline_message_id, reply_markup
         )
         if type(result) == bool:
@@ -3597,7 +3597,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
-        result = await asyncio_helper.send_game(
+        result = await api.send_game(
             self.token,
             chat_id,
             game_short_name,
@@ -3634,7 +3634,7 @@ class AsyncTeleBot:
         :param disable_edit_message:
         :return:
         """
-        result = await asyncio_helper.set_game_score(
+        result = await api.set_game_score(
             self.token,
             user_id,
             score,
@@ -3666,7 +3666,7 @@ class AsyncTeleBot:
         :param inline_message_id:
         :return:
         """
-        result = await asyncio_helper.get_game_high_scores(
+        result = await api.get_game_high_scores(
             self.token, user_id, chat_id, message_id, inline_message_id
         )
         return [types.GameHighScore.de_json(r) for r in result]
@@ -3746,7 +3746,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
-        result = await asyncio_helper.send_invoice(
+        result = await api.send_invoice(
             self.token,
             chat_id,
             title,
@@ -3841,7 +3841,7 @@ class AsyncTeleBot:
         )
 
         return types.Message.de_json(
-            await asyncio_helper.send_poll(
+            await api.send_poll(
                 self.token,
                 chat_id,
                 question,
@@ -3882,7 +3882,7 @@ class AsyncTeleBot:
         :return:
         """
         return types.Poll.de_json(
-            await asyncio_helper.stop_poll(
+            await api.stop_poll(
                 self.token, chat_id, message_id, reply_markup
             )
         )
@@ -3905,7 +3905,7 @@ class AsyncTeleBot:
         :param error_message:
         :return:
         """
-        return await asyncio_helper.answer_shipping_query(
+        return await api.answer_shipping_query(
             self.token, shipping_query_id, ok, shipping_options, error_message
         )
 
@@ -3922,7 +3922,7 @@ class AsyncTeleBot:
         :param error_message:
         :return:
         """
-        return await asyncio_helper.answer_pre_checkout_query(
+        return await api.answer_pre_checkout_query(
             self.token, pre_checkout_query_id, ok, error_message
         )
 
@@ -3952,7 +3952,7 @@ class AsyncTeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        result = await asyncio_helper.edit_message_caption(
+        result = await api.edit_message_caption(
             self.token,
             caption,
             chat_id,
@@ -4010,7 +4010,7 @@ class AsyncTeleBot:
         :param switch_pm_text: 	Parameter for the start message sent to the bot when user presses the switch button
         :return: True means success.
         """
-        return await asyncio_helper.answer_inline_query(
+        return await api.answer_inline_query(
             self.token,
             inline_query_id,
             results,
@@ -4042,7 +4042,7 @@ class AsyncTeleBot:
         :param cache_time:
         :return:
         """
-        return await asyncio_helper.answer_callback_query(
+        return await api.answer_callback_query(
             self.token, callback_query_id, text, show_alert, url, cache_time
         )
 
@@ -4062,7 +4062,7 @@ class AsyncTeleBot:
             see https://core.telegram.org/animated_stickers#technical-requirements
 
         """
-        return await asyncio_helper.set_sticker_set_thumb(
+        return await api.set_sticker_set_thumb(
             self.token, name, user_id, thumb
         )
 
@@ -4075,7 +4075,7 @@ class AsyncTeleBot:
         :param name:
         :return:
         """
-        result = await asyncio_helper.get_sticker_set(self.token, name)
+        result = await api.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
 
     async def upload_sticker_file(
@@ -4092,7 +4092,7 @@ class AsyncTeleBot:
         :param png_sticker:
         :return:
         """
-        result = await asyncio_helper.upload_sticker_file(
+        result = await api.upload_sticker_file(
             self.token, user_id, png_sticker
         )
         return types.File.de_json(result)
@@ -4127,7 +4127,7 @@ class AsyncTeleBot:
         :param mask_position:
         :return:
         """
-        return await asyncio_helper.create_new_sticker_set(
+        return await api.create_new_sticker_set(
             self.token,
             user_id,
             name,
@@ -4166,7 +4166,7 @@ class AsyncTeleBot:
         :param mask_position:
         :return:
         """
-        return await asyncio_helper.add_sticker_to_set(
+        return await api.add_sticker_to_set(
             self.token,
             user_id,
             name,
@@ -4187,7 +4187,7 @@ class AsyncTeleBot:
         :param position:
         :return:
         """
-        return await asyncio_helper.set_sticker_position_in_set(
+        return await api.set_sticker_position_in_set(
             self.token, sticker, position
         )
 
@@ -4200,7 +4200,7 @@ class AsyncTeleBot:
         :param sticker:
         :return:
         """
-        return await asyncio_helper.delete_sticker_from_set(self.token, sticker)
+        return await api.delete_sticker_from_set(self.token, sticker)
 
     async def set_state(self, user_id: int, state: str, chat_id: int = None):
         """
