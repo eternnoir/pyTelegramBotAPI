@@ -4,7 +4,7 @@ import logging
 
 from aiohttp import web
 
-from telebot import types, api
+from telebot import api, types
 from telebot.bot_runner import BotRunner
 
 logger = logging.getLogger(__name__)

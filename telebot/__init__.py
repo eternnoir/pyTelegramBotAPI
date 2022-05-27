@@ -8,9 +8,8 @@ from datetime import datetime
 from inspect import signature
 from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
-from telebot import api, filters, types, util, callback_data, exceptions
+from telebot import api, callback_data, filters, types, util
 from telebot.types import service as service_types
-from telebot.handler_backends import CancelUpdate, SkipHandler
 
 logger = logging.getLogger(__name__.split(".")[0])
 formatter = logging.Formatter(
@@ -54,7 +53,7 @@ class AsyncTeleBot:
         self.token = token
         self.parse_mode = parse_mode
 
-        self.update_listener: list[Callable[[types.Update], service_types.NoneCoroutine]] = []
+        self.update_listeners: list[Callable[[types.Update], service_types.NoneCoroutine]] = []
 
         self.message_handlers: list[service_types.Handler] = []
         self.edited_message_handlers: list[service_types.Handler] = []
@@ -255,7 +254,7 @@ class AsyncTeleBot:
 
         for update in updates:
             logger.debug("Processing updates: {0}".format(update))
-            for listener in self.update_listener:
+            for listener in self.update_listeners:
                 asyncio.create_task(listener(update))
 
             coroutines: list[Coroutine[None, None, None]] = []
@@ -318,8 +317,8 @@ class AsyncTeleBot:
                 return False
         return True
 
-    def add_update_listener(self, func: Callable[[types.Update], service_types.NoneCoroutine]):
-        self.update_listener.append(func)
+    def update_listener(self, decorated: Callable[[types.Update], service_types.NoneCoroutine]):
+        self.update_listeners.append(decorated)
 
     def add_custom_filter(self, custom_filter: filters.AnyCustomFilter):
         self.custom_filters[custom_filter.key] = custom_filter

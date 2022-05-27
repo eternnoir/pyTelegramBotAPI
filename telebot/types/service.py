@@ -1,7 +1,6 @@
-from typing import Callable, Coroutine, ForwardRef, Optional, TypeVar, TypedDict, Union
+from typing import Callable, Coroutine, ForwardRef, Optional, TypedDict, TypeVar, Union
 
 from telebot import callback_data, types
-
 
 UpdateContent = Union[
     types.Message,
@@ -26,7 +25,7 @@ FilterValue = Union[str, list[str], callback_data.CallbackData, FilterFunc, None
 NoneCoroutine = Coroutine[None, None, None]
 HandlerFunction = Union[
     Callable[[T], NoneCoroutine],
-    Callable[[T, ForwardRef["AsyncTeleBot"]], NoneCoroutine],
+    Callable[[T, ForwardRef("AsyncTeleBot")], NoneCoroutine],
 ]
 
 

@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union
 
 from telebot import types
-from telebot.types import service as service_types
 from telebot.handler_backends import State
+from telebot.types import service as service_types
 
 
 class SimpleCustomFilter(ABC):
