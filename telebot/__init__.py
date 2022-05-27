@@ -1,20 +1,18 @@
-# -*- coding: utf-8 -*-
+import asyncio
 import logging
 import re
 import sys
-import threading
 import time
 import traceback
 from datetime import datetime
-from typing import Any, Callable, List, Optional, Union
+from inspect import signature
+from typing import Any, List, Optional, Union
 
 import telebot.types
-
-# these imports are used to avoid circular import error
 import telebot.util
-
-# storage
-from telebot.storage import StateMemoryStorage, StatePickleStorage
+from telebot import asyncio_filters, asyncio_helper, logger, types, util
+from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler
+from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
 
 logger = logging.getLogger("TeleBot")
 
@@ -22,64 +20,15 @@ formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
 )
 
-import inspect
-
 console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
 logger.addHandler(console_output_handler)
-
 logger.setLevel(logging.ERROR)
 
-from telebot import apihelper, types, util
-from telebot.custom_filters import AdvancedCustomFilter, SimpleCustomFilter
-from telebot.handler_backends import (
-    BaseMiddleware,
-    CancelUpdate,
-    FileHandlerBackend,
-    MemoryHandlerBackend,
-    SkipHandler,
-)
 
-REPLY_MARKUP_TYPES = Union[
-    types.InlineKeyboardMarkup,
-    types.ReplyKeyboardMarkup,
-    types.ReplyKeyboardRemove,
-    types.ForceReply,
-]
-
-
-"""
-Module : telebot
-"""
-
-
-class Handler:
+class AsyncTeleBot:
     """
-    Class for (next step|reply) handlers
-    """
-
-    def __init__(self, callback, *args, **kwargs):
-        self.callback = callback
-        self.args = args
-        self.kwargs = kwargs
-
-    def __getitem__(self, item):
-        return getattr(self, item)
-
-
-class ExceptionHandler:
-    """
-    Class for handling exceptions while Polling
-    """
-
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def handle(self, exception):
-        return False
-
-
-class TeleBot:
-    """
-    This is the main synchronous class for Bot.
+    This is the main asynchronous class for Bot.
 
     It allows you to add handlers for different kind of updates.
 
@@ -87,8 +36,8 @@ class TeleBot:
 
     .. code-block:: python
 
-        from telebot import TeleBot
-        bot = TeleBot('token') # get token from @BotFather
+        from telebot.async_telebot import AsyncTeleBot
+        bot = AsyncTeleBot('token') # get token from @BotFather
 
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
@@ -97,41 +46,18 @@ class TeleBot:
 
     def __init__(
         self,
-        token,
-        parse_mode=None,
-        threaded=True,
-        skip_pending=False,
-        num_threads=2,
-        next_step_backend=None,
-        reply_backend=None,
+        token: str,
+        parse_mode: Optional[str] = None,
+        offset=None,
         exception_handler=None,
-        last_update_id=0,
-        suppress_middleware_excepions=False,
         state_storage=StateMemoryStorage(),
-        use_class_middlewares=False,
-    ):
-        """
-        :param token: bot API token
-        :param parse_mode: default parse_mode
-        :return: Telebot object.
-        """
+    ) -> None:  # TODO: ADD TYPEHINTS
+        self.token = token
+
+        self.offset = offset
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
-        self.skip_pending = skip_pending
-        self.suppress_middleware_excepions = suppress_middleware_excepions
-
-        self.__stop_polling = threading.Event()
-        self.last_update_id = last_update_id
-        self.exc_info = None
-
-        self.next_step_backend = next_step_backend
-        if not self.next_step_backend:
-            self.next_step_backend = MemoryHandlerBackend()
-
-        self.reply_backend = reply_backend
-        if not self.reply_backend:
-            self.reply_backend = MemoryHandlerBackend()
 
         self.exception_handler = exception_handler
 
@@ -154,276 +80,287 @@ class TeleBot:
 
         self.current_states = state_storage
 
-        self.use_class_middlewares = use_class_middlewares
-        if apihelper.ENABLE_MIDDLEWARE and not use_class_middlewares:
-            self.typed_middleware_handlers = {
-                "message": [],
-                "edited_message": [],
-                "channel_post": [],
-                "edited_channel_post": [],
-                "inline_query": [],
-                "chosen_inline_result": [],
-                "callback_query": [],
-                "shipping_query": [],
-                "pre_checkout_query": [],
-                "poll": [],
-                "poll_answer": [],
-                "my_chat_member": [],
-                "chat_member": [],
-                "chat_join_request": [],
-            }
-            self.default_middleware_handlers = []
-        if apihelper.ENABLE_MIDDLEWARE and use_class_middlewares:
-            logger.warning(
-                "You are using class based middlewares, but you have "
-                "ENABLE_MIDDLEWARE set to True. This is not recommended."
-            )
-        self.middlewares = [] if use_class_middlewares else None
+        self.middlewares = []
 
-        self.threaded = threaded
-        if self.threaded:
-            self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
-
-    @property
-    def user(self) -> types.User:
+    async def close_session(self):
         """
-        The User object representing this bot.
-        Equivalent to bot.get_me() but the result is cached so only one API call is needed
+        Closes existing session of aiohttp.
+        Use this function if you stop polling.
         """
-        if not hasattr(self, "_user"):
-            self._user = self.get_me()
-        return self._user
+        await asyncio_helper.session_manager.session.close()
 
-    def enable_save_next_step_handlers(
-        self, delay=120, filename="./.handler-saves/step.save"
-    ):
-        """
-        Enable saving next step handlers (by default saving disabled)
-
-        This function explicitly assigns FileHandlerBackend (instead of Saver) just to keep backward
-        compatibility whose purpose was to enable file saving capability for handlers. And the same
-        implementation is now available with FileHandlerBackend
-
-        :param delay: Delay between changes in handlers and saving
-        :param filename: Filename of save file
-        """
-        self.next_step_backend = FileHandlerBackend(
-            self.next_step_backend.handlers, filename, delay
-        )
-
-    def enable_saving_states(self, filename="./.state-save/states.pkl"):
-        """
-        Enable saving states (by default saving disabled)
-
-        :param filename: Filename of saving file
-        """
-        self.current_states = StatePickleStorage(file_path=filename)
-        self.current_states.create_dir()
-
-    def enable_save_reply_handlers(
-        self, delay=120, filename="./.handler-saves/reply.save"
-    ):
-        """
-        Enable saving reply handlers (by default saving disable)
-
-        This function explicitly assigns FileHandlerBackend (instead of Saver) just to keep backward
-        compatibility whose purpose was to enable file saving capability for handlers. And the same
-        implementation is now available with FileHandlerBackend
-
-        :param delay: Delay between changes in handlers and saving
-        :param filename: Filename of save file
-        """
-        self.reply_backend = FileHandlerBackend(
-            self.reply_backend.handlers, filename, delay
-        )
-
-    def disable_save_next_step_handlers(self):
-        """
-        Disable saving next step handlers (by default saving disable)
-
-        This function is left to keep backward compatibility whose purpose was to disable file saving capability
-        for handlers. For the same purpose, MemoryHandlerBackend is reassigned as a new next_step_backend backend
-        instead of FileHandlerBackend.
-        """
-        self.next_step_backend = MemoryHandlerBackend(self.next_step_backend.handlers)
-
-    def disable_save_reply_handlers(self):
-        """
-        Disable saving next step handlers (by default saving disable)
-
-        This function is left to keep backward compatibility whose purpose was to disable file saving capability
-        for handlers. For the same purpose, MemoryHandlerBackend is reassigned as a new reply_backend backend
-        instead of FileHandlerBackend.
-        """
-        self.reply_backend = MemoryHandlerBackend(self.reply_backend.handlers)
-
-    def load_next_step_handlers(
-        self, filename="./.handler-saves/step.save", del_file_after_loading=True
-    ):
-        """
-        Load next step handlers from save file
-
-        This function is left to keep backward compatibility whose purpose was to load handlers from file with the
-        help of FileHandlerBackend and is only recommended to use if next_step_backend was assigned as
-        FileHandlerBackend before entering this function
-
-        :param filename: Filename of the file where handlers was saved
-        :param del_file_after_loading: Is passed True, after loading save file will be deleted
-        """
-        self.next_step_backend.load_handlers(filename, del_file_after_loading)
-
-    def load_reply_handlers(
-        self, filename="./.handler-saves/reply.save", del_file_after_loading=True
-    ):
-        """
-        Load reply handlers from save file
-
-        This function is left to keep backward compatibility whose purpose was to load handlers from file with the
-        help of FileHandlerBackend and is only recommended to use if reply_backend was assigned as
-        FileHandlerBackend before entering this function
-
-        :param filename: Filename of the file where handlers was saved
-        :param del_file_after_loading: Is passed True, after loading save file will be deleted
-        """
-        self.reply_backend.load_handlers(filename, del_file_after_loading)
-
-    def set_webhook(
-        self,
-        url=None,
-        certificate=None,
-        max_connections=None,
-        allowed_updates=None,
-        ip_address=None,
-        drop_pending_updates=None,
-        timeout=None,
-    ):
-        """
-        Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
-        update for the bot, we will send an HTTPS POST request to the specified url,
-        containing a JSON-serialized Update.
-        In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
-        Returns True on success.
-
-        Telegram documentation: https://core.telegram.org/bots/api#setwebhook
-
-        :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
-        :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
-            See our self-signed guide for details.
-        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook
-            for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server,
-            and higher values to increase your bot's throughput.
-        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates
-            of these types. See Update for a complete list of available update types.
-            Specify an empty list to receive all updates regardless of type (default).
-            If not specified, the previous setting will be used.
-        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address
-            resolved through DNS
-        :param drop_pending_updates: Pass True to drop all pending updates
-        :param timeout: Integer. Request connection timeout
-        :return: API reply.
-        """
-        return apihelper.set_webhook(
-            self.token,
-            url,
-            certificate,
-            max_connections,
-            allowed_updates,
-            ip_address,
-            drop_pending_updates,
-            timeout,
-        )
-
-    def delete_webhook(self, drop_pending_updates=None, timeout=None):
-        """
-        Use this method to remove webhook integration if you decide to switch back to getUpdates.
-
-        Telegram documentation: https://core.telegram.org/bots/api#deletewebhook
-
-        :param drop_pending_updates: Pass True to drop all pending updates
-        :param timeout: Integer. Request connection timeout
-        :return: bool
-        """
-        return apihelper.delete_webhook(self.token, drop_pending_updates, timeout)
-
-    def get_webhook_info(self, timeout: Optional[int] = None):
-        """
-        Use this method to get current webhook status. Requires no parameters.
-        If the bot is using getUpdates, will return an object with the url field empty.
-
-        Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo
-
-        :param timeout: Integer. Request connection timeout
-        :return: On success, returns a WebhookInfo object.
-        """
-        result = apihelper.get_webhook_info(self.token, timeout)
-        return types.WebhookInfo.de_json(result)
-
-    def remove_webhook(self):
-        return self.set_webhook()  # No params resets webhook
-
-    def get_updates(
+    async def get_updates(
         self,
         offset: Optional[int] = None,
         limit: Optional[int] = None,
-        timeout: Optional[int] = 20,
-        allowed_updates: Optional[List[str]] = None,
-        long_polling_timeout: int = 20,
+        timeout: Optional[int] = None,
+        allowed_updates: Optional[List] = None,
+        request_timeout: Optional[int] = None,
     ) -> List[types.Update]:
-        """
-        Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
-
-        Telegram documentation: https://core.telegram.org/bots/api#getupdates
-
-        :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
-        :param offset: Integer. Identifier of the first update to be returned.
-        :param limit: Integer. Limits the number of updates to be retrieved.
-        :param timeout: Integer. Request connection timeout
-        :param long_polling_timeout: Timeout in seconds for long polling.
-        :return: array of Updates
-        """
-        json_updates = apihelper.get_updates(
-            self.token, offset, limit, timeout, allowed_updates, long_polling_timeout
+        json_updates = await asyncio_helper.get_updates(
+            self.token, offset, limit, timeout, allowed_updates, request_timeout
         )
         return [types.Update.de_json(ju) for ju in json_updates]
 
-    def __skip_updates(self):
-        """
-        Get and discard all pending updates before first poll of the bot
-
-        :return:
-        """
-        self.get_updates(offset=-1)
-
-    def __retrieve_updates(
-        self, timeout=20, long_polling_timeout=20, allowed_updates=None
+    async def polling(
+        self,
+        non_stop: bool = False,
+        skip_pending=False,
+        interval: int = 0,
+        timeout: int = 20,
+        request_timeout: int = 20,
+        allowed_updates: Optional[List[str]] = None,
+        none_stop: Optional[bool] = None,
     ):
         """
-        Retrieves any updates from the Telegram API.
-        Registered listeners and applicable message handlers will be notified when a new message arrives.
+        This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
 
-        :raises ApiException when a call has failed.
+        Warning: Do not call this function more than once!
+
+        Always get updates.
+
+        :param interval: Delay between two update retrivals
+        :param non_stop: Do not stop polling when an ApiException occurs.
+        :param timeout: Request connection timeout
+        :param skip_pending: skip old updates
+        :param request_timeout: Timeout in seconds for a request.
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
+            If not specified, the previous setting will be used.
+
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
+            so unwanted updates may be received for a short period of time.
+        :param none_stop: Deprecated, use non_stop. Old typo f***up compatibility
+        :return:
         """
-        if self.skip_pending:
-            self.__skip_updates()
-            logger.debug("Skipped all pending messages")
-            self.skip_pending = False
-        updates = self.get_updates(
-            offset=(self.last_update_id + 1),
-            allowed_updates=allowed_updates,
-            timeout=timeout,
-            long_polling_timeout=long_polling_timeout,
+        if none_stop is not None:
+            logger.warning(
+                "polling: none_stop parameter is deprecated. Use non_stop instead."
+            )
+            non_stop = none_stop
+
+        if skip_pending:
+            await self.skip_updates()
+        await self._process_polling(
+            non_stop, interval, timeout, request_timeout, allowed_updates
         )
-        self.process_new_updates(updates)
 
-    def process_new_updates(self, updates):
+    async def infinity_polling(
+        self,
+        timeout: int = 20,
+        skip_pending: bool = False,
+        request_timeout: int = 20,
+        logger_level=logging.ERROR,
+        allowed_updates: Optional[List[str]] = None,
+        *args,
+        **kwargs
+    ):
         """
-        Processes new updates. Just pass list of subclasses of Update to this method.
+        Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
-        :param updates: List of Update objects
+        :param timeout: Request connection timeout
+        :param request_timeout: Timeout in seconds for long polling (see API docs)
+        :param skip_pending: skip old updates
+        :param logger_level: Custom logging level for infinity_polling logging.
+            Use logger levels from logging as a value. None/NOTSET = no error logging
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
+            If not specified, the previous setting will be used.
+
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
+            so unwanted updates may be received for a short period of time.
+        """
+        if skip_pending:
+            await self.skip_updates()
+        self._polling = True
+        while self._polling:
+            try:
+                await self._process_polling(
+                    non_stop=True,
+                    timeout=timeout,
+                    request_timeout=request_timeout,
+                    allowed_updates=allowed_updates,
+                    *args,
+                    **kwargs
+                )
+            except Exception as e:
+                if logger_level and logger_level >= logging.ERROR:
+                    logger.error("Infinity polling exception: %s", str(e))
+                if logger_level and logger_level >= logging.DEBUG:
+                    logger.error("Exception traceback:\n%s", traceback.format_exc())
+                time.sleep(3)
+                continue
+            if logger_level and logger_level >= logging.INFO:
+                logger.error("Infinity polling: polling exited")
+        if logger_level and logger_level >= logging.INFO:
+            logger.error("Break infinity polling")
+
+    async def _process_polling(
+        self,
+        non_stop: bool = False,
+        interval: int = 0,
+        timeout: int = 20,
+        request_timeout: int = 20,
+        allowed_updates: Optional[List[str]] = None,
+    ):
+        """
+        Function to process polling.
+
+        :param non_stop: Do not stop polling when an ApiException occurs.
+        :param interval: Delay between two update retrivals
+        :param timeout: Request connection timeout
+        :param request_timeout: Timeout in seconds for long polling (see API docs)
+        :param allowed_updates: A list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
+            If not specified, the previous setting will be used.
+
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
+            so unwanted updates may be received for a short period of time.
+        :return:
+
+        """
+        self._polling = True
+
+        try:
+            while self._polling:
+                try:
+
+                    updates = await self.get_updates(
+                        offset=self.offset,
+                        allowed_updates=allowed_updates,
+                        timeout=timeout,
+                        request_timeout=request_timeout,
+                    )
+                    if updates:
+                        self.offset = updates[-1].update_id + 1
+                        asyncio.create_task(
+                            self.process_new_updates(updates)
+                        )  # Seperate task for processing updates
+                    if interval:
+                        await asyncio.sleep(interval)
+
+                except KeyboardInterrupt:
+                    return
+                except asyncio.CancelledError:
+                    return
+                except asyncio_helper.RequestTimeout as e:
+                    logger.error(str(e))
+                    if non_stop:
+                        await asyncio.sleep(2)
+                        continue
+                    else:
+                        return
+                except asyncio_helper.ApiTelegramException as e:
+                    logger.error(str(e))
+                    if non_stop:
+                        continue
+                    else:
+                        break
+                except Exception as e:
+                    logger.error("Cause exception while getting updates.")
+                    if non_stop:
+                        logger.error(str(e))
+                        await asyncio.sleep(3)
+                        continue
+                    else:
+                        raise e
+        finally:
+            self._polling = False
+            await self.close_session()
+            logger.warning("Polling is stopped.")
+
+    def _loop_create_task(self, coro):
+        return asyncio.create_task(coro)
+
+    async def _process_updates(self, handlers, messages, update_type):
+        """
+        Process updates.
+
+        :param handlers:
+        :param messages:
+        :return:
+        """
+        tasks = []
+        for message in messages:
+            middleware = await self.process_middlewares(update_type)
+            tasks.append(
+                self._run_middlewares_and_handlers(handlers, message, middleware)
+            )
+        await asyncio.gather(*tasks)
+
+    async def _run_middlewares_and_handlers(self, handlers, message, middlewares):
+        handler_error = None
+        data = {}
+        process_handler = True
+
+        if middlewares:
+            for middleware in middlewares:
+                middleware_result = await middleware.pre_process(message, data)
+                if isinstance(middleware_result, SkipHandler):
+                    await middleware.post_process(message, data, handler_error)
+                    process_handler = False
+                if isinstance(middleware_result, CancelUpdate):
+                    return
+        for handler in handlers:
+            if not process_handler:
+                break
+
+            process_update = await self._test_message_handler(handler, message)
+            if not process_update:
+                continue
+            elif process_update:
+                try:
+                    params = []
+
+                    for i in signature(handler["function"]).parameters:
+                        params.append(i)
+                    if len(params) == 1:
+                        await handler["function"](message)
+                        break
+                    elif len(params) == 2:
+                        if handler["pass_bot"]:
+                            await handler["function"](message, self)
+                            break
+                        else:
+                            await handler["function"](message, data)
+                            break
+                    elif len(params) == 3:
+                        if handler["pass_bot"] and params[1] == "bot":
+                            await handler["function"](message, self, data)
+                            break
+                        else:
+                            await handler["function"](message, data)
+                            break
+                except Exception as e:
+                    handler_error = e
+
+                    if not middlewares:
+                        if self.exception_handler:
+                            return self.exception_handler.handle(e)
+                        logging.error(str(e))
+                        return
+
+        if middlewares:
+            for middleware in middlewares:
+                await middleware.post_process(message, data, handler_error)
+
+    # update handling
+    async def process_new_updates(self, updates):
+        """
+        Process new updates.
+        Just pass list of updates - each update should be
+        instance of Update object.
+
+        :param updates: list of updates
         """
         upd_count = len(updates)
-        logger.debug("Received {0} new updates".format(upd_count))
+        logger.info("Received {0} new updates".format(upd_count))
         if upd_count == 0:
             return
 
@@ -441,22 +378,8 @@ class TeleBot:
         new_my_chat_members = None
         new_chat_members = None
         chat_join_request = None
-
         for update in updates:
-            if apihelper.ENABLE_MIDDLEWARE:
-                try:
-                    self.process_middlewares(update)
-                except Exception as e:
-                    logger.error(str(e))
-                    if not self.suppress_middleware_excepions:
-                        raise
-                    else:
-                        if update.update_id > self.last_update_id:
-                            self.last_update_id = update.update_id
-                        continue
-
-            if update.update_id > self.last_update_id:
-                self.last_update_id = update.update_id
+            logger.debug("Processing updates: {0}".format(update))
             if update.message:
                 if new_messages is None:
                     new_messages = []
@@ -515,454 +438,1106 @@ class TeleBot:
                 chat_join_request.append(update.chat_join_request)
 
         if new_messages:
-            self.process_new_messages(new_messages)
+            await self.process_new_messages(new_messages)
         if new_edited_messages:
-            self.process_new_edited_messages(new_edited_messages)
+            await self.process_new_edited_messages(new_edited_messages)
         if new_channel_posts:
-            self.process_new_channel_posts(new_channel_posts)
+            await self.process_new_channel_posts(new_channel_posts)
         if new_edited_channel_posts:
-            self.process_new_edited_channel_posts(new_edited_channel_posts)
+            await self.process_new_edited_channel_posts(new_edited_channel_posts)
         if new_inline_queries:
-            self.process_new_inline_query(new_inline_queries)
+            await self.process_new_inline_query(new_inline_queries)
         if new_chosen_inline_results:
-            self.process_new_chosen_inline_query(new_chosen_inline_results)
+            await self.process_new_chosen_inline_query(new_chosen_inline_results)
         if new_callback_queries:
-            self.process_new_callback_query(new_callback_queries)
+            await self.process_new_callback_query(new_callback_queries)
         if new_shipping_queries:
-            self.process_new_shipping_query(new_shipping_queries)
+            await self.process_new_shipping_query(new_shipping_queries)
         if new_pre_checkout_queries:
-            self.process_new_pre_checkout_query(new_pre_checkout_queries)
+            await self.process_new_pre_checkout_query(new_pre_checkout_queries)
         if new_polls:
-            self.process_new_poll(new_polls)
+            await self.process_new_poll(new_polls)
         if new_poll_answers:
-            self.process_new_poll_answer(new_poll_answers)
+            await self.process_new_poll_answer(new_poll_answers)
         if new_my_chat_members:
-            self.process_new_my_chat_member(new_my_chat_members)
+            await self.process_new_my_chat_member(new_my_chat_members)
         if new_chat_members:
-            self.process_new_chat_member(new_chat_members)
+            await self.process_new_chat_member(new_chat_members)
         if chat_join_request:
-            self.process_new_chat_join_request(chat_join_request)
+            await self.process_chat_join_request(chat_join_request)
 
-    def process_new_messages(self, new_messages):
-        self._notify_next_handlers(new_messages)
-        self._notify_reply_handlers(new_messages)
-        self.__notify_update(new_messages)
-        self._notify_command_handlers(self.message_handlers, new_messages, "message")
+    async def process_new_messages(self, new_messages):
+        await self.__notify_update(new_messages)
+        await self._process_updates(self.message_handlers, new_messages, "message")
 
-    def process_new_edited_messages(self, edited_message):
-        self._notify_command_handlers(
+    async def process_new_edited_messages(self, edited_message):
+        await self._process_updates(
             self.edited_message_handlers, edited_message, "edited_message"
         )
 
-    def process_new_channel_posts(self, channel_post):
-        self._notify_command_handlers(
+    async def process_new_channel_posts(self, channel_post):
+        await self._process_updates(
             self.channel_post_handlers, channel_post, "channel_post"
         )
 
-    def process_new_edited_channel_posts(self, edited_channel_post):
-        self._notify_command_handlers(
+    async def process_new_edited_channel_posts(self, edited_channel_post):
+        await self._process_updates(
             self.edited_channel_post_handlers,
             edited_channel_post,
             "edited_channel_post",
         )
 
-    def process_new_inline_query(self, new_inline_querys):
-        self._notify_command_handlers(
+    async def process_new_inline_query(self, new_inline_querys):
+        await self._process_updates(
             self.inline_handlers, new_inline_querys, "inline_query"
         )
 
-    def process_new_chosen_inline_query(self, new_chosen_inline_querys):
-        self._notify_command_handlers(
+    async def process_new_chosen_inline_query(self, new_chosen_inline_querys):
+        await self._process_updates(
             self.chosen_inline_handlers, new_chosen_inline_querys, "chosen_inline_query"
         )
 
-    def process_new_callback_query(self, new_callback_querys):
-        self._notify_command_handlers(
+    async def process_new_callback_query(self, new_callback_querys):
+        await self._process_updates(
             self.callback_query_handlers, new_callback_querys, "callback_query"
         )
 
-    def process_new_shipping_query(self, new_shipping_querys):
-        self._notify_command_handlers(
+    async def process_new_shipping_query(self, new_shipping_querys):
+        await self._process_updates(
             self.shipping_query_handlers, new_shipping_querys, "shipping_query"
         )
 
-    def process_new_pre_checkout_query(self, pre_checkout_querys):
-        self._notify_command_handlers(
+    async def process_new_pre_checkout_query(self, pre_checkout_querys):
+        await self._process_updates(
             self.pre_checkout_query_handlers, pre_checkout_querys, "pre_checkout_query"
         )
 
-    def process_new_poll(self, polls):
-        self._notify_command_handlers(self.poll_handlers, polls, "poll")
+    async def process_new_poll(self, polls):
+        await self._process_updates(self.poll_handlers, polls, "poll")
 
-    def process_new_poll_answer(self, poll_answers):
-        self._notify_command_handlers(
+    async def process_new_poll_answer(self, poll_answers):
+        await self._process_updates(
             self.poll_answer_handlers, poll_answers, "poll_answer"
         )
 
-    def process_new_my_chat_member(self, my_chat_members):
-        self._notify_command_handlers(
+    async def process_new_my_chat_member(self, my_chat_members):
+        await self._process_updates(
             self.my_chat_member_handlers, my_chat_members, "my_chat_member"
         )
 
-    def process_new_chat_member(self, chat_members):
-        self._notify_command_handlers(
+    async def process_new_chat_member(self, chat_members):
+        await self._process_updates(
             self.chat_member_handlers, chat_members, "chat_member"
         )
 
-    def process_new_chat_join_request(self, chat_join_request):
-        self._notify_command_handlers(
+    async def process_chat_join_request(self, chat_join_request):
+        await self._process_updates(
             self.chat_join_request_handlers, chat_join_request, "chat_join_request"
         )
 
-    def process_middlewares(self, update):
-        for update_type, middlewares in self.typed_middleware_handlers.items():
-            if getattr(update, update_type) is not None:
-                for typed_middleware_handler in middlewares:
-                    try:
-                        typed_middleware_handler(self, getattr(update, update_type))
-                    except Exception as e:
-                        e.args = e.args + (
-                            f'Typed middleware handler "{typed_middleware_handler.__qualname__}"',
-                        )
-                        raise
+    async def process_middlewares(self, update_type):
+        if self.middlewares:
+            middlewares = [
+                middleware
+                for middleware in self.middlewares
+                if update_type in middleware.update_types
+            ]
+            return middlewares
+        return None
 
-        if len(self.default_middleware_handlers) > 0:
-            for default_middleware_handler in self.default_middleware_handlers:
-                try:
-                    default_middleware_handler(self, update)
-                except Exception as e:
-                    e.args = e.args + (
-                        f'Default middleware handler "{default_middleware_handler.__qualname__}"',
-                    )
-                    raise
-
-    def __notify_update(self, new_messages):
+    async def __notify_update(self, new_messages):
         if len(self.update_listener) == 0:
             return
         for listener in self.update_listener:
-            self._exec_task(listener, new_messages)
+            self._loop_create_task(listener(new_messages))
 
-    def infinity_polling(
-        self,
-        timeout: int = 20,
-        skip_pending: bool = False,
-        long_polling_timeout: int = 20,
-        logger_level=logging.ERROR,
-        allowed_updates: Optional[List[str]] = None,
-        *args,
-        **kwargs,
-    ):
+    async def _test_message_handler(self, message_handler, message):
         """
-        Wrap polling with infinite loop and exception handling to avoid bot stops polling.
+        Test message handler.
 
-        :param timeout: Request connection timeout
-        :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
-        :param skip_pending: skip old updates
-        :param logger_level: Custom (different from logger itself) logging level for infinity_polling logging.
-            Use logger levels from logging as a value. None/NOTSET = no error logging
-        :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
-            See util.update_types for a complete list of available update types.
-            Specify an empty list to receive all update types except chat_member (default).
-            If not specified, the previous setting will be used.
-
-            Please note that this parameter doesn't affect updates created before the call to the get_updates,
-            so unwanted updates may be received for a short period of time.
-        """
-        if skip_pending:
-            self.__skip_updates()
-
-        while not self.__stop_polling.is_set():
-            try:
-                self.polling(
-                    non_stop=True,
-                    timeout=timeout,
-                    long_polling_timeout=long_polling_timeout,
-                    logger_level=logger_level,
-                    allowed_updates=allowed_updates,
-                    *args,
-                    **kwargs,
-                )
-            except Exception as e:
-                if logger_level and logger_level >= logging.ERROR:
-                    logger.error("Infinity polling exception: %s", str(e))
-                if logger_level and logger_level >= logging.DEBUG:
-                    logger.error("Exception traceback:\n%s", traceback.format_exc())
-                time.sleep(3)
-                continue
-            if logger_level and logger_level >= logging.INFO:
-                logger.error("Infinity polling: polling exited")
-        if logger_level and logger_level >= logging.INFO:
-            logger.error("Break infinity polling")
-
-    def polling(
-        self,
-        non_stop: bool = False,
-        skip_pending=False,
-        interval: int = 0,
-        timeout: int = 20,
-        long_polling_timeout: int = 20,
-        logger_level=logging.ERROR,
-        allowed_updates: Optional[List[str]] = None,
-        none_stop: Optional[bool] = None,
-    ):
-        """
-        This function creates a new Thread that calls an internal __retrieve_updates function.
-        This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
-
-        Warning: Do not call this function more than once!
-
-        Always get updates.
-
-        :param interval: Delay between two update retrivals
-        :param non_stop: Do not stop polling when an ApiException occurs.
-        :param timeout: Request connection timeout
-        :param skip_pending: skip old updates
-        :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
-        :param logger_level: Custom (different from logger itself) logging level for infinity_polling logging.
-            Use logger levels from logging as a value. None/NOTSET = no error logging
-        :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
-            See util.update_types for a complete list of available update types.
-            Specify an empty list to receive all update types except chat_member (default).
-            If not specified, the previous setting will be used.
-
-            Please note that this parameter doesn't affect updates created before the call to the get_updates,
-            so unwanted updates may be received for a short period of time.
-        :param none_stop: Deprecated, use non_stop. Old typo f***up compatibility
+        :param message_handler:
+        :param message:
         :return:
         """
-        if none_stop is not None:
+        for message_filter, filter_value in message_handler["filters"].items():
+            if filter_value is None:
+                continue
+
+            if not await self._test_filter(message_filter, filter_value, message):
+                return False
+
+        return True
+
+    def set_update_listener(self, func):
+        """
+        Update listener is a function that gets any update.
+
+        :param func: function that should get update.
+        """
+        self.update_listener.append(func)
+
+    def add_custom_filter(self, custom_filter):
+        """
+        Create custom filter.
+
+        custom_filter: Class with check(message) method.
+        """
+        self.custom_filters[custom_filter.key] = custom_filter
+
+    async def _test_filter(self, message_filter, filter_value, message):
+        """
+        Test filters.
+
+        :param message_filter: Filter type passed in handler
+        :param filter_value: Filter value passed in handler
+        :param message: Message to test
+        :return: True if filter conforms
+        """
+        #     test_cases = {
+        #         'content_types': lambda msg: msg.content_type in filter_value,
+        #         'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
+        #         'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
+        #         'func': lambda msg: filter_value(msg)
+        #     }
+        #     return test_cases.get(message_filter, lambda msg: False)(message)
+        if message_filter == "content_types":
+            return message.content_type in filter_value
+        elif message_filter == "regexp":
+            return message.content_type == "text" and re.search(
+                filter_value, message.text, re.IGNORECASE
+            )
+        elif message_filter == "commands":
+            return (
+                message.content_type == "text"
+                and util.extract_command(message.text) in filter_value
+            )
+        elif message_filter == "chat_types":
+            return message.chat.type in filter_value
+        elif message_filter == "func":
+            return filter_value(message)
+        elif self.custom_filters and message_filter in self.custom_filters:
+            return await self._check_filter(message_filter, filter_value, message)
+        else:
+            return False
+
+    async def _check_filter(self, message_filter, filter_value, message):
+        """
+        Check up the filter.
+
+        :param message_filter:
+        :param filter_value:
+        :param message:
+        :return:
+        """
+        filter_check = self.custom_filters.get(message_filter)
+        if not filter_check:
+            return False
+        elif isinstance(filter_check, asyncio_filters.SimpleCustomFilter):
+            return filter_value == await filter_check.check(message)
+        elif isinstance(filter_check, asyncio_filters.AdvancedCustomFilter):
+            return await filter_check.check(message, filter_value)
+        else:
+            logger.error(
+                "Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter."
+            )
+            return False
+
+    def setup_middleware(self, middleware):
+        """
+        Setup middleware.
+
+        :param middleware: Middleware-class.
+        :return:
+        """
+        self.middlewares.append(middleware)
+
+    def message_handler(
+        self,
+        commands=None,
+        regexp=None,
+        func=None,
+        content_types=None,
+        chat_types=None,
+        **kwargs
+    ):
+        """
+        Message handler decorator.
+        This decorator can be used to decorate functions that must handle certain types of messages.
+        All message handlers are tested in the order they were added.
+
+        Example:
+
+        .. code-block:: python
+
+            bot = TeleBot('TOKEN')
+
+            # Handles all messages which text matches regexp.
+            @bot.message_handler(regexp='someregexp')
+            async def command_help(message):
+                bot.send_message(message.chat.id, 'Did someone call for help?')
+
+            # Handles messages in private chat
+            @bot.message_handler(chat_types=['private']) # You can add more chat types
+            async def command_help(message):
+                bot.send_message(message.chat.id, 'Private chat detected, sir!')
+
+            # Handle all sent documents of type 'text/plain'.
+            @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+                content_types=['document'])
+            async def command_handle_document(message):
+                bot.send_message(message.chat.id, 'Document received, sir!')
+
+            # Handle all other messages.
+            @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+                'text', 'location', 'contact', 'sticker'])
+            async def async default_command(message):
+                bot.send_message(message.chat.id, "This is the async default command handler.")
+
+        :param commands: Optional list of strings (commands to handle).
+        :param regexp: Optional regular expression.
+        :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
+            It must return True if the command should handle the message.
+        :param content_types: Supported message content types. Must be a list. async defaults to ['text'].
+        :param chat_types: list of chat types
+        """
+
+        if content_types is None:
+            content_types = ["text"]
+
+        if isinstance(commands, str):
             logger.warning(
-                "polling: none_stop parameter is deprecated. Use non_stop instead."
+                "message_handler: 'commands' filter should be List of strings (commands), not string."
             )
-            non_stop = none_stop
+            commands = [commands]
 
-        if skip_pending:
-            self.__skip_updates()
-
-        if self.threaded:
-            self.__threaded_polling(
-                non_stop=non_stop,
-                interval=interval,
-                timeout=timeout,
-                long_polling_timeout=long_polling_timeout,
-                logger_level=logger_level,
-                allowed_updates=allowed_updates,
+        if isinstance(content_types, str):
+            logger.warning(
+                "message_handler: 'content_types' filter should be List of strings (content types), not string."
             )
-        else:
-            self.__non_threaded_polling(
-                non_stop=non_stop,
-                interval=interval,
-                timeout=timeout,
-                long_polling_timeout=long_polling_timeout,
-                logger_level=logger_level,
-                allowed_updates=allowed_updates,
-            )
+            content_types = [content_types]
 
-    def __threaded_polling(
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(
+                handler,
+                chat_types=chat_types,
+                content_types=content_types,
+                commands=commands,
+                regexp=regexp,
+                func=func,
+                **kwargs
+            )
+            self.add_message_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_message_handler(self, handler_dict):
+        """
+        Adds a message handler.
+        Note that you should use register_message_handler to add message_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.message_handlers.append(handler_dict)
+
+    def register_message_handler(
         self,
-        non_stop=False,
-        interval=0,
-        timeout=None,
-        long_polling_timeout=None,
-        logger_level=logging.ERROR,
-        allowed_updates=None,
+        callback,
+        content_types=None,
+        commands=None,
+        regexp=None,
+        func=None,
+        chat_types=None,
+        pass_bot=False,
+        **kwargs
     ):
-        if not (logger_level) or (logger_level < logging.INFO):
-            warning = "\n  Warning: this message appearance will be changed. Set logger_level=logging.INFO to continue seeing it."
-        else:
-            warning = ""
-        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-        logger.info("Started polling." + warning)
-        self.__stop_polling.clear()
-        error_interval = 0.25
+        """
+        Registers message handler.
 
-        polling_thread = util.WorkerThread(name="PollingThread")
-        or_event = util.OrEvent(
-            polling_thread.done_event,
-            polling_thread.exception_event,
-            self.worker_pool.exception_event,
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :param chat_types: True for private chat
+        :param pass_bot: True if you want to get TeleBot instance in your handler
+        :return: decorated function
+        """
+        if content_types is None:
+            content_types = ["text"]
+        if isinstance(commands, str):
+            logger.warning(
+                "register_message_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning(
+                "register_message_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
+
+        handler_dict = self._build_handler_dict(
+            callback,
+            chat_types=chat_types,
+            content_types=content_types,
+            commands=commands,
+            regexp=regexp,
+            func=func,
+            pass_bot=pass_bot,
+            **kwargs
         )
+        self.add_message_handler(handler_dict)
 
-        while not self.__stop_polling.wait(interval):
-            or_event.clear()
-            try:
-                polling_thread.put(
-                    self.__retrieve_updates,
-                    timeout,
-                    long_polling_timeout,
-                    allowed_updates=allowed_updates,
-                )
-                or_event.wait()  # wait for polling thread finish, polling thread error or thread pool error
-                polling_thread.raise_exceptions()
-                self.worker_pool.raise_exceptions()
-                error_interval = 0.25
-            except apihelper.ApiException as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
-                if not handled:
-                    if logger_level and logger_level >= logging.ERROR:
-                        logger.error("Threaded polling exception: %s", str(e))
-                    if logger_level and logger_level >= logging.DEBUG:
-                        logger.error("Exception traceback:\n%s", traceback.format_exc())
-                    if not non_stop:
-                        self.__stop_polling.set()
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info("Exception occurred. Stopping." + warning)
-                    else:
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info(
-                            "Waiting for {0} seconds until retry".format(error_interval)
-                            + warning
-                        )
-                        time.sleep(error_interval)
-                        if error_interval * 2 < 60:
-                            error_interval *= 2
-                        else:
-                            error_interval = 60
-                else:
-                    # polling_thread.clear_exceptions()
-                    # self.worker_pool.clear_exceptions()
-                    time.sleep(error_interval)
-                polling_thread.clear_exceptions()  # *
-                self.worker_pool.clear_exceptions()  # *
-            except KeyboardInterrupt:
-                # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                logger.info("KeyboardInterrupt received." + warning)
-                self.__stop_polling.set()
-                break
-            except Exception as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
-                if not handled:
-                    polling_thread.stop()
-                    polling_thread.clear_exceptions()  # *
-                    self.worker_pool.clear_exceptions()  # *
-                    raise e
-                else:
-                    polling_thread.clear_exceptions()
-                    self.worker_pool.clear_exceptions()
-                    time.sleep(error_interval)
-
-        polling_thread.stop()
-        polling_thread.clear_exceptions()
-        self.worker_pool.clear_exceptions()
-        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-        logger.info("Stopped polling." + warning)
-
-    def __non_threaded_polling(
+    def edited_message_handler(
         self,
-        non_stop=False,
-        interval=0,
-        timeout=None,
-        long_polling_timeout=None,
-        logger_level=logging.ERROR,
-        allowed_updates=None,
+        commands=None,
+        regexp=None,
+        func=None,
+        content_types=None,
+        chat_types=None,
+        **kwargs
     ):
-        if not (logger_level) or (logger_level < logging.INFO):
-            warning = "\n  Warning: this message appearance will be changed. Set logger_level=logging.INFO to continue seeing it."
-        else:
-            warning = ""
-        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-        logger.info("Started polling." + warning)
-        self.__stop_polling.clear()
-        error_interval = 0.25
+        """
+        Edit message handler decorator.
 
-        while not self.__stop_polling.wait(interval):
-            try:
-                self.__retrieve_updates(
-                    timeout, long_polling_timeout, allowed_updates=allowed_updates
-                )
-                error_interval = 0.25
-            except apihelper.ApiException as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
+        :param commands:
+        :param regexp:
+        :param func:
+        :param content_types:
+        :param chat_types: list of chat types
+        :param kwargs:
+        :return:
+        """
 
-                if not handled:
-                    if logger_level and logger_level >= logging.ERROR:
-                        logger.error("Polling exception: %s", str(e))
-                    if logger_level and logger_level >= logging.DEBUG:
-                        logger.error("Exception traceback:\n%s", traceback.format_exc())
-                    if not non_stop:
-                        self.__stop_polling.set()
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info("Exception occurred. Stopping." + warning)
-                    else:
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info(
-                            "Waiting for {0} seconds until retry".format(error_interval)
-                            + warning
-                        )
-                        time.sleep(error_interval)
-                        error_interval *= 2
-                else:
-                    time.sleep(error_interval)
-            except KeyboardInterrupt:
-                # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                logger.info("KeyboardInterrupt received." + warning)
-                self.__stop_polling.set()
-                break
-            except Exception as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
-                if not handled:
-                    raise e
-                else:
-                    time.sleep(error_interval)
-        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-        logger.info("Stopped polling." + warning)
+        if content_types is None:
+            content_types = ["text"]
 
-    def _exec_task(self, task, *args, **kwargs):
-        if kwargs and kwargs.get("task_type") == "handler":
-            pass_bot = kwargs.get("pass_bot")
-            kwargs.pop("pass_bot")
-            kwargs.pop("task_type")
-            if pass_bot:
-                kwargs["bot"] = self
+        if isinstance(commands, str):
+            logger.warning(
+                "edited_message_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
 
-        if self.threaded:
-            self.worker_pool.put(task, *args, **kwargs)
-        else:
-            try:
-                task(*args, **kwargs)
-            except Exception as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
-                if not handled:
-                    raise e
+        if isinstance(content_types, str):
+            logger.warning(
+                "edited_message_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
 
-    def stop_polling(self):
-        self.__stop_polling.set()
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(
+                handler,
+                chat_types=chat_types,
+                content_types=content_types,
+                commands=commands,
+                regexp=regexp,
+                func=func,
+                **kwargs
+            )
+            self.add_edited_message_handler(handler_dict)
+            return handler
 
-    def stop_bot(self):
-        self.stop_polling()
-        if self.threaded and self.worker_pool:
-            self.worker_pool.close()
+        return decorator
 
-    def set_update_listener(self, listener):
-        self.update_listener.append(listener)
+    def add_edited_message_handler(self, handler_dict):
+        """
+        Adds the edit message handler.
+        Note that you should use register_edited_message_handler to add edited_message_handler.
 
-    def get_me(self) -> types.User:
+        :param handler_dict:
+        :return:
+        """
+        self.edited_message_handlers.append(handler_dict)
+
+    def register_edited_message_handler(
+        self,
+        callback,
+        content_types=None,
+        commands=None,
+        regexp=None,
+        func=None,
+        chat_types=None,
+        pass_bot=False,
+        **kwargs
+    ):
+        """
+        Registers edited message handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :param chat_types: True for private chat
+        :return: decorated function
+        """
+        if isinstance(commands, str):
+            logger.warning(
+                "register_edited_message_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning(
+                "register_edited_message_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
+
+        handler_dict = self._build_handler_dict(
+            callback,
+            chat_types=chat_types,
+            content_types=content_types,
+            commands=commands,
+            regexp=regexp,
+            func=func,
+            pass_bot=pass_bot,
+            **kwargs
+        )
+        self.add_edited_message_handler(handler_dict)
+
+    def channel_post_handler(
+        self, commands=None, regexp=None, func=None, content_types=None, **kwargs
+    ):
+        """
+        Channel post handler decorator.
+
+        :param commands:
+        :param regexp:
+        :param func:
+        :param content_types:
+        :param kwargs:
+        :return:
+        """
+        if content_types is None:
+            content_types = ["text"]
+
+        if isinstance(commands, str):
+            logger.warning(
+                "channel_post_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning(
+                "channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(
+                handler,
+                content_types=content_types,
+                commands=commands,
+                regexp=regexp,
+                func=func,
+                **kwargs
+            )
+            self.add_channel_post_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_channel_post_handler(self, handler_dict):
+        """
+        Adds channel post handler.
+        Note that you should use register_channel_post_handler to add channel_post_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.channel_post_handlers.append(handler_dict)
+
+    def register_channel_post_handler(
+        self,
+        callback,
+        content_types=None,
+        commands=None,
+        regexp=None,
+        func=None,
+        pass_bot=False,
+        **kwargs
+    ):
+        """
+        Registers channel post message handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :return: decorated function
+        """
+        if isinstance(commands, str):
+            logger.warning(
+                "register_channel_post_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning(
+                "register_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
+
+        handler_dict = self._build_handler_dict(
+            callback,
+            content_types=content_types,
+            commands=commands,
+            regexp=regexp,
+            func=func,
+            pass_bot=pass_bot,
+            **kwargs
+        )
+        self.add_channel_post_handler(handler_dict)
+
+    def edited_channel_post_handler(
+        self, commands=None, regexp=None, func=None, content_types=None, **kwargs
+    ):
+        """
+        Edit channel post handler decorator.
+
+        :param commands:
+        :param regexp:
+        :param func:
+        :param content_types:
+        :param kwargs:
+        :return:
+        """
+        if content_types is None:
+            content_types = ["text"]
+
+        if isinstance(commands, str):
+            logger.warning(
+                "edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning(
+                "edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(
+                handler,
+                content_types=content_types,
+                commands=commands,
+                regexp=regexp,
+                func=func,
+                **kwargs
+            )
+            self.add_edited_channel_post_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_edited_channel_post_handler(self, handler_dict):
+        """
+        Adds the edit channel post handler.
+        Note that you should use register_edited_channel_post_handler to add edited_channel_post_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.edited_channel_post_handlers.append(handler_dict)
+
+    def register_edited_channel_post_handler(
+        self,
+        callback,
+        content_types=None,
+        commands=None,
+        regexp=None,
+        func=None,
+        pass_bot=False,
+        **kwargs
+    ):
+        """
+        Registers edited channel post message handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param content_types: list of content_types
+        :param commands: list of commands
+        :param regexp:
+        :param func:
+        :return: decorated function
+        """
+        if isinstance(commands, str):
+            logger.warning(
+                "register_edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string."
+            )
+            commands = [commands]
+
+        if isinstance(content_types, str):
+            logger.warning(
+                "register_edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
+            )
+            content_types = [content_types]
+
+        handler_dict = self._build_handler_dict(
+            callback,
+            content_types=content_types,
+            commands=commands,
+            regexp=regexp,
+            func=func,
+            pass_bot=pass_bot,
+            **kwargs
+        )
+        self.add_edited_channel_post_handler(handler_dict)
+
+    def inline_handler(self, func, **kwargs):
+        """
+        Inline call handler decorator.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_inline_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_inline_handler(self, handler_dict):
+        """
+        Adds inline call handler.
+        Note that you should use register_inline_handler to add inline_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.inline_handlers.append(handler_dict)
+
+    def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
+        """
+        Registers inline handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_inline_handler(handler_dict)
+
+    def chosen_inline_handler(self, func, **kwargs):
+        """
+
+        Description: TBD
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chosen_inline_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_chosen_inline_handler(self, handler_dict):
+        """
+        Description: TBD
+        Note that you should use register_chosen_inline_handler to add chosen_inline_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.chosen_inline_handlers.append(handler_dict)
+
+    def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
+        """
+        Registers chosen inline handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_chosen_inline_handler(handler_dict)
+
+    def callback_query_handler(self, func, **kwargs):
+        """
+        Callback request handler decorator.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_callback_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_callback_query_handler(self, handler_dict):
+        """
+        Adds a callback request handler.
+        Note that you should use register_callback_query_handler to add callback_query_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.callback_query_handlers.append(handler_dict)
+
+    def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
+        """
+        Registers callback query handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_callback_query_handler(handler_dict)
+
+    def shipping_query_handler(self, func, **kwargs):
+        """
+        Shipping request handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_shipping_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_shipping_query_handler(self, handler_dict):
+        """
+        Adds a shipping request handler.
+        Note that you should use register_shipping_query_handler to add shipping_query_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.shipping_query_handlers.append(handler_dict)
+
+    def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
+        """
+        Registers shipping query handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_shipping_query_handler(handler_dict)
+
+    def pre_checkout_query_handler(self, func, **kwargs):
+        """
+        Pre-checkout request handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_pre_checkout_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_pre_checkout_query_handler(self, handler_dict):
+        """
+        Adds a pre-checkout request handler.
+        Note that you should use register_pre_checkout_query_handler to add pre_checkout_query_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.pre_checkout_query_handlers.append(handler_dict)
+
+    def register_pre_checkout_query_handler(
+        self, callback, func, pass_bot=False, **kwargs
+    ):
+        """
+        Registers pre-checkout request handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_pre_checkout_query_handler(handler_dict)
+
+    def poll_handler(self, func, **kwargs):
+        """
+        Poll request handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_poll_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_poll_handler(self, handler_dict):
+        """
+        Adds a poll request handler.
+        Note that you should use register_poll_handler to add poll_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.poll_handlers.append(handler_dict)
+
+    def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
+        """
+        Registers poll handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_poll_handler(handler_dict)
+
+    def poll_answer_handler(self, func=None, **kwargs):
+        """
+        Poll_answer request handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_poll_answer_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_poll_answer_handler(self, handler_dict):
+        """
+        Adds a poll_answer request handler.
+        Note that you should use register_poll_answer_handler to add poll_answer_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.poll_answer_handlers.append(handler_dict)
+
+    def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
+        """
+        Registers poll answer handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_poll_answer_handler(handler_dict)
+
+    def my_chat_member_handler(self, func=None, **kwargs):
+        """
+        my_chat_member handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_my_chat_member_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_my_chat_member_handler(self, handler_dict):
+        """
+        Adds a my_chat_member handler.
+        Note that you should use register_my_chat_member_handler to add my_chat_member_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.my_chat_member_handlers.append(handler_dict)
+
+    def register_my_chat_member_handler(
+        self, callback, func=None, pass_bot=False, **kwargs
+    ):
+        """
+        Registers my chat member handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_my_chat_member_handler(handler_dict)
+
+    def chat_member_handler(self, func=None, **kwargs):
+        """
+        chat_member handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chat_member_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_chat_member_handler(self, handler_dict):
+        """
+        Adds a chat_member handler.
+        Note that you should use register_chat_member_handler to add chat_member_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.chat_member_handlers.append(handler_dict)
+
+    def register_chat_member_handler(
+        self, callback, func=None, pass_bot=False, **kwargs
+    ):
+        """
+        Registers chat member handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_chat_member_handler(handler_dict)
+
+    def chat_join_request_handler(self, func=None, **kwargs):
+        """
+        chat_join_request handler.
+
+        :param func:
+        :param kwargs:
+        :return:
+        """
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chat_join_request_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_chat_join_request_handler(self, handler_dict):
+        """
+        Adds a chat_join_request handler.
+        Note that you should use register_chat_join_request_handler to add chat_join_request_handler.
+
+        :param handler_dict:
+        :return:
+        """
+        self.chat_join_request_handlers.append(handler_dict)
+
+    def register_chat_join_request_handler(
+        self, callback, func=None, pass_bot=False, **kwargs
+    ):
+        """
+        Registers chat join request handler.
+
+        :param pass_bot:
+        :param callback: function to be called
+        :param func:
+        :return: decorated function
+        """
+        handler_dict = self._build_handler_dict(
+            callback, func=func, pass_bot=pass_bot, **kwargs
+        )
+        self.add_chat_join_request_handler(handler_dict)
+
+    @staticmethod
+    def _build_handler_dict(handler, pass_bot=False, **filters):
+        """
+        Builds a dictionary for a handler.
+
+        :param handler:
+        :param filters:
+        :return:
+        """
+        return {
+            "function": handler,
+            "pass_bot": pass_bot,
+            "filters": {
+                ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None
+            }
+            # Remove None values, they are skipped in _test_filter anyway
+            #'filters': filters
+        }
+
+    async def skip_updates(self):
+        """
+        Skip existing updates.
+        Only last update will remain on server.
+        """
+        await self.get_updates(-1)
+        return True
+
+    # all methods begin here
+
+    async def get_me(self) -> types.User:
         """
         Returns basic information about the bot in form of a User object.
 
         Telegram documentation: https://core.telegram.org/bots/api#getme
         """
-        result = apihelper.get_me(self.token)
+        result = await asyncio_helper.get_me(self.token)
         return types.User.de_json(result)
 
-    def get_file(self, file_id: str) -> types.File:
+    async def get_file(self, file_id: str) -> types.File:
         """
         Use this method to get basic info about a file and prepare it for downloading.
         For the moment, bots can download files of up to 20MB in size.
@@ -972,22 +1547,18 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getfile
 
-        :param file_id: File identifier
+        :param file_id:
         """
-        return types.File.de_json(apihelper.get_file(self.token, file_id))
+        return types.File.de_json(await asyncio_helper.get_file(self.token, file_id))
 
-    def get_file_url(self, file_id: str) -> str:
-        """
-        Get a valid URL for downloading a file.
+    async def get_file_url(self, file_id: str) -> str:
 
-        :param file_id: File identifier to get download URL for.
-        """
-        return apihelper.get_file_url(self.token, file_id)
+        return await asyncio_helper.get_file_url(self.token, file_id)
 
-    def download_file(self, file_path: str) -> bytes:
-        return apihelper.download_file(self.token, file_path)
+    async def download_file(self, file_path: str) -> bytes:
+        return await asyncio_helper.download_file(self.token, file_path)
 
-    def log_out(self) -> bool:
+    async def log_out(self) -> bool:
         """
         Use this method to log out from the cloud Bot API server before launching the bot locally.
         You MUST log out the bot before running it locally, otherwise there is no guarantee
@@ -998,9 +1569,9 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#logout
         """
-        return apihelper.log_out(self.token)
+        return await asyncio_helper.log_out(self.token)
 
-    def close(self) -> bool:
+    async def close(self) -> bool:
         """
         Use this method to close the bot instance before moving it from one local server to another.
         You need to delete the webhook before calling this method to ensure that the bot isn't launched again
@@ -1010,9 +1581,98 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#close
         """
-        return apihelper.close(self.token)
+        return await asyncio_helper.close(self.token)
 
-    def get_user_profile_photos(
+    def enable_saving_states(self, filename="./.state-save/states.pkl"):
+        """
+        Enable saving states (by default saving disabled)
+
+        :param filename: Filename of saving file
+        """
+
+        self.current_states = StatePickleStorage(file_path=filename)
+
+    async def set_webhook(
+        self,
+        url=None,
+        certificate=None,
+        max_connections=None,
+        allowed_updates=None,
+        ip_address=None,
+        drop_pending_updates=None,
+        timeout=None,
+    ):
+        """
+        Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
+        update for the bot, we will send an HTTPS POST request to the specified url,
+        containing a JSON-serialized Update.
+        In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setwebhook
+
+        :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
+        :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
+            See our self-signed guide for details.
+        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook
+            for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server,
+            and higher values to increase your bot's throughput.
+        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive.
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates
+            of these types. See Update for a complete list of available update types.
+            Specify an empty list to receive all updates regardless of type (default).
+            If not specified, the previous setting will be used.
+        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address
+            resolved through DNS
+        :param drop_pending_updates: Pass True to drop all pending updates
+        :param timeout: Integer. Request connection timeout
+        :return:
+        """
+        return await asyncio_helper.set_webhook(
+            self.token,
+            url,
+            certificate,
+            max_connections,
+            allowed_updates,
+            ip_address,
+            drop_pending_updates,
+            timeout,
+        )
+
+    async def delete_webhook(self, drop_pending_updates=None, timeout=None):
+        """
+        Use this method to remove webhook integration if you decide to switch back to getUpdates.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletewebhook
+
+        :param drop_pending_updates: Pass True to drop all pending updates
+        :param timeout: Integer. Request connection timeout
+        :return: bool
+        """
+        return await asyncio_helper.delete_webhook(
+            self.token, drop_pending_updates, timeout
+        )
+
+    async def remove_webhook(self):
+        """
+        Alternative for delete_webhook but uses set_webhook
+        """
+        await self.set_webhook()
+
+    async def get_webhook_info(self, timeout=None):
+        """
+        Use this method to get current webhook status. Requires no parameters.
+        If the bot is using getUpdates, will return an object with the url field empty.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo
+
+        :param timeout: Integer. Request connection timeout
+        :return: On success, returns a WebhookInfo object.
+        """
+        result = await asyncio_helper.get_webhook_info(self.token, timeout)
+        return types.WebhookInfo.de_json(result)
+
+    async def get_user_profile_photos(
         self, user_id: int, offset: Optional[int] = None, limit: Optional[int] = None
     ) -> types.UserProfilePhotos:
         """
@@ -1020,15 +1680,17 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getuserprofilephotos
 
-        :param user_id: Integer - Unique identifier of the target user
+        :param user_id:
         :param offset:
         :param limit:
         :return: API reply.
         """
-        result = apihelper.get_user_profile_photos(self.token, user_id, offset, limit)
+        result = await asyncio_helper.get_user_profile_photos(
+            self.token, user_id, offset, limit
+        )
         return types.UserProfilePhotos.de_json(result)
 
-    def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
+    async def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
@@ -1036,24 +1698,24 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#getchat
 
         :param chat_id:
-        :return: API reply.
+        :return:
         """
-        result = apihelper.get_chat(self.token, chat_id)
+        result = await asyncio_helper.get_chat(self.token, chat_id)
         return types.Chat.de_json(result)
 
-    def leave_chat(self, chat_id: Union[int, str]) -> bool:
+    async def leave_chat(self, chat_id: Union[int, str]) -> bool:
         """
         Use this method for your bot to leave a group, supergroup or channel. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#leavechat
 
         :param chat_id:
-        :return: API reply.
+        :return:
         """
-        result = apihelper.leave_chat(self.token, chat_id)
+        result = await asyncio_helper.leave_chat(self.token, chat_id)
         return result
 
-    def get_chat_administrators(
+    async def get_chat_administrators(
         self, chat_id: Union[int, str]
     ) -> List[types.ChatMember]:
         """
@@ -1063,34 +1725,33 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
 
-        :param chat_id: Unique identifier for the target chat or username
-            of the target supergroup or channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
         :return: API reply.
         """
-        result = apihelper.get_chat_administrators(self.token, chat_id)
+        result = await asyncio_helper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
 
     @util.deprecated(deprecation_text="Use get_chat_member_count instead")
-    def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
+    async def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
         This function is deprecated. Use `get_chat_member_count` instead
         """
-        result = apihelper.get_chat_member_count(self.token, chat_id)
+        result = await asyncio_helper.get_chat_member_count(self.token, chat_id)
         return result
 
-    def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
+    async def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
         """
         Use this method to get the number of members in a chat. Returns Int on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#getchatmembercount
 
         :param chat_id:
-        :return: API reply.
+        :return:
         """
-        result = apihelper.get_chat_member_count(self.token, chat_id)
+        result = await asyncio_helper.get_chat_member_count(self.token, chat_id)
         return result
 
-    def set_chat_sticker_set(
+    async def set_chat_sticker_set(
         self, chat_id: Union[int, str], sticker_set_name: str
     ) -> types.StickerSet:
         """
@@ -1105,10 +1766,12 @@ class TeleBot:
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
         :return: API reply.
         """
-        result = apihelper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
+        result = await asyncio_helper.set_chat_sticker_set(
+            self.token, chat_id, sticker_set_name
+        )
         return result
 
-    def delete_chat_sticker_set(self, chat_id: Union[int, str]) -> bool:
+    async def delete_chat_sticker_set(self, chat_id: Union[int, str]) -> bool:
         """
         Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
@@ -1119,10 +1782,30 @@ class TeleBot:
         :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
         :return: API reply.
         """
-        result = apihelper.delete_chat_sticker_set(self.token, chat_id)
+        result = await asyncio_helper.delete_chat_sticker_set(self.token, chat_id)
         return result
 
-    def get_chat_member(
+    async def answer_web_app_query(
+        self, web_app_query_id: str, result: types.InlineQueryResultBase
+    ) -> types.SentWebAppMessage:
+        """
+        Use this method to set the result of an interaction with a Web App and
+        send a corresponding message on behalf of the user to the chat from which
+        the query originated.
+        On success, a SentWebAppMessage object is returned.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#answerwebappquery
+
+        :param web_app_query_id: Unique identifier for the query to be answered
+        :param result: A JSON-serialized object describing the message to be sent
+        :return:
+        """
+
+        return await asyncio_helper.answer_web_app_query(
+            self.token, web_app_query_id, result
+        )
+
+    async def get_chat_member(
         self, chat_id: Union[int, str], user_id: int
     ) -> types.ChatMember:
         """
@@ -1134,10 +1817,10 @@ class TeleBot:
         :param user_id:
         :return: API reply.
         """
-        result = apihelper.get_chat_member(self.token, chat_id, user_id)
+        result = await asyncio_helper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
 
-    def send_message(
+    async def send_message(
         self,
         chat_id: Union[int, str],
         text: str,
@@ -1148,7 +1831,7 @@ class TeleBot:
         protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
     ) -> types.Message:
         """
@@ -1160,23 +1843,23 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-        :param text: Text of the message to be sent
-        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
-        :param entities: List of special entities that appear in message text, which can be specified instead of parse_mode
-        :param disable_web_page_preview: Disables link previews for links in this message
-        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
-        :param protect_content: If True, the message content will be hidden for all users except for the target user
-        :param reply_to_message_id: If the message is a reply, ID of the original message
-        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
-        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+        :param chat_id:
+        :param text:
+        :param disable_web_page_preview:
+        :param reply_to_message_id:
+        :param reply_markup:
+        :param parse_mode:
+        :param disable_notification: Boolean, Optional. Sends the message silently.
         :param timeout:
+        :param entities:
+        :param allow_sending_without_reply:
+        :param protect_content:
         :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_message(
+            await asyncio_helper.send_message(
                 self.token,
                 chat_id,
                 text,
@@ -1188,11 +1871,11 @@ class TeleBot:
                 timeout,
                 entities,
                 allow_sending_without_reply,
-                protect_content=protect_content,
+                protect_content,
             )
         )
 
-    def forward_message(
+    async def forward_message(
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
@@ -1210,12 +1893,12 @@ class TeleBot:
         :param chat_id: which chat to forward
         :param from_chat_id: which chat message from
         :param message_id: message id
-        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+        :param protect_content:
         :param timeout:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.forward_message(
+            await asyncio_helper.forward_message(
                 self.token,
                 chat_id,
                 from_chat_id,
@@ -1226,7 +1909,7 @@ class TeleBot:
             )
         )
 
-    def copy_message(
+    async def copy_message(
         self,
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
@@ -1238,7 +1921,7 @@ class TeleBot:
         protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
     ) -> types.MessageID:
         """
@@ -1253,15 +1936,17 @@ class TeleBot:
         :param parse_mode:
         :param caption_entities:
         :param disable_notification:
-        :param protect_content:
         :param reply_to_message_id:
         :param allow_sending_without_reply:
         :param reply_markup:
         :param timeout:
+        :param protect_content:
         :return: API reply.
         """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
         return types.MessageID.de_json(
-            apihelper.copy_message(
+            await asyncio_helper.copy_message(
                 self.token,
                 chat_id,
                 from_chat_id,
@@ -1278,7 +1963,7 @@ class TeleBot:
             )
         )
 
-    def delete_message(
+    async def delete_message(
         self, chat_id: Union[int, str], message_id: int, timeout: Optional[int] = None
     ) -> bool:
         """
@@ -1291,15 +1976,17 @@ class TeleBot:
         :param timeout:
         :return: API reply.
         """
-        return apihelper.delete_message(self.token, chat_id, message_id, timeout)
+        return await asyncio_helper.delete_message(
+            self.token, chat_id, message_id, timeout
+        )
 
-    def send_dice(
+    async def send_dice(
         self,
         chat_id: Union[int, str],
         emoji: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
@@ -1320,7 +2007,7 @@ class TeleBot:
         :return: Message
         """
         return types.Message.de_json(
-            apihelper.send_dice(
+            await asyncio_helper.send_dice(
                 self.token,
                 chat_id,
                 emoji,
@@ -1333,7 +2020,7 @@ class TeleBot:
             )
         )
 
-    def send_photo(
+    async def send_photo(
         self,
         chat_id: Union[int, str],
         photo: Union[Any, str],
@@ -1344,11 +2031,11 @@ class TeleBot:
         protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
     ) -> types.Message:
         """
-        Use this method to send photos. On success, the sent Message is returned.
+        Use this method to send photos.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendphoto
 
@@ -1356,19 +2043,19 @@ class TeleBot:
         :param photo:
         :param caption:
         :param parse_mode:
-        :param caption_entities:
         :param disable_notification:
-        :param protect_content:
         :param reply_to_message_id:
-        :param allow_sending_without_reply:
         :param reply_markup:
         :param timeout:
-        :return: Message
+        :param caption_entities:
+        :param allow_sending_without_reply:
+        :param protect_content:
+        :return: API reply.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_photo(
+            await asyncio_helper.send_photo(
                 self.token,
                 chat_id,
                 photo,
@@ -1384,8 +2071,7 @@ class TeleBot:
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_audio(
+    async def send_audio(
         self,
         chat_id: Union[int, str],
         audio: Union[Any, str],
@@ -1394,7 +2080,7 @@ class TeleBot:
         performer: Optional[str] = None,
         title: Optional[str] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         parse_mode: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         timeout: Optional[int] = None,
@@ -1429,7 +2115,7 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_audio(
+            await asyncio_helper.send_audio(
                 self.token,
                 chat_id,
                 audio,
@@ -1449,15 +2135,14 @@ class TeleBot:
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_voice(
+    async def send_voice(
         self,
         chat_id: Union[int, str],
         voice: Union[Any, str],
         caption: Optional[str] = None,
         duration: Optional[int] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         parse_mode: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         timeout: Optional[int] = None,
@@ -1488,7 +2173,7 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_voice(
+            await asyncio_helper.send_voice(
                 self.token,
                 chat_id,
                 voice,
@@ -1505,14 +2190,13 @@ class TeleBot:
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_document(
+    async def send_document(
         self,
         chat_id: Union[int, str],
         document: Union[Any, str],
         reply_to_message_id: Optional[int] = None,
         caption: Optional[str] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         parse_mode: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         timeout: Optional[int] = None,
@@ -1540,9 +2224,9 @@ class TeleBot:
         :param thumb: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
         :param caption_entities:
         :param allow_sending_without_reply:
-        :param visible_file_name: allows to define file name that will be visible in the Telegram instead of original file name
+        :param visible_file_name: allows to async define file name that will be visible in the Telegram instead of original file name
         :param disable_content_type_detection: Disables automatic server-side content type detection for files uploaded using multipart/form-data
-        :param data: function typo miss compatibility: do not use it
+        :param data: function typo compatibility: do not use it
         :param protect_content:
         :return: API reply.
         """
@@ -1552,7 +2236,7 @@ class TeleBot:
             document = data
 
         return types.Message.de_json(
-            apihelper.send_data(
+            await asyncio_helper.send_data(
                 self.token,
                 chat_id,
                 document,
@@ -1572,13 +2256,12 @@ class TeleBot:
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_sticker(
+    async def send_sticker(
         self,
         chat_id: Union[int, str],
         sticker: Union[Any, str],
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         disable_notification: Optional[bool] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
@@ -1592,21 +2275,24 @@ class TeleBot:
 
         :param chat_id:
         :param sticker:
-        :param data:
         :param reply_to_message_id:
         :param reply_markup:
         :param disable_notification: to disable the notification
         :param timeout: timeout
         :param allow_sending_without_reply:
         :param protect_content:
-        :param data: function typo miss compatibility: do not use it
+        :param data: deprecated, for backward compatibility
         :return: API reply.
         """
         if data and not (sticker):
             # function typo miss compatibility
+            logger.warning(
+                "send_sticker: data parameter is deprecated. Use sticker instead."
+            )
             sticker = data
+
         return types.Message.de_json(
-            apihelper.send_data(
+            await asyncio_helper.send_data(
                 self.token,
                 chat_id,
                 sticker,
@@ -1620,7 +2306,7 @@ class TeleBot:
             )
         )
 
-    def send_video(
+    async def send_video(
         self,
         chat_id: Union[int, str],
         video: Union[Any, str],
@@ -1636,7 +2322,7 @@ class TeleBot:
         protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         data: Optional[Union[Any, str]] = None,
     ) -> types.Message:
@@ -1661,15 +2347,18 @@ class TeleBot:
         :param allow_sending_without_reply:
         :param reply_markup:
         :param timeout:
-        :param data: function typo miss compatibility: do not use it
+        :param data: deprecated, for backward compatibility
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         if data and not (video):
             # function typo miss compatibility
+            logger.warning(
+                "send_sticker: data parameter is deprecated. Use video instead."
+            )
             video = data
 
         return types.Message.de_json(
-            apihelper.send_video(
+            await asyncio_helper.send_video(
                 self.token,
                 chat_id,
                 video,
@@ -1690,7 +2379,7 @@ class TeleBot:
             )
         )
 
-    def send_animation(
+    async def send_animation(
         self,
         chat_id: Union[int, str],
         animation: Union[Any, str],
@@ -1705,7 +2394,7 @@ class TeleBot:
         protect_content: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
     ) -> types.Message:
         """
@@ -1734,7 +2423,7 @@ class TeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
-            apihelper.send_animation(
+            await asyncio_helper.send_animation(
                 self.token,
                 chat_id,
                 animation,
@@ -1748,21 +2437,20 @@ class TeleBot:
                 thumb,
                 caption_entities,
                 allow_sending_without_reply,
-                protect_content,
                 width,
                 height,
+                protect_content,
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_video_note(
+    async def send_video_note(
         self,
         chat_id: Union[int, str],
         data: Union[Any, str],
         duration: Optional[int] = None,
         length: Optional[int] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         disable_notification: Optional[bool] = None,
         timeout: Optional[int] = None,
         thumb: Optional[Union[Any, str]] = None,
@@ -1790,7 +2478,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.send_video_note(
+            await asyncio_helper.send_video_note(
                 self.token,
                 chat_id,
                 data,
@@ -1806,7 +2494,7 @@ class TeleBot:
             )
         )
 
-    def send_media_group(
+    async def send_media_group(
         self,
         chat_id: Union[int, str],
         media: List[
@@ -1824,20 +2512,20 @@ class TeleBot:
         allow_sending_without_reply: Optional[bool] = None,
     ) -> List[types.Message]:
         """
-        Send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+        send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
 
         :param chat_id:
         :param media:
         :param disable_notification:
-        :param protect_content:
         :param reply_to_message_id:
         :param timeout:
         :param allow_sending_without_reply:
+        :param protect_content:
         :return:
         """
-        result = apihelper.send_media_group(
+        result = await asyncio_helper.send_media_group(
             self.token,
             chat_id,
             media,
@@ -1849,15 +2537,14 @@ class TeleBot:
         )
         return [types.Message.de_json(msg) for msg in result]
 
-    # TODO: Rewrite this method like in API.
-    def send_location(
+    async def send_location(
         self,
         chat_id: Union[int, str],
         latitude: float,
         longitude: float,
         live_period: Optional[int] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         disable_notification: Optional[bool] = None,
         timeout: Optional[int] = None,
         horizontal_accuracy: Optional[float] = None,
@@ -1866,6 +2553,7 @@ class TeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
     ) -> types.Message:
+
         """
         Use this method to send point on the map.
 
@@ -1887,7 +2575,7 @@ class TeleBot:
         :return: API reply.
         """
         return types.Message.de_json(
-            apihelper.send_location(
+            await asyncio_helper.send_location(
                 self.token,
                 chat_id,
                 latitude,
@@ -1905,14 +2593,14 @@ class TeleBot:
             )
         )
 
-    def edit_message_live_location(
+    async def edit_message_live_location(
         self,
         latitude: float,
         longitude: float,
         chat_id: Optional[Union[int, str]] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         horizontal_accuracy: Optional[float] = None,
         heading: Optional[int] = None,
@@ -1936,7 +2624,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.edit_message_live_location(
+            await asyncio_helper.edit_message_live_location(
                 self.token,
                 latitude,
                 longitude,
@@ -1951,17 +2639,17 @@ class TeleBot:
             )
         )
 
-    def stop_message_live_location(
+    async def stop_message_live_location(
         self,
         chat_id: Optional[Union[int, str]] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to stop updating a live location message sent by the bot
-        or via the bot (for inline bots) before live_period expires
+        or via the bot (for inline bots) before live_period expires.
 
         Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
 
@@ -1973,7 +2661,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.stop_message_live_location(
+            await asyncio_helper.stop_message_live_location(
                 self.token,
                 chat_id,
                 message_id,
@@ -1983,8 +2671,7 @@ class TeleBot:
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_venue(
+    async def send_venue(
         self,
         chat_id: Union[int, str],
         latitude: float,
@@ -1995,7 +2682,7 @@ class TeleBot:
         foursquare_type: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         google_place_id: Optional[str] = None,
@@ -2013,7 +2700,7 @@ class TeleBot:
         :param title: String : Name of the venue
         :param address: String : Address of the venue
         :param foursquare_id: String : Foursquare identifier of the venue
-        :param foursquare_type: Foursquare type of the venue, if known. (For example, “arts_entertainment/default”,
+        :param foursquare_type: Foursquare type of the venue, if known. (For example, “arts_entertainment/async default”,
             “arts_entertainment/aquarium” or “food/icecream”.)
         :param disable_notification:
         :param reply_to_message_id:
@@ -2026,7 +2713,7 @@ class TeleBot:
         :return:
         """
         return types.Message.de_json(
-            apihelper.send_venue(
+            await asyncio_helper.send_venue(
                 self.token,
                 chat_id,
                 latitude,
@@ -2046,8 +2733,7 @@ class TeleBot:
             )
         )
 
-    # TODO: Rewrite this method like in API.
-    def send_contact(
+    async def send_contact(
         self,
         chat_id: Union[int, str],
         phone_number: str,
@@ -2056,7 +2742,7 @@ class TeleBot:
         vcard: Optional[str] = None,
         disable_notification: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
@@ -2077,11 +2763,9 @@ class TeleBot:
         :param timeout:
         :param allow_sending_without_reply:
         :param protect_content:
-        :return:
         """
-
         return types.Message.de_json(
-            apihelper.send_contact(
+            await asyncio_helper.send_contact(
                 self.token,
                 chat_id,
                 phone_number,
@@ -2097,7 +2781,7 @@ class TeleBot:
             )
         )
 
-    def send_chat_action(
+    async def send_chat_action(
         self, chat_id: Union[int, str], action: str, timeout: Optional[int] = None
     ) -> bool:
         """
@@ -2114,10 +2798,11 @@ class TeleBot:
         :param timeout:
         :return: API reply. :type: boolean
         """
-        return apihelper.send_chat_action(self.token, chat_id, action, timeout)
+        return await asyncio_helper.send_chat_action(
+            self.token, chat_id, action, timeout
+        )
 
-    @util.deprecated(deprecation_text="Use ban_chat_member instead")
-    def kick_chat_member(
+    async def kick_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: int,
@@ -2127,11 +2812,12 @@ class TeleBot:
         """
         This function is deprecated. Use `ban_chat_member` instead
         """
-        return apihelper.ban_chat_member(
+        logger.info("kick_chat_member is deprecated. Use ban_chat_member instead.")
+        return await asyncio_helper.ban_chat_member(
             self.token, chat_id, user_id, until_date, revoke_messages
         )
 
-    def ban_chat_member(
+    async def ban_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: int,
@@ -2155,11 +2841,11 @@ class TeleBot:
                 Always True for supergroups and channels.
         :return: boolean
         """
-        return apihelper.ban_chat_member(
+        return await asyncio_helper.ban_chat_member(
             self.token, chat_id, user_id, until_date, revoke_messages
         )
 
-    def unban_chat_member(
+    async def unban_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: int,
@@ -2168,7 +2854,7 @@ class TeleBot:
         """
         Use this method to unban a previously kicked user in a supergroup or channel.
         The user will not return to the group or channel automatically, but will be able to join via link, etc.
-        The bot must be an administrator for this to work. By default, this method guarantees that after the call
+        The bot must be an administrator for this to work. By async default, this method guarantees that after the call
         the user is not a member of the chat, but will be able to join it. So if the user is a member of the chat
         they will also be removed from the chat. If you don't want this, use the parameter only_if_banned.
 
@@ -2180,9 +2866,11 @@ class TeleBot:
         :param only_if_banned: Do nothing if the user is not banned
         :return: True on success
         """
-        return apihelper.unban_chat_member(self.token, chat_id, user_id, only_if_banned)
+        return await asyncio_helper.unban_chat_member(
+            self.token, chat_id, user_id, only_if_banned
+        )
 
-    def restrict_chat_member(
+    async def restrict_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: int,
@@ -2203,8 +2891,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
 
-        :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup
-            or channel (in the format @channelusername)
+        :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup or channel (in the format @channelusername)
         :param user_id: Int : Unique identifier of the target user
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
@@ -2213,17 +2900,15 @@ class TeleBot:
         :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
             and voice notes, implies can_send_messages
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
-        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
-        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
-            implies can_send_media_messages
-        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
-            Ignored in public supergroups
-        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
-            implies can_invite_users
+        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and
+            use inline bots, implies can_send_media_messages
+        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages, implies can_send_media_messages
+        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings. Ignored in public supergroups
+        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat, implies can_invite_users
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """
-        return apihelper.restrict_chat_member(
+        return await asyncio_helper.restrict_chat_member(
             self.token,
             chat_id,
             user_id,
@@ -2238,7 +2923,7 @@ class TeleBot:
             can_pin_messages,
         )
 
-    def promote_chat_member(
+    async def promote_chat_member(
         self,
         chat_id: Union[int, str],
         user_id: int,
@@ -2282,10 +2967,10 @@ class TeleBot:
             Implied by any other administrator privilege
         :param can_manage_video_chats: Bool: Pass True, if the administrator can manage voice chats
             For now, bots can use this privilege only for passing to other administrators.
-        :param can_manage_voice_chats: Deprecated, use can_manage_video_chats.
-
+        :param can_manage_voice_chats: Deprecated, use can_manage_video_chats
         :return: True on success.
         """
+
         if can_manage_voice_chats is not None:
             logger.warning(
                 "promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead."
@@ -2293,7 +2978,7 @@ class TeleBot:
             if can_manage_video_chats is None:
                 can_manage_video_chats = can_manage_voice_chats
 
-        return apihelper.promote_chat_member(
+        return await asyncio_helper.promote_chat_member(
             self.token,
             chat_id,
             user_id,
@@ -2310,7 +2995,7 @@ class TeleBot:
             can_manage_video_chats,
         )
 
-    def set_chat_administrator_custom_title(
+    async def set_chat_administrator_custom_title(
         self, chat_id: Union[int, str], user_id: int, custom_title: str
     ) -> bool:
         """
@@ -2326,11 +3011,11 @@ class TeleBot:
             0-16 characters, emoji are not allowed
         :return: True on success.
         """
-        return apihelper.set_chat_administrator_custom_title(
+        return await asyncio_helper.set_chat_administrator_custom_title(
             self.token, chat_id, user_id, custom_title
         )
 
-    def ban_chat_sender_chat(
+    async def ban_chat_sender_chat(
         self, chat_id: Union[int, str], sender_chat_id: Union[int, str]
     ) -> bool:
         """
@@ -2347,9 +3032,11 @@ class TeleBot:
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
         """
-        return apihelper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id)
+        return await asyncio_helper.ban_chat_sender_chat(
+            self.token, chat_id, sender_chat_id
+        )
 
-    def unban_chat_sender_chat(
+    async def unban_chat_sender_chat(
         self, chat_id: Union[int, str], sender_chat_id: Union[int, str]
     ) -> bool:
         """
@@ -2365,13 +3052,15 @@ class TeleBot:
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
         """
-        return apihelper.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
+        return await asyncio_helper.unban_chat_sender_chat(
+            self.token, chat_id, sender_chat_id
+        )
 
-    def set_chat_permissions(
+    async def set_chat_permissions(
         self, chat_id: Union[int, str], permissions: types.ChatPermissions
     ) -> bool:
         """
-        Use this method to set default chat permissions for all members.
+        Use this method to set async default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
         and must have the can_restrict_members admin rights.
 
@@ -2379,12 +3068,14 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
-        :param permissions: New default chat permissions
+        :param permissions: New async default chat permissions
         :return: True on success
         """
-        return apihelper.set_chat_permissions(self.token, chat_id, permissions)
+        return await asyncio_helper.set_chat_permissions(
+            self.token, chat_id, permissions
+        )
 
-    def create_chat_invite_link(
+    async def create_chat_invite_link(
         self,
         chat_id: Union[int, str],
         name: Optional[str] = None,
@@ -2407,7 +3098,7 @@ class TeleBot:
         :return:
         """
         return types.ChatInviteLink.de_json(
-            apihelper.create_chat_invite_link(
+            await asyncio_helper.create_chat_invite_link(
                 self.token,
                 chat_id,
                 name,
@@ -2417,7 +3108,7 @@ class TeleBot:
             )
         )
 
-    def edit_chat_invite_link(
+    async def edit_chat_invite_link(
         self,
         chat_id: Union[int, str],
         invite_link: Optional[str] = None,
@@ -2442,7 +3133,7 @@ class TeleBot:
         :return:
         """
         return types.ChatInviteLink.de_json(
-            apihelper.edit_chat_invite_link(
+            await asyncio_helper.edit_chat_invite_link(
                 self.token,
                 chat_id,
                 name,
@@ -2453,7 +3144,7 @@ class TeleBot:
             )
         )
 
-    def revoke_chat_invite_link(
+    async def revoke_chat_invite_link(
         self, chat_id: Union[int, str], invite_link: str
     ) -> types.ChatInviteLink:
         """
@@ -2463,16 +3154,17 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
 
-        :param chat_id: Id: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
+        :param chat_id: Id: Unique identifier for the target chat or username of the target channel(in the format @channelusername)
         :param invite_link: The invite link to revoke
-        :return:
+        :return: API reply.
         """
         return types.ChatInviteLink.de_json(
-            apihelper.revoke_chat_invite_link(self.token, chat_id, invite_link)
+            await asyncio_helper.revoke_chat_invite_link(
+                self.token, chat_id, invite_link
+            )
         )
 
-    def export_chat_invite_link(self, chat_id: Union[int, str]) -> str:
+    async def export_chat_invite_link(self, chat_id: Union[int, str]) -> str:
         """
         Use this method to export an invite link to a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -2483,9 +3175,9 @@ class TeleBot:
             (in the format @channelusername)
         :return: exported invite link as String on success.
         """
-        return apihelper.export_chat_invite_link(self.token, chat_id)
+        return await asyncio_helper.export_chat_invite_link(self.token, chat_id)
 
-    def approve_chat_join_request(
+    async def approve_chat_join_request(
         self, chat_id: Union[str, int], user_id: Union[int, str]
     ) -> bool:
         """
@@ -2500,9 +3192,11 @@ class TeleBot:
         :param user_id: Unique identifier of the target user
         :return: True on success.
         """
-        return apihelper.approve_chat_join_request(self.token, chat_id, user_id)
+        return await asyncio_helper.approve_chat_join_request(
+            self.token, chat_id, user_id
+        )
 
-    def decline_chat_join_request(
+    async def decline_chat_join_request(
         self, chat_id: Union[str, int], user_id: Union[int, str]
     ) -> bool:
         """
@@ -2517,43 +3211,42 @@ class TeleBot:
         :param user_id: Unique identifier of the target user
         :return: True on success.
         """
-        return apihelper.decline_chat_join_request(self.token, chat_id, user_id)
+        return await asyncio_helper.decline_chat_join_request(
+            self.token, chat_id, user_id
+        )
 
-    def set_chat_photo(self, chat_id: Union[int, str], photo: Any) -> bool:
+    async def set_chat_photo(self, chat_id: Union[int, str], photo: Any) -> bool:
         """
         Use this method to set a new profile photo for the chat. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
-        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
-        setting is off in the target group.
+        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatphoto
 
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
-            (in the format @channelusername)
+        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
         :return:
         """
-        return apihelper.set_chat_photo(self.token, chat_id, photo)
+        return await asyncio_helper.set_chat_photo(self.token, chat_id, photo)
 
-    def delete_chat_photo(self, chat_id: Union[int, str]) -> bool:
+    async def delete_chat_photo(self, chat_id: Union[int, str]) -> bool:
         """
         Use this method to delete a chat photo. Photos can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
         Returns True on success.
-        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’ setting is off in the target group.
+        Note: In regular groups (non-supergroups), this method will only work if the ‘All Members Are Admins’
+        setting is off in the target group.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
         """
-        return apihelper.delete_chat_photo(self.token, chat_id)
+        return await asyncio_helper.delete_chat_photo(self.token, chat_id)
 
-    def get_my_commands(
-        self,
-        scope: Optional[types.BotCommandScope] = None,
-        language_code: Optional[str] = None,
+    async def get_my_commands(
+        self, scope: Optional[types.BotCommandScope], language_code: Optional[str]
     ) -> List[types.BotCommand]:
         """
         Use this method to get the current list of the bot's commands.
@@ -2562,15 +3255,15 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#getmycommands
 
         :param scope: The scope of users for which the commands are relevant.
-            Defaults to BotCommandScopeDefault.
+            async defaults to BotCommandScopeasync default.
         :param language_code: A two-letter ISO 639-1 language code. If empty,
             commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         """
-        result = apihelper.get_my_commands(self.token, scope, language_code)
+        result = await asyncio_helper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
-    def set_chat_menu_button(
+    async def set_chat_menu_button(
         self, chat_id: Union[int, str] = None, menu_button: types.MenuButton = None
     ) -> bool:
         """
@@ -2585,9 +3278,13 @@ class TeleBot:
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
 
         """
-        return apihelper.set_chat_menu_button(self.token, chat_id, menu_button)
+        return await asyncio_helper.set_chat_menu_button(
+            self.token, chat_id, menu_button
+        )
 
-    def get_chat_menu_button(self, chat_id: Union[int, str] = None) -> types.MenuButton:
+    async def get_chat_menu_button(
+        self, chat_id: Union[int, str] = None
+    ) -> types.MenuButton:
         """
         Use this method to get the current value of the bot's menu button
         in a private chat, or the default menu button.
@@ -2601,10 +3298,10 @@ class TeleBot:
 
         """
         return types.MenuButton.de_json(
-            apihelper.get_chat_menu_button(self.token, chat_id)
+            await asyncio_helper.get_chat_menu_button(self.token, chat_id)
         )
 
-    def set_my_default_administrator_rights(
+    async def set_my_default_administrator_rights(
         self, rights: types.ChatAdministratorRights = None, for_channels: bool = None
     ) -> bool:
         """
@@ -2620,11 +3317,11 @@ class TeleBot:
         :param for_channels: Pass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
         """
 
-        return apihelper.set_my_default_administrator_rights(
+        return await asyncio_helper.set_my_default_administrator_rights(
             self.token, rights, for_channels
         )
 
-    def get_my_default_administrator_rights(
+    async def get_my_default_administrator_rights(
         self, for_channels: bool = None
     ) -> types.ChatAdministratorRights:
         """
@@ -2638,10 +3335,12 @@ class TeleBot:
         """
 
         return types.ChatAdministratorRights.de_json(
-            apihelper.get_my_default_administrator_rights(self.token, for_channels)
+            await asyncio_helper.get_my_default_administrator_rights(
+                self.token, for_channels
+            )
         )
 
-    def set_my_commands(
+    async def set_my_commands(
         self,
         commands: List[types.BotCommand],
         scope: Optional[types.BotCommandScope] = None,
@@ -2654,18 +3353,20 @@ class TeleBot:
 
         :param commands: List of BotCommand. At most 100 commands can be specified.
         :param scope: The scope of users for which the commands are relevant.
-            Defaults to BotCommandScopeDefault.
+            async defaults to BotCommandScopeasync default.
         :param language_code: A two-letter ISO 639-1 language code. If empty,
             commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :return:
         """
-        return apihelper.set_my_commands(self.token, commands, scope, language_code)
+        return await asyncio_helper.set_my_commands(
+            self.token, commands, scope, language_code
+        )
 
-    def delete_my_commands(
+    async def delete_my_commands(
         self,
         scope: Optional[types.BotCommandScope] = None,
-        language_code: Optional[str] = None,
+        language_code: Optional[int] = None,
     ) -> bool:
         """
         Use this method to delete the list of the bot's commands for the given scope and user language.
@@ -2675,14 +3376,14 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#deletemycommands
 
         :param scope: The scope of users for which the commands are relevant.
-            Defaults to BotCommandScopeDefault.
+            async defaults to BotCommandScopeasync default.
         :param language_code: A two-letter ISO 639-1 language code. If empty,
             commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         """
-        return apihelper.delete_my_commands(self.token, scope, language_code)
+        return await asyncio_helper.delete_my_commands(self.token, scope, language_code)
 
-    def set_chat_title(self, chat_id: Union[int, str], title: str) -> bool:
+    async def set_chat_title(self, chat_id: Union[int, str], title: str) -> bool:
         """
         Use this method to change the title of a chat. Titles can't be changed for private chats.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -2697,9 +3398,9 @@ class TeleBot:
         :param title: New chat title, 1-255 characters
         :return:
         """
-        return apihelper.set_chat_title(self.token, chat_id, title)
+        return await asyncio_helper.set_chat_title(self.token, chat_id, title)
 
-    def set_chat_description(
+    async def set_chat_description(
         self, chat_id: Union[int, str], description: Optional[str] = None
     ) -> bool:
         """
@@ -2713,9 +3414,11 @@ class TeleBot:
         :param description: Str: New chat description, 0-255 characters
         :return: True on success.
         """
-        return apihelper.set_chat_description(self.token, chat_id, description)
+        return await asyncio_helper.set_chat_description(
+            self.token, chat_id, description
+        )
 
-    def pin_chat_message(
+    async def pin_chat_message(
         self,
         chat_id: Union[int, str],
         message_id: int,
@@ -2735,11 +3438,11 @@ class TeleBot:
             to all group members about the new pinned message
         :return:
         """
-        return apihelper.pin_chat_message(
+        return await asyncio_helper.pin_chat_message(
             self.token, chat_id, message_id, disable_notification
         )
 
-    def unpin_chat_message(
+    async def unpin_chat_message(
         self, chat_id: Union[int, str], message_id: Optional[int] = None
     ) -> bool:
         """
@@ -2754,9 +3457,9 @@ class TeleBot:
         :param message_id: Int: Identifier of a message to unpin
         :return:
         """
-        return apihelper.unpin_chat_message(self.token, chat_id, message_id)
+        return await asyncio_helper.unpin_chat_message(self.token, chat_id, message_id)
 
-    def unpin_all_chat_messages(self, chat_id: Union[int, str]) -> bool:
+    async def unpin_all_chat_messages(self, chat_id: Union[int, str]) -> bool:
         """
         Use this method to unpin a all pinned messages in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -2768,9 +3471,9 @@ class TeleBot:
             (in the format @channelusername)
         :return:
         """
-        return apihelper.unpin_all_chat_messages(self.token, chat_id)
+        return await asyncio_helper.unpin_all_chat_messages(self.token, chat_id)
 
-    def edit_message_text(
+    async def edit_message_text(
         self,
         text: str,
         chat_id: Optional[Union[int, str]] = None,
@@ -2779,7 +3482,7 @@ class TeleBot:
         parse_mode: Optional[str] = None,
         entities: Optional[List[types.MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
     ) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
@@ -2798,7 +3501,7 @@ class TeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        result = apihelper.edit_message_text(
+        result = await asyncio_helper.edit_message_text(
             self.token,
             text,
             chat_id,
@@ -2813,13 +3516,13 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
-    def edit_message_media(
+    async def edit_message_media(
         self,
         media: Any,
         chat_id: Optional[Union[int, str]] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
     ) -> Union[types.Message, bool]:
         """
         Use this method to edit animation, audio, document, photo, or video messages.
@@ -2836,24 +3539,24 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
-        result = apihelper.edit_message_media(
+        result = await asyncio_helper.edit_message_media(
             self.token, media, chat_id, message_id, inline_message_id, reply_markup
         )
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
-    def edit_message_reply_markup(
+    async def edit_message_reply_markup(
         self,
         chat_id: Optional[Union[int, str]] = None,
         message_id: Optional[int] = None,
         inline_message_id: Optional[str] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
     ) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
 
-        Telegram documentation: https://core.telegram.org/bots/api#editmessagereplymarkup
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagetypes.ReplyMarkup
 
         :param chat_id:
         :param message_id:
@@ -2861,20 +3564,20 @@ class TeleBot:
         :param reply_markup:
         :return:
         """
-        result = apihelper.edit_message_reply_markup(
+        result = await asyncio_helper.edit_message_reply_markup(
             self.token, chat_id, message_id, inline_message_id, reply_markup
         )
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
 
-    def send_game(
+    async def send_game(
         self,
         chat_id: Union[int, str],
         game_short_name: str,
         disable_notification: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
@@ -2894,7 +3597,7 @@ class TeleBot:
         :param protect_content:
         :return:
         """
-        result = apihelper.send_game(
+        result = await asyncio_helper.send_game(
             self.token,
             chat_id,
             game_short_name,
@@ -2907,7 +3610,7 @@ class TeleBot:
         )
         return types.Message.de_json(result)
 
-    def set_game_score(
+    async def set_game_score(
         self,
         user_id: Union[int, str],
         score: int,
@@ -2920,7 +3623,7 @@ class TeleBot:
         """
         Sets the value of points in the game to a specific user.
 
-        Telegram documentation: https://core.telegram.org/bots/api#setgamecore
+        Telegram documentation: https://core.telegram.org/bots/api#setgamescore
 
         :param user_id:
         :param score:
@@ -2931,7 +3634,7 @@ class TeleBot:
         :param disable_edit_message:
         :return:
         """
-        result = apihelper.set_game_score(
+        result = await asyncio_helper.set_game_score(
             self.token,
             user_id,
             score,
@@ -2945,7 +3648,7 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
-    def get_game_high_scores(
+    async def get_game_high_scores(
         self,
         user_id: int,
         chat_id: Optional[Union[int, str]] = None,
@@ -2963,13 +3666,12 @@ class TeleBot:
         :param inline_message_id:
         :return:
         """
-        result = apihelper.get_game_high_scores(
+        result = await asyncio_helper.get_game_high_scores(
             self.token, user_id, chat_id, message_id, inline_message_id
         )
         return [types.GameHighScore.de_json(r) for r in result]
 
-    # TODO: rewrite this method like in API
-    def send_invoice(
+    async def send_invoice(
         self,
         chat_id: Union[int, str],
         title: str,
@@ -2992,7 +3694,7 @@ class TeleBot:
         is_flexible: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         provider_data: Optional[str] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
@@ -3008,7 +3710,7 @@ class TeleBot:
         :param chat_id: Unique identifier for the target private chat
         :param title: Product name
         :param description: Product description
-        :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+        :param invoice_payload: Bot-async defined invoice payload, 1-128 bytes. This will not be displayed to the user,
             use for your internal processes.
         :param provider_token: Payments provider token, obtained via @Botfather
         :param currency: Three-letter ISO 4217 currency code,
@@ -3044,7 +3746,7 @@ class TeleBot:
         :param protect_content:
         :return:
         """
-        result = apihelper.send_invoice(
+        result = await asyncio_helper.send_invoice(
             self.token,
             chat_id,
             title,
@@ -3078,8 +3780,7 @@ class TeleBot:
         return types.Message.de_json(result)
 
     # noinspection PyShadowingBuiltins
-    # TODO: rewrite this method like in API
-    def send_poll(
+    async def send_poll(
         self,
         chat_id: Union[int, str],
         question: str,
@@ -3095,14 +3796,14 @@ class TeleBot:
         is_closed: Optional[bool] = None,
         disable_notification: Optional[bool] = False,
         reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
         allow_sending_without_reply: Optional[bool] = None,
         timeout: Optional[int] = None,
         explanation_entities: Optional[List[types.MessageEntity]] = None,
         protect_content: Optional[bool] = None,
     ) -> types.Message:
         """
-        Sends a poll.
+        Send polls.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendpoll
 
@@ -3127,6 +3828,7 @@ class TeleBot:
         :param protect_content:
         :return:
         """
+
         if isinstance(question, types.Poll):
             raise RuntimeError(
                 "The send_poll signature was changed, please see send_poll function details."
@@ -3139,7 +3841,7 @@ class TeleBot:
         )
 
         return types.Message.de_json(
-            apihelper.send_poll(
+            await asyncio_helper.send_poll(
                 self.token,
                 chat_id,
                 question,
@@ -3163,14 +3865,14 @@ class TeleBot:
             )
         )
 
-    def stop_poll(
+    async def stop_poll(
         self,
         chat_id: Union[int, str],
         message_id: int,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
     ) -> types.Poll:
         """
-        Stops a poll.
+        Stops poll.
 
         Telegram documentation: https://core.telegram.org/bots/api#stoppoll
 
@@ -3180,10 +3882,12 @@ class TeleBot:
         :return:
         """
         return types.Poll.de_json(
-            apihelper.stop_poll(self.token, chat_id, message_id, reply_markup)
+            await asyncio_helper.stop_poll(
+                self.token, chat_id, message_id, reply_markup
+            )
         )
 
-    def answer_shipping_query(
+    async def answer_shipping_query(
         self,
         shipping_query_id: str,
         ok: bool,
@@ -3201,11 +3905,11 @@ class TeleBot:
         :param error_message:
         :return:
         """
-        return apihelper.answer_shipping_query(
+        return await asyncio_helper.answer_shipping_query(
             self.token, shipping_query_id, ok, shipping_options, error_message
         )
 
-    def answer_pre_checkout_query(
+    async def answer_pre_checkout_query(
         self, pre_checkout_query_id: int, ok: bool, error_message: Optional[str] = None
     ) -> bool:
         """
@@ -3218,11 +3922,11 @@ class TeleBot:
         :param error_message:
         :return:
         """
-        return apihelper.answer_pre_checkout_query(
+        return await asyncio_helper.answer_pre_checkout_query(
             self.token, pre_checkout_query_id, ok, error_message
         )
 
-    def edit_message_caption(
+    async def edit_message_caption(
         self,
         caption: str,
         chat_id: Optional[Union[int, str]] = None,
@@ -3230,7 +3934,7 @@ class TeleBot:
         inline_message_id: Optional[str] = None,
         parse_mode: Optional[str] = None,
         caption_entities: Optional[List[types.MessageEntity]] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
     ) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
@@ -3248,7 +3952,7 @@ class TeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        result = apihelper.edit_message_caption(
+        result = await asyncio_helper.edit_message_caption(
             self.token,
             caption,
             chat_id,
@@ -3262,7 +3966,9 @@ class TeleBot:
             return result
         return types.Message.de_json(result)
 
-    def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
+    async def reply_to(
+        self, message: types.Message, text: str, **kwargs
+    ) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
 
@@ -3271,11 +3977,11 @@ class TeleBot:
         :param kwargs:
         :return:
         """
-        return self.send_message(
+        return await self.send_message(
             message.chat.id, text, reply_to_message_id=message.message_id, **kwargs
         )
 
-    def answer_inline_query(
+    async def answer_inline_query(
         self,
         inline_query_id: str,
         results: List[Any],
@@ -3304,7 +4010,7 @@ class TeleBot:
         :param switch_pm_text: 	Parameter for the start message sent to the bot when user presses the switch button
         :return: True means success.
         """
-        return apihelper.answer_inline_query(
+        return await asyncio_helper.answer_inline_query(
             self.token,
             inline_query_id,
             results,
@@ -3315,7 +4021,7 @@ class TeleBot:
             switch_pm_parameter,
         )
 
-    def answer_callback_query(
+    async def answer_callback_query(
         self,
         callback_query_id: int,
         text: Optional[str] = None,
@@ -3336,11 +4042,11 @@ class TeleBot:
         :param cache_time:
         :return:
         """
-        return apihelper.answer_callback_query(
+        return await asyncio_helper.answer_callback_query(
             self.token, callback_query_id, text, show_alert, url, cache_time
         )
 
-    def set_sticker_set_thumb(
+    async def set_sticker_set_thumb(
         self, name: str, user_id: int, thumb: Union[Any, str] = None
     ):
         """
@@ -3351,11 +4057,16 @@ class TeleBot:
 
         :param name: Sticker set name
         :param user_id: User identifier
-        :param thumb:
-        """
-        return apihelper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+        :param thumb: A PNG image with the thumbnail, must be up to 128 kilobytes in size and have width and height
+            exactly 100px, or a TGS animation with the thumbnail up to 32 kilobytes in size;
+            see https://core.telegram.org/animated_stickers#technical-requirements
 
-    def get_sticker_set(self, name: str) -> types.StickerSet:
+        """
+        return await asyncio_helper.set_sticker_set_thumb(
+            self.token, name, user_id, thumb
+        )
+
+    async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
 
@@ -3364,15 +4075,16 @@ class TeleBot:
         :param name:
         :return:
         """
-        result = apihelper.get_sticker_set(self.token, name)
+        result = await asyncio_helper.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
 
-    def upload_sticker_file(
+    async def upload_sticker_file(
         self, user_id: int, png_sticker: Union[Any, str]
     ) -> types.File:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
+
 
         Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
 
@@ -3380,10 +4092,12 @@ class TeleBot:
         :param png_sticker:
         :return:
         """
-        result = apihelper.upload_sticker_file(self.token, user_id, png_sticker)
+        result = await asyncio_helper.upload_sticker_file(
+            self.token, user_id, png_sticker
+        )
         return types.File.de_json(result)
 
-    def create_new_sticker_set(
+    async def create_new_sticker_set(
         self,
         user_id: int,
         name: str,
@@ -3408,12 +4122,12 @@ class TeleBot:
         :param emojis:
         :param png_sticker:
         :param tgs_sticker:
-        :param webm_sticker:
+        :webm_sticker:
         :param contains_masks:
         :param mask_position:
         :return:
         """
-        return apihelper.create_new_sticker_set(
+        return await asyncio_helper.create_new_sticker_set(
             self.token,
             user_id,
             name,
@@ -3426,7 +4140,7 @@ class TeleBot:
             webm_sticker,
         )
 
-    def add_sticker_to_set(
+    async def add_sticker_to_set(
         self,
         user_id: int,
         name: str,
@@ -3448,11 +4162,11 @@ class TeleBot:
         :param emojis:
         :param png_sticker: Required if `tgs_sticker` is None
         :param tgs_sticker: Required if `png_sticker` is None
-        :param webm_sticker:
+        :webm_sticker:
         :param mask_position:
         :return:
         """
-        return apihelper.add_sticker_to_set(
+        return await asyncio_helper.add_sticker_to_set(
             self.token,
             user_id,
             name,
@@ -3463,7 +4177,7 @@ class TeleBot:
             webm_sticker,
         )
 
-    def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
+    async def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """
         Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
 
@@ -3473,9 +4187,11 @@ class TeleBot:
         :param position:
         :return:
         """
-        return apihelper.set_sticker_position_in_set(self.token, sticker, position)
+        return await asyncio_helper.set_sticker_position_in_set(
+            self.token, sticker, position
+        )
 
-    def delete_sticker_from_set(self, sticker: str) -> bool:
+    async def delete_sticker_from_set(self, sticker: str) -> bool:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on success.
 
@@ -3484,126 +4200,21 @@ class TeleBot:
         :param sticker:
         :return:
         """
-        return apihelper.delete_sticker_from_set(self.token, sticker)
+        return await asyncio_helper.delete_sticker_from_set(self.token, sticker)
 
-    def answer_web_app_query(
-        self, web_app_query_id: str, result: types.InlineQueryResultBase
-    ) -> types.SentWebAppMessage:
-        """
-        Use this method to set the result of an interaction with a Web App and
-        send a corresponding message on behalf of the user to the chat from which
-        the query originated.
-        On success, a SentWebAppMessage object is returned.
-
-        Telegram Documentation: https://core.telegram.org/bots/api#answerwebappquery
-
-        :param web_app_query_id: Unique identifier for the query to be answered
-        :param result: A JSON-serialized object describing the message to be sent
-        :return:
-        """
-
-        return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
-
-    def register_for_reply(
-        self, message: types.Message, callback: Callable, *args, **kwargs
-    ) -> None:
-        """
-        Registers a callback function to be notified when a reply to `message` arrives.
-
-        Warning: In case `callback` as lambda function, saving reply handlers will not work.
-
-        :param message:     The message for which we are awaiting a reply.
-        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
-                            parameter, which will contain the replied message.
-        """
-        message_id = message.message_id
-        self.register_for_reply_by_message_id(message_id, callback, *args, **kwargs)
-
-    def register_for_reply_by_message_id(
-        self, message_id: int, callback: Callable, *args, **kwargs
-    ) -> None:
-        """
-        Registers a callback function to be notified when a reply to `message` arrives.
-
-        Warning: In case `callback` as lambda function, saving reply handlers will not work.
-
-        :param message_id:  The id of the message for which we are awaiting a reply.
-        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
-                            parameter, which will contain the replied message.
-        """
-        self.reply_backend.register_handler(
-            message_id, Handler(callback, *args, **kwargs)
-        )
-
-    def _notify_reply_handlers(self, new_messages) -> None:
-        """
-        Notify handlers of the answers
-
-        :param new_messages:
-        :return:
-        """
-        for message in new_messages:
-            if (
-                hasattr(message, "reply_to_message")
-                and message.reply_to_message is not None
-            ):
-                handlers = self.reply_backend.get_handlers(
-                    message.reply_to_message.message_id
-                )
-                if handlers:
-                    for handler in handlers:
-                        self._exec_task(
-                            handler["callback"],
-                            message,
-                            *handler["args"],
-                            **handler["kwargs"],
-                        )
-
-    def register_next_step_handler(
-        self, message: types.Message, callback: Callable, *args, **kwargs
-    ) -> None:
-        """
-        Registers a callback function to be notified when new message arrives after `message`.
-
-        Warning: In case `callback` as lambda function, saving next step handlers will not work.
-
-        :param message:     The message for which we want to handle new message in the same chat.
-        :param callback:    The callback function which next new message arrives.
-        :param args:        Args to pass in callback func
-        :param kwargs:      Args to pass in callback func
-        """
-        chat_id = message.chat.id
-        self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
-
-    def setup_middleware(self, middleware: BaseMiddleware):
-        """
-        Register middleware
-
-        :param middleware: Subclass of `telebot.handler_backends.BaseMiddleware`
-        :return: None
-        """
-        if not self.use_class_middlewares:
-            logger.warning(
-                "Middleware is not enabled. Pass use_class_middlewares=True to enable it."
-            )
-            return
-        self.middlewares.append(middleware)
-
-    def set_state(
-        self, user_id: int, state: Union[int, str], chat_id: int = None
-    ) -> None:
+    async def set_state(self, user_id: int, state: str, chat_id: int = None):
         """
         Sets a new state of a user.
 
         :param user_id:
-        :param state: new state. can be string or integer.
         :param chat_id:
+        :param state: new state. can be string or integer.
         """
-        if chat_id is None:
+        if not chat_id:
             chat_id = user_id
-        self.current_states.set_state(chat_id, user_id, state)
+        await self.current_states.set_state(chat_id, user_id, state)
 
-    def reset_data(self, user_id: int, chat_id: int = None):
+    async def reset_data(self, user_id: int, chat_id: int = None):
         """
         Reset data for a user in chat.
 
@@ -3612,10 +4223,9 @@ class TeleBot:
         """
         if chat_id is None:
             chat_id = user_id
+        await self.current_states.reset_data(chat_id, user_id)
 
-        self.current_states.reset_data(chat_id, user_id)
-
-    def delete_state(self, user_id: int, chat_id: int = None) -> None:
+    async def delete_state(self, user_id: int, chat_id: int = None):
         """
         Delete the current state of a user.
 
@@ -3623,18 +4233,16 @@ class TeleBot:
         :param chat_id:
         :return:
         """
-        if chat_id is None:
+        if not chat_id:
             chat_id = user_id
-        self.current_states.delete_state(chat_id, user_id)
+        await self.current_states.delete_state(chat_id, user_id)
 
-    def retrieve_data(
-        self, user_id: int, chat_id: int = None
-    ) -> Optional[Union[int, str]]:
-        if chat_id is None:
+    def retrieve_data(self, user_id: int, chat_id: int = None):
+        if not chat_id:
             chat_id = user_id
         return self.current_states.get_interactive_data(chat_id, user_id)
 
-    def get_state(self, user_id: int, chat_id: int = None) -> Optional[Union[int, str]]:
+    async def get_state(self, user_id, chat_id: int = None):
         """
         Get current state of a user.
 
@@ -3642,1257 +4250,18 @@ class TeleBot:
         :param chat_id:
         :return: state of a user
         """
-        if chat_id is None:
+        if not chat_id:
             chat_id = user_id
-        return self.current_states.get_state(chat_id, user_id)
+        return await self.current_states.get_state(chat_id, user_id)
 
-    def add_data(self, user_id: int, chat_id: int = None, **kwargs):
+    async def add_data(self, user_id: int, chat_id: int = None, **kwargs):
         """
         Add data to states.
 
         :param user_id:
         :param chat_id:
         """
-        if chat_id is None:
+        if not chat_id:
             chat_id = user_id
         for key, value in kwargs.items():
-            self.current_states.set_data(chat_id, user_id, key, value)
-
-    def register_next_step_handler_by_chat_id(
-        self, chat_id: Union[int, str], callback: Callable, *args, **kwargs
-    ) -> None:
-        """
-        Registers a callback function to be notified when new message arrives after `message`.
-
-        Warning: In case `callback` as lambda function, saving next step handlers will not work.
-
-        :param chat_id:     The chat for which we want to handle new message.
-        :param callback:    The callback function which next new message arrives.
-        :param args:        Args to pass in callback func
-        :param kwargs:      Args to pass in callback func
-        """
-        self.next_step_backend.register_handler(
-            chat_id, Handler(callback, *args, **kwargs)
-        )
-
-    def clear_step_handler(self, message: types.Message) -> None:
-        """
-        Clears all callback functions registered by register_next_step_handler().
-
-        :param message:     The message for which we want to handle new message after that in same chat.
-        """
-        chat_id = message.chat.id
-        self.clear_step_handler_by_chat_id(chat_id)
-
-    def clear_step_handler_by_chat_id(self, chat_id: Union[int, str]) -> None:
-        """
-        Clears all callback functions registered by register_next_step_handler().
-
-        :param chat_id: The chat for which we want to clear next step handlers
-        """
-        self.next_step_backend.clear_handlers(chat_id)
-
-    def clear_reply_handlers(self, message: types.Message) -> None:
-        """
-        Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
-
-        :param message: The message for which we want to clear reply handlers
-        """
-        message_id = message.message_id
-        self.clear_reply_handlers_by_message_id(message_id)
-
-    def clear_reply_handlers_by_message_id(self, message_id: int) -> None:
-        """
-        Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
-
-        :param message_id: The message id for which we want to clear reply handlers
-        """
-        self.reply_backend.clear_handlers(message_id)
-
-    def _notify_next_handlers(self, new_messages):
-        """
-        Description: TBD
-
-        :param new_messages:
-        :return:
-        """
-        for i, message in enumerate(new_messages):
-            need_pop = False
-            handlers = self.next_step_backend.get_handlers(message.chat.id)
-            if handlers:
-                for handler in handlers:
-                    need_pop = True
-                    self._exec_task(
-                        handler["callback"],
-                        message,
-                        *handler["args"],
-                        **handler["kwargs"],
-                    )
-            if need_pop:
-                # removing message that was detected with next_step_handler
-                new_messages.pop(i)
-
-    @staticmethod
-    def _build_handler_dict(handler, pass_bot=False, **filters):
-        """
-        Builds a dictionary for a handler
-
-        :param handler:
-        :param filters:
-        :return:
-        """
-        return {
-            "function": handler,
-            "pass_bot": pass_bot,
-            "filters": {
-                ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None
-            }
-            # Remove None values, they are skipped in _test_filter anyway
-            #'filters': filters
-        }
-
-    def middleware_handler(self, update_types=None):
-        """
-        Middleware handler decorator.
-
-        This decorator can be used to decorate functions that must be handled as middlewares before entering any other
-        message handlers
-        But, be careful and check type of the update inside the handler if more than one update_type is given
-
-        Example:
-
-        .. code-block:: python3
-
-            bot = TeleBot('TOKEN')
-
-            # Print post message text before entering to any post_channel handlers
-            @bot.middleware_handler(update_types=['channel_post', 'edited_channel_post'])
-            def print_channel_post_text(bot_instance, channel_post):
-                print(channel_post.text)
-
-            # Print update id before entering to any handlers
-            @bot.middleware_handler()
-            def print_channel_post_text(bot_instance, update):
-                print(update.update_id)
-
-        :param update_types: Optional list of update types that can be passed into the middleware handler.
-        """
-
-        def decorator(handler):
-            self.add_middleware_handler(handler, update_types)
-            return handler
-
-        return decorator
-
-    def add_middleware_handler(self, handler, update_types=None):
-        """
-        Add middleware handler.
-
-        :param handler:
-        :param update_types:
-        :return:
-        """
-        if not apihelper.ENABLE_MIDDLEWARE:
-            raise RuntimeError(
-                "Middleware is not enabled. Use apihelper.ENABLE_MIDDLEWARE before initialising TeleBot."
-            )
-
-        if update_types:
-            for update_type in update_types:
-                self.typed_middleware_handlers[update_type].append(handler)
-        else:
-            self.default_middleware_handlers.append(handler)
-
-    # function register_middleware_handler
-    def register_middleware_handler(self, callback, update_types=None):
-        """
-        Middleware handler decorator.
-
-        This function will create a decorator that can be used to decorate functions that must be handled as middlewares before entering any other
-        message handlers
-        But, be careful and check type of the update inside the handler if more than one update_type is given
-
-        Example:
-
-        bot = TeleBot('TOKEN')
-
-        bot.register_middleware_handler(print_channel_post_text, update_types=['channel_post', 'edited_channel_post'])
-
-        :param callback:
-        :param update_types: Optional list of update types that can be passed into the middleware handler.
-        """
-        self.add_middleware_handler(callback, update_types)
-
-    @staticmethod
-    def check_commands_input(commands, method_name):
-        if not isinstance(commands, list) or not all(
-            isinstance(item, str) for item in commands
-        ):
-            logger.error(
-                f"{method_name}: Commands filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use the supplied type."
-            )
-
-    @staticmethod
-    def check_regexp_input(regexp, method_name):
-        if not isinstance(regexp, str):
-            logger.error(
-                f"{method_name}: Regexp filter should be string. Not able to use the supplied type."
-            )
-
-    def message_handler(
-        self,
-        commands=None,
-        regexp=None,
-        func=None,
-        content_types=None,
-        chat_types=None,
-        **kwargs,
-    ):
-        """
-        Message handler decorator.
-        This decorator can be used to decorate functions that must handle certain types of messages.
-        All message handlers are tested in the order they were added.
-
-        Example:
-
-        .. code-block:: python
-
-            bot = TeleBot('TOKEN')
-
-            # Handles all messages which text matches regexp.
-            @bot.message_handler(regexp='someregexp')
-            def command_help(message):
-                bot.send_message(message.chat.id, 'Did someone call for help?')
-
-            # Handles messages in private chat
-            @bot.message_handler(chat_types=['private']) # You can add more chat types
-            def command_help(message):
-                bot.send_message(message.chat.id, 'Private chat detected, sir!')
-
-            # Handle all sent documents of type 'text/plain'.
-            @bot.message_handler(func=lambda message: message.document.mime_type == 'text/plain',
-                content_types=['document'])
-            def command_handle_document(message):
-                bot.send_message(message.chat.id, 'Document received, sir!')
-
-            # Handle all other messages.
-            @bot.message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
-                'text', 'location', 'contact', 'sticker'])
-            def default_command(message):
-                bot.send_message(message.chat.id, "This is the default command handler.")
-
-        :param commands: Optional list of strings (commands to handle).
-        :param regexp: Optional regular expression.
-        :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
-            It must return True if the command should handle the message.
-        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
-        :param chat_types: list of chat types
-        """
-        if content_types is None:
-            content_types = ["text"]
-
-        method_name = "message_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler,
-                chat_types=chat_types,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs,
-            )
-            self.add_message_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_message_handler(self, handler_dict):
-        """
-        Adds a message handler
-        Note that you should use register_message_handler to add message_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.message_handlers.append(handler_dict)
-
-    def register_message_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        chat_types=None,
-        pass_bot=False,
-        **kwargs,
-    ):
-        """
-        Registers message handler.
-
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :param chat_types: True for private chat
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        method_name = "register_message_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            chat_types=chat_types,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs,
-        )
-        self.add_message_handler(handler_dict)
-
-    def edited_message_handler(
-        self,
-        commands=None,
-        regexp=None,
-        func=None,
-        content_types=None,
-        chat_types=None,
-        **kwargs,
-    ):
-        """
-        Edit message handler decorator
-
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param chat_types: list of chat types
-        :param kwargs:
-        :return:
-        """
-        if content_types is None:
-            content_types = ["text"]
-
-        method_name = "edited_message_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "edited_message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler,
-                chat_types=chat_types,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs,
-            )
-            self.add_edited_message_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_edited_message_handler(self, handler_dict):
-        """
-        Adds the edit message handler
-        Note that you should use register_edited_message_handler to add edited_message_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.edited_message_handlers.append(handler_dict)
-
-    def register_edited_message_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        chat_types=None,
-        pass_bot=False,
-        **kwargs,
-    ):
-        """
-        Registers edited message handler.
-
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :param chat_types: True for private chat
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        method_name = "register_edited_message_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_edited_message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            chat_types=chat_types,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs,
-        )
-        self.add_edited_message_handler(handler_dict)
-
-    def channel_post_handler(
-        self, commands=None, regexp=None, func=None, content_types=None, **kwargs
-    ):
-        """
-        Channel post handler decorator
-
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param kwargs:
-        :return:
-        """
-        if content_types is None:
-            content_types = ["text"]
-
-        method_name = "channel_post_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs,
-            )
-            self.add_channel_post_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_channel_post_handler(self, handler_dict):
-        """
-        Adds channel post handler
-        Note that you should use register_channel_post_handler to add channel_post_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.channel_post_handlers.append(handler_dict)
-
-    def register_channel_post_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        pass_bot=False,
-        **kwargs,
-    ):
-        """
-        Registers channel post message handler.
-
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        method_name = "register_channel_post_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs,
-        )
-        self.add_channel_post_handler(handler_dict)
-
-    def edited_channel_post_handler(
-        self, commands=None, regexp=None, func=None, content_types=None, **kwargs
-    ):
-        """
-        Edit channel post handler decorator
-
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param kwargs:
-        :return:
-        """
-        if content_types is None:
-            content_types = ["text"]
-
-        method_name = "edited_channel_post_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs,
-            )
-            self.add_edited_channel_post_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_edited_channel_post_handler(self, handler_dict):
-        """
-        Adds the edit channel post handler
-        Note that you should use register_edited_channel_post_handler to add edited_channel_post_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.edited_channel_post_handlers.append(handler_dict)
-
-    def register_edited_channel_post_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        pass_bot=False,
-        **kwargs,
-    ):
-        """
-        Registers edited channel post message handler.
-
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        method_name = "register_edited_channel_post_handler"
-
-        if commands is not None:
-            self.check_commands_input(commands, method_name)
-            if isinstance(commands, str):
-                commands = [commands]
-
-        if regexp is not None:
-            self.check_regexp_input(regexp, method_name)
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs,
-        )
-        self.add_edited_channel_post_handler(handler_dict)
-
-    def inline_handler(self, func, **kwargs):
-        """
-        Inline call handler decorator
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_inline_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_inline_handler(self, handler_dict):
-        """
-        Adds inline call handler
-        Note that you should use register_inline_handler to add inline_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.inline_handlers.append(handler_dict)
-
-    def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers inline handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_inline_handler(handler_dict)
-
-    def chosen_inline_handler(self, func, **kwargs):
-        """
-        Description: TBD
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_chosen_inline_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_chosen_inline_handler(self, handler_dict):
-        """
-        Description: TBD
-        Note that you should use register_chosen_inline_handler to add chosen_inline_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.chosen_inline_handlers.append(handler_dict)
-
-    def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers chosen inline handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_chosen_inline_handler(handler_dict)
-
-    def callback_query_handler(self, func, **kwargs):
-        """
-        Callback request handler decorator
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_callback_query_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_callback_query_handler(self, handler_dict):
-        """
-        Adds a callback request handler
-        Note that you should use register_callback_query_handler to add callback_query_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.callback_query_handlers.append(handler_dict)
-
-    def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers callback query handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_callback_query_handler(handler_dict)
-
-    def shipping_query_handler(self, func, **kwargs):
-        """
-        Shipping request handler
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_shipping_query_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_shipping_query_handler(self, handler_dict):
-        """
-        Adds a shipping request handler.
-        Note that you should use register_shipping_query_handler to add shipping_query_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.shipping_query_handlers.append(handler_dict)
-
-    def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers shipping query handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_shipping_query_handler(handler_dict)
-
-    def pre_checkout_query_handler(self, func, **kwargs):
-        """
-        Pre-checkout request handler
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_pre_checkout_query_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_pre_checkout_query_handler(self, handler_dict):
-        """
-        Adds a pre-checkout request handler
-        Note that you should use register_pre_checkout_query_handler to add pre_checkout_query_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.pre_checkout_query_handlers.append(handler_dict)
-
-    def register_pre_checkout_query_handler(
-        self, callback, func, pass_bot=False, **kwargs
-    ):
-        """
-        Registers pre-checkout request handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_pre_checkout_query_handler(handler_dict)
-
-    def poll_handler(self, func, **kwargs):
-        """
-        Poll request handler
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_poll_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_poll_handler(self, handler_dict):
-        """
-        Adds a poll request handler
-        Note that you should use register_poll_handler to add poll_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.poll_handlers.append(handler_dict)
-
-    def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers poll handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_poll_handler(handler_dict)
-
-    def poll_answer_handler(self, func=None, **kwargs):
-        """
-        Poll_answer request handler
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_poll_answer_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_poll_answer_handler(self, handler_dict):
-        """
-        Adds a poll_answer request handler.
-        Note that you should use register_poll_answer_handler to add poll_answer_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.poll_answer_handlers.append(handler_dict)
-
-    def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers poll answer handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_poll_answer_handler(handler_dict)
-
-    def my_chat_member_handler(self, func=None, **kwargs):
-        """
-        my_chat_member handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_my_chat_member_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_my_chat_member_handler(self, handler_dict):
-        """
-        Adds a my_chat_member handler.
-        Note that you should use register_my_chat_member_handler to add my_chat_member_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.my_chat_member_handlers.append(handler_dict)
-
-    def register_my_chat_member_handler(
-        self, callback, func=None, pass_bot=False, **kwargs
-    ):
-        """
-        Registers my chat member handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_my_chat_member_handler(handler_dict)
-
-    def chat_member_handler(self, func=None, **kwargs):
-        """
-        chat_member handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_chat_member_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_chat_member_handler(self, handler_dict):
-        """
-        Adds a chat_member handler.
-        Note that you should use register_chat_member_handler to add chat_member_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.chat_member_handlers.append(handler_dict)
-
-    def register_chat_member_handler(
-        self, callback, func=None, pass_bot=False, **kwargs
-    ):
-        """
-        Registers chat member handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_chat_member_handler(handler_dict)
-
-    def chat_join_request_handler(self, func=None, **kwargs):
-        """
-        chat_join_request handler
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_chat_join_request_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_chat_join_request_handler(self, handler_dict):
-        """
-        Adds a chat_join_request handler.
-        Note that you should use register_chat_join_request_handler to add chat_join_request_handler to the bot.
-
-        :param handler_dict:
-        :return:
-        """
-        self.chat_join_request_handlers.append(handler_dict)
-
-    def register_chat_join_request_handler(
-        self, callback, func=None, pass_bot=False, **kwargs
-    ):
-        """
-        Registers chat join request handler.
-
-        :param callback: function to be called
-        :param func:
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
-        self.add_chat_join_request_handler(handler_dict)
-
-    def _test_message_handler(self, message_handler, message):
-        """
-        Test message handler
-
-        :param message_handler:
-        :param message:
-        :return:
-        """
-        for message_filter, filter_value in message_handler["filters"].items():
-            if filter_value is None:
-                continue
-
-            if not self._test_filter(message_filter, filter_value, message):
-                return False
-
-        return True
-
-    def add_custom_filter(
-        self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]
-    ):
-        """
-        Create custom filter.
-
-        :param custom_filter: Class with check(message) method.
-        :param custom_filter: Custom filter class with key.
-        """
-        self.custom_filters[custom_filter.key] = custom_filter
-
-    def _test_filter(self, message_filter, filter_value, message):
-        """
-        Test filters
-
-        :param message_filter: Filter type passed in handler
-        :param filter_value: Filter value passed in handler
-        :param message: Message to test
-        :return: True if filter conforms
-        """
-        if message_filter == "content_types":
-            return message.content_type in filter_value
-        elif message_filter == "regexp":
-            return message.content_type == "text" and re.search(
-                filter_value, message.text, re.IGNORECASE
-            )
-        elif message_filter == "commands":
-            return (
-                message.content_type == "text"
-                and util.extract_command(message.text) in filter_value
-            )
-        elif message_filter == "chat_types":
-            return message.chat.type in filter_value
-        elif message_filter == "func":
-            return filter_value(message)
-        elif self.custom_filters and message_filter in self.custom_filters:
-            return self._check_filter(message_filter, filter_value, message)
-        else:
-            return False
-
-    def _check_filter(self, message_filter, filter_value, message):
-        filter_check = self.custom_filters.get(message_filter)
-        if not filter_check:
-            return False
-        elif isinstance(filter_check, SimpleCustomFilter):
-            return filter_value == filter_check.check(message)
-        elif isinstance(filter_check, AdvancedCustomFilter):
-            return filter_check.check(message, filter_value)
-        else:
-            logger.error(
-                "Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter."
-            )
-            return False
-
-    # middleware check-up method
-    def _check_middleware(self, update_type):
-        """
-        Check middleware
-
-        :param update_type:
-        :return:
-        """
-        middlewares = None
-        if self.middlewares:
-            middlewares = [i for i in self.middlewares if update_type in i.update_types]
-        return middlewares
-
-    def _run_middlewares_and_handler(
-        self, message, handlers, middlewares, *args, **kwargs
-    ):
-        """
-        This class is made to run handler and middleware in queue.
-
-        :param handler: handler that should be executed.
-        :param middleware: middleware that should be executed.
-        :return:
-        """
-        data = {}
-        params = []
-        handler_error = None
-        skip_handler = False
-        if middlewares:
-            for middleware in middlewares:
-                result = middleware.pre_process(message, data)
-                # We will break this loop if CancelUpdate is returned
-                # Also, we will not run other middlewares
-                if isinstance(result, CancelUpdate):
-                    return
-                elif isinstance(result, SkipHandler) and skip_handler is False:
-                    skip_handler = True
-
-        try:
-            if handlers and not skip_handler:
-                for handler in handlers:
-                    process_handler = self._test_message_handler(handler, message)
-                    if not process_handler:
-                        continue
-                    else:
-                        for i in inspect.signature(handler["function"]).parameters:
-                            params.append(i)
-                        if len(params) == 1:
-                            handler["function"](message)
-
-                        elif len(params) == 2:
-                            if handler.get("pass_bot") is True:
-                                handler["function"](message, self)
-
-                            elif handler.get("pass_bot") is False:
-                                handler["function"](message, data)
-
-                        elif len(params) == 3:
-                            if params[2] == "bot" and handler.get("pass_bot") is True:
-                                handler["function"](message, data, self)
-
-                            elif not handler.get("pass_bot"):
-                                raise RuntimeError(
-                                    "Your handler accepts 3 parameters but pass_bot is False. Please re-check your handler."
-                                )
-
-                            else:
-                                handler["function"](message, self, data)
-
-        except Exception as e:
-            handler_error = e
-
-            if not middlewares:
-                if self.exception_handler:
-                    return self.exception_handler.handle(e)
-                logging.error(str(e))
-                return
-        if middlewares:
-            for middleware in middlewares:
-                middleware.post_process(message, data, handler_error)
-
-    def _notify_command_handlers(self, handlers, new_messages, update_type):
-        """
-        Notifies command handlers.
-
-        :param handlers:
-        :param new_messages:
-        :return:
-        """
-        if len(handlers) == 0 and not self.use_class_middlewares:
-            return
-
-        for message in new_messages:
-            if self.use_class_middlewares:
-                middleware = self._check_middleware(update_type)
-                self._exec_task(
-                    self._run_middlewares_and_handler,
-                    message,
-                    handlers=handlers,
-                    middlewares=middleware,
-                )
-                return
-            else:
-                for message_handler in handlers:
-                    if self._test_message_handler(message_handler, message):
-                        self._exec_task(
-                            message_handler["function"],
-                            message,
-                            pass_bot=message_handler["pass_bot"],
-                            task_type="handler",
-                        )
-                        break
+            await self.current_states.set_data(chat_id, user_id, key, value)

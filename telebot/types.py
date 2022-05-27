@@ -1419,6 +1419,14 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         return json_dict
 
 
+ReplyMarkup = Union[
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+    ForceReply,
+]
+
+
 class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
