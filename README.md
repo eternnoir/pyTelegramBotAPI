@@ -29,3 +29,9 @@ The project uses [Poetry](https://python-poetry.org/) to track dependencies and 
 Install as described [here](https://python-poetry.org/docs/#installation).
 
 
+### Installing locally
+
+```bash
+poetry init
+poetry install
+```
