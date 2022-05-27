@@ -1,7 +1,11 @@
-
-[![PyPi Package Version](https://img.shields.io/pypi/v/telebot-against-war.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/telebot-against-war.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
-[![PyPi status](https://img.shields.io/pypi/status/telebot-against-war.svg?style=flat-square)](https://pypi.python.org/pypi/pytelegrambotapi)
+<p align="center">
+  <a href="https://pypi.org/project/telebot-against-war/">
+    <img src="https://img.shields.io/pypi/v/telebot-against-war.svg" alt="PyPI package version"/>
+  </a>
+  <a href="https://pypi.org/project/telebot-against-war/">
+    <img src="https://img.shields.io/pypi/pyversions/telebot-against-war.svg" alt="Supported Python versions"/>
+  </a>
+</p>
 
 # <p align="center">telebot
 
