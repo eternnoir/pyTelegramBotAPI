@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from io import BytesIO
 import logging
 from abc import ABC
 from typing import Dict, List, Optional, Union
@@ -3425,10 +3426,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
 
 class InputMediaPhoto(InputMedia):
-    def __init__(self, media, caption=None, parse_mode=None):
-        if util.is_pil_image(media):
-            media = util.pil_image_to_file(media)
-
+    def __init__(self, media: BytesIO, caption=None, parse_mode=None):
         super(InputMediaPhoto, self).__init__(
             type="photo", media=media, caption=caption, parse_mode=parse_mode
         )

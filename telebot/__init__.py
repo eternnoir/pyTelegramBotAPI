@@ -8,18 +8,14 @@ from datetime import datetime
 from inspect import signature
 from typing import Any, List, Optional, Union
 
-import telebot.types
-import telebot.util
-from telebot import api, filters, logger, types, util
+from telebot import api, filters, types, util
 from telebot.handler_backends import CancelUpdate, SkipHandler
 from telebot.storages import StateMemoryStorage, StatePickleStorage
 
-logger = logging.getLogger("TeleBot")
-
+logger = logging.getLogger(__name__.split(".")[0])
 formatter = logging.Formatter(
     '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
 )
-
 console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
 logger.addHandler(console_output_handler)
@@ -36,7 +32,7 @@ class AsyncTeleBot:
 
     .. code-block:: python
 
-        from telebot.async_telebot import AsyncTeleBot
+        from telebot import AsyncTeleBot
         bot = AsyncTeleBot('token') # get token from @BotFather
 
     See more examples in examples/ directory:
@@ -51,7 +47,7 @@ class AsyncTeleBot:
         offset=None,
         exception_handler=None,
         state_storage=StateMemoryStorage(),
-    ) -> None:  # TODO: ADD TYPEHINTS
+    ) -> None:
         self.token = token
 
         self.offset = offset
@@ -1552,7 +1548,6 @@ class AsyncTeleBot:
         return types.File.de_json(await api.get_file(self.token, file_id))
 
     async def get_file_url(self, file_id: str) -> str:
-
         return await api.get_file_url(self.token, file_id)
 
     async def download_file(self, file_path: str) -> bytes:
@@ -1582,15 +1577,6 @@ class AsyncTeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#close
         """
         return await api.close(self.token)
-
-    def enable_saving_states(self, filename="./.state-save/states.pkl"):
-        """
-        Enable saving states (by default saving disabled)
-
-        :param filename: Filename of saving file
-        """
-
-        self.current_states = StatePickleStorage(file_path=filename)
 
     async def set_webhook(
         self,
@@ -1730,14 +1716,6 @@ class AsyncTeleBot:
         """
         result = await api.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
-
-    @util.deprecated(deprecation_text="Use get_chat_member_count instead")
-    async def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
-        """
-        This function is deprecated. Use `get_chat_member_count` instead
-        """
-        result = await api.get_chat_member_count(self.token, chat_id)
-        return result
 
     async def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
         """

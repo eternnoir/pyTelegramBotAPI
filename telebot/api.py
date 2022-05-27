@@ -1,26 +1,22 @@
-import asyncio  # for future uses
-
+import logging
 import aiohttp
-
-from telebot import types
-
-try:
-    import ujson as json
-except ImportError:
-    import json
-
+from datetime import datetime
+import ujson as json
 import os
 
+from telebot import types, util
+
+
+logger = logging.getLogger(__name__)
+
+
 API_URL = "https://api.telegram.org/bot{0}/{1}"
-
-from datetime import datetime
-
-from telebot import logger, util
 
 proxy = None
 session = None
 
 FILE_URL = None
+CUSTOM_SERIALIZER = None
 
 REQUEST_TIMEOUT = None
 MAX_RETRIES = 3
@@ -538,8 +534,6 @@ async def send_photo(
     files = None
     if util.is_string(photo):
         payload["photo"] = photo
-    elif util.is_pil_image(photo):
-        files = {"photo": util.pil_image_to_file(photo)}
     else:
         files = {"photo": photo}
     if caption:
@@ -1363,8 +1357,6 @@ async def set_chat_photo(token, chat_id, photo):
     files = None
     if util.is_string(photo):
         payload["photo"] = photo
-    elif util.is_pil_image(photo):
-        files = {"photo": util.pil_image_to_file(photo)}
     else:
         files = {"photo": photo}
     return await _process_request(

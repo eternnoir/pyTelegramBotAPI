@@ -10,26 +10,11 @@ import threading
 import traceback
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from telebot import types
-
-try:
-    import ujson as json
-except ImportError:
-    import json
-
-try:
-    # noinspection PyPackageRequirements
-    from io import BytesIO
-
-    from PIL import Image
-
-    pil_imported = True
-except:
-    pil_imported = False
+import ujson as json
 
 MAX_MESSAGE_LENGTH = 4096
 
-logger = logging.getLogger("TeleBot")
+logger = logging.getLogger(__name__)
 
 thread_local = threading.local()
 
@@ -255,21 +240,6 @@ def is_bytes(var):
     return isinstance(var, bytes)
 
 
-def is_pil_image(var):
-    return pil_imported and isinstance(var, Image.Image)
-
-
-def pil_image_to_file(image, extension="JPEG", quality="web_low"):
-    if pil_imported:
-        photoBuffer = BytesIO()
-        image.convert("RGB").save(photoBuffer, extension, quality=quality)
-        photoBuffer.seek(0)
-
-        return photoBuffer
-    else:
-        raise RuntimeError("PIL module is not imported")
-
-
 def is_command(text: str) -> bool:
     r"""
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
@@ -382,68 +352,6 @@ def escape(text: str) -> str:
     return text
 
 
-def user_link(user: types.User, include_id: bool = False) -> str:
-    """
-    Returns an HTML user link. This is useful for reports.
-    Attention: Don't forget to set parse_mode to 'HTML'!
-
-    Example:
-    bot.send_message(your_user_id, user_link(message.from_user) + ' started the bot!', parse_mode='HTML')
-
-    :param user: the user (not the user_id)
-    :param include_id: include the user_id
-    :return: HTML user link
-    """
-    name = escape(user.first_name)
-    return f"<a href='tg://user?id={user.id}'>{name}</a>" + (
-        f" (<pre>{user.id}</pre>)" if include_id else ""
-    )
-
-
-def quick_markup(
-    values: Dict[str, Dict[str, Any]], row_width: int = 2
-) -> types.InlineKeyboardMarkup:
-    """
-    Returns a reply markup from a dict in this format: {'text': kwargs}
-    This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)'
-
-    Example:
-
-    .. code-block:: python
-
-        quick_markup({
-            'Twitter': {'url': 'https://twitter.com'},
-            'Facebook': {'url': 'https://facebook.com'},
-            'Back': {'callback_data': 'whatever'}
-        }, row_width=2):
-            # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
-            # and a back button below
-
-        # kwargs can be:
-        {
-            'url': None,
-            'callback_data': None,
-            'switch_inline_query': None,
-            'switch_inline_query_current_chat': None,
-            'callback_game': None,
-            'pay': None,
-            'login_url': None,
-            'web_app': None
-        }
-
-    :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
-    :param row_width: int row width
-    :return: InlineKeyboardMarkup
-    """
-    markup = types.InlineKeyboardMarkup(row_width=row_width)
-    buttons = [
-        types.InlineKeyboardButton(text=text, **kwargs)
-        for text, kwargs in values.items()
-    ]
-    markup.add(*buttons)
-    return markup
-
-
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
 def or_set(self):
     self._set()
@@ -535,50 +443,3 @@ def deprecated(
         return wrapper
 
     return decorator
-
-
-# Cloud helpers
-def webhook_google_functions(bot, request):
-    """A webhook endpoint for Google Cloud Functions FaaS."""
-    if request.is_json:
-        try:
-            request_json = request.get_json()
-            update = types.Update.de_json(request_json)
-            bot.process_new_updates([update])
-            return ""
-        except Exception as e:
-            print(e)
-            return "Bot FAIL", 400
-    else:
-        return "Bot ON"
-
-
-def antiflood(function, *args, **kwargs):
-    """
-    Use this function inside loops in order to avoid getting TooManyRequests error.
-    Example:
-
-    .. code-block:: python3
-
-        from telebot.util import antiflood
-        for chat_id in chat_id_list:
-        msg = antiflood(bot.send_message, chat_id, text)
-
-    :param function:
-    :param args:
-    :param kwargs:
-    :return: None
-    """
-    from time import sleep
-
-    from telebot.apihelper import ApiTelegramException
-
-    msg = None
-    try:
-        msg = function(*args, **kwargs)
-    except ApiTelegramException as ex:
-        if ex.error_code == 429:
-            sleep(ex.result_json["parameters"]["retry_after"])
-            msg = function(*args, **kwargs)
-    finally:
-        return msg
