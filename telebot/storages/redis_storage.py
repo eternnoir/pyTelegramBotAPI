@@ -17,19 +17,13 @@ class StateRedisStorage(StateStorageBase):
     TeleBot(storage=StateRedisStorage())
     """
 
-    def __init__(
-        self, host="localhost", port=6379, db=0, password=None, prefix="telebot_"
-    ):
+    def __init__(self, host="localhost", port=6379, db=0, password=None, prefix="telebot_"):
         if not redis_installed:
-            raise ImportError(
-                'AioRedis is not installed. Install it via "pip install aioredis"'
-            )
+            raise ImportError('AioRedis is not installed. Install it via "pip install aioredis"')
 
         aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
         if aioredis_version < (2,):
-            raise ImportError(
-                "Invalid aioredis version. Aioredis version should be >= 2.0.0"
-            )
+            raise ImportError("Invalid aioredis version. Aioredis version should be >= 2.0.0")
         self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
 
         self.prefix = prefix

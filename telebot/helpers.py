@@ -16,14 +16,10 @@ def user_link(user: types.User, include_id: bool = False) -> str:
     :return: HTML user link
     """
     name = util.escape(user.first_name)
-    return f"<a href='tg://user?id={user.id}'>{name}</a>" + (
-        f" (<pre>{user.id}</pre>)" if include_id else ""
-    )
+    return f"<a href='tg://user?id={user.id}'>{name}</a>" + (f" (<pre>{user.id}</pre>)" if include_id else "")
 
 
-def quick_markup(
-    values: dict[str, dict[str, Any]], row_width: int = 2
-) -> types.InlineKeyboardMarkup:
+def quick_markup(values: dict[str, dict[str, Any]], row_width: int = 2) -> types.InlineKeyboardMarkup:
     """
     Returns a reply markup from a dict in this format: {'text': kwargs}
     This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)'
@@ -57,9 +53,6 @@ def quick_markup(
     :return: InlineKeyboardMarkup
     """
     markup = types.InlineKeyboardMarkup(row_width=row_width)
-    buttons = [
-        types.InlineKeyboardButton(text=text, **kwargs)
-        for text, kwargs in values.items()
-    ]
+    buttons = [types.InlineKeyboardButton(text=text, **kwargs) for text, kwargs in values.items()]
     markup.add(*buttons)
     return markup

@@ -132,7 +132,9 @@ def test_json_UserProfilePhotos():
 
 
 def test_json_contact():
-    json_string = r'{"phone_number":"00011111111","first_name":"dd","last_name":"ddl","user_id":8633,"vcard":"SomeContactString"}'
+    json_string = (
+        r'{"phone_number":"00011111111","first_name":"dd","last_name":"ddl","user_id":8633,"vcard":"SomeContactString"}'
+    )
     contact = types.Contact.de_json(json_string)
     assert contact.first_name == "dd"
     assert contact.last_name == "ddl"
@@ -182,9 +184,7 @@ def test_InlineQueryResultCachedPhoto_with_markup():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
     markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
-    iq = types.InlineQueryResultCachedPhoto(
-        "aaa", "Fileid", title="Title", reply_markup=markup
-    )
+    iq = types.InlineQueryResultCachedPhoto("aaa", "Fileid", title="Title", reply_markup=markup)
     json_str = iq.to_json()
     assert "aa" in json_str
     assert "Fileid" in json_str
@@ -216,11 +216,7 @@ def test_json_poll_answer():
 
 def test_KeyboardButtonPollType():
     markup = types.ReplyKeyboardMarkup()
-    markup.add(
-        types.KeyboardButton(
-            "send me a poll", request_poll=types.KeyboardButtonPollType(type="quiz")
-        )
-    )
+    markup.add(types.KeyboardButton("send me a poll", request_poll=types.KeyboardButtonPollType(type="quiz")))
     json_str = markup.to_json()
     assert "request_poll" in json_str
     assert "quiz" in json_str

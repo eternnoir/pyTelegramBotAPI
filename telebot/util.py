@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 # noinspection PyPep8Naming
 import queue as Queue
 import random
@@ -142,9 +143,7 @@ def split_string(text: str, chars_per_string: int) -> List[str]:
     :param chars_per_string: The number of characters per line the text is split into.
     :return: The splitted text as a list of strings.
     """
-    return [
-        text[i : i + chars_per_string] for i in range(0, len(text), chars_per_string)
-    ]
+    return [text[i : i + chars_per_string] for i in range(0, len(text), chars_per_string)]
 
 
 def smart_split(text: str, chars_per_string: int = MAX_MESSAGE_LENGTH) -> List[str]:
@@ -260,9 +259,7 @@ def generate_random_token():
     return "".join(random.sample(string.ascii_letters, 16))
 
 
-def deprecated(
-    warn: bool = True, alternative: Optional[Callable] = None, deprecation_text=None
-):
+def deprecated(warn: bool = True, alternative: Optional[Callable] = None, deprecation_text=None):
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.

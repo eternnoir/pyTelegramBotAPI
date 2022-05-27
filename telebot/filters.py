@@ -67,12 +67,7 @@ class TextFilter:
         :param ignore_case: bool (default False), case insensitive
         """
 
-        to_check = sum(
-            (
-                pattern is not None
-                for pattern in (equals, contains, starts_with, ends_with)
-            )
-        )
+        to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
         if to_check == 0:
             raise ValueError("None of the check modes was specified")
 
@@ -85,11 +80,7 @@ class TextFilter:
     def _check_iterable(self, iterable, filter_name):
         if not iterable:
             pass
-        elif (
-            not isinstance(iterable, str)
-            and not isinstance(iterable, list)
-            and not isinstance(iterable, tuple)
-        ):
+        elif not isinstance(iterable, str) and not isinstance(iterable, list) and not isinstance(iterable, tuple):
             raise ValueError(f"Incorrect value of {filter_name!r}")
         elif isinstance(iterable, str):
             iterable = [iterable]
@@ -123,9 +114,7 @@ class TextFilter:
             result = prepare_func(self.equals) == text
             if result:
                 return True
-            elif not result and not any(
-                (self.contains, self.starts_with, self.ends_with)
-            ):
+            elif not result and not any((self.contains, self.starts_with, self.ends_with)):
                 return False
 
         if self.contains:
@@ -181,11 +170,7 @@ class TextContainsFilter(AdvancedCustomFilter):
     key = "text_contains"
 
     async def check(self, message, text):
-        if (
-            not isinstance(text, str)
-            and not isinstance(text, list)
-            and not isinstance(text, tuple)
-        ):
+        if not isinstance(text, str) and not isinstance(text, list) and not isinstance(text, tuple):
             raise ValueError("Incorrect text_contains value")
         elif isinstance(text, str):
             text = [text]

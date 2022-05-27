@@ -145,9 +145,7 @@ def hspoiler(content: str, escape: bool = True) -> str:
     :param content: The string to spoiler.
     :param escape: True if you need to escape special characters.
     """
-    return "<tg-spoiler>{}</tg-spoiler>".format(
-        escape_html(content) if escape else content
-    )
+    return "<tg-spoiler>{}</tg-spoiler>".format(escape_html(content) if escape else content)
 
 
 def mlink(content: str, url: str, escape: bool = True) -> str:
@@ -158,9 +156,7 @@ def mlink(content: str, url: str, escape: bool = True) -> str:
     :param url: The URL to link to.
     :param escape: True if you need to escape special characters.
     """
-    return "[{}]({})".format(
-        escape_markdown(content), escape_markdown(url) if escape else content
-    )
+    return "[{}]({})".format(escape_markdown(content), escape_markdown(url) if escape else content)
 
 
 def hlink(content: str, url: str, escape: bool = True) -> str:
@@ -171,9 +167,7 @@ def hlink(content: str, url: str, escape: bool = True) -> str:
     :param url: The URL to link to.
     :param escape: True if you need to escape special characters.
     """
-    return '<a href="{}">{}</a>'.format(
-        escape_html(url), escape_html(content) if escape else content
-    )
+    return '<a href="{}">{}</a>'.format(escape_html(url), escape_html(content) if escape else content)
 
 
 def mcode(content: str, language: str = "", escape: bool = True) -> str:
@@ -183,9 +177,7 @@ def mcode(content: str, language: str = "", escape: bool = True) -> str:
     :param content: The string to code.
     :param escape: True if you need to escape special characters.
     """
-    return "```{}\n{}```".format(
-        language, escape_markdown(content) if escape else content
-    )
+    return "```{}\n{}```".format(language, escape_markdown(content) if escape else content)
 
 
 def hcode(content: str, escape: bool = True) -> str:
@@ -205,9 +197,7 @@ def hpre(content: str, escape: bool = True, language: str = "") -> str:
     :param content: The string to preformatted.
     :param escape: True if you need to escape special characters.
     """
-    return '<pre><code class="{}">{}</code></pre>'.format(
-        language, escape_html(content) if escape else content
-    )
+    return '<pre><code class="{}">{}</code></pre>'.format(language, escape_html(content) if escape else content)
 
 
 def hide_link(url: str) -> str:

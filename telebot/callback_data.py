@@ -36,9 +36,7 @@ class CallbackData:
 
     def __init__(self, *parts, prefix: str, sep=":"):
         if not isinstance(prefix, str):
-            raise TypeError(
-                f"Prefix must be instance of str not {type(prefix).__name__}"
-            )
+            raise TypeError(f"Prefix must be instance of str not {type(prefix).__name__}")
         if not prefix:
             raise ValueError("Prefix can't be empty")
         if sep in prefix:
@@ -73,9 +71,7 @@ class CallbackData:
                 value = str(value)
 
             if self.sep in value:
-                raise ValueError(
-                    f"Symbol {self.sep!r} is defined as the separator and can't be used in parts' values"
-                )
+                raise ValueError(f"Symbol {self.sep!r} is defined as the separator and can't be used in parts' values")
 
             data.append(value)
 

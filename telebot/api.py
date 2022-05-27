@@ -26,17 +26,13 @@ REQUEST_LIMIT = 50
 
 class SessionManager:
     def __init__(self) -> None:
-        self.session = aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT)
-        )
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
 
     def set_session(self, session: aiohttp.ClientSession):
         self.session = session
 
     async def create_session(self):
-        self.session = aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT)
-        )
+        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
         return self.session
 
     async def get_session(self):
@@ -53,9 +49,7 @@ class SessionManager:
 session_manager = SessionManager()
 
 
-async def _request(
-    token: str, route: str, method: str = "get", params=None, files=None, request_timeout=None
-):
+async def _request(token: str, route: str, method: str = "get", params=None, files=None, request_timeout=None):
     params = prepare_data(params, files)
     if request_timeout is None:
         request_timeout = REQUEST_TIMEOUT
@@ -77,9 +71,7 @@ async def _request(
                 logger.debug(
                     "Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(
                         method, route, params, files, request_timeout, current_try
-                    ).replace(
-                        token, token.split(":")[0] + ":{TOKEN}"
-                    )
+                    ).replace(token, token.split(":")[0] + ":{TOKEN}")
                 )
 
                 json_result = await _check_result(route, resp)
@@ -131,9 +123,7 @@ def prepare_data(params=None, files=None):
                 if len(f) == 2:
                     filename, fileobj = f
                 else:
-                    raise ValueError(
-                        "Tuple must have exactly 2 elements: filename, fileobj"
-                    )
+                    raise ValueError("Tuple must have exactly 2 elements: filename, fileobj")
             else:
                 filename, fileobj = prepare_file(f) or key, f
 
@@ -170,9 +160,7 @@ async def get_file(token, file_id):
 
 async def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(
-            token, get_file(token, file_id)["file_path"]
-        )
+        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)["file_path"])
     else:
         # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, get_file(token, file_id)["file_path"])
@@ -259,9 +247,7 @@ async def get_updates(
         params["timeout"] = timeout
     elif allowed_updates:
         params["allowed_updates"] = allowed_updates
-    return await _request(
-        token, method_name, params=params, request_timeout=request_timeout
-    )
+    return await _request(token, method_name, params=params, request_timeout=request_timeout)
 
 
 async def _check_result(method_name, result):
@@ -391,9 +377,7 @@ async def set_sticker_set_thumb(token, name, user_id, thumb):
             files["thumb"] = thumb
         else:
             payload["thumb"] = thumb
-    return await _request(
-        token, method_url, params=payload, files=files or None
-    )
+    return await _request(token, method_url, params=payload, files=files or None)
 
 
 async def set_chat_sticker_set(token, chat_id, sticker_set_name):
@@ -408,9 +392,7 @@ async def delete_chat_sticker_set(token, chat_id):
     return await _request(token, method_url, params=payload)
 
 
-async def answer_web_app_query(
-    token, web_app_query_id, result: types.InlineQueryResultBase
-):
+async def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
     method_url = "answerWebAppQuery"
     payload = {"web_app_query_id": web_app_query_id, "result": result.to_json()}
     return await _request(token, method_url, params=payload, method="post")
@@ -552,16 +534,12 @@ async def send_photo(
     if timeout:
         payload["timeout"] = timeout
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def send_media_group(
@@ -845,16 +823,12 @@ async def send_video(
     if height:
         payload["height"] = height
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def send_animation(
@@ -905,9 +879,7 @@ async def send_animation(
         else:
             payload["thumb"] = thumb
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if width:
@@ -916,9 +888,7 @@ async def send_animation(
         payload["height"] = height
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def send_voice(
@@ -958,16 +928,12 @@ async def send_voice(
     if timeout:
         payload["timeout"] = timeout
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def send_video_note(
@@ -1017,9 +983,7 @@ async def send_video_note(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def send_audio(
@@ -1074,16 +1038,12 @@ async def send_audio(
         else:
             payload["thumb"] = thumb
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def send_data(
@@ -1135,18 +1095,14 @@ async def send_data(
         else:
             payload["thumb"] = thumb
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
     if method_url == "sendDocument" and disable_content_type_detection is not None:
         payload["disable_content_type_detection"] = disable_content_type_detection
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def get_method_by_type(data_type):
@@ -1156,9 +1112,7 @@ async def get_method_by_type(data_type):
         return r"sendSticker"
 
 
-async def ban_chat_member(
-    token, chat_id, user_id, until_date=None, revoke_messages=None
-):
+async def ban_chat_member(token, chat_id, user_id, until_date=None, revoke_messages=None):
     method_url = "banChatMember"
     payload = {"chat_id": chat_id, "user_id": user_id}
     if isinstance(until_date, datetime):
@@ -1287,9 +1241,7 @@ async def set_chat_permissions(token, chat_id, permissions):
     return await _request(token, method_url, params=payload, method="post")
 
 
-async def create_chat_invite_link(
-    token, chat_id, name, expire_date, member_limit, creates_join_request
-):
+async def create_chat_invite_link(token, chat_id, name, expire_date, member_limit, creates_join_request):
     method_url = "createChatInviteLink"
     payload = {"chat_id": chat_id}
 
@@ -1308,9 +1260,7 @@ async def create_chat_invite_link(
     return await _request(token, method_url, params=payload, method="post")
 
 
-async def edit_chat_invite_link(
-    token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request
-):
+async def edit_chat_invite_link(token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request):
     method_url = "editChatInviteLink"
     payload = {"chat_id": chat_id, "invite_link": invite_link}
 
@@ -1362,9 +1312,7 @@ async def set_chat_photo(token, chat_id, photo):
         payload["photo"] = photo
     else:
         files = {"photo": photo}
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def delete_chat_photo(token, chat_id):
@@ -1533,9 +1481,7 @@ async def edit_message_caption(
     if parse_mode:
         payload["parse_mode"] = parse_mode
     if caption_entities:
-        payload["caption_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(caption_entities)
-        )
+        payload["caption_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
     return await _request(token, method_url, params=payload, method="post")
@@ -1560,14 +1506,10 @@ async def edit_message_media(
         payload["inline_message_id"] = inline_message_id
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
-    return await _request(
-        token, method_url, params=payload, files=file, method="post" if file else "get"
-    )
+    return await _request(token, method_url, params=payload, files=file, method="post" if file else "get")
 
 
-async def edit_message_reply_markup(
-    token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None
-):
+async def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
     method_url = r"editMessageReplyMarkup"
     payload = {}
     if chat_id:
@@ -1659,9 +1601,7 @@ async def set_game_score(
 
 
 # https://core.telegram.org/bots/api#getgamehighscores
-async def get_game_high_scores(
-    token, user_id, chat_id=None, message_id=None, inline_message_id=None
-):
+async def get_game_high_scores(token, user_id, chat_id=None, message_id=None, inline_message_id=None):
     """
     Use this method to get data for high score tables. Will return the score of the specified user and several of his neighbors in a game. On success, returns an Array of GameHighScore objects.
     This method will currently return scores for the target user, plus two of his closest neighbors on each side. Will also return the top three users if the user and his neighbors are not among them. Please note that this behavior is subject to change.
@@ -1806,9 +1746,7 @@ async def send_invoice(
     return await _request(token, method_url, params=payload)
 
 
-async def answer_shipping_query(
-    token, shipping_query_id, ok, shipping_options=None, error_message=None
-):
+async def answer_shipping_query(token, shipping_query_id, ok, shipping_options=None, error_message=None):
     """
     If you sent an invoice requesting a shipping address and the parameter is_flexible was specified, the Bot API will send an Update with a shipping_query field to the bot. Use this method to reply to shipping queries. On success, True is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1821,17 +1759,13 @@ async def answer_shipping_query(
     method_url = "answerShippingQuery"
     payload = {"shipping_query_id": shipping_query_id, "ok": ok}
     if shipping_options:
-        payload["shipping_options"] = await _convert_list_json_serializable(
-            shipping_options
-        )
+        payload["shipping_options"] = await _convert_list_json_serializable(shipping_options)
     if error_message:
         payload["error_message"] = error_message
     return await _request(token, method_url, params=payload)
 
 
-async def answer_pre_checkout_query(
-    token, pre_checkout_query_id, ok, error_message=None
-):
+async def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=None):
     """
     Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query. Use this method to respond to such pre-checkout queries. On success, True is returned. Note: The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
     :param token: Bot's token (you don't need to fill this)
@@ -1850,9 +1784,7 @@ async def answer_pre_checkout_query(
 # InlineQuery
 
 
-async def answer_callback_query(
-    token, callback_query_id, text=None, show_alert=None, url=None, cache_time=None
-):
+async def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None, cache_time=None):
     """
     Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, True is returned.
     Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must first create a game for your bot via BotFather and accept the terms. Otherwise, you may use links like telegram.me/your_bot?start=XXXX that open your bot with a parameter.
@@ -1915,9 +1847,7 @@ async def upload_sticker_file(token, user_id, png_sticker):
     method_url = "uploadStickerFile"
     payload = {"user_id": user_id}
     files = {"png_sticker": png_sticker}
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def create_new_sticker_set(
@@ -1952,14 +1882,10 @@ async def create_new_sticker_set(
         payload["mask_position"] = mask_position.to_json()
     if webm_sticker:
         payload["webm_sticker"] = webm_sticker
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
-async def add_sticker_to_set(
-    token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker
-):
+async def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
     method_url = "addStickerToSet"
     payload = {"user_id": user_id, "name": name, "emojis": emojis}
     if png_sticker:
@@ -1980,9 +1906,7 @@ async def add_sticker_to_set(
 
     if webm_sticker:
         payload["webm_sticker"] = webm_sticker
-    return await _request(
-        token, method_url, params=payload, files=files, method="post"
-    )
+    return await _request(token, method_url, params=payload, files=files, method="post")
 
 
 async def set_sticker_position_in_set(token, sticker, position):
@@ -2060,9 +1984,7 @@ async def send_poll(
     if timeout:
         payload["timeout"] = timeout
     if explanation_entities:
-        payload["explanation_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(explanation_entities)
-        )
+        payload["explanation_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(explanation_entities))
     if protect_content:
         payload["protect_content"] = protect_content
     return await _request(token, method_url, params=payload)
@@ -2150,9 +2072,7 @@ class ApiException(Exception):
     """
 
     def __init__(self, msg, function_name, result):
-        super(ApiException, self).__init__(
-            "A request to the Telegram API was unsuccessful. {0}".format(msg)
-        )
+        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
 
@@ -2165,9 +2085,7 @@ class ApiHTTPException(ApiException):
 
     def __init__(self, function_name, result):
         super(ApiHTTPException, self).__init__(
-            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(
-                result.status_code, result.reason, result
-            ),
+            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(result.status_code, result.reason, result),
             function_name,
             result,
         )
@@ -2181,9 +2099,7 @@ class ApiInvalidJSONException(ApiException):
 
     def __init__(self, function_name, result):
         super(ApiInvalidJSONException, self).__init__(
-            "The server returned an invalid JSON response. Response body:\n[{0}]".format(
-                result
-            ),
+            "The server returned an invalid JSON response. Response body:\n[{0}]".format(result),
             function_name,
             result,
         )
@@ -2196,9 +2112,7 @@ class ApiTelegramException(ApiException):
 
     def __init__(self, function_name, result, result_json):
         super(ApiTelegramException, self).__init__(
-            "Error code: {0}. Description: {1}".format(
-                result_json["error_code"], result_json["description"]
-            ),
+            "Error code: {0}. Description: {1}".format(result_json["error_code"], result_json["description"]),
             function_name,
             result,
         )

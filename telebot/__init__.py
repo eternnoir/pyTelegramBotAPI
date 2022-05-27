@@ -95,9 +95,7 @@ class AsyncTeleBot:
         allowed_updates: Optional[List] = None,
         request_timeout: Optional[int] = None,
     ) -> List[types.Update]:
-        json_updates = await api.get_updates(
-            self.token, offset, limit, timeout, allowed_updates, request_timeout
-        )
+        json_updates = await api.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
     async def polling(
@@ -134,16 +132,12 @@ class AsyncTeleBot:
         :return:
         """
         if none_stop is not None:
-            logger.warning(
-                "polling: none_stop parameter is deprecated. Use non_stop instead."
-            )
+            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
             non_stop = none_stop
 
         if skip_pending:
             await self.skip_updates()
-        await self._process_polling(
-            non_stop, interval, timeout, request_timeout, allowed_updates
-        )
+        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates)
 
     async def infinity_polling(
         self,
@@ -237,9 +231,7 @@ class AsyncTeleBot:
                     )
                     if updates:
                         self.offset = updates[-1].update_id + 1
-                        asyncio.create_task(
-                            self.process_new_updates(updates)
-                        )  # Seperate task for processing updates
+                        asyncio.create_task(self.process_new_updates(updates))  # Seperate task for processing updates
                     if interval:
                         await asyncio.sleep(interval)
 
@@ -287,9 +279,7 @@ class AsyncTeleBot:
         tasks = []
         for message in messages:
             middleware = await self.process_middlewares(update_type)
-            tasks.append(
-                self._run_middlewares_and_handlers(handlers, message, middleware)
-            )
+            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
         await asyncio.gather(*tasks)
 
     async def _run_middlewares_and_handlers(self, handlers, message, middlewares):
@@ -441,14 +431,10 @@ class AsyncTeleBot:
         await self._process_updates(self.message_handlers, new_messages, "message")
 
     async def process_new_edited_messages(self, edited_message):
-        await self._process_updates(
-            self.edited_message_handlers, edited_message, "edited_message"
-        )
+        await self._process_updates(self.edited_message_handlers, edited_message, "edited_message")
 
     async def process_new_channel_posts(self, channel_post):
-        await self._process_updates(
-            self.channel_post_handlers, channel_post, "channel_post"
-        )
+        await self._process_updates(self.channel_post_handlers, channel_post, "channel_post")
 
     async def process_new_edited_channel_posts(self, edited_channel_post):
         await self._process_updates(
@@ -458,60 +444,38 @@ class AsyncTeleBot:
         )
 
     async def process_new_inline_query(self, new_inline_querys):
-        await self._process_updates(
-            self.inline_handlers, new_inline_querys, "inline_query"
-        )
+        await self._process_updates(self.inline_handlers, new_inline_querys, "inline_query")
 
     async def process_new_chosen_inline_query(self, new_chosen_inline_querys):
-        await self._process_updates(
-            self.chosen_inline_handlers, new_chosen_inline_querys, "chosen_inline_query"
-        )
+        await self._process_updates(self.chosen_inline_handlers, new_chosen_inline_querys, "chosen_inline_query")
 
     async def process_new_callback_query(self, new_callback_querys):
-        await self._process_updates(
-            self.callback_query_handlers, new_callback_querys, "callback_query"
-        )
+        await self._process_updates(self.callback_query_handlers, new_callback_querys, "callback_query")
 
     async def process_new_shipping_query(self, new_shipping_querys):
-        await self._process_updates(
-            self.shipping_query_handlers, new_shipping_querys, "shipping_query"
-        )
+        await self._process_updates(self.shipping_query_handlers, new_shipping_querys, "shipping_query")
 
     async def process_new_pre_checkout_query(self, pre_checkout_querys):
-        await self._process_updates(
-            self.pre_checkout_query_handlers, pre_checkout_querys, "pre_checkout_query"
-        )
+        await self._process_updates(self.pre_checkout_query_handlers, pre_checkout_querys, "pre_checkout_query")
 
     async def process_new_poll(self, polls):
         await self._process_updates(self.poll_handlers, polls, "poll")
 
     async def process_new_poll_answer(self, poll_answers):
-        await self._process_updates(
-            self.poll_answer_handlers, poll_answers, "poll_answer"
-        )
+        await self._process_updates(self.poll_answer_handlers, poll_answers, "poll_answer")
 
     async def process_new_my_chat_member(self, my_chat_members):
-        await self._process_updates(
-            self.my_chat_member_handlers, my_chat_members, "my_chat_member"
-        )
+        await self._process_updates(self.my_chat_member_handlers, my_chat_members, "my_chat_member")
 
     async def process_new_chat_member(self, chat_members):
-        await self._process_updates(
-            self.chat_member_handlers, chat_members, "chat_member"
-        )
+        await self._process_updates(self.chat_member_handlers, chat_members, "chat_member")
 
     async def process_chat_join_request(self, chat_join_request):
-        await self._process_updates(
-            self.chat_join_request_handlers, chat_join_request, "chat_join_request"
-        )
+        await self._process_updates(self.chat_join_request_handlers, chat_join_request, "chat_join_request")
 
     async def process_middlewares(self, update_type):
         if self.middlewares:
-            middlewares = [
-                middleware
-                for middleware in self.middlewares
-                if update_type in middleware.update_types
-            ]
+            middlewares = [middleware for middleware in self.middlewares if update_type in middleware.update_types]
             return middlewares
         return None
 
@@ -573,14 +537,9 @@ class AsyncTeleBot:
         if message_filter == "content_types":
             return message.content_type in filter_value
         elif message_filter == "regexp":
-            return message.content_type == "text" and re.search(
-                filter_value, message.text, re.IGNORECASE
-            )
+            return message.content_type == "text" and re.search(filter_value, message.text, re.IGNORECASE)
         elif message_filter == "commands":
-            return (
-                message.content_type == "text"
-                and util.extract_command(message.text) in filter_value
-            )
+            return message.content_type == "text" and util.extract_command(message.text) in filter_value
         elif message_filter == "chat_types":
             return message.chat.type in filter_value
         elif message_filter == "func":
@@ -607,9 +566,7 @@ class AsyncTeleBot:
         elif isinstance(filter_check, filters.AdvancedCustomFilter):
             return await filter_check.check(message, filter_value)
         else:
-            logger.error(
-                "Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter."
-            )
+            logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
             return False
 
     def setup_middleware(self, middleware):
@@ -621,15 +578,7 @@ class AsyncTeleBot:
         """
         self.middlewares.append(middleware)
 
-    def message_handler(
-        self,
-        commands=None,
-        regexp=None,
-        func=None,
-        content_types=None,
-        chat_types=None,
-        **kwargs
-    ):
+    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
@@ -675,9 +624,7 @@ class AsyncTeleBot:
             content_types = ["text"]
 
         if isinstance(commands, str):
-            logger.warning(
-                "message_handler: 'commands' filter should be List of strings (commands), not string."
-            )
+            logger.warning("message_handler: 'commands' filter should be List of strings (commands), not string.")
             commands = [commands]
 
         if isinstance(content_types, str):
@@ -761,13 +708,7 @@ class AsyncTeleBot:
         self.add_message_handler(handler_dict)
 
     def edited_message_handler(
-        self,
-        commands=None,
-        regexp=None,
-        func=None,
-        content_types=None,
-        chat_types=None,
-        **kwargs
+        self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs
     ):
         """
         Edit message handler decorator.
@@ -868,9 +809,7 @@ class AsyncTeleBot:
         )
         self.add_edited_message_handler(handler_dict)
 
-    def channel_post_handler(
-        self, commands=None, regexp=None, func=None, content_types=None, **kwargs
-    ):
+    def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Channel post handler decorator.
 
@@ -885,9 +824,7 @@ class AsyncTeleBot:
             content_types = ["text"]
 
         if isinstance(commands, str):
-            logger.warning(
-                "channel_post_handler: 'commands' filter should be List of strings (commands), not string."
-            )
+            logger.warning("channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
             commands = [commands]
 
         if isinstance(content_types, str):
@@ -898,12 +835,7 @@ class AsyncTeleBot:
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(
-                handler,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs
+                handler, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs
             )
             self.add_channel_post_handler(handler_dict)
             return handler
@@ -921,14 +853,7 @@ class AsyncTeleBot:
         self.channel_post_handlers.append(handler_dict)
 
     def register_channel_post_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        pass_bot=False,
-        **kwargs
+        self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs
     ):
         """
         Registers channel post message handler.
@@ -964,9 +889,7 @@ class AsyncTeleBot:
         )
         self.add_channel_post_handler(handler_dict)
 
-    def edited_channel_post_handler(
-        self, commands=None, regexp=None, func=None, content_types=None, **kwargs
-    ):
+    def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
         Edit channel post handler decorator.
 
@@ -994,12 +917,7 @@ class AsyncTeleBot:
 
         def decorator(handler):
             handler_dict = self._build_handler_dict(
-                handler,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs
+                handler, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs
             )
             self.add_edited_channel_post_handler(handler_dict)
             return handler
@@ -1017,14 +935,7 @@ class AsyncTeleBot:
         self.edited_channel_post_handlers.append(handler_dict)
 
     def register_edited_channel_post_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        pass_bot=False,
-        **kwargs
+        self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs
     ):
         """
         Registers edited channel post message handler.
@@ -1095,9 +1006,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_inline_handler(handler_dict)
 
     def chosen_inline_handler(self, func, **kwargs):
@@ -1136,9 +1045,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chosen_inline_handler(handler_dict)
 
     def callback_query_handler(self, func, **kwargs):
@@ -1176,9 +1083,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_callback_query_handler(handler_dict)
 
     def shipping_query_handler(self, func, **kwargs):
@@ -1216,9 +1121,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_shipping_query_handler(handler_dict)
 
     def pre_checkout_query_handler(self, func, **kwargs):
@@ -1247,9 +1150,7 @@ class AsyncTeleBot:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
 
-    def register_pre_checkout_query_handler(
-        self, callback, func, pass_bot=False, **kwargs
-    ):
+    def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
         """
         Registers pre-checkout request handler.
 
@@ -1258,9 +1159,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
@@ -1298,9 +1197,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_handler(handler_dict)
 
     def poll_answer_handler(self, func=None, **kwargs):
@@ -1338,9 +1235,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_answer_handler(handler_dict)
 
     def my_chat_member_handler(self, func=None, **kwargs):
@@ -1369,9 +1264,7 @@ class AsyncTeleBot:
         """
         self.my_chat_member_handlers.append(handler_dict)
 
-    def register_my_chat_member_handler(
-        self, callback, func=None, pass_bot=False, **kwargs
-    ):
+    def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers my chat member handler.
 
@@ -1380,9 +1273,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_my_chat_member_handler(handler_dict)
 
     def chat_member_handler(self, func=None, **kwargs):
@@ -1411,9 +1302,7 @@ class AsyncTeleBot:
         """
         self.chat_member_handlers.append(handler_dict)
 
-    def register_chat_member_handler(
-        self, callback, func=None, pass_bot=False, **kwargs
-    ):
+    def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat member handler.
 
@@ -1422,9 +1311,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_member_handler(handler_dict)
 
     def chat_join_request_handler(self, func=None, **kwargs):
@@ -1453,9 +1340,7 @@ class AsyncTeleBot:
         """
         self.chat_join_request_handlers.append(handler_dict)
 
-    def register_chat_join_request_handler(
-        self, callback, func=None, pass_bot=False, **kwargs
-    ):
+    def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
         """
         Registers chat join request handler.
 
@@ -1464,9 +1349,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(
-            callback, func=func, pass_bot=pass_bot, **kwargs
-        )
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_join_request_handler(handler_dict)
 
     @staticmethod
@@ -1481,9 +1364,7 @@ class AsyncTeleBot:
         return {
             "function": handler,
             "pass_bot": pass_bot,
-            "filters": {
-                ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None
-            }
+            "filters": {ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None}
             # Remove None values, they are skipped in _test_filter anyway
             #'filters': filters
         }
@@ -1609,9 +1490,7 @@ class AsyncTeleBot:
         :param timeout: Integer. Request connection timeout
         :return: bool
         """
-        return await api.delete_webhook(
-            self.token, drop_pending_updates, timeout
-        )
+        return await api.delete_webhook(self.token, drop_pending_updates, timeout)
 
     async def remove_webhook(self):
         """
@@ -1645,9 +1524,7 @@ class AsyncTeleBot:
         :param limit:
         :return: API reply.
         """
-        result = await api.get_user_profile_photos(
-            self.token, user_id, offset, limit
-        )
+        result = await api.get_user_profile_photos(self.token, user_id, offset, limit)
         return types.UserProfilePhotos.de_json(result)
 
     async def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
@@ -1675,9 +1552,7 @@ class AsyncTeleBot:
         result = await api.leave_chat(self.token, chat_id)
         return result
 
-    async def get_chat_administrators(
-        self, chat_id: Union[int, str]
-    ) -> List[types.ChatMember]:
+    async def get_chat_administrators(self, chat_id: Union[int, str]) -> List[types.ChatMember]:
         """
         Use this method to get a list of administrators in a chat.
         On success, returns an Array of ChatMember objects that contains
@@ -1703,9 +1578,7 @@ class AsyncTeleBot:
         result = await api.get_chat_member_count(self.token, chat_id)
         return result
 
-    async def set_chat_sticker_set(
-        self, chat_id: Union[int, str], sticker_set_name: str
-    ) -> types.StickerSet:
+    async def set_chat_sticker_set(self, chat_id: Union[int, str], sticker_set_name: str) -> types.StickerSet:
         """
         Use this method to set a new group sticker set for a supergroup. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -1718,9 +1591,7 @@ class AsyncTeleBot:
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
         :return: API reply.
         """
-        result = await api.set_chat_sticker_set(
-            self.token, chat_id, sticker_set_name
-        )
+        result = await api.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
         return result
 
     async def delete_chat_sticker_set(self, chat_id: Union[int, str]) -> bool:
@@ -1753,13 +1624,9 @@ class AsyncTeleBot:
         :return:
         """
 
-        return await api.answer_web_app_query(
-            self.token, web_app_query_id, result
-        )
+        return await api.answer_web_app_query(self.token, web_app_query_id, result)
 
-    async def get_chat_member(
-        self, chat_id: Union[int, str], user_id: int
-    ) -> types.ChatMember:
+    async def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
 
@@ -1915,9 +1782,7 @@ class AsyncTeleBot:
             )
         )
 
-    async def delete_message(
-        self, chat_id: Union[int, str], message_id: int, timeout: Optional[int] = None
-    ) -> bool:
+    async def delete_message(self, chat_id: Union[int, str], message_id: int, timeout: Optional[int] = None) -> bool:
         """
         Use this method to delete message. Returns True on success.
 
@@ -1928,9 +1793,7 @@ class AsyncTeleBot:
         :param timeout:
         :return: API reply.
         """
-        return await api.delete_message(
-            self.token, chat_id, message_id, timeout
-        )
+        return await api.delete_message(self.token, chat_id, message_id, timeout)
 
     async def send_dice(
         self,
@@ -2238,9 +2101,7 @@ class AsyncTeleBot:
         """
         if data and not (sticker):
             # function typo miss compatibility
-            logger.warning(
-                "send_sticker: data parameter is deprecated. Use sticker instead."
-            )
+            logger.warning("send_sticker: data parameter is deprecated. Use sticker instead.")
             sticker = data
 
         return types.Message.de_json(
@@ -2304,9 +2165,7 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         if data and not (video):
             # function typo miss compatibility
-            logger.warning(
-                "send_sticker: data parameter is deprecated. Use video instead."
-            )
+            logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
             video = data
 
         return types.Message.de_json(
@@ -2733,9 +2592,7 @@ class AsyncTeleBot:
             )
         )
 
-    async def send_chat_action(
-        self, chat_id: Union[int, str], action: str, timeout: Optional[int] = None
-    ) -> bool:
+    async def send_chat_action(self, chat_id: Union[int, str], action: str, timeout: Optional[int] = None) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
@@ -2750,9 +2607,7 @@ class AsyncTeleBot:
         :param timeout:
         :return: API reply. :type: boolean
         """
-        return await api.send_chat_action(
-            self.token, chat_id, action, timeout
-        )
+        return await api.send_chat_action(self.token, chat_id, action, timeout)
 
     async def kick_chat_member(
         self,
@@ -2765,9 +2620,7 @@ class AsyncTeleBot:
         This function is deprecated. Use `ban_chat_member` instead
         """
         logger.info("kick_chat_member is deprecated. Use ban_chat_member instead.")
-        return await api.ban_chat_member(
-            self.token, chat_id, user_id, until_date, revoke_messages
-        )
+        return await api.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     async def ban_chat_member(
         self,
@@ -2793,9 +2646,7 @@ class AsyncTeleBot:
                 Always True for supergroups and channels.
         :return: boolean
         """
-        return await api.ban_chat_member(
-            self.token, chat_id, user_id, until_date, revoke_messages
-        )
+        return await api.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     async def unban_chat_member(
         self,
@@ -2818,9 +2669,7 @@ class AsyncTeleBot:
         :param only_if_banned: Do nothing if the user is not banned
         :return: True on success
         """
-        return await api.unban_chat_member(
-            self.token, chat_id, user_id, only_if_banned
-        )
+        return await api.unban_chat_member(self.token, chat_id, user_id, only_if_banned)
 
     async def restrict_chat_member(
         self,
@@ -2963,13 +2812,9 @@ class AsyncTeleBot:
             0-16 characters, emoji are not allowed
         :return: True on success.
         """
-        return await api.set_chat_administrator_custom_title(
-            self.token, chat_id, user_id, custom_title
-        )
+        return await api.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
-    async def ban_chat_sender_chat(
-        self, chat_id: Union[int, str], sender_chat_id: Union[int, str]
-    ) -> bool:
+    async def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
         Use this method to ban a channel chat in a supergroup or a channel.
         The owner of the chat will not be able to send messages and join live
@@ -2984,13 +2829,9 @@ class AsyncTeleBot:
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
         """
-        return await api.ban_chat_sender_chat(
-            self.token, chat_id, sender_chat_id
-        )
+        return await api.ban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
-    async def unban_chat_sender_chat(
-        self, chat_id: Union[int, str], sender_chat_id: Union[int, str]
-    ) -> bool:
+    async def unban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
         Use this method to unban a previously banned channel chat in a supergroup or channel.
         The bot must be an administrator for this to work and must have the appropriate
@@ -3004,13 +2845,9 @@ class AsyncTeleBot:
         :param sender_chat_id: Unique identifier of the target sender chat
         :return: True on success.
         """
-        return await api.unban_chat_sender_chat(
-            self.token, chat_id, sender_chat_id
-        )
+        return await api.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
-    async def set_chat_permissions(
-        self, chat_id: Union[int, str], permissions: types.ChatPermissions
-    ) -> bool:
+    async def set_chat_permissions(self, chat_id: Union[int, str], permissions: types.ChatPermissions) -> bool:
         """
         Use this method to set async default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
@@ -3023,9 +2860,7 @@ class AsyncTeleBot:
         :param permissions: New async default chat permissions
         :return: True on success
         """
-        return await api.set_chat_permissions(
-            self.token, chat_id, permissions
-        )
+        return await api.set_chat_permissions(self.token, chat_id, permissions)
 
     async def create_chat_invite_link(
         self,
@@ -3096,9 +2931,7 @@ class AsyncTeleBot:
             )
         )
 
-    async def revoke_chat_invite_link(
-        self, chat_id: Union[int, str], invite_link: str
-    ) -> types.ChatInviteLink:
+    async def revoke_chat_invite_link(self, chat_id: Union[int, str], invite_link: str) -> types.ChatInviteLink:
         """
         Use this method to revoke an invite link created by the bot.
         Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator
@@ -3110,11 +2943,7 @@ class AsyncTeleBot:
         :param invite_link: The invite link to revoke
         :return: API reply.
         """
-        return types.ChatInviteLink.de_json(
-            await api.revoke_chat_invite_link(
-                self.token, chat_id, invite_link
-            )
-        )
+        return types.ChatInviteLink.de_json(await api.revoke_chat_invite_link(self.token, chat_id, invite_link))
 
     async def export_chat_invite_link(self, chat_id: Union[int, str]) -> str:
         """
@@ -3129,9 +2958,7 @@ class AsyncTeleBot:
         """
         return await api.export_chat_invite_link(self.token, chat_id)
 
-    async def approve_chat_join_request(
-        self, chat_id: Union[str, int], user_id: Union[int, str]
-    ) -> bool:
+    async def approve_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
         """
         Use this method to approve a chat join request.
         The bot must be an administrator in the chat for this to work and must have
@@ -3144,13 +2971,9 @@ class AsyncTeleBot:
         :param user_id: Unique identifier of the target user
         :return: True on success.
         """
-        return await api.approve_chat_join_request(
-            self.token, chat_id, user_id
-        )
+        return await api.approve_chat_join_request(self.token, chat_id, user_id)
 
-    async def decline_chat_join_request(
-        self, chat_id: Union[str, int], user_id: Union[int, str]
-    ) -> bool:
+    async def decline_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
         """
         Use this method to decline a chat join request.
         The bot must be an administrator in the chat for this to work and must have
@@ -3163,9 +2986,7 @@ class AsyncTeleBot:
         :param user_id: Unique identifier of the target user
         :return: True on success.
         """
-        return await api.decline_chat_join_request(
-            self.token, chat_id, user_id
-        )
+        return await api.decline_chat_join_request(self.token, chat_id, user_id)
 
     async def set_chat_photo(self, chat_id: Union[int, str], photo: Any) -> bool:
         """
@@ -3215,9 +3036,7 @@ class AsyncTeleBot:
         result = await api.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
-    async def set_chat_menu_button(
-        self, chat_id: Union[int, str] = None, menu_button: types.MenuButton = None
-    ) -> bool:
+    async def set_chat_menu_button(self, chat_id: Union[int, str] = None, menu_button: types.MenuButton = None) -> bool:
         """
         Use this method to change the bot's menu button in a private chat,
         or the default menu button.
@@ -3230,13 +3049,9 @@ class AsyncTeleBot:
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
 
         """
-        return await api.set_chat_menu_button(
-            self.token, chat_id, menu_button
-        )
+        return await api.set_chat_menu_button(self.token, chat_id, menu_button)
 
-    async def get_chat_menu_button(
-        self, chat_id: Union[int, str] = None
-    ) -> types.MenuButton:
+    async def get_chat_menu_button(self, chat_id: Union[int, str] = None) -> types.MenuButton:
         """
         Use this method to get the current value of the bot's menu button
         in a private chat, or the default menu button.
@@ -3249,9 +3064,7 @@ class AsyncTeleBot:
         :return: types.MenuButton
 
         """
-        return types.MenuButton.de_json(
-            await api.get_chat_menu_button(self.token, chat_id)
-        )
+        return types.MenuButton.de_json(await api.get_chat_menu_button(self.token, chat_id))
 
     async def set_my_default_administrator_rights(
         self, rights: types.ChatAdministratorRights = None, for_channels: bool = None
@@ -3269,13 +3082,9 @@ class AsyncTeleBot:
         :param for_channels: Pass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
         """
 
-        return await api.set_my_default_administrator_rights(
-            self.token, rights, for_channels
-        )
+        return await api.set_my_default_administrator_rights(self.token, rights, for_channels)
 
-    async def get_my_default_administrator_rights(
-        self, for_channels: bool = None
-    ) -> types.ChatAdministratorRights:
+    async def get_my_default_administrator_rights(self, for_channels: bool = None) -> types.ChatAdministratorRights:
         """
         Use this method to get the current default administrator rights of the bot.
         Returns ChatAdministratorRights on success.
@@ -3287,9 +3096,7 @@ class AsyncTeleBot:
         """
 
         return types.ChatAdministratorRights.de_json(
-            await api.get_my_default_administrator_rights(
-                self.token, for_channels
-            )
+            await api.get_my_default_administrator_rights(self.token, for_channels)
         )
 
     async def set_my_commands(
@@ -3311,9 +3118,7 @@ class AsyncTeleBot:
             for whose language there are no dedicated commands
         :return:
         """
-        return await api.set_my_commands(
-            self.token, commands, scope, language_code
-        )
+        return await api.set_my_commands(self.token, commands, scope, language_code)
 
     async def delete_my_commands(
         self,
@@ -3352,9 +3157,7 @@ class AsyncTeleBot:
         """
         return await api.set_chat_title(self.token, chat_id, title)
 
-    async def set_chat_description(
-        self, chat_id: Union[int, str], description: Optional[str] = None
-    ) -> bool:
+    async def set_chat_description(self, chat_id: Union[int, str], description: Optional[str] = None) -> bool:
         """
         Use this method to change the description of a supergroup or a channel.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -3366,9 +3169,7 @@ class AsyncTeleBot:
         :param description: Str: New chat description, 0-255 characters
         :return: True on success.
         """
-        return await api.set_chat_description(
-            self.token, chat_id, description
-        )
+        return await api.set_chat_description(self.token, chat_id, description)
 
     async def pin_chat_message(
         self,
@@ -3390,13 +3191,9 @@ class AsyncTeleBot:
             to all group members about the new pinned message
         :return:
         """
-        return await api.pin_chat_message(
-            self.token, chat_id, message_id, disable_notification
-        )
+        return await api.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
-    async def unpin_chat_message(
-        self, chat_id: Union[int, str], message_id: Optional[int] = None
-    ) -> bool:
+    async def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int] = None) -> bool:
         """
         Use this method to unpin specific pinned message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -3491,9 +3288,7 @@ class AsyncTeleBot:
         :param reply_markup:
         :return:
         """
-        result = await api.edit_message_media(
-            self.token, media, chat_id, message_id, inline_message_id, reply_markup
-        )
+        result = await api.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -3516,9 +3311,7 @@ class AsyncTeleBot:
         :param reply_markup:
         :return:
         """
-        result = await api.edit_message_reply_markup(
-            self.token, chat_id, message_id, inline_message_id, reply_markup
-        )
+        result = await api.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
@@ -3618,9 +3411,7 @@ class AsyncTeleBot:
         :param inline_message_id:
         :return:
         """
-        result = await api.get_game_high_scores(
-            self.token, user_id, chat_id, message_id, inline_message_id
-        )
+        result = await api.get_game_high_scores(self.token, user_id, chat_id, message_id, inline_message_id)
         return [types.GameHighScore.de_json(r) for r in result]
 
     async def send_invoice(
@@ -3782,15 +3573,9 @@ class AsyncTeleBot:
         """
 
         if isinstance(question, types.Poll):
-            raise RuntimeError(
-                "The send_poll signature was changed, please see send_poll function details."
-            )
+            raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
-        explanation_parse_mode = (
-            self.parse_mode
-            if (explanation_parse_mode is None)
-            else explanation_parse_mode
-        )
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         return types.Message.de_json(
             await api.send_poll(
@@ -3833,11 +3618,7 @@ class AsyncTeleBot:
         :param reply_markup:
         :return:
         """
-        return types.Poll.de_json(
-            await api.stop_poll(
-                self.token, chat_id, message_id, reply_markup
-            )
-        )
+        return types.Poll.de_json(await api.stop_poll(self.token, chat_id, message_id, reply_markup))
 
     async def answer_shipping_query(
         self,
@@ -3857,9 +3638,7 @@ class AsyncTeleBot:
         :param error_message:
         :return:
         """
-        return await api.answer_shipping_query(
-            self.token, shipping_query_id, ok, shipping_options, error_message
-        )
+        return await api.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
     async def answer_pre_checkout_query(
         self, pre_checkout_query_id: int, ok: bool, error_message: Optional[str] = None
@@ -3874,9 +3653,7 @@ class AsyncTeleBot:
         :param error_message:
         :return:
         """
-        return await api.answer_pre_checkout_query(
-            self.token, pre_checkout_query_id, ok, error_message
-        )
+        return await api.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
     async def edit_message_caption(
         self,
@@ -3918,9 +3695,7 @@ class AsyncTeleBot:
             return result
         return types.Message.de_json(result)
 
-    async def reply_to(
-        self, message: types.Message, text: str, **kwargs
-    ) -> types.Message:
+    async def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
 
@@ -3929,9 +3704,7 @@ class AsyncTeleBot:
         :param kwargs:
         :return:
         """
-        return await self.send_message(
-            message.chat.id, text, reply_to_message_id=message.message_id, **kwargs
-        )
+        return await self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
 
     async def answer_inline_query(
         self,
@@ -3994,13 +3767,9 @@ class AsyncTeleBot:
         :param cache_time:
         :return:
         """
-        return await api.answer_callback_query(
-            self.token, callback_query_id, text, show_alert, url, cache_time
-        )
+        return await api.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    async def set_sticker_set_thumb(
-        self, name: str, user_id: int, thumb: Union[Any, str] = None
-    ):
+    async def set_sticker_set_thumb(self, name: str, user_id: int, thumb: Union[Any, str] = None):
         """
         Use this method to set the thumbnail of a sticker set.
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
@@ -4014,9 +3783,7 @@ class AsyncTeleBot:
             see https://core.telegram.org/animated_stickers#technical-requirements
 
         """
-        return await api.set_sticker_set_thumb(
-            self.token, name, user_id, thumb
-        )
+        return await api.set_sticker_set_thumb(self.token, name, user_id, thumb)
 
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
@@ -4030,9 +3797,7 @@ class AsyncTeleBot:
         result = await api.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
 
-    async def upload_sticker_file(
-        self, user_id: int, png_sticker: Union[Any, str]
-    ) -> types.File:
+    async def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]) -> types.File:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
@@ -4044,9 +3809,7 @@ class AsyncTeleBot:
         :param png_sticker:
         :return:
         """
-        result = await api.upload_sticker_file(
-            self.token, user_id, png_sticker
-        )
+        result = await api.upload_sticker_file(self.token, user_id, png_sticker)
         return types.File.de_json(result)
 
     async def create_new_sticker_set(
@@ -4139,9 +3902,7 @@ class AsyncTeleBot:
         :param position:
         :return:
         """
-        return await api.set_sticker_position_in_set(
-            self.token, sticker, position
-        )
+        return await api.set_sticker_position_in_set(self.token, sticker, position)
 
     async def delete_sticker_from_set(self, sticker: str) -> bool:
         """
