@@ -6,7 +6,7 @@ import time
 import traceback
 from datetime import datetime
 from inspect import signature
-from typing import Any, Callable, Coroutine, List, Optional, Union, cast
+from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
 from telebot import api, filters, types, util, callback_data, exceptions
 from telebot.types import service as service_types
@@ -20,6 +20,9 @@ console_output_handler = logging.StreamHandler(sys.stderr)
 console_output_handler.setFormatter(formatter)
 logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
+
+
+_UpdateContentT = TypeVar("_UpdateContentT", bound=service_types.UpdateContent)
 
 
 class AsyncTeleBot:
@@ -537,52 +540,12 @@ class AsyncTeleBot:
 
         return decorator
 
-    def inline_query_handler(self, func: Optional[service_types.FilterFunc[types.InlineQuery]], **kwargs):
-        def decorator(decorated: service_types.HandlerFunction[types.InlineQuery]):
-            self.inline_query_handlers.append(
-                service_types.Handler(
-                    function=decorated,
-                    filters={
-                        "func": func,
-                        **kwargs,
-                    },
-                )
-            )
-            return decorated
-
-        return decorator
-
-    def chosen_inline_result_handler(
-        self, func: Optional[service_types.FilterFunc[types.ChosenInlineResult]], **kwargs
-    ):
-        def decorator(decorated: service_types.HandlerFunction[types.InlineQuery]):
-            self.chosen_inline_handlers.append(
-                service_types.Handler(
-                    function=decorated,
-                    filters={
-                        "func": func,
-                        **kwargs,
-                    },
-                )
-            )
-            return decorated
-
-        return decorator
-
     def callback_query_handler(
         self,
         callback_data: callback_data.CallbackData,
         func: Optional[service_types.FilterFunc[types.ChosenInlineResult]] = None,
         **kwargs,
     ):
-        """
-        Callback request handler decorator.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
         def decorator(decorated: service_types.HandlerFunction[types.CallbackQuery]):
             self.callback_query_handlers.append(
                 service_types.Handler(
@@ -591,278 +554,61 @@ class AsyncTeleBot:
                         "callback_data": callback_data,
                         "func": func,
                         **kwargs,
-                    }
+                    },
                 )
             )
             return decorated
 
         return decorator
 
-    def shipping_query_handler(self, func, **kwargs):
-        """
-        Shipping request handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_shipping_query_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_shipping_query_handler(self, handler_dict):
-        """
-        Adds a shipping request handler.
-        Note that you should use register_shipping_query_handler to add shipping_query_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.shipping_query_handlers.append(handler_dict)
-
-    def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers shipping query handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_shipping_query_handler(handler_dict)
-
-    def pre_checkout_query_handler(self, func, **kwargs):
-        """
-        Pre-checkout request handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_pre_checkout_query_handler(handler_dict)
-            return handler
+    def _simple_handler(
+        self,
+        handler_list: list[service_types.Handler],
+        func: Optional[service_types.FilterFunc[_UpdateContentT]],
+        **kwargs,
+    ):
+        def decorator(decorated: service_types.HandlerFunction[_UpdateContentT]):
+            handler_list.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "func": func,
+                        **kwargs,
+                    },
+                )
+            )
+            return decorated
 
         return decorator
 
-    def add_pre_checkout_query_handler(self, handler_dict):
-        """
-        Adds a pre-checkout request handler.
-        Note that you should use register_pre_checkout_query_handler to add pre_checkout_query_handler.
+    def inline_query_handler(self, func: Optional[service_types.FilterFunc[types.InlineQuery]], **kwargs):
+        return self._simple_handler(self.inline_query_handlers, func, **kwargs)
 
-        :param handler_dict:
-        :return:
-        """
-        self.pre_checkout_query_handlers.append(handler_dict)
+    def chosen_inline_result_handler(
+        self, func: Optional[service_types.FilterFunc[types.ChosenInlineResult]], **kwargs
+    ):
+        return self._simple_handler(self.chosen_inline_handlers, func, **kwargs)
 
-    def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers pre-checkout request handler.
+    def shipping_query_handler(self, func: Optional[service_types.FilterFunc[types.ShippingQuery]], **kwargs):
+        return self._simple_handler(self.shipping_query_handlers, func, **kwargs)
 
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_pre_checkout_query_handler(handler_dict)
+    def pre_checkout_query_handler(self, func: Optional[service_types.FilterFunc[types.PreCheckoutQuery]], **kwargs):
+        return self._simple_handler(self.pre_checkout_query_handlers, func, **kwargs)
 
-    def poll_handler(self, func, **kwargs):
-        """
-        Poll request handler.
+    def poll_handler(self, func: Optional[service_types.FilterFunc[types.Poll]], **kwargs):
+        return self._simple_handler(self.poll_handlers, func, **kwargs)
 
-        :param func:
-        :param kwargs:
-        :return:
-        """
+    def poll_answer_handler(self, func: Optional[service_types.FilterFunc[types.PollAnswer]], **kwargs):
+        return self._simple_handler(self.poll_answer_handlers, func, **kwargs)
 
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_poll_handler(handler_dict)
-            return handler
+    def my_chat_member_handler(self, func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]], **kwargs):
+        return self._simple_handler(self.my_chat_member_handlers, func, **kwargs)
 
-        return decorator
+    def chat_member_handler(self, func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]], **kwargs):
+        return self._simple_handler(self.chat_member_handlers, func, **kwargs)
 
-    def add_poll_handler(self, handler_dict):
-        """
-        Adds a poll request handler.
-        Note that you should use register_poll_handler to add poll_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.poll_handlers.append(handler_dict)
-
-    def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers poll handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_poll_handler(handler_dict)
-
-    def poll_answer_handler(self, func=None, **kwargs):
-        """
-        Poll_answer request handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_poll_answer_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_poll_answer_handler(self, handler_dict):
-        """
-        Adds a poll_answer request handler.
-        Note that you should use register_poll_answer_handler to add poll_answer_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.poll_answer_handlers.append(handler_dict)
-
-    def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers poll answer handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_poll_answer_handler(handler_dict)
-
-    def my_chat_member_handler(self, func=None, **kwargs):
-        """
-        my_chat_member handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_my_chat_member_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_my_chat_member_handler(self, handler_dict):
-        """
-        Adds a my_chat_member handler.
-        Note that you should use register_my_chat_member_handler to add my_chat_member_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.my_chat_member_handlers.append(handler_dict)
-
-    def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
-        """
-        Registers my chat member handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_my_chat_member_handler(handler_dict)
-
-    def chat_member_handler(self, func=None, **kwargs):
-        """
-        chat_member handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_chat_member_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_chat_member_handler(self, handler_dict):
-        """
-        Adds a chat_member handler.
-        Note that you should use register_chat_member_handler to add chat_member_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.chat_member_handlers.append(handler_dict)
-
-    def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
-        """
-        Registers chat member handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_chat_member_handler(handler_dict)
-
-    def chat_join_request_handler(self, func=None, **kwargs):
-        """
-        chat_join_request handler.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._new_handler(handler, func=func, **kwargs)
-            self.add_chat_join_request_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_chat_join_request_handler(self, handler_dict):
-        """
-        Adds a chat_join_request handler.
-        Note that you should use register_chat_join_request_handler to add chat_join_request_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.chat_join_request_handlers.append(handler_dict)
-
-    def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
-        """
-        Registers chat join request handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_chat_join_request_handler(handler_dict)
+    def chat_join_request_handler(self, func: Optional[service_types.FilterFunc[types.ChatJoinRequest]], **kwargs):
+        return self._simple_handler(self.chat_join_request_handlers, func, **kwargs)
 
     async def skip_updates(self):
         """
@@ -872,7 +618,7 @@ class AsyncTeleBot:
         await self.get_updates(-1)
         return True
 
-    # all methods begin here
+    # user-facing methods
 
     async def get_me(self) -> types.User:
         """
@@ -892,8 +638,6 @@ class AsyncTeleBot:
         When the link expires, a new one can be requested by calling get_file again.
 
         Telegram documentation: https://core.telegram.org/bots/api#getfile
-
-        :param file_id:
         """
         return types.File.de_json(await api.get_file(self.token, file_id))
 
@@ -3190,7 +2934,19 @@ class AsyncTeleBot:
             return result
         return types.Message.de_json(result)
 
-    async def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
+    async def reply_to(
+        self,
+        message: types.Message,
+        text: str,
+        parse_mode: Optional[str] = None,
+        entities: Optional[List[types.MessageEntity]] = None,
+        disable_web_page_preview: Optional[bool] = None,
+        disable_notification: Optional[bool] = None,
+        protect_content: Optional[bool] = None,
+        allow_sending_without_reply: Optional[bool] = None,
+        reply_markup: Optional[types.ReplyMarkup] = None,
+        timeout: Optional[int] = None,
+    ) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
 
@@ -3199,7 +2955,19 @@ class AsyncTeleBot:
         :param kwargs:
         :return:
         """
-        return await self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
+        return await self.send_message(
+            message.chat.id,
+            text,
+            reply_to_message_id=message.message_id,
+            parse_mode=parse_mode,
+            entities=entities,
+            disable_web_page_preview=disable_web_page_preview,
+            disable_notification=disable_notification,
+            protect_content=protect_content,
+            allow_sending_without_reply=allow_sending_without_reply,
+            reply_markup=reply_markup,
+            timeout=timeout,
+        )
 
     async def answer_inline_query(
         self,

@@ -250,7 +250,7 @@ class LanguageFilter(AdvancedCustomFilter):
 
     key = "language_code"
 
-    async def check(self, message, text):
+    async def check(self, message: types.Message, text):
         if type(text) is list:
             return message.from_user.language_code in text
         else:
@@ -273,59 +273,6 @@ class IsAdminFilter(SimpleCustomFilter):
     async def check(self, message):
         result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
         return result.status in ["creator", "administrator"]
-
-
-class StateFilter(AdvancedCustomFilter):
-    """
-    Filter to check state.
-
-    Example:
-    @bot.message_handler(state=1)
-    """
-
-    def __init__(self, bot):
-        self.bot = bot
-
-    key = "state"
-
-    async def check(self, message, text):
-        if text == "*":
-            return True
-
-        # needs to work with callbackquery
-        if isinstance(message, types.Message):
-            chat_id = message.chat.id
-            user_id = message.from_user.id
-
-        if isinstance(message, types.CallbackQuery):
-
-            chat_id = message.message.chat.id
-            user_id = message.from_user.id
-            message = message.message
-
-        if isinstance(text, list):
-            new_text = []
-            for i in text:
-                if isinstance(i, State):
-                    i = i.name
-                new_text.append(i)
-            text = new_text
-        elif isinstance(text, State):
-            text = text.name
-
-        if message.chat.type == "group":
-            group_state = await self.bot.current_states.get_state(user_id, chat_id)
-            if group_state == text:
-                return True
-            elif type(text) is list and group_state in text:
-                return True
-
-        else:
-            user_state = await self.bot.current_states.get_state(user_id, chat_id)
-            if user_state == text:
-                return True
-            elif type(text) is list and user_state in text:
-                return True
 
 
 class IsDigitFilter(SimpleCustomFilter):
