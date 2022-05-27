@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "telebot-against-war"
+version = "0.1.0"
+description = "Async-first fork of pyTelegramBotApi"
+authors = ["Igor Vaiman <gosha.vaiman@gmail.com>"]
+license = "GPL-2.0-only"
+readme = "README.md"
+repository = "https://github.com/bots-against-war/telebot"
+packages = [
+    { include = "telebot" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aiohttp = "^3.8.1"
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+isort = "^5.10.1"
+pytest = "^7.1.2"
+pre-commit = "^2.19.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

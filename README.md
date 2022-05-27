@@ -13,3 +13,15 @@ library wrapping the <a href="https://core.telegram.org/bots/api">Telegram Bot A
 <h2 align="center">See upstream project <a href='https://pytba.readthedocs.io/en/latest/index.html'>docs</a> and 
 <a href='https://github.com/eternnoir/pyTelegramBotAPI/blob/master/README.md'>README</a></h2>
 
+
+## Usage
+
+TBD: what is different from upstream pyTelegramBotApi?
+
+
+## Development
+
+The project uses [Poetry](https://python-poetry.org/) to track dependencies and build package.
+Install as described [here](https://python-poetry.org/docs/#installation).
+
+
