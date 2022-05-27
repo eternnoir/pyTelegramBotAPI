@@ -1,8 +1,8 @@
 from abc import ABC
 from typing import Optional, Union
-from telebot.asyncio_handler_backends import State
 
 from telebot import types
+from telebot.asyncio_handler_backends import State
 
 
 class SimpleCustomFilter(ABC):
@@ -10,7 +10,7 @@ class SimpleCustomFilter(ABC):
     Simple Custom Filter base class.
     Create child class with check() method.
     Accepts only message, returns bool value, that is compared with given in handler.
-    
+
     Child classes should have .key property.
     """
 
@@ -50,12 +50,14 @@ class TextFilter:
     example of usage is in examples/asynchronous_telebot/custom_filters/advanced_text_filter.py
     """
 
-    def __init__(self,
-                 equals: Optional[str] = None,
-                 contains: Optional[Union[list, tuple]] = None,
-                 starts_with: Optional[Union[str, list, tuple]] = None,
-                 ends_with: Optional[Union[str, list, tuple]] = None,
-                 ignore_case: bool = False):
+    def __init__(
+        self,
+        equals: Optional[str] = None,
+        contains: Optional[Union[list, tuple]] = None,
+        starts_with: Optional[Union[str, list, tuple]] = None,
+        ends_with: Optional[Union[str, list, tuple]] = None,
+        ignore_case: bool = False,
+    ):
 
         """
         :param equals: string, True if object's text is equal to passed string
@@ -65,20 +67,29 @@ class TextFilter:
         :param ignore_case: bool (default False), case insensitive
         """
 
-        to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
+        to_check = sum(
+            (
+                pattern is not None
+                for pattern in (equals, contains, starts_with, ends_with)
+            )
+        )
         if to_check == 0:
-            raise ValueError('None of the check modes was specified')
+            raise ValueError("None of the check modes was specified")
 
         self.equals = equals
-        self.contains = self._check_iterable(contains, filter_name='contains')
-        self.starts_with = self._check_iterable(starts_with, filter_name='starts_with')
-        self.ends_with = self._check_iterable(ends_with, filter_name='ends_with')
+        self.contains = self._check_iterable(contains, filter_name="contains")
+        self.starts_with = self._check_iterable(starts_with, filter_name="starts_with")
+        self.ends_with = self._check_iterable(ends_with, filter_name="ends_with")
         self.ignore_case = ignore_case
 
     def _check_iterable(self, iterable, filter_name):
         if not iterable:
             pass
-        elif not isinstance(iterable, str) and not isinstance(iterable, list) and not isinstance(iterable, tuple):
+        elif (
+            not isinstance(iterable, str)
+            and not isinstance(iterable, list)
+            and not isinstance(iterable, tuple)
+        ):
             raise ValueError(f"Incorrect value of {filter_name!r}")
         elif isinstance(iterable, str):
             iterable = [iterable]
@@ -86,7 +97,10 @@ class TextFilter:
             iterable = [i for i in iterable if isinstance(i, str)]
         return iterable
 
-    async def check(self, obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll]):
+    async def check(
+        self,
+        obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll],
+    ):
 
         if isinstance(obj, types.Poll):
             text = obj.question
@@ -109,7 +123,9 @@ class TextFilter:
             result = prepare_func(self.equals) == text
             if result:
                 return True
-            elif not result and not any((self.contains, self.starts_with, self.ends_with)):
+            elif not result and not any(
+                (self.contains, self.starts_with, self.ends_with)
+            ):
                 return False
 
         if self.contains:
@@ -141,7 +157,7 @@ class TextMatchFilter(AdvancedCustomFilter):
     @bot.message_handler(text=['account'])
     """
 
-    key = 'text'
+    key = "text"
 
     async def check(self, message, text):
         if isinstance(text, TextFilter):
@@ -162,10 +178,14 @@ class TextContainsFilter(AdvancedCustomFilter):
     @bot.message_handler(text_contains=['account'])
     """
 
-    key = 'text_contains'
+    key = "text_contains"
 
     async def check(self, message, text):
-        if not isinstance(text, str) and not isinstance(text, list) and not isinstance(text, tuple):
+        if (
+            not isinstance(text, str)
+            and not isinstance(text, list)
+            and not isinstance(text, tuple)
+        ):
             raise ValueError("Incorrect text_contains value")
         elif isinstance(text, str):
             text = [text]
@@ -184,7 +204,7 @@ class TextStartsFilter(AdvancedCustomFilter):
     @bot.message_handler(text_startswith='Sir')
     """
 
-    key = 'text_startswith'
+    key = "text_startswith"
 
     async def check(self, message, text):
         return message.text.startswith(text)
@@ -198,7 +218,7 @@ class ChatFilter(AdvancedCustomFilter):
     @bot.message_handler(chat_id=[99999])
     """
 
-    key = 'chat_id'
+    key = "chat_id"
 
     async def check(self, message, text):
         return message.chat.id in text
@@ -213,7 +233,7 @@ class ForwardFilter(SimpleCustomFilter):
     @bot.message_handler(is_forwarded=True)
     """
 
-    key = 'is_forwarded'
+    key = "is_forwarded"
 
     async def check(self, message):
         return message.forward_from_chat is not None
@@ -228,7 +248,7 @@ class IsReplyFilter(SimpleCustomFilter):
     @bot.message_handler(is_reply=True)
     """
 
-    key = 'is_reply'
+    key = "is_reply"
 
     async def check(self, message):
         return message.reply_to_message is not None
@@ -243,7 +263,7 @@ class LanguageFilter(AdvancedCustomFilter):
     @bot.message_handler(language_code=['ru'])
     """
 
-    key = 'language_code'
+    key = "language_code"
 
     async def check(self, message, text):
         if type(text) is list:
@@ -260,14 +280,14 @@ class IsAdminFilter(SimpleCustomFilter):
     @bot.message_handler(chat_types=['supergroup'], is_chat_admin=True)
     """
 
-    key = 'is_chat_admin'
+    key = "is_chat_admin"
 
     def __init__(self, bot):
         self._bot = bot
 
     async def check(self, message):
         result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
-        return result.status in ['creator', 'administrator']
+        return result.status in ["creator", "administrator"]
 
 
 class StateFilter(AdvancedCustomFilter):
@@ -281,10 +301,11 @@ class StateFilter(AdvancedCustomFilter):
     def __init__(self, bot):
         self.bot = bot
 
-    key = 'state'
+    key = "state"
 
     async def check(self, message, text):
-        if text == '*': return True
+        if text == "*":
+            return True
 
         # needs to work with callbackquery
         if isinstance(message, types.Message):
@@ -292,28 +313,27 @@ class StateFilter(AdvancedCustomFilter):
             user_id = message.from_user.id
 
         if isinstance(message, types.CallbackQuery):
-            
+
             chat_id = message.message.chat.id
             user_id = message.from_user.id
             message = message.message
 
-
         if isinstance(text, list):
             new_text = []
             for i in text:
-                if isinstance(i, State): i = i.name
+                if isinstance(i, State):
+                    i = i.name
                 new_text.append(i)
             text = new_text
         elif isinstance(text, State):
             text = text.name
 
-        if message.chat.type == 'group':
+        if message.chat.type == "group":
             group_state = await self.bot.current_states.get_state(user_id, chat_id)
             if group_state == text:
                 return True
             elif type(text) is list and group_state in text:
                 return True
-
 
         else:
             user_state = await self.bot.current_states.get_state(user_id, chat_id)
@@ -330,7 +350,8 @@ class IsDigitFilter(SimpleCustomFilter):
     Example:
     @bot.message_handler(is_digit=True)
     """
-    key = 'is_digit'
+
+    key = "is_digit"
 
     async def check(self, message):
         return message.text.isdigit()

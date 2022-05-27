@@ -3,8 +3,10 @@ import pickle
 import threading
 
 from telebot import apihelper
+
 try:
     from redis import Redis
+
     redis_installed = True
 except:
     redis_installed = False
@@ -14,6 +16,7 @@ class HandlerBackend(object):
     """
     Class for saving (next step|reply) handlers
     """
+
     def __init__(self, handlers=None):
         if handlers is None:
             handlers = {}
@@ -47,7 +50,9 @@ class MemoryHandlerBackend(HandlerBackend):
 
 
 class FileHandlerBackend(HandlerBackend):
-    def __init__(self, handlers=None, filename='./.handler-saves/handlers.save', delay=120):
+    def __init__(
+        self, handlers=None, filename="./.handler-saves/handlers.save", delay=120
+    ):
         super(FileHandlerBackend, self).__init__(handlers)
         self.filename = filename
         self.delay = delay
@@ -83,17 +88,19 @@ class FileHandlerBackend(HandlerBackend):
     def load_handlers(self, filename=None, del_file_after_loading=True):
         if not filename:
             filename = self.filename
-        tmp = self.return_load_handlers(filename, del_file_after_loading=del_file_after_loading)
+        tmp = self.return_load_handlers(
+            filename, del_file_after_loading=del_file_after_loading
+        )
         if tmp is not None:
             self.handlers.update(tmp)
 
     @staticmethod
     def dump_handlers(handlers, filename, file_mode="wb"):
-        dirs = filename.rsplit('/', maxsplit=1)[0]
+        dirs = filename.rsplit("/", maxsplit=1)[0]
         os.makedirs(dirs, exist_ok=True)
 
         with open(filename + ".tmp", file_mode) as file:
-            if (apihelper.CUSTOM_SERIALIZER is None):
+            if apihelper.CUSTOM_SERIALIZER is None:
                 pickle.dump(handlers, file)
             else:
                 apihelper.CUSTOM_SERIALIZER.dump(handlers, file)
@@ -107,7 +114,7 @@ class FileHandlerBackend(HandlerBackend):
     def return_load_handlers(filename, del_file_after_loading=True):
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "rb") as file:
-                if (apihelper.CUSTOM_SERIALIZER is None):
+                if apihelper.CUSTOM_SERIALIZER is None:
                     handlers = pickle.load(file)
                 else:
                     handlers = apihelper.CUSTOM_SERIALIZER.load(file)
@@ -119,15 +126,25 @@ class FileHandlerBackend(HandlerBackend):
 
 
 class RedisHandlerBackend(HandlerBackend):
-    def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot', password=None):
+    def __init__(
+        self,
+        handlers=None,
+        host="localhost",
+        port=6379,
+        db=0,
+        prefix="telebot",
+        password=None,
+    ):
         super(RedisHandlerBackend, self).__init__(handlers)
         if not redis_installed:
-            raise Exception("Redis is not installed. Install it via 'pip install redis'")
+            raise Exception(
+                "Redis is not installed. Install it via 'pip install redis'"
+            )
         self.prefix = prefix
         self.redis = Redis(host, port, db, password)
 
     def _key(self, handle_group_id):
-        return ':'.join((self.prefix, str(handle_group_id)))
+        return ":".join((self.prefix, str(handle_group_id)))
 
     def register_handler(self, handler_group_id, handler):
         handlers = []
@@ -152,19 +169,23 @@ class RedisHandlerBackend(HandlerBackend):
 class State:
     def __init__(self) -> None:
         self.name = None
+
     def __str__(self) -> str:
         return self.name
 
-    
 
 class StatesGroup:
     def __init_subclass__(cls) -> None:
         for name, value in cls.__dict__.items():
-            if not name.startswith('__') and not callable(value) and isinstance(value, State):
+            if (
+                not name.startswith("__")
+                and not callable(value)
+                and isinstance(value, State)
+            ):
                 # change value of that variable
-                value.name = ':'.join((cls.__name__, name))
+                value.name = ":".join((cls.__name__, name))
 
-    
+
 class BaseMiddleware:
     """
     Base class for middleware.
@@ -184,7 +205,7 @@ class BaseMiddleware:
 class SkipHandler:
     """
     Class for skipping handlers.
-    Just return instance of this class 
+    Just return instance of this class
     in middleware to skip handler.
     Update will go to post_process,
     but will skip execution of handler.
@@ -193,10 +214,11 @@ class SkipHandler:
     def __init__(self) -> None:
         pass
 
+
 class CancelUpdate:
     """
     Class for canceling updates.
-    Just return instance of this class 
+    Just return instance of this class
     in middleware to skip update.
     Update will skip handler and execution
     of post_process in middlewares.

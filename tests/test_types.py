@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 
-sys.path.append('../')
+sys.path.append("../")
 from telebot import types
 
 
@@ -9,52 +9,51 @@ def test_json_user():
     jsonstring = r'{"id":101176298,"first_name":"RDSSBOT","last_name":")))","username":"rdss_bot","is_bot":true}'
     u = types.User.de_json(jsonstring)
     assert u.id == 101176298
-    assert u.full_name == 'RDSSBOT )))'
+    assert u.full_name == "RDSSBOT )))"
 
 
 def test_json_message():
     jsonstring = r'{"message_id":1,"from":{"id":108929734,"first_name":"Frank","last_name":"Wang","username":"eternnoir","is_bot":true},"chat":{"id":1734,"first_name":"F","type":"private","last_name":"Wa","username":"oir"},"date":1435296025,"text":"HIHI"}'
     msg = types.Message.de_json(jsonstring)
-    assert msg.text == 'HIHI'
+    assert msg.text == "HIHI"
 
 
 def test_json_message_with_reply_markup():
     jsonstring = r'{"message_id":48,"from":{"id":153587469,"is_bot":false,"first_name":"Neko","username":"Neko"},"chat":{"id":153587469,"first_name":"Neko","username":"Neko","type":"private"},"date":1598879570,"text":"test","reply_markup":{"inline_keyboard":[[{"text":"Google","url":"http://www.google.com"},{"text":"Yahoo","url":"http://www.yahoo.com"}]]}}'
     msg = types.Message.de_json(jsonstring)
-    assert msg.content_type == 'text'
-    assert msg.reply_markup.keyboard[0][0].text == 'Google'
+    assert msg.content_type == "text"
+    assert msg.reply_markup.keyboard[0][0].text == "Google"
 
 
 def test_json_InlineKeyboardMarkup():
     jsonstring = r'{"inline_keyboard":[[{"text":"Google","url":"http://www.google.com"},{"text":"Yahoo","url":"http://www.yahoo.com"}]]}'
     markup = types.InlineKeyboardMarkup.de_json(jsonstring)
-    assert markup.keyboard[0][0].text == 'Google'
-    assert markup.keyboard[0][1].url == 'http://www.yahoo.com'
+    assert markup.keyboard[0][0].text == "Google"
+    assert markup.keyboard[0][1].url == "http://www.yahoo.com"
 
 
 def test_json_InlineKeyboardButton():
     jsonstring = r'{"text":"Google","url":"http://www.google.com"}'
     button = types.InlineKeyboardButton.de_json(jsonstring)
-    assert button.text == 'Google'
-    assert button.url == 'http://www.google.com'
-
+    assert button.text == "Google"
+    assert button.url == "http://www.google.com"
 
 
 def test_json_message_with_dice():
     jsonstring = r'{"message_id":5560,"from":{"id":879343317,"is_bot":false,"first_name":"George","last_name":"Forse","username":"dr_fxrse","language_code":"ru"},"chat":{"id":879343317,"first_name":"George","last_name":"Forse","username":"dr_fxrse","type":"private"},"date":1586926330,"dice":{"value": 4, "emoji": "\ud83c\udfaf"}}'
     msg = types.Message.de_json(jsonstring)
-    assert msg.content_type == 'dice'
+    assert msg.content_type == "dice"
     assert isinstance(msg.dice, types.Dice)
     assert msg.dice.value == 4
-    assert msg.dice.emoji == '🎯'
+    assert msg.dice.emoji == "🎯"
 
 
 def test_json_message_group():
     json_string = r'{"message_id":10,"from":{"id":12345,"first_name":"g","last_name":"G","username":"GG","is_bot":true},"chat":{"id":-866,"type":"private","title":"\u4ea4"},"date":1435303157,"text":"HIHI","has_protected_content":true}'
     msg = types.Message.de_json(json_string)
-    assert msg.text == 'HIHI'
+    assert msg.text == "HIHI"
     assert len(msg.chat.title) != 0
-    assert msg.from_user.username == 'GG'
+    assert msg.from_user.username == "GG"
 
 
 def test_json_GroupChat():
@@ -67,16 +66,16 @@ def test_json_Document():
     json_string = r'{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_unique_id": "AgADJQEAAqfhOEY","file_size":446}'
     doc = types.Document.de_json(json_string)
     assert doc.thumb is None
-    assert doc.file_name == 'Text File'
+    assert doc.file_name == "Text File"
 
 
 def test_json_Message_Audio():
     json_string = r'{"message_id":131,"from":{"id":12775,"first_name":"dd","username":"dd","is_bot":true },"chat":{"id":10834,"first_name":"dd","type":"private","type":"private","last_name":"dd","username":"dd"},"date":1439978364,"audio":{"duration":1,"mime_type":"audio\/mpeg","title":"pyTelegram","performer":"eternnoir","file_id":"BQADBQADDH1JaB8-1KyWUss2-Ag","file_unique_id": "AgADawEAAn8VSFY","file_size":20096}}'
     msg = types.Message.de_json(json_string)
     assert msg.audio.duration == 1
-    assert msg.content_type == 'audio'
-    assert msg.audio.performer == 'eternnoir'
-    assert msg.audio.title == 'pyTelegram'
+    assert msg.content_type == "audio"
+    assert msg.audio.performer == "eternnoir"
+    assert msg.audio.title == "pyTelegram"
 
 
 def test_json_Message_Sticker():
@@ -84,7 +83,7 @@ def test_json_Message_Sticker():
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb.height == 60
-    assert msg.content_type == 'sticker'
+    assert msg.content_type == "sticker"
 
 
 def test_json_Message_Sticker_without_thumb():
@@ -92,21 +91,21 @@ def test_json_Message_Sticker_without_thumb():
     msg = types.Message.de_json(json_string)
     assert msg.sticker.height == 368
     assert msg.sticker.thumb is None
-    assert msg.content_type == 'sticker'
+    assert msg.content_type == "sticker"
 
 
 def test_json_Message_Document():
     json_string = r'{"message_id":97,"from":{"id":10734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10,"first_name":"Fd","type":"private","last_name":"Wd","username":"dd"},"date":1435478744,"document":{"file_name":"Text File","thumb":{},"file_id":"BQADBQADMwIAAsYifgZ_CEh0u682xwI","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":446}}'
     msg = types.Message.de_json(json_string)
-    assert msg.document.file_name == 'Text File'
-    assert msg.content_type == 'document'
+    assert msg.document.file_name == "Text File"
+    assert msg.content_type == "document"
 
 
 def test_json_Message_Photo():
     json_string = r'{"message_id":96,"from":{"id":109734,"first_name":"Fd","last_name":"Wd","username":"dd","is_bot":true },"chat":{"id":10734,"first_name":"Fd","type":"private","last_name":"dd","username":"dd"},"date":1435478191,"photo":[{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":615,"width":90,"height":67},{"file_id":"AgADBQADIagxG8YifgYv8yLSj76i-dd","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":10174,"width":320,"height":240},{"file_id":"dd-A_LsTIABFNx-FUOaEa_3AABAQABAg","file_unique_id": "AQAD_QIfa3QAAyA4BgAB","file_size":53013,"width":759,"height":570}]}'
     msg = types.Message.de_json(json_string)
     assert len(msg.photo) == 3
-    assert msg.content_type == 'photo'
+    assert msg.content_type == "photo"
 
 
 def test_json_Message_Video():
@@ -115,14 +114,14 @@ def test_json_Message_Video():
     assert msg.video
     assert msg.video.duration == 3
     assert msg.video.thumb.width == 50
-    assert msg.content_type == 'video'
+    assert msg.content_type == "video"
 
 
 def test_json_Message_Location():
     json_string = r'{"message_id":102,"from":{"id":108734,"first_name":"dd","last_name":"dd","username":"dd","is_bot":true },"chat":{"id":1089734,"first_name":"dd","type":"private","last_name":"dd","username":"dd"},"date":1535482469,"location":{"longitude":127.479471,"latitude":26.090577}}'
     msg = types.Message.de_json(json_string)
     assert msg.location.latitude == 26.090577
-    assert msg.content_type == 'location'
+    assert msg.content_type == "location"
 
 
 def test_json_UserProfilePhotos():
@@ -135,8 +134,8 @@ def test_json_UserProfilePhotos():
 def test_json_contact():
     json_string = r'{"phone_number":"00011111111","first_name":"dd","last_name":"ddl","user_id":8633,"vcard":"SomeContactString"}'
     contact = types.Contact.de_json(json_string)
-    assert contact.first_name == 'dd'
-    assert contact.last_name == 'ddl'
+    assert contact.first_name == "dd"
+    assert contact.last_name == "ddl"
 
 
 def test_json_voice():
@@ -158,38 +157,40 @@ def test_json_chat():
     json_string = r'{"id": -111111,"title": "Test Title","type": "group"}'
     chat = types.Chat.de_json(json_string)
     assert chat.id == -111111
-    assert chat.type == 'group'
-    assert chat.title == 'Test Title'
+    assert chat.type == "group"
+    assert chat.title == "Test Title"
 
 
 def test_InlineQueryResultCachedPhoto():
-    iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid')
+    iq = types.InlineQueryResultCachedPhoto("aaa", "Fileid")
     json_str = iq.to_json()
-    assert 'aa' in json_str
-    assert 'Fileid' in json_str
-    assert 'caption' not in json_str
+    assert "aa" in json_str
+    assert "Fileid" in json_str
+    assert "caption" not in json_str
 
 
 def test_InlineQueryResultCachedPhoto_with_title():
-    iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid', title='Title')
+    iq = types.InlineQueryResultCachedPhoto("aaa", "Fileid", title="Title")
     json_str = iq.to_json()
-    assert 'aa' in json_str
-    assert 'Fileid' in json_str
-    assert 'Title' in json_str
-    assert 'caption' not in json_str
+    assert "aa" in json_str
+    assert "Fileid" in json_str
+    assert "Title" in json_str
+    assert "caption" not in json_str
 
 
 def test_InlineQueryResultCachedPhoto_with_markup():
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Google", url="http://www.google.com"))
     markup.add(types.InlineKeyboardButton("Yahoo", url="http://www.yahoo.com"))
-    iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid', title='Title', reply_markup=markup)
+    iq = types.InlineQueryResultCachedPhoto(
+        "aaa", "Fileid", title="Title", reply_markup=markup
+    )
     json_str = iq.to_json()
-    assert 'aa' in json_str
-    assert 'Fileid' in json_str
-    assert 'Title' in json_str
-    assert 'caption' not in json_str
-    assert 'reply_markup' in json_str
+    assert "aa" in json_str
+    assert "Fileid" in json_str
+    assert "Title" in json_str
+    assert "caption" not in json_str
+    assert "reply_markup" in json_str
 
 
 def test_json_poll_1():
@@ -197,7 +198,7 @@ def test_json_poll_1():
     msg = types.Message.de_json(jsonstring)
     assert msg.poll is not None
     assert isinstance(msg.poll, types.Poll)
-    assert msg.poll.id == '5272018969396510722'
+    assert msg.poll.id == "5272018969396510722"
     assert msg.poll.question is not None
     assert msg.poll.options is not None
     assert len(msg.poll.options) == 2
@@ -206,25 +207,29 @@ def test_json_poll_1():
 
 def test_json_poll_answer():
     jsonstring = r'{"poll_id": "5895675970559410186", "user": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "option_ids": [1]}'
-    __import__('pprint').pprint(__import__('json').loads(jsonstring))
+    __import__("pprint").pprint(__import__("json").loads(jsonstring))
     poll_answer = types.PollAnswer.de_json(jsonstring)
-    assert poll_answer.poll_id == '5895675970559410186'
+    assert poll_answer.poll_id == "5895675970559410186"
     assert isinstance(poll_answer.user, types.User)
     assert poll_answer.option_ids == [1]
 
 
 def test_KeyboardButtonPollType():
     markup = types.ReplyKeyboardMarkup()
-    markup.add(types.KeyboardButton('send me a poll', request_poll=types.KeyboardButtonPollType(type='quiz')))
+    markup.add(
+        types.KeyboardButton(
+            "send me a poll", request_poll=types.KeyboardButtonPollType(type="quiz")
+        )
+    )
     json_str = markup.to_json()
-    assert 'request_poll' in json_str
-    assert 'quiz' in json_str
+    assert "request_poll" in json_str
+    assert "quiz" in json_str
 
 
 def test_json_chat_invite_link():
     json_string = r'{"invite_link":"https://t.me/joinchat/MeASP-Wi...","creator":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"ru"},"pending_join_request_count":1,"creates_join_request":true,"is_primary":false,"is_revoked":false}'
     invite_link = types.ChatInviteLink.de_json(json_string)
-    assert invite_link.invite_link == 'https://t.me/joinchat/MeASP-Wi...'
+    assert invite_link.invite_link == "https://t.me/joinchat/MeASP-Wi..."
     assert isinstance(invite_link.creator, types.User)
     assert not invite_link.is_primary
     assert not invite_link.is_revoked
@@ -250,21 +255,17 @@ def test_webhook_info():
     json_string = r'{"url": "https://example.com/webhook", "has_custom_certificate": true, "pending_update_count": 1, "last_error_date": 0, "last_error_message": "", "last_synchronization_error_date": 489309, "max_connections": 40, "allowed_updates": ["message"]}'
     webhook_info = types.WebhookInfo.de_json(json_string)
     print(webhook_info)
-    assert webhook_info.url == 'https://example.com/webhook'
+    assert webhook_info.url == "https://example.com/webhook"
     assert webhook_info.has_custom_certificate is True
     assert webhook_info.pending_update_count == 1
     assert webhook_info.last_error_date == 0
-    assert webhook_info.last_error_message == ''
+    assert webhook_info.last_error_message == ""
     assert webhook_info.max_connections == 40
     assert webhook_info.last_synchronization_error_date == 489309
-    assert webhook_info.allowed_updates == ['message']
-    
+    assert webhook_info.allowed_updates == ["message"]
+
 
 def test_sent_web_app_message():
     json_string = r'{"inline_message_id": "29430"}'
     sent_web_app_message = types.SentWebAppMessage.de_json(json_string)
-    assert sent_web_app_message.inline_message_id == '29430'
-    
-
-
-
+    assert sent_web_app_message.inline_message_id == "29430"

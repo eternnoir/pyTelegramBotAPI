@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+import logging
+
+# noinspection PyPep8Naming
+import queue as Queue
 import random
 import re
 import string
 import threading
 import traceback
-from typing import Any, Callable, List, Dict, Optional, Union
-
-# noinspection PyPep8Naming
-import queue as Queue
-import logging
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from telebot import types
 
@@ -19,8 +19,9 @@ except ImportError:
 
 try:
     # noinspection PyPackageRequirements
-    from PIL import Image
     from io import BytesIO
+
+    from PIL import Image
 
     pil_imported = True
 except:
@@ -28,26 +29,63 @@ except:
 
 MAX_MESSAGE_LENGTH = 4096
 
-logger = logging.getLogger('TeleBot')
+logger = logging.getLogger("TeleBot")
 
 thread_local = threading.local()
 
 content_type_media = [
-    'text', 'audio', 'animation', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact', 'dice', 'poll',
-    'venue', 'location'
+    "text",
+    "audio",
+    "animation",
+    "document",
+    "photo",
+    "sticker",
+    "video",
+    "video_note",
+    "voice",
+    "contact",
+    "dice",
+    "poll",
+    "venue",
+    "location",
 ]
 
 content_type_service = [
-    'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created',
-    'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message',
-    'proximity_alert_triggered', 'video_chat_scheduled', 'video_chat_started', 'video_chat_ended',
-    'video_chat_participants_invited', 'message_auto_delete_timer_changed'
+    "new_chat_members",
+    "left_chat_member",
+    "new_chat_title",
+    "new_chat_photo",
+    "delete_chat_photo",
+    "group_chat_created",
+    "supergroup_chat_created",
+    "channel_chat_created",
+    "migrate_to_chat_id",
+    "migrate_from_chat_id",
+    "pinned_message",
+    "proximity_alert_triggered",
+    "video_chat_scheduled",
+    "video_chat_started",
+    "video_chat_ended",
+    "video_chat_participants_invited",
+    "message_auto_delete_timer_changed",
 ]
 
 update_types = [
-    "update_id", "message", "edited_message", "channel_post", "edited_channel_post", "inline_query",
-    "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer",
-    "my_chat_member", "chat_member", "chat_join_request"
+    "update_id",
+    "message",
+    "edited_message",
+    "channel_post",
+    "edited_channel_post",
+    "inline_query",
+    "chosen_inline_result",
+    "callback_query",
+    "shipping_query",
+    "pre_checkout_query",
+    "poll",
+    "poll_answer",
+    "my_chat_member",
+    "chat_member",
+    "chat_join_request",
 ]
 
 
@@ -78,7 +116,7 @@ class WorkerThread(threading.Thread):
     def run(self):
         while self._running:
             try:
-                task, args, kwargs = self.queue.get(block=True, timeout=.5)
+                task, args, kwargs = self.queue.get(block=True, timeout=0.5)
                 self.continue_event.clear()
                 self.received_task_event.clear()
                 self.done_event.clear()
@@ -92,7 +130,13 @@ class WorkerThread(threading.Thread):
             except Queue.Empty:
                 pass
             except Exception as e:
-                logger.debug(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
+                logger.debug(
+                    type(e).__name__
+                    + " occurred, args="
+                    + str(e.args)
+                    + "\n"
+                    + traceback.format_exc()
+                )
                 self.exception_info = e
                 self.exception_event.set()
                 if self.exception_callback:
@@ -115,11 +159,12 @@ class WorkerThread(threading.Thread):
 
 
 class ThreadPool:
-
     def __init__(self, telebot, num_threads=2):
         self.telebot = telebot
         self.tasks = Queue.Queue()
-        self.workers = [WorkerThread(self.on_exception, self.tasks) for _ in range(num_threads)]
+        self.workers = [
+            WorkerThread(self.on_exception, self.tasks) for _ in range(num_threads)
+        ]
         self.num_threads = num_threads
 
         self.exception_event = threading.Event()
@@ -178,8 +223,8 @@ class AsyncTask:
             return self.result
 
 
-class CustomRequestResponse():
-    def __init__(self, json_text, status_code = 200, reason = ""):
+class CustomRequestResponse:
+    def __init__(self, json_text, status_code=200, reason=""):
         self.status_code = status_code
         self.text = json_text
         self.reason = reason
@@ -214,26 +259,27 @@ def is_pil_image(var):
     return pil_imported and isinstance(var, Image.Image)
 
 
-def pil_image_to_file(image, extension='JPEG', quality='web_low'):
+def pil_image_to_file(image, extension="JPEG", quality="web_low"):
     if pil_imported:
         photoBuffer = BytesIO()
-        image.convert('RGB').save(photoBuffer, extension, quality=quality)
+        image.convert("RGB").save(photoBuffer, extension, quality=quality)
         photoBuffer.seek(0)
 
         return photoBuffer
     else:
-        raise RuntimeError('PIL module is not imported')
+        raise RuntimeError("PIL module is not imported")
 
 
 def is_command(text: str) -> bool:
     r"""
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
-    
+
     :param text: Text to check.
     :return: True if `text` is a command, else False.
     """
-    if text is None: return False
-    return text.startswith('/')
+    if text is None:
+        return False
+    return text.startswith("/")
 
 
 def extract_command(text: str) -> Union[str, None]:
@@ -250,19 +296,20 @@ def extract_command(text: str) -> Union[str, None]:
     :param text: String to extract the command from
     :return: the command if `text` is a command (according to is_command), else None.
     """
-    if text is None: return None
-    return text.split()[0].split('@')[0][1:] if is_command(text) else None
+    if text is None:
+        return None
+    return text.split()[0].split("@")[0][1:] if is_command(text) else None
 
 
 def extract_arguments(text: str) -> str:
     """
     Returns the argument after the command.
-    
+
     Examples:
     extract_arguments("/get name"): 'name'
     extract_arguments("/get"): ''
     extract_arguments("/get@botName name"): 'name'
-    
+
     :param text: String to extract the arguments from a command
     :return: the arguments if `text` is a command (according to is_command), else None.
     """
@@ -280,10 +327,12 @@ def split_string(text: str, chars_per_string: int) -> List[str]:
     :param chars_per_string: The number of characters per line the text is split into.
     :return: The splitted text as a list of strings.
     """
-    return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
+    return [
+        text[i : i + chars_per_string] for i in range(0, len(text), chars_per_string)
+    ]
 
 
-def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str]:
+def smart_split(text: str, chars_per_string: int = MAX_MESSAGE_LENGTH) -> List[str]:
     r"""
     Splits one string into multiple strings, with a maximum amount of `chars_per_string` characters per string.
     This is very useful for splitting one giant message into multiples.
@@ -298,7 +347,8 @@ def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str
     def _text_before_last(substr: str) -> str:
         return substr.join(part.split(substr)[:-1]) + substr
 
-    if chars_per_string > MAX_MESSAGE_LENGTH: chars_per_string = MAX_MESSAGE_LENGTH
+    if chars_per_string > MAX_MESSAGE_LENGTH:
+        chars_per_string = MAX_MESSAGE_LENGTH
 
     parts = []
     while True:
@@ -308,12 +358,15 @@ def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str
 
         part = text[:chars_per_string]
 
-        if "\n" in part: part = _text_before_last("\n")
-        elif ". " in part: part = _text_before_last(". ")
-        elif " " in part: part = _text_before_last(" ")
+        if "\n" in part:
+            part = _text_before_last("\n")
+        elif ". " in part:
+            part = _text_before_last(". ")
+        elif " " in part:
+            part = _text_before_last(" ")
 
         parts.append(part)
-        text = text[len(part):]
+        text = text[len(part) :]
 
 
 def escape(text: str) -> str:
@@ -324,11 +377,12 @@ def escape(text: str) -> str:
     :return: the escaped text
     """
     chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;"}
-    for old, new in chars.items(): text = text.replace(old, new)
+    for old, new in chars.items():
+        text = text.replace(old, new)
     return text
 
 
-def user_link(user: types.User, include_id: bool=False) -> str:
+def user_link(user: types.User, include_id: bool = False) -> str:
     """
     Returns an HTML user link. This is useful for reports.
     Attention: Don't forget to set parse_mode to 'HTML'!
@@ -341,15 +395,18 @@ def user_link(user: types.User, include_id: bool=False) -> str:
     :return: HTML user link
     """
     name = escape(user.first_name)
-    return (f"<a href='tg://user?id={user.id}'>{name}</a>"
-        + (f" (<pre>{user.id}</pre>)" if include_id else ""))
+    return f"<a href='tg://user?id={user.id}'>{name}</a>" + (
+        f" (<pre>{user.id}</pre>)" if include_id else ""
+    )
 
 
-def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.InlineKeyboardMarkup:
+def quick_markup(
+    values: Dict[str, Dict[str, Any]], row_width: int = 2
+) -> types.InlineKeyboardMarkup:
     """
     Returns a reply markup from a dict in this format: {'text': kwargs}
-    This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)' 
-    
+    This is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)'
+
     Example:
 
     .. code-block:: python
@@ -358,14 +415,14 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
             'Twitter': {'url': 'https://twitter.com'},
             'Facebook': {'url': 'https://facebook.com'},
             'Back': {'callback_data': 'whatever'}
-        }, row_width=2): 
+        }, row_width=2):
             # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
             # and a back button below
 
-        # kwargs can be: 
+        # kwargs can be:
         {
-            'url': None, 
-            'callback_data': None, 
+            'url': None,
+            'callback_data': None,
             'switch_inline_query': None,
             'switch_inline_query_current_chat': None,
             'callback_game': None,
@@ -373,7 +430,7 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
             'login_url': None,
             'web_app': None
         }
-    
+
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
     :param row_width: int row width
     :return: InlineKeyboardMarkup
@@ -443,22 +500,25 @@ def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     # https://stackoverflow.com/a/312464/9935473
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        yield lst[i : i + n]
 
 
 def generate_random_token():
-    return ''.join(random.sample(string.ascii_letters, 16))
+    return "".join(random.sample(string.ascii_letters, 16))
 
 
-def deprecated(warn: bool=True, alternative: Optional[Callable]=None, deprecation_text=None):
+def deprecated(
+    warn: bool = True, alternative: Optional[Callable] = None, deprecation_text=None
+):
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.
-    
+
     :param warn: If True a warning is logged else an info
     :param alternative: The new function to use instead
     :param deprecation_text: Custom deprecation text
     """
+
     def decorator(function):
         def wrapper(*args, **kwargs):
             info = f"`{function.__name__}` is deprecated."
@@ -471,7 +531,9 @@ def deprecated(warn: bool=True, alternative: Optional[Callable]=None, deprecatio
             else:
                 logger.warning(info)
             return function(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -483,38 +545,40 @@ def webhook_google_functions(bot, request):
             request_json = request.get_json()
             update = types.Update.de_json(request_json)
             bot.process_new_updates([update])
-            return ''
+            return ""
         except Exception as e:
             print(e)
-            return 'Bot FAIL', 400
+            return "Bot FAIL", 400
     else:
-        return 'Bot ON'
+        return "Bot ON"
 
 
 def antiflood(function, *args, **kwargs):
     """
     Use this function inside loops in order to avoid getting TooManyRequests error.
     Example:
-    
+
     .. code-block:: python3
-    
+
         from telebot.util import antiflood
         for chat_id in chat_id_list:
         msg = antiflood(bot.send_message, chat_id, text)
-        
+
     :param function:
     :param args:
     :param kwargs:
     :return: None
     """
-    from telebot.apihelper import ApiTelegramException
     from time import sleep
+
+    from telebot.apihelper import ApiTelegramException
+
     msg = None
     try:
         msg = function(*args, **kwargs)
     except ApiTelegramException as ex:
         if ex.error_code == 429:
-            sleep(ex.result_json['parameters']['retry_after'])
+            sleep(ex.result_json["parameters"]["retry_after"])
             msg = function(*args, **kwargs)
     finally:
         return msg
