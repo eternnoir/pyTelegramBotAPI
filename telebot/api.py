@@ -1,11 +1,11 @@
 import logging
-import aiohttp
-from datetime import datetime
-import ujson as json
 import os
+from datetime import datetime
+
+import aiohttp
+import ujson as json
 
 from telebot import types, util
-
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ FILE_URL = None
 CUSTOM_SERIALIZER = None
 
 REQUEST_TIMEOUT = None
-MAX_RETRIES = 3
+MAX_RETRIES = 10
 
 REQUEST_LIMIT = 50
 
@@ -29,6 +29,9 @@ class SessionManager:
         self.session = aiohttp.ClientSession(
             connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT)
         )
+
+    def set_session(self, session: aiohttp.ClientSession):
+        self.session = session
 
     async def create_session(self):
         self.session = aiohttp.ClientSession(
@@ -50,8 +53,8 @@ class SessionManager:
 session_manager = SessionManager()
 
 
-async def _process_request(
-    token, url, method="get", params=None, files=None, request_timeout=None
+async def _request(
+    token: str, route: str, method: str = "get", params=None, files=None, request_timeout=None
 ):
     params = prepare_data(params, files)
     if request_timeout is None:
@@ -65,7 +68,7 @@ async def _process_request(
         try:
             async with session.request(
                 method=method,
-                url=API_URL.format(token, url),
+                url=API_URL.format(token, route),
                 data=params,
                 timeout=timeout,
                 proxy=proxy,
@@ -73,13 +76,13 @@ async def _process_request(
                 got_result = True
                 logger.debug(
                     "Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(
-                        method, url, params, files, request_timeout, current_try
+                        method, route, params, files, request_timeout, current_try
                     ).replace(
                         token, token.split(":")[0] + ":{TOKEN}"
                     )
                 )
 
-                json_result = await _check_result(url, resp)
+                json_result = await _check_result(route, resp)
                 if json_result:
                     return json_result["result"]
         except (ApiTelegramException, ApiInvalidJSONException, ApiHTTPException) as e:
@@ -91,7 +94,7 @@ async def _process_request(
         if not got_result:
             raise RequestTimeout(
                 "Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(
-                    method, url, params, files, request_timeout, current_try
+                    method, route, params, files, request_timeout, current_try
                 )
             )
 
@@ -147,22 +150,22 @@ async def _convert_markup(markup):
 
 async def get_me(token):
     method_url = r"getMe"
-    return await _process_request(token, method_url)
+    return await _request(token, method_url)
 
 
 async def log_out(token):
     method_url = r"logOut"
-    return await _process_request(token, method_url)
+    return await _request(token, method_url)
 
 
 async def close(token):
     method_url = r"close"
-    return await _process_request(token, method_url)
+    return await _request(token, method_url)
 
 
 async def get_file(token, file_id):
     method_url = r"getFile"
-    return await _process_request(token, method_url, params={"file_id": file_id})
+    return await _request(token, method_url, params={"file_id": file_id})
 
 
 async def get_file_url(token, file_id):
@@ -217,7 +220,7 @@ async def set_webhook(
         payload["drop_pending_updates"] = drop_pending_updates
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload, files=files)
+    return await _request(token, method_url, params=payload, files=files)
 
 
 async def delete_webhook(token, drop_pending_updates=None, timeout=None):
@@ -227,7 +230,7 @@ async def delete_webhook(token, drop_pending_updates=None, timeout=None):
         payload["drop_pending_updates"] = drop_pending_updates
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def get_webhook_info(token, timeout=None):
@@ -235,7 +238,7 @@ async def get_webhook_info(token, timeout=None):
     payload = {}
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def get_updates(
@@ -256,7 +259,7 @@ async def get_updates(
         params["timeout"] = timeout
     elif allowed_updates:
         params["allowed_updates"] = allowed_updates
-    return await _process_request(
+    return await _request(
         token, method_name, params=params, request_timeout=request_timeout
     )
 
@@ -339,7 +342,7 @@ async def send_message(
     if protect_content is not None:
         params["protect_content"] = protect_content
 
-    return await _process_request(token, method_name, params=params)
+    return await _request(token, method_name, params=params)
 
 
 # methods
@@ -352,31 +355,31 @@ async def get_user_profile_photos(token, user_id, offset=None, limit=None):
         payload["offset"] = offset
     if limit:
         payload["limit"] = limit
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def get_chat(token, chat_id):
     method_url = r"getChat"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def leave_chat(token, chat_id):
     method_url = r"leaveChat"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def get_chat_administrators(token, chat_id):
     method_url = r"getChatAdministrators"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def get_chat_member_count(token, chat_id):
     method_url = r"getChatMemberCount"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def set_sticker_set_thumb(token, name, user_id, thumb):
@@ -388,7 +391,7 @@ async def set_sticker_set_thumb(token, name, user_id, thumb):
             files["thumb"] = thumb
         else:
             payload["thumb"] = thumb
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files or None
     )
 
@@ -396,13 +399,13 @@ async def set_sticker_set_thumb(token, name, user_id, thumb):
 async def set_chat_sticker_set(token, chat_id, sticker_set_name):
     method_url = r"setChatStickerSet"
     payload = {"chat_id": chat_id, "sticker_set_name": sticker_set_name}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def delete_chat_sticker_set(token, chat_id):
     method_url = r"deleteChatStickerSet"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def answer_web_app_query(
@@ -410,13 +413,13 @@ async def answer_web_app_query(
 ):
     method_url = "answerWebAppQuery"
     payload = {"web_app_query_id": web_app_query_id, "result": result.to_json()}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def get_chat_member(token, chat_id, user_id):
     method_url = r"getChatMember"
     payload = {"chat_id": chat_id, "user_id": user_id}
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def forward_message(
@@ -440,7 +443,7 @@ async def forward_message(
         payload["timeout"] = timeout
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def copy_message(
@@ -482,7 +485,7 @@ async def copy_message(
         payload["timeout"] = timeout
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def send_dice(
@@ -512,7 +515,7 @@ async def send_dice(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def send_photo(
@@ -556,7 +559,7 @@ async def send_photo(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -584,7 +587,7 @@ async def send_media_group(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token,
         method_url,
         params=payload,
@@ -631,7 +634,7 @@ async def send_location(
         payload["timeout"] = timeout
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def edit_message_live_location(
@@ -665,7 +668,7 @@ async def edit_message_live_location(
         payload["reply_markup"] = await _convert_markup(reply_markup)
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def stop_message_live_location(
@@ -688,7 +691,7 @@ async def stop_message_live_location(
         payload["reply_markup"] = await _convert_markup(reply_markup)
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def send_venue(
@@ -737,7 +740,7 @@ async def send_venue(
         payload["google_place_type"] = google_place_type
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def send_contact(
@@ -776,7 +779,7 @@ async def send_contact(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def send_chat_action(token, chat_id, action, timeout=None):
@@ -784,7 +787,7 @@ async def send_chat_action(token, chat_id, action, timeout=None):
     payload = {"chat_id": chat_id, "action": action}
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def send_video(
@@ -849,7 +852,7 @@ async def send_video(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -913,7 +916,7 @@ async def send_animation(
         payload["height"] = height
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -962,7 +965,7 @@ async def send_voice(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1014,7 +1017,7 @@ async def send_video_note(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1078,7 +1081,7 @@ async def send_audio(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1141,7 +1144,7 @@ async def send_data(
         payload["protect_content"] = protect_content
     if method_url == "sendDocument" and disable_content_type_detection is not None:
         payload["disable_content_type_detection"] = disable_content_type_detection
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1164,7 +1167,7 @@ async def ban_chat_member(
         payload["until_date"] = until_date
     if revoke_messages is not None:
         payload["revoke_messages"] = revoke_messages
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def unban_chat_member(token, chat_id, user_id, only_if_banned):
@@ -1172,7 +1175,7 @@ async def unban_chat_member(token, chat_id, user_id, only_if_banned):
     payload = {"chat_id": chat_id, "user_id": user_id}
     if only_if_banned is not None:  # None / True / False
         payload["only_if_banned"] = only_if_banned
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def restrict_chat_member(
@@ -1214,7 +1217,7 @@ async def restrict_chat_member(
             payload["until_date"] = until_date.timestamp()
         else:
             payload["until_date"] = until_date
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def promote_chat_member(
@@ -1257,31 +1260,31 @@ async def promote_chat_member(
         payload["can_manage_chat"] = can_manage_chat
     if can_manage_video_chats is not None:
         payload["can_manage_video_chats"] = can_manage_video_chats
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
     method_url = "setChatAdministratorCustomTitle"
     payload = {"chat_id": chat_id, "user_id": user_id, "custom_title": custom_title}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def ban_chat_sender_chat(token, chat_id, sender_chat_id):
     method_url = "banChatSenderChat"
     payload = {"chat_id": chat_id, "sender_chat_id": sender_chat_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def unban_chat_sender_chat(token, chat_id, sender_chat_id):
     method_url = "unbanChatSenderChat"
     payload = {"chat_id": chat_id, "sender_chat_id": sender_chat_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_chat_permissions(token, chat_id, permissions):
     method_url = "setChatPermissions"
     payload = {"chat_id": chat_id, "permissions": permissions.to_json()}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def create_chat_invite_link(
@@ -1302,7 +1305,7 @@ async def create_chat_invite_link(
     if name:
         payload["name"] = name
 
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def edit_chat_invite_link(
@@ -1324,31 +1327,31 @@ async def edit_chat_invite_link(
     if creates_join_request is not None:
         payload["creates_join_request"] = creates_join_request
 
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def revoke_chat_invite_link(token, chat_id, invite_link):
     method_url = "revokeChatInviteLink"
     payload = {"chat_id": chat_id, "invite_link": invite_link}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def export_chat_invite_link(token, chat_id):
     method_url = "exportChatInviteLink"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def approve_chat_join_request(token, chat_id, user_id):
     method_url = "approveChatJoinRequest"
     payload = {"chat_id": chat_id, "user_id": user_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def decline_chat_join_request(token, chat_id, user_id):
     method_url = "declineChatJoinRequest"
     payload = {"chat_id": chat_id, "user_id": user_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_chat_photo(token, chat_id, photo):
@@ -1359,7 +1362,7 @@ async def set_chat_photo(token, chat_id, photo):
         payload["photo"] = photo
     else:
         files = {"photo": photo}
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1367,13 +1370,13 @@ async def set_chat_photo(token, chat_id, photo):
 async def delete_chat_photo(token, chat_id):
     method_url = "deleteChatPhoto"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_chat_title(token, chat_id, title):
     method_url = "setChatTitle"
     payload = {"chat_id": chat_id, "title": title}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def get_my_commands(token, scope=None, language_code=None):
@@ -1383,7 +1386,7 @@ async def get_my_commands(token, scope=None, language_code=None):
         payload["scope"] = scope.to_json()
     if language_code:
         payload["language_code"] = language_code
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def set_chat_menu_button(token, chat_id=None, menu_button=None):
@@ -1394,7 +1397,7 @@ async def set_chat_menu_button(token, chat_id=None, menu_button=None):
     if menu_button:
         payload["menu_button"] = menu_button.to_json()
 
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def get_chat_menu_button(token, chat_id=None):
@@ -1403,7 +1406,7 @@ async def get_chat_menu_button(token, chat_id=None):
     if chat_id:
         payload["chat_id"] = chat_id
 
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_my_default_administrator_rights(token, rights=None, for_channels=None):
@@ -1414,7 +1417,7 @@ async def set_my_default_administrator_rights(token, rights=None, for_channels=N
     if for_channels is not None:
         payload["for_channels"] = for_channels
 
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def get_my_default_administrator_rights(token, for_channels=None):
@@ -1423,7 +1426,7 @@ async def get_my_default_administrator_rights(token, for_channels=None):
     if for_channels:
         payload["for_channels"] = for_channels
 
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_my_commands(token, commands, scope=None, language_code=None):
@@ -1433,7 +1436,7 @@ async def set_my_commands(token, commands, scope=None, language_code=None):
         payload["scope"] = scope.to_json()
     if language_code:
         payload["language_code"] = language_code
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def delete_my_commands(token, scope=None, language_code=None):
@@ -1443,7 +1446,7 @@ async def delete_my_commands(token, scope=None, language_code=None):
         payload["scope"] = scope.to_json()
     if language_code:
         payload["language_code"] = language_code
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def set_chat_description(token, chat_id, description):
@@ -1451,7 +1454,7 @@ async def set_chat_description(token, chat_id, description):
     payload = {"chat_id": chat_id}
     if description is not None:  # Allow empty strings
         payload["description"] = description
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def pin_chat_message(token, chat_id, message_id, disable_notification=None):
@@ -1459,7 +1462,7 @@ async def pin_chat_message(token, chat_id, message_id, disable_notification=None
     payload = {"chat_id": chat_id, "message_id": message_id}
     if disable_notification is not None:
         payload["disable_notification"] = disable_notification
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def unpin_chat_message(token, chat_id, message_id):
@@ -1467,13 +1470,13 @@ async def unpin_chat_message(token, chat_id, message_id):
     payload = {"chat_id": chat_id}
     if message_id:
         payload["message_id"] = message_id
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def unpin_all_chat_messages(token, chat_id):
     method_url = "unpinAllChatMessages"
     payload = {"chat_id": chat_id}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 # Updating messages
@@ -1506,7 +1509,7 @@ async def edit_message_text(
         payload["disable_web_page_preview"] = disable_web_page_preview
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def edit_message_caption(
@@ -1535,7 +1538,7 @@ async def edit_message_caption(
         )
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def edit_message_media(
@@ -1557,7 +1560,7 @@ async def edit_message_media(
         payload["inline_message_id"] = inline_message_id
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=file, method="post" if file else "get"
     )
 
@@ -1575,7 +1578,7 @@ async def edit_message_reply_markup(
         payload["inline_message_id"] = inline_message_id
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def delete_message(token, chat_id, message_id, timeout=None):
@@ -1583,7 +1586,7 @@ async def delete_message(token, chat_id, message_id, timeout=None):
     payload = {"chat_id": chat_id, "message_id": message_id}
     if timeout:
         payload["timeout"] = timeout
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 # Game
@@ -1614,7 +1617,7 @@ async def send_game(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 # https://core.telegram.org/bots/api#setgamescore
@@ -1652,7 +1655,7 @@ async def set_game_score(
         payload["inline_message_id"] = inline_message_id
     if disable_edit_message is not None:
         payload["disable_edit_message"] = disable_edit_message
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 # https://core.telegram.org/bots/api#getgamehighscores
@@ -1677,7 +1680,7 @@ async def get_game_high_scores(
         payload["message_id"] = message_id
     if inline_message_id:
         payload["inline_message_id"] = inline_message_id
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 # Payments (https://core.telegram.org/bots/api#payments)
@@ -1800,7 +1803,7 @@ async def send_invoice(
         payload["suggested_tip_amounts"] = json.dumps(suggested_tip_amounts)
     if protect_content is not None:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def answer_shipping_query(
@@ -1823,7 +1826,7 @@ async def answer_shipping_query(
         )
     if error_message:
         payload["error_message"] = error_message
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def answer_pre_checkout_query(
@@ -1841,7 +1844,7 @@ async def answer_pre_checkout_query(
     payload = {"pre_checkout_query_id": pre_checkout_query_id, "ok": ok}
     if error_message:
         payload["error_message"] = error_message
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 # InlineQuery
@@ -1872,7 +1875,7 @@ async def answer_callback_query(
         payload["url"] = url
     if cache_time is not None:
         payload["cache_time"] = cache_time
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def answer_inline_query(
@@ -1900,19 +1903,19 @@ async def answer_inline_query(
         payload["switch_pm_text"] = switch_pm_text
     if switch_pm_parameter:
         payload["switch_pm_parameter"] = switch_pm_parameter
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def get_sticker_set(token, name):
     method_url = "getStickerSet"
-    return await _process_request(token, method_url, params={"name": name})
+    return await _request(token, method_url, params={"name": name})
 
 
 async def upload_sticker_file(token, user_id, png_sticker):
     method_url = "uploadStickerFile"
     payload = {"user_id": user_id}
     files = {"png_sticker": png_sticker}
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1949,7 +1952,7 @@ async def create_new_sticker_set(
         payload["mask_position"] = mask_position.to_json()
     if webm_sticker:
         payload["webm_sticker"] = webm_sticker
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1977,7 +1980,7 @@ async def add_sticker_to_set(
 
     if webm_sticker:
         payload["webm_sticker"] = webm_sticker
-    return await _process_request(
+    return await _request(
         token, method_url, params=payload, files=files, method="post"
     )
 
@@ -1985,13 +1988,13 @@ async def add_sticker_to_set(
 async def set_sticker_position_in_set(token, sticker, position):
     method_url = "setStickerPositionInSet"
     payload = {"sticker": sticker, "position": position}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 async def delete_sticker_from_set(token, sticker):
     method_url = "deleteStickerFromSet"
     payload = {"sticker": sticker}
-    return await _process_request(token, method_url, params=payload, method="post")
+    return await _request(token, method_url, params=payload, method="post")
 
 
 # noinspection PyShadowingBuiltins
@@ -2062,7 +2065,7 @@ async def send_poll(
         )
     if protect_content:
         payload["protect_content"] = protect_content
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 async def _convert_list_json_serializable(results):
@@ -2134,7 +2137,7 @@ async def stop_poll(token, chat_id, message_id, reply_markup=None):
     payload = {"chat_id": str(chat_id), "message_id": message_id}
     if reply_markup:
         payload["reply_markup"] = await _convert_markup(reply_markup)
-    return await _process_request(token, method_url, params=payload)
+    return await _request(token, method_url, params=payload)
 
 
 # exceptions

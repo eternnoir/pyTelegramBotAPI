@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-
 # noinspection PyPep8Naming
 import queue as Queue
 import random
@@ -8,7 +7,7 @@ import re
 import string
 import threading
 import traceback
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Callable, List, Optional, Union
 
 import ujson as json
 
@@ -72,160 +71,6 @@ update_types = [
     "chat_member",
     "chat_join_request",
 ]
-
-
-class WorkerThread(threading.Thread):
-    count = 0
-
-    def __init__(self, exception_callback=None, queue=None, name=None):
-        if not name:
-            name = "WorkerThread{0}".format(self.__class__.count + 1)
-            self.__class__.count += 1
-        if not queue:
-            queue = Queue.Queue()
-
-        threading.Thread.__init__(self, name=name)
-        self.queue = queue
-        self.daemon = True
-
-        self.received_task_event = threading.Event()
-        self.done_event = threading.Event()
-        self.exception_event = threading.Event()
-        self.continue_event = threading.Event()
-
-        self.exception_callback = exception_callback
-        self.exception_info = None
-        self._running = True
-        self.start()
-
-    def run(self):
-        while self._running:
-            try:
-                task, args, kwargs = self.queue.get(block=True, timeout=0.5)
-                self.continue_event.clear()
-                self.received_task_event.clear()
-                self.done_event.clear()
-                self.exception_event.clear()
-                logger.debug("Received task")
-                self.received_task_event.set()
-
-                task(*args, **kwargs)
-                logger.debug("Task complete")
-                self.done_event.set()
-            except Queue.Empty:
-                pass
-            except Exception as e:
-                logger.debug(
-                    type(e).__name__
-                    + " occurred, args="
-                    + str(e.args)
-                    + "\n"
-                    + traceback.format_exc()
-                )
-                self.exception_info = e
-                self.exception_event.set()
-                if self.exception_callback:
-                    self.exception_callback(self, self.exception_info)
-                self.continue_event.wait()
-
-    def put(self, task, *args, **kwargs):
-        self.queue.put((task, args, kwargs))
-
-    def raise_exceptions(self):
-        if self.exception_event.is_set():
-            raise self.exception_info
-
-    def clear_exceptions(self):
-        self.exception_event.clear()
-        self.continue_event.set()
-
-    def stop(self):
-        self._running = False
-
-
-class ThreadPool:
-    def __init__(self, telebot, num_threads=2):
-        self.telebot = telebot
-        self.tasks = Queue.Queue()
-        self.workers = [
-            WorkerThread(self.on_exception, self.tasks) for _ in range(num_threads)
-        ]
-        self.num_threads = num_threads
-
-        self.exception_event = threading.Event()
-        self.exception_info = None
-
-    def put(self, func, *args, **kwargs):
-        self.tasks.put((func, args, kwargs))
-
-    def on_exception(self, worker_thread, exc_info):
-        if self.telebot.exception_handler is not None:
-            handled = self.telebot.exception_handler.handle(exc_info)
-        else:
-            handled = False
-        if not handled:
-            self.exception_info = exc_info
-            self.exception_event.set()
-        worker_thread.continue_event.set()
-
-    def raise_exceptions(self):
-        if self.exception_event.is_set():
-            raise self.exception_info
-
-    def clear_exceptions(self):
-        self.exception_event.clear()
-
-    def close(self):
-        for worker in self.workers:
-            worker.stop()
-        for worker in self.workers:
-            worker.join()
-
-
-class AsyncTask:
-    def __init__(self, target, *args, **kwargs):
-        self.target = target
-        self.args = args
-        self.kwargs = kwargs
-
-        self.done = False
-        self.thread = threading.Thread(target=self._run)
-        self.thread.start()
-
-    def _run(self):
-        try:
-            self.result = self.target(*self.args, **self.kwargs)
-        except Exception as e:
-            self.result = e
-        self.done = True
-
-    def wait(self):
-        if not self.done:
-            self.thread.join()
-        if isinstance(self.result, BaseException):
-            raise self.result
-        else:
-            return self.result
-
-
-class CustomRequestResponse:
-    def __init__(self, json_text, status_code=200, reason=""):
-        self.status_code = status_code
-        self.text = json_text
-        self.reason = reason
-
-    def json(self):
-        return json.loads(self.text)
-
-
-def async_dec():
-    def decorator(fn):
-        def wrapper(*args, **kwargs):
-            return AsyncTask(fn, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 def is_string(var):

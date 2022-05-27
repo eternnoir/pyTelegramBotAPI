@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from io import BytesIO
 import logging
 from abc import ABC
-from typing import Dict, List, Optional, Union
+from io import BytesIO
+from typing import Dict, List, Literal, Optional, Union
 
 try:
     import ujson as json
@@ -133,21 +133,21 @@ class Update(JsonDeserializable):
 
     def __init__(
         self,
-        update_id,
-        message,
-        edited_message,
-        channel_post,
-        edited_channel_post,
-        inline_query,
-        chosen_inline_result,
-        callback_query,
-        shipping_query,
-        pre_checkout_query,
-        poll,
-        poll_answer,
-        my_chat_member,
-        chat_member,
-        chat_join_request,
+        update_id: int,
+        message: Optional['Message'],
+        edited_message: Optional['Message'],
+        channel_post: Optional['Message'],
+        edited_channel_post: Optional['Message'],
+        inline_query: Optional['InlineQuery'],
+        chosen_inline_result: Optional['ChosenInlineResult'],
+        callback_query: Optional['CallbackQuery'],
+        shipping_query: Optional['ShippingQuery'],
+        pre_checkout_query: Optional['PreCheckoutQuery'],
+        poll: Optional['Poll'],
+        poll_answer: Optional['PollAnswer'],
+        my_chat_member: Optional['ChatMemberUpdated'],
+        chat_member: Optional['ChatMemberUpdated'],
+        chat_join_request: Optional['ChatJoinRequest'],
     ):
         self.update_id = update_id
         self.message = message
@@ -3960,3 +3960,22 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+
+AllowedUpdateName = Literal[
+    "update_id",
+    "message",
+    "edited_message",
+    "channel_post",
+    "edited_channel_post",
+    "inline_query",
+    "chosen_inline_result",
+    "callback_query",
+    "shipping_query",
+    "pre_checkout_query",
+    "poll",
+    "poll_answer",
+    "my_chat_member",
+    "chat_member",
+    "chat_join_request",
+]

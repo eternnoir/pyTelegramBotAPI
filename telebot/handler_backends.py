@@ -3,6 +3,7 @@ import pickle
 import threading
 
 from telebot import api
+
 try:
     from redis import Redis  # type: ignore
     redis_installed = True

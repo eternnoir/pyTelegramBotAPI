@@ -85,6 +85,8 @@ class AsyncTeleBot:
         """
         await api.session_manager.session.close()
 
+    # polling-related methods
+
     async def get_updates(
         self,
         offset: Optional[int] = None,
@@ -347,7 +349,7 @@ class AsyncTeleBot:
                 await middleware.post_process(message, data, handler_error)
 
     # update handling
-    async def process_new_updates(self, updates):
+    async def process_new_updates(self, updates: list[types.Update]):
         """
         Process new updates.
         Just pass list of updates - each update should be
@@ -360,77 +362,49 @@ class AsyncTeleBot:
         if upd_count == 0:
             return
 
-        new_messages = None
-        new_edited_messages = None
-        new_channel_posts = None
-        new_edited_channel_posts = None
-        new_inline_queries = None
-        new_chosen_inline_results = None
-        new_callback_queries = None
-        new_shipping_queries = None
-        new_pre_checkout_queries = None
-        new_polls = None
-        new_poll_answers = None
-        new_my_chat_members = None
-        new_chat_members = None
-        chat_join_request = None
+        new_messages = []
+        new_edited_messages = []
+        new_channel_posts = []
+        new_edited_channel_posts = []
+        new_inline_queries = []
+        new_chosen_inline_results = []
+        new_callback_queries = []
+        new_shipping_queries = []
+        new_pre_checkout_queries = []
+        new_polls = []
+        new_poll_answers = []
+        new_my_chat_members = []
+        new_chat_members = []
+        chat_join_request = []
         for update in updates:
             logger.debug("Processing updates: {0}".format(update))
             if update.message:
-                if new_messages is None:
-                    new_messages = []
                 new_messages.append(update.message)
             if update.edited_message:
-                if new_edited_messages is None:
-                    new_edited_messages = []
                 new_edited_messages.append(update.edited_message)
             if update.channel_post:
-                if new_channel_posts is None:
-                    new_channel_posts = []
                 new_channel_posts.append(update.channel_post)
             if update.edited_channel_post:
-                if new_edited_channel_posts is None:
-                    new_edited_channel_posts = []
                 new_edited_channel_posts.append(update.edited_channel_post)
             if update.inline_query:
-                if new_inline_queries is None:
-                    new_inline_queries = []
                 new_inline_queries.append(update.inline_query)
             if update.chosen_inline_result:
-                if new_chosen_inline_results is None:
-                    new_chosen_inline_results = []
                 new_chosen_inline_results.append(update.chosen_inline_result)
             if update.callback_query:
-                if new_callback_queries is None:
-                    new_callback_queries = []
                 new_callback_queries.append(update.callback_query)
             if update.shipping_query:
-                if new_shipping_queries is None:
-                    new_shipping_queries = []
                 new_shipping_queries.append(update.shipping_query)
             if update.pre_checkout_query:
-                if new_pre_checkout_queries is None:
-                    new_pre_checkout_queries = []
                 new_pre_checkout_queries.append(update.pre_checkout_query)
             if update.poll:
-                if new_polls is None:
-                    new_polls = []
                 new_polls.append(update.poll)
             if update.poll_answer:
-                if new_poll_answers is None:
-                    new_poll_answers = []
                 new_poll_answers.append(update.poll_answer)
             if update.my_chat_member:
-                if new_my_chat_members is None:
-                    new_my_chat_members = []
                 new_my_chat_members.append(update.my_chat_member)
             if update.chat_member:
-                if new_chat_members is None:
-                    new_chat_members = []
                 new_chat_members.append(update.chat_member)
             if update.chat_join_request:
-                if chat_join_request is None:
-                    chat_join_request = []
                 chat_join_request.append(update.chat_join_request)
 
         if new_messages:
@@ -564,7 +538,7 @@ class AsyncTeleBot:
 
         return True
 
-    def set_update_listener(self, func):
+    def add_update_listener(self, func):
         """
         Update listener is a function that gets any update.
 
