@@ -6,11 +6,11 @@ import time
 import traceback
 from datetime import datetime
 from inspect import signature
-from typing import Any, List, Optional, Union
+from typing import Any, Callable, Coroutine, List, Optional, Union, cast
 
-from telebot import api, filters, types, util
+from telebot import api, filters, types, util, callback_data, exceptions
+from telebot.types import service as service_types
 from telebot.handler_backends import CancelUpdate, SkipHandler
-from telebot.storages import StateMemoryStorage, StatePickleStorage
 
 logger = logging.getLogger(__name__.split(".")[0])
 formatter = logging.Formatter(
@@ -45,38 +45,30 @@ class AsyncTeleBot:
         token: str,
         parse_mode: Optional[str] = None,
         offset=None,
-        exception_handler=None,
-        state_storage=StateMemoryStorage(),
     ) -> None:
         self.token = token
-
         self.offset = offset
         self.token = token
         self.parse_mode = parse_mode
-        self.update_listener = []
 
-        self.exception_handler = exception_handler
+        self.update_listener: list[Callable[[types.Update], service_types.NoneCoroutine]] = []
 
-        self.message_handlers = []
-        self.edited_message_handlers = []
-        self.channel_post_handlers = []
-        self.edited_channel_post_handlers = []
-        self.inline_handlers = []
-        self.chosen_inline_handlers = []
-        self.callback_query_handlers = []
-        self.shipping_query_handlers = []
-        self.pre_checkout_query_handlers = []
-        self.poll_handlers = []
-        self.poll_answer_handlers = []
-        self.my_chat_member_handlers = []
-        self.chat_member_handlers = []
-        self.chat_join_request_handlers = []
-        self.custom_filters = {}
-        self.state_handlers = []
+        self.message_handlers: list[service_types.Handler] = []
+        self.edited_message_handlers: list[service_types.Handler] = []
+        self.channel_post_handlers: list[service_types.Handler] = []
+        self.edited_channel_post_handlers: list[service_types.Handler] = []
+        self.inline_query_handlers: list[service_types.Handler] = []
+        self.chosen_inline_handlers: list[service_types.Handler] = []
+        self.callback_query_handlers: list[service_types.Handler] = []
+        self.shipping_query_handlers: list[service_types.Handler] = []
+        self.pre_checkout_query_handlers: list[service_types.Handler] = []
+        self.poll_handlers: list[service_types.Handler] = []
+        self.poll_answer_handlers: list[service_types.Handler] = []
+        self.my_chat_member_handlers: list[service_types.Handler] = []
+        self.chat_member_handlers: list[service_types.Handler] = []
+        self.chat_join_request_handlers: list[service_types.Handler] = []
 
-        self.current_states = state_storage
-
-        self.middlewares = []
+        self.custom_filters: dict[str, filters.AnyCustomFilter] = {}
 
     async def close_session(self):
         """
@@ -147,7 +139,7 @@ class AsyncTeleBot:
         logger_level=logging.ERROR,
         allowed_updates: Optional[List[str]] = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
@@ -177,7 +169,7 @@ class AsyncTeleBot:
                     request_timeout=request_timeout,
                     allowed_updates=allowed_updates,
                     *args,
-                    **kwargs
+                    **kwargs,
                 )
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
@@ -199,24 +191,6 @@ class AsyncTeleBot:
         request_timeout: int = 20,
         allowed_updates: Optional[List[str]] = None,
     ):
-        """
-        Function to process polling.
-
-        :param non_stop: Do not stop polling when an ApiException occurs.
-        :param interval: Delay between two update retrivals
-        :param timeout: Request connection timeout
-        :param request_timeout: Timeout in seconds for long polling (see API docs)
-        :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
-            See util.update_types for a complete list of available update types.
-            Specify an empty list to receive all update types except chat_member (default).
-            If not specified, the previous setting will be used.
-
-            Please note that this parameter doesn't affect updates created before the call to the get_updates,
-            so unwanted updates may be received for a short period of time.
-        :return:
-
-        """
         self._polling = True
 
         try:
@@ -268,317 +242,149 @@ class AsyncTeleBot:
     def _loop_create_task(self, coro):
         return asyncio.create_task(coro)
 
-    async def _process_updates(self, handlers, messages, update_type):
-        """
-        Process updates.
-
-        :param handlers:
-        :param messages:
-        :return:
-        """
-        tasks = []
-        for message in messages:
-            middleware = await self.process_middlewares(update_type)
-            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
-        await asyncio.gather(*tasks)
-
-    async def _run_middlewares_and_handlers(self, handlers, message, middlewares):
-        handler_error = None
-        data = {}
-        process_handler = True
-
-        if middlewares:
-            for middleware in middlewares:
-                middleware_result = await middleware.pre_process(message, data)
-                if isinstance(middleware_result, SkipHandler):
-                    await middleware.post_process(message, data, handler_error)
-                    process_handler = False
-                if isinstance(middleware_result, CancelUpdate):
-                    return
-        for handler in handlers:
-            if not process_handler:
-                break
-
-            process_update = await self._test_message_handler(handler, message)
-            if not process_update:
-                continue
-            elif process_update:
-                try:
-                    params = []
-
-                    for i in signature(handler["function"]).parameters:
-                        params.append(i)
-                    if len(params) == 1:
-                        await handler["function"](message)
-                        break
-                    elif len(params) == 2:
-                        if handler["pass_bot"]:
-                            await handler["function"](message, self)
-                            break
-                        else:
-                            await handler["function"](message, data)
-                            break
-                    elif len(params) == 3:
-                        if handler["pass_bot"] and params[1] == "bot":
-                            await handler["function"](message, self, data)
-                            break
-                        else:
-                            await handler["function"](message, data)
-                            break
-                except Exception as e:
-                    handler_error = e
-
-                    if not middlewares:
-                        if self.exception_handler:
-                            return self.exception_handler.handle(e)
-                        logging.error(str(e))
-                        return
-
-        if middlewares:
-            for middleware in middlewares:
-                await middleware.post_process(message, data, handler_error)
-
     # update handling
-    async def process_new_updates(self, updates: list[types.Update]):
-        """
-        Process new updates.
-        Just pass list of updates - each update should be
-        instance of Update object.
 
-        :param updates: list of updates
-        """
+    async def process_new_updates(self, updates: list[types.Update]):
         upd_count = len(updates)
         logger.info("Received {0} new updates".format(upd_count))
         if upd_count == 0:
             return
 
-        new_messages = []
-        new_edited_messages = []
-        new_channel_posts = []
-        new_edited_channel_posts = []
-        new_inline_queries = []
-        new_chosen_inline_results = []
-        new_callback_queries = []
-        new_shipping_queries = []
-        new_pre_checkout_queries = []
-        new_polls = []
-        new_poll_answers = []
-        new_my_chat_members = []
-        new_chat_members = []
-        chat_join_request = []
         for update in updates:
             logger.debug("Processing updates: {0}".format(update))
+            for listener in self.update_listener:
+                asyncio.create_task(listener(update))
+
+            coroutines: list[Coroutine[None, None, None]] = []
             if update.message:
-                new_messages.append(update.message)
+                coroutines.append(self._process_update(self.message_handlers, update.message))
             if update.edited_message:
-                new_edited_messages.append(update.edited_message)
+                coroutines.append(self._process_update(self.edited_message_handlers, update.edited_message))
             if update.channel_post:
-                new_channel_posts.append(update.channel_post)
+                coroutines.append(self._process_update(self.channel_post_handlers, update.channel_post))
             if update.edited_channel_post:
-                new_edited_channel_posts.append(update.edited_channel_post)
+                coroutines.append(self._process_update(self.edited_channel_post_handlers, update.edited_channel_post))
             if update.inline_query:
-                new_inline_queries.append(update.inline_query)
+                coroutines.append(self._process_update(self.inline_query_handlers, update.inline_query))
             if update.chosen_inline_result:
-                new_chosen_inline_results.append(update.chosen_inline_result)
+                coroutines.append(self._process_update(self.chosen_inline_handlers, update.chosen_inline_result))
             if update.callback_query:
-                new_callback_queries.append(update.callback_query)
+                coroutines.append(self._process_update(self.callback_query_handlers, update.callback_query))
             if update.shipping_query:
-                new_shipping_queries.append(update.shipping_query)
+                coroutines.append(self._process_update(self.shipping_query_handlers, update.shipping_query))
             if update.pre_checkout_query:
-                new_pre_checkout_queries.append(update.pre_checkout_query)
+                coroutines.append(self._process_update(self.pre_checkout_query_handlers, update.pre_checkout_query))
             if update.poll:
-                new_polls.append(update.poll)
+                coroutines.append(self._process_update(self.poll_handlers, update.poll))
             if update.poll_answer:
-                new_poll_answers.append(update.poll_answer)
+                coroutines.append(self._process_update(self.poll_answer_handlers, update.poll_answer))
             if update.my_chat_member:
-                new_my_chat_members.append(update.my_chat_member)
+                coroutines.append(self._process_update(self.my_chat_member_handlers, update.my_chat_member))
             if update.chat_member:
-                new_chat_members.append(update.chat_member)
+                coroutines.append(self._process_update(self.chat_member_handlers, update.chat_member))
             if update.chat_join_request:
-                chat_join_request.append(update.chat_join_request)
+                coroutines.append(self._process_update(self.chat_join_request_handlers, update.chat_join_request))
 
-        if new_messages:
-            await self.process_new_messages(new_messages)
-        if new_edited_messages:
-            await self.process_new_edited_messages(new_edited_messages)
-        if new_channel_posts:
-            await self.process_new_channel_posts(new_channel_posts)
-        if new_edited_channel_posts:
-            await self.process_new_edited_channel_posts(new_edited_channel_posts)
-        if new_inline_queries:
-            await self.process_new_inline_query(new_inline_queries)
-        if new_chosen_inline_results:
-            await self.process_new_chosen_inline_query(new_chosen_inline_results)
-        if new_callback_queries:
-            await self.process_new_callback_query(new_callback_queries)
-        if new_shipping_queries:
-            await self.process_new_shipping_query(new_shipping_queries)
-        if new_pre_checkout_queries:
-            await self.process_new_pre_checkout_query(new_pre_checkout_queries)
-        if new_polls:
-            await self.process_new_poll(new_polls)
-        if new_poll_answers:
-            await self.process_new_poll_answer(new_poll_answers)
-        if new_my_chat_members:
-            await self.process_new_my_chat_member(new_my_chat_members)
-        if new_chat_members:
-            await self.process_new_chat_member(new_chat_members)
-        if chat_join_request:
-            await self.process_chat_join_request(chat_join_request)
+        await asyncio.gather(*coroutines)
 
-    async def process_new_messages(self, new_messages):
-        await self.__notify_update(new_messages)
-        await self._process_updates(self.message_handlers, new_messages, "message")
+    async def _process_update(self, handlers: list[service_types.Handler], update_content: service_types.UpdateContent):
+        for handler in handlers:
+            if await self._test_handler(handler, update_content):
+                try:
+                    handler_func_n_params = len(list(signature(handler["function"]).parameters.keys()))
+                    if handler_func_n_params == 1:
+                        await handler["function"](update_content)
+                        return
+                    elif handler_func_n_params == 2:
+                        await handler["function"](update_content, self)
+                        return
+                    else:
+                        raise TypeError(
+                            "Handler function must have one (update content) or two (+ bot) parameters, "
+                            + f"but {handler_func_n_params} found"
+                        )
+                except Exception as e:
+                    logger.error(f"Error processing update {update_content} with handler {handler['name']}: {e}")
+                    return
 
-    async def process_new_edited_messages(self, edited_message):
-        await self._process_updates(self.edited_message_handlers, edited_message, "edited_message")
-
-    async def process_new_channel_posts(self, channel_post):
-        await self._process_updates(self.channel_post_handlers, channel_post, "channel_post")
-
-    async def process_new_edited_channel_posts(self, edited_channel_post):
-        await self._process_updates(
-            self.edited_channel_post_handlers,
-            edited_channel_post,
-            "edited_channel_post",
-        )
-
-    async def process_new_inline_query(self, new_inline_querys):
-        await self._process_updates(self.inline_handlers, new_inline_querys, "inline_query")
-
-    async def process_new_chosen_inline_query(self, new_chosen_inline_querys):
-        await self._process_updates(self.chosen_inline_handlers, new_chosen_inline_querys, "chosen_inline_query")
-
-    async def process_new_callback_query(self, new_callback_querys):
-        await self._process_updates(self.callback_query_handlers, new_callback_querys, "callback_query")
-
-    async def process_new_shipping_query(self, new_shipping_querys):
-        await self._process_updates(self.shipping_query_handlers, new_shipping_querys, "shipping_query")
-
-    async def process_new_pre_checkout_query(self, pre_checkout_querys):
-        await self._process_updates(self.pre_checkout_query_handlers, pre_checkout_querys, "pre_checkout_query")
-
-    async def process_new_poll(self, polls):
-        await self._process_updates(self.poll_handlers, polls, "poll")
-
-    async def process_new_poll_answer(self, poll_answers):
-        await self._process_updates(self.poll_answer_handlers, poll_answers, "poll_answer")
-
-    async def process_new_my_chat_member(self, my_chat_members):
-        await self._process_updates(self.my_chat_member_handlers, my_chat_members, "my_chat_member")
-
-    async def process_new_chat_member(self, chat_members):
-        await self._process_updates(self.chat_member_handlers, chat_members, "chat_member")
-
-    async def process_chat_join_request(self, chat_join_request):
-        await self._process_updates(self.chat_join_request_handlers, chat_join_request, "chat_join_request")
-
-    async def process_middlewares(self, update_type):
-        if self.middlewares:
-            middlewares = [middleware for middleware in self.middlewares if update_type in middleware.update_types]
-            return middlewares
-        return None
-
-    async def __notify_update(self, new_messages):
-        if len(self.update_listener) == 0:
-            return
-        for listener in self.update_listener:
-            self._loop_create_task(listener(new_messages))
-
-    async def _test_message_handler(self, message_handler, message):
-        """
-        Test message handler.
-
-        :param message_handler:
-        :param message:
-        :return:
-        """
-        for message_filter, filter_value in message_handler["filters"].items():
+    async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
+        for filter_key, filter_value in handler["filters"].items():
             if filter_value is None:
                 continue
-
-            if not await self._test_filter(message_filter, filter_value, message):
+            if not await self._test_filter(filter_key, filter_value, content):
                 return False
-
         return True
 
-    def add_update_listener(self, func):
-        """
-        Update listener is a function that gets any update.
-
-        :param func: function that should get update.
-        """
+    def add_update_listener(self, func: Callable[[types.Update], service_types.NoneCoroutine]):
         self.update_listener.append(func)
 
-    def add_custom_filter(self, custom_filter):
-        """
-        Create custom filter.
-
-        custom_filter: Class with check(message) method.
-        """
+    def add_custom_filter(self, custom_filter: filters.AnyCustomFilter):
         self.custom_filters[custom_filter.key] = custom_filter
 
-    async def _test_filter(self, message_filter, filter_value, message):
-        """
-        Test filters.
-
-        :param message_filter: Filter type passed in handler
-        :param filter_value: Filter value passed in handler
-        :param message: Message to test
-        :return: True if filter conforms
-        """
-        #     test_cases = {
-        #         'content_types': lambda msg: msg.content_type in filter_value,
-        #         'regexp': lambda msg: msg.content_type == 'text' and re.search(filter_value, msg.text, re.IGNORECASE),
-        #         'commands': lambda msg: msg.content_type == 'text' and util.extract_command(msg.text) in filter_value,
-        #         'func': lambda msg: filter_value(msg)
-        #     }
-        #     return test_cases.get(message_filter, lambda msg: False)(message)
-        if message_filter == "content_types":
-            return message.content_type in filter_value
-        elif message_filter == "regexp":
-            return message.content_type == "text" and re.search(filter_value, message.text, re.IGNORECASE)
-        elif message_filter == "commands":
-            return message.content_type == "text" and util.extract_command(message.text) in filter_value
-        elif message_filter == "chat_types":
-            return message.chat.type in filter_value
-        elif message_filter == "func":
-            return filter_value(message)
-        elif self.custom_filters and message_filter in self.custom_filters:
-            return await self._check_filter(message_filter, filter_value, message)
+    async def _test_filter(
+        self, filter_key: str, filter_value: service_types.FilterValue, update_content: service_types.UpdateContent
+    ) -> bool:
+        if filter_key == "content_types":
+            filter_value = cast(list[str], filter_value)
+            return update_content.content_type in filter_value
+        elif filter_key == "regexp":
+            return update_content.content_type == "text" and re.search(
+                filter_value, update_content.text or update_content.caption, re.IGNORECASE
+            )
+        elif filter_key == "commands":
+            return update_content.content_type == "text" and util.extract_command(update_content.text) in filter_value
+        elif filter_key == "chat_types":
+            return update_content.chat.type in filter_value
+        elif filter_key == "func":
+            filter_value = cast(service_types.FilterFunc, filter_value)
+            filter_func_return = filter_value(update_content)
+            if asyncio.iscoroutine(filter_func_return):
+                return await filter_func_return
+            else:
+                return filter_func_return
+        elif filter_key == "callback_data":
+            try:
+                filter_value = cast(callback_data.CallbackData, filter_value)
+                update_content = cast(types.CallbackQuery, update_content)
+                filter_value.parse(update_content.data)
+                return True
+            except ValueError:
+                return False
         else:
+            return await self._test_custom_filters(filter_key, filter_value, update_content)
+
+    async def _test_custom_filters(
+        self, filter_key: str, filter_value: service_types.FilterValue, update_content: service_types.UpdateContent
+    ):
+        try:
+            custom_filter = self.custom_filters.get(filter_key)
+            if custom_filter is None:
+                return False
+            elif isinstance(custom_filter, filters.SimpleCustomFilter):
+                return filter_value == await custom_filter.check(update_content)
+            elif isinstance(custom_filter, filters.AdvancedCustomFilter):
+                return await custom_filter.check(update_content, filter_value)
+            else:
+                logger.error(
+                    "Invalid custom filter type, expected either SimpleCustomFilter "
+                    + f"or AdvancedCustomFilter, got {custom_filter}."
+                )
+                return False
+        except Exception as e:
+            logger.error(f"Unexpected error testing custom filters: {e}")
             return False
 
-    async def _check_filter(self, message_filter, filter_value, message):
-        """
-        Check up the filter.
+    # handlers building decorators and methods
 
-        :param message_filter:
-        :param filter_value:
-        :param message:
-        :return:
-        """
-        filter_check = self.custom_filters.get(message_filter)
-        if not filter_check:
-            return False
-        elif isinstance(filter_check, filters.SimpleCustomFilter):
-            return filter_value == await filter_check.check(message)
-        elif isinstance(filter_check, filters.AdvancedCustomFilter):
-            return await filter_check.check(message, filter_value)
-        else:
-            logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
-            return False
-
-    def setup_middleware(self, middleware):
-        """
-        Setup middleware.
-
-        :param middleware: Middleware-class.
-        :return:
-        """
-        self.middlewares.append(middleware)
-
-    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
+    def message_handler(
+        self,
+        commands: Optional[list[str]] = None,
+        regexp: str = None,
+        func: Optional[service_types.FilterFunc[types.Message]] = None,
+        content_types: Optional[list[str]] = None,
+        chat_types: Optional[list[str]] = None,
+        **kwargs,
+    ):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
@@ -621,434 +427,154 @@ class AsyncTeleBot:
         """
 
         if content_types is None:
-            content_types = ["text"]
+            content_types = util.content_type_media
 
-        if isinstance(commands, str):
-            logger.warning("message_handler: 'commands' filter should be List of strings (commands), not string.")
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "message_handler: 'content_types' filter should be List of strings (content types), not string."
+        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.message_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "commands": commands,
+                        "regexp": regexp,
+                        "content_types": content_types,
+                        "chat_types": chat_types,
+                        "func": func,
+                        **kwargs,
+                    },
+                )
             )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler,
-                chat_types=chat_types,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs
-            )
-            self.add_message_handler(handler_dict)
-            return handler
+            return decorated
 
         return decorator
-
-    def add_message_handler(self, handler_dict):
-        """
-        Adds a message handler.
-        Note that you should use register_message_handler to add message_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.message_handlers.append(handler_dict)
-
-    def register_message_handler(
-        self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        chat_types=None,
-        pass_bot=False,
-        **kwargs
-    ):
-        """
-        Registers message handler.
-
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :param chat_types: True for private chat
-        :param pass_bot: True if you want to get TeleBot instance in your handler
-        :return: decorated function
-        """
-        if content_types is None:
-            content_types = ["text"]
-        if isinstance(commands, str):
-            logger.warning(
-                "register_message_handler: 'commands' filter should be List of strings (commands), not string."
-            )
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            chat_types=chat_types,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs
-        )
-        self.add_message_handler(handler_dict)
 
     def edited_message_handler(
-        self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs
-    ):
-        """
-        Edit message handler decorator.
-
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param chat_types: list of chat types
-        :param kwargs:
-        :return:
-        """
-
-        if content_types is None:
-            content_types = ["text"]
-
-        if isinstance(commands, str):
-            logger.warning(
-                "edited_message_handler: 'commands' filter should be List of strings (commands), not string."
-            )
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "edited_message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler,
-                chat_types=chat_types,
-                content_types=content_types,
-                commands=commands,
-                regexp=regexp,
-                func=func,
-                **kwargs
-            )
-            self.add_edited_message_handler(handler_dict)
-            return handler
-
-        return decorator
-
-    def add_edited_message_handler(self, handler_dict):
-        """
-        Adds the edit message handler.
-        Note that you should use register_edited_message_handler to add edited_message_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.edited_message_handlers.append(handler_dict)
-
-    def register_edited_message_handler(
         self,
-        callback,
-        content_types=None,
-        commands=None,
-        regexp=None,
-        func=None,
-        chat_types=None,
-        pass_bot=False,
-        **kwargs
+        commands: Optional[list[str]] = None,
+        regexp: str = None,
+        func: Optional[service_types.FilterFunc[types.Message]] = None,
+        content_types: Optional[list[str]] = None,
+        chat_types: Optional[list[str]] = None,
+        **kwargs,
     ):
-        """
-        Registers edited message handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :param chat_types: True for private chat
-        :return: decorated function
-        """
-        if isinstance(commands, str):
-            logger.warning(
-                "register_edited_message_handler: 'commands' filter should be List of strings (commands), not string."
-            )
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_edited_message_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            chat_types=chat_types,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs
-        )
-        self.add_edited_message_handler(handler_dict)
-
-    def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
-        """
-        Channel post handler decorator.
-
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param kwargs:
-        :return:
-        """
         if content_types is None:
-            content_types = ["text"]
+            content_types = util.content_type_media
 
-        if isinstance(commands, str):
-            logger.warning("channel_post_handler: 'commands' filter should be List of strings (commands), not string.")
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
+        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.edited_message_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "commands": commands,
+                        "regexp": regexp,
+                        "content_types": content_types,
+                        "chat_types": chat_types,
+                        "func": func,
+                        **kwargs,
+                    },
+                )
             )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs
-            )
-            self.add_channel_post_handler(handler_dict)
-            return handler
+            return decorated
 
         return decorator
 
-    def add_channel_post_handler(self, handler_dict):
-        """
-        Adds channel post handler.
-        Note that you should use register_channel_post_handler to add channel_post_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.channel_post_handlers.append(handler_dict)
-
-    def register_channel_post_handler(
-        self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs
+    def channel_post_handler(
+        self,
+        commands: Optional[list[str]] = None,
+        regexp: str = None,
+        func: Optional[service_types.FilterFunc[types.Message]] = None,
+        content_types: Optional[list[str]] = None,
+        chat_types: Optional[list[str]] = None,
+        **kwargs,
     ):
-        """
-        Registers channel post message handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :return: decorated function
-        """
-        if isinstance(commands, str):
-            logger.warning(
-                "register_channel_post_handler: 'commands' filter should be List of strings (commands), not string."
-            )
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs
-        )
-        self.add_channel_post_handler(handler_dict)
-
-    def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
-        """
-        Edit channel post handler decorator.
-
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param kwargs:
-        :return:
-        """
         if content_types is None:
-            content_types = ["text"]
+            content_types = util.content_type_media
 
-        if isinstance(commands, str):
-            logger.warning(
-                "edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string."
+        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.channel_post_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "commands": commands,
+                        "regexp": regexp,
+                        "content_types": content_types,
+                        "chat_types": chat_types,
+                        "func": func,
+                        **kwargs,
+                    },
+                )
             )
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(
-                handler, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs
-            )
-            self.add_edited_channel_post_handler(handler_dict)
-            return handler
+            return decorated
 
         return decorator
 
-    def add_edited_channel_post_handler(self, handler_dict):
-        """
-        Adds the edit channel post handler.
-        Note that you should use register_edited_channel_post_handler to add edited_channel_post_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.edited_channel_post_handlers.append(handler_dict)
-
-    def register_edited_channel_post_handler(
-        self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs
+    def edited_channel_post_handler(
+        self,
+        commands: Optional[list[str]] = None,
+        regexp: str = None,
+        func: Optional[service_types.FilterFunc[types.Message]] = None,
+        content_types: Optional[list[str]] = None,
+        chat_types: Optional[list[str]] = None,
+        **kwargs,
     ):
-        """
-        Registers edited channel post message handler.
+        if content_types is None:
+            content_types = util.content_type_media
 
-        :param pass_bot:
-        :param callback: function to be called
-        :param content_types: list of content_types
-        :param commands: list of commands
-        :param regexp:
-        :param func:
-        :return: decorated function
-        """
-        if isinstance(commands, str):
-            logger.warning(
-                "register_edited_channel_post_handler: 'commands' filter should be List of strings (commands), not string."
+        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.edited_channel_post_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "commands": commands,
+                        "regexp": regexp,
+                        "content_types": content_types,
+                        "chat_types": chat_types,
+                        "func": func,
+                        **kwargs,
+                    },
+                )
             )
-            commands = [commands]
-
-        if isinstance(content_types, str):
-            logger.warning(
-                "register_edited_channel_post_handler: 'content_types' filter should be List of strings (content types), not string."
-            )
-            content_types = [content_types]
-
-        handler_dict = self._build_handler_dict(
-            callback,
-            content_types=content_types,
-            commands=commands,
-            regexp=regexp,
-            func=func,
-            pass_bot=pass_bot,
-            **kwargs
-        )
-        self.add_edited_channel_post_handler(handler_dict)
-
-    def inline_handler(self, func, **kwargs):
-        """
-        Inline call handler decorator.
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_inline_handler(handler_dict)
-            return handler
+            return decorated
 
         return decorator
 
-    def add_inline_handler(self, handler_dict):
-        """
-        Adds inline call handler.
-        Note that you should use register_inline_handler to add inline_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.inline_handlers.append(handler_dict)
-
-    def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers inline handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_inline_handler(handler_dict)
-
-    def chosen_inline_handler(self, func, **kwargs):
-        """
-
-        Description: TBD
-
-        :param func:
-        :param kwargs:
-        :return:
-        """
-
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_chosen_inline_handler(handler_dict)
-            return handler
+    def inline_query_handler(self, func: Optional[service_types.FilterFunc[types.InlineQuery]], **kwargs):
+        def decorator(decorated: service_types.HandlerFunction[types.InlineQuery]):
+            self.inline_query_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "func": func,
+                        **kwargs,
+                    },
+                )
+            )
+            return decorated
 
         return decorator
 
-    def add_chosen_inline_handler(self, handler_dict):
-        """
-        Description: TBD
-        Note that you should use register_chosen_inline_handler to add chosen_inline_handler.
+    def chosen_inline_result_handler(
+        self, func: Optional[service_types.FilterFunc[types.ChosenInlineResult]], **kwargs
+    ):
+        def decorator(decorated: service_types.HandlerFunction[types.InlineQuery]):
+            self.chosen_inline_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "func": func,
+                        **kwargs,
+                    },
+                )
+            )
+            return decorated
 
-        :param handler_dict:
-        :return:
-        """
-        self.chosen_inline_handlers.append(handler_dict)
+        return decorator
 
-    def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers chosen inline handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_chosen_inline_handler(handler_dict)
-
-    def callback_query_handler(self, func, **kwargs):
+    def callback_query_handler(
+        self,
+        callback_data: callback_data.CallbackData,
+        func: Optional[service_types.FilterFunc[types.ChosenInlineResult]] = None,
+        **kwargs,
+    ):
         """
         Callback request handler decorator.
 
@@ -1057,34 +583,20 @@ class AsyncTeleBot:
         :return:
         """
 
-        def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
-            self.add_callback_query_handler(handler_dict)
-            return handler
+        def decorator(decorated: service_types.HandlerFunction[types.CallbackQuery]):
+            self.callback_query_handlers.append(
+                service_types.Handler(
+                    function=decorated,
+                    filters={
+                        "callback_data": callback_data,
+                        "func": func,
+                        **kwargs,
+                    }
+                )
+            )
+            return decorated
 
         return decorator
-
-    def add_callback_query_handler(self, handler_dict):
-        """
-        Adds a callback request handler.
-        Note that you should use register_callback_query_handler to add callback_query_handler.
-
-        :param handler_dict:
-        :return:
-        """
-        self.callback_query_handlers.append(handler_dict)
-
-    def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
-        """
-        Registers callback query handler.
-
-        :param pass_bot:
-        :param callback: function to be called
-        :param func:
-        :return: decorated function
-        """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
-        self.add_callback_query_handler(handler_dict)
 
     def shipping_query_handler(self, func, **kwargs):
         """
@@ -1096,7 +608,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_shipping_query_handler(handler_dict)
             return handler
 
@@ -1121,7 +633,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_shipping_query_handler(handler_dict)
 
     def pre_checkout_query_handler(self, func, **kwargs):
@@ -1134,7 +646,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_pre_checkout_query_handler(handler_dict)
             return handler
 
@@ -1159,7 +671,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
@@ -1172,7 +684,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_poll_handler(handler_dict)
             return handler
 
@@ -1197,7 +709,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_handler(handler_dict)
 
     def poll_answer_handler(self, func=None, **kwargs):
@@ -1210,7 +722,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_poll_answer_handler(handler_dict)
             return handler
 
@@ -1235,7 +747,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_answer_handler(handler_dict)
 
     def my_chat_member_handler(self, func=None, **kwargs):
@@ -1248,7 +760,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_my_chat_member_handler(handler_dict)
             return handler
 
@@ -1273,7 +785,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_my_chat_member_handler(handler_dict)
 
     def chat_member_handler(self, func=None, **kwargs):
@@ -1286,7 +798,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_chat_member_handler(handler_dict)
             return handler
 
@@ -1311,7 +823,7 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_member_handler(handler_dict)
 
     def chat_join_request_handler(self, func=None, **kwargs):
@@ -1324,7 +836,7 @@ class AsyncTeleBot:
         """
 
         def decorator(handler):
-            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            handler_dict = self._new_handler(handler, func=func, **kwargs)
             self.add_chat_join_request_handler(handler_dict)
             return handler
 
@@ -1349,25 +861,8 @@ class AsyncTeleBot:
         :param func:
         :return: decorated function
         """
-        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        handler_dict = self._new_handler(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_join_request_handler(handler_dict)
-
-    @staticmethod
-    def _build_handler_dict(handler, pass_bot=False, **filters):
-        """
-        Builds a dictionary for a handler.
-
-        :param handler:
-        :param filters:
-        :return:
-        """
-        return {
-            "function": handler,
-            "pass_bot": pass_bot,
-            "filters": {ftype: fvalue for ftype, fvalue in filters.items() if fvalue is not None}
-            # Remove None values, they are skipped in _test_filter anyway
-            #'filters': filters
-        }
 
     async def skip_updates(self):
         """
@@ -3914,67 +3409,3 @@ class AsyncTeleBot:
         :return:
         """
         return await api.delete_sticker_from_set(self.token, sticker)
-
-    async def set_state(self, user_id: int, state: str, chat_id: int = None):
-        """
-        Sets a new state of a user.
-
-        :param user_id:
-        :param chat_id:
-        :param state: new state. can be string or integer.
-        """
-        if not chat_id:
-            chat_id = user_id
-        await self.current_states.set_state(chat_id, user_id, state)
-
-    async def reset_data(self, user_id: int, chat_id: int = None):
-        """
-        Reset data for a user in chat.
-
-        :param user_id:
-        :param chat_id:
-        """
-        if chat_id is None:
-            chat_id = user_id
-        await self.current_states.reset_data(chat_id, user_id)
-
-    async def delete_state(self, user_id: int, chat_id: int = None):
-        """
-        Delete the current state of a user.
-
-        :param user_id:
-        :param chat_id:
-        :return:
-        """
-        if not chat_id:
-            chat_id = user_id
-        await self.current_states.delete_state(chat_id, user_id)
-
-    def retrieve_data(self, user_id: int, chat_id: int = None):
-        if not chat_id:
-            chat_id = user_id
-        return self.current_states.get_interactive_data(chat_id, user_id)
-
-    async def get_state(self, user_id, chat_id: int = None):
-        """
-        Get current state of a user.
-
-        :param user_id:
-        :param chat_id:
-        :return: state of a user
-        """
-        if not chat_id:
-            chat_id = user_id
-        return await self.current_states.get_state(chat_id, user_id)
-
-    async def add_data(self, user_id: int, chat_id: int = None, **kwargs):
-        """
-        Add data to states.
-
-        :param user_id:
-        :param chat_id:
-        """
-        if not chat_id:
-            chat_id = user_id
-        for key, value in kwargs.items():
-            await self.current_states.set_data(chat_id, user_id, key, value)

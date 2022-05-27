@@ -1,0 +1,2 @@
+class InvalidFilters(ValueError):
+    pass

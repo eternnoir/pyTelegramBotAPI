@@ -261,15 +261,15 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     def __init__(
         self,
-        id,
-        is_bot,
-        first_name,
-        last_name=None,
-        username=None,
-        language_code=None,
-        can_join_groups=None,
-        can_read_all_group_messages=None,
-        supports_inline_queries=None,
+        id: int,
+        is_bot: bool,
+        first_name: str,
+        last_name: Optional[str] = None,
+        username: Optional[str] = None,
+        language_code: Optional[str] = None,
+        can_join_groups: Optional[bool] = None,
+        can_read_all_group_messages: Optional[bool] = None,
+        supports_inline_queries: Optional[bool] = None,
         **kwargs
     ):
         self.id: int = id
@@ -337,48 +337,48 @@ class Chat(JsonDeserializable):
 
     def __init__(
         self,
-        id,
-        type,
-        title=None,
-        username=None,
-        first_name=None,
-        last_name=None,
-        photo=None,
-        bio=None,
-        has_private_forwards=None,
-        description=None,
-        invite_link=None,
-        pinned_message=None,
-        permissions=None,
-        slow_mode_delay=None,
-        message_auto_delete_time=None,
-        has_protected_content=None,
-        sticker_set_name=None,
-        can_set_sticker_set=None,
-        linked_chat_id=None,
-        location=None,
+        id: int,
+        type: str,
+        title: Optional[str] = None,
+        username: Optional[str] = None,
+        first_name: Optional[str] = None,
+        last_name: Optional[str] = None,
+        photo: Optional["ChatPhoto"] = None,
+        bio: Optional[str] = None,
+        has_private_forwards: Optional[bool] = None,
+        description: Optional[str] = None,
+        invite_link: Optional[str] = None,
+        pinned_message: Optional["Message"] = None,
+        permissions: Optional["ChatPermissions"] = None,
+        slow_mode_delay: Optional[int] = None,
+        message_auto_delete_time: Optional[int] = None,
+        has_protected_content: Optional[bool] = None,
+        sticker_set_name: Optional[str] = None,
+        can_set_sticker_set: Optional[bool] = None,
+        linked_chat_id: Optional[int] = None,
+        location: Optional["ChatLocation"] = None,
         **kwargs
     ):
-        self.id: int = id
-        self.type: str = type
-        self.title: str = title
-        self.username: str = username
-        self.first_name: str = first_name
-        self.last_name: str = last_name
-        self.photo: ChatPhoto = photo
-        self.bio: str = bio
-        self.has_private_forwards: bool = has_private_forwards
-        self.description: str = description
-        self.invite_link: str = invite_link
-        self.pinned_message: Message = pinned_message
-        self.permissions: ChatPermissions = permissions
-        self.slow_mode_delay: int = slow_mode_delay
-        self.message_auto_delete_time: int = message_auto_delete_time
-        self.has_protected_content: bool = has_protected_content
-        self.sticker_set_name: str = sticker_set_name
-        self.can_set_sticker_set: bool = can_set_sticker_set
-        self.linked_chat_id: int = linked_chat_id
-        self.location: ChatLocation = location
+        self.id = id
+        self.type = type
+        self.title = title
+        self.username = username
+        self.first_name = first_name
+        self.last_name = last_name
+        self.photo = photo
+        self.bio = bio
+        self.has_private_forwards = has_private_forwards
+        self.description = description
+        self.invite_link = invite_link
+        self.pinned_message = pinned_message
+        self.permissions = permissions
+        self.slow_mode_delay = slow_mode_delay
+        self.message_auto_delete_time = message_auto_delete_time
+        self.has_protected_content = has_protected_content
+        self.sticker_set_name = sticker_set_name
+        self.can_set_sticker_set = can_set_sticker_set
+        self.linked_chat_id = linked_chat_id
+        self.location = location
 
 
 class MessageID(JsonDeserializable):
@@ -411,7 +411,7 @@ class WebAppData(JsonDeserializable):
 
 class Message(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string):
+    def de_json(cls, json_string) -> Optional["Message"]:
         if json_string is None:
             return None
         obj = cls.check_json(json_string, dict_copy=False)

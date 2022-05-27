@@ -1,7 +1,8 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Optional, Union
 
 from telebot import types
+from telebot.types import service as service_types
 from telebot.handler_backends import State
 
 
@@ -16,11 +17,9 @@ class SimpleCustomFilter(ABC):
 
     key: str = None
 
-    async def check(self, message):
-        """
-        Perform a check.
-        """
-        pass
+    @abstractmethod
+    async def check(self, update_content: service_types.UpdateContent) -> bool:
+        ...
 
 
 class AdvancedCustomFilter(ABC):
@@ -36,11 +35,12 @@ class AdvancedCustomFilter(ABC):
 
     key: str = None
 
-    async def check(self, message, text):
-        """
-        Perform a check.
-        """
-        pass
+    @abstractmethod
+    async def check(self, update_content: service_types.UpdateContent, text):
+        ...
+
+
+AnyCustomFilter = Union[SimpleCustomFilter, AdvancedCustomFilter]
 
 
 class TextFilter:

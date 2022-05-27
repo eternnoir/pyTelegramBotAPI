@@ -4,7 +4,7 @@ import logging
 
 from aiohttp import web
 
-import telebot
+from telebot import types, api
 from telebot.bot_runner import BotRunner
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
             return web.Response(status=403)
         try:
             request_body_dict = await request.json()
-            update = telebot.types.Update.de_json(request_body_dict)
+            update = types.Update.de_json(request_body_dict)
             await bot_wrapper.bot.process_new_updates([update])
         except Exception as e:
             logger.exception(f"Unexpected error processing update #{update.update_id}:\n{update}")
@@ -54,8 +54,12 @@ def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
                 loop.create_task(coro)
                 logger.info(f"Background task #{idx} created for {bw.name}")
 
+    async def close_client_session(_):
+        await api.session_manager.session.close()
+
     app = web.Application()
     app.on_startup.append(setup_webhooks)
     app.on_startup.append(run_background_tasks)
+    app.on_cleanup.append(close_client_session)
     app.router.add_post("/{route}/", handle_update)
     web.run_app(app, host="0.0.0.0", port=port, access_log=None)
