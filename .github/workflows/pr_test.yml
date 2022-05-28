@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9', '3.10' ]
+        python-version: [ '3.9' ]
     name: Python ${{ matrix.python-version }} tests
     steps:
       - name: Checkout latest version
@@ -34,4 +34,3 @@ jobs:
           poetry run mypy telebot
       - name: Run unit tests
         run: poetry run pytest tests -vv
-
