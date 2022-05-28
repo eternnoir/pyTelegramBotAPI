@@ -12,8 +12,6 @@ from telebot import types, util
 logger = logging.getLogger(__name__)
 
 
-proxy = None
-
 FILE_URL = None
 CUSTOM_SERIALIZER = None
 
@@ -67,7 +65,6 @@ async def _request(
                 url="https://api.telegram.org/bot{0}/{1}".format(token, route),
                 data=to_form_data(params, files),
                 timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
-                proxy=proxy,
             ) as resp:
                 logger.debug(
                     "Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(
@@ -156,7 +153,7 @@ async def download_file(token, file_path):
         # noinspection PyUnresolvedReferences
         url = FILE_URL.format(token, file_path)
     async with await session_manager.get_session() as session:
-        async with session.get(url, proxy=proxy) as response:
+        async with session.get(url) as response:
             result = await response.read()
             if response.status != 200:
                 raise ApiHTTPException("Download file", result)
