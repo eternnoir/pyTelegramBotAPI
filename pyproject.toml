@@ -24,9 +24,10 @@ pytest-asyncio = "^0.18.3"
 python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+pytest-aiohttp = "1.0.4"
 black = "^22.3.0"
 isort = "^5.10.1"
-pytest = "^7.1.2"
 pre-commit = "^2.19.0"
 mypy = "^0.960"
 

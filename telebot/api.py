@@ -28,7 +28,8 @@ class SessionManager:
         self.session = session
 
     async def close_session(self):
-        await self.session.close()
+        if self.session is not None:
+            await self.session.close()
 
     async def init_session(self):
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
