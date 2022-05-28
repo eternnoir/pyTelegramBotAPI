@@ -25,13 +25,39 @@ TBD: what is different from upstream pyTelegramBotApi?
 
 ## Development
 
-The project uses [Poetry](https://python-poetry.org/) to track dependencies and build package.
-Install as described [here](https://python-poetry.org/docs/#installation).
-
-
-### Installing locally
+The project uses [Poetry](https://python-poetry.org/) to manage dependencies, build and publish the package.
+Install as described [here](https://python-poetry.org/docs/master/#installation) and make sure to update
+to the latest `1.2.x` version:
 
 ```bash
-poetry init
+poetry self update 1.2.0b1
+```
+
+
+### Installing and configuring locally
+
+```bash
 poetry install
+poetry run pre-commit install
+```
+
+### Running tests and linters
+
+```bash
+poetry shell
+
+pytest tests -vv
+
+mypy telebot
+
+black .
+isort .
+```
+
+### Building
+
+```bash
+poetry plugin add poetry-dynamic-versioning
+poetry build
+poetry publish -u <pypi-username> -p <pypi-pwd>
 ```
