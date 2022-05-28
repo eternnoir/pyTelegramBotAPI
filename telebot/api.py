@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+from typing import Optional
 
 import aiohttp
 import ujson as json
@@ -26,23 +27,17 @@ REQUEST_LIMIT = 50
 
 class SessionManager:
     def __init__(self) -> None:
-        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
+        self.session: Optional[aiohttp.ClientSession] = None
 
     def set_session(self, session: aiohttp.ClientSession):
         self.session = session
 
-    async def create_session(self):
+    async def init_session(self):
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
-        return self.session
 
-    async def get_session(self):
-        if self.session.closed:
-            self.session = await self.create_session()
-
-        # noinspection PyProtectedMember
-        if not self.session._loop.is_running():
-            await self.session.close()
-            self.session = await self.create_session()
+    async def get_session(self) -> aiohttp.ClientSession:
+        if self.session is None or self.session.closed:
+            await self.init_session()
         return self.session
 
 
