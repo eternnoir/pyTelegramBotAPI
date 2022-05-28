@@ -162,33 +162,26 @@ async def download_file(token, file_path):
 
 
 async def set_webhook(
-    token,
-    url=None,
-    certificate=None,
-    max_connections=None,
-    allowed_updates=None,
-    ip_address=None,
-    drop_pending_updates=None,
-    timeout=None,
+    token: str,
+    url: str = None,
+    certificate: Optional[FileObject] = None,
+    max_connections: Optional[int] = None,
+    allowed_updates: Optional[list[str]] = None,
+    ip_address: Optional[str] = None,
+    drop_pending_updates: Optional[bool] = None,
+    timeout: Optional[float] = None,
 ):
-    method_url = r"setWebhook"
-    payload = {
-        "url": url if url else "",
-    }
-    files = None
-    if certificate:
-        files = {"certificate": certificate}
+    files: Optional[Files] = {"certificate": certificate} if certificate else None
+    params: Params = {"url": url}
     if max_connections:
-        payload["max_connections"] = max_connections
+        params["max_connections"] = max_connections
     if allowed_updates is not None:  # Empty lists should pass
-        payload["allowed_updates"] = json.dumps(allowed_updates)
+        params["allowed_updates"] = json.dumps(allowed_updates)
     if ip_address is not None:  # Empty string should pass
-        payload["ip_address"] = ip_address
+        params["ip_address"] = ip_address
     if drop_pending_updates is not None:  # Any bool value should pass
-        payload["drop_pending_updates"] = drop_pending_updates
-    if timeout:
-        payload["timeout"] = timeout
-    return await _request(token, method_url, params=payload, files=files)
+        params["drop_pending_updates"] = drop_pending_updates
+    return await _request(token, route="setWebhook", params=params, files=files, request_timeout=timeout)
 
 
 async def delete_webhook(token, drop_pending_updates=None, timeout=None):
@@ -210,15 +203,14 @@ async def get_webhook_info(token, timeout=None):
 
 
 async def get_updates(
-    token,
-    offset=None,
-    limit=None,
-    timeout=None,
-    allowed_updates=None,
-    request_timeout=None,
+    token: str,
+    offset: Optional[int] = None,
+    limit: Optional[int] = None,
+    timeout: Optional[float] = None,
+    allowed_updates: Optional[list[str]] = None,
+    request_timeout: Optional[float] = None,
 ):
-    method_name = "getUpdates"
-    params = {}
+    params: dict = {}
     if offset:
         params["offset"] = offset
     elif limit:
@@ -227,7 +219,7 @@ async def get_updates(
         params["timeout"] = timeout
     elif allowed_updates:
         params["allowed_updates"] = allowed_updates
-    return await _request(token, method_name, params=params, request_timeout=request_timeout)
+    return await _request(token, route="getUpdates", params=params, request_timeout=request_timeout)
 
 
 async def _check_response(method_name: str, response: aiohttp.ClientResponse):
