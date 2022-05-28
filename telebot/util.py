@@ -12,6 +12,13 @@ MAX_MESSAGE_LENGTH = 4096
 logger = logging.getLogger(__name__)
 
 
+def qualified_name(obj: Any) -> str:
+    try:
+        return f"{obj.__module__}.{obj.__qualname__}"
+    except Exception:
+        return "<cant-get-qualified-name>"
+
+
 def is_string(var: Any) -> bool:
     return isinstance(var, str)
 

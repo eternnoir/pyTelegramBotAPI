@@ -183,7 +183,15 @@ class AsyncTeleBot:
 
     async def _process_update(self, handlers: list[service_types.Handler], update_content: service_types.UpdateContent):
         for handler in handlers:
-            if await self._test_handler(handler, update_content):
+            handler_name = handler.get("name", "<anonymous>")
+
+            try:
+                is_match = await self._test_handler(handler, update_content)
+            except Exception:
+                logger.exception(f"Error testing handler {handler_name}")
+                is_match = False
+
+            if is_match:
                 try:
                     handler_func = handler["function"]
                     handler_func_n_params = len(list(signature(handler_func).parameters.keys()))
@@ -199,9 +207,7 @@ class AsyncTeleBot:
                             + f"but found function with {handler_func_n_params} params"
                         )
                 except Exception:
-                    logger.exception(
-                        f"Error processing update {update_content} with handler {handler.get('name', '<anonymous>')}"
-                    )
+                    logger.exception(f"Error processing update with handler {handler_name}: {update_content}")
                     return
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
@@ -355,6 +361,7 @@ class AsyncTeleBot:
                         "func": func,
                         **kwargs,
                     },
+                    name=util.qualified_name(decorated),
                 )
             )
             return decorated
@@ -386,6 +393,7 @@ class AsyncTeleBot:
                         "func": func,
                         **kwargs,
                     },
+                    name=util.qualified_name(decorated),
                 )
             )
             return decorated
@@ -417,6 +425,7 @@ class AsyncTeleBot:
                         "func": func,
                         **kwargs,
                     },
+                    name=util.qualified_name(decorated),
                 )
             )
             return decorated
@@ -448,6 +457,7 @@ class AsyncTeleBot:
                         "func": func,
                         **kwargs,
                     },
+                    name=util.qualified_name(decorated),
                 )
             )
             return decorated
@@ -470,6 +480,7 @@ class AsyncTeleBot:
                         "func": func,
                         **kwargs,
                     },
+                    name=util.qualified_name(decorated),
                 )
             )
             return decorated
@@ -490,6 +501,7 @@ class AsyncTeleBot:
                         "func": func,
                         **kwargs,
                     },
+                    name=util.qualified_name(decorated),
                 )
             )
             return decorated
