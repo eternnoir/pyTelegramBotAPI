@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: black
+        entry: black .
+        language: python
+        language_version: python3
+        require_serial: true
+        types: [python]
+      - id: isort
+        name: isort
+        entry: isort .
+        language: python
+        language_version: python3
+        require_serial: true
+        types: [python]

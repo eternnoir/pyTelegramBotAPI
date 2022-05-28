@@ -40,5 +40,5 @@ def mock_message_update(text: str) -> types.Update:
         my_chat_member,
         chat_member,
         chat_join_request,
-        _json='{"json": "data", "here": 1}'
+        _json='{"json": "data", "here": 1}',
     )
