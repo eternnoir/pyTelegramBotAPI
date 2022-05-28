@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "telebot-against-war"
-version = "0.0.0"  # dynamic versioning
+version = "0.0.0"  # replaced by dynamic versioning plugin
 description = "Async-first fork of pyTelegramBotApi"
 authors = ["Igor Vaiman <gosha.vaiman@gmail.com>"]
 license = "GPL-2.0-only"
@@ -13,7 +13,8 @@ packages = [
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"
-style = "semver"
+dirty = true
+style="semver"
 
 [tool.poetry.dependencies]
 python = "^3.9"
