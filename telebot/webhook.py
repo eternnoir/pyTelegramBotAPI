@@ -15,7 +15,9 @@ def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
     logger.info("Running bots:\n" + "\n".join(f"/{path}: {bw.name}" for path, bw in bot_runner_by_route.items()))
 
     async def handle_update(request: web.Request):
-        route: str = request.match_info.get("route")
+        route = request.match_info.get("route")
+        if route is None:
+            return web.Response(status=404)
         bot_wrapper = bot_runner_by_route.get(route)
 
         if len(route) >= 64:
@@ -30,11 +32,12 @@ def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
         if bot_wrapper is None:
             return web.Response(status=403)
         try:
-            request_body_dict = await request.json()
-            update = types.Update.de_json(request_body_dict)
-            await bot_wrapper.bot.process_new_updates([update])
+            update = types.Update.de_json(await request.json())
+            if update is not None:
+                await bot_wrapper.bot.process_new_updates([update])
         except Exception as e:
-            logger.exception(f"Unexpected error processing update #{update.update_id}:\n{update}")
+            update_id = update.update_id if update is not None else "<not defined>"
+            logger.exception(f"Unexpected error processing update #{update_id}:\n{update}")
         finally:
             return web.Response()
 

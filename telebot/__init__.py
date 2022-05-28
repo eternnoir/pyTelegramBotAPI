@@ -8,6 +8,8 @@ from datetime import datetime
 from inspect import signature
 from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
+import aiohttp
+
 from telebot import api, callback_data, filters, types, util
 from telebot.types import service as service_types
 
@@ -46,11 +48,10 @@ class AsyncTeleBot:
         self,
         token: str,
         parse_mode: Optional[str] = None,
-        offset=None,
+        offset: Optional[int] = None,
     ) -> None:
         self.token = token
         self.offset = offset
-        self.token = token
         self.parse_mode = parse_mode
 
         self.update_listeners: list[Callable[[types.Update], service_types.NoneCoroutine]] = []
@@ -88,161 +89,45 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         allowed_updates: Optional[List] = None,
         request_timeout: Optional[int] = None,
-    ) -> List[types.Update]:
+    ) -> list[types.Update]:
         json_updates = await api.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
-        return [types.Update.de_json(ju) for ju in json_updates]
-
-    async def polling(
-        self,
-        non_stop: bool = False,
-        skip_pending=False,
-        interval: int = 0,
-        timeout: int = 20,
-        request_timeout: int = 20,
-        allowed_updates: Optional[List[str]] = None,
-        none_stop: Optional[bool] = None,
-    ):
-        """
-        This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
-
-        Warning: Do not call this function more than once!
-
-        Always get updates.
-
-        :param interval: Delay between two update retrivals
-        :param non_stop: Do not stop polling when an ApiException occurs.
-        :param timeout: Request connection timeout
-        :param skip_pending: skip old updates
-        :param request_timeout: Timeout in seconds for a request.
-        :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
-            See util.update_types for a complete list of available update types.
-            Specify an empty list to receive all update types except chat_member (default).
-            If not specified, the previous setting will be used.
-
-            Please note that this parameter doesn't affect updates created before the call to the get_updates,
-            so unwanted updates may be received for a short period of time.
-        :param none_stop: Deprecated, use non_stop. Old typo f***up compatibility
-        :return:
-        """
-        if none_stop is not None:
-            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
-            non_stop = none_stop
-
-        if skip_pending:
-            await self.skip_updates()
-        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates)
+        maybe_updates = [types.Update.de_json(ju) for ju in json_updates]
+        return [u for u in maybe_updates if u is not None]
 
     async def infinity_polling(
         self,
+        interval: float = 1,
+        allowed_updates: Optional[list[str]] = None,
         timeout: int = 20,
         skip_pending: bool = False,
         request_timeout: int = 20,
-        logger_level=logging.ERROR,
-        allowed_updates: Optional[List[str]] = None,
-        *args,
-        **kwargs,
     ):
-        """
-        Wrap polling with infinite loop and exception handling to avoid bot stops polling.
-
-        :param timeout: Request connection timeout
-        :param request_timeout: Timeout in seconds for long polling (see API docs)
-        :param skip_pending: skip old updates
-        :param logger_level: Custom logging level for infinity_polling logging.
-            Use logger levels from logging as a value. None/NOTSET = no error logging
-        :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
-            See util.update_types for a complete list of available update types.
-            Specify an empty list to receive all update types except chat_member (default).
-            If not specified, the previous setting will be used.
-
-            Please note that this parameter doesn't affect updates created before the call to the get_updates,
-            so unwanted updates may be received for a short period of time.
-        """
-        if skip_pending:
-            await self.skip_updates()
-        self._polling = True
-        while self._polling:
-            try:
-                await self._process_polling(
-                    non_stop=True,
-                    timeout=timeout,
-                    request_timeout=request_timeout,
-                    allowed_updates=allowed_updates,
-                    *args,
-                    **kwargs,
-                )
-            except Exception as e:
-                if logger_level and logger_level >= logging.ERROR:
-                    logger.error("Infinity polling exception: %s", str(e))
-                if logger_level and logger_level >= logging.DEBUG:
-                    logger.error("Exception traceback:\n%s", traceback.format_exc())
-                time.sleep(3)
-                continue
-            if logger_level and logger_level >= logging.INFO:
-                logger.error("Infinity polling: polling exited")
-        if logger_level and logger_level >= logging.INFO:
-            logger.error("Break infinity polling")
-
-    async def _process_polling(
-        self,
-        non_stop: bool = False,
-        interval: int = 0,
-        timeout: int = 20,
-        request_timeout: int = 20,
-        allowed_updates: Optional[List[str]] = None,
-    ):
-        self._polling = True
-
+        interval = max(interval, 0.3)
         try:
-            while self._polling:
+            logger.info("Running polling")
+            if skip_pending:
+                await self.skip_updates()
+            while True:
                 try:
-
                     updates = await self.get_updates(
                         offset=self.offset,
                         allowed_updates=allowed_updates,
                         timeout=timeout,
                         request_timeout=request_timeout,
                     )
+                    logger.debug(f"Got {len(updates)} updates\n\n" + "\n".join([str(u._json) for u in updates]) + "\n")
                     if updates:
                         self.offset = updates[-1].update_id + 1
-                        asyncio.create_task(self.process_new_updates(updates))  # Seperate task for processing updates
+                        asyncio.create_task(self.process_new_updates(updates))
                     if interval:
                         await asyncio.sleep(interval)
-
-                except KeyboardInterrupt:
-                    return
-                except asyncio.CancelledError:
-                    return
-                except api.RequestTimeout as e:
-                    logger.error(str(e))
-                    if non_stop:
-                        await asyncio.sleep(2)
-                        continue
-                    else:
-                        return
-                except api.ApiTelegramException as e:
-                    logger.error(str(e))
-                    if non_stop:
-                        continue
-                    else:
-                        break
-                except Exception as e:
-                    logger.error("Cause exception while getting updates.")
-                    if non_stop:
-                        logger.error(str(e))
-                        await asyncio.sleep(3)
-                        continue
-                    else:
-                        raise e
+                except Exception:
+                    logger.exception("Unexpected exception while processing updates")
+                    await asyncio.sleep(1)
+                    logger.info("Resuming polling")
         finally:
-            self._polling = False
             await self.close_session()
-            logger.warning("Polling is stopped.")
-
-    def _loop_create_task(self, coro):
-        return asyncio.create_task(coro)
+            logger.info("Stopping")
 
     # update handling
 
@@ -293,20 +178,23 @@ class AsyncTeleBot:
         for handler in handlers:
             if await self._test_handler(handler, update_content):
                 try:
-                    handler_func_n_params = len(list(signature(handler["function"]).parameters.keys()))
+                    handler_func = handler["function"]
+                    handler_func_n_params = len(list(signature(handler_func).parameters.keys()))
                     if handler_func_n_params == 1:
-                        await handler["function"](update_content)
+                        await handler_func(update_content)
                         return
                     elif handler_func_n_params == 2:
-                        await handler["function"](update_content, self)
+                        await handler_func(update_content, self)
                         return
                     else:
                         raise TypeError(
-                            "Handler function must have one (update content) or two (+ bot) parameters, "
-                            + f"but {handler_func_n_params} found"
+                            "Handler function must have one (update content) or two (update content and bot) parameters, "
+                            + f"but found function with {handler_func_n_params} params"
                         )
-                except Exception as e:
-                    logger.error(f"Error processing update {update_content} with handler {handler['name']}: {e}")
+                except Exception:
+                    logger.exception(
+                        f"Error processing update {update_content} with handler {handler.get('name', '<anonymous>')}"
+                    )
                     return
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
@@ -326,24 +214,37 @@ class AsyncTeleBot:
     async def _test_filter(
         self, filter_key: str, filter_value: service_types.FilterValue, update_content: service_types.UpdateContent
     ) -> bool:
+        def update_content_as_message() -> types.Message:
+            if not isinstance(update_content, types.Message):
+                raise TypeError(f"{filter_key} filter can be used only with message updates")
+            return update_content
+
         if filter_key == "content_types":
-            filter_value = cast(list[str], filter_value)
-            return update_content.content_type in filter_value
+            return update_content_as_message().content_type in util.list_str_validated(filter_value)
         elif filter_key == "regexp":
-            return update_content.content_type == "text" and re.search(
-                filter_value, update_content.text or update_content.caption, re.IGNORECASE
+            message = update_content_as_message()
+            return message.content_type == "text" and bool(
+                re.search(util.str_validated(filter_value), message.text or message.caption or "", re.IGNORECASE)
             )
         elif filter_key == "commands":
-            return update_content.content_type == "text" and util.extract_command(update_content.text) in filter_value
+            message = update_content_as_message()
+            command = util.extract_command(message.text)
+            return (
+                message.content_type == "text"
+                and command is not None
+                and command in util.list_str_validated(filter_value)
+            )
         elif filter_key == "chat_types":
-            return update_content.chat.type in filter_value
+            return update_content_as_message().chat.type in util.list_str_validated(filter_value)
         elif filter_key == "func":
+            if not callable(filter_value):
+                raise TypeError("func filter must be callable")
             filter_value = cast(service_types.FilterFunc, filter_value)
             filter_func_return = filter_value(update_content)
-            if asyncio.iscoroutine(filter_func_return):
-                return await filter_func_return
-            else:
+            if isinstance(filter_func_return, bool):
                 return filter_func_return
+            else:
+                return await filter_func_return
         elif filter_key == "callback_data":
             try:
                 filter_value = cast(callback_data.CallbackData, filter_value)
@@ -615,7 +516,6 @@ class AsyncTeleBot:
         Only last update will remain on server.
         """
         await self.get_updates(-1)
-        return True
 
     # user-facing methods
 

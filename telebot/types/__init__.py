@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass
 import logging
 from abc import ABC
 from io import BytesIO
@@ -69,7 +70,7 @@ class JsonDeserializable(object):
         raise NotImplementedError
 
     @staticmethod
-    def check_json(json_type, dict_copy=True):
+    def ensure_json_dict(json_: Union[str, dict], copy_dict=True) -> dict:
         """
         Checks whether json_type is a dict or a string. If it is already a dict, it is returned as-is.
         If it is not, it is converted to a dict by means of json.loads(json_type)
@@ -78,10 +79,10 @@ class JsonDeserializable(object):
         :param dict_copy: if dict is passed and it is changed outside - should be True!
         :return: Dictionary parsed from json or original dict
         """
-        if util.is_dict(json_type):
-            return json_type.copy() if dict_copy else json_type
-        elif util.is_string(json_type):
-            return json.loads(json_type)
+        if isinstance(json_, dict):
+            return json_.copy() if copy_dict else json_
+        elif isinstance(json_, str):
+            return json.loads(json_)
         else:
             raise ValueError("json_type should be a json dict or string.")
 
@@ -90,12 +91,31 @@ class JsonDeserializable(object):
         return str(d)
 
 
+@dataclass
 class Update(JsonDeserializable):
+    update_id: int
+    message: Optional["Message"]
+    edited_message: Optional["Message"]
+    channel_post: Optional["Message"]
+    edited_channel_post: Optional["Message"]
+    inline_query: Optional["InlineQuery"]
+    chosen_inline_result: Optional["ChosenInlineResult"]
+    callback_query: Optional["CallbackQuery"]
+    shipping_query: Optional["ShippingQuery"]
+    pre_checkout_query: Optional["PreCheckoutQuery"]
+    poll: Optional["Poll"]
+    poll_answer: Optional["PollAnswer"]
+    my_chat_member: Optional["ChatMemberUpdated"]
+    chat_member: Optional["ChatMemberUpdated"]
+    chat_join_request: Optional["ChatJoinRequest"]
+
+    _json: Union[dict, str]
+
     @classmethod
-    def de_json(cls, json_string):
-        if json_string is None:
+    def de_json(cls, json_: Optional[Union[dict, str]]) -> Optional['Update']:
+        if json_ is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_, copy_dict=False)
         update_id = obj["update_id"]
         message = Message.de_json(obj.get("message"))
         edited_message = Message.de_json(obj.get("edited_message"))
@@ -111,7 +131,7 @@ class Update(JsonDeserializable):
         my_chat_member = ChatMemberUpdated.de_json(obj.get("my_chat_member"))
         chat_member = ChatMemberUpdated.de_json(obj.get("chat_member"))
         chat_join_request = ChatJoinRequest.de_json(obj.get("chat_join_request"))
-        return cls(
+        return Update(
             update_id,
             message,
             edited_message,
@@ -127,41 +147,8 @@ class Update(JsonDeserializable):
             my_chat_member,
             chat_member,
             chat_join_request,
+            _json=json_
         )
-
-    def __init__(
-        self,
-        update_id: int,
-        message: Optional["Message"],
-        edited_message: Optional["Message"],
-        channel_post: Optional["Message"],
-        edited_channel_post: Optional["Message"],
-        inline_query: Optional["InlineQuery"],
-        chosen_inline_result: Optional["ChosenInlineResult"],
-        callback_query: Optional["CallbackQuery"],
-        shipping_query: Optional["ShippingQuery"],
-        pre_checkout_query: Optional["PreCheckoutQuery"],
-        poll: Optional["Poll"],
-        poll_answer: Optional["PollAnswer"],
-        my_chat_member: Optional["ChatMemberUpdated"],
-        chat_member: Optional["ChatMemberUpdated"],
-        chat_join_request: Optional["ChatJoinRequest"],
-    ):
-        self.update_id = update_id
-        self.message = message
-        self.edited_message = edited_message
-        self.channel_post = channel_post
-        self.edited_channel_post = edited_channel_post
-        self.inline_query = inline_query
-        self.chosen_inline_result = chosen_inline_result
-        self.callback_query = callback_query
-        self.shipping_query = shipping_query
-        self.pre_checkout_query = pre_checkout_query
-        self.poll = poll
-        self.poll_answer = poll_answer
-        self.my_chat_member = my_chat_member
-        self.chat_member = chat_member
-        self.chat_join_request = chat_join_request
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -169,7 +156,7 @@ class ChatMemberUpdated(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["chat"] = Chat.de_json(obj["chat"])
         obj["from_user"] = User.de_json(obj.pop("from"))
         obj["old_chat_member"] = ChatMember.de_json(obj["old_chat_member"])
@@ -217,7 +204,7 @@ class ChatJoinRequest(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["chat"] = Chat.de_json(obj["chat"])
         obj["from_user"] = User.de_json(obj["from"])
         obj["invite_link"] = ChatInviteLink.de_json(obj.get("invite_link"))
@@ -244,7 +231,7 @@ class WebhookInfo(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(
@@ -276,7 +263,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(
@@ -331,7 +318,7 @@ class GroupChat(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, id, title, **kwargs):
@@ -344,7 +331,7 @@ class Chat(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "photo" in obj:
             obj["photo"] = ChatPhoto.de_json(obj["photo"])
         if "pinned_message" in obj:
@@ -406,7 +393,7 @@ class MessageID(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, message_id, **kwargs):
@@ -425,16 +412,16 @@ class WebAppData(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
 
 class Message(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string) -> Optional["Message"]:
+    def de_json(cls, json_string) -> "Message":
         if json_string is None:
-            return None
-        obj = cls.check_json(json_string, dict_copy=False)
+            raise ValueError("json can't be None")
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         message_id = obj["message_id"]
         from_user = User.de_json(obj.get("from"))
         date = obj["date"]
@@ -784,7 +771,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "user" in obj:
             obj["user"] = User.de_json(obj["user"])
         return cls(**obj)
@@ -819,7 +806,7 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, value, emoji, **kwargs):
@@ -838,7 +825,7 @@ class PhotoSize(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, width, height, file_size=None, **kwargs):
@@ -854,7 +841,7 @@ class Audio(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "thumb" in obj and "file_id" in obj["thumb"]:
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         else:
@@ -890,7 +877,7 @@ class Voice(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, duration, mime_type=None, file_size=None, **kwargs):
@@ -906,7 +893,7 @@ class Document(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "thumb" in obj and "file_id" in obj["thumb"]:
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         else:
@@ -927,7 +914,7 @@ class Video(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "thumb" in obj and "file_id" in obj["thumb"]:
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         return cls(**obj)
@@ -961,7 +948,7 @@ class VideoNote(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "thumb" in obj and "file_id" in obj["thumb"]:
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         return cls(**obj)
@@ -980,7 +967,7 @@ class Contact(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, phone_number, first_name, last_name=None, user_id=None, vcard=None, **kwargs):
@@ -996,7 +983,7 @@ class Location(JsonDeserializable, JsonSerializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(
@@ -1035,7 +1022,7 @@ class Venue(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["location"] = Location.de_json(obj["location"])
         return cls(**obj)
 
@@ -1064,7 +1051,7 @@ class UserProfilePhotos(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "photos" in obj:
             photos = [[PhotoSize.de_json(y) for y in x] for x in obj["photos"]]
             obj["photos"] = photos
@@ -1080,7 +1067,7 @@ class File(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, file_size=None, file_path=None, **kwargs):
@@ -1124,7 +1111,7 @@ class WebAppInfo(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(self, url, **kwargs):
@@ -1271,7 +1258,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj["inline_keyboard"]]
         return cls(keyboard=keyboard)
 
@@ -1362,7 +1349,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "login_url" in obj:
             obj["login_url"] = LoginUrl.de_json(obj.get("login_url"))
         if "web_app" in obj:
@@ -1422,7 +1409,7 @@ class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None, **kwargs):
@@ -1450,7 +1437,7 @@ class CallbackQuery(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if not "data" in obj:
             # "data" field is Optional in the API, but historically is mandatory in the class constructor
             obj["data"] = None
@@ -1476,7 +1463,7 @@ class ChatPhoto(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, small_file_id, small_file_unique_id, big_file_id, big_file_unique_id, **kwargs):
@@ -1491,7 +1478,7 @@ class ChatMember(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["user"] = User.de_json(obj["user"])
         return cls(**obj)
 
@@ -1575,7 +1562,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None:
             return json_string
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(
@@ -1628,7 +1615,7 @@ class BotCommand(JsonSerializable, JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, command, description):
@@ -1743,7 +1730,7 @@ class InlineQuery(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["from_user"] = User.de_json(obj.pop("from"))
         if "location" in obj:
             obj["location"] = Location.de_json(obj["location"])
@@ -1971,7 +1958,7 @@ class ChosenInlineResult(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["from_user"] = User.de_json(obj.pop("from"))
         if "location" in obj:
             obj["location"] = Location.de_json(obj["location"])
@@ -2040,7 +2027,7 @@ class SentWebAppMessage(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(self, inline_message_id=None):
@@ -2890,7 +2877,7 @@ class Game(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["photo"] = Game.parse_photo(obj["photo"])
         if "text_entities" in obj:
             obj["text_entities"] = Game.parse_entities(obj["text_entities"])
@@ -2926,7 +2913,7 @@ class Animation(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "thumb" in obj and "file_id" in obj["thumb"]:
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         else:
@@ -2962,7 +2949,7 @@ class GameHighScore(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["user"] = User.de_json(obj["user"])
         return cls(**obj)
 
@@ -2992,7 +2979,7 @@ class Invoice(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, title, description, start_parameter, currency, total_amount, **kwargs):
@@ -3008,7 +2995,7 @@ class ShippingAddress(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, country_code, state, city, street_line1, street_line2, post_code, **kwargs):
@@ -3025,7 +3012,7 @@ class OrderInfo(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["shipping_address"] = ShippingAddress.de_json(obj.get("shipping_address"))
         return cls(**obj)
 
@@ -3065,7 +3052,7 @@ class SuccessfulPayment(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["order_info"] = OrderInfo.de_json(obj.get("order_info"))
         return cls(**obj)
 
@@ -3094,7 +3081,7 @@ class ShippingQuery(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["from_user"] = User.de_json(obj.pop("from"))
         obj["shipping_address"] = ShippingAddress.de_json(obj["shipping_address"])
         return cls(**obj)
@@ -3111,7 +3098,7 @@ class PreCheckoutQuery(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["from_user"] = User.de_json(obj.pop("from"))
         obj["order_info"] = OrderInfo.de_json(obj.get("order_info"))
         return cls(**obj)
@@ -3136,7 +3123,7 @@ class StickerSet(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         stickers = []
         for s in obj["stickers"]:
             stickers.append(Sticker.de_json(s))
@@ -3162,7 +3149,7 @@ class Sticker(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "thumb" in obj and "file_id" in obj["thumb"]:
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         else:
@@ -3204,7 +3191,7 @@ class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, point, x_shift, y_shift, scale, **kwargs):
@@ -3392,7 +3379,7 @@ class PollOption(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, text, voter_count=0, **kwargs):
@@ -3410,7 +3397,7 @@ class Poll(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["poll_id"] = obj.pop("id")
         options = []
         for opt in obj["options"]:
@@ -3470,7 +3457,7 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["user"] = User.de_json(obj["user"])
         return cls(**obj)
 
@@ -3495,7 +3482,7 @@ class ChatLocation(JsonSerializable, JsonDeserializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None:
             return json_string
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["location"] = Location.de_json(obj["location"])
         return cls(**obj)
 
@@ -3515,7 +3502,7 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         obj["creator"] = User.de_json(obj["creator"])
         return cls(**obj)
 
@@ -3569,7 +3556,7 @@ class ProximityAlertTriggered(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, traveler, watcher, distance, **kwargs):
@@ -3602,7 +3589,7 @@ class VideoChatScheduled(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, start_date, **kwargs):
@@ -3620,7 +3607,7 @@ class VideoChatEnded(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, duration, **kwargs):
@@ -3638,7 +3625,7 @@ class VideoChatParticipantsInvited(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         if "users" in obj:
             obj["users"] = [User.de_json(u) for u in obj["users"]]
         return cls(**obj)
@@ -3658,7 +3645,7 @@ class MessageAutoDeleteTimerChanged(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string, dict_copy=False)
+        obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
     def __init__(self, message_auto_delete_time, **kwargs):
@@ -3674,7 +3661,7 @@ class MenuButton(JsonDeserializable, JsonSerializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         map = {
             "commands": MenuButtonCommands,
             "web_app": MenuButtonWebApp,
@@ -3731,7 +3718,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(

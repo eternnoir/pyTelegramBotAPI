@@ -1,4 +1,4 @@
-from typing import Callable, Coroutine, TypedDict, TypeVar, Union
+from typing import Callable, Coroutine, ForwardRef, Protocol, TypedDict, TypeVar, Union, overload
 
 from typing_extensions import NotRequired
 
@@ -20,9 +20,12 @@ UpdateContent = Union[
 ]
 
 
-_UCT = TypeVar("_UCT", bound=UpdateContent)
+_UCT = TypeVar("_UCT", bound=UpdateContent, contravariant=True)
 
-FilterFunc = Union[Callable[[_UCT], bool], Callable[[_UCT], Coroutine[None, None, bool]]]
+
+class FilterFunc(Protocol[_UCT]):
+    def __call__(self, update_content: _UCT) -> Union[bool, Coroutine[None, None, bool]]:
+        pass
 
 FilterValue = Union[
     str,  # simple filters like text="hello"
@@ -36,10 +39,16 @@ FilterValue = Union[
 ]
 
 NoneCoroutine = Coroutine[None, None, None]
-HandlerFunction = Union[
-    Callable[[_UCT], NoneCoroutine],
-    Callable[[_UCT, "AsyncTeleBot"], NoneCoroutine],  # type: ignore
-]
+
+
+class HandlerFunction(Protocol[_UCT]):
+    @overload
+    def __call__(self, update_content: _UCT) -> NoneCoroutine:
+        ...
+
+    @overload
+    def __call__(self, update_content: _UCT, bot: 'AsyncTeleBot') -> NoneCoroutine:  # type: ignore
+        ...
 
 
 class Handler(TypedDict):

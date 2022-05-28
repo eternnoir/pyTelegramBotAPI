@@ -3,7 +3,7 @@ import random
 import re
 import string
 import threading
-from typing import Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Type, Union
 
 MAX_MESSAGE_LENGTH = 4096
 
@@ -71,12 +71,25 @@ def is_string(var):
     return isinstance(var, str)
 
 
-def is_dict(var):
-    return isinstance(var, dict)
-
-
 def is_bytes(var):
     return isinstance(var, bytes)
+
+
+def list_str_validated(v: Any, name: Optional[str] = None) -> list[str]:
+    name = name or "<anonymous>"
+    if not isinstance(v, list):
+        raise TypeError(f"{name} is expected to be list[str], but it's not even list")
+    for item in v:
+        if not isinstance(item, str):
+            raise TypeError(f"{name} is expected to be list[str], but includes non-string item '{item}'")
+    return v
+
+
+def str_validated(v: Any, name: Optional[str] = None) -> str:
+    name = name or "<anonymous>"
+    if not isinstance(v, str):
+        raise TypeError(f"{name} is expected to be str, but it's '{v}'")
+    return v
 
 
 def is_command(text: str) -> bool:

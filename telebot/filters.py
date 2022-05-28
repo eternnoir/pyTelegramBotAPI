@@ -1,11 +1,11 @@
-import logging
 from abc import ABC, abstractmethod
+import logging
 from typing import Generic, Optional, TypeVar, Union
 
 from telebot import types
 from telebot.text_matcher import TextMatcher
-from telebot.types import ChatMember
-from telebot.types import service as service_types
+from telebot.types import ChatMember, service as service_types
+
 
 logger = logging.getLogger(__name__)
 
@@ -132,10 +132,10 @@ class LanguageFilter(AdvancedCustomFilter[types.Message]):
     key = "language_code"
 
     async def check(self, update_content: types.Message, filter_value: service_types.FilterValue) -> bool:
-        if isinstance(filter_value, str):
-            languages = [filter_value]
-        elif isinstance(filter_value, list):
+        if isinstance(filter_value, list):
             languages = filter_value
+        elif isinstance(filter_value, str):
+            languages = [filter_value]
         else:
             return False
         return update_content.from_user.language_code in languages
