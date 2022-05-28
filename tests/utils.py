@@ -50,7 +50,7 @@ def mock_message_update(text: str) -> types.Update:
 
 @dataclass
 class MethodCall:
-    args: tuple[Any]
+    args: tuple[Any, ...]
     kwargs: dict[str, Any]
 
 

@@ -70,6 +70,7 @@ async def test_message_handler_for_commands(
         tb.message_handler(**handler_filter_kwargs)(handler_simple)
 
     await tb.process_new_updates([update])
+    assert update.message is not None
     if must_be_received:
         assert update.message.text == got_msg_confirmation
     else:
