@@ -1,7 +1,8 @@
+from io import BytesIO
 import logging
 import os
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional, Union
 
 import aiohttp
 import ujson as json
@@ -11,17 +12,13 @@ from telebot import types, util
 logger = logging.getLogger(__name__)
 
 
-API_URL = "https://api.telegram.org/bot{0}/{1}"
-
 proxy = None
-session = None
 
 FILE_URL = None
 CUSTOM_SERIALIZER = None
 
-REQUEST_TIMEOUT = None
+DEFAULT_REQUEST_TIMEOUT = None
 MAX_RETRIES = 10
-
 REQUEST_LIMIT = 50
 
 
@@ -47,25 +44,31 @@ class SessionManager:
 session_manager = SessionManager()
 
 
-async def _request(token: str, route: str, method: str = "get", params=None, files=None, request_timeout=None):
-    params = prepare_data(params, files)
-    if request_timeout is None:
-        request_timeout = REQUEST_TIMEOUT
-    timeout = aiohttp.ClientTimeout(total=request_timeout)
-    got_result = False
-    current_try = 0
+FileObject = Union[BytesIO, bytes, bytearray, memoryview]
+Params = dict[str, Any]
+Files = dict[str, Union[tuple[str, FileObject], FileObject]]
+
+
+async def _request(
+    token: str,
+    route: str,
+    method: str = "get",
+    params: Optional[Params] = None,
+    files: Optional[Files] = None,
+    request_timeout: Optional[float] = None,
+):
     session = await session_manager.get_session()
-    while not got_result and current_try < MAX_RETRIES - 1:
+    current_try = 0
+    while current_try < MAX_RETRIES - 1:
         current_try += 1
         try:
             async with session.request(
                 method=method,
-                url=API_URL.format(token, route),
-                data=params,
-                timeout=timeout,
+                url="https://api.telegram.org/bot{0}/{1}".format(token, route),
+                data=to_form_data(params, files),
+                timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
                 proxy=proxy,
             ) as resp:
-                got_result = True
                 logger.debug(
                     "Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(
                         method, route, params, files, request_timeout, current_try
@@ -76,39 +79,25 @@ async def _request(token: str, route: str, method: str = "get", params=None, fil
                 if json_result:
                     return json_result["result"]
         except (ApiTelegramException, ApiInvalidJSONException, ApiHTTPException) as e:
-            raise e
-        except aiohttp.ClientError as e:
-            logger.error("Aiohttp ClientError: {0}".format(e.__class__.__name__))
+            raise e  # should be handled in client-level code
         except Exception as e:
             logger.exception(f"Unexpected error processing request to Telegram API")
-        if not got_result:
-            raise RequestTimeout(
-                "Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(
-                    method, route, params, files, request_timeout, current_try
-                )
-            )
+            raise e
+
+    raise RequestTimeout(
+        "Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(
+            method, route, params, files, request_timeout, current_try
+        )
+    )
 
 
-def prepare_file(obj):
-    """
-    returns os.path.basename for a given file
-
-    :param obj:
-    :return:
-    """
+def extract_filename(obj: Any) -> Optional[tuple[str, BytesIO]]:
     name = getattr(obj, "name", None)
     if name and isinstance(name, str) and name[0] != "<" and name[-1] != ">":
         return os.path.basename(name)
 
 
-def prepare_data(params=None, files=None):
-    """
-    prepare data for request.
-
-    :param params:
-    :param files:
-    :return:
-    """
+def to_form_data(params: Optional[Params] = None, files: Optional[Files] = None) -> aiohttp.FormData:
     data = aiohttp.formdata.FormData(quote_fields=False)
 
     if params:
@@ -119,13 +108,13 @@ def prepare_data(params=None, files=None):
         for key, f in files.items():
             if isinstance(f, tuple):
                 if len(f) == 2:
-                    filename, fileobj = f
+                    filename, file_object = f
                 else:
-                    raise ValueError("Tuple must have exactly 2 elements: filename, fileobj")
+                    raise ValueError("Tuple must have exactly 2 elements: filename, file_object")
             else:
-                filename, fileobj = prepare_file(f) or key, f
+                filename, file_object = extract_filename(f) or key, f
 
-            data.add_field(key, fileobj, filename=filename)
+            data.add_field(key, file_object, filename=filename)
 
     return data
 
@@ -137,23 +126,19 @@ async def _convert_markup(markup):
 
 
 async def get_me(token):
-    method_url = r"getMe"
-    return await _request(token, method_url)
+    return await _request(token, "getMe")
 
 
 async def log_out(token):
-    method_url = r"logOut"
-    return await _request(token, method_url)
+    return await _request(token, "logOut")
 
 
 async def close(token):
-    method_url = r"close"
-    return await _request(token, method_url)
+    return await _request(token, "close")
 
 
 async def get_file(token, file_id):
-    method_url = r"getFile"
-    return await _request(token, method_url, params={"file_id": file_id})
+    return await _request(token, "getFile", params={"file_id": file_id})
 
 
 async def get_file_url(token, file_id):
@@ -269,7 +254,6 @@ async def _check_response(method_name: str, response: aiohttp.ClientResponse):
         raise ApiInvalidJSONException(method_name, response)
     if not result_json["ok"]:
         raise ApiTelegramException(method_name, response, result_json)
-
     return result_json
 
 
@@ -2079,11 +2063,11 @@ class ApiHTTPException(ApiException):
     Telegram API server returns HTTP code that is not 200.
     """
 
-    def __init__(self, function_name, result):
+    def __init__(self, function_name: str, response: aiohttp.ClientResponse):
         super(ApiHTTPException, self).__init__(
-            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(result.status_code, result.reason, result),
+            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(response.status, response.reason, response),
             function_name,
-            result,
+            response,
         )
 
 
@@ -2093,11 +2077,11 @@ class ApiInvalidJSONException(ApiException):
     Telegram API server returns invalid json.
     """
 
-    def __init__(self, function_name, result):
+    def __init__(self, function_name: str, response: aiohttp.ClientResponse):
         super(ApiInvalidJSONException, self).__init__(
-            "The server returned an invalid JSON response. Response body:\n[{0}]".format(result),
+            "The server returned an invalid JSON response. Response body:\n[{0}]".format(response),
             function_name,
-            result,
+            response,
         )
 
 
@@ -2106,14 +2090,16 @@ class ApiTelegramException(ApiException):
     This class represents an Exception thrown when a Telegram API returns error code.
     """
 
-    def __init__(self, function_name, result, result_json):
+    def __init__(self, function_name: str, response: aiohttp.ClientResponse, response_json: dict):
+        error_code = response_json.get("error_code", "NO ERROR CODE FOUND IN JSON")
+        description = response_json.get("description", "NO DESCRIPTION FOUND IN JSON")
         super(ApiTelegramException, self).__init__(
-            "Error code: {0}. Description: {1}".format(result_json["error_code"], result_json["description"]),
+            "Error code: {0}. Description: {1}".format(error_code, description),
             function_name,
-            result,
+            response,
         )
-        self.result_json = result_json
-        self.error_code = result_json["error_code"]
+        self.result_json = response_json
+        self.error_code = error_code
 
 
 class RequestTimeout(Exception):

@@ -34,3 +34,6 @@ line-length = 120
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+markers = [
+    'integration: requires a real bot to run',
+]

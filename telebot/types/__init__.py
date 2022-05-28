@@ -39,7 +39,7 @@ class Dictionaryable(object):
     All subclasses of this class must override to_dict.
     """
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """
         Returns a DICT with class field values
 
@@ -47,6 +47,13 @@ class Dictionaryable(object):
         :return: a DICT
         """
         raise NotImplementedError
+
+    def __eq__(self, other: 'Dictionaryable') -> bool:
+        if isinstance(other, Dictionaryable):
+            return self.to_dict() == other.to_dict()
+        else:
+            return False
+
 
 
 class JsonDeserializable(object):
@@ -1111,7 +1118,7 @@ class WebAppInfo(JsonDeserializable):
         return {"url": self.url}
 
 
-class ReplyKeyboardMarkup(JsonSerializable):
+class ReplyKeyboardMarkup(JsonSerializable, Dictionaryable):
     max_row_keys = 12
 
     def __init__(
@@ -1181,22 +1188,25 @@ class ReplyKeyboardMarkup(JsonSerializable):
 
         return self.add(*args, row_width=self.max_row_keys)
 
+    def to_dict(self) -> dict:
+        d = {"keyboard": self.keyboard}
+        if self.one_time_keyboard is not None:
+            d["one_time_keyboard"] = self.one_time_keyboard
+        if self.resize_keyboard is not None:
+            d["resize_keyboard"] = self.resize_keyboard
+        if self.selective is not None:
+            d["selective"] = self.selective
+        if self.input_field_placeholder:
+            d["input_field_placeholder"] = self.input_field_placeholder
+        return d
+
     def to_json(self):
         """
         Converts this object to its json representation following the Telegram API guidelines described here:
         https://core.telegram.org/bots/api#replykeyboardmarkup
         :return:
         """
-        json_dict = {"keyboard": self.keyboard}
-        if self.one_time_keyboard is not None:
-            json_dict["one_time_keyboard"] = self.one_time_keyboard
-        if self.resize_keyboard is not None:
-            json_dict["resize_keyboard"] = self.resize_keyboard
-        if self.selective is not None:
-            json_dict["selective"] = self.selective
-        if self.input_field_placeholder:
-            json_dict["input_field_placeholder"] = self.input_field_placeholder
-        return json.dumps(json_dict)
+        return json.dumps(self.to_dict())
 
 
 class KeyboardButtonPollType(Dictionaryable):

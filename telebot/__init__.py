@@ -77,7 +77,7 @@ class AsyncTeleBot:
         Closes existing session of aiohttp.
         Use this function if you stop polling.
         """
-        await api.session_manager.session.close()
+        await api.session_manager.close_session()
 
     # polling-related methods
 
