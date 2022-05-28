@@ -1,9 +1,11 @@
+import asyncio
+import functools
 import logging
 import random
 import re
 import string
 import threading
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
 from telebot.types import constants
 
@@ -17,6 +19,21 @@ def qualified_name(obj: Any) -> str:
         return f"{obj.__module__}.{obj.__qualname__}"
     except Exception:
         return "<cant-get-qualified-name>"
+
+
+T = TypeVar("T")
+
+
+def ensure_async(func: Callable[..., Union[T, Coroutine[None, None, T]]]) -> Callable[..., Coroutine[None, None, T]]:
+    if asyncio.iscoroutinefunction(func):
+        return cast(Callable[..., Coroutine[None, None, T]], func)
+    else:
+
+        @functools.wraps(func)
+        async def wrapper(*args, **kwargs) -> T:
+            return cast(Callable[..., T], func)(*args, **kwargs)
+
+        return wrapper
 
 
 def is_string(var: Any) -> bool:

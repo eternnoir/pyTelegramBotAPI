@@ -23,6 +23,6 @@ class BotRunner:
 
         asyncio.run(run())
 
-    def webhook_route(self) -> str:
+    def webhook_subroute(self) -> str:
         token_hash = sha256(self.bot.token.encode("utf-8")).hexdigest()
         return f"{self.name}-{token_hash}"

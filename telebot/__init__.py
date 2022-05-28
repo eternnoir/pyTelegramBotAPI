@@ -52,7 +52,7 @@ class AsyncTeleBot:
         self.offset = offset
         self.parse_mode = parse_mode
 
-        self.update_listeners: list[Callable[[types.Update], service_types.NoneCoroutine]] = []
+        self.update_listeners: list[Callable[[types.Update], service_types.NoneCoro]] = []
 
         self.message_handlers: list[service_types.Handler] = []
         self.edited_message_handlers: list[service_types.Handler] = []
@@ -188,7 +188,7 @@ class AsyncTeleBot:
             try:
                 is_match = await self._test_handler(handler, update_content)
             except Exception:
-                logger.exception(f"Error testing handler {handler_name}")
+                logger.exception(f"Error testing handler '{handler_name}'")
                 is_match = False
 
             if is_match:
@@ -207,7 +207,7 @@ class AsyncTeleBot:
                             + f"but found function with {handler_func_n_params} params"
                         )
                 except Exception:
-                    logger.exception(f"Error processing update with handler {handler_name}: {update_content}")
+                    logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
                     return
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
@@ -218,7 +218,7 @@ class AsyncTeleBot:
                 return False
         return True
 
-    def update_listener(self, decorated: Callable[[types.Update], service_types.NoneCoroutine]):
+    def update_listener(self, decorated: Callable[[types.Update], service_types.NoneCoro]):
         self.update_listeners.append(decorated)
 
     def add_custom_filter(self, custom_filter: filters.AnyCustomFilter):
@@ -352,7 +352,7 @@ class AsyncTeleBot:
             self.allowed_updates.add(constants.UpdateType.message)
             self.message_handlers.append(
                 service_types.Handler(
-                    function=decorated,
+                    function=util.ensure_async(decorated),
                     filters={
                         "commands": commands,
                         "regexp": regexp,
@@ -384,7 +384,7 @@ class AsyncTeleBot:
             self.allowed_updates.add(constants.UpdateType.edited_message)
             self.edited_message_handlers.append(
                 service_types.Handler(
-                    function=decorated,
+                    function=util.ensure_async(decorated),
                     filters={
                         "commands": commands,
                         "regexp": regexp,
@@ -416,7 +416,7 @@ class AsyncTeleBot:
             self.allowed_updates.add(constants.UpdateType.channel_post)
             self.channel_post_handlers.append(
                 service_types.Handler(
-                    function=decorated,
+                    function=util.ensure_async(decorated),
                     filters={
                         "commands": commands,
                         "regexp": regexp,
@@ -448,7 +448,7 @@ class AsyncTeleBot:
             self.allowed_updates.add(constants.UpdateType.edited_channel_post)
             self.edited_channel_post_handlers.append(
                 service_types.Handler(
-                    function=decorated,
+                    function=util.ensure_async(decorated),
                     filters={
                         "commands": commands,
                         "regexp": regexp,
@@ -474,7 +474,7 @@ class AsyncTeleBot:
             self.allowed_updates.add(constants.UpdateType.callback_query)
             self.callback_query_handlers.append(
                 service_types.Handler(
-                    function=decorated,
+                    function=util.ensure_async(decorated),
                     filters={
                         "callback_data": callback_data,
                         "func": func,
@@ -496,7 +496,7 @@ class AsyncTeleBot:
         def decorator(decorated: service_types.HandlerFunction[_UpdateContentT]):
             handler_list.append(
                 service_types.Handler(
-                    function=decorated,
+                    function=util.ensure_async(decorated),
                     filters={
                         "func": func,
                         **kwargs,
@@ -653,7 +653,7 @@ class AsyncTeleBot:
             timeout,
         )
 
-    async def delete_webhook(self, drop_pending_updates=None, timeout=None):
+    async def delete_webhook(self, drop_pending_updates: Optional[bool] = None, timeout: Optional[float] = None):
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
 

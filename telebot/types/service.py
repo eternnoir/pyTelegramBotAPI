@@ -50,16 +50,16 @@ FilterValue = Union[
     None,  # no filter
 ]
 
-NoneCoroutine = Coroutine[None, None, None]
+NoneCoro = Coroutine[None, None, None]
 
 
 class HandlerFunction(Protocol[_UCT]):
     @overload
-    def __call__(self, update_content: _UCT) -> NoneCoroutine:
+    async def __call__(self, update_content: _UCT) -> None:
         ...
 
     @overload
-    def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> NoneCoroutine:  # type: ignore
+    async def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> None:  # type: ignore
         ...
 
 
