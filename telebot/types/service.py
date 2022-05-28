@@ -1,4 +1,13 @@
-from typing import Callable, Coroutine, ForwardRef, Protocol, TypedDict, TypeVar, Union, overload
+from typing import (
+    Callable,
+    Coroutine,
+    ForwardRef,
+    Protocol,
+    TypedDict,
+    TypeVar,
+    Union,
+    overload,
+)
 
 from typing_extensions import NotRequired
 
@@ -27,6 +36,7 @@ class FilterFunc(Protocol[_UCT]):
     def __call__(self, update_content: _UCT) -> Union[bool, Coroutine[None, None, bool]]:
         pass
 
+
 FilterValue = Union[
     str,  # simple filters like text="hello"
     list[str],  # most common filters like chat_types=["private", "group"]
@@ -47,7 +57,7 @@ class HandlerFunction(Protocol[_UCT]):
         ...
 
     @overload
-    def __call__(self, update_content: _UCT, bot: 'AsyncTeleBot') -> NoneCoroutine:  # type: ignore
+    def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> NoneCoroutine:  # type: ignore
         ...
 
 

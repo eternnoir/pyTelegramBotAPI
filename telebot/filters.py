@@ -1,11 +1,11 @@
-from abc import ABC, abstractmethod
 import logging
+from abc import ABC, abstractmethod
 from typing import Generic, Optional, TypeVar, Union
 
 from telebot import types
 from telebot.text_matcher import TextMatcher
-from telebot.types import ChatMember, service as service_types
-
+from telebot.types import ChatMember
+from telebot.types import service as service_types
 
 logger = logging.getLogger(__name__)
 
