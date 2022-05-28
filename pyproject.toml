@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "telebot-against-war"
-version = "0.1.0"
+version = "0.0.0"  # dynamic versioning
 description = "Async-first fork of pyTelegramBotApi"
 authors = ["Igor Vaiman <gosha.vaiman@gmail.com>"]
 license = "GPL-2.0-only"
@@ -9,6 +9,11 @@ repository = "https://github.com/bots-against-war/telebot"
 packages = [
     { include = "telebot" },
 ]
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -24,17 +29,18 @@ pytest = "^7.1.2"
 pre-commit = "^2.19.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
 build-backend = "poetry.core.masonry.api"
+
+
+# dev and testing tools
 
 
 [tool.black]
 line-length = 120
 
-
 [tool.isort]
 profile = 'black'
-
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
