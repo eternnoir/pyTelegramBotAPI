@@ -4,7 +4,7 @@ from telebot.storages.base_storage import StateContext, StateStorageBase
 
 redis_installed = True
 try:
-    import aioredis
+    import aioredis  # type: ignore
 except:
     redis_installed = False
 

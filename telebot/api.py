@@ -2,10 +2,10 @@ import logging
 import os
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, cast
 
 import aiohttp
-import ujson as json
+import ujson as json  # type: ignore
 
 from telebot import types, util
 
@@ -34,9 +34,9 @@ class SessionManager:
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
 
     async def get_session(self) -> aiohttp.ClientSession:
-        if self.session is None or self.session.closed:
+        if self.session is None or self.session.closed or not self.session._loop.is_running():
             await self.init_session()
-        return self.session
+        return cast(aiohttp.ClientSession, self.session)
 
 
 session_manager = SessionManager()
@@ -82,16 +82,16 @@ async def _request(
             raise e
 
     raise RequestTimeout(
-        "Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(
-            method, route, params, files, request_timeout, current_try
-        )
+        f"Request timeout. Request: {method = !r} {route = !r} {params = !r} {files = !r} {request_timeout = !r}"
     )
 
 
-def extract_filename(obj: Any) -> Optional[tuple[str, BytesIO]]:
+def extract_filename(obj: Any) -> Optional[str]:
     name = getattr(obj, "name", None)
     if name and isinstance(name, str) and name[0] != "<" and name[-1] != ">":
         return os.path.basename(name)
+    else:
+        return None
 
 
 def to_form_data(params: Optional[Params] = None, files: Optional[Files] = None) -> aiohttp.FormData:

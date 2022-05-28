@@ -55,15 +55,15 @@ class CallbackData:
         :param kwargs: named parameters
         :return: str
         """
-        args = list(args)
+        arg_list = list(args)
 
         data = [self.prefix]
 
         for part in self._part_names:
             value = kwargs.pop(part, None)
             if value is None:
-                if args:
-                    value = args.pop(0)
+                if arg_list:
+                    value = arg_list.pop(0)
                 else:
                     raise ValueError(f"Value for {part!r} was not passed!")
 
@@ -75,7 +75,7 @@ class CallbackData:
 
             data.append(value)
 
-        if args or kwargs:
+        if arg_list or kwargs:
             raise TypeError("Too many arguments were passed!")
 
         callback_data = self.sep.join(data)

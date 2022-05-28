@@ -1,11 +1,10 @@
 from telebot.storages.base_storage import StateContext, StateStorageBase
+from telebot.types import service as service_types
 
 
 class StateMemoryStorage(StateStorageBase):
     def __init__(self) -> None:
-        self.data = {}
-        #
-        # {chat_id: {user_id: {'state': None, 'data': {}}, ...}, ...}
+        self.data: dict[service_types.ChatId, dict[int, dict]] = {}
 
     async def set_state(self, chat_id, user_id, state):
         if hasattr(state, "name"):

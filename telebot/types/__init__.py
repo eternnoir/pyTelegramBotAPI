@@ -3,12 +3,9 @@
 import logging
 from abc import ABC
 from io import BytesIO
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
-try:
-    import ujson as json
-except ImportError:
-    import json
+import ujson as json  # type: ignore
 
 from telebot import util
 
@@ -48,7 +45,7 @@ class Dictionaryable(object):
         """
         raise NotImplementedError
 
-    def __eq__(self, other: "Dictionaryable") -> bool:
+    def __eq__(self, other) -> bool:
         if isinstance(other, Dictionaryable):
             return self.to_dict() == other.to_dict()
         else:
@@ -180,13 +177,22 @@ class ChatMemberUpdated(JsonDeserializable):
         obj["invite_link"] = ChatInviteLink.de_json(obj.get("invite_link"))
         return cls(**obj)
 
-    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None, **kwargs):
-        self.chat: Chat = chat
-        self.from_user: User = from_user
-        self.date: int = date
-        self.old_chat_member: ChatMember = old_chat_member
-        self.new_chat_member: ChatMember = new_chat_member
-        self.invite_link: Optional[ChatInviteLink] = invite_link
+    def __init__(
+        self,
+        chat: "Chat",
+        from_user: "User",
+        date: int,
+        old_chat_member: "ChatMember",
+        new_chat_member: "ChatMember",
+        invite_link: Optional["ChatInviteLink"] = None,
+        **kwargs
+    ):
+        self.chat = chat
+        self.from_user = from_user
+        self.date = date
+        self.old_chat_member = old_chat_member
+        self.new_chat_member = new_chat_member
+        self.invite_link = invite_link
 
     @property
     def difference(self) -> Dict[str, List]:
@@ -217,7 +223,15 @@ class ChatJoinRequest(JsonDeserializable):
         obj["invite_link"] = ChatInviteLink.de_json(obj.get("invite_link"))
         return cls(**obj)
 
-    def __init__(self, chat, from_user, date, bio=None, invite_link=None, **kwargs):
+    def __init__(
+        self,
+        chat: "Chat",
+        from_user: "User",
+        date: int,
+        bio: Optional[str] = None,
+        invite_link: Optional["ChatInviteLink"] = None,
+        **kwargs
+    ):
         self.chat = chat
         self.from_user = from_user
         self.date = date
@@ -278,15 +292,15 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         supports_inline_queries: Optional[bool] = None,
         **kwargs
     ):
-        self.id: int = id
-        self.is_bot: bool = is_bot
-        self.first_name: str = first_name
-        self.username: str = username
-        self.last_name: str = last_name
-        self.language_code: str = language_code
-        self.can_join_groups: bool = can_join_groups
-        self.can_read_all_group_messages: bool = can_read_all_group_messages
-        self.supports_inline_queries: bool = supports_inline_queries
+        self.id = id
+        self.is_bot = is_bot
+        self.first_name = first_name
+        self.username = username
+        self.last_name = last_name
+        self.language_code = language_code
+        self.can_join_groups = can_join_groups
+        self.can_read_all_group_messages = can_read_all_group_messages
+        self.supports_inline_queries = supports_inline_queries
 
     @property
     def full_name(self):
@@ -797,6 +811,9 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
         }
 
 
+TiedToChat = Union[ChatMemberUpdated, ChatJoinRequest, Message]
+
+
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
@@ -1079,8 +1096,8 @@ class ForceReply(JsonSerializable):
         selective: Optional[bool] = None,
         input_field_placeholder: Optional[str] = None,
     ):
-        self.selective: bool = selective
-        self.input_field_placeholder: str = input_field_placeholder
+        self.selective = selective
+        self.input_field_placeholder = input_field_placeholder
 
     def to_json(self):
         json_dict = {"force_reply": True}
@@ -1134,12 +1151,12 @@ class ReplyKeyboardMarkup(JsonSerializable, Dictionaryable):
                 logger.error("Telegram does not support reply keyboard row width over %d." % self.max_row_keys)
             row_width = self.max_row_keys
 
-        self.resize_keyboard: bool = resize_keyboard
-        self.one_time_keyboard: bool = one_time_keyboard
-        self.selective: bool = selective
-        self.row_width: int = row_width
-        self.input_field_placeholder: str = input_field_placeholder
-        self.keyboard: List[List[KeyboardButton]] = []
+        self.resize_keyboard = resize_keyboard
+        self.one_time_keyboard = one_time_keyboard
+        self.selective = selective
+        self.row_width = row_width
+        self.input_field_placeholder = input_field_placeholder
+        self.keyboard: list[list[KeyboardButton]] = []
 
     def add(self, *args, row_width=None):
         """
@@ -1188,7 +1205,7 @@ class ReplyKeyboardMarkup(JsonSerializable, Dictionaryable):
         return self.add(*args, row_width=self.max_row_keys)
 
     def to_dict(self) -> dict:
-        d = {"keyboard": self.keyboard}
+        d: dict[str, Any] = {"keyboard": self.keyboard}
         if self.one_time_keyboard is not None:
             d["one_time_keyboard"] = self.one_time_keyboard
         if self.resize_keyboard is not None:
@@ -1223,13 +1240,13 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         request_contact: Optional[bool] = None,
         request_location: Optional[bool] = None,
         request_poll: Optional[KeyboardButtonPollType] = None,
-        web_app: WebAppInfo = None,
+        web_app: Optional[WebAppInfo] = None,
     ):
-        self.text: str = text
-        self.request_contact: bool = request_contact
-        self.request_location: bool = request_location
-        self.request_poll: KeyboardButtonPollType = request_poll
-        self.web_app: WebAppInfo = web_app
+        self.text = text
+        self.request_contact = request_contact
+        self.request_location = request_location
+        self.request_poll = request_poll
+        self.web_app = web_app
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -3727,22 +3744,22 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
         can_promote_members: bool,
         can_change_info: bool,
         can_invite_users: bool,
-        can_post_messages: bool = None,
-        can_edit_messages: bool = None,
-        can_pin_messages: bool = None,
+        can_post_messages: Optional[bool] = None,
+        can_edit_messages: Optional[bool] = None,
+        can_pin_messages: Optional[bool] = None,
     ) -> None:
 
-        self.is_anonymous: bool = is_anonymous
-        self.can_manage_chat: bool = can_manage_chat
-        self.can_delete_messages: bool = can_delete_messages
-        self.can_manage_video_chats: bool = can_manage_video_chats
-        self.can_restrict_members: bool = can_restrict_members
-        self.can_promote_members: bool = can_promote_members
-        self.can_change_info: bool = can_change_info
-        self.can_invite_users: bool = can_invite_users
-        self.can_post_messages: bool = can_post_messages
-        self.can_edit_messages: bool = can_edit_messages
-        self.can_pin_messages: bool = can_pin_messages
+        self.is_anonymous = is_anonymous
+        self.can_manage_chat = can_manage_chat
+        self.can_delete_messages = can_delete_messages
+        self.can_manage_video_chats = can_manage_video_chats
+        self.can_restrict_members = can_restrict_members
+        self.can_promote_members = can_promote_members
+        self.can_change_info = can_change_info
+        self.can_invite_users = can_invite_users
+        self.can_post_messages = can_post_messages
+        self.can_edit_messages = can_edit_messages
+        self.can_pin_messages = can_pin_messages
 
     def to_dict(self):
         json_dict = {

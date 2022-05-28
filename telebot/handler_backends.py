@@ -1,6 +1,7 @@
 import os
 import pickle
 import threading
+from typing import Optional
 
 from telebot import api
 
@@ -154,10 +155,10 @@ class RedisHandlerBackend(HandlerBackend):
 
 class State:
     def __init__(self) -> None:
-        self.name = None
+        self.name: Optional[str] = None
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
 
 class StatesGroup:

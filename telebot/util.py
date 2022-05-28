@@ -1,16 +1,9 @@
-# -*- coding: utf-8 -*-
 import logging
-
-# noinspection PyPep8Naming
-import queue as Queue
 import random
 import re
 import string
 import threading
-import traceback
 from typing import Callable, List, Optional, Union
-
-import ujson as json
 
 MAX_MESSAGE_LENGTH = 4096
 
@@ -98,7 +91,7 @@ def is_command(text: str) -> bool:
     return text.startswith("/")
 
 
-def extract_command(text: str) -> Union[str, None]:
+def extract_command(text: Optional[str]) -> Optional[str]:
     """
     Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
     If `text` is not a command, this function returns None.
@@ -117,7 +110,7 @@ def extract_command(text: str) -> Union[str, None]:
     return text.split()[0].split("@")[0][1:] if is_command(text) else None
 
 
-def extract_arguments(text: str) -> str:
+def extract_arguments(text: str) -> Optional[str]:
     """
     Returns the argument after the command.
 
@@ -131,7 +124,10 @@ def extract_arguments(text: str) -> str:
     """
     regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     result = regexp.match(text)
-    return result.group(2) if is_command(text) else None
+    if result is None:
+        return None
+    else:
+        return result.group(2) if is_command(text) else None
 
 
 def split_string(text: str, chars_per_string: int) -> List[str]:
