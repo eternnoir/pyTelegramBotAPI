@@ -2,15 +2,12 @@ import asyncio
 import logging
 import re
 import sys
-import time
-import traceback
 from datetime import datetime
 from inspect import signature
 from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
-import aiohttp
-
 from telebot import api, callback_data, filters, types, util
+from telebot.types import constants
 from telebot.types import service as service_types
 
 logger = logging.getLogger(__name__.split(".")[0])
@@ -41,7 +38,6 @@ class AsyncTeleBot:
 
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
-
     """
 
     def __init__(
@@ -49,7 +45,9 @@ class AsyncTeleBot:
         token: str,
         parse_mode: Optional[str] = None,
         offset: Optional[int] = None,
-    ) -> None:
+        custom_filters: Optional[list[filters.AnyCustomFilter]] = None,
+        force_allowed_updates: Optional[list[constants.UpdateType]] = None,
+    ):
         self.token = token
         self.offset = offset
         self.parse_mode = parse_mode
@@ -71,7 +69,12 @@ class AsyncTeleBot:
         self.chat_member_handlers: list[service_types.Handler] = []
         self.chat_join_request_handlers: list[service_types.Handler] = []
 
-        self.custom_filters: dict[str, filters.AnyCustomFilter] = {}
+        if custom_filters:
+            self.custom_filters: dict[str, filters.AnyCustomFilter] = {cf.key: cf for cf in custom_filters}
+        else:
+            self.custom_filters = dict()
+
+        self.allowed_updates: set[constants.UpdateType] = set(force_allowed_updates) if force_allowed_updates else set()
 
     async def close_session(self):
         """
@@ -87,17 +90,22 @@ class AsyncTeleBot:
         offset: Optional[int] = None,
         limit: Optional[int] = None,
         timeout: Optional[int] = None,
-        allowed_updates: Optional[List] = None,
         request_timeout: Optional[int] = None,
     ) -> list[types.Update]:
-        json_updates = await api.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
+        json_updates = await api.get_updates(
+            self.token,
+            offset,
+            limit,
+            timeout,
+            [ut.value for ut in self.allowed_updates],
+            request_timeout,
+        )
         maybe_updates = [types.Update.de_json(ju) for ju in json_updates]
         return [u for u in maybe_updates if u is not None]
 
     async def infinity_polling(
         self,
         interval: float = 1,
-        allowed_updates: Optional[list[str]] = None,
         timeout: int = 20,
         skip_pending: bool = False,
         request_timeout: int = 20,
@@ -111,7 +119,6 @@ class AsyncTeleBot:
                 try:
                     updates = await self.get_updates(
                         offset=self.offset,
-                        allowed_updates=allowed_updates,
                         timeout=timeout,
                         request_timeout=request_timeout,
                     )
@@ -220,11 +227,12 @@ class AsyncTeleBot:
             return update_content
 
         if filter_key == "content_types":
-            return update_content_as_message().content_type in util.list_str_validated(filter_value)
+            ct = constants.content_type_from_str(update_content_as_message().content_type)
+            return ct in util.validated_list_content_type(filter_value, name="content types filter")
         elif filter_key == "regexp":
             message = update_content_as_message()
             return message.content_type == "text" and bool(
-                re.search(util.str_validated(filter_value), message.text or message.caption or "", re.IGNORECASE)
+                re.search(util.validated_str(filter_value), message.text or message.caption or "", re.IGNORECASE)
             )
         elif filter_key == "commands":
             message = update_content_as_message()
@@ -232,10 +240,12 @@ class AsyncTeleBot:
             return (
                 message.content_type == "text"
                 and command is not None
-                and command in util.list_str_validated(filter_value)
+                and command in util.validated_list_str(filter_value, name="commands filter")
             )
         elif filter_key == "chat_types":
-            return update_content_as_message().chat.type in util.list_str_validated(filter_value)
+            return update_content_as_message().chat.type in util.validated_list_str(
+                filter_value, name="chat types filter"
+            )
         elif filter_key == "func":
             if not callable(filter_value):
                 raise TypeError("func filter must be callable")
@@ -284,7 +294,7 @@ class AsyncTeleBot:
         commands: Optional[list[str]] = None,
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
-        content_types: Optional[list[str]] = None,
+        content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[str]] = None,
         **kwargs,
     ):
@@ -330,9 +340,10 @@ class AsyncTeleBot:
         """
 
         if content_types is None:
-            content_types = util.content_type_media
+            content_types = list(constants.MediaContentType)
 
         def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.allowed_updates.add(constants.UpdateType.message)
             self.message_handlers.append(
                 service_types.Handler(
                     function=decorated,
@@ -355,14 +366,15 @@ class AsyncTeleBot:
         commands: Optional[list[str]] = None,
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
-        content_types: Optional[list[str]] = None,
+        content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[str]] = None,
         **kwargs,
     ):
         if content_types is None:
-            content_types = util.content_type_media
+            content_types = list(constants.MediaContentType)
 
         def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.allowed_updates.add(constants.UpdateType.edited_message)
             self.edited_message_handlers.append(
                 service_types.Handler(
                     function=decorated,
@@ -390,9 +402,10 @@ class AsyncTeleBot:
         **kwargs,
     ):
         if content_types is None:
-            content_types = util.content_type_media
+            content_types = list(constants.MediaContentType)
 
         def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.allowed_updates.add(constants.UpdateType.channel_post)
             self.channel_post_handlers.append(
                 service_types.Handler(
                     function=decorated,
@@ -415,14 +428,15 @@ class AsyncTeleBot:
         commands: Optional[list[str]] = None,
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
-        content_types: Optional[list[str]] = None,
+        content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[str]] = None,
         **kwargs,
     ):
         if content_types is None:
-            content_types = util.content_type_media
+            content_types = list(constants.MediaContentType)
 
         def decorator(decorated: service_types.HandlerFunction[types.Message]):
+            self.allowed_updates.add(constants.UpdateType.edited_channel_post)
             self.edited_channel_post_handlers.append(
                 service_types.Handler(
                     function=decorated,
@@ -447,6 +461,7 @@ class AsyncTeleBot:
         **kwargs,
     ):
         def decorator(decorated: service_types.HandlerFunction[types.CallbackQuery]):
+            self.allowed_updates.add(constants.UpdateType.callback_query)
             self.callback_query_handlers.append(
                 service_types.Handler(
                     function=decorated,
@@ -482,32 +497,41 @@ class AsyncTeleBot:
         return decorator
 
     def inline_query_handler(self, func: Optional[service_types.FilterFunc[types.InlineQuery]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.inline_query)
         return self._simple_handler(self.inline_query_handlers, func, **kwargs)
 
     def chosen_inline_result_handler(
         self, func: Optional[service_types.FilterFunc[types.ChosenInlineResult]], **kwargs
     ):
+        self.allowed_updates.add(constants.UpdateType.chosen_inline_result)
         return self._simple_handler(self.chosen_inline_handlers, func, **kwargs)
 
     def shipping_query_handler(self, func: Optional[service_types.FilterFunc[types.ShippingQuery]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.shipping_query)
         return self._simple_handler(self.shipping_query_handlers, func, **kwargs)
 
     def pre_checkout_query_handler(self, func: Optional[service_types.FilterFunc[types.PreCheckoutQuery]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.pre_checkout_query)
         return self._simple_handler(self.pre_checkout_query_handlers, func, **kwargs)
 
     def poll_handler(self, func: Optional[service_types.FilterFunc[types.Poll]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.poll)
         return self._simple_handler(self.poll_handlers, func, **kwargs)
 
     def poll_answer_handler(self, func: Optional[service_types.FilterFunc[types.PollAnswer]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.poll_answer)
         return self._simple_handler(self.poll_answer_handlers, func, **kwargs)
 
     def my_chat_member_handler(self, func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.my_chat_member)
         return self._simple_handler(self.my_chat_member_handlers, func, **kwargs)
 
     def chat_member_handler(self, func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.chat_member)
         return self._simple_handler(self.chat_member_handlers, func, **kwargs)
 
     def chat_join_request_handler(self, func: Optional[service_types.FilterFunc[types.ChatJoinRequest]], **kwargs):
+        self.allowed_updates.add(constants.UpdateType.chat_join_request)
         return self._simple_handler(self.chat_join_request_handlers, func, **kwargs)
 
     async def skip_updates(self):
@@ -573,13 +597,12 @@ class AsyncTeleBot:
 
     async def set_webhook(
         self,
-        url=None,
-        certificate=None,
-        max_connections=None,
-        allowed_updates=None,
-        ip_address=None,
-        drop_pending_updates=None,
-        timeout=None,
+        url: str,
+        certificate: Optional[api.FileObject] = None,
+        max_connections: Optional[int] = None,
+        ip_address: Optional[str] = None,
+        drop_pending_updates: Optional[bool] = None,
+        timeout: Optional[float] = None,
     ):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
@@ -612,7 +635,7 @@ class AsyncTeleBot:
             url,
             certificate,
             max_connections,
-            allowed_updates,
+            [ut.value for ut in self.allowed_updates],
             ip_address,
             drop_pending_updates,
             timeout,
@@ -629,12 +652,6 @@ class AsyncTeleBot:
         :return: bool
         """
         return await api.delete_webhook(self.token, drop_pending_updates, timeout)
-
-    async def remove_webhook(self):
-        """
-        Alternative for delete_webhook but uses set_webhook
-        """
-        await self.set_webhook()
 
     async def get_webhook_info(self, timeout=None):
         """

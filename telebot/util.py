@@ -3,92 +3,47 @@ import random
 import re
 import string
 import threading
-from typing import Any, Callable, List, Optional, Type, Union
+from typing import Any, Callable, List, Optional
+
+from telebot.types import constants
 
 MAX_MESSAGE_LENGTH = 4096
 
 logger = logging.getLogger(__name__)
 
-thread_local = threading.local()
 
-content_type_media = [
-    "text",
-    "audio",
-    "animation",
-    "document",
-    "photo",
-    "sticker",
-    "video",
-    "video_note",
-    "voice",
-    "contact",
-    "dice",
-    "poll",
-    "venue",
-    "location",
-]
-
-content_type_service = [
-    "new_chat_members",
-    "left_chat_member",
-    "new_chat_title",
-    "new_chat_photo",
-    "delete_chat_photo",
-    "group_chat_created",
-    "supergroup_chat_created",
-    "channel_chat_created",
-    "migrate_to_chat_id",
-    "migrate_from_chat_id",
-    "pinned_message",
-    "proximity_alert_triggered",
-    "video_chat_scheduled",
-    "video_chat_started",
-    "video_chat_ended",
-    "video_chat_participants_invited",
-    "message_auto_delete_timer_changed",
-]
-
-update_types = [
-    "update_id",
-    "message",
-    "edited_message",
-    "channel_post",
-    "edited_channel_post",
-    "inline_query",
-    "chosen_inline_result",
-    "callback_query",
-    "shipping_query",
-    "pre_checkout_query",
-    "poll",
-    "poll_answer",
-    "my_chat_member",
-    "chat_member",
-    "chat_join_request",
-]
-
-
-def is_string(var):
+def is_string(var: Any) -> bool:
     return isinstance(var, str)
 
 
-def is_bytes(var):
+def is_bytes(var: Any) -> bool:
     return isinstance(var, bytes)
 
 
-def list_str_validated(v: Any, name: Optional[str] = None) -> list[str]:
+def validated_list_str(v: Any, name: Optional[str] = None) -> list[str]:
     name = name or "<anonymous>"
     if not isinstance(v, list):
-        raise TypeError(f"{name} is expected to be list[str], but it's not even list")
+        raise TypeError(f"{name} is expected to be list[str], but it's not even a list")
     for item in v:
         if not isinstance(item, str):
             raise TypeError(f"{name} is expected to be list[str], but includes non-string item '{item}'")
     return v
 
 
-def str_validated(v: Any, name: Optional[str] = None) -> str:
+def validated_str(v: Any, name: Optional[str] = None) -> str:
     name = name or "<anonymous>"
     if not isinstance(v, str):
         raise TypeError(f"{name} is expected to be str, but it's '{v}'")
+    return v
+
+
+def validated_list_content_type(v: Any, name: Optional[str] = None) -> list[constants.ContentType]:
+    name = name or "<anonymous>"
+    if not isinstance(v, list):
+        raise TypeError(f"{name} is expected to be list[ContentType], but it's not even a list")
+    for item in v:
+        if not isinstance(item, (constants.ServiceContentType, constants.MediaContentType)):
+            raise TypeError(f"{name} is expected to be list[ContentType], but includes invalid item '{item}'")
     return v
 
 
@@ -247,14 +202,6 @@ def OrEvent(*events):
     or_event.wait = busy_wait
     changed()
     return or_event
-
-
-def per_thread(key, construct_value, reset=False):
-    if reset or not hasattr(thread_local, key):
-        value = construct_value()
-        setattr(thread_local, key, value)
-
-    return getattr(thread_local, key)
 
 
 def chunks(lst, n):
