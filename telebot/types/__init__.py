@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from dataclasses import dataclass
 import logging
 from abc import ABC
+from dataclasses import dataclass
 from io import BytesIO
 from typing import Any, Dict, List, Literal, Optional, Union
 
@@ -112,7 +112,7 @@ class Update(JsonDeserializable):
     _json: Union[dict, str]
 
     @classmethod
-    def de_json(cls, json_: Optional[Union[dict, str]]) -> Optional['Update']:
+    def de_json(cls, json_: Optional[Union[dict, str]]) -> Optional["Update"]:
         if json_ is None:
             return None
         obj = cls.ensure_json_dict(json_, copy_dict=False)
@@ -147,7 +147,7 @@ class Update(JsonDeserializable):
             my_chat_member,
             chat_member,
             chat_join_request,
-            _json=json_
+            _json=json_,
         )
 
 
@@ -420,7 +420,8 @@ class Message(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string) -> "Message":
         if json_string is None:
-            raise ValueError("json can't be None")
+            # TODO: validation and type-safety here
+            return None  # type: ignore
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
         message_id = obj["message_id"]
         from_user = User.de_json(obj.get("from"))
