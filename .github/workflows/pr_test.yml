@@ -29,6 +29,6 @@ jobs:
         run:
           poetry run isort . --check &&
           poetry run black . --check &&
-          poetry run mypy telebot
+          poetry run mypy .
       - name: Run unit tests
         run: poetry run pytest tests -vv

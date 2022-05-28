@@ -34,9 +34,10 @@ AUDIO_OGG = DATA_DIR / "test_audio.ogg"
 
 
 @pytest.fixture(scope="class")
-def bot(request) -> AsyncTeleBot:
+def bot_attr(request):
     bot = AsyncTeleBot(TOKEN)
     request.cls.bot = bot
+    return
 
 
 @pytest.fixture(scope="session")
@@ -65,7 +66,7 @@ def respect_rate_limit(method):
 
 
 @pytest.mark.skipif(skip_reason_msg is not None, reason=skip_reason_msg or "")
-@pytest.mark.usefixtures("bot", "teardown")
+@pytest.mark.usefixtures("bot_attr", "teardown")
 @pytest.mark.integration
 class TestIntegration(_HasBotAttr):
     async def passed(self):

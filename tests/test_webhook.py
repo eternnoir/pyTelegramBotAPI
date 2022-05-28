@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+from typing import Generator
 from uuid import uuid4
 
 import aiohttp
@@ -35,7 +36,7 @@ def bot() -> MockTeleBot:
 
 
 @pytest.fixture
-def bot_runner(bot: AsyncTeleBot) -> BotRunner:
+def bot_runner(bot: AsyncTeleBot) -> Generator[BotRunner, None, None]:
     async def count_milliseconds():
         global COUNTED_MILLISECONDS
         while True:
