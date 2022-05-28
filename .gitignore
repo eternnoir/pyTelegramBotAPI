@@ -68,3 +68,6 @@ testMain.py
 
 # documentation
 _build/
+
+
+.env

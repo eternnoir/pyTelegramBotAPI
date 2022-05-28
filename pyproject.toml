@@ -15,6 +15,7 @@ python = "^3.9"
 aiohttp = "^3.8.1"
 ujson = "^5.3.0"
 pytest-asyncio = "^0.18.3"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"

@@ -55,7 +55,7 @@ def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
                 logger.info(f"Background task #{idx} created for {bw.name}")
 
     async def close_client_session(_):
-        await api.session_manager.session.close()
+        await api.session_manager.close_session()
 
     app = web.Application()
     app.on_startup.append(setup_webhooks)

@@ -32,6 +32,9 @@ class SessionManager:
     def set_session(self, session: aiohttp.ClientSession):
         self.session = session
 
+    async def close_session(self):
+        await self.session.close()
+
     async def init_session(self):
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=REQUEST_LIMIT))
 
@@ -69,7 +72,7 @@ async def _request(token: str, route: str, method: str = "get", params=None, fil
                     ).replace(token, token.split(":")[0] + ":{TOKEN}")
                 )
 
-                json_result = await _check_result(route, resp)
+                json_result = await _check_response(route, resp)
                 if json_result:
                     return json_result["result"]
         except (ApiTelegramException, ApiInvalidJSONException, ApiHTTPException) as e:
@@ -77,7 +80,7 @@ async def _request(token: str, route: str, method: str = "get", params=None, fil
         except aiohttp.ClientError as e:
             logger.error("Aiohttp ClientError: {0}".format(e.__class__.__name__))
         except Exception as e:
-            logger.error(f"Unknown error: {e.__class__.__name__}")
+            logger.exception(f"Unexpected error processing request to Telegram API")
         if not got_result:
             raise RequestTimeout(
                 "Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(
@@ -245,7 +248,7 @@ async def get_updates(
     return await _request(token, method_name, params=params, request_timeout=request_timeout)
 
 
-async def _check_result(method_name, result):
+async def _check_response(method_name: str, response: aiohttp.ClientResponse):
     """
     Checks whether `result` is a valid API response.
     A result is considered invalid if:
@@ -258,18 +261,16 @@ async def _check_result(method_name, result):
     :param result: The returned result of the method request
     :return: The result parsed to a JSON dictionary.
     """
+    if response.status != 200:
+        raise ApiHTTPException(method_name, response)
     try:
-        result_json = await result.json(encoding="utf-8")
-    except:
-        if result.status_code != 200:
-            raise ApiHTTPException(method_name, result)
-        else:
-            raise ApiInvalidJSONException(method_name, result)
-    else:
-        if not result_json["ok"]:
-            raise ApiTelegramException(method_name, result, result_json)
+        result_json = await response.json(encoding="utf-8")
+    except Exception:
+        raise ApiInvalidJSONException(method_name, response)
+    if not result_json["ok"]:
+        raise ApiTelegramException(method_name, response, result_json)
 
-        return result_json
+    return result_json
 
 
 async def send_message(
