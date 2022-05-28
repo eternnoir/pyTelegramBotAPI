@@ -32,6 +32,10 @@ build-backend = "poetry.core.masonry.api"
 line-length = 120
 
 
+[tool.isort]
+profile = 'black'
+
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 markers = [

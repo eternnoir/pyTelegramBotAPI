@@ -4,13 +4,12 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
-import aiohttp
 
+import aiohttp
 import pytest
 from dotenv import load_dotenv
 
-from telebot import AsyncTeleBot, types, util
-from telebot import api
+from telebot import AsyncTeleBot, api, types, util
 
 load_dotenv()
 

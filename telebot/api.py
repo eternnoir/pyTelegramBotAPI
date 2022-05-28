@@ -1,7 +1,7 @@
-from io import BytesIO
 import logging
 import os
 from datetime import datetime
+from io import BytesIO
 from typing import Any, Optional, Union
 
 import aiohttp
@@ -2065,7 +2065,9 @@ class ApiHTTPException(ApiException):
 
     def __init__(self, function_name: str, response: aiohttp.ClientResponse):
         super(ApiHTTPException, self).__init__(
-            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(response.status, response.reason, response),
+            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(
+                response.status, response.reason, response
+            ),
             function_name,
             response,
         )

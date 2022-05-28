@@ -2,7 +2,9 @@ import pytest
 
 
 def pytest_addoption(parser):
-    parser.addoption("--integration", action="store_true", default=False, help="Specify to run integration test in real bot")
+    parser.addoption(
+        "--integration", action="store_true", default=False, help="Specify to run integration test in real bot"
+    )
 
 
 def pytest_collection_modifyitems(config, items):

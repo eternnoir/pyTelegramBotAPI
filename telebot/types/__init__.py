@@ -48,12 +48,11 @@ class Dictionaryable(object):
         """
         raise NotImplementedError
 
-    def __eq__(self, other: 'Dictionaryable') -> bool:
+    def __eq__(self, other: "Dictionaryable") -> bool:
         if isinstance(other, Dictionaryable):
             return self.to_dict() == other.to_dict()
         else:
             return False
-
 
 
 class JsonDeserializable(object):
