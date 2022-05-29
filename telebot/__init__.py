@@ -366,7 +366,7 @@ class AsyncTeleBot:
                     priority=priority,
                 )
             )
-            util.sort_by_priority(self.message_handlers)
+            sort_by_priority(self.message_handlers)
             return decorated
 
         return decorator
@@ -401,7 +401,7 @@ class AsyncTeleBot:
                     priority=priority,
                 )
             )
-            util.sort_by_priority(self.edited_message_handlers)
+            sort_by_priority(self.edited_message_handlers)
             return decorated
 
         return decorator
@@ -436,7 +436,7 @@ class AsyncTeleBot:
                     priority=priority,
                 )
             )
-            util.sort_by_priority(self.channel_post_handlers)
+            sort_by_priority(self.channel_post_handlers)
             return decorated
 
         return decorator
@@ -471,7 +471,7 @@ class AsyncTeleBot:
                     priority=priority,
                 )
             )
-            util.sort_by_priority(self.edited_channel_post_handlers)
+            sort_by_priority(self.edited_channel_post_handlers)
             return decorated
 
         return decorator
@@ -497,7 +497,7 @@ class AsyncTeleBot:
                     priority=priority,
                 )
             )
-            util.sort_by_priority(self.callback_query_handlers)
+            sort_by_priority(self.callback_query_handlers)
             return decorated
 
         return decorator
@@ -521,7 +521,7 @@ class AsyncTeleBot:
                     priority=priority,
                 )
             )
-            util.sort_by_priority(handler_list)
+            sort_by_priority(handler_list)
             return decorated
 
         return decorator
@@ -3148,3 +3148,7 @@ class AsyncTeleBot:
         :return:
         """
         return await api.delete_sticker_from_set(self.token, sticker)
+
+
+def sort_by_priority(handlers: list[service_types.Handler]):
+    handlers.sort(key=lambda h: h.get("priority") or 1, reverse=True)
