@@ -4,7 +4,7 @@ from typing_extensions import NotRequired
 
 from telebot import callback_data, types
 from telebot.check_text import CheckText
-from telebot.types.constants import ContentType
+from telebot.types.constants import ChatType, ContentType
 
 UpdateContent = Union[
     types.Message,
@@ -33,6 +33,7 @@ FilterValue = Union[
     str,  # simple filters like text="hello"
     list[str],  # most common filters like chat_types=["private", "group"]
     list[ContentType],
+    list[ChatType],
     list[int],  # chat id filtering
     callback_data.CallbackData,  # callback query handler for a particular CallbackData
     FilterFunc,
