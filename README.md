@@ -20,7 +20,37 @@ library wrapping the <a href="https://core.telegram.org/bots/api">Telegram Bot A
 
 ## Usage
 
-TBD: what is different from upstream pyTelegramBotApi?
+Install with
+
+```bash
+pip install telebot-against-war
+```
+
+Basic usage
+
+```python
+import asyncio
+from telebot import AsyncTeleBot, types
+
+
+async def minimal_example():
+    bot = AsyncTeleBot("TOKEN")
+
+    @bot.message_handler(commands=["start", "help"])
+    async def receive_cmd(m: types.Message):
+        await bot.send_message(m.from_user.id, "Welcome!")
+
+
+    @bot.message_handler()  # catch-all handler
+    def receive_message(m: types.Message):
+        await bot.reply_to(m, m.text)
+
+    await bot.infinity_polling(interval=1)
+
+
+asyncio.run(minimal_example())
+
+```
 
 
 ## Development
