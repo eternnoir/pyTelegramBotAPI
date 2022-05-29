@@ -302,6 +302,7 @@ class AsyncTeleBot:
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[str]] = None,
+        priority: Optional[int] = None,
         **kwargs,
     ):
         """
@@ -362,8 +363,10 @@ class AsyncTeleBot:
                         **kwargs,
                     },
                     name=util.qualified_name(decorated),
+                    priority=priority,
                 )
             )
+            util.sort_by_priority(self.message_handlers)
             return decorated
 
         return decorator
@@ -375,6 +378,7 @@ class AsyncTeleBot:
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[str]] = None,
+        priority: Optional[int] = None,
         **kwargs,
     ):
         if content_types is None:
@@ -394,8 +398,10 @@ class AsyncTeleBot:
                         **kwargs,
                     },
                     name=util.qualified_name(decorated),
+                    priority=priority,
                 )
             )
+            util.sort_by_priority(self.edited_message_handlers)
             return decorated
 
         return decorator
@@ -407,6 +413,7 @@ class AsyncTeleBot:
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[str]] = None,
         chat_types: Optional[list[str]] = None,
+        priority: Optional[int] = None,
         **kwargs,
     ):
         if content_types is None:
@@ -426,8 +433,10 @@ class AsyncTeleBot:
                         **kwargs,
                     },
                     name=util.qualified_name(decorated),
+                    priority=priority,
                 )
             )
+            util.sort_by_priority(self.channel_post_handlers)
             return decorated
 
         return decorator
@@ -439,6 +448,7 @@ class AsyncTeleBot:
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[str]] = None,
+        priority: Optional[int] = None,
         **kwargs,
     ):
         if content_types is None:
@@ -458,8 +468,10 @@ class AsyncTeleBot:
                         **kwargs,
                     },
                     name=util.qualified_name(decorated),
+                    priority=priority,
                 )
             )
+            util.sort_by_priority(self.edited_channel_post_handlers)
             return decorated
 
         return decorator
@@ -468,6 +480,7 @@ class AsyncTeleBot:
         self,
         callback_data: callback_data.CallbackData,
         func: Optional[service_types.FilterFunc[types.ChosenInlineResult]] = None,
+        priority: Optional[int] = None,
         **kwargs,
     ):
         def decorator(decorated: service_types.HandlerFunction[types.CallbackQuery]):
@@ -481,8 +494,10 @@ class AsyncTeleBot:
                         **kwargs,
                     },
                     name=util.qualified_name(decorated),
+                    priority=priority,
                 )
             )
+            util.sort_by_priority(self.callback_query_handlers)
             return decorated
 
         return decorator
@@ -491,6 +506,7 @@ class AsyncTeleBot:
         self,
         handler_list: list[service_types.Handler],
         func: Optional[service_types.FilterFunc[_UpdateContentT]],
+        priority: Optional[int] = None,
         **kwargs,
     ):
         def decorator(decorated: service_types.HandlerFunction[_UpdateContentT]):
@@ -502,49 +518,76 @@ class AsyncTeleBot:
                         **kwargs,
                     },
                     name=util.qualified_name(decorated),
+                    priority=priority,
                 )
             )
+            util.sort_by_priority(handler_list)
             return decorated
 
         return decorator
 
-    def inline_query_handler(self, func: Optional[service_types.FilterFunc[types.InlineQuery]], **kwargs):
+    def inline_query_handler(
+        self, func: Optional[service_types.FilterFunc[types.InlineQuery]], priority: Optional[int] = None, **kwargs
+    ):
         self.allowed_updates.add(constants.UpdateType.inline_query)
-        return self._simple_handler(self.inline_query_handlers, func, **kwargs)
+        return self._simple_handler(self.inline_query_handlers, func, priority=priority, **kwargs)
 
     def chosen_inline_result_handler(
-        self, func: Optional[service_types.FilterFunc[types.ChosenInlineResult]], **kwargs
+        self,
+        func: Optional[service_types.FilterFunc[types.ChosenInlineResult]],
+        priority: Optional[int] = None,
+        **kwargs,
     ):
         self.allowed_updates.add(constants.UpdateType.chosen_inline_result)
-        return self._simple_handler(self.chosen_inline_handlers, func, **kwargs)
+        return self._simple_handler(self.chosen_inline_handlers, func, priority=priority, **kwargs)
 
-    def shipping_query_handler(self, func: Optional[service_types.FilterFunc[types.ShippingQuery]], **kwargs):
+    def shipping_query_handler(
+        self, func: Optional[service_types.FilterFunc[types.ShippingQuery]], priority: Optional[int] = None, **kwargs
+    ):
         self.allowed_updates.add(constants.UpdateType.shipping_query)
-        return self._simple_handler(self.shipping_query_handlers, func, **kwargs)
+        return self._simple_handler(self.shipping_query_handlers, func, priority=priority, **kwargs)
 
-    def pre_checkout_query_handler(self, func: Optional[service_types.FilterFunc[types.PreCheckoutQuery]], **kwargs):
+    def pre_checkout_query_handler(
+        self, func: Optional[service_types.FilterFunc[types.PreCheckoutQuery]], priority: Optional[int] = None, **kwargs
+    ):
         self.allowed_updates.add(constants.UpdateType.pre_checkout_query)
-        return self._simple_handler(self.pre_checkout_query_handlers, func, **kwargs)
+        return self._simple_handler(self.pre_checkout_query_handlers, func, priority=priority, **kwargs)
 
-    def poll_handler(self, func: Optional[service_types.FilterFunc[types.Poll]], **kwargs):
+    def poll_handler(
+        self, func: Optional[service_types.FilterFunc[types.Poll]], priority: Optional[int] = None, **kwargs
+    ):
         self.allowed_updates.add(constants.UpdateType.poll)
-        return self._simple_handler(self.poll_handlers, func, **kwargs)
+        return self._simple_handler(self.poll_handlers, func, priority=priority, **kwargs)
 
-    def poll_answer_handler(self, func: Optional[service_types.FilterFunc[types.PollAnswer]], **kwargs):
+    def poll_answer_handler(
+        self, func: Optional[service_types.FilterFunc[types.PollAnswer]], priority: Optional[int] = None, **kwargs
+    ):
         self.allowed_updates.add(constants.UpdateType.poll_answer)
-        return self._simple_handler(self.poll_answer_handlers, func, **kwargs)
+        return self._simple_handler(self.poll_answer_handlers, func, priority=priority, **kwargs)
 
-    def my_chat_member_handler(self, func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]], **kwargs):
+    def my_chat_member_handler(
+        self,
+        func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]],
+        priority: Optional[int] = None,
+        **kwargs,
+    ):
         self.allowed_updates.add(constants.UpdateType.my_chat_member)
-        return self._simple_handler(self.my_chat_member_handlers, func, **kwargs)
+        return self._simple_handler(self.my_chat_member_handlers, func, priority=priority, **kwargs)
 
-    def chat_member_handler(self, func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]], **kwargs):
+    def chat_member_handler(
+        self,
+        func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]],
+        priority: Optional[int] = None,
+        **kwargs,
+    ):
         self.allowed_updates.add(constants.UpdateType.chat_member)
-        return self._simple_handler(self.chat_member_handlers, func, **kwargs)
+        return self._simple_handler(self.chat_member_handlers, func, priority=priority, **kwargs)
 
-    def chat_join_request_handler(self, func: Optional[service_types.FilterFunc[types.ChatJoinRequest]], **kwargs):
+    def chat_join_request_handler(
+        self, func: Optional[service_types.FilterFunc[types.ChatJoinRequest]], priority: Optional[int] = None, **kwargs
+    ):
         self.allowed_updates.add(constants.UpdateType.chat_join_request)
-        return self._simple_handler(self.chat_join_request_handlers, func, **kwargs)
+        return self._simple_handler(self.chat_join_request_handlers, func, priority=priority, **kwargs)
 
     async def skip_updates(self):
         """

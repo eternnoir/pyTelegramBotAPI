@@ -8,6 +8,7 @@ import threading
 from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
 from telebot.types import constants
+from telebot.types import service as service_types
 
 MAX_MESSAGE_LENGTH = 4096
 
@@ -19,6 +20,10 @@ def qualified_name(obj: Any) -> str:
         return f"{obj.__module__}.{obj.__qualname__}"
     except Exception:
         return "<cant-get-qualified-name>"
+
+
+def sort_by_priority(handlers: list[service_types.Handler]):
+    handlers.sort(key=lambda h: h.get("priority") or 1, reverse=True)
 
 
 T = TypeVar("T")

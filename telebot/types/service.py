@@ -1,13 +1,4 @@
-from typing import (
-    Callable,
-    Coroutine,
-    ForwardRef,
-    Protocol,
-    TypedDict,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import Coroutine, Optional, Protocol, TypedDict, TypeVar, Union, overload
 
 from typing_extensions import NotRequired
 
@@ -67,6 +58,7 @@ class Handler(TypedDict):
     function: HandlerFunction
     filters: dict[str, FilterValue]
     name: NotRequired[str]
+    priority: NotRequired[Optional[int]]
 
 
 ChatId = Union[str, int]
