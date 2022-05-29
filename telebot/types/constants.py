@@ -2,7 +2,15 @@ from enum import Enum
 from typing import Optional, Union
 
 
-class MediaContentType(Enum):
+class StrEnum(Enum):
+    def __str__(self) -> str:
+        return self.value
+
+    def __repr__(self) -> str:
+        return str(self)
+
+
+class MediaContentType(StrEnum):
     text = "text"
     audio = "audio"
     animation = "animation"
@@ -19,7 +27,7 @@ class MediaContentType(Enum):
     location = "location"
 
 
-class ServiceContentType(Enum):
+class ServiceContentType(StrEnum):
     new_chat_members = "new_chat_members"
     left_chat_member = "left_chat_member"
     new_chat_title = "new_chat_title"
@@ -52,7 +60,7 @@ def content_type_from_str(ct: str) -> Optional[ContentType]:
             return None
 
 
-class UpdateType(Enum):
+class UpdateType(StrEnum):
     message = "message"
     edited_message = "edited_message"
     channel_post = "channel_post"

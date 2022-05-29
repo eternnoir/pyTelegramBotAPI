@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import uuid4
 
 import pytest
@@ -49,7 +50,7 @@ def pass_bot_to_handler_func(request) -> bool:
         pytest.param("other_text", {"func": lambda message: r"lambda" in message.text}, False),
     ],
 )
-async def test_message_handler_for_commands(
+async def test_message_handler_basic(
     message_text: str, handler_filter_kwargs: dict, must_be_received: bool, pass_bot_to_handler_func: bool
 ):
     tb = telebot.AsyncTeleBot("")
@@ -75,3 +76,48 @@ async def test_message_handler_for_commands(
         assert update.message.text == got_msg_confirmation
     else:
         assert update.message.text == message_text
+
+
+@pytest.mark.parametrize(
+    "message_text, handler_filter_kwargs_list, message_received_by_expected",
+    [
+        pytest.param("/start", [{"commands": ["start"]}], 0, id="single handler"),
+        pytest.param("/start", [{"commands": ["start"]}, {}], 0, id="no priority - first handler gets the message"),
+        pytest.param("/start", [{}, {"commands": ["start"]}], 0, id="no priority - first handler gets the message"),
+        pytest.param(
+            "/start",
+            [{"commands": ["start"]}, {"commands": ["start"], "priority": 2}],
+            1,
+            id="second handler has higher priority than the first",
+        ),
+        pytest.param(
+            "/start",
+            [{}, {"commands": ["start"], "priority": 2}],
+            1,
+            id="second handler has higher priority than the first, even when it's catch-all",
+        ),
+    ],
+)
+async def test_message_handler_priority(
+    message_text: str,
+    handler_filter_kwargs_list: list[dict],
+    message_received_by_expected: int,
+):
+    tb = telebot.AsyncTeleBot("")
+    update = mock_message_update(message_text)
+
+    message_received_by: Optional[int] = None
+
+    def create_handler(idx: int):
+        async def handler(message: types.Message):
+            nonlocal message_received_by
+            message_received_by = idx
+
+        return handler
+
+    for idx, handler_kwargs in enumerate(handler_filter_kwargs_list):
+        decorator = tb.message_handler(**handler_kwargs)
+        decorator(create_handler(idx))
+
+    await tb.process_new_updates([update])
+    assert message_received_by == message_received_by_expected
