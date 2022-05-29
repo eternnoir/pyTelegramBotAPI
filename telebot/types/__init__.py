@@ -759,6 +759,10 @@ class Message(JsonDeserializable):
     def html_caption(self):
         return self.__html_text(self.caption, self.caption_entities)
 
+    @property
+    def text_content(self) -> str:
+        return self.text or self.caption or ""
+
 
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     @staticmethod

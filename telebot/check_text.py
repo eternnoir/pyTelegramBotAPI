@@ -3,11 +3,15 @@ from typing import Optional, Union
 from telebot import types
 
 
-class TextMatcher:
+class CheckText:
     """
-    Advanced text filter to check (types.Message, types.CallbackQuery, types.InlineQuery, types.Poll)
+    Advanced text filter to check types.Message. For example, the handler
 
-    example of usage is in examples/asynchronous_telebot/custom_filters/advanced_text_filter.py
+    >>> @bot.message_handler(text=CheckText(contains=["hello", "world"], equals="potato", ends_with=["foo", "bar"]))
+    >>> async def handler(...):
+    ...     ...
+
+    will receive all of the following: "hello world", "hello", "potato", "the world is ending", "hello foo", "bar"
     """
 
     def __init__(
@@ -23,12 +27,12 @@ class TextMatcher:
             raise ValueError("None of the check modes was specified")
 
         self.equals = equals
-        self.contains = self._check_iterable(contains, filter_name="contains")
-        self.starts_with = self._check_iterable(starts_with, filter_name="starts_with")
-        self.ends_with = self._check_iterable(ends_with, filter_name="ends_with")
+        self.contains = self._to_list(contains, filter_name="contains")
+        self.starts_with = self._to_list(starts_with, filter_name="starts_with")
+        self.ends_with = self._to_list(ends_with, filter_name="ends_with")
         self.ignore_case = ignore_case
 
-    def _check_iterable(self, iterable, filter_name):
+    def _to_list(self, iterable, filter_name) -> list[str]:
         if not iterable:
             pass
         elif not isinstance(iterable, str) and not isinstance(iterable, list) and not isinstance(iterable, tuple):
@@ -39,18 +43,8 @@ class TextMatcher:
             iterable = [i for i in iterable if isinstance(i, str)]
         return iterable
 
-    async def check(self, matchable: types.Message):
-
-        if isinstance(matchable, types.Poll):
-            text = matchable.question
-        elif isinstance(matchable, types.Message):
-            text = matchable.text or matchable.caption or ""
-        elif isinstance(matchable, types.CallbackQuery):
-            text = matchable.data
-        elif isinstance(matchable, types.InlineQuery):
-            text = matchable.query
-        else:
-            return False
+    async def check(self, message: types.Message):
+        text = message.text_content
 
         if self.ignore_case:
             text = text.lower()

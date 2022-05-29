@@ -1,9 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Generic, Optional, TypeVar, Union
+from typing import Generic, TypeVar, Union
 
 from telebot import types
-from telebot.text_matcher import TextMatcher
+from telebot.check_text import CheckText
 from telebot.types import ChatMember
 from telebot.types import service as service_types
 
@@ -62,7 +62,7 @@ class TextMatchFilter(AdvancedCustomFilter[types.Message]):
     key = "text"
 
     async def check(self, update_content: types.Message, filter_value: service_types.FilterValue) -> bool:
-        if isinstance(filter_value, TextMatcher):
+        if isinstance(filter_value, CheckText):
             return await filter_value.check(update_content)
         elif isinstance(filter_value, list):
             return update_content.text in filter_value

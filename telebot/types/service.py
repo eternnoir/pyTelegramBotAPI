@@ -12,7 +12,7 @@ from typing import (
 from typing_extensions import NotRequired
 
 from telebot import callback_data, types
-from telebot.text_matcher import TextMatcher
+from telebot.check_text import CheckText
 from telebot.types.constants import ContentType
 
 UpdateContent = Union[
@@ -46,7 +46,7 @@ FilterValue = Union[
     callback_data.CallbackData,  # callback query handler for a particular CallbackData
     FilterFunc,
     bool,  # to turn on CustomFilters
-    TextMatcher,
+    CheckText,
     None,  # no filter
 ]
 
