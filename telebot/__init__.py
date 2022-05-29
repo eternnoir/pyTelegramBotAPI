@@ -249,7 +249,7 @@ class AsyncTeleBot:
                 and command in util.validated_list_str(filter_value, name="commands filter")
             )
         elif filter_key == "chat_types":
-            return update_content_as_message().chat.type in util.validated_list_str(
+            return constants.ChatType(update_content_as_message().chat.type) in util.validated_list_chat_type(
                 filter_value, name="chat types filter"
             )
         elif filter_key == "func":
@@ -301,7 +301,7 @@ class AsyncTeleBot:
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
-        chat_types: Optional[list[str]] = None,
+        chat_types: Optional[list[constants.ChatType]] = None,
         priority: Optional[int] = None,
         **kwargs,
     ):
@@ -377,7 +377,7 @@ class AsyncTeleBot:
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
-        chat_types: Optional[list[str]] = None,
+        chat_types: Optional[list[constants.ChatType]] = None,
         priority: Optional[int] = None,
         **kwargs,
     ):
@@ -412,7 +412,7 @@ class AsyncTeleBot:
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[str]] = None,
-        chat_types: Optional[list[str]] = None,
+        chat_types: Optional[list[constants.ChatType]] = None,
         priority: Optional[int] = None,
         **kwargs,
     ):
@@ -447,7 +447,7 @@ class AsyncTeleBot:
         regexp: str = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
-        chat_types: Optional[list[str]] = None,
+        chat_types: Optional[list[constants.ChatType]] = None,
         priority: Optional[int] = None,
         **kwargs,
     ):

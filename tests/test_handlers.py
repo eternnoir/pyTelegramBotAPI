@@ -5,6 +5,7 @@ import pytest
 
 import telebot
 from telebot import AsyncTeleBot, types
+from telebot.types import constants
 from tests.utils import mock_message, mock_message_update
 
 
@@ -121,3 +122,47 @@ async def test_message_handler_priority(
 
     await tb.process_new_updates([update])
     assert message_received_by == message_received_by_expected
+
+
+async def test_chat_types_filter():
+    bot = telebot.AsyncTeleBot("")
+
+    fired: bool = False
+
+    @bot.message_handler(chat_types=[constants.ChatType.private])
+    def must_not_fire_2(messsage: types.Message):
+        assert False
+
+    @bot.message_handler(chat_types=[constants.ChatType.group])
+    def must_fire(messsage: types.Message):
+        nonlocal fired
+        fired = True
+
+    await bot.process_new_updates(
+        [
+            types.Update.de_json(
+                {
+                    "update_id": 1312,
+                    "message": {
+                        "message_id": 55,
+                        "from": {
+                            "id": 23412345123,
+                            "is_bot": False,
+                            "first_name": "фоыдрафыва",
+                            "username": "ajdjhsfadsf",
+                            "language_code": "en",
+                        },
+                        "chat": {
+                            "id": -314235412351,
+                            "title": "service bot group",
+                            "type": "group",
+                            "all_members_are_administrators": True,
+                        },
+                        "date": 13412341234,
+                        "text": "123",
+                    },
+                }
+            )
+        ]
+    )
+    assert fired

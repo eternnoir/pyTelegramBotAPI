@@ -75,3 +75,10 @@ class UpdateType(StrEnum):
     my_chat_member = "my_chat_member"
     chat_member = "chat_member"
     chat_join_request = "chat_join_request"
+
+
+class ChatType(StrEnum):
+    private = "private"
+    group = "group"
+    supergroup = "supergroup"
+    channel = "channel"

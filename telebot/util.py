@@ -5,7 +5,7 @@ import random
 import re
 import string
 import threading
-from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
+from typing import Any, Callable, Coroutine, List, Optional, Type, TypeVar, Union, cast
 
 from telebot.types import constants
 
@@ -61,14 +61,23 @@ def validated_str(v: Any, name: Optional[str] = None) -> str:
     return v
 
 
-def validated_list_content_type(v: Any, name: Optional[str] = None) -> list[constants.ContentType]:
+def _validated_list(v: Any, item_types: list[Type], name: Optional[str] = None) -> list:
     name = name or "<anonymous>"
+    item_types_str = ", ".join([it.__name__ for it in item_types])
     if not isinstance(v, list):
-        raise TypeError(f"{name} is expected to be list[ContentType], but it's not even a list")
+        raise TypeError(f"{name} is expected to be list of {item_types_str} but it's not even a list")
     for item in v:
-        if not isinstance(item, (constants.ServiceContentType, constants.MediaContentType)):
-            raise TypeError(f"{name} is expected to be list[ContentType], but includes invalid item '{item}'")
+        if not isinstance(item, tuple(item_types)):
+            raise TypeError(f"{name} is expected to be list of {item_types_str} but includes invalid item '{item}'")
     return v
+
+
+def validated_list_content_type(v: Any, name: Optional[str] = None) -> list[constants.ContentType]:
+    return _validated_list(v, item_types=[constants.ServiceContentType, constants.MediaContentType], name=name)
+
+
+def validated_list_chat_type(v: Any, name: Optional[str] = None) -> list[constants.ChatType]:
+    return _validated_list(v, item_types=[constants.ChatType], name=name)
 
 
 def is_command(text: str) -> bool:
