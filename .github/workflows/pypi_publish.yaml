@@ -1,3 +1,5 @@
+name: Build and publish package ty PyPI
+
 on:
   release:
     types: [published]

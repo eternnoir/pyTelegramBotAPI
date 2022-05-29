@@ -1,4 +1,4 @@
-name: Run tests
+name: Run tests on pull requests
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.9' ]
-    name: Python ${{ matrix.python-version }} tests
+    name: Testing on python ${{ matrix.python-version }}
     steps:
       - name: Checkout latest version
         uses: actions/checkout@v2
