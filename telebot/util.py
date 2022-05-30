@@ -524,7 +524,7 @@ def antiflood(function, *args, **kwargs):
         return msg
     
     
-def parse_WebApp_data(token: str, raw_init_data: str):
+def parse_webapp_data(token: str, raw_init_data: str):
     is_valid = validate_WebApp_data(token, raw_init_data)
     if not is_valid:
         return False
@@ -540,7 +540,7 @@ def parse_WebApp_data(token: str, raw_init_data: str):
     return result
 
 
-def validate_WebApp_data(token, raw_init_data):
+def validate_webapp_data(token, raw_init_data):
     try:
         parsed_data = dict(parse_qsl(raw_init_data))
     except ValueError:
