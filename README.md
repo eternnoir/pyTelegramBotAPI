@@ -896,5 +896,5 @@ Here are some examples of template:
 * [Pyfram-telegram-bot](https://github.com/skelly37/pyfram-telegram-bot) Query wolframalpha.com and make use of its API through Telegram.
 * [TranslateThisVideoBot](https://gitlab.com/WuerfelDev/translatethisvideo) This Bot can understand spoken text in videos and translate it to English
 * [Zyprexa](https://t.me/mathemathicsBot) ([source](https://github.com/atif5/zyprexa)) Zyprexa can solve, help you solve any mathematical problem you encounter and convert your regular mathematical expressions into beautiful imagery using LaTeX.
-
+* [Bincode-telegram-bot](https://github.com/tusharhero/bincode-telegram-bot) by [tusharhero](https://github.com/tusharhero) - Makes [bincodes](https://github.com/tusharhero/bincode) from text provides and also converts them back to text.
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
