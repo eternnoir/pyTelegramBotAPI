@@ -90,7 +90,7 @@ class ChatFilter(AdvancedCustomFilter[types.TiedToChat]):
             return False
 
 
-class ForwardFilter(SimpleCustomFilter[types.Message]):
+class IsForwardedFilter(SimpleCustomFilter[types.Message]):
     """
     Check whether message was forwarded from channel or group.
 

@@ -69,11 +69,19 @@ class AsyncTeleBot:
         self.chat_member_handlers: list[service_types.Handler] = []
         self.chat_join_request_handlers: list[service_types.Handler] = []
 
-        if custom_filters:
-            self.custom_filters: dict[str, filters.AnyCustomFilter] = {cf.key: cf for cf in custom_filters}
-        else:
-            self.custom_filters = dict()
+        DEFAULT_CUSTOM_FILTERS: list[filters.AnyCustomFilter] = [
+            filters.TextMatchFilter(),
+            filters.ChatFilter(),
+            filters.IsForwardedFilter(),
+            filters.IsReplyFilter(),
+        ]
 
+        if custom_filters is None:
+            custom_filters = []
+
+        self.custom_filters = {cf.key: cf for cf in DEFAULT_CUSTOM_FILTERS + custom_filters}
+
+        # updated automatically from added handlers
         self.allowed_updates: set[constants.UpdateType] = set(force_allowed_updates) if force_allowed_updates else set()
 
     async def close_session(self):
