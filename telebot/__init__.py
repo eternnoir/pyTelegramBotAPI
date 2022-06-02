@@ -286,6 +286,9 @@ class AsyncTeleBot:
         try:
             custom_filter = self.custom_filters.get(filter_key)
             if custom_filter is None:
+                logger.error(
+                    f"Invalid filter key: {filter_key!r}. Did you forgot to add your custom filter to the bot?"
+                )
                 return False
             elif isinstance(custom_filter, filters.SimpleCustomFilter):
                 return filter_value == await custom_filter.check(update_content)
