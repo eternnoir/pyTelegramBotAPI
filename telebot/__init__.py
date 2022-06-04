@@ -12,11 +12,6 @@ from telebot.types import constants
 from telebot.types import service as service_types
 
 logger = logging.getLogger("telebot")
-handler = logging.StreamHandler(sys.stderr)
-handler.setFormatter(
-    logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"')
-)
-logger.addHandler(handler)
 
 
 _UpdateContentT = TypeVar("_UpdateContentT", bound=service_types.UpdateContent)
@@ -140,13 +135,13 @@ class AsyncTeleBot:
                     logger.info("Resuming polling")
         finally:
             await self.close_session()
-            logger.info("Stopping")
+            logger.info("Stopping polling")
 
     # update handling
 
     async def process_new_updates(self, updates: list[types.Update]):
         update_dumps = [json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates]
-        logger.debug(f"Got {len(updates)} updates\n\n" + "\n\n".join(update_dumps) + "\n")
+        logger.debug(f"{len(updates)} update(s) received\n" + "\n\n".join(update_dumps) + "\n")
 
         upd_count = len(updates)
         if upd_count == 0:
