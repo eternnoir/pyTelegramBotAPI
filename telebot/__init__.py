@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 import re
 import sys
@@ -10,14 +11,12 @@ from telebot import api, callback_data, filters, types, util
 from telebot.types import constants
 from telebot.types import service as service_types
 
-logger = logging.getLogger(__name__.split(".")[0])
-formatter = logging.Formatter(
-    '%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"'
+logger = logging.getLogger("telebot")
+handler = logging.StreamHandler(sys.stderr)
+handler.setFormatter(
+    logging.Formatter('%(asctime)s (%(filename)s:%(lineno)d %(threadName)s) %(levelname)s - %(name)s: "%(message)s"')
 )
-console_output_handler = logging.StreamHandler(sys.stderr)
-console_output_handler.setFormatter(formatter)
-logger.addHandler(console_output_handler)
-logger.setLevel(logging.ERROR)
+logger.addHandler(handler)
 
 
 _UpdateContentT = TypeVar("_UpdateContentT", bound=service_types.UpdateContent)
@@ -130,7 +129,6 @@ class AsyncTeleBot:
                         timeout=timeout,
                         request_timeout=request_timeout,
                     )
-                    logger.debug(f"Got {len(updates)} updates\n\n" + "\n".join([str(u._json) for u in updates]) + "\n")
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         asyncio.create_task(self.process_new_updates(updates))
@@ -147,13 +145,14 @@ class AsyncTeleBot:
     # update handling
 
     async def process_new_updates(self, updates: list[types.Update]):
+        update_dumps = [json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates]
+        logger.debug(f"Got {len(updates)} updates\n\n" + "\n\n".join(update_dumps) + "\n")
+
         upd_count = len(updates)
-        logger.info("Received {0} new updates".format(upd_count))
         if upd_count == 0:
             return
 
         for update in updates:
-            logger.debug("Processing updates: {0}".format(update))
             for listener in self.update_listeners:
                 asyncio.create_task(listener(update))
 
@@ -297,11 +296,11 @@ class AsyncTeleBot:
             else:
                 logger.error(
                     "Invalid custom filter type, expected either SimpleCustomFilter "
-                    + f"or AdvancedCustomFilter, got {custom_filter}."
+                    + f"or AdvancedCustomFilter, got {custom_filter!r}."
                 )
                 return False
         except Exception as e:
-            logger.error(f"Unexpected error testing custom filters: {e}")
+            logger.exception(f"Unexpected error testing custom filters")
             return False
 
     # handlers building decorators and methods
@@ -1335,7 +1334,6 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
-        data: Union[Any, str] = None,
     ) -> types.Message:
         """
         Use this method to send .webp stickers.
@@ -1353,10 +1351,6 @@ class AsyncTeleBot:
         :param data: deprecated, for backward compatibility
         :return: API reply.
         """
-        if data and not (sticker):
-            # function typo miss compatibility
-            logger.warning("send_sticker: data parameter is deprecated. Use sticker instead.")
-            sticker = data
 
         return types.Message.de_json(
             await api.send_data(
@@ -1391,7 +1385,6 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
-        data: Optional[Union[Any, str]] = None,
     ) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
@@ -1417,10 +1410,6 @@ class AsyncTeleBot:
         :param data: deprecated, for backward compatibility
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
-        if data and not (video):
-            # function typo miss compatibility
-            logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
-            video = data
 
         return types.Message.de_json(
             await api.send_video(
@@ -1863,19 +1852,6 @@ class AsyncTeleBot:
         """
         return await api.send_chat_action(self.token, chat_id, action, timeout)
 
-    async def kick_chat_member(
-        self,
-        chat_id: Union[int, str],
-        user_id: int,
-        until_date: Optional[Union[int, datetime]] = None,
-        revoke_messages: Optional[bool] = None,
-    ) -> bool:
-        """
-        This function is deprecated. Use `ban_chat_member` instead
-        """
-        logger.info("kick_chat_member is deprecated. Use ban_chat_member instead.")
-        return await api.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
-
     async def ban_chat_member(
         self,
         chat_id: Union[int, str],
@@ -1993,7 +1969,6 @@ class AsyncTeleBot:
         is_anonymous: Optional[bool] = None,
         can_manage_chat: Optional[bool] = None,
         can_manage_video_chats: Optional[bool] = None,
-        can_manage_voice_chats: Optional[bool] = None,
     ) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
@@ -2025,13 +2000,6 @@ class AsyncTeleBot:
         :param can_manage_voice_chats: Deprecated, use can_manage_video_chats
         :return: True on success.
         """
-
-        if can_manage_voice_chats is not None:
-            logger.warning(
-                "promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead."
-            )
-            if can_manage_video_chats is None:
-                can_manage_video_chats = can_manage_voice_chats
 
         return await api.promote_chat_member(
             self.token,

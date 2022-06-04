@@ -107,7 +107,7 @@ class Update(JsonDeserializable):
     chat_member: Optional["ChatMemberUpdated"]
     chat_join_request: Optional["ChatJoinRequest"]
 
-    _json: Union[dict, str]
+    _json_dict: dict
 
     @classmethod
     def de_json(cls, json_: Optional[Union[dict, str]]) -> Optional["Update"]:
@@ -145,7 +145,7 @@ class Update(JsonDeserializable):
             my_chat_member,
             chat_member,
             chat_join_request,
-            _json=json_,
+            _json_dict=obj,
         )
 
 
