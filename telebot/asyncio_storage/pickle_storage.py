@@ -51,9 +51,11 @@ class StatePickleStorage(StateStorageBase):
         if chat_id in self.data:
             if user_id in self.data[chat_id]:
                 self.data[chat_id][user_id]['state'] = state
+                self.update_data()
                 return True
             else:
                 self.data[chat_id][user_id] = {'state': state, 'data': {}}
+                self.update_data()
                 return True
         self.data[chat_id] = {user_id: {'state': state, 'data': {}}}
         self.update_data()
