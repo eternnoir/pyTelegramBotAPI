@@ -20,6 +20,7 @@ style="semver"
 python = "^3.9"
 aiohttp = "^3.8.1"
 ujson = "^5.3.0"
+typing-extensions = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"

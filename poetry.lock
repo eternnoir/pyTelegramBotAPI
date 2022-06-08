@@ -406,7 +406,7 @@ python-versions = ">=3.7"
 name = "typing-extensions"
 version = "4.2.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -451,7 +451,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d85885f14835d6ec0ac891d39bc2943bcaaf7dd29c156a09cdfeedd2a66bf48d"
+content-hash = "be97e20bccb31114d49bbc9e4943798ca59794da8b09269353e6a6f799a4445e"
 
 [metadata.files]
 aiohttp = [
