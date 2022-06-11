@@ -1,7 +1,5 @@
 import asyncio
-import json
 import logging
-from typing import Callable, Coroutine, Optional
 
 from aiohttp import web
 
@@ -33,11 +31,7 @@ def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Appli
         finally:
             return web.Response()
 
-    background_tasks: list[asyncio.Task] = []
-
-    app = web.Application()
-    # see https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task
-    app["background_tasks"] = background_tasks
+    background_tasks: set[asyncio.Task] = set()
 
     async def setup(_):
         loop = asyncio.get_running_loop()
@@ -45,17 +39,28 @@ def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Appli
             await br.bot.delete_webhook()
             await br.bot.set_webhook(url=base_url + ROUTE_TEMPLATE.format(subroute=subroute))
             logger.info(f"Webhook set for {br.name}")
-        for bw in bot_runners:
-            for idx, coro in enumerate(bw.background_jobs):
-                background_tasks.append(loop.create_task(coro))
-                logger.info(f"Background task created for {bw.name} (#{idx})")
+        for br in bot_runners:
+            for idx, coro in enumerate(br.background_jobs):
+                task = loop.create_task(coro, name=f"{br.name}-{idx}")
+                background_tasks.add(task)
+
+                def background_job_done(task: asyncio.Task):
+                    background_tasks.discard(task)
+                    logger.info(f"Backgound job is completed: {task}")
+
+                task.add_done_callback(background_job_done)
+                logger.info(f"Background task created for {br.name} (#{idx})")
 
     async def cleanup(_):
+        logger.debug("Cleanup started")
         await api.session_manager.close_session()
         for t in background_tasks:
+            logger.debug(f"Cancelling background task {t}")
             t.cancel()
         await asyncio.gather(*background_tasks)
+        logger.debug("Cleanup completed")
 
+    app = web.Application()
     app.on_startup.append(setup)
     app.on_cleanup.append(cleanup)
     app.router.add_post(ROUTE_TEMPLATE, webhook_handler)
