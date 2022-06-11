@@ -101,3 +101,17 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockTeleBot, aiohttp_clien
     assert [m.text for m in RECEIVED_COMMANDS] == ["/start", "/help"]
 
     assert COUNTED_MILLISECONDS > 1, "Background job didn't count milliseconds!"
+
+
+@pytest.mark.parametrize(
+    "bot_name, token, expected_route_prefix",
+    [
+        pytest.param("hello-world", uuid4().hex, "hello-world"),
+        pytest.param("hello world", uuid4().hex, "hello-world"),
+        pytest.param(" Very Bad  Name For   a Bot!!!   ", uuid4().hex, "Very-Bad-Name-For-a-Bot%21%21%21"),
+    ],
+)
+def test_webhook_route_generation(bot_name: str, token: str, expected_route_prefix: str):
+    bot = AsyncTeleBot(token)
+    bot_runner = BotRunner(name=bot_name, bot=bot)
+    assert bot_runner.webhook_subroute().startswith(expected_route_prefix)

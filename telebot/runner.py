@@ -1,4 +1,5 @@
 import asyncio
+import urllib.parse
 from dataclasses import dataclass, field
 from hashlib import sha256
 from typing import Coroutine
@@ -20,5 +21,6 @@ class BotRunner:
         )
 
     def webhook_subroute(self) -> str:
+        urlasafe_name = "-".join(self.name.split())
         token_hash = sha256(self.bot.token.encode("utf-8")).hexdigest()
-        return f"{self.name}-{token_hash}"
+        return urllib.parse.quote(f"{urlasafe_name}-{token_hash}")
