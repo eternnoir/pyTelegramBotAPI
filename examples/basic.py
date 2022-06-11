@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -16,7 +17,6 @@ async def echo(message: tg.Message):
     await bot.reply_to(message, message.text_content)
 
 
-BotRunner(
-    name="echo-bot",
-    bot=bot,
-).run_polling()
+asyncio.run(
+    BotRunner(name="echo-bot", bot=bot).run_polling(),
+)
