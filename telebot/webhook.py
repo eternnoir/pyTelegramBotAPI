@@ -11,11 +11,7 @@ from telebot.runner import BotRunner
 logger = logging.getLogger(__name__)
 
 
-def create_webhook_app(
-    bot_runners: list[BotRunner],
-    base_url: str,
-    global_cleanup: Optional[Callable[[], Coroutine]],
-) -> web.Application:
+def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Application:
     ROUTE_TEMPLATE = "/webhook/{subroute}/"
     bot_runner_by_subroute = {bw.webhook_subroute(): bw for bw in bot_runners}
     logger.info("Running bots:\n" + "\n".join(f"/{path}: {bw.name}" for path, bw in bot_runner_by_subroute.items()))
@@ -39,8 +35,12 @@ def create_webhook_app(
 
     background_tasks: list[asyncio.Task] = []
 
+    app = web.Application()
+    # see https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task
+    app["background_tasks"] = background_tasks
+
     async def setup(_):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         for subroute, br in bot_runner_by_subroute.items():
             await br.bot.delete_webhook()
             await br.bot.set_webhook(url=base_url + ROUTE_TEMPLATE.format(subroute=subroute))
@@ -54,22 +54,14 @@ def create_webhook_app(
         await api.session_manager.close_session()
         for t in background_tasks:
             t.cancel()
-        if global_cleanup is not None:
-            await global_cleanup()
+        await asyncio.gather(*background_tasks)
 
-    app = web.Application()
     app.on_startup.append(setup)
     app.on_cleanup.append(cleanup)
     app.router.add_post(ROUTE_TEMPLATE, webhook_handler)
-
     return app
 
 
-def run_webhook_server(
-    bot_runners: list[BotRunner],
-    base_url: str,
-    port: int,
-    global_cleanup: Optional[Callable[[], Coroutine]] = None,
-):
-    app = create_webhook_app(bot_runners, base_url, global_cleanup=global_cleanup)
+def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
+    app = create_webhook_app(bot_runners, base_url)
     web.run_app(app, host="0.0.0.0", port=port, access_log=None)
