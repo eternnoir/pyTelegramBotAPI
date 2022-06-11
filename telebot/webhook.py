@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 def create_webhook_app(
-    bot_runners: list[BotRunner], base_url: str, global_cleanup: Optional[Callable[[], Coroutine]]
+    bot_runners: list[BotRunner],
+    base_url: str,
+    global_cleanup: Optional[Callable[[], Coroutine]],
 ) -> web.Application:
     ROUTE_TEMPLATE = "/webhook/{subroute}/"
     bot_runner_by_subroute = {bw.webhook_subroute(): bw for bw in bot_runners}
@@ -63,6 +65,11 @@ def create_webhook_app(
     return app
 
 
-def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
-    app = create_webhook_app(bot_runners, base_url)
+def run_webhook_server(
+    bot_runners: list[BotRunner],
+    base_url: str,
+    port: int,
+    global_cleanup: Optional[Callable[[], Coroutine]] = None,
+):
+    app = create_webhook_app(bot_runners, base_url, global_cleanup=global_cleanup)
     web.run_app(app, host="0.0.0.0", port=port, access_log=None)
