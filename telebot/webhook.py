@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+from typing import Callable, Coroutine, Optional
 
 from aiohttp import web
 
@@ -10,7 +11,9 @@ from telebot.runner import BotRunner
 logger = logging.getLogger(__name__)
 
 
-def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Application:
+def create_webhook_app(
+    bot_runners: list[BotRunner], base_url: str, global_cleanup: Optional[Callable[[], Coroutine]]
+) -> web.Application:
     ROUTE_TEMPLATE = "/webhook/{subroute}/"
     bot_runner_by_subroute = {bw.webhook_subroute(): bw for bw in bot_runners}
     logger.info("Running bots:\n" + "\n".join(f"/{path}: {bw.name}" for path, bw in bot_runner_by_subroute.items()))
@@ -43,12 +46,14 @@ def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Appli
         for bw in bot_runners:
             for idx, coro in enumerate(bw.background_jobs):
                 background_tasks.append(loop.create_task(coro))
-                logger.info(f"Background task #{idx} created for {bw.name}")
+                logger.info(f"Background task created for {bw.name} (#{idx})")
 
     async def cleanup(_):
         await api.session_manager.close_session()
         for t in background_tasks:
             t.cancel()
+        if global_cleanup is not None:
+            await global_cleanup()
 
     app = web.Application()
     app.on_startup.append(setup)
