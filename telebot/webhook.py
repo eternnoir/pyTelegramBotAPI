@@ -9,15 +9,24 @@ from telebot.runner import BotRunner
 logger = logging.getLogger(__name__)
 
 
-def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Application:
-    ROUTE_TEMPLATE = "/webhook/{subroute}/"
-    bot_runner_by_subroute = {bw.webhook_subroute(): bw for bw in bot_runners}
+ROUTE_TEMPLATE = "/webhook/{subroute}/"
 
-    async def webhook_handler(request: web.Request):
+
+class WebhookApp:
+    def __init__(self, base_url: str):
+        self.base_url = base_url
+        self.bot_runner_by_subroute: dict[str, BotRunner] = dict()
+        self.background_tasks: set[asyncio.Task] = set()
+        self.aiohttp_app = web.Application()
+
+        self.aiohttp_app.on_cleanup.append(self.cleanup)
+        self.aiohttp_app.router.add_post(ROUTE_TEMPLATE, self.webhook_handler)
+
+    async def webhook_handler(self, request: web.Request):
         subroute = request.match_info.get("subroute")
         if subroute is None:
             return web.Response(status=404)
-        bot_runner = bot_runner_by_subroute.get(subroute)
+        bot_runner = self.bot_runner_by_subroute.get(subroute)
         if bot_runner is None:
             return web.Response(status=404)
         try:
@@ -30,51 +39,46 @@ def create_webhook_app(bot_runners: list[BotRunner], base_url: str) -> web.Appli
         finally:
             return web.Response()
 
-    background_tasks: set[asyncio.Task] = set()
-
-    async def setup(_):
-        broken_subroutes = []
-        for subroute, br in bot_runner_by_subroute.items():
-            try:
-                await br.bot.delete_webhook()
-                await br.bot.set_webhook(url=base_url + ROUTE_TEMPLATE.format(subroute=subroute))
-                logger.info(f"Webhook set for {br.name:>30}: /{subroute}")
-            except Exception as e:
-                logger.error(f"Error setting up webhook for the bot {br.name}, dropping it: {e}")
-                broken_subroutes.append(subroute)
-
-        for subroute in broken_subroutes:
-            bot_runner_by_subroute.pop(subroute)
+    async def add_bot_runner(self, runner: BotRunner):
+        subroute = runner.webhook_subroute()
+        try:
+            await runner.bot.delete_webhook()
+            await runner.bot.set_webhook(url=self.base_url + ROUTE_TEMPLATE.format(subroute=subroute))
+            logger.info(f"Webhook set for {runner.name:>30}: /{subroute}")
+        except Exception as e:
+            logger.error(f"Error setting up webhook for the bot {runner.name}, dropping it: {e}")
+            return
 
         loop = asyncio.get_running_loop()
-        for br in bot_runner_by_subroute.values():
-            for idx, coro in enumerate(br.background_jobs):
-                idx += 1  # 1-based numbering
-                task = loop.create_task(coro, name=f"{br.name}-{idx}")
-                background_tasks.add(task)
+        for idx, coro in enumerate(runner.background_jobs):
+            idx += 1  # 1-based numbering
+            task = loop.create_task(coro, name=f"{runner.name}-{idx}")
+            self.background_tasks.add(task)
 
-                def background_job_done(task: asyncio.Task):
-                    background_tasks.discard(task)
-                    logger.info(f"Backgound job completed: {task}")
+            def background_job_done(task: asyncio.Task):
+                self.background_tasks.discard(task)
+                logger.info(f"Backgound job completed: {task}")
 
-                task.add_done_callback(background_job_done)
-                logger.info(f"Background task created for {br.name} ({idx}/{len(br.background_jobs)})")
+            task.add_done_callback(background_job_done)
+            logger.info(f"Background task created for {runner.name} ({idx}/{len(runner.background_jobs)})")
 
-    async def cleanup(_):
+        self.bot_runner_by_subroute[runner.webhook_subroute()] = runner
+
+    async def cleanup(self, _):
         logger.debug("Cleanup started")
         await api.session_manager.close_session()
-        for t in background_tasks:
+        for t in self.background_tasks:
             logger.debug(f"Cancelling background task {t}")
             t.cancel()
         logger.debug("Cleanup completed")
 
-    app = web.Application()
-    app.on_startup.append(setup)
-    app.on_cleanup.append(cleanup)
-    app.router.add_post(ROUTE_TEMPLATE, webhook_handler)
-    return app
-
-
-def run_webhook_server(bot_runners: list[BotRunner], base_url: str, port: int):
-    app = create_webhook_app(bot_runners, base_url)
-    web.run_app(app, host="0.0.0.0", port=port, access_log=None)
+    async def run(self, port: int):
+        aiohttp_runner = web.AppRunner(self.aiohttp_app, access_log=None)
+        await aiohttp_runner.setup()
+        site = web.TCPSite(aiohttp_runner, "0.0.0.0", port)
+        try:
+            await site.start()
+            while True:
+                await asyncio.sleep(3600)
+        finally:
+            await aiohttp_runner.cleanup()

@@ -8,7 +8,7 @@ import pytest
 
 from telebot import AsyncTeleBot, types
 from telebot.runner import BotRunner
-from telebot.webhook import create_webhook_app
+from telebot.webhook import WebhookApp
 from tests.utils import MockTeleBot
 
 MOCK_BOT_NAME = "testing-bot"
@@ -36,28 +36,26 @@ def bot() -> MockTeleBot:
 
 
 @pytest.fixture
-def bot_runner(bot: AsyncTeleBot) -> Generator[BotRunner, None, None]:
+def bot_runner(bot: AsyncTeleBot) -> BotRunner:
     async def count_milliseconds():
         global COUNTED_MILLISECONDS
         while True:
             COUNTED_MILLISECONDS += 10
             await asyncio.sleep(0.01)
 
-    job_coro = count_milliseconds()
-
-    yield BotRunner(
+    return BotRunner(
         name=MOCK_BOT_NAME,
         bot=bot,
-        background_jobs=[job_coro],
+        background_jobs=[count_milliseconds()],
     )
-
-    job_coro.close()
 
 
 async def test_bot_runner(bot_runner: BotRunner, bot: MockTeleBot, aiohttp_client):
     subroute = bot_runner.webhook_subroute()
     route = "/webhook/" + subroute + "/"
-    client: aiohttp.ClientSession = await aiohttp_client(create_webhook_app([bot_runner], "http://127.0.0.1"))
+    webhook_app = WebhookApp("http://127.0.0.1")
+    await webhook_app.add_bot_runner(bot_runner)
+    client: aiohttp.ClientSession = await aiohttp_client(webhook_app.aiohttp_app)
 
     assert MOCK_TOKEN not in subroute
 
