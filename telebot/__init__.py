@@ -516,8 +516,8 @@ class AsyncTeleBot:
         self,
         handler_list: list[service_types.Handler],
         func: Optional[service_types.FilterFunc[_UpdateContentT]],
-        priority: Optional[int] = None,
-        name: Optional[str] = None,
+        priority: Optional[int],
+        name: Optional[str],
         **kwargs,
     ):
         def decorator(decorated: service_types.HandlerFunction[_UpdateContentT]):
@@ -539,7 +539,7 @@ class AsyncTeleBot:
 
     def inline_query_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.InlineQuery]],
+        func: Optional[service_types.FilterFunc[types.InlineQuery]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -549,7 +549,7 @@ class AsyncTeleBot:
 
     def chosen_inline_result_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.ChosenInlineResult]],
+        func: Optional[service_types.FilterFunc[types.ChosenInlineResult]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -559,7 +559,7 @@ class AsyncTeleBot:
 
     def shipping_query_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.ShippingQuery]],
+        func: Optional[service_types.FilterFunc[types.ShippingQuery]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -569,7 +569,7 @@ class AsyncTeleBot:
 
     def pre_checkout_query_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.PreCheckoutQuery]],
+        func: Optional[service_types.FilterFunc[types.PreCheckoutQuery]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -579,7 +579,7 @@ class AsyncTeleBot:
 
     def poll_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.Poll]],
+        func: Optional[service_types.FilterFunc[types.Poll]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -589,7 +589,7 @@ class AsyncTeleBot:
 
     def poll_answer_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.PollAnswer]],
+        func: Optional[service_types.FilterFunc[types.PollAnswer]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -599,7 +599,7 @@ class AsyncTeleBot:
 
     def my_chat_member_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]],
+        func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -609,7 +609,7 @@ class AsyncTeleBot:
 
     def chat_member_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]],
+        func: Optional[service_types.FilterFunc[types.ChatMemberUpdated]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -619,7 +619,7 @@ class AsyncTeleBot:
 
     def chat_join_request_handler(
         self,
-        func: Optional[service_types.FilterFunc[types.ChatJoinRequest]],
+        func: Optional[service_types.FilterFunc[types.ChatJoinRequest]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
