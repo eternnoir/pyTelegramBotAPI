@@ -214,11 +214,11 @@ async def get_updates(
     params: dict = {}
     if offset:
         params["offset"] = offset
-    elif limit:
+    if limit:
         params["limit"] = limit
-    elif timeout:
+    if timeout:
         params["timeout"] = timeout
-    elif allowed_updates:
+    if allowed_updates:
         params["allowed_updates"] = allowed_updates
     return await _request(token, route="getUpdates", params=params, request_timeout=request_timeout)
 
