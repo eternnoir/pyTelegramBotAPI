@@ -53,6 +53,7 @@
     * [Controlling the amount of Threads used by TeleBot](#controlling-the-amount-of-threads-used-by-telebot)
     * [The listener mechanism](#the-listener-mechanism)
     * [Using web hooks](#using-web-hooks)
+    * [Creating Web Apps](#creating-web-apps)
     * [Logging](#logging)
     * [Proxy](#proxy)
     * [Testing](#testing)
@@ -661,6 +662,13 @@ bot.infinity_polling()
 When using webhooks telegram sends one Update per call, for processing it you should call process_new_messages([update.message]) when you recieve it.
 
 There are some examples using webhooks in the [examples/webhook_examples](examples/webhook_examples) directory.
+
+### Creating Web Apps
+Telegram has launched the support of Web Apps in their Bot API 6.0 on April 16th, 2022. Here's the official [blog post](https://telegram.org/blog/notifications-bots).
+
+With Web Apps, bots get a whole new dimension. Here's a [detailed manual](https://core.telegram.org/bots/webapps) on how Web Apps work.
+
+Luckily, you can use this library to create your own Web Apps too! Here are some [examples](https://github.com/TECH-SAVVY-GUY/telegram-web-apps).
 
 ### Logging
 You can use the Telebot module logger to log debug info about Telebot. Use `telebot.logger` to get the logger of the TeleBot module.
