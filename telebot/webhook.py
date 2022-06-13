@@ -39,15 +39,15 @@ class WebhookApp:
         finally:
             return web.Response()
 
-    async def add_bot_runner(self, runner: BotRunner):
+    async def add_bot_runner(self, runner: BotRunner) -> bool:
         subroute = runner.webhook_subroute()
         try:
             await runner.bot.delete_webhook()
             await runner.bot.set_webhook(url=self.base_url + ROUTE_TEMPLATE.format(subroute=subroute))
-            logger.info(f"Webhook set for {runner.name:>30}: /{subroute}")
+            logger.info(f"Webhook set for {runner.name}: /{subroute}")
         except Exception as e:
             logger.error(f"Error setting up webhook for the bot {runner.name}, dropping it: {e}")
-            return
+            return False
 
         loop = asyncio.get_running_loop()
         for idx, coro in enumerate(runner.background_jobs):
@@ -62,7 +62,12 @@ class WebhookApp:
             task.add_done_callback(background_job_done)
             logger.info(f"Background task created for {runner.name} ({idx}/{len(runner.background_jobs)})")
 
-        self.bot_runner_by_subroute[runner.webhook_subroute()] = runner
+        self.bot_runner_by_subroute[subroute] = runner
+        return True
+
+    async def remove_bot_runner(self, runner: BotRunner) -> bool:
+        """Warning: background jobs associated with the runner are not cancelled"""
+        return bool(self.bot_runner_by_subroute.pop(runner.webhook_subroute(), None))
 
     async def cleanup(self, _):
         logger.debug("Cleanup started")
