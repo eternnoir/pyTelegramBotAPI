@@ -36,4 +36,4 @@ class BotRunner:
 
     def webhook_subroute(self) -> str:
         token_hash = sha256(self.bot.token.encode("utf-8")).hexdigest()
-        return urllib.parse.quote(f"{self.name_urlsafe}-{token_hash}")
+        return f"{self.name_urlsafe}-{token_hash}"
