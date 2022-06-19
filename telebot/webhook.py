@@ -47,7 +47,7 @@ class WebhookApp:
             await runner.bot.set_webhook(url=self.base_url + WEBHOOK_ROUTE.format(subroute=subroute))
             logger.info(f"Webhook set for {runner.name}: /webhook/{subroute}")
         except Exception as e:
-            logger.error(f"Error setting up webhook for the bot {runner.name}, dropping it: {e}")
+            logger.exception(f"Error setting up webhook for the bot {runner.name}, dropping it: {e}")
             return False
 
         for endpoint in runner.aux_endpoints:
@@ -73,7 +73,18 @@ class WebhookApp:
 
     async def remove_bot_runner(self, runner: BotRunner) -> bool:
         """Warning: background jobs and aux endpoints added with the runner are not removed/cancelled"""
-        return bool(self.bot_runner_by_subroute.pop(runner.webhook_subroute(), None))
+        subroute = runner.webhook_subroute()
+        if subroute not in self.bot_runner_by_subroute:
+            return False
+        try:
+            await runner.bot.delete_webhook()
+            logger.info(f"Webhook removed for {runner.name}; was /webhook/{subroute}")
+        except Exception as e:
+            logger.exception(f"Error deleting webhook for the bot {runner.name}, keeping it")
+            return False
+
+        self.bot_runner_by_subroute.pop(subroute)
+        return True
 
     async def cleanup(self, _):
         logger.debug("Cleanup started")
