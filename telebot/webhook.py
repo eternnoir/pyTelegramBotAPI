@@ -9,7 +9,8 @@ from telebot.runner import BotRunner
 logger = logging.getLogger(__name__)
 
 
-ROUTE_TEMPLATE = "/webhook/{subroute}/"
+WEBHOOK_ROUTE = "/webhook/{subroute}/"
+AUX_ROUTE_TEMPLATE = "aux/{bot_name}/{subroute}"
 
 
 class WebhookApp:
@@ -20,7 +21,7 @@ class WebhookApp:
         self.aiohttp_app = web.Application()
 
         self.aiohttp_app.on_cleanup.append(self.cleanup)
-        self.aiohttp_app.router.add_post(ROUTE_TEMPLATE, self.webhook_handler)
+        self.aiohttp_app.router.add_post(WEBHOOK_ROUTE, self.webhook_handler)
 
     async def webhook_handler(self, request: web.Request):
         subroute = request.match_info.get("subroute")
@@ -43,11 +44,16 @@ class WebhookApp:
         subroute = runner.webhook_subroute()
         try:
             await runner.bot.delete_webhook()
-            await runner.bot.set_webhook(url=self.base_url + ROUTE_TEMPLATE.format(subroute=subroute))
-            logger.info(f"Webhook set for {runner.name}: /{subroute}")
+            await runner.bot.set_webhook(url=self.base_url + WEBHOOK_ROUTE.format(subroute=subroute))
+            logger.info(f"Webhook set for {runner.name}: /webhook/{subroute}")
         except Exception as e:
             logger.error(f"Error setting up webhook for the bot {runner.name}, dropping it: {e}")
             return False
+
+        for endpoint in runner.aux_endpoints:
+            route = AUX_ROUTE_TEMPLATE.format(bot_name=runner.name, subroute=endpoint.subroute)
+            self.aiohttp_app.router.add_route(endpoint.method, route, endpoint.handler)
+            logger.info(f"Aux endpoint created for {runner.name}: /{route}")
 
         loop = asyncio.get_running_loop()
         for idx, coro in enumerate(runner.background_jobs):
@@ -66,7 +72,7 @@ class WebhookApp:
         return True
 
     async def remove_bot_runner(self, runner: BotRunner) -> bool:
-        """Warning: background jobs associated with the runner are not cancelled"""
+        """Warning: background jobs and aux endpoints added with the runner are not removed/cancelled"""
         return bool(self.bot_runner_by_subroute.pop(runner.webhook_subroute(), None))
 
     async def cleanup(self, _):
