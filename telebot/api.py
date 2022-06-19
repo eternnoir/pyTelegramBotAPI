@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 from io import BytesIO
 from typing import Any, Optional, Union, cast
@@ -2041,7 +2042,15 @@ class ApiException(Exception):
     failed.
     """
 
-    def __init__(self, msg, function_name, result):
+    API_URL_REGEX = re.compile(r"https://api\.telegram\.org/bot(?P<token>)/.*")
+
+    def __init__(self, msg: str, function_name: str, result: Any):
+        match = self.API_URL_REGEX.search(msg)
+        if match is not None:
+            bot_token = match.group("token")
+            masked_token = bot_token[:3] + "*" * (len(bot_token) - 3)
+            msg = msg.replace(bot_token, masked_token)
+
         super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
