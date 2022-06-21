@@ -2583,7 +2583,7 @@ class Sticker(JsonDeserializable):
             obj['thumb'] = None
         if 'mask_position' in obj:
             obj['mask_position'] = MaskPosition.de_json(obj['mask_position'])
-        if 'premium_animation':
+        if 'premium_animation' in obj:
             obj['premium_animation'] = File.de_json(obj['premium_animation'])
         return cls(**obj)
 
