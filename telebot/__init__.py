@@ -261,7 +261,7 @@ class TeleBot:
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
-                    drop_pending_updates = None, timeout=None):
+                    drop_pending_updates = None, timeout=None, secret_token=None):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
         update for the bot, we will send an HTTPS POST request to the specified url,
@@ -286,10 +286,11 @@ class TeleBot:
             resolved through DNS
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
+        :param secret_token: Secret token to be used to verify the webhook request.
         :return: API reply.
         """
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
-                                     drop_pending_updates, timeout)
+                                     drop_pending_updates, timeout, secret_token)
 
     def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
@@ -2461,6 +2462,69 @@ class TeleBot:
             reply_to_message_id, reply_markup, provider_data, timeout, allow_sending_without_reply,
             max_tip_amount, suggested_tip_amounts, protect_content)
         return types.Message.de_json(result)
+
+
+    def create_invoice_link(self,
+            title: str, description: str, payload:str, provider_token: str, 
+            currency: str, prices: List[types.LabeledPrice],
+            max_tip_amount: Optional[int] = None, 
+            suggested_tip_amounts: Optional[List[int]]=None,
+            provider_data: Optional[str]=None,
+            photo_url: Optional[str]=None,
+            photo_size: Optional[int]=None,
+            photo_width: Optional[int]=None,
+            photo_height: Optional[int]=None,
+            need_name: Optional[bool]=None,
+            need_phone_number: Optional[bool]=None,
+            need_email: Optional[bool]=None,
+            need_shipping_address: Optional[bool]=None,
+            send_phone_number_to_provider: Optional[bool]=None,
+            send_email_to_provider: Optional[bool]=None,
+            is_flexible: Optional[bool]=None) -> str:
+            
+        """
+        Use this method to create a link for an invoice. 
+        Returns the created invoice link as String on success.
+
+        Telegram documentation:
+        https://core.telegram.org/bots/api#createinvoicelink
+
+        :param title: Product name, 1-32 characters
+        :param description: Product description, 1-255 characters
+        :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+            use for your internal processes.
+        :param provider_token: Payments provider token, obtained via @Botfather
+        :param currency: Three-letter ISO 4217 currency code,
+            see https://core.telegram.org/bots/payments#supported-currencies
+        :param prices: Price breakdown, a list of components
+            (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
+        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
+            A detailed description of required fields should be provided by the payment provider.
+        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
+        :param photo_size: Photo size in bytes
+        :param photo_width: Photo width
+        :param photo_height: Photo height
+        :param need_name: Pass True, if you require the user's full name to complete the order
+        :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :param need_email: Pass True, if you require the user's email to complete the order
+        :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :param is_flexible: Pass True, if the final price depends on the shipping method
+
+        :return: Created invoice link as String on success.
+        """
+        result = apihelper.create_invoice_link(
+            self.token, title, description, payload, provider_token,
+            currency, prices, max_tip_amount, suggested_tip_amounts, provider_data,
+            photo_url, photo_size, photo_width, photo_height, need_name, need_phone_number,
+            need_email, need_shipping_address, send_phone_number_to_provider,
+            send_email_to_provider, is_flexible)
+        return result
+
+
 
     # noinspection PyShadowingBuiltins
     # TODO: rewrite this method like in API
