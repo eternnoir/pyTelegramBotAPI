@@ -171,7 +171,7 @@ async def download_file(token, file_path):
 
 
 async def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
-                drop_pending_updates = None, timeout=None):
+                drop_pending_updates = None, timeout=None, secret_token=None):
     method_url = r'setWebhook'
     payload = {
         'url': url if url else "",
@@ -189,6 +189,8 @@ async def set_webhook(token, url=None, certificate=None, max_connections=None, a
         payload['drop_pending_updates'] = drop_pending_updates
     if timeout:
         payload['timeout'] = timeout
+    if secret_token:
+        payload['secret_token'] = secret_token
     return await _process_request(token, method_url, params=payload, files=files)
 
 
@@ -1597,6 +1599,47 @@ async def delete_sticker_from_set(token, sticker):
     method_url = 'deleteStickerFromSet'
     payload = {'sticker': sticker}
     return await _process_request(token, method_url, params=payload, method='post')
+
+
+
+async def create_invoice_link(token, title, description, payload, provider_token,
+            currency, prices, max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
+            photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None, need_phone_number=None,
+            need_email=None, need_shipping_address=None, send_phone_number_to_provider=None,
+            send_email_to_provider=None, is_flexible=None):
+    method_url = r'createInvoiceLink'
+    payload = {'title': title, 'description': description, 'payload': payload, 'provider_token': provider_token,
+                'currency': currency, 'prices': await _convert_list_json_serializable(prices)}
+    if max_tip_amount:
+        payload['max_tip_amount'] = max_tip_amount
+    if suggested_tip_amounts:
+        payload['suggested_tip_amounts'] = json.dumps(suggested_tip_amounts)
+    if provider_data:
+        payload['provider_data'] = provider_data
+    if photo_url:
+        payload['photo_url'] = photo_url
+    if photo_size:
+        payload['photo_size'] = photo_size
+    if photo_width:
+        payload['photo_width'] = photo_width
+    if photo_height:
+        payload['photo_height'] = photo_height
+    if need_name:
+        payload['need_name'] = need_name
+    if need_phone_number:
+        payload['need_phone_number'] = need_phone_number
+    if need_email:
+        payload['need_email'] = need_email
+    if need_shipping_address:
+        payload['need_shipping_address'] = need_shipping_address
+    if send_phone_number_to_provider:
+        payload['send_phone_number_to_provider'] = send_phone_number_to_provider
+    if send_email_to_provider:
+        payload['send_email_to_provider'] = send_email_to_provider
+    if is_flexible:
+        payload['is_flexible'] = is_flexible
+    return await _process_request(token, method_url, params=payload, method='post')
+
 
 
 # noinspection PyShadowingBuiltins
