@@ -1636,7 +1636,7 @@ async def create_invoice_link(token, title, description, payload, provider_token
         payload['send_phone_number_to_provider'] = send_phone_number_to_provider
     if send_email_to_provider:
         payload['send_email_to_provider'] = send_email_to_provider
-    if is_flexible:
+    if is_flexible is not None:
         payload['is_flexible'] = is_flexible
     return await _process_request(token, method_url, params=payload, method='post')
 
