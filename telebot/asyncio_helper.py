@@ -1624,17 +1624,17 @@ async def create_invoice_link(token, title, description, payload, provider_token
         payload['photo_width'] = photo_width
     if photo_height:
         payload['photo_height'] = photo_height
-    if need_name:
+    if need_name is not None:
         payload['need_name'] = need_name
-    if need_phone_number:
+    if need_phone_number is not None:
         payload['need_phone_number'] = need_phone_number
-    if need_email:
+    if need_email is not None:
         payload['need_email'] = need_email
-    if need_shipping_address:
+    if need_shipping_address is not None:
         payload['need_shipping_address'] = need_shipping_address
-    if send_phone_number_to_provider:
+    if send_phone_number_to_provider is not None:
         payload['send_phone_number_to_provider'] = send_phone_number_to_provider
-    if send_email_to_provider:
+    if send_email_to_provider is not None:
         payload['send_email_to_provider'] = send_email_to_provider
     if is_flexible is not None:
         payload['is_flexible'] = is_flexible
