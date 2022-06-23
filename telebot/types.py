@@ -143,15 +143,17 @@ class ChatMemberUpdated(JsonDeserializable):
         obj['old_chat_member'] = ChatMember.de_json(obj['old_chat_member'])
         obj['new_chat_member'] = ChatMember.de_json(obj['new_chat_member'])
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
+        obj['json_string'] = json_string
         return cls(**obj)
     
-    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None, **kwargs):
+    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, json_string, invite_link=None, **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
         self.date: int = date
         self.old_chat_member: ChatMember = old_chat_member
         self.new_chat_member: ChatMember = new_chat_member
         self.invite_link: Optional[ChatInviteLink] = invite_link
+        self.json = json_string
     
     @property
     def difference(self) -> Dict[str, List]:
@@ -177,14 +179,16 @@ class ChatJoinRequest(JsonDeserializable):
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['from_user'] = User.de_json(obj['from'])
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
+        obj['json_string'] = json_string
         return cls(**obj)
     
-    def __init__(self, chat, from_user, date, bio=None, invite_link=None, **kwargs):
+    def __init__(self, chat, from_user, date, json_string, bio=None, invite_link=None, **kwargs):
         self.chat = chat
         self.from_user = from_user
         self.date = date
         self.bio = bio
         self.invite_link = invite_link
+        self.json = json_string
 
 class WebhookInfo(JsonDeserializable):
     @classmethod
@@ -1241,7 +1245,7 @@ class CallbackQuery(JsonDeserializable):
         obj['from_user'] = User.de_json(obj.pop('from'))
         if 'message' in obj:
             obj['message'] = Message.de_json(obj.get('message'))
-        obj['json'] = json_string
+        obj['json_string'] = json_string
         return cls(**obj)
 
     def __init__(self, id, from_user, data, chat_instance, json_string, message=None, inline_message_id=None, game_short_name=None, **kwargs):
@@ -1497,9 +1501,10 @@ class InlineQuery(JsonDeserializable):
         obj['from_user'] = User.de_json(obj.pop('from'))
         if 'location' in obj:
             obj['location'] = Location.de_json(obj['location'])
+        obj['json_sting'] = json_string
         return cls(**obj)
 
-    def __init__(self, id, from_user, query, offset, chat_type=None, location=None, **kwargs):
+    def __init__(self, id, from_user, query, offset, json_string, chat_type=None, location=None, **kwargs):
         """
         This object represents an incoming inline query.
         When the user sends an empty query, your bot could
@@ -1520,6 +1525,7 @@ class InlineQuery(JsonDeserializable):
         self.offset: str = offset
         self.chat_type: str = chat_type
         self.location: Location = location
+        self.json = json_string
 
 
 class InputTextMessageContent(Dictionaryable):
@@ -1684,9 +1690,10 @@ class ChosenInlineResult(JsonDeserializable):
         obj['from_user'] = User.de_json(obj.pop('from'))
         if 'location' in obj:
             obj['location'] = Location.de_json(obj['location'])
+        obj['json_string'] = json_string
         return cls(**obj)
 
-    def __init__(self, result_id, from_user, query, location=None, inline_message_id=None, **kwargs):
+    def __init__(self, result_id, from_user, query, json_string, location=None, inline_message_id=None, **kwargs):
         """
         This object represents a result of an inline query
         that was chosen by the user and sent to their chat partner.
@@ -1700,6 +1707,7 @@ class ChosenInlineResult(JsonDeserializable):
         self.location: Location = location
         self.inline_message_id: str = inline_message_id
         self.query: str = query
+        self.json = json_string
 
 
 class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
@@ -2512,13 +2520,15 @@ class ShippingQuery(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['from_user'] = User.de_json(obj.pop('from'))
         obj['shipping_address'] = ShippingAddress.de_json(obj['shipping_address'])
+        obj['json_string'] = json_string
         return cls(**obj)
 
-    def __init__(self, id, from_user, invoice_payload, shipping_address, **kwargs):
+    def __init__(self, id, from_user, invoice_payload, json_string, shipping_address, **kwargs):
         self.id: str = id
         self.from_user: User = from_user
         self.invoice_payload: str = invoice_payload
         self.shipping_address: ShippingAddress = shipping_address
+        self.json = json_string
 
 
 class PreCheckoutQuery(JsonDeserializable):
@@ -2528,9 +2538,10 @@ class PreCheckoutQuery(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['from_user'] = User.de_json(obj.pop('from'))
         obj['order_info'] = OrderInfo.de_json(obj.get('order_info'))
+        obj['json_string'] = json_string
         return cls(**obj)
 
-    def __init__(self, id, from_user, currency, total_amount, invoice_payload, shipping_option_id=None, order_info=None, **kwargs):
+    def __init__(self, id, from_user, currency, total_amount, invoice_payload, json_string, shipping_option_id=None, order_info=None, **kwargs):
         self.id: str = id
         self.from_user: User = from_user
         self.currency: str = currency
@@ -2538,6 +2549,7 @@ class PreCheckoutQuery(JsonDeserializable):
         self.invoice_payload: str = invoice_payload
         self.shipping_option_id: str = shipping_option_id
         self.order_info: OrderInfo = order_info
+        self.json = json_string
 
 
 # Stickers
@@ -2774,12 +2786,13 @@ class Poll(JsonDeserializable):
         obj['options'] = options or None
         if 'explanation_entities' in obj:
             obj['explanation_entities'] = Message.parse_entities(obj['explanation_entities'])
+        obj['json_string'] = json_string
         return cls(**obj)
 
     # noinspection PyShadowingBuiltins
     def __init__(
             self,
-            question, options,
+            question, options, json_string,
             poll_id=None, total_voter_count=None, is_closed=None, is_anonymous=None, type=None,
             allows_multiple_answers=None, correct_option_id=None, explanation=None, explanation_entities=None,
             open_period=None, close_date=None, poll_type=None, **kwargs):
@@ -2801,6 +2814,7 @@ class Poll(JsonDeserializable):
         self.explanation_entities: List[MessageEntity] = explanation_entities
         self.open_period: int = open_period
         self.close_date: int = close_date
+        self.json = json_string
 
     def add(self, option):
         if type(option) is PollOption:
@@ -2815,12 +2829,14 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
+        obj['json_string'] = json_string
         return cls(**obj)
 
-    def __init__(self, poll_id, user, option_ids, **kwargs):
+    def __init__(self, poll_id, user, option_ids, json_string, **kwargs):
         self.poll_id: str = poll_id
         self.user: User = user
         self.option_ids: List[int] = option_ids
+        self.json = json_string
 
     def to_json(self):
         return json.dumps(self.to_dict())
