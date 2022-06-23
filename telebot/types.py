@@ -215,7 +215,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         return cls(**obj)
 
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, 
-                 can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, **kwargs):
+                 can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
+                 is_premium=None, added_to_attachment_menu=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -225,6 +226,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.can_join_groups: bool = can_join_groups
         self.can_read_all_group_messages: bool = can_read_all_group_messages
         self.supports_inline_queries: bool = supports_inline_queries
+        self.is_premium: bool = is_premium
+        self.added_to_attachment_menu: bool = added_to_attachment_menu
+
 
     @property
     def full_name(self):
@@ -280,7 +284,8 @@ class Chat(JsonDeserializable):
                  description=None, invite_link=None, pinned_message=None, 
                  permissions=None, slow_mode_delay=None,
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
-                 can_set_sticker_set=None, linked_chat_id=None, location=None, **kwargs):
+                 can_set_sticker_set=None, linked_chat_id=None, location=None, 
+                 join_to_send_messages=None, join_by_request=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -289,6 +294,8 @@ class Chat(JsonDeserializable):
         self.last_name: str = last_name
         self.photo: ChatPhoto = photo
         self.bio: str = bio
+        self.join_to_send_messages: bool = join_to_send_messages
+        self.join_by_request: bool = join_by_request
         self.has_private_forwards: bool = has_private_forwards
         self.description: str = description
         self.invite_link: str = invite_link
@@ -2576,10 +2583,13 @@ class Sticker(JsonDeserializable):
             obj['thumb'] = None
         if 'mask_position' in obj:
             obj['mask_position'] = MaskPosition.de_json(obj['mask_position'])
+        if 'premium_animation' in obj:
+            obj['premium_animation'] = File.de_json(obj['premium_animation'])
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, width, height, is_animated, 
-                is_video, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, **kwargs):
+                is_video, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, 
+                premium_animation=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
@@ -2591,6 +2601,7 @@ class Sticker(JsonDeserializable):
         self.set_name: str = set_name
         self.mask_position: MaskPosition = mask_position
         self.file_size: int = file_size
+        self.premium_animation: File = premium_animation
         
 
 

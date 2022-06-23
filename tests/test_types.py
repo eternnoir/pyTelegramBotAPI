@@ -6,10 +6,13 @@ from telebot import types
 
 
 def test_json_user():
-    jsonstring = r'{"id":101176298,"first_name":"RDSSBOT","last_name":")))","username":"rdss_bot","is_bot":true}'
+    jsonstring = r'{"id":101176298,"first_name":"RDSSBOT","last_name":")))","username":"rdss_bot","is_bot":true, "is_premium":true, "added_to_attachment_menu": true}'
     u = types.User.de_json(jsonstring)
     assert u.id == 101176298
     assert u.full_name == 'RDSSBOT )))'
+    assert u.is_premium is True
+    assert u.added_to_attachment_menu is True
+
 
 
 def test_json_message():
@@ -155,12 +158,14 @@ def test_json_update():
 
 
 def test_json_chat():
-    json_string = r'{"id": -111111,"title": "Test Title","type": "group"}'
+    json_string = r'{"id": -111111,"title": "Test Title","type": "group", "join_to_send_messages": true, "join_by_request": true}'
     chat = types.Chat.de_json(json_string)
     assert chat.id == -111111
     assert chat.type == 'group'
     assert chat.title == 'Test Title'
-
+    assert chat.join_to_send_messages is True
+    assert chat.join_by_request is True
+    
 
 def test_InlineQueryResultCachedPhoto():
     iq = types.InlineQueryResultCachedPhoto('aaa', 'Fileid')
