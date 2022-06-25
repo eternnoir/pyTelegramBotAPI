@@ -9,6 +9,7 @@ import time
 import traceback
 from typing import Any, Callable, List, Optional, Union
 
+
 # these imports are used to avoid circular import error
 import telebot.util
 import telebot.types
@@ -3977,7 +3978,7 @@ class TeleBot:
             middlewares = [i for i in self.middlewares if update_type in i.update_types]
         return middlewares
 
-    def _run_middlewares_and_handler(self, message, handlers, middlewares, *args, **kwargs):
+    def _run_middlewares_and_handler(self, message, handlers, middlewares):
         """
         This class is made to run handler and middleware in queue.
 
@@ -4021,10 +4022,11 @@ class TeleBot:
                                     return
                             
                             else:
-                                if len(data) > len(params) -2:
+                                if handler.get('pass_bot'): data["bot"] = self
+                                if len(data) > len(params) - 1: # remove the message parameter
                                     logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
                                     return
-                                if handler.get('pass_bot'): data["bot"] = self
+                                
                                 handler["function"](message, **data)
 
         except Exception as e:
@@ -4035,6 +4037,9 @@ class TeleBot:
                     return self.exception_handler.handle(e)
                 logging.error(str(e))
                 return
+        # remove the bot from data
+        if "bot" in data:
+            del data["bot"]
         if middlewares:
             for middleware in middlewares:
                 middleware.post_process(message, data, handler_error)
