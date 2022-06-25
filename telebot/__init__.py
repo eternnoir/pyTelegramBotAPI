@@ -488,7 +488,7 @@ class AsyncTeleBot:
     def callback_query_handler(
         self,
         callback_data: callback_data.CallbackData,
-        func: Optional[service_types.FilterFunc[types.ChosenInlineResult]] = None,
+        func: Optional[service_types.FilterFunc[types.CallbackQuery]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
