@@ -3998,6 +3998,7 @@ class TeleBot:
                     return
                 elif isinstance(result, SkipHandler) and skip_handler is False:
                     skip_handler = True
+                
 
         try:
             if handlers and not skip_handler:
@@ -4009,24 +4010,23 @@ class TeleBot:
                             params.append(i)
                         if len(params) == 1:
                             handler['function'](message)
-                
-                        elif len(params) == 2:
-                            if handler.get('pass_bot') is True:
-                                handler['function'](message, self)
-                                
-                            elif handler.get('pass_bot') is False:
-                                handler['function'](message, data)
-                                
-                        elif len(params) == 3:
-                            if params[2] == 'bot' and handler.get('pass_bot') is True:
-                                handler['function'](message, data, self)
+                        else:
+                            if "data" in params:
+                                if len(params) == 2:
+                                    handler['function'](message, data)
+                                elif len(params) == 3:
+                                    handler['function'](message, data=data, bot=self)
+                                else:
+                                    logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                                    return
                             
-                            elif not handler.get('pass_bot'):
-                                raise RuntimeError('Your handler accepts 3 parameters but pass_bot is False. Please re-check your handler.')
-                                
                             else:
-                                handler['function'](message, self, data)
-                    
+                                if len(data) > len(params) -2:
+                                    logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
+                                    return
+                                if handler.get('pass_bot'): data["bot"] = self
+                                handler["function"](message, **data)
+
         except Exception as e:
             handler_error = e
 
