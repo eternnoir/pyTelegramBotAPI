@@ -2,8 +2,9 @@ import asyncio
 import urllib.parse
 from dataclasses import dataclass, field
 from hashlib import sha256
-from typing import Coroutine, Literal
+from typing import Coroutine
 
+from aiohttp import hdrs
 from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import AsyncTeleBot
@@ -11,9 +12,13 @@ from telebot import AsyncTeleBot
 
 @dataclass
 class AuxBotEndpoint:
-    method: Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
+    method: str
     route: str  # with leading slash
     handler: AiohttpHandler
+
+    def __post_init__(self):
+        if self.method not in hdrs.METH_ALL:
+            raise ValueError(f"Unknown method {self.method!r}")
 
 
 @dataclass
