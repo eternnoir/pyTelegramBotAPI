@@ -10,18 +10,18 @@ from telebot import AsyncTeleBot
 
 
 @dataclass
-class BotEndpoint:
+class AuxBotEndpoint:
     method: Literal["GET", "POST", "PUT", "DELETE", "PATCH"]
-    subroute: str  # relative to baseurl/aux/, must not start with slash
+    route: str  # with leading slash
     handler: AiohttpHandler
 
 
 @dataclass
 class BotRunner:
-    name: str
+    bot_prefix: str
     bot: AsyncTeleBot
     background_jobs: list[Coroutine[None, None, None]] = field(default_factory=list)
-    aux_endpoints: list[BotEndpoint] = field(default_factory=list)
+    aux_endpoints: list[AuxBotEndpoint] = field(default_factory=list)
 
     async def run_polling(self):
         """For local run / testing only"""
@@ -31,9 +31,9 @@ class BotRunner:
         )
 
     @property
-    def name_urlsafe(self) -> str:
-        return urllib.parse.quote("-".join(self.name.split()))
+    def bot_prefix_urlsafe(self) -> str:
+        return urllib.parse.quote("-".join(self.bot_prefix.split()))
 
     def webhook_subroute(self) -> str:
         token_hash = sha256(self.bot.token.encode("utf-8")).hexdigest()
-        return f"{self.name_urlsafe}-{token_hash}"
+        return f"{self.bot_prefix_urlsafe}-{token_hash}"

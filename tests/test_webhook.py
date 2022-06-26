@@ -44,7 +44,7 @@ def bot_runner(bot: AsyncTeleBot) -> BotRunner:
             await asyncio.sleep(0.01)
 
     return BotRunner(
-        name=MOCK_BOT_NAME,
+        bot_prefix=MOCK_BOT_NAME,
         bot=bot,
         background_jobs=[count_milliseconds()],
     )
@@ -111,5 +111,5 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockTeleBot, aiohttp_clien
 )
 def test_webhook_route_generation(bot_name: str, token: str, expected_route_prefix: str):
     bot = AsyncTeleBot(token)
-    bot_runner = BotRunner(name=bot_name, bot=bot)
+    bot_runner = BotRunner(bot_prefix=bot_name, bot=bot)
     assert bot_runner.webhook_subroute().startswith(expected_route_prefix)

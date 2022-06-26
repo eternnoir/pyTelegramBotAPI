@@ -18,5 +18,5 @@ async def echo(message: tg.Message):
 
 
 asyncio.run(
-    BotRunner(name="echo-bot", bot=bot).run_polling(),
+    BotRunner(bot_prefix="echo-bot", bot=bot).run_polling(),
 )

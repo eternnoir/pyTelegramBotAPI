@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 WEBHOOK_ROUTE = "/webhook/{subroute}/"
-AUX_ROUTE_TEMPLATE = "aux/{bot_name}/{subroute}"
 
 
 class WebhookApp:
@@ -45,20 +44,23 @@ class WebhookApp:
         try:
             await runner.bot.delete_webhook()
             await runner.bot.set_webhook(url=self.base_url + WEBHOOK_ROUTE.format(subroute=subroute))
-            logger.info(f"Webhook set for {runner.name}: /webhook/{subroute}")
+            logger.info(f"Webhook set for {runner.bot_prefix}: /webhook/{subroute}")
         except Exception as e:
-            logger.exception(f"Error setting up webhook for the bot {runner.name}, dropping it: {e}")
+            logger.exception(f"Error setting up webhook for the bot {runner.bot_prefix}, dropping it: {e}")
             return False
 
         for endpoint in runner.aux_endpoints:
-            route = AUX_ROUTE_TEMPLATE.format(bot_name=runner.name, subroute=endpoint.subroute)
-            self.aiohttp_app.router.add_route(endpoint.method, route, endpoint.handler)
-            logger.info(f"Aux endpoint created for {runner.name}: /{route}")
+            self.aiohttp_app.router.add_route(
+                endpoint.method,
+                endpoint.route,
+                endpoint.handler,
+            )
+            logger.info(f"Aux endpoint created for {runner.bot_prefix}: {endpoint.route}")
 
         loop = asyncio.get_running_loop()
         for idx, coro in enumerate(runner.background_jobs):
             idx += 1  # 1-based numbering
-            task = loop.create_task(coro, name=f"{runner.name}-{idx}")
+            task = loop.create_task(coro, name=f"{runner.bot_prefix}-{idx}")
             self.background_tasks.add(task)
 
             def background_job_done(task: asyncio.Task):
@@ -66,7 +68,7 @@ class WebhookApp:
                 logger.info(f"Backgound job completed: {task}")
 
             task.add_done_callback(background_job_done)
-            logger.info(f"Background task created for {runner.name} ({idx}/{len(runner.background_jobs)})")
+            logger.info(f"Background task created for {runner.bot_prefix} ({idx}/{len(runner.background_jobs)})")
 
         self.bot_runner_by_subroute[subroute] = runner
         return True
@@ -78,9 +80,9 @@ class WebhookApp:
             return False
         try:
             await runner.bot.delete_webhook()
-            logger.info(f"Webhook removed for {runner.name}; was /webhook/{subroute}")
+            logger.info(f"Webhook removed for {runner.bot_prefix}; was /webhook/{subroute}")
         except Exception as e:
-            logger.exception(f"Error deleting webhook for the bot {runner.name}, keeping it")
+            logger.exception(f"Error deleting webhook for the bot {runner.bot_prefix}, keeping it")
             return False
 
         self.bot_runner_by_subroute.pop(subroute)
