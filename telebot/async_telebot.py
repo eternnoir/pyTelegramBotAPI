@@ -277,7 +277,7 @@ class AsyncTeleBot:
         handler_error = None
         data = {}
         process_handler = True
-        
+        params = []
         if middlewares:
             for middleware in middlewares:
                 middleware_result = await middleware.pre_process(message, data)
@@ -295,27 +295,27 @@ class AsyncTeleBot:
                 continue
             elif process_update:
                 try:
-                    params = []
-
                     for i in signature(handler['function']).parameters:
                         params.append(i)
                     if len(params) == 1:
                         await handler['function'](message)
-                        break
-                    elif len(params) == 2:
-                        if handler['pass_bot']:
-                            await handler['function'](message, self)
-                            break
+                    else:
+                        if "data" in params:
+                            if len(params) == 2:
+                                await handler['function'](message, data)
+                            elif len(params) == 3:
+                                await handler['function'](message, data=data, bot=self)
+                            else:
+                                logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                                return
+                        
                         else:
-                            await handler['function'](message, data)
-                            break
-                    elif len(params) == 3:
-                        if handler['pass_bot'] and params[1] == 'bot':
-                            await handler['function'](message, self, data)
-                            break
-                        else:
-                            await handler['function'](message, data)
-                            break
+                        
+                            if handler.get('pass_bot'): data["bot"] = self
+                            if len(data) > len(params) - 1:
+                                logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
+                                return
+                            await handler["function"](message, **data)
                 except Exception as e:
                     handler_error = e
 
@@ -324,6 +324,9 @@ class AsyncTeleBot:
                             return self.exception_handler.handle(e)
                         logging.error(str(e))
                         return
+        # remove the bot from data
+        if "bot" in data:
+            del data["bot"]
 
         if middlewares:
             for middleware in middlewares:
