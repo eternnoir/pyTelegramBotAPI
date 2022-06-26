@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Any, Callable, Coroutine, Optional
 
 from aiohttp import web
 
@@ -18,11 +19,9 @@ class WebhookApp:
         self.bot_runner_by_subroute: dict[str, BotRunner] = dict()
         self.background_tasks: set[asyncio.Task] = set()
         self.aiohttp_app = web.Application()
+        self.aiohttp_app.router.add_post(WEBHOOK_ROUTE, self.bot_webhook_handler)
 
-        self.aiohttp_app.on_cleanup.append(self.cleanup)
-        self.aiohttp_app.router.add_post(WEBHOOK_ROUTE, self.webhook_handler)
-
-    async def webhook_handler(self, request: web.Request):
+    async def bot_webhook_handler(self, request: web.Request):
         subroute = request.match_info.get("subroute")
         if subroute is None:
             return web.Response(status=404)
@@ -88,21 +87,21 @@ class WebhookApp:
         self.bot_runner_by_subroute.pop(subroute)
         return True
 
-    async def cleanup(self, _):
-        logger.debug("Cleanup started")
-        await api.session_manager.close_session()
-        for t in self.background_tasks:
-            logger.debug(f"Cancelling background task {t}")
-            t.cancel()
-        logger.debug("Cleanup completed")
-
-    async def run(self, port: int):
+    async def run(self, port: int, on_server_listening: Optional[Callable[[], Coroutine[None, None, Any]]] = None):
         aiohttp_runner = web.AppRunner(self.aiohttp_app, access_log=None)
         await aiohttp_runner.setup()
         site = web.TCPSite(aiohttp_runner, "0.0.0.0", port)
         try:
             await site.start()
+            if on_server_listening is not None:
+                await on_server_listening()
             while True:
                 await asyncio.sleep(3600)
         finally:
+            logger.debug("Cleanup started")
+            await api.session_manager.close_session()
+            for t in self.background_tasks:
+                logger.debug(f"Cancelling background task {t}")
+                t.cancel()
+            logger.debug("Cleanup completed")
             await aiohttp_runner.cleanup()
