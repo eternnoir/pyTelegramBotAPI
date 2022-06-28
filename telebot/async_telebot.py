@@ -309,13 +309,20 @@ class AsyncTeleBot:
                                 logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                                 return
                         
-                        else:
-                        
-                            if handler.get('pass_bot'): data["bot"] = self
-                            if len(data) > len(params) - 1:
+                        else:                 
+
+                            data_copy = data.copy()
+                            
+                            for key in list(data_copy):
+                                # remove data from data_copy if handler does not accept it
+                                if key not in params:
+                                    del data_copy[key]
+                            if handler.get('pass_bot'): data_copy["bot"] = self
+                            if len(data_copy) > len(params) - 1: # remove the message parameter
                                 logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
                                 return
-                            await handler["function"](message, **data)
+                            
+                            handler["function"](message, **data_copy)
                 except Exception as e:
                     handler_error = e
 
@@ -324,9 +331,6 @@ class AsyncTeleBot:
                             return self.exception_handler.handle(e)
                         logging.error(str(e))
                         return
-        # remove the bot from data
-        if "bot" in data:
-            del data["bot"]
 
         if middlewares:
             for middleware in middlewares:
