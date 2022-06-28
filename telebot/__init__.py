@@ -4022,12 +4022,19 @@ class TeleBot:
                                     return
                             
                             else:
-                                if handler.get('pass_bot'): data["bot"] = self
-                                if len(data) > len(params) - 1: # remove the message parameter
+
+                                data_copy = data.copy()
+                                
+                                for key in list(data_copy):
+                                    # remove data from data_copy if handler does not accept it
+                                    if key not in params:
+                                        del data_copy[key]
+                                if handler.get('pass_bot'): data_copy["bot"] = self
+                                if len(data_copy) > len(params) - 1: # remove the message parameter
                                     logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
                                     return
                                 
-                                handler["function"](message, **data)
+                                handler["function"](message, **data_copy)
 
         except Exception as e:
             handler_error = e
@@ -4038,8 +4045,6 @@ class TeleBot:
                 logging.error(str(e))
                 return
         # remove the bot from data
-        if "bot" in data:
-            del data["bot"]
         if middlewares:
             for middleware in middlewares:
                 middleware.post_process(message, data, handler_error)
