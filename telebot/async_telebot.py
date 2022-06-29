@@ -322,7 +322,7 @@ class AsyncTeleBot:
                                 logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
                                 return
                             
-                            handler["function"](message, **data_copy)
+                            await handler["function"](message, **data_copy)
                 except Exception as e:
                     handler_error = e
 
