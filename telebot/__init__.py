@@ -386,7 +386,7 @@ class TeleBot:
         new_poll_answers = None
         new_my_chat_members = None
         new_chat_members = None
-        chat_join_request = None
+        new_chat_join_request = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -443,8 +443,8 @@ class TeleBot:
                 if new_chat_members is None: new_chat_members = []
                 new_chat_members.append(update.chat_member)
             if update.chat_join_request:
-                if chat_join_request is None: chat_join_request = []
-                chat_join_request.append(update.chat_join_request)
+                if new_chat_join_request is None: new_chat_join_request = []
+                new_chat_join_request.append(update.chat_join_request)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -472,8 +472,8 @@ class TeleBot:
             self.process_new_my_chat_member(new_my_chat_members)
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
-        if chat_join_request:
-            self.process_new_chat_join_request(chat_join_request)
+        if new_chat_join_request:
+            self.process_new_chat_join_request(new_chat_join_request)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
