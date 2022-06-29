@@ -29,6 +29,7 @@ class StatesGroup:
             if not name.startswith('__') and not callable(value) and isinstance(value, State):
                 # change value of that variable
                 value.name = ':'.join((cls.__name__, name))
+                value.group = cls
 
 
 class SkipHandler:
