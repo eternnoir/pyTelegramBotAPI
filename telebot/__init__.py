@@ -34,7 +34,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler, State
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
@@ -2927,7 +2927,7 @@ class TeleBot:
         
 
 
-    def set_state(self, user_id: int, state: Union[int, str], chat_id: int=None) -> None:
+    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: int=None) -> None:
         """
         Sets a new state of a user.
 

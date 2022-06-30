@@ -14,7 +14,7 @@ import telebot.types
 
 # storages
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
-from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler
+from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler, State
 
 from inspect import signature
 
@@ -3455,7 +3455,7 @@ class AsyncTeleBot:
         return await asyncio_helper.delete_sticker_from_set(self.token, sticker)
 
 
-    async def set_state(self, user_id: int, state: str, chat_id: int=None):
+    async def set_state(self, user_id: int, state: Union[State, int, str], chat_id: int=None):
         """
         Sets a new state of a user.
 
