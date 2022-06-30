@@ -17,15 +17,14 @@ PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
 BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+This file was added during the pull request. The maintainers overlooked that it was copied
+"as is" from another project and they do not consider it as a right way to develop a project.
+However, due to backward compatibility we had to leave this file in the project with the above
+copyright added, as it is required by the original project license.
 """
 
-"""
-This file was added during the pull request. The maintainers overlooked that
-it was copied "as is" from another project and they do not consider it as a 
-right way to develop a project. However, due to backward compatibility we had
-to leave this file in the project with the above copyright added,
-as it is required by the original project license.
-"""
 import typing
 
 
