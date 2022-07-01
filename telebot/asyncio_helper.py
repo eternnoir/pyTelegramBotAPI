@@ -152,7 +152,7 @@ async def get_file_url(token, file_id):
         return "https://api.telegram.org/file/bot{0}/{1}".format(token, await get_file(token, file_id)['file_path'])
     else:
         # noinspection PyUnresolvedReferences
-        return FILE_URL.format(token, get_file(token, file_id)['file_path'])
+        return FILE_URL.format(token, await get_file(token, file_id)['file_path'])
 
 
 async def download_file(token, file_path):
