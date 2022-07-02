@@ -899,5 +899,6 @@ Here are some examples of template:
 * [Zyprexa](https://t.me/mathemathicsBot) ([source](https://github.com/atif5/zyprexa)) Zyprexa can solve, help you solve any mathematical problem you encounter and convert your regular mathematical expressions into beautiful imagery using LaTeX.
 * [Bincode-telegram-bot](https://github.com/tusharhero/bincode-telegram-bot) by [tusharhero](https://github.com/tusharhero) - Makes [bincodes](https://github.com/tusharhero/bincode) from text provides and also converts them back to text.
 * [hydrolib_bot](https://github.com/Mayson90/hydrolib_bot) Toolset for Hydrophilia tabletop game (game cards, rules, structure...).
+* [Gugumoe-bot](http://t.me/gugumoe_bot) ([source](https://github.com/GooGuJiang/Gugumoe-bot)) by [咕谷酱](https://gmoe.cc) GuXiaoJiang is a multi-functional robot, such as OSU game information query, IP test, animation screenshot search and other functions.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
