@@ -118,7 +118,20 @@ class AsyncTeleBot:
         """
         await asyncio_helper.session_manager.session.close()
     async def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
-        timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
+        timeout: Optional[int]=20, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
+        """
+        Use this method to receive incoming updates using long polling (wiki). 
+        An Array of Update objects is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#making-requests
+
+        :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
+        :param offset: Integer. Identifier of the first update to be returned.
+        :param limit: Integer. Limits the number of updates to be retrieved.
+        :param timeout: Integer. Request connection timeout
+        :param request_timeout: Timeout in seconds for a request.
+        :return: array of Updates
+        """       
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
@@ -299,12 +312,15 @@ class AsyncTeleBot:
                         params.append(i)
                     if len(params) == 1:
                         await handler['function'](message)
+                        break
                     else:
                         if "data" in params:
                             if len(params) == 2:
                                 await handler['function'](message, data)
+                                break
                             elif len(params) == 3:
                                 await handler['function'](message, data=data, bot=self)
+                                break
                             else:
                                 logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                                 return
@@ -323,14 +339,13 @@ class AsyncTeleBot:
                                 return
                             
                             await handler["function"](message, **data_copy)
+                            break
                 except Exception as e:
                     handler_error = e
 
-                    if not middlewares:
-                        if self.exception_handler:
-                            return self.exception_handler.handle(e)
-                        logging.error(str(e))
-                        return
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                    else: logger.error(str(e))
 
         if middlewares:
             for middleware in middlewares:
