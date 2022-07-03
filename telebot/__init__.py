@@ -2,7 +2,7 @@ import asyncio
 import json
 import logging
 import re
-import sys
+from asyncio.exceptions import TimeoutError
 from datetime import datetime
 from inspect import signature
 from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
@@ -108,9 +108,9 @@ class AsyncTeleBot:
     async def infinity_polling(
         self,
         interval: float = 1,
-        timeout: int = 20,
+        timeout: int = 30,
         skip_pending: bool = False,
-        request_timeout: int = 20,
+        request_timeout: int = 60,
     ):
         interval = max(interval, 0.3)
         try:
@@ -127,12 +127,14 @@ class AsyncTeleBot:
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         asyncio.create_task(self.process_new_updates(updates))
-                    if interval:
-                        await asyncio.sleep(interval)
+                except TimeoutError:
+                    logger.debug("Long polling timed out, sending new request")
                 except Exception:
                     logger.exception("Unexpected exception while processing updates")
-                    await asyncio.sleep(1)
                     logger.info("Resuming polling")
+                finally:
+                    await asyncio.sleep(interval)
+
         finally:
             await self.close_session()
             logger.info("Stopping polling")

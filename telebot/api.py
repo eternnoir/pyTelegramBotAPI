@@ -58,34 +58,18 @@ async def _request(
     request_timeout: Optional[float] = None,
 ):
     session = await session_manager.get_session()
-    current_try = 0
-    while current_try < MAX_RETRIES - 1:
-        current_try += 1
-        try:
-            async with session.request(
-                method=method,
-                url="https://api.telegram.org/bot{0}/{1}".format(token, route),
-                data=to_form_data(params, files),
-                timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
-            ) as resp:
-                logger.debug(
-                    "Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(
-                        method, route, params, files, request_timeout, current_try
-                    ).replace(token, token.split(":")[0] + ":{TOKEN}")
-                )
+    log_mesage = f"Making request: {method = } {route = } {params = } {files = } {request_timeout = }"
+    logger.debug(log_mesage.replace(token, token.split(":")[0] + ":{TOKEN}"))
+    async with session.request(
+        method=method,
+        url="https://api.telegram.org/bot{0}/{1}".format(token, route),
+        data=to_form_data(params, files),
+        timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
+    ) as resp:
 
-                json_result = await _check_response(route, resp)
-                if json_result:
-                    return json_result["result"]
-        except (ApiTelegramException, ApiInvalidJSONException, ApiHTTPException) as e:
-            raise e  # should be handled in client-level code
-        except Exception as e:
-            logger.exception(f"Unexpected error processing request to Telegram API")
-            raise e
-
-    raise RequestTimeout(
-        f"Request timeout. Request: {method = !r} {route = !r} {params = !r} {files = !r} {request_timeout = !r}"
-    )
+        json_result = await _check_response(route, resp)
+        if json_result:
+            return json_result["result"]
 
 
 def extract_filename(obj: Any) -> Optional[str]:
