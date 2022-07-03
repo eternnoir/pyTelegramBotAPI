@@ -2042,7 +2042,7 @@ class ApiException(Exception):
     failed.
     """
 
-    API_URL_REGEX = re.compile(r"https://api\.telegram\.org/bot(?P<token>)/.*")
+    API_URL_REGEX = re.compile(r"api\.telegram\.org/bot(?P<token>.*?)/.*")
 
     def __init__(self, msg: str, function_name: str, result: Any):
         match = self.API_URL_REGEX.search(msg)
