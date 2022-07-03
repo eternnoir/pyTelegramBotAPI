@@ -108,7 +108,6 @@ class AsyncTeleBot:
 
         self.current_states = state_storage
 
-
         self.middlewares = []
 
     async def close_session(self):
@@ -117,6 +116,7 @@ class AsyncTeleBot:
         Use this function if you stop polling.
         """
         await asyncio_helper.session_manager.session.close()
+
     async def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
         timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
