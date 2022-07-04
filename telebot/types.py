@@ -1283,20 +1283,21 @@ class ChatMember(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         member_type = obj['status']
-        if member_type == "creator":
-            return ChatMemberOwner(**obj)
-        elif member_type == "administrator":
-            return ChatMemberAdministrator(**obj)
-        elif member_type == "member":
+        # Ordered according to estimated appearance frequency.
+        if member_type == "member":
             return ChatMemberMember(**obj)
-        elif member_type == "restricted":
-            return ChatMemberRestricted(**obj)
         elif member_type == "left":
             return ChatMemberLeft(**obj)
         elif member_type == "kicked":
             return ChatMemberBanned(**obj)
+        elif member_type == "restricted":
+            return ChatMemberRestricted(**obj)
+        elif member_type == "administrator":
+            return ChatMemberAdministrator(**obj)
+        elif member_type == "creator":
+            return ChatMemberOwner(**obj)
         else:
-            # Should not be here
+            # Should not be here. For "if something happen" compatibility
             return cls(**obj)
 
     def __init__(self, user, status, custom_title=None, is_anonymous=None, can_be_edited=None,
