@@ -1248,9 +1248,10 @@ class CallbackQuery(JsonDeserializable):
         obj['from_user'] = User.de_json(obj.pop('from'))
         if 'message' in obj:
             obj['message'] = Message.de_json(obj.get('message'))
+        obj['json_string'] = json_string
         return cls(**obj)
 
-    def __init__(self, id, from_user, data, chat_instance, message=None, inline_message_id=None, game_short_name=None, **kwargs):
+    def __init__(self, id, from_user, data, chat_instance, json_string, message=None, inline_message_id=None, game_short_name=None, **kwargs):
         self.id: int = id
         self.from_user: User = from_user
         self.message: Message = message
@@ -1258,6 +1259,7 @@ class CallbackQuery(JsonDeserializable):
         self.chat_instance: str = chat_instance
         self.data: str = data
         self.game_short_name: str = game_short_name
+        self.json = json_string
         
         
 class ChatPhoto(JsonDeserializable):
@@ -1280,7 +1282,23 @@ class ChatMember(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
-        return cls(**obj)
+        member_type = obj['status']
+        # Ordered according to estimated appearance frequency.
+        if member_type == "member":
+            return ChatMemberMember(**obj)
+        elif member_type == "left":
+            return ChatMemberLeft(**obj)
+        elif member_type == "kicked":
+            return ChatMemberBanned(**obj)
+        elif member_type == "restricted":
+            return ChatMemberRestricted(**obj)
+        elif member_type == "administrator":
+            return ChatMemberAdministrator(**obj)
+        elif member_type == "creator":
+            return ChatMemberOwner(**obj)
+        else:
+            # Should not be here. For "if something happen" compatibility
+            return cls(**obj)
 
     def __init__(self, user, status, custom_title=None, is_anonymous=None, can_be_edited=None,
                  can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
@@ -1317,6 +1335,7 @@ class ChatMember(JsonDeserializable):
 
 class ChatMemberOwner(ChatMember):
     pass
+
 
 class ChatMemberAdministrator(ChatMember):
     pass
