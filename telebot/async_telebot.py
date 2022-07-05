@@ -14,7 +14,7 @@ import telebot.types
 
 # storages
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
-from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler
+from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler, State
 
 from inspect import signature
 
@@ -108,7 +108,6 @@ class AsyncTeleBot:
 
         self.current_states = state_storage
 
-
         self.middlewares = []
 
     async def close_session(self):
@@ -117,8 +116,22 @@ class AsyncTeleBot:
         Use this function if you stop polling.
         """
         await asyncio_helper.session_manager.session.close()
+
     async def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
-        timeout: Optional[int]=None, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
+        timeout: Optional[int]=20, allowed_updates: Optional[List]=None, request_timeout: Optional[int]=None) -> List[types.Update]:
+        """
+        Use this method to receive incoming updates using long polling (wiki). 
+        An Array of Update objects is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#making-requests
+
+        :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
+        :param offset: Integer. Identifier of the first update to be returned.
+        :param limit: Integer. Limits the number of updates to be retrieved.
+        :param timeout: Integer. Request connection timeout
+        :param request_timeout: Timeout in seconds for a request.
+        :return: array of Updates
+        """       
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
@@ -277,7 +290,7 @@ class AsyncTeleBot:
         handler_error = None
         data = {}
         process_handler = True
-        
+        params = []
         if middlewares:
             for middleware in middlewares:
                 middleware_result = await middleware.pre_process(message, data)
@@ -295,35 +308,44 @@ class AsyncTeleBot:
                 continue
             elif process_update:
                 try:
-                    params = []
-
                     for i in signature(handler['function']).parameters:
                         params.append(i)
                     if len(params) == 1:
                         await handler['function'](message)
                         break
-                    elif len(params) == 2:
-                        if handler['pass_bot']:
-                            await handler['function'](message, self)
-                            break
-                        else:
-                            await handler['function'](message, data)
-                            break
-                    elif len(params) == 3:
-                        if handler['pass_bot'] and params[1] == 'bot':
-                            await handler['function'](message, self, data)
-                            break
-                        else:
-                            await handler['function'](message, data)
+                    else:
+                        if "data" in params:
+                            if len(params) == 2:
+                                await handler['function'](message, data)
+                                break
+                            elif len(params) == 3:
+                                await handler['function'](message, data=data, bot=self)
+                                break
+                            else:
+                                logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                                return
+                        
+                        else:                 
+
+                            data_copy = data.copy()
+                            
+                            for key in list(data_copy):
+                                # remove data from data_copy if handler does not accept it
+                                if key not in params:
+                                    del data_copy[key]
+                            if handler.get('pass_bot'): data_copy["bot"] = self
+                            if len(data_copy) > len(params) - 1: # remove the message parameter
+                                logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
+                                return
+                            
+                            await handler["function"](message, **data_copy)
                             break
                 except Exception as e:
                     handler_error = e
 
-                    if not middlewares:
-                        if self.exception_handler:
-                            return self.exception_handler.handle(e)
-                        logging.error(str(e))
-                        return
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                    else: logger.error(str(e))
 
         if middlewares:
             for middleware in middlewares:
@@ -1384,7 +1406,7 @@ class AsyncTeleBot:
         self.current_states = StatePickleStorage(file_path=filename)
 
     async def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
-                    drop_pending_updates = None, timeout=None):
+                    drop_pending_updates = None, timeout=None, secret_token=None):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
         update for the bot, we will send an HTTPS POST request to the specified url,
@@ -1409,10 +1431,11 @@ class AsyncTeleBot:
             resolved through DNS
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
+        :param secret_token: Secret token to be used to verify the webhook
         :return:
         """
         return await asyncio_helper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
-                                     drop_pending_updates, timeout)
+                                     drop_pending_updates, timeout, secret_token)
 
 
 
@@ -1674,6 +1697,8 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
         return types.MessageID.de_json(
             await asyncio_helper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
@@ -3064,6 +3089,67 @@ class AsyncTeleBot:
             max_tip_amount, suggested_tip_amounts, protect_content)
         return types.Message.de_json(result)
 
+
+    async def create_invoice_link(self,
+            title: str, description: str, payload:str, provider_token: str, 
+            currency: str, prices: List[types.LabeledPrice],
+            max_tip_amount: Optional[int] = None, 
+            suggested_tip_amounts: Optional[List[int]]=None,
+            provider_data: Optional[str]=None,
+            photo_url: Optional[str]=None,
+            photo_size: Optional[int]=None,
+            photo_width: Optional[int]=None,
+            photo_height: Optional[int]=None,
+            need_name: Optional[bool]=None,
+            need_phone_number: Optional[bool]=None,
+            need_email: Optional[bool]=None,
+            need_shipping_address: Optional[bool]=None,
+            send_phone_number_to_provider: Optional[bool]=None,
+            send_email_to_provider: Optional[bool]=None,
+            is_flexible: Optional[bool]=None) -> str:
+            
+        """
+        Use this method to create a link for an invoice. 
+        Returns the created invoice link as String on success.
+
+        Telegram documentation:
+        https://core.telegram.org/bots/api#createinvoicelink
+
+        :param title: Product name, 1-32 characters
+        :param description: Product description, 1-255 characters
+        :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+            use for your internal processes.
+        :param provider_token: Payments provider token, obtained via @Botfather
+        :param currency: Three-letter ISO 4217 currency code,
+            see https://core.telegram.org/bots/payments#supported-currencies
+        :param prices: Price breakdown, a list of components
+            (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
+        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
+            A detailed description of required fields should be provided by the payment provider.
+        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
+        :param photo_size: Photo size in bytes
+        :param photo_width: Photo width
+        :param photo_height: Photo height
+        :param need_name: Pass True, if you require the user's full name to complete the order
+        :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :param need_email: Pass True, if you require the user's email to complete the order
+        :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :param is_flexible: Pass True, if the final price depends on the shipping method
+
+        :return: Created invoice link as String on success.
+        """
+        result = await asyncio_helper.create_invoice_link(
+            self.token, title, description, payload, provider_token,
+            currency, prices, max_tip_amount, suggested_tip_amounts, provider_data,
+            photo_url, photo_size, photo_width, photo_height, need_name, need_phone_number,
+            need_email, need_shipping_address, send_phone_number_to_provider,
+            send_email_to_provider, is_flexible)
+        return result
+
     # noinspection PyShadowingBuiltins
     async def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[str],
@@ -3111,6 +3197,8 @@ class AsyncTeleBot:
 
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
+
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         return types.Message.de_json(
             await asyncio_helper.send_poll(
@@ -3382,7 +3470,7 @@ class AsyncTeleBot:
         return await asyncio_helper.delete_sticker_from_set(self.token, sticker)
 
 
-    async def set_state(self, user_id: int, state: str, chat_id: int=None):
+    async def set_state(self, user_id: int, state: Union[State, int, str], chat_id: int=None):
         """
         Sets a new state of a user.
 

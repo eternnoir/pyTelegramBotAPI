@@ -5,6 +5,10 @@ import string
 import threading
 import traceback
 from typing import Any, Callable, List, Dict, Optional, Union
+import hmac
+import json
+from hashlib import sha256
+from urllib.parse import parse_qsl
 
 # noinspection PyPep8Naming
 import queue as Queue
@@ -45,7 +49,7 @@ content_type_service = [
 ]
 
 update_types = [
-    "update_id", "message", "edited_message", "channel_post", "edited_channel_post", "inline_query",
+    "message", "edited_message", "channel_post", "edited_channel_post", "inline_query",
     "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer",
     "my_chat_member", "chat_member", "chat_join_request"
 ]
@@ -370,7 +374,8 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
             'switch_inline_query_current_chat': None,
             'callback_game': None,
             'pay': None,
-            'login_url': None
+            'login_url': None,
+            'web_app': None
         }
     
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
@@ -517,3 +522,36 @@ def antiflood(function, *args, **kwargs):
             msg = function(*args, **kwargs)
     finally:
         return msg
+    
+    
+def parse_web_app_data(token: str, raw_init_data: str):
+    is_valid = validate_WebApp_data(token, raw_init_data)
+    if not is_valid:
+        return False
+
+    result = {}
+    for key, value in parse_qsl(raw_init_data):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            result[key] = value
+        else:
+            result[key] = value
+    return result
+
+
+def validate_web_app_data(token, raw_init_data):
+    try:
+        parsed_data = dict(parse_qsl(raw_init_data))
+    except ValueError:
+        return False
+    if "hash" not in parsed_data:
+        return False
+
+    init_data_hash = parsed_data.pop('hash')
+    data_check_string = "\n".join(f"{key}={value}" for key, value in sorted(parsed_data.items()))
+    secret_key = hmac.new(key=b"WebAppData", msg=token.encode(), digestmod=sha256)
+
+    return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
+
+    

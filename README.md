@@ -11,7 +11,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#april-16-2022">6.0</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-20-2022">6.1</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 	
@@ -358,7 +358,25 @@ def start(message):
 There are other examples using middleware handler in the [examples/middleware](examples/middleware) directory.
 
 #### Class-based middlewares
-There are class-based middlewares. Check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
+There are class-based middlewares. 
+Basic class-based middleware looks like this:
+```python
+class Middleware(BaseMiddleware):
+    def __init__(self):
+        self.update_types = ['message']
+    def pre_process(self, message, data):
+        data['foo'] = 'Hello' # just for example
+        # we edited the data. now, this data is passed to handler.
+        # return SkipHandler() -> this will skip handler
+        # return CancelUpdate() -> this will cancel update
+    def post_process(self, message, data, exception=None):
+        print(data['foo'])
+        if exception: # check for exception
+            print(exception)
+```
+Class-based middleware should have to functions: post and pre process.
+So, as you can see, class-based middlewares work before and after handler execution.
+For more, check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
 	
 #### Custom filters
 Also, you can use built-in custom filters. Or, you can create your own filter.	
@@ -709,6 +727,7 @@ Result will be:
 
 
 ## API conformance
+* ✔ [Bot API 6.1](https://core.telegram.org/bots/api#june-20-2022)	
 * ✔ [Bot API 6.0](https://core.telegram.org/bots/api#april-16-2022)	
 * ✔ [Bot API 5.7](https://core.telegram.org/bots/api#january-31-2022)
 * ✔ [Bot API 5.6](https://core.telegram.org/bots/api#december-30-2021)
@@ -878,5 +897,8 @@ Here are some examples of template:
 * [Pyfram-telegram-bot](https://github.com/skelly37/pyfram-telegram-bot) Query wolframalpha.com and make use of its API through Telegram.
 * [TranslateThisVideoBot](https://gitlab.com/WuerfelDev/translatethisvideo) This Bot can understand spoken text in videos and translate it to English
 * [Zyprexa](https://t.me/mathemathicsBot) ([source](https://github.com/atif5/zyprexa)) Zyprexa can solve, help you solve any mathematical problem you encounter and convert your regular mathematical expressions into beautiful imagery using LaTeX.
+* [Bincode-telegram-bot](https://github.com/tusharhero/bincode-telegram-bot) by [tusharhero](https://github.com/tusharhero) - Makes [bincodes](https://github.com/tusharhero/bincode) from text provides and also converts them back to text.
+* [hydrolib_bot](https://github.com/Mayson90/hydrolib_bot) Toolset for Hydrophilia tabletop game (game cards, rules, structure...).
+* [Gugumoe-bot](http://t.me/gugumoe_bot) ([source](https://github.com/GooGuJiang/Gugumoe-bot)) by [咕谷酱](https://gmoe.cc) GuXiaoJiang is a multi-functional robot, such as OSU game information query, IP test, animation screenshot search and other functions.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
