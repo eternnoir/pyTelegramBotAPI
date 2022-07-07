@@ -12,6 +12,7 @@ try:
     from werkzeug.serving import _TSSLContextArg
 except ImportError:
     flask_installed = False
+    _TSSLContextArg = None
 
 
 from telebot.types import Update
