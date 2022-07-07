@@ -152,7 +152,7 @@ class AsyncWebhookListener:
         self.app.add_api_route(endpoint=self.process_update,path= self._url_path, methods=["POST"])
 
 
-    async def process_update(self, request: fastapi.Request):
+    async def process_update(self, request):
         """
         Processes updates.
         """
