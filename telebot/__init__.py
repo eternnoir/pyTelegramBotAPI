@@ -375,7 +375,7 @@ class TeleBot:
         ssl_context = (certificate, certificate_key) if certificate else None
         self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
         self.webhook_listener.run_app()
-        return self.webhook_listener
+
 
 
     def delete_webhook(self, drop_pending_updates=None, timeout=None):

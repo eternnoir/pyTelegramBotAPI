@@ -1,7 +1,8 @@
-from .webhooks import SyncWebhookListener
+from .webhooks import SyncWebhookListener, AsyncWebhookListener
 
 
 
 __all__ = [
-    'SyncWebhookListener'
+    'SyncWebhookListener',
+    'AsyncWebhookListener'
 ]
