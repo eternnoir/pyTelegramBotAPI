@@ -24,7 +24,7 @@ import string
 
 
 # webhooks module
-from telebot.extensions.webhooks import SyncWebhookListener
+from telebot.extensions import SyncWebhookListener
 
 logger = logging.getLogger('TeleBot')
 
