@@ -26,6 +26,8 @@ import string
 # webhooks module
 from telebot.extensions import SyncWebhookListener
 
+import ssl
+
 logger = logging.getLogger('TeleBot')
 
 formatter = logging.Formatter(
@@ -350,10 +352,17 @@ class TeleBot:
         if not webhook_url:
             webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
 
-        
+        if certificate and certificate_key:
+            ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            ssl_ctx.load_cert_chain(certificate, certificate_key)
+        else:
+            ssl_ctx = None
+
+        # open certificate if it exists
+        cert_file = open(certificate, 'rb') if certificate else None
         self.set_webhook(
             url=webhook_url,
-            certificate=certificate,
+            certificate=cert_file,
             max_connections=max_connections,
             allowed_updates=allowed_updates,
             ip_address=ip_address,
@@ -361,6 +370,7 @@ class TeleBot:
             timeout=timeout,
             secret_token=secret_token
         )
+        if cert_file: cert_file.close()
 
         ssl_context = (certificate, certificate_key) if certificate else None
         self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
