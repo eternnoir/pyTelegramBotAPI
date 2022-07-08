@@ -23,9 +23,6 @@ import random
 import string
 
 
-# webhooks module
-from telebot.extensions import SyncWebhookListener
-
 import ssl
 
 logger = logging.getLogger('TeleBot')
@@ -372,7 +369,12 @@ class TeleBot:
         )
         if cert_file: cert_file.close()
 
-        ssl_context = (certificate, certificate_key) if certificate else None
+        ssl_context = (certificate, certificate_key) if certificate else (None, None)
+        # webhooks module
+        try:
+            from telebot.extensions.synchronous import SyncWebhookListener
+        except NameError:
+            raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
         self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
         self.webhook_listener.run_app()
 

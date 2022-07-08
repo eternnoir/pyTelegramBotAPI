@@ -1,8 +1,3 @@
-from .webhooks import SyncWebhookListener, AsyncWebhookListener
-
-
-
-__all__ = [
-    'SyncWebhookListener',
-    'AsyncWebhookListener'
-]
+"""
+A folder with asynchronous and synchronous extensions.
+"""
