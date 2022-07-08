@@ -6,7 +6,6 @@ import threading
 import traceback
 from typing import Any, Callable, List, Dict, Optional, Union
 import hmac
-import json
 from hashlib import sha256
 from urllib.parse import parse_qsl
 
@@ -525,7 +524,7 @@ def antiflood(function, *args, **kwargs):
     
     
 def parse_web_app_data(token: str, raw_init_data: str):
-    is_valid = validate_WebApp_data(token, raw_init_data)
+    is_valid = validate_web_app_data(token, raw_init_data)
     if not is_valid:
         return False
 
