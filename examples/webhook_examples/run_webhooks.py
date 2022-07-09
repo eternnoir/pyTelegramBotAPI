@@ -12,7 +12,7 @@ bot = telebot.TeleBot(API_TOKEN)
 
 WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
 WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
-DOMAIN = '123.12.33.22' # either domain, or ip address of vps
+DOMAIN = '1.2.3.4' # either domain, or ip address of vps
 
 # Quick'n'dirty SSL certificate generation:
 #

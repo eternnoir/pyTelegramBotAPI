@@ -1515,8 +1515,8 @@ class AsyncTeleBot:
         ssl_context = (certificate, certificate_key) if certificate else (None, None)
         # for webhooks
         try:
-            from telebot.extensions.asynchronous import AsyncWebhookListener
-        except NameError:
+            from telebot.ext.aio import AsyncWebhookListener
+        except (NameError, ImportError):
             raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
         self.webhook_listener = AsyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
         await self.webhook_listener.run_app()
