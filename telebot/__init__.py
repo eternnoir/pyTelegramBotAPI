@@ -17,8 +17,6 @@ import telebot.types
 # storage
 from telebot.storage import StatePickleStorage, StateMemoryStorage
 
-
-
 logger = logging.getLogger('TeleBot')
 
 formatter = logging.Formatter(
@@ -87,7 +85,6 @@ class TeleBot:
 
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
-
     """
 
     def __init__(
@@ -2075,7 +2072,6 @@ class TeleBot:
         """
         return apihelper.set_chat_menu_button(self.token, chat_id, menu_button)
 
-
     def get_chat_menu_button(self, chat_id: Union[int, str]=None) -> types.MenuButton:
         """
         Use this method to get the current value of the bot's menu button
@@ -2091,8 +2087,7 @@ class TeleBot:
         """
         return types.MenuButton.de_json(apihelper.get_chat_menu_button(self.token, chat_id))
 
-
-    def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None, 
+    def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None,
                                     for_channels: bool=None) -> bool:
         """
         Use this method to change the default administrator rights requested by the bot
@@ -2109,7 +2104,6 @@ class TeleBot:
 
         return apihelper.set_my_default_administrator_rights(self.token, rights, for_channels)
         
-
     def get_my_default_administrator_rights(self, for_channels: bool=None) -> types.ChatAdministratorRights:
         """
         Use this method to get the current default administrator rights of the bot.
@@ -2123,8 +2117,7 @@ class TeleBot:
 
         return types.ChatAdministratorRights.de_json(apihelper.get_my_default_administrator_rights(self.token, for_channels))
         
-
-    def set_my_commands(self, commands: List[types.BotCommand], 
+    def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[str]=None) -> bool:
         """
@@ -2464,7 +2457,6 @@ class TeleBot:
             max_tip_amount, suggested_tip_amounts, protect_content)
         return types.Message.de_json(result)
 
-
     def create_invoice_link(self,
             title: str, description: str, payload:str, provider_token: str, 
             currency: str, prices: List[types.LabeledPrice],
@@ -2482,7 +2474,6 @@ class TeleBot:
             send_phone_number_to_provider: Optional[bool]=None,
             send_email_to_provider: Optional[bool]=None,
             is_flexible: Optional[bool]=None) -> str:
-            
         """
         Use this method to create a link for an invoice. 
         Returns the created invoice link as String on success.
@@ -2524,8 +2515,6 @@ class TeleBot:
             need_email, need_shipping_address, send_phone_number_to_provider,
             send_email_to_provider, is_flexible)
         return result
-
-
 
     # noinspection PyShadowingBuiltins
     # TODO: rewrite this method like in API
@@ -2912,7 +2901,6 @@ class TeleBot:
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
 
-
     def setup_middleware(self, middleware: BaseMiddleware):
         """
         Register middleware
@@ -2924,8 +2912,6 @@ class TeleBot:
             logger.warning('Middleware is not enabled. Pass use_class_middlewares=True to enable it.')
             return
         self.middlewares.append(middleware)
-        
-
 
     def set_state(self, user_id: int, state: Union[int, str, State], chat_id: int=None) -> None:
         """
@@ -3361,7 +3347,6 @@ class TeleBot:
                                                 pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
-
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -3982,8 +3967,8 @@ class TeleBot:
         """
         This class is made to run handler and middleware in queue.
 
-        :param handler: handler that should be executed.
-        :param middleware: middleware that should be executed.
+        :param handlers: handlers that should be executed.
+        :param middlewares: middlewares that should be executed.
         :return:
         """
         data = {}
@@ -3999,7 +3984,6 @@ class TeleBot:
                     return
                 elif isinstance(result, SkipHandler) and skip_handler is False:
                     skip_handler = True
-                
 
         try:
             if handlers and not skip_handler:
@@ -4035,7 +4019,6 @@ class TeleBot:
                                     return
                                 
                                 handler["function"](message, **data_copy)
-
         except Exception as e:
             handler_error = e
 
@@ -4049,9 +4032,6 @@ class TeleBot:
             for middleware in middlewares:
                 middleware.post_process(message, data, handler_error)
 
-        
-
-
     def _notify_command_handlers(self, handlers, new_messages, update_type):
         """
         Notifies command handlers.
@@ -4060,7 +4040,7 @@ class TeleBot:
         :param new_messages:
         :return:
         """
-        if len(handlers) == 0 and not self.use_class_middlewares:
+        if (not handlers) and (not self.use_class_middlewares):
             return
 
         for message in new_messages:
