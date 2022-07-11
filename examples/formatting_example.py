@@ -36,6 +36,8 @@ def start_message(message):
             formatting.hunderline(message.from_user.first_name),
             formatting.hstrikethrough(message.from_user.first_name),
             formatting.hcode(message.from_user.first_name),
+            # hide_link is only for html
+            formatting.hide_link('https://telegra.ph/file/c158e3a6e2a26a160b253.jpg'),
             separator=" "
         ),
         parse_mode='HTML'

@@ -9,6 +9,7 @@ import time
 import traceback
 from typing import Any, Callable, List, Optional, Union
 
+
 # these imports are used to avoid circular import error
 import telebot.util
 import telebot.types
@@ -33,7 +34,7 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler
+from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler, State
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
@@ -261,7 +262,7 @@ class TeleBot:
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
     def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
-                    drop_pending_updates = None, timeout=None):
+                    drop_pending_updates = None, timeout=None, secret_token=None):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
         update for the bot, we will send an HTTPS POST request to the specified url,
@@ -286,10 +287,11 @@ class TeleBot:
             resolved through DNS
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
+        :param secret_token: Secret token to be used to verify the webhook request.
         :return: API reply.
         """
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
-                                     drop_pending_updates, timeout)
+                                     drop_pending_updates, timeout, secret_token)
 
     def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
@@ -384,7 +386,7 @@ class TeleBot:
         new_poll_answers = None
         new_my_chat_members = None
         new_chat_members = None
-        chat_join_request = None
+        new_chat_join_request = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE:
@@ -441,8 +443,8 @@ class TeleBot:
                 if new_chat_members is None: new_chat_members = []
                 new_chat_members.append(update.chat_member)
             if update.chat_join_request:
-                if chat_join_request is None: chat_join_request = []
-                chat_join_request.append(update.chat_join_request)
+                if new_chat_join_request is None: new_chat_join_request = []
+                new_chat_join_request.append(update.chat_join_request)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -470,8 +472,8 @@ class TeleBot:
             self.process_new_my_chat_member(new_my_chat_members)
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
-        if chat_join_request:
-            self.process_new_chat_join_request(chat_join_request)
+        if new_chat_join_request:
+            self.process_new_chat_join_request(new_chat_join_request)
 
     def process_new_messages(self, new_messages):
         self._notify_next_handlers(new_messages)
@@ -2462,6 +2464,69 @@ class TeleBot:
             max_tip_amount, suggested_tip_amounts, protect_content)
         return types.Message.de_json(result)
 
+
+    def create_invoice_link(self,
+            title: str, description: str, payload:str, provider_token: str, 
+            currency: str, prices: List[types.LabeledPrice],
+            max_tip_amount: Optional[int] = None, 
+            suggested_tip_amounts: Optional[List[int]]=None,
+            provider_data: Optional[str]=None,
+            photo_url: Optional[str]=None,
+            photo_size: Optional[int]=None,
+            photo_width: Optional[int]=None,
+            photo_height: Optional[int]=None,
+            need_name: Optional[bool]=None,
+            need_phone_number: Optional[bool]=None,
+            need_email: Optional[bool]=None,
+            need_shipping_address: Optional[bool]=None,
+            send_phone_number_to_provider: Optional[bool]=None,
+            send_email_to_provider: Optional[bool]=None,
+            is_flexible: Optional[bool]=None) -> str:
+            
+        """
+        Use this method to create a link for an invoice. 
+        Returns the created invoice link as String on success.
+
+        Telegram documentation:
+        https://core.telegram.org/bots/api#createinvoicelink
+
+        :param title: Product name, 1-32 characters
+        :param description: Product description, 1-255 characters
+        :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+            use for your internal processes.
+        :param provider_token: Payments provider token, obtained via @Botfather
+        :param currency: Three-letter ISO 4217 currency code,
+            see https://core.telegram.org/bots/payments#supported-currencies
+        :param prices: Price breakdown, a list of components
+            (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
+        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
+            A detailed description of required fields should be provided by the payment provider.
+        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
+        :param photo_size: Photo size in bytes
+        :param photo_width: Photo width
+        :param photo_height: Photo height
+        :param need_name: Pass True, if you require the user's full name to complete the order
+        :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :param need_email: Pass True, if you require the user's email to complete the order
+        :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :param is_flexible: Pass True, if the final price depends on the shipping method
+
+        :return: Created invoice link as String on success.
+        """
+        result = apihelper.create_invoice_link(
+            self.token, title, description, payload, provider_token,
+            currency, prices, max_tip_amount, suggested_tip_amounts, provider_data,
+            photo_url, photo_size, photo_width, photo_height, need_name, need_phone_number,
+            need_email, need_shipping_address, send_phone_number_to_provider,
+            send_email_to_provider, is_flexible)
+        return result
+
+
+
     # noinspection PyShadowingBuiltins
     # TODO: rewrite this method like in API
     def send_poll(
@@ -2509,6 +2574,8 @@ class TeleBot:
         """
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
+
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         return types.Message.de_json(
             apihelper.send_poll(
@@ -2860,7 +2927,7 @@ class TeleBot:
         
 
 
-    def set_state(self, user_id: int, state: Union[int, str], chat_id: int=None) -> None:
+    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: int=None) -> None:
         """
         Sets a new state of a user.
 
@@ -3911,7 +3978,7 @@ class TeleBot:
             middlewares = [i for i in self.middlewares if update_type in i.update_types]
         return middlewares
 
-    def _run_middlewares_and_handler(self, message, handlers, middlewares, *args, **kwargs):
+    def _run_middlewares_and_handler(self, message, handlers, middlewares):
         """
         This class is made to run handler and middleware in queue.
 
@@ -3932,6 +3999,7 @@ class TeleBot:
                     return
                 elif isinstance(result, SkipHandler) and skip_handler is False:
                     skip_handler = True
+                
 
         try:
             if handlers and not skip_handler:
@@ -3943,24 +4011,31 @@ class TeleBot:
                             params.append(i)
                         if len(params) == 1:
                             handler['function'](message)
-                
-                        elif len(params) == 2:
-                            if handler.get('pass_bot') is True:
-                                handler['function'](message, self)
-                                
-                            elif handler.get('pass_bot') is False:
-                                handler['function'](message, data)
-                                
-                        elif len(params) == 3:
-                            if params[2] == 'bot' and handler.get('pass_bot') is True:
-                                handler['function'](message, data, self)
+                        else:
+                            if "data" in params:
+                                if len(params) == 2:
+                                    handler['function'](message, data)
+                                elif len(params) == 3:
+                                    handler['function'](message, data=data, bot=self)
+                                else:
+                                    logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                                    return
                             
-                            elif not handler.get('pass_bot'):
-                                raise RuntimeError('Your handler accepts 3 parameters but pass_bot is False. Please re-check your handler.')
-                                
                             else:
-                                handler['function'](message, self, data)
-                    
+
+                                data_copy = data.copy()
+                                
+                                for key in list(data_copy):
+                                    # remove data from data_copy if handler does not accept it
+                                    if key not in params:
+                                        del data_copy[key]
+                                if handler.get('pass_bot'): data_copy["bot"] = self
+                                if len(data_copy) > len(params) - 1: # remove the message parameter
+                                    logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
+                                    return
+                                
+                                handler["function"](message, **data_copy)
+
         except Exception as e:
             handler_error = e
 

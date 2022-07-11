@@ -208,6 +208,8 @@ class ChatFilter(AdvancedCustomFilter):
     key = 'chat_id'
 
     def check(self, message, text):
+        if isinstance(message, types.CallbackQuery):
+            return message.message.chat.id in text
         return message.chat.id in text
 
 
@@ -223,7 +225,7 @@ class ForwardFilter(SimpleCustomFilter):
     key = 'is_forwarded'
 
     def check(self, message):
-        return message.forward_from_chat is not None
+        return message.forward_date is not None
 
 
 class IsReplyFilter(SimpleCustomFilter):
@@ -238,6 +240,8 @@ class IsReplyFilter(SimpleCustomFilter):
     key = 'is_reply'
 
     def check(self, message):
+        if isinstance(message, types.CallbackQuery):
+            return message.message.reply_to_message is not None
         return message.reply_to_message is not None
 
 
@@ -273,6 +277,8 @@ class IsAdminFilter(SimpleCustomFilter):
         self._bot = bot
 
     def check(self, message):
+        if isinstance(message, types.CallbackQuery):
+            return self._bot.get_chat_member(message.message.chat.id, message.from_user.id).status in ['creator', 'administrator']
         return self._bot.get_chat_member(message.chat.id, message.from_user.id).status in ['creator', 'administrator']
 
 
@@ -315,7 +321,7 @@ class StateFilter(AdvancedCustomFilter):
         elif isinstance(text, State):
             text = text.name
         
-        if message.chat.type == 'group':
+        if message.chat.type in ['group', 'supergroup']:
             group_state = self.bot.current_states.get_state(user_id, chat_id)
             if group_state == text:
                 return True

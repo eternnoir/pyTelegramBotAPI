@@ -199,3 +199,13 @@ def hpre(content: str, escape: bool=True, language: str="") -> str:
     :param escape: True if you need to escape special characters.
     """
     return '<pre><code class="{}">{}</code></pre>'.format(language, escape_html(content) if escape else content)
+
+
+def hide_link(url: str) -> str:
+    """
+    Hide url of an image.
+
+    :param url:
+    :return: str
+    """
+    return f'<a href="{url}">&#8288;</a>'
