@@ -345,7 +345,7 @@ class AsyncTeleBot:
 
                     if self.exception_handler:
                         self.exception_handler.handle(e)
-                    else: logging.error(str(e))
+                    else: logger.error(str(e))
                         
 
         if middlewares:
