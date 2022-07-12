@@ -9,7 +9,6 @@ import time
 import traceback
 from typing import Any, Callable, List, Optional, Union
 
-
 # these imports are used to avoid circular import error
 import telebot.util
 import telebot.types
@@ -17,11 +16,9 @@ import telebot.types
 # storage
 from telebot.storage import StatePickleStorage, StateMemoryStorage
 
-
 # random module to generate random string
 import random
 import string
-
 
 import ssl
 
@@ -93,7 +90,6 @@ class TeleBot:
 
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
-
     """
 
     def __init__(
@@ -170,8 +166,6 @@ class TeleBot:
                 'ENABLE_MIDDLEWARE set to True. This is not recommended.'
             )
         self.middlewares = [] if use_class_middlewares else None
-
-
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
@@ -299,7 +293,6 @@ class TeleBot:
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
                                      drop_pending_updates, timeout, secret_token)
 
-
     def run_webhooks(self,
                     listen: Optional[str]="127.0.0.1",
                     port: Optional[int]=443,
@@ -331,6 +324,8 @@ class TeleBot:
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
         :param secret_token: Secret token to be used to verify the webhook request.
+        :param secret_token_length:
+        :param debug:
         :return:
         """
 
@@ -338,13 +333,10 @@ class TeleBot:
         if not secret_token:
             secret_token = ''.join(random.choices(string.ascii_uppercase + string.digits, k=secret_token_length))
 
-
         if not url_path:
             url_path = self.token + '/'
         if url_path[-1] != '/': url_path += '/'
         
-
-
         protocol = "https" if certificate else "http"
         if not webhook_url:
             webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
@@ -352,8 +344,6 @@ class TeleBot:
         if certificate and certificate_key:
             ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_ctx.load_cert_chain(certificate, certificate_key)
-        else:
-            ssl_ctx = None
 
         # open certificate if it exists
         cert_file = open(certificate, 'rb') if certificate else None
@@ -377,8 +367,6 @@ class TeleBot:
             raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
         self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
         self.webhook_listener.run_app()
-
-
 
     def delete_webhook(self, drop_pending_updates=None, timeout=None):
         """
@@ -486,8 +474,7 @@ class TeleBot:
                     else:
                         if update.update_id > self.last_update_id: self.last_update_id = update.update_id
                         continue
-            
-                    
+
             if update.update_id > self.last_update_id:
                 self.last_update_id = update.update_id
             if update.message:
@@ -1519,9 +1506,6 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
-            video messages.
-
         Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
         
         :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
@@ -1742,7 +1726,6 @@ class TeleBot:
         :param protect_content:
         :return:
         """
-        
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
@@ -2158,10 +2141,8 @@ class TeleBot:
         :param chat_id: Unique identifier for the target private chat. 
             If not specified, default bot's menu button will be changed.
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
-
         """
         return apihelper.set_chat_menu_button(self.token, chat_id, menu_button)
-
 
     def get_chat_menu_button(self, chat_id: Union[int, str]=None) -> types.MenuButton:
         """
@@ -2174,10 +2155,8 @@ class TeleBot:
         :param chat_id: Unique identifier for the target private chat.
             If not specified, default bot's menu button will be returned.
         :return: types.MenuButton
-
         """
         return types.MenuButton.de_json(apihelper.get_chat_menu_button(self.token, chat_id))
-
 
     def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None, 
                                     for_channels: bool=None) -> bool:
@@ -2193,9 +2172,7 @@ class TeleBot:
         :param rights: A JSON-serialized object describing new default administrator rights. If not specified, the default administrator rights will be cleared.
         :param for_channels: Pass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
         """
-
         return apihelper.set_my_default_administrator_rights(self.token, rights, for_channels)
-        
 
     def get_my_default_administrator_rights(self, for_channels: bool=None) -> types.ChatAdministratorRights:
         """
@@ -2207,11 +2184,9 @@ class TeleBot:
         :param for_channels: Pass True to get the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be returned.
         :return: types.ChatAdministratorRights
         """
-
         return types.ChatAdministratorRights.de_json(apihelper.get_my_default_administrator_rights(self.token, for_channels))
         
-
-    def set_my_commands(self, commands: List[types.BotCommand], 
+    def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[str]=None) -> bool:
         """
@@ -2551,7 +2526,6 @@ class TeleBot:
             max_tip_amount, suggested_tip_amounts, protect_content)
         return types.Message.de_json(result)
 
-
     def create_invoice_link(self,
             title: str, description: str, payload:str, provider_token: str, 
             currency: str, prices: List[types.LabeledPrice],
@@ -2611,8 +2585,6 @@ class TeleBot:
             need_email, need_shipping_address, send_phone_number_to_provider,
             send_email_to_provider, is_flexible)
         return result
-
-
 
     # noinspection PyShadowingBuiltins
     # TODO: rewrite this method like in API
@@ -2940,11 +2912,9 @@ class TeleBot:
         :param result: A JSON-serialized object describing the message to be sent
         :return:
         """
-
         return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
 
-    def register_for_reply(
-            self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
+    def register_for_reply(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
         """
         Registers a callback function to be notified when a reply to `message` arrives.
 
@@ -2984,8 +2954,7 @@ class TeleBot:
                     for handler in handlers:
                         self._exec_task(handler["callback"], message, *handler["args"], **handler["kwargs"])
 
-    def register_next_step_handler(
-            self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
+    def register_next_step_handler(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
         """
         Registers a callback function to be notified when new message arrives after `message`.
 
@@ -2999,7 +2968,6 @@ class TeleBot:
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
 
-
     def setup_middleware(self, middleware: BaseMiddleware):
         """
         Register middleware
@@ -3011,8 +2979,6 @@ class TeleBot:
             logger.warning('Middleware is not enabled. Pass use_class_middlewares=True to enable it.')
             return
         self.middlewares.append(middleware)
-        
-
 
     def set_state(self, user_id: int, state: Union[int, str, State], chat_id: int=None) -> None:
         """
@@ -3035,8 +3001,8 @@ class TeleBot:
         """
         if chat_id is None:
             chat_id = user_id
-
         self.current_states.reset_data(chat_id, user_id)
+
     def delete_state(self, user_id: int, chat_id: int=None) -> None:
         """
         Delete the current state of a user.
@@ -3448,7 +3414,6 @@ class TeleBot:
                                                 pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_message_handler(handler_dict)
-
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -4086,7 +4051,6 @@ class TeleBot:
                     return
                 elif isinstance(result, SkipHandler) and skip_handler is False:
                     skip_handler = True
-                
 
         try:
             if handlers and not skip_handler:
@@ -4122,10 +4086,8 @@ class TeleBot:
                                     return
                                 
                                 handler["function"](message, **data_copy)
-
         except Exception as e:
             handler_error = e
-
             if self.exception_handler:
                 self.exception_handler.handle(e)
             else: logging.error(str(e))
@@ -4133,9 +4095,6 @@ class TeleBot:
         if middlewares:
             for middleware in middlewares:
                 middleware.post_process(message, data, handler_error)
-
-        
-
 
     def _notify_command_handlers(self, handlers, new_messages, update_type):
         """
