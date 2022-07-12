@@ -4126,12 +4126,10 @@ class TeleBot:
         except Exception as e:
             handler_error = e
 
-            if not middlewares:
-                if self.exception_handler:
-                    return self.exception_handler.handle(e)
-                logging.error(str(e))
-                return
-        # remove the bot from data
+            if self.exception_handler:
+                self.exception_handler.handle(e)
+            else: logging.error(str(e))
+
         if middlewares:
             for middleware in middlewares:
                 middleware.post_process(message, data, handler_error)
