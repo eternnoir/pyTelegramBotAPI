@@ -30,6 +30,11 @@ REPLY_MARKUP_TYPES = Union[
     types.ReplyKeyboardRemove, types.ForceReply]
 
 
+import string
+import random
+import ssl
+
+
 """
 Module : telebot
 """
@@ -346,6 +351,7 @@ class AsyncTeleBot:
                     if self.exception_handler:
                         self.exception_handler.handle(e)
                     else: logger.error(str(e))
+                        
 
         if middlewares:
             for middleware in middlewares:
@@ -1436,6 +1442,85 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
                                      drop_pending_updates, timeout, secret_token)
+
+
+    async def run_webhooks(self,
+                    listen: Optional[str]="127.0.0.1",
+                    port: Optional[int]=443,
+                    url_path: Optional[str]=None,
+                    certificate: Optional[str]=None,
+                    certificate_key: Optional[str]=None,
+                    webhook_url: Optional[str]=None,
+                    max_connections: Optional[int]=None,
+                    allowed_updates: Optional[List]=None,
+                    ip_address: Optional[str]=None,
+                    drop_pending_updates: Optional[bool] = None,
+                    timeout: Optional[int]=None,
+                    secret_token: Optional[str]=None,
+                    secret_token_length: Optional[int]=20,
+                    debug: Optional[bool]=False):
+        """
+        This class sets webhooks and listens to a given url and port.
+
+        :param listen: IP address to listen to. Defaults to
+            0.0.0.0
+        :param port: A port which will be used to listen to webhooks.
+        :param url_path: Path to the webhook. Defaults to /token
+        :param certificate: Path to the certificate file.
+        :param certificate_key: Path to the certificate key file.
+        :param webhook_url: Webhook URL.
+        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
+        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). If not specified, the previous setting will be used.
+        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
+        :param drop_pending_updates: Pass True to drop all pending updates
+        :param timeout: Integer. Request connection timeout
+        :param secret_token: Secret token to be used to verify the webhook request.
+        :return:
+        """
+
+        # generate secret token if not set
+        if not secret_token:
+            secret_token = ''.join(random.choices(string.ascii_uppercase + string.digits, k=secret_token_length))
+
+
+        if not url_path:
+            url_path = self.token + '/'
+        if url_path[-1] != '/': url_path += '/'
+        
+
+
+        protocol = "https" if certificate else "http"
+        if not webhook_url:
+            webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
+
+        if certificate and certificate_key:
+            ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+            ssl_ctx.load_cert_chain(certificate, certificate_key)
+        else:
+            ssl_ctx = None
+
+        # open certificate if it exists
+        cert_file = open(certificate, 'rb') if certificate else None
+        await self.set_webhook(
+            url=webhook_url,
+            certificate=cert_file,
+            max_connections=max_connections,
+            allowed_updates=allowed_updates,
+            ip_address=ip_address,
+            drop_pending_updates=drop_pending_updates,
+            timeout=timeout,
+            secret_token=secret_token
+        )
+        if cert_file: cert_file.close()
+
+        ssl_context = (certificate, certificate_key) if certificate else (None, None)
+        # for webhooks
+        try:
+            from telebot.ext.aio import AsyncWebhookListener
+        except (NameError, ImportError):
+            raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
+        self.webhook_listener = AsyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
+        await self.webhook_listener.run_app()
 
 
 
