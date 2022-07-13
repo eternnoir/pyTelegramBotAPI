@@ -161,10 +161,9 @@ class TeleBot:
             }
             self.default_middleware_handlers = []
         if apihelper.ENABLE_MIDDLEWARE and use_class_middlewares:
-            self.typed_middleware_handlers = {}
-            logger.warning(
-                'You are using class based middlewares, but you have '
-                'ENABLE_MIDDLEWARE set to True. This is not recommended.'
+            self.typed_middleware_handlers = None
+            logger.error(
+                'You are using class based middlewares while having ENABLE_MIDDLEWARE set to True. This is not recommended.'
             )
         self.middlewares = [] if use_class_middlewares else None
         self.threaded = threaded
@@ -465,7 +464,7 @@ class TeleBot:
         new_chat_join_request = None
         
         for update in updates:
-            if apihelper.ENABLE_MIDDLEWARE:
+            if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
                 try:
                     self.process_middlewares(update)
                 except Exception as e:
@@ -3171,6 +3170,10 @@ class TeleBot:
         """
         if not apihelper.ENABLE_MIDDLEWARE:
             raise RuntimeError("Middleware is not enabled. Use apihelper.ENABLE_MIDDLEWARE before initialising TeleBot.")
+
+        if self.use_class_middlewares:
+            logger.error("middleware_handler/register_middleware_handler/add_middleware_handler cannot be used with use_class_middlewares=True. Skipped.")
+            return
 
         added = False
         if update_types and self.typed_middleware_handlers:
