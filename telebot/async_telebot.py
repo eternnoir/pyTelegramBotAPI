@@ -141,7 +141,7 @@ class AsyncTeleBot:
         return [types.Update.de_json(ju) for ju in json_updates]
 
     async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
-            request_timeout: int=20, allowed_updates: Optional[List[str]]=None,
+            request_timeout: int=None, allowed_updates: Optional[List[str]]=None,
             none_stop: Optional[bool]=None):
         """
         This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
@@ -174,7 +174,7 @@ class AsyncTeleBot:
             await self.skip_updates()
         await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates)
 
-    async def infinity_polling(self, timeout: int=20, skip_pending: bool=False, request_timeout: int=20, logger_level=logging.ERROR,
+    async def infinity_polling(self, timeout: int=20, skip_pending: bool=False, request_timeout: int=None, logger_level=logging.ERROR,
             allowed_updates: Optional[List[str]]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
@@ -213,7 +213,7 @@ class AsyncTeleBot:
             logger.error("Break infinity polling")
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
-            request_timeout: int=20, allowed_updates: Optional[List[str]]=None):
+            request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
         """
         Function to process polling.
 
