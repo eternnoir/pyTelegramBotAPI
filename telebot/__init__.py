@@ -161,6 +161,7 @@ class TeleBot:
             }
             self.default_middleware_handlers = []
         if apihelper.ENABLE_MIDDLEWARE and use_class_middlewares:
+            self.typed_middleware_handlers = {}
             logger.warning(
                 'You are using class based middlewares, but you have '
                 'ENABLE_MIDDLEWARE set to True. This is not recommended.'
@@ -595,16 +596,17 @@ class TeleBot:
         self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
     def process_middlewares(self, update):
-        for update_type, middlewares in self.typed_middleware_handlers.items():
-            if getattr(update, update_type) is not None:
-                for typed_middleware_handler in middlewares:
-                    try:
-                        typed_middleware_handler(self, getattr(update, update_type))
-                    except Exception as e:
-                        e.args = e.args + (f'Typed middleware handler "{typed_middleware_handler.__qualname__}"',)
-                        raise
+        if self.typed_middleware_handlers:
+            for update_type, middlewares in self.typed_middleware_handlers.items():
+                if getattr(update, update_type) is not None:
+                    for typed_middleware_handler in middlewares:
+                        try:
+                            typed_middleware_handler(self, getattr(update, update_type))
+                        except Exception as e:
+                            e.args = e.args + (f'Typed middleware handler "{typed_middleware_handler.__qualname__}"',)
+                            raise
 
-        if len(self.default_middleware_handlers) > 0:
+        if self.default_middleware_handlers:
             for default_middleware_handler in self.default_middleware_handlers:
                 try:
                     default_middleware_handler(self, update)
@@ -3170,10 +3172,13 @@ class TeleBot:
         if not apihelper.ENABLE_MIDDLEWARE:
             raise RuntimeError("Middleware is not enabled. Use apihelper.ENABLE_MIDDLEWARE before initialising TeleBot.")
 
-        if update_types:
+        added = False
+        if update_types and self.typed_middleware_handlers:
             for update_type in update_types:
-                self.typed_middleware_handlers[update_type].append(handler)
-        else:
+                if update_type in self.typed_middleware_handlers:
+                    added = True
+                    self.typed_middleware_handlers[update_type].append(handler)
+        if not added:
             self.default_middleware_handlers.append(handler)
 
     # function register_middleware_handler
