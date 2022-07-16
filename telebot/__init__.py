@@ -142,12 +142,15 @@ class AsyncTeleBot:
     # update handling
 
     async def process_new_updates(self, updates: list[types.Update]):
-        update_dumps = [json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates]
-        logger.debug(f"{len(updates)} update(s) received\n" + "\n\n".join(update_dumps) + "\n")
-
         upd_count = len(updates)
         if upd_count == 0:
             return
+
+        try:
+            update_dumps = [json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates]
+            logger.debug(f"{upd_count} update(s) received:\n" + "\n\n".join(update_dumps) + "\n")
+        except Exception:
+            logger.exception(f"{upd_count} update(s) received, but error occured trying to dump them")
 
         for update in updates:
             for listener in self.update_listeners:
@@ -183,19 +186,25 @@ class AsyncTeleBot:
             if update.chat_join_request:
                 coroutines.append(self._process_update(self.chat_join_request_handlers, update.chat_join_request))
 
-        await asyncio.gather(*coroutines)
+        await asyncio.gather(*coroutines, return_exceptions=True)
 
     async def _process_update(self, handlers: list[service_types.Handler], update_content: service_types.UpdateContent):
+        try:
+            update_content_log = f"{update_content.__class__.__name__} {update_content}"
+        except Exception:
+            update_content_log = f"{update_content.__class__.__name__}"
+
         for handler in handlers:
             handler_name = handler.get("name", "<anonymous>")
 
             try:
                 is_match = await self._test_handler(handler, update_content)
             except Exception:
-                logger.exception(f"Error testing handler '{handler_name}'")
+                logger.exception(f"Error testing handler {handler_name!r} for {update_content_log}")
                 is_match = False
 
             if is_match:
+                logger.debug(f"Using handler {handler_name!r} to process {update_content_log}")
                 try:
                     handler_func = handler["function"]
                     handler_func_n_params = len(list(signature(handler_func).parameters.keys()))
@@ -213,6 +222,8 @@ class AsyncTeleBot:
                 except Exception:
                     logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
                     return
+        else:
+            logger.debug(f"No matching handler found for {update_content_log}, ignoring")
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
         for filter_key, filter_value in handler["filters"].items():
