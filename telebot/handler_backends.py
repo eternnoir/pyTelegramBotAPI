@@ -173,7 +173,34 @@ class BaseMiddleware:
     """
     Base class for middleware.
     Your middlewares should be inherited from this class.
+
+    Set update_sensitive=True if you want to get different updates on
+    different functions. For example, if you want to handle pre_process for
+    message update, then you will have to create pre_process_message function, and
+    so on. Same applies to post_process.
+
+    .. code-block:: python
+        class MyMiddleware(BaseMiddleware):
+            def __init__(self):
+                self.update_sensitive = True
+                self.update_types = ['message', 'edited_message']
+            
+            def pre_process_message(self, message, data):
+                # only message update here
+                pass
+
+            def post_process_message(self, message, data, exception):
+                pass # only message update here for post_process
+
+            def pre_process_edited_message(self, message, data):
+                # only edited_message update here
+                pass
+
+            def post_process_edited_message(self, message, data, exception):
+                pass # only edited_message update here for post_process
     """
+
+    update_sensitive: bool = False
 
     def __init__(self):
         pass

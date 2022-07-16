@@ -14,7 +14,7 @@ import telebot.types
 
 # storages
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage
-from telebot.asyncio_handler_backends import CancelUpdate, SkipHandler, State
+from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipHandler, State
 
 from inspect import signature
 
@@ -288,17 +288,24 @@ class AsyncTeleBot:
         tasks = []
         for message in messages:
             middleware = await self.process_middlewares(update_type)
-            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware))
+            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware, update_type))
         await asyncio.gather(*tasks)
 
-    async def _run_middlewares_and_handlers(self, handlers, message, middlewares):
+    async def _run_middlewares_and_handlers(self, handlers, message, middlewares, update_type):
         handler_error = None
         data = {}
         process_handler = True
         params = []
         if middlewares:
             for middleware in middlewares:
-                middleware_result = await middleware.pre_process(message, data)
+                if middleware.update_sensitive:
+                    if hasattr(middleware, f'pre_process_{update_type}'):
+                        middleware_result = await getattr(middleware, f'pre_process_{update_type}')(message, data)
+                    else:
+                        logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                        middleware_result = None
+                else:
+                    middleware_result = await middleware.pre_process(message, data)
                 if isinstance(middleware_result, SkipHandler):
                     await middleware.post_process(message, data, handler_error)
                     process_handler = False
@@ -356,7 +363,12 @@ class AsyncTeleBot:
 
         if middlewares:
             for middleware in middlewares:
-                await middleware.post_process(message, data, handler_error)
+                if middleware.update_sensitive:
+                    if hasattr(middleware, f'post_process_{update_type}'):
+                        await getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+                    else:
+                        logger.error('Middleware {} does not have post_process_{} method. post_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                else: await middleware.post_process(message, data, handler_error)
     # update handling
     async def process_new_updates(self, updates):
         """
@@ -597,13 +609,21 @@ class AsyncTeleBot:
             logger.error("Custom filter: wrong type. Should be SimpleCustomFilter or AdvancedCustomFilter.")
             return False
 
-    def setup_middleware(self, middleware):
+    def setup_middleware(self, middleware: BaseMiddleware):
         """
         Setup middleware.
 
         :param middleware: Middleware-class.
         :return:
         """
+        if not hasattr(middleware, 'update_types'):
+            logger.error('Middleware has no update_types parameter. Please add list of updates to handle.')
+            return
+
+        if not hasattr(middleware, 'update_sensitive'):
+            logger.warning('Middleware has no update_sensitive parameter. Parameter was set to False.')
+            middleware.update_sensitive = False
+
         self.middlewares.append(middleware)
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):

@@ -2979,6 +2979,15 @@ class TeleBot:
         if not self.use_class_middlewares:
             logger.warning('Class-based middlewares are not enabled. Pass use_class_middlewares=True to enable it.')
             return
+
+        if not hasattr(middleware, 'update_types'):
+            logger.error('Middleware has no update_types parameter. Please add list of updates to handle.')
+            return
+
+        if not hasattr(middleware, 'update_sensitive'):
+            logger.warning('Middleware has no update_sensitive parameter. Parameter was set to False.')
+            middleware.update_sensitive = False
+
         self.middlewares.append(middleware)
 
     def set_state(self, user_id: int, state: Union[int, str, State], chat_id: int=None) -> None:
@@ -4037,7 +4046,7 @@ class TeleBot:
             middlewares = [i for i in self.middlewares if update_type in i.update_types]
         return middlewares
 
-    def _run_middlewares_and_handler(self, message, handlers, middlewares):
+    def _run_middlewares_and_handler(self, message, handlers, middlewares, update_type):
         """
         This class is made to run handler and middleware in queue.
 
@@ -4051,7 +4060,14 @@ class TeleBot:
         skip_handler = False
         if middlewares:
             for middleware in middlewares:
-                result = middleware.pre_process(message, data)
+                if middleware.update_sensitive:
+                    if hasattr(middleware, f'pre_process_{update_type}'):
+                        result = getattr(middleware, f'pre_process_{update_type}')(message, data)
+                    else: 
+                        logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                        result = None
+                else:
+                    result = middleware.pre_process(message, data)
                 # We will break this loop if CancelUpdate is returned
                 # Also, we will not run other middlewares
                 if isinstance(result, CancelUpdate):
@@ -4102,7 +4118,13 @@ class TeleBot:
 
         if middlewares:
             for middleware in middlewares:
-                middleware.post_process(message, data, handler_error)
+                if middleware.update_sensitive:
+                    if hasattr(middleware, f'post_process_{update_type}'):
+                        result = getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+                    else:
+                        logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
+                else:
+                    result = middleware.post_process(message, data, handler_error)
 
     def _notify_command_handlers(self, handlers, new_messages, update_type):
         """
@@ -4118,7 +4140,7 @@ class TeleBot:
         for message in new_messages:
             if self.use_class_middlewares:
                 middleware = self._check_middleware(update_type)
-                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware)
+                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware, update_type=update_type)
                 return
             else:
                 for message_handler in handlers:
