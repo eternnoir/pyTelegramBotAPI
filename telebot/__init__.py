@@ -2971,13 +2971,13 @@ class TeleBot:
 
     def setup_middleware(self, middleware: BaseMiddleware):
         """
-        Register middleware
+        Registers class-based middleware.
 
         :param middleware: Subclass of `telebot.handler_backends.BaseMiddleware`
         :return: None
         """
         if not self.use_class_middlewares:
-            logger.error('Middleware is not enabled. Pass use_class_middlewares=True to enable it.')
+            logger.error('Class-based middlewares are not enabled. Pass use_class_middlewares=True to enable it.')
             return
 
         if not hasattr(middleware, 'update_types'):
@@ -3139,7 +3139,7 @@ class TeleBot:
 
     def middleware_handler(self, update_types=None):
         """
-        Middleware handler decorator.
+        Function-based middleware handler decorator.
 
         This decorator can be used to decorate functions that must be handled as middlewares before entering any other
         message handlers
@@ -3196,10 +3196,9 @@ class TeleBot:
     # function register_middleware_handler
     def register_middleware_handler(self, callback, update_types=None):
         """
-        Middleware handler decorator.
+        Adds function-based middleware handler.
 
-        This function will create a decorator that can be used to decorate functions that must be handled as middlewares before entering any other
-        message handlers
+        This function will register your decorator function. Function-based middlewares are executed before handlers.
         But, be careful and check type of the update inside the handler if more than one update_type is given
 
         Example:
@@ -4115,6 +4114,7 @@ class TeleBot:
             if self.exception_handler:
                 self.exception_handler.handle(e)
             else: logging.error(str(e))
+        
 
         if middlewares:
             for middleware in middlewares:
