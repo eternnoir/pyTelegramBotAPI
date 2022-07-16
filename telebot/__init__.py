@@ -2977,7 +2977,7 @@ class TeleBot:
         :return: None
         """
         if not self.use_class_middlewares:
-            logger.warning('Class-based middlewares are not enabled. Pass use_class_middlewares=True to enable it.')
+            logger.error('Class-based middlewares are not enabled. Pass use_class_middlewares=True to enable it.')
             return
 
         if not hasattr(middleware, 'update_types'):
