@@ -152,11 +152,11 @@ class AsyncTeleBot:
         except Exception:
             logger.exception(f"{upd_count} update(s) received, but error occured trying to dump them")
 
+        coroutines: list[Coroutine[None, None, None]] = []
         for update in updates:
             for listener in self.update_listeners:
                 asyncio.create_task(listener(update))
 
-            coroutines: list[Coroutine[None, None, None]] = []
             if update.message:
                 coroutines.append(self._process_update(self.message_handlers, update.message))
             if update.edited_message:
