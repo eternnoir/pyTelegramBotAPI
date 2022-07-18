@@ -14,7 +14,7 @@ import telebot.util
 import telebot.types
 
 # storage
-from telebot.storage import StatePickleStorage, StateMemoryStorage
+from telebot.storage import StatePickleStorage, StateMemoryStorage, StateStorageBase
 
 # random module to generate random string
 import random
@@ -37,13 +37,14 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler, State
+from telebot.handler_backends import HandlerBackend, MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler, State
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
 REPLY_MARKUP_TYPES = Union[
     types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
     types.ReplyKeyboardRemove, types.ForceReply]
+
 
 
 """
@@ -53,7 +54,7 @@ Module : telebot
 
 class Handler:
     """
-    Class for (next step|reply) handlers
+    Class for (next step|reply) handlers.
     """
 
     def __init__(self, callback, *args, **kwargs):
@@ -90,18 +91,53 @@ class TeleBot:
 
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
+
+
+    :param token: Token of a bot, should be obtained from @BotFather
+    :type token: :obj:`str`
+
+    :param parse_mode: Default parse mode, defaults to None
+    :type parse_mode: :obj:`str`, optional
+
+    :param threaded: Threaded or not, defaults to True
+    :type threaded: :obj:`bool`, optional
+
+    :param skip_pending: Skips pending updates, defaults to False
+    :type skip_pending: :obj:`bool`, optional
+
+    :param num_threads: Number of maximum parallel threads, defaults to 2
+    :type num_threads: :obj:`int`, optional
+
+    :param next_step_backend: Next step backend class, defaults to None
+    :type next_step_backend: :class:`telebot.handler_backends.HandlerBackend`, optional
+
+    :param reply_backend: Reply step handler class, defaults to None
+    :type reply_backend: :class:`telebot.handler_backends.HandlerBackend`, optional
+
+    :param exception_handler: Exception handler to handle errors, defaults to None
+    :type exception_handler: :class:`telebot.ExceptionHandler`, optional
+
+    :param last_update_id: Last update's id, defaults to 0
+    :type last_update_id: :obj:`int`, optional
+
+    :param suppress_middleware_excepions: Supress middleware exceptions, defaults to False
+    :type suppress_middleware_excepions: :obj:`bool`, optional
+
+    :param state_storage: Storage for states, defaults to StateMemoryStorage()
+    :type state_storage: :class:`telebot.storage.StateStorageBase`, optional
+
+    :param use_class_middlewares: Use class middlewares, defaults to False
+    :type use_class_middlewares: :obj:`bool`, optional
     """
 
     def __init__(
-            self, token, parse_mode=None, threaded=True, skip_pending=False, num_threads=2,
-            next_step_backend=None, reply_backend=None, exception_handler=None, last_update_id=0,
-            suppress_middleware_excepions=False, state_storage=StateMemoryStorage(), use_class_middlewares=False
+            self, token: str, parse_mode: Optional[str]=None, threaded: Optional[bool]=True,
+            skip_pending: Optional[bool]=False, num_threads: Optional[int]=2,
+            next_step_backend: Optional[HandlerBackend]=None, reply_backend: Optional[HandlerBackend]=None,
+            exception_handler: Optional[ExceptionHandler]=None, last_update_id: Optional[int]=0,
+            suppress_middleware_excepions: Optional[bool]=False, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
+            use_class_middlewares: Optional[bool]=False
     ):
-        """
-        :param token: bot API token
-        :param parse_mode: default parse_mode
-        :return: Telebot object.
-        """
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
@@ -174,13 +210,16 @@ class TeleBot:
     def user(self) -> types.User:
         """
         The User object representing this bot.
-        Equivalent to bot.get_me() but the result is cached so only one API call is needed
+        Equivalent to bot.get_me() but the result is cached so only one API call is needed.
+
+        :return: Bot's info.
+        :rtype: :class:`telebot.types.User`
         """
         if not hasattr(self, "_user"):
             self._user = self.get_me()
         return self._user
 
-    def enable_save_next_step_handlers(self, delay=120, filename="./.handler-saves/step.save"):
+    def enable_save_next_step_handlers(self, delay: Optional[int]=120, filename: Optional[str]="./.handler-saves/step.save"):
         """
         Enable saving next step handlers (by default saving disabled)
 
@@ -188,19 +227,31 @@ class TeleBot:
         compatibility whose purpose was to enable file saving capability for handlers. And the same
         implementation is now available with FileHandlerBackend
 
-        :param delay: Delay between changes in handlers and saving
-        :param filename: Filename of save file
+        :param delay: Delay between changes in handlers and saving, defaults to 120
+        :type delay: :obj:`int`, optional
+
+        :param filename: Filename of save file, defaults to "./.handler-saves/step.save"
+        :type filename: :obj:`str`, optional
+
+        :return: None
         """
         self.next_step_backend = FileHandlerBackend(self.next_step_backend.handlers, filename, delay)
 
-    def enable_saving_states(self, filename="./.state-save/states.pkl"):
+
+    def enable_saving_states(self, filename: Optional[str]="./.state-save/states.pkl"):
         """
         Enable saving states (by default saving disabled)
 
-        :param filename: Filename of saving file
+        .. note::
+            It is recommended to pass a :class:`~telebot.storage.StateMemoryStorage` instance as state_storage
+            to TeleBot class.
+
+        :param filename: Filename of saving file, defaults to "./.state-save/states.pkl"
+        :type filename: :obj:`str`, optional
         """
         self.current_states = StatePickleStorage(file_path=filename)
         self.current_states.create_dir()
+
 
     def enable_save_reply_handlers(self, delay=120, filename="./.handler-saves/reply.save"):
         """
@@ -210,10 +261,14 @@ class TeleBot:
         compatibility whose purpose was to enable file saving capability for handlers. And the same
         implementation is now available with FileHandlerBackend
 
-        :param delay: Delay between changes in handlers and saving
-        :param filename: Filename of save file
+        :param delay: Delay between changes in handlers and saving, defaults to 120
+        :type delay: :obj:`int`, optional
+
+        :param filename: Filename of save file, defaults to "./.handler-saves/reply.save"
+        :type filename: :obj:`str`, optional
         """
         self.reply_backend = FileHandlerBackend(self.reply_backend.handlers, filename, delay)
+
 
     def disable_save_next_step_handlers(self):
         """
@@ -225,6 +280,7 @@ class TeleBot:
         """
         self.next_step_backend = MemoryHandlerBackend(self.next_step_backend.handlers)
 
+
     def disable_save_reply_handlers(self):
         """
         Disable saving next step handlers (by default saving disable)
@@ -235,6 +291,7 @@ class TeleBot:
         """
         self.reply_backend = MemoryHandlerBackend(self.reply_backend.handlers)
 
+
     def load_next_step_handlers(self, filename="./.handler-saves/step.save", del_file_after_loading=True):
         """
         Load next step handlers from save file
@@ -243,10 +300,15 @@ class TeleBot:
         help of FileHandlerBackend and is only recommended to use if next_step_backend was assigned as
         FileHandlerBackend before entering this function
 
-        :param filename: Filename of the file where handlers was saved
-        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+
+        :param filename: Filename of the file where handlers was saved, defaults to "./.handler-saves/step.save"
+        :type filename: :obj:`str`, optional
+
+        :param del_file_after_loading: If True is passed, after the loading file will be deleted, defaults to True
+        :type del_file_after_loading: :obj:`bool`, optional
         """
         self.next_step_backend.load_handlers(filename, del_file_after_loading)
+
 
     def load_reply_handlers(self, filename="./.handler-saves/reply.save", del_file_after_loading=True):
         """
@@ -256,42 +318,71 @@ class TeleBot:
         help of FileHandlerBackend and is only recommended to use if reply_backend was assigned as
         FileHandlerBackend before entering this function
 
-        :param filename: Filename of the file where handlers was saved
-        :param del_file_after_loading: Is passed True, after loading save file will be deleted
+        :param filename: Filename of the file where handlers was saved, defaults to "./.handler-saves/reply.save"
+        :type filename: :obj:`str`, optional
+
+        :param del_file_after_loading: If True is passed, after the loading file will be deleted, defaults to True, defaults to True
+        :type del_file_after_loading: :obj:`bool`, optional
         """
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
-    def set_webhook(self, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
-                    drop_pending_updates = None, timeout=None, secret_token=None):
+
+    def set_webhook(self, url: Optional[str]=None, certificate: Optional[Union[str, Any]]=None, max_connections: Optional[int]=None,
+                    allowed_updates: Optional[List[str]]=None, ip_address: Optional[str]=None,
+                    drop_pending_updates: Optional[bool] = None, timeout: Optional[int]=None, secret_token: Optional[str]=None) -> bool:
         """
-        Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
-        update for the bot, we will send an HTTPS POST request to the specified url,
-        containing a JSON-serialized Update.
-        In case of an unsuccessful request, we will give up after a reasonable amount of attempts.
-        Returns True on success.
+        Use this method to specify a URL and receive incoming updates via an outgoing webhook.
+        Whenever there is an update for the bot, we will send an HTTPS POST request to the specified URL,
+        containing a JSON-serialized Update. In case of an unsuccessful request, we will give up after
+        a reasonable amount of attempts. Returns True on success.
 
-        Telegram documentation: https://core.telegram.org/bots/api#setwebhook
+        If you'd like to make sure that the webhook was set by you, you can specify secret data in the parameter secret_token.
+        If specified, the request will contain a header “X-Telegram-Bot-Api-Secret-Token” with the secret token as content.
 
-        :param url: HTTPS url to send updates to. Use an empty string to remove webhook integration
-        :param certificate: Upload your public key certificate so that the root certificate in use can be checked.
-            See our self-signed guide for details.
-        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook
-            for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server,
-            and higher values to increase your bot's throughput.
-        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates
-            of these types. See Update for a complete list of available update types.
-            Specify an empty list to receive all updates regardless of type (default).
+        Telegram Documentation: https://core.telegram.org/bots/api#setwebhook
+
+        :param url: HTTPS URL to send updates to. Use an empty string to remove webhook integration, defaults to None
+        :type url: :obj:`str`, optional
+
+        :param certificate: Upload your public key certificate so that the root certificate in use can be checked, defaults to None
+        :type certificate: :class:`str`, optional
+
+        :param max_connections: The maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100.
+            Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput,
+            defaults to None
+        :type max_connections: :obj:`int`, optional
+        
+        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example,
+            specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update
+            for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
+            
+            Please note that this parameter doesn't affect updates created before the call to the setWebhook, so unwanted updates may be received
+            for a short period of time. Defaults to None
+        
+        :type allowed_updates: :obj:`list`, optional
+
         :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address
-            resolved through DNS
-        :param drop_pending_updates: Pass True to drop all pending updates
-        :param timeout: Integer. Request connection timeout
-        :param secret_token: Secret token to be used to verify the webhook request.
-        :return: API reply.
+            resolved through DNS, defaults to None
+        :type ip_address: :obj:`str`, optional
+
+        :param drop_pending_updates: Pass True to drop all pending updates, defaults to None
+        :type drop_pending_updates: :obj:`bool`, optional
+
+        :param timeout: Timeout of a request, defaults to None
+        :type timeout: :obj:`int`, optional
+
+        :param secret_token: A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token” in every webhook request, 1-256 characters.
+            Only characters A-Z, a-z, 0-9, _ and - are allowed. The header is useful to ensure that the request comes from a webhook set by you. Defaults to None
+        :type secret_token: :obj:`str`, optional
+
+        :return: True on success.
+        :rtype: :obj:`bool` if the request was successful.
         """
+
         return apihelper.set_webhook(self.token, url, certificate, max_connections, allowed_updates, ip_address,
                                      drop_pending_updates, timeout, secret_token)
+
 
     def run_webhooks(self,
                     listen: Optional[str]="127.0.0.1",
@@ -311,22 +402,55 @@ class TeleBot:
         """
         This class sets webhooks and listens to a given url and port.
 
-        :param listen: IP address to listen to. Defaults to
-            0.0.0.0
-        :param port: A port which will be used to listen to webhooks.
-        :param url_path: Path to the webhook. Defaults to /token
-        :param certificate: Path to the certificate file.
-        :param certificate_key: Path to the certificate key file.
-        :param webhook_url: Webhook URL.
-        :param max_connections: Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput.
-        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). If not specified, the previous setting will be used.
-        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS
-        :param drop_pending_updates: Pass True to drop all pending updates
-        :param timeout: Integer. Request connection timeout
-        :param secret_token: Secret token to be used to verify the webhook request.
-        :param secret_token_length:
-        :param debug:
-        :return:
+        Requires fastapi, uvicorn, and latest version of starlette.
+
+        :param listen: IP address to listen to, defaults to "127.0.0.1"
+        :type listen: Optional[str], optional
+
+        :param port: A port which will be used to listen to webhooks., defaults to 443
+        :type port: Optional[int], optional
+
+        :param url_path: Path to the webhook. Defaults to /token, defaults to None
+        :type url_path: Optional[str], optional
+
+        :param certificate: Path to the certificate file, defaults to None
+        :type certificate: Optional[str], optional
+
+        :param certificate_key: Path to the certificate key file, defaults to None
+        :type certificate_key: Optional[str], optional
+
+        :param webhook_url: Webhook URL to be set, defaults to None
+        :type webhook_url: Optional[str], optional
+
+        :param max_connections: Maximum allowed number of simultaneous HTTPS connections
+                to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server,
+                and higher values to increase your bot's throughput., defaults to None
+        :type max_connections: Optional[int], optional
+
+        :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”]
+            to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). 
+            If not specified, the previous setting will be used. defaults to None
+        :type allowed_updates: Optional[List], optional
+
+        :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS, defaults to None
+        :type ip_address: Optional[str], optional
+
+        :param drop_pending_updates: Pass True to drop all pending updates, defaults to None
+        :type drop_pending_updates: Optional[bool], optional
+
+        :param timeout: Request connection timeout, defaults to None
+        :type timeout: Optional[int], optional
+
+        :param secret_token: Secret token to be used to verify the webhook request, defaults to None
+        :type secret_token: Optional[str], optional
+
+        :param secret_token_length: Length of a secret token, defaults to 20
+        :type secret_token_length: Optional[int], optional
+
+        :param debug: set True if you want to set debugging on for webserver, defaults to False
+        :type debug: Optional[bool], optional
+
+        :raises ImportError: If necessary libraries were not installed.
         """
 
         # generate secret token if not set
@@ -368,33 +492,52 @@ class TeleBot:
         self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
         self.webhook_listener.run_app()
 
-    def delete_webhook(self, drop_pending_updates=None, timeout=None):
+
+    def delete_webhook(self, drop_pending_updates: Optional[bool]=None, timeout: Optional[int]=None) -> bool:
         """
         Use this method to remove webhook integration if you decide to switch back to getUpdates.
+        Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletewebhook
 
-        :param drop_pending_updates: Pass True to drop all pending updates
-        :param timeout: Integer. Request connection timeout
-        :return: bool
+        :param drop_pending_updates: Pass True to drop all pending updates, defaults to None
+        :type drop_pending_updates: :obj: `bool`, optional
+
+        :param timeout: Request connection timeout, defaults to None
+        :type timeout: :obj:`int`, optional
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.delete_webhook(self.token, drop_pending_updates, timeout)
 
-    def get_webhook_info(self, timeout: Optional[int]=None):
+
+    def get_webhook_info(self, timeout: Optional[int]=None) -> types.WebhookInfo:
         """
         Use this method to get current webhook status. Requires no parameters.
-        If the bot is using getUpdates, will return an object with the url field empty.
+        On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
 
         Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo
 
-        :param timeout: Integer. Request connection timeout
+        :param timeout: Request connection timeout
+        :type timeout: :obj:`int`, optional
+
         :return: On success, returns a WebhookInfo object.
+        :rtype: :class:`telebot.types.WebhookInfo`
         """
         result = apihelper.get_webhook_info(self.token, timeout)
         return types.WebhookInfo.de_json(result)
 
-    def remove_webhook(self):
+
+    def remove_webhook(self) -> bool:
+        """
+        Deletes webhooks using set_webhook() function.
+
+        :return: True on success.
+        :rtype: :obj:`bool`
+        """
         return self.set_webhook()  # No params resets webhook
+
 
     def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None, 
             timeout: Optional[int]=20, allowed_updates: Optional[List[str]]=None, 
@@ -405,18 +548,34 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#getupdates
 
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
-        :param offset: Integer. Identifier of the first update to be returned.
-        :param limit: Integer. Limits the number of updates to be retrieved.
-        :param timeout: Integer. Request connection timeout
+        :type allowed_updates: :obj:`list`, optional
+
+        :param offset: Identifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates.
+            By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset
+            higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue.
+            All previous updates will forgotten.
+        :type offset: :obj:`int`, optional
+
+        :param limit: Limits the number of updates to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+        :type limit: :obj:`int`, optional
+
+        :param timeout: Request connection timeout
+        :type timeout: :obj:`int`, optional
+
         :param long_polling_timeout: Timeout in seconds for long polling.
-        :return: array of Updates
+        :type long_polling_timeout: :obj:`int`, optional
+
+        :return: An Array of Update objects is returned.
+        :rtype: :obj:`list` of :class:`telebot.types.Update`
         """
         json_updates = apihelper.get_updates(self.token, offset, limit, timeout, allowed_updates, long_polling_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
     def __skip_updates(self):
         """
-        Get and discard all pending updates before first poll of the bot
+        Get and discard all pending updates before first poll of the bot.
+
+        :meta private:
 
         :return:
         """
@@ -426,6 +585,8 @@ class TeleBot:
         """
         Retrieves any updates from the Telegram API.
         Registered listeners and applicable message handlers will be notified when a new message arrives.
+
+        :meta private:
         
         :raises ApiException when a call has failed.
         """
@@ -438,11 +599,11 @@ class TeleBot:
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
         self.process_new_updates(updates)
 
-    def process_new_updates(self, updates):
+    def process_new_updates(self, updates: List[types.Update]):
         """
         Processes new updates. Just pass list of subclasses of Update to this method.
 
-        :param updates: List of Update objects
+        :param updates: List of :class:`telebot.types.Update` objects.
         """
         upd_count = len(updates)
         logger.debug('Received {0} new updates'.format(upd_count))
@@ -550,51 +711,96 @@ class TeleBot:
             self.process_new_chat_join_request(new_chat_join_request)
 
     def process_new_messages(self, new_messages):
+        """
+        :meta private:
+        """
         self._notify_next_handlers(new_messages)
         self._notify_reply_handlers(new_messages)
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages, 'message')
 
     def process_new_edited_messages(self, edited_message):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.edited_message_handlers, edited_message, 'edited_message')
 
     def process_new_channel_posts(self, channel_post):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.channel_post_handlers, channel_post, 'channel_post')
 
     def process_new_edited_channel_posts(self, edited_channel_post):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post, 'edited_channel_post')
 
     def process_new_inline_query(self, new_inline_querys):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.inline_handlers, new_inline_querys, 'inline_query')
 
     def process_new_chosen_inline_query(self, new_chosen_inline_querys):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_querys, 'chosen_inline_query')
 
     def process_new_callback_query(self, new_callback_querys):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.callback_query_handlers, new_callback_querys, 'callback_query')
 
     def process_new_shipping_query(self, new_shipping_querys):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.shipping_query_handlers, new_shipping_querys, 'shipping_query')
 
     def process_new_pre_checkout_query(self, pre_checkout_querys):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys, 'pre_checkout_query')
 
     def process_new_poll(self, polls):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.poll_handlers, polls, 'poll')
 
     def process_new_poll_answer(self, poll_answers):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.poll_answer_handlers, poll_answers, 'poll_answer')
     
     def process_new_my_chat_member(self, my_chat_members):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.my_chat_member_handlers, my_chat_members, 'my_chat_member')
 
     def process_new_chat_member(self, chat_members):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.chat_member_handlers, chat_members, 'chat_member')
 
     def process_new_chat_join_request(self, chat_join_request):
+        """
+        :meta private:
+        """
         self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
     def process_middlewares(self, update):
+        """
+        :meta private:
+        """
         if self.typed_middleware_handlers:
             for update_type, middlewares in self.typed_middleware_handlers.items():
                 if getattr(update, update_type) is not None:
@@ -613,30 +819,45 @@ class TeleBot:
                     e.args = e.args + (f'Default middleware handler "{default_middleware_handler.__qualname__}"',)
                     raise
 
+
     def __notify_update(self, new_messages):
+        """
+        :meta private:
+        """
         if len(self.update_listener) == 0:
             return
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def infinity_polling(self, timeout: int=20, skip_pending: bool=False, long_polling_timeout: int=20,
-                         logger_level=logging.ERROR, allowed_updates: Optional[List[str]]=None, *args, **kwargs):
+
+    def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, long_polling_timeout: Optional[int]=20,
+                         logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
-        :param timeout: Request connection timeout
+        :param timeout: Request connection timeout.
+        :type timeout: :obj:`int`
+
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :type long_polling_timeout: :obj:`int`
+
         :param skip_pending: skip old updates
+        :type skip_pending: :obj:`bool`
+
         :param logger_level: Custom (different from logger itself) logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
+        :type logger_level: :obj:`int`.
+
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
             See util.update_types for a complete list of available update types. 
             Specify an empty list to receive all update types except chat_member (default). 
             If not specified, the previous setting will be used.
-            
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
+        :type allowed_updates: :obj:`list` of :obj:`str`
+
+        :return:
         """
         if skip_pending:
             self.__skip_updates()
@@ -657,8 +878,10 @@ class TeleBot:
         if logger_level and logger_level >= logging.INFO:
             logger.error("Break infinity polling")
 
-    def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20, long_polling_timeout: int=20,
-                logger_level=logging.ERROR, allowed_updates: Optional[List[str]]=None,
+
+    def polling(self, non_stop: Optional[bool]=False, skip_pending: Optional[bool]=False, interval: Optional[int]=0,
+                timeout: Optional[int]=20, long_polling_timeout: Optional[int]=20,
+                logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
                 none_stop: Optional[bool]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
@@ -668,13 +891,28 @@ class TeleBot:
         
         Always get updates.
 
+        .. deprecated:: 4.1.1
+            Use :meth:`infinity_polling` instead.
+
         :param interval: Delay between two update retrivals
+        :type interval: :obj:`int`
+
         :param non_stop: Do not stop polling when an ApiException occurs.
+        :type non_stop: :obj:`bool`
+
         :param timeout: Request connection timeout
+        :type timeout: :obj:`int`
+
         :param skip_pending: skip old updates
+        :type skip_pending: :obj:`bool`
+        
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
+        :type long_polling_timeout: :obj:`int`
+
         :param logger_level: Custom (different from logger itself) logging level for infinity_polling logging.
             Use logger levels from logging as a value. None/NOTSET = no error logging
+        :type logger_level: :obj:`int`
+
         :param allowed_updates: A list of the update types you want your bot to receive.
             For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
             See util.update_types for a complete list of available update types. 
@@ -683,7 +921,11 @@ class TeleBot:
             
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
-        :param none_stop: Deprecated, use non_stop. Old typo f***up compatibility
+        :type allowed_updates: :obj:`list`] of :obj:`str`
+
+        :param none_stop: Deprecated, use non_stop. Old typo, kept for backward compatibility.
+        :type none_stop: :obj:`bool`
+        
         :return:
         """
         if none_stop is not None:
@@ -699,6 +941,7 @@ class TeleBot:
         else:
             self.__non_threaded_polling(non_stop=non_stop, interval=interval, timeout=timeout, long_polling_timeout=long_polling_timeout,
                                         logger_level=logger_level, allowed_updates=allowed_updates)
+
 
     def __threaded_polling(self, non_stop = False, interval = 0, timeout = None, long_polling_timeout = None,
                            logger_level=logging.ERROR, allowed_updates=None):
@@ -780,6 +1023,7 @@ class TeleBot:
         #if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
         logger.info('Stopped polling.' + warning)
 
+
     def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None,
                                logger_level=logging.ERROR, allowed_updates=None):
         if not(logger_level) or (logger_level < logging.INFO):
@@ -834,6 +1078,7 @@ class TeleBot:
         #if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
         logger.info('Stopped polling.' + warning)
 
+
     def _exec_task(self, task, *args, **kwargs):
         if kwargs and kwargs.get('task_type') == 'handler':
             pass_bot = kwargs.get('pass_bot')
@@ -855,19 +1100,36 @@ class TeleBot:
                 if not handled:
                     raise e
 
+
     def stop_polling(self):
+        """
+        Stops polling.
+        """
         self.__stop_polling.set()
 
+
     def stop_bot(self):
+        """
+        Stops bot by stopping polling and closing the worker pool.
+        """
         self.stop_polling()
         if self.threaded and self.worker_pool:
             self.worker_pool.close()
 
-    def set_update_listener(self, listener):
+
+    def set_update_listener(self, listener: Callable):
+        """
+        Sets a listener function to be called when a new update is received.
+
+        :param listener: Listener function.
+        :type listener: Callable
+        """
         self.update_listener.append(listener)
+
 
     def get_me(self) -> types.User:
         """
+        A simple method for testing your bot's authentication token. Requires no parameters.
         Returns basic information about the bot in form of a User object.
 
         Telegram documentation: https://core.telegram.org/bots/api#getme
@@ -875,7 +1137,8 @@ class TeleBot:
         result = apihelper.get_me(self.token)
         return types.User.de_json(result)
 
-    def get_file(self, file_id: str) -> types.File:
+
+    def get_file(self, file_id: Optional[str]) -> types.File:
         """
         Use this method to get basic info about a file and prepare it for downloading.
         For the moment, bots can download files of up to 20MB in size. 
@@ -886,19 +1149,29 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#getfile
 
         :param file_id: File identifier
+        :type file_id: :obj:`str`
+
+        :return: :class:`telebot.types.File`
         """
         return types.File.de_json(apihelper.get_file(self.token, file_id))
 
-    def get_file_url(self, file_id: str) -> str:
+
+    def get_file_url(self, file_id: Optional[str]) -> str:
         """
         Get a valid URL for downloading a file.
 
         :param file_id: File identifier to get download URL for.
+        :type file_id: :obj:`str`
+
+        :return: URL for downloading the file.
+        :rtype: :obj:`str`
         """
         return apihelper.get_file_url(self.token, file_id)
 
+
     def download_file(self, file_path: str) -> bytes:
         return apihelper.download_file(self.token, file_path)
+
 
     def log_out(self) -> bool:
         """
@@ -910,8 +1183,12 @@ class TeleBot:
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#logout
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.log_out(self.token)
+    
     
     def close(self) -> bool:
         """
@@ -922,23 +1199,36 @@ class TeleBot:
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#close
+
+        :return: :obj:`bool`
         """
         return apihelper.close(self.token)
 
-    def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None, 
+
+    def get_user_profile_photos(self, user_id: Optional[int], offset: Optional[int]=None, 
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
-        Retrieves the user profile photos of the person with 'user_id'
+        Use this method to get a list of profile pictures for a user.
+        Returns a UserProfilePhotos object.
 
         Telegram documentation: https://core.telegram.org/bots/api#getuserprofilephotos
 
-        :param user_id: Integer - Unique identifier of the target user
-        :param offset:
-        :param limit:
-        :return: API reply.
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :param offset: Sequential number of the first photo to be returned. By default, all photos are returned.
+        :type offset: :obj:`int`
+
+        :param limit: Limits the number of photos to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+        :type limit: :obj:`int`
+
+        :return: `UserProfilePhotos <https://core.telegram.org/bots/api#userprofilephotos>`_
+        :rtype: :class:`telebot.types.UserProfilePhotos`
+
         """
         result = apihelper.get_user_profile_photos(self.token, user_id, offset, limit)
         return types.UserProfilePhotos.de_json(result)
+
 
     def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
         """
@@ -947,11 +1237,15 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getchat
 
-        :param chat_id:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: :class:`telebot.types.Chat`
+        :rtype: :class:`telebot.types.Chat`
         """
         result = apihelper.get_chat(self.token, chat_id)
         return types.Chat.de_json(result)
+
 
     def leave_chat(self, chat_id: Union[int, str]) -> bool:
         """
@@ -959,11 +1253,14 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#leavechat
 
-        :param chat_id:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: :obj:`bool`
         """
         result = apihelper.leave_chat(self.token, chat_id)
         return result
+
 
     def get_chat_administrators(self, chat_id: Union[int, str]) -> List[types.ChatMember]:
         """
@@ -975,43 +1272,65 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
-        :return: API reply.
+        :return: List made of ChatMember objects.
+        :rtype: :obj:`list` of :class:`telebot.types.ChatMember`
         """
         result = apihelper.get_chat_administrators(self.token, chat_id)
         return [types.ChatMember.de_json(r) for r in result]
 
+
     @util.deprecated(deprecation_text="Use get_chat_member_count instead")
     def get_chat_members_count(self, chat_id: Union[int, str]) -> int:
         """
-        This function is deprecated. Use `get_chat_member_count` instead
+        This function is deprecated. Use `get_chat_member_count` instead.
+
+        .. deprecated:: 4.0.0
+            This function is deprecated. Use `get_chat_member_count` instead.
+
+        Use this method to get the number of members in a chat.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatmembercount
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: Number of members in the chat.
+        :rtype: :obj:`int`
         """
         result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
     
     def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
         """
-        Use this method to get the number of members in a chat. Returns Int on success.
-        
+        Use this method to get the number of members in a chat.
+
         Telegram documentation: https://core.telegram.org/bots/api#getchatmembercount
 
-        :param chat_id:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: Number of members in the chat.
+        :rtype: :obj:`int`
         """
         result = apihelper.get_chat_member_count(self.token, chat_id)
         return result
 
     def set_chat_sticker_set(self, chat_id: Union[int, str], sticker_set_name: str) -> types.StickerSet:
         """
-        Use this method to set a new group sticker set for a supergroup. The bot must be an administrator
-        in the chat for this to work and must have the appropriate admin rights.
-        Use the field can_set_sticker_set optionally returned in getChat requests to check
-        if the bot can use this method. Returns True on success.
+        Use this method to set a new group sticker set for a supergroup. The bot must be an administrator in the chat
+        for this to work and must have the appropriate administrator rights. Use the field can_set_sticker_set optionally returned
+        in getChat requests to check if the bot can use this method. Returns True on success.
         
         Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param sticker_set_name: Name of the sticker set to be set as the group sticker set
-        :return: API reply.
+        :type sticker_set_name: :obj:`str`
+
+        :return: StickerSet object
+        :rtype: :class:`telebot.types.StickerSet`
         """
         result = apihelper.set_chat_sticker_set(self.token, chat_id, sticker_set_name)
         return result
@@ -1025,7 +1344,10 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
 
         :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
-        :return: API reply.
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
         """
         result = apihelper.delete_chat_sticker_set(self.token, chat_id)
         return result
@@ -1036,9 +1358,14 @@ class TeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#getchatmember
 
-        :param chat_id:
-        :param user_id:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :return: Returns ChatMember object on success.
+        :rtype: :class:`telebot.types.ChatMember`
         """
         result = apihelper.get_chat_member(self.token, chat_id, user_id)
         return types.ChatMember.de_json(result)
@@ -1064,17 +1391,40 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param text: Text of the message to be sent
+        :type text: :obj:`str`
+
         :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+        :type parse_mode: :obj:`str`
+
         :param entities: List of special entities that appear in message text, which can be specified instead of parse_mode
+        :type entities: Array of :class:`telebot.types.MessageEntity`
+
         :param disable_web_page_preview: Disables link previews for links in this message
+        :type disable_web_page_preview: :obj:`bool`
+
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
         :param protect_content: If True, the message content will be hidden for all users except for the target user
+        :type protect_content: :obj:`bool`
+
         :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
-        :param timeout:
-        :return: API reply.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1086,7 +1436,7 @@ class TeleBot:
 
     def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
-            message_id: int, disable_notification: Optional[bool]=None,
+            message_id: Optional[int], disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None) -> types.Message:
         """
@@ -1094,16 +1444,30 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#forwardmessage
 
-        :param disable_notification:
-        :param chat_id: which chat to forward
-        :param from_chat_id: which chat message from
-        :param message_id: message id
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+        :type disable_notification: :obj:`bool`
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        :type from_chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Message identifier in the chat specified in from_chat_id
+        :type message_id: :obj:`int`
+
         :param protect_content: Protects the contents of the forwarded message from forwarding and saving
-        :param timeout:
-        :return: API reply.
+        :type protect_content: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.Message.de_json(
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout, protect_content))
+
 
     def copy_message(
             self, chat_id: Union[int, str], 
@@ -1123,19 +1487,44 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#copymessage
 
-        :param chat_id: which chat to forward
-        :param from_chat_id: which chat message from
-        :param message_id: message id
-        :param caption:
-        :param parse_mode:
-        :param caption_entities:
-        :param disable_notification:
-        :param protect_content:
-        :param reply_to_message_id:
-        :param allow_sending_without_reply:
-        :param reply_markup:
-        :param timeout:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        :type from_chat_id: :obj:`int` or :obj:`str`
+        :param message_id: Message identifier in the chat specified in from_chat_id
+        :type message_id: :obj:`int`
+
+        :param caption: New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the new caption.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the new caption, which can be specified instead of parse_mode
+        :type caption_entities: Array of :class:`telebot.types.MessageEntity`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+        
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
@@ -1145,14 +1534,29 @@ class TeleBot:
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
             timeout: Optional[int]=None) -> bool:
         """
-        Use this method to delete message. Returns True on success.
+        Use this method to delete a message, including service messages, with the following limitations:
+        - A message can only be deleted if it was sent less than 48 hours ago.
+        - A dice message in a private chat can only be deleted if it was sent more than 24 hours ago.
+        - Bots can delete outgoing messages in private chats, groups, and supergroups.
+        - Bots can delete incoming messages in private chats.
+        - Bots granted can_post_messages permissions can delete outgoing messages in channels.
+        - If the bot is an administrator of a group, it can delete any message there.
+        - If the bot has can_delete_messages permission in a supergroup or a channel, it can delete any message there.
+        Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletemessage
 
-        :param chat_id: in which chat to delete
-        :param message_id: which message to delete
-        :param timeout:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of the message to delete
+        :type message_id: :obj:`int`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.delete_message(self.token, chat_id, message_id, timeout)
 
@@ -1165,25 +1569,45 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Use this method to send dices.
+        Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#senddice
 
-        :param chat_id:
-        :param emoji:
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param timeout:
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return: Message
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param emoji: Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”.
+            Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
+        :type emoji: :obj:`str`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.Message.de_json(
             apihelper.send_dice(
                 self.token, chat_id, emoji, disable_notification, reply_to_message_id,
                 reply_markup, timeout, allow_sending_without_reply, protect_content)
         )
+
 
     def send_photo(
             self, chat_id: Union[int, str], photo: Union[Any, str], 
@@ -1200,18 +1624,44 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendphoto
         
-        :param chat_id:
-        :param photo:
-        :param caption:
-        :param parse_mode:
-        :param caption_entities:
-        :param disable_notification:
-        :param protect_content:
-        :param reply_to_message_id:
-        :param allow_sending_without_reply:
-        :param reply_markup:
-        :param timeout:
-        :return: Message
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param photo: Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended),
+            pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data.
+            The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20.
+        :type photo: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param caption: Photo caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the photo caption.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+        
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1237,26 +1687,65 @@ class TeleBot:
             protect_content: Optional[bool]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
-        Your audio must be in the .mp3 format.
+        Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
+        this limit may be changed in the future.
+
+        For sending voice messages, use the send_voice method instead.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendaudio
         
-        :param chat_id: Unique identifier for the message recipient
-        :param audio: Audio file to send.
-        :param caption:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param audio: Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended),
+            pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data.
+            Audio must be in the .MP3 or .M4A format.
+        :type audio: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param caption: Audio caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
         :param duration: Duration of the audio in seconds
+        :type duration: :obj:`int`
+
         :param performer: Performer
+        :type performer: :obj:`str`
+
         :param title: Track name
+        :type title: :obj:`str`
+
         :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
         :param reply_markup:
-        :param parse_mode:
-        :param disable_notification:
-        :param timeout:
-        :param thumb:
-        :param caption_entities:
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return: Message
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param parse_mode: Mode for parsing entities in the audio caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+            The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
+            Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
+            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
+        :type thumb: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1279,24 +1768,51 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display the file
-        as a playable voice message.
+        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
+        For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as Audio or Document).
+        On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
         
-        :param chat_id: Unique identifier for the message recipient.
-        :param voice:
-        :param caption:
-        :param duration: Duration of sent audio in seconds
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param parse_mode:
-        :param disable_notification:
-        :param timeout:
-        :param caption_entities:
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return: Message
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param voice: Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended),
+            pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+        :type voice: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param caption: Voice message caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param duration: Duration of the voice message in seconds
+        :type duration: :obj:`int`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param parse_mode: Mode for parsing entities in the voice message caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -1328,21 +1844,54 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#senddocument
         
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-        :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a
+            String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data
+        :type document: :obj:`str` or :class:`telebot.types.InputFile`
+
         :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
         :param caption: Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
-        :param reply_markup:
+        :type caption: :obj:`str`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
         :param parse_mode: Mode for parsing entities in the document caption
+        :type parse_mode: :obj:`str`
+
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
-        :param timeout:
+        :type disable_notification: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :param thumb: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :param caption_entities:
-        :param allow_sending_without_reply:
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
         :param visible_file_name: allows to define file name that will be visible in the Telegram instead of original file name
+        :type visible_file_name: :obj:`str`
+
         :param disable_content_type_detection: Disables automatic server-side content type detection for files uploaded using multipart/form-data
+        :type disable_content_type_detection: :obj:`bool`
+
         :param data: function typo miss compatibility: do not use it
-        :param protect_content:
-        :return: API reply.
+        :type data: :obj:`str`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         if data and not(document):
@@ -1358,6 +1907,7 @@ class TeleBot:
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name,
                 protect_content = protect_content))
 
+
     # TODO: Rewrite this method like in API.
     def send_sticker(
             self, chat_id: Union[int, str],
@@ -1370,21 +1920,42 @@ class TeleBot:
             protect_content:Optional[bool]=None,
             data: Union[Any, str]=None) -> types.Message:
         """
-        Use this method to send .webp stickers.
+        Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
+        On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendsticker
 
-        :param chat_id:
-        :param sticker:
-        :param data:
-        :param reply_to_message_id:
-        :param reply_markup:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param sticker: Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL
+            as a String for Telegram to get a .webp file from the Internet, or upload a new one using multipart/form-data.
+        :type sticker: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
         :param disable_notification: to disable the notification
-        :param timeout: timeout
-        :param allow_sending_without_reply:
-        :param protect_content:
+        :type disable_notification: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
         :param data: function typo miss compatibility: do not use it
-        :return: API reply.
+        :type data: :obj:`str`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         if data and not(sticker):
             # function typo miss compatibility
@@ -1420,22 +1991,59 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#sendvideo
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
+        :type video: :obj:`str` or :class:`telebot.types.InputFile`
+
         :param duration: Duration of sent video in seconds
+        :type duration: :obj:`int`
+
         :param width: Video width
+        :type width: :obj:`int`
+
         :param height: Video height
+        :type height: :obj:`int`
+
         :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
         :param parse_mode: Mode for parsing entities in the video caption
-        :param caption_entities:
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: List of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
         :param supports_streaming: Pass True, if the uploaded video is suitable for streaming
+        :type supports_streaming: :obj:`bool`
+
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
-        :param protect_content:
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
         :param reply_to_message_id: If the message is a reply, ID of the original message
-        :param allow_sending_without_reply:
-        :param reply_markup:
-        :param timeout:
+        :type reply_to_message_id: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :param data: function typo miss compatibility: do not use it
+        :type data: :obj:`str`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         if data and not(video):
@@ -1465,26 +2073,45 @@ class TeleBot:
             timeout: Optional[int]=None, ) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
+        On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
         
         Telegram documentation: https://core.telegram.org/bots/api#sendanimation
 
-        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param animation: InputFile or String : Animation to send. You can either pass a file_id as String to resend an
-            animation that is already on the Telegram server
-        :param duration: Integer : Duration of sent video in seconds
-        :param width: Integer : Video width
-        :param height: Integer : Video height
-        :param thumb: InputFile or String : Thumbnail of the file sent
-        :param caption: String : Animation caption (may also be used when resending animation by file_id).
-        :param parse_mode:
-        :param protect_content:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param disable_notification:
-        :param timeout:
-        :param caption_entities:
-        :param allow_sending_without_reply:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param animation: Animation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended),
+            pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data.
+        :type animation: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param duration: Duration of sent animation in seconds
+        :type duration: :obj:`int`
+
+        :param width: Animation width
+        :type width: :obj:`int`
+
+        :param height: Animation height
+        :type height: :obj:`int`
+        
+        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+            The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
+            Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
+            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param caption: Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the animation caption
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :param timeout: Timeout in seconds for the request.
+        :param caption_entities: List of special entities that appear in the caption, which can be specified instead of parse_mode
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
