@@ -26,9 +26,7 @@ REQUEST_LIMIT = 50
 
 class SessionManager:
     def __init__(self) -> None:
-        self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(
-            limit=REQUEST_LIMIT
-        ))
+        self.session = None
 
 
     async def create_session(self):
@@ -38,6 +36,10 @@ class SessionManager:
         return self.session
 
     async def get_session(self):
+        if self.session is None:
+            self.session = await self.create_session()
+            return self.session
+            
         if self.session.closed:
             self.session = await self.create_session()
 
