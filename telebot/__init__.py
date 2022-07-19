@@ -2777,7 +2777,7 @@ class TeleBot:
         :param can_pin_messages: Pass True, if the administrator can pin messages, supergroups only
         :type can_pin_messages: :obj:`bool`
 
-        :param can_promote_members:Pass True, if the administrator can add new administrators with a subset
+        :param can_promote_members: Pass True, if the administrator can add new administrators with a subset
             of his own privileges or demote administrators that he has promoted, directly or indirectly
             (promoted by administrators that were appointed by him)
         :type can_promote_members: :obj:`bool`
@@ -4925,6 +4925,7 @@ class TeleBot:
         """
         Adds the edit message handler
         Note that you should use register_edited_message_handler to add edited_message_handler to the bot.
+        
         :meta private:
 
         :param handler_dict:
@@ -4956,7 +4957,7 @@ class TeleBot:
         :param chat_types: True for private chat
         :type chat_types: :obj:`bool`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5065,7 +5066,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5174,7 +5175,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: decorated function
@@ -5242,7 +5243,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: decorated function
@@ -5290,7 +5291,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5338,7 +5339,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5386,7 +5387,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5433,7 +5434,7 @@ class TeleBot:
 
         :param func: Function executed as a filter
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: decorated function
@@ -5480,7 +5481,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5511,6 +5512,8 @@ class TeleBot:
         Adds a poll_answer request handler.
         Note that you should use register_poll_answer_handler to add poll_answer_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
@@ -5526,7 +5529,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5575,7 +5578,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
@@ -5622,8 +5625,9 @@ class TeleBot:
         :type callback: :obj:`function``
 
         :param func: Function executed as a filter
+        :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :param kwargs: Optional keyword arguments(custom filters)
@@ -5674,7 +5678,7 @@ class TeleBot:
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: Pass TeleBot to handler.
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
         :return: None
