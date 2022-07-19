@@ -180,6 +180,7 @@ class BaseMiddleware:
     so on. Same applies to post_process.
 
     .. code-block:: python
+    
         class MyMiddleware(BaseMiddleware):
             def __init__(self):
                 self.update_sensitive = True

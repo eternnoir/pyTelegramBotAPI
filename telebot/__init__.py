@@ -405,50 +405,50 @@ class TeleBot:
         Requires fastapi, uvicorn, and latest version of starlette.
 
         :param listen: IP address to listen to, defaults to "127.0.0.1"
-        :type listen: Optional[str], optional
+        :type listen: :obj:`str`, optional
 
         :param port: A port which will be used to listen to webhooks., defaults to 443
-        :type port: Optional[int], optional
+        :type port: :obj:`int`, optional
 
         :param url_path: Path to the webhook. Defaults to /token, defaults to None
-        :type url_path: Optional[str], optional
+        :type url_path: :obj:`str`, optional
 
         :param certificate: Path to the certificate file, defaults to None
-        :type certificate: Optional[str], optional
+        :type certificate: :obj:`str`, optional
 
         :param certificate_key: Path to the certificate key file, defaults to None
-        :type certificate_key: Optional[str], optional
+        :type certificate_key: :obj:`str`, optional
 
         :param webhook_url: Webhook URL to be set, defaults to None
-        :type webhook_url: Optional[str], optional
+        :type webhook_url: :obj:`str`, optional
 
         :param max_connections: Maximum allowed number of simultaneous HTTPS connections
                 to the webhook for update delivery, 1-100. Defaults to 40. Use lower values to limit the load on your bot's server,
                 and higher values to increase your bot's throughput., defaults to None
-        :type max_connections: Optional[int], optional
+        :type max_connections: :obj:`int`, optional
 
         :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”]
             to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). 
             If not specified, the previous setting will be used. defaults to None
-        :type allowed_updates: Optional[List], optional
+        :type allowed_updates: :obj:`list`, optional
 
         :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address resolved through DNS, defaults to None
-        :type ip_address: Optional[str], optional
+        :type ip_address: :obj:`str`, optional
 
         :param drop_pending_updates: Pass True to drop all pending updates, defaults to None
-        :type drop_pending_updates: Optional[bool], optional
+        :type drop_pending_updates: :obj:`bool`, optional
 
         :param timeout: Request connection timeout, defaults to None
-        :type timeout: Optional[int], optional
+        :type timeout: :obj:`int`, optional
 
         :param secret_token: Secret token to be used to verify the webhook request, defaults to None
-        :type secret_token: Optional[str], optional
+        :type secret_token: :obj:`str`, optional
 
         :param secret_token_length: Length of a secret token, defaults to 20
-        :type secret_token_length: Optional[int], optional
+        :type secret_token_length: :obj:`int`, optional
 
         :param debug: set True if you want to set debugging on for webserver, defaults to False
-        :type debug: Optional[bool], optional
+        :type debug: :obj:`bool`, optional
 
         :raises ImportError: If necessary libraries were not installed.
         """
@@ -1205,7 +1205,7 @@ class TeleBot:
         return apihelper.close(self.token)
 
 
-    def get_user_profile_photos(self, user_id: Optional[int], offset: Optional[int]=None, 
+    def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None, 
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Use this method to get a list of profile pictures for a user.
@@ -1396,7 +1396,7 @@ class TeleBot:
         :param text: Text of the message to be sent
         :type text: :obj:`str`
 
-        :param parse_mode: Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in your bot's message.
+        :param parse_mode: Mode for parsing entities in the message text.
         :type parse_mode: :obj:`str`
 
         :param entities: List of special entities that appear in message text, which can be specified instead of parse_mode
@@ -1418,7 +1418,8 @@ class TeleBot:
         :type allow_sending_without_reply: :obj:`bool`
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
@@ -1436,7 +1437,7 @@ class TeleBot:
 
     def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
-            message_id: Optional[int], disable_notification: Optional[bool]=None,
+            message_id: int, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None) -> types.Message:
         """
@@ -1518,7 +1519,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
             or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
@@ -1588,7 +1590,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
             to remove reply keyboard or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
@@ -1655,7 +1658,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
             to remove reply keyboard or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
@@ -1718,7 +1722,8 @@ class TeleBot:
         :type reply_to_message_id: :obj:`int`
 
         :param reply_markup:
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param parse_mode: Mode for parsing entities in the audio caption. See formatting options for more details.
         :type parse_mode: :obj:`str`
@@ -1792,7 +1797,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
             to remove reply keyboard or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param parse_mode: Mode for parsing entities in the voice message caption. See formatting options for more details.
         :type parse_mode: :obj:`str`
@@ -1858,7 +1864,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
             or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param parse_mode: Mode for parsing entities in the document caption
         :type parse_mode: :obj:`str`
@@ -1937,7 +1944,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
             or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param disable_notification: to disable the notification
         :type disable_notification: :obj:`bool`
@@ -2034,7 +2042,8 @@ class TeleBot:
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
             or to force a reply from the user.
-        :type reply_markup: :obj:`telebot.REPLY_MARKUP_TYPES`
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
 
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
@@ -2103,13 +2112,31 @@ class TeleBot:
         :type caption: :obj:`str`
 
         :param parse_mode: Mode for parsing entities in the animation caption
+        :type parse_mode: :obj:`str`
+
         :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
         :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
         :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :param caption_entities: List of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2134,26 +2161,58 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
+        As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
+        Use this method to send video messages. On success, the sent Message is returned.
+
         Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
         
-        :param chat_id: Integer : Unique identifier for the message recipient — User or GroupChat id
-        :param data: InputFile or String : Video note to send. You can either pass a file_id as String to resend
-            a video that is already on the Telegram server
-        :param duration: Integer : Duration of sent video in seconds
-        :param length: Integer : Video width and height, Can't be None and should be in range of (0, 640)
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param disable_notification:
-        :param timeout:
-        :param thumb: InputFile or String : Thumbnail of the file sent
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        
+        :param data: Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended)
+            or upload a new video using multipart/form-data. Sending video notes by a URL is currently unsupported
+        :type data: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param duration: Duration of sent video in seconds
+        :type duration: :obj:`int`
+
+        :param length: Video width and height, i.e. diameter of the video message
+        :type length: :obj:`int`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+            The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
+            Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
+            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.Message.de_json(
             apihelper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
                 disable_notification, timeout, thumb, allow_sending_without_reply, protect_content))
+
 
     def send_media_group(
             self, chat_id: Union[int, str], 
@@ -2166,18 +2225,34 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None) -> List[types.Message]:
         """
-        Send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
+        Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
+        can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
         
         Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
 
-        :param chat_id:
-        :param media:
-        :param disable_notification:
-        :param protect_content:
-        :param reply_to_message_id:
-        :param timeout:
-        :param allow_sending_without_reply:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param media: A JSON-serialized array describing messages to be sent, must include 2-10 items
+        :type media: :obj:`list` of :obj:`types.InputMedia`
+
+        :param disable_notification: Sends the messages silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :return: On success, an array of Messages that were sent is returned.
+        :rtype: List[types.Message]
         """
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
@@ -2199,24 +2274,53 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Use this method to send point on the map.
+        Use this method to send point on the map. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendlocation
 
-        :param chat_id:
-        :param latitude:
-        :param longitude:
-        :param live_period:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param disable_notification:
-        :param timeout:
-        :param horizontal_accuracy:
-        :param heading:
-        :param proximity_alert_radius:
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return: API reply.
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param latitude: Latitude of the location
+        :type latitude: :obj:`float`
+
+        :param longitude: Longitude of the location
+        :type longitude: :obj:`float`
+
+        :param live_period: Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400.
+        :type live_period: :obj:`int`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
+            or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param horizontal_accuracy: The radius of uncertainty for the location, measured in meters; 0-1500
+        :type horizontal_accuracy: :obj:`float`
+
+        :param heading: For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
+        :type heading: :obj:`int`
+
+        :param proximity_alert_radius: For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+        :type proximity_alert_radius: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+        
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.Message.de_json(
             apihelper.send_location(
@@ -2234,23 +2338,47 @@ class TeleBot:
             timeout: Optional[int]=None,
             horizontal_accuracy: Optional[float]=None, 
             heading: Optional[int]=None, 
-            proximity_alert_radius: Optional[int]=None) -> types.Message:
+            proximity_alert_radius: Optional[int]=None) -> types.Message or bool:
         """
-        Use this method to edit live location.
+        Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly
+            disabled by a call to stopMessageLiveLocation. On success, if the edited message is not an inline message, the edited Message
+            is returned, otherwise True is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagelivelocation
 
-        :param latitude:
-        :param longitude:
-        :param chat_id:
-        :param message_id:
-        :param reply_markup:
-        :param timeout:
-        :param inline_message_id:
-        :param horizontal_accuracy:
-        :param heading:
-        :param proximity_alert_radius:
-        :return:
+        :param latitude: Latitude of new location
+        :type latitude: :obj:`float`
+
+        :param longitude: Longitude of new location
+        :type longitude: :obj:`float`
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the message to edit
+        :type message_id: :obj:`int`
+
+        :param reply_markup: A JSON-serialized object for a new inline keyboard.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
+        :type inline_message_id: :obj:`str`
+
+        :param horizontal_accuracy: The radius of uncertainty for the location, measured in meters; 0-1500
+        :type horizontal_accuracy: :obj:`float`
+
+        :param heading: Direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
+        :type heading: :obj:`int`
+
+        :param proximity_alert_radius: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+        :type proximity_alert_radius: :obj:`int`
+
+        :return: On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
+        :rtype: :class:`telebot.types.Message` or bool
         """
         return types.Message.de_json(
             apihelper.edit_message_live_location(
@@ -2263,19 +2391,31 @@ class TeleBot:
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            timeout: Optional[int]=None) -> types.Message:
+            timeout: Optional[int]=None) -> types.Message or bool:
         """
-        Use this method to stop updating a live location message sent by the bot
-        or via the bot (for inline bots) before live_period expires
+        Use this method to stop updating a live location message before live_period expires.
+        On success, if the message is not an inline message, the edited Message is returned, otherwise True is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
         
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :param reply_markup:
-        :param timeout:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: 	Required if inline_message_id is not specified. Identifier of the message with live location to stop
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message with live location to stop
+        :type inline_message_id: :obj:`str`
+
+        :param reply_markup: A JSON-serialized object for a new inline keyboard.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :return: On success, if the message is not an inline message, the edited Message is returned, otherwise True is returned.
+        :rtype: :class:`telebot.types.Message` or bool
         """
         return types.Message.de_json(
             apihelper.stop_message_live_location(
@@ -2284,7 +2424,7 @@ class TeleBot:
     # TODO: Rewrite this method like in API.
     def send_venue(
             self, chat_id: Union[int, str], 
-            latitude: float, longitude: float, 
+            latitude: Optional[float], longitude: Optional[float], 
             title: str, address: str, 
             foursquare_id: Optional[str]=None, 
             foursquare_type: Optional[str]=None,
@@ -2297,33 +2437,68 @@ class TeleBot:
             google_place_type: Optional[str]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Use this method to send information about a venue.
+        Use this method to send information about a venue. On success, the sent Message is returned.
         
         Telegram documentation: https://core.telegram.org/bots/api#sendvenue
 
-        :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
-        :param latitude: Float : Latitude of the venue
-        :param longitude: Float : Longitude of the venue
-        :param title: String : Name of the venue
-        :param address: String : Address of the venue
-        :param foursquare_id: String : Foursquare identifier of the venue
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` or :obj:`str`
+        
+        :param latitude: Latitude of the venue
+        :type latitude: :obj:`float`
+
+        :param longitude: Longitude of the venue
+        :type longitude: :obj:`float`
+
+        :param title: Name of the venue
+        :type title: :obj:`str`
+
+        :param address: Address of the venue
+        :type address: :obj:`str`
+
+        :param foursquare_id: Foursquare identifier of the venue
+        :type foursquare_id: :obj:`str`
+
         :param foursquare_type: Foursquare type of the venue, if known. (For example, “arts_entertainment/default”,
             “arts_entertainment/aquarium” or “food/icecream”.)
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param timeout:
-        :param allow_sending_without_reply:
-        :param google_place_id:
-        :param google_place_type:
-        :param protect_content:
-        :return:
+        :type foursquare_type: :obj:`str`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard,
+            custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if one of the specified
+            replied-to messages is not found.
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param google_place_id: Google Places identifier of the venue
+        :type google_place_id: :obj:`str`
+
+        :param google_place_type: Google Places type of the venue.
+        :type google_place_type: :obj:`str`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.Message.de_json(
             apihelper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
                 disable_notification, reply_to_message_id, reply_markup, timeout,
                 allow_sending_without_reply, google_place_id, google_place_type, protect_content))
+
 
     # TODO: Rewrite this method like in API.
     def send_contact(
@@ -2337,22 +2512,48 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Use this method to send phone contacts.
+        Use this method to send phone contacts. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendcontact
 
-        :param chat_id: Integer or String : Unique identifier for the target chat or username of the target channel
-        :param phone_number: String : Contact's phone number
-        :param first_name: String : Contact's first name
-        :param last_name: String : Contact's last name
-        :param vcard: String : Additional data about the contact in the form of a vCard, 0-2048 bytes
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param timeout:
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param phone_number: Contact's phone number
+        :type phone_number: :obj:`str`
+
+        :param first_name: Contact's first name
+        :type first_name: :obj:`str`
+
+        :param last_name: Contact's last name
+        :type last_name: :obj:`str`
+
+        :param vcard: Additional data about the contact in the form of a vCard, 0-2048 bytes
+        :type vcard: :obj:`str`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard,
+            custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if one of the specified
+            replied-to messages is not found.
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return types.Message.de_json(
             apihelper.send_contact(
@@ -2364,17 +2565,28 @@ class TeleBot:
             self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
-        The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
-        its typing status).
+        The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
+        Returns True on success.
+
+        Example: The ImageBot needs some time to process a request and upload the image. Instead of sending a text message along the lines of
+        “Retrieving image, please wait…”, the bot may use sendChatAction with action = upload_photo. The user will see a “sending photo” status for the bot.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendchataction
 
-        :param chat_id:
-        :param action:  One of the following strings: 'typing', 'upload_photo', 'record_video', 'upload_video',
-                        'record_audio', 'upload_audio', 'upload_document', 'find_location', 'record_video_note',
-                        'upload_video_note'.
-        :param timeout:
-        :return: API reply. :type: boolean
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` or :obj:`str`
+        
+        :param action: Type of action to broadcast. Choose one, depending on what the user is about
+            to receive: typing for text messages, upload_photo for photos, record_video or upload_video
+            for videos, record_voice or upload_voice for voice notes, upload_document for general files,
+            choose_sticker for stickers, find_location for location data, record_video_note or upload_video_note for video notes.
+        :type action: :obj:`str`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.send_chat_action(self.token, chat_id, action, timeout)
     
@@ -2384,13 +2596,13 @@ class TeleBot:
             until_date:Optional[Union[int, datetime]]=None, 
             revoke_messages: Optional[bool]=None) -> bool:
         """
-        This function is deprecated. Use `ban_chat_member` instead
+        This function is deprecated. Use `ban_chat_member` instead.
         """
         return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     def ban_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
-            until_date:Optional[Union[int, datetime]]=None, 
+            until_date: Optional[Union[int, datetime]]=None, 
             revoke_messages: Optional[bool]=None) -> bool:
         """
         Use this method to ban a user in a group, a supergroup or a channel. 
@@ -2400,14 +2612,24 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#banchatmember
 
-        :param chat_id: Int or string : Unique identifier for the target group or username of the target supergroup
-        :param user_id: Int : Unique identifier of the target user
+        :param chat_id: Unique identifier for the target group or username of the target supergroup
+            or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
         :param until_date: Date when the user will be unbanned, unix time. If user is banned for more than 366 days or
                less than 30 seconds from the current time they are considered to be banned forever
+        :type until_date: :obj:`int` or :obj:`datetime`
+
         :param revoke_messages: Bool: Pass True to delete all messages from the chat for the user that is being removed.
-                If False, the user will be able to see messages in the group that were sent before the user was removed. 
-                Always True for supergroups and channels.
-        :return: boolean
+            If False, the user will be able to see messages in the group that were sent before the user was removed. 
+            Always True for supergroups and channels.
+        :type revoke_messages: :obj:`bool`
+        
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
@@ -2425,9 +2647,16 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup or channel
             (in the format @username)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
         :param only_if_banned: Do nothing if the user is not banned
+        :type only_if_banned: :obj:`bool`
+
         :return: True on success
+        :rtype: :obj:`bool`
         """
         return apihelper.unban_chat_member(self.token, chat_id, user_id, only_if_banned)
 
@@ -2449,25 +2678,48 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
 
-        :param chat_id: Int or String : Unique identifier for the target group or username of the target supergroup
+        :param chat_id: Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
-        :param user_id: Int : Unique identifier of the target user
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
+        :type until_date: :obj:`int` or :obj:`datetime`
+
         :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
+        :type can_send_messages: :obj:`bool`
+        
         :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
             and voice notes, implies can_send_messages
+        :type can_send_media_messages: :obj:`bool`
+        
         :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
+        :type can_send_polls: :obj:`bool`
+
         :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
+        :type can_send_other_messages: :obj:`bool`
+
         :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
             implies can_send_media_messages
+        :type can_add_web_page_previews: :obj:`bool`
+
         :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
             Ignored in public supergroups
+        :type can_change_info: :obj:`bool`
+
         :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
             implies can_invite_users
+        :type can_invite_users: :obj:`bool`
+
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
+        :type can_pin_messages: :obj:`bool`
+
         :return: True on success
+        :rtype: :obj:`bool`
         """
         return apihelper.restrict_chat_member(
             self.token, chat_id, user_id, until_date,
@@ -2477,7 +2729,7 @@ class TeleBot:
             can_invite_users, can_pin_messages)
 
     def promote_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
+            self, chat_id: Union[int, str], user_id: int,
             can_change_info: Optional[bool]=None, 
             can_post_messages: Optional[bool]=None,
             can_edit_messages: Optional[bool]=None, 
@@ -2499,27 +2751,55 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (
             in the format @channelusername)
-        :param user_id: Int : Unique identifier of the target user
-        :param can_change_info: Bool: Pass True, if the administrator can change chat title, photo and other settings
-        :param can_post_messages: Bool : Pass True, if the administrator can create channel posts, channels only
-        :param can_edit_messages: Bool : Pass True, if the administrator can edit messages of other users, channels only
-        :param can_delete_messages: Bool : Pass True, if the administrator can delete messages of other users
-        :param can_invite_users: Bool : Pass True, if the administrator can invite new users to the chat
-        :param can_restrict_members: Bool: Pass True, if the administrator can restrict, ban or unban chat members
-        :param can_pin_messages: Bool: Pass True, if the administrator can pin messages, supergroups only
-        :param can_promote_members: Bool: Pass True, if the administrator can add new administrators with a subset
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :param can_change_info: Pass True, if the administrator can change chat title, photo and other settings
+        :type can_change_info: :obj:`bool`
+
+        :param can_post_messages: Pass True, if the administrator can create channel posts, channels only
+        :type can_post_messages: :obj:`bool`
+
+        :param can_edit_messages: Pass True, if the administrator can edit messages of other users, channels only
+        :type can_edit_messages: :obj:`bool`
+
+        :param can_delete_messages: Pass True, if the administrator can delete messages of other users
+        :type can_delete_messages: :obj:`bool`
+
+        :param can_invite_users: Pass True, if the administrator can invite new users to the chat
+        :type can_invite_users: :obj:`bool`
+
+        :param can_restrict_members: Pass True, if the administrator can restrict, ban or unban chat members
+        :type can_restrict_members: :obj:`bool`
+
+        :param can_pin_messages: Pass True, if the administrator can pin messages, supergroups only
+        :type can_pin_messages: :obj:`bool`
+
+        :param can_promote_members:Pass True, if the administrator can add new administrators with a subset
             of his own privileges or demote administrators that he has promoted, directly or indirectly
             (promoted by administrators that were appointed by him)
-        :param is_anonymous: Bool: Pass True, if the administrator's presence in the chat is hidden
-        :param can_manage_chat: Bool: Pass True, if the administrator can access the chat event log, chat statistics, 
+        :type can_promote_members: :obj:`bool`
+
+        :param is_anonymous: Pass True, if the administrator's presence in the chat is hidden
+        :type is_anonymous: :obj:`bool`
+
+        :param can_manage_chat: Pass True, if the administrator can access the chat event log, chat statistics, 
             message statistics in channels, see channel members, 
             see anonymous administrators in supergroups and ignore slow mode. 
             Implied by any other administrator privilege
-        :param can_manage_video_chats: Bool: Pass True, if the administrator can manage voice chats
+        :type can_manage_chat: :obj:`bool`
+
+        :param can_manage_video_chats: Pass True, if the administrator can manage voice chats
             For now, bots can use this privilege only for passing to other administrators.
+        :type can_manage_video_chats: :obj:`bool`
+
         :param can_manage_voice_chats: Deprecated, use can_manage_video_chats.
+        :type can_manage_voice_chats: :obj:`bool`
 
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         if can_manage_voice_chats is not None:
             logger.warning("promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead.")
@@ -2535,17 +2815,24 @@ class TeleBot:
     def set_chat_administrator_custom_title(
             self, chat_id: Union[int, str], user_id: int, custom_title: str) -> bool:
         """
-        Use this method to set a custom title for an administrator
-        in a supergroup promoted by the bot.
+        Use this method to set a custom title for an administrator in a supergroup promoted by the bot.
+        Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatadministratorcustomtitle
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
         :param custom_title: New custom title for the administrator;
             0-16 characters, emoji are not allowed
+        :type custom_title: :obj:`str`
+
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
     
@@ -2561,8 +2848,13 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#banchatsenderchat
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param sender_chat_id: Unique identifier of the target sender chat
+        :type sender_chat_id: :obj:`int` or :obj:`str`
+
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.ban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
@@ -2575,10 +2867,14 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#unbanchatsenderchat
 
-        :params:
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-        :param sender_chat_id: Unique identifier of the target sender chat
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param sender_chat_id: Unique identifier of the target sender chat.
+        :type sender_chat_id: :obj:`int` or :obj:`str`
+
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
@@ -2593,8 +2889,13 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param permissions: New default chat permissions
+        :type permissions: :class:`telebot.types..ChatPermissions`
+
         :return: True on success
+        :rtype: :obj:`bool`
         """
         return apihelper.set_chat_permissions(self.token, chat_id, permissions)
 
@@ -2605,18 +2906,31 @@ class TeleBot:
             member_limit: Optional[int]=None,
             creates_join_request: Optional[bool]=None) -> types.ChatInviteLink:
         """
-        Use this method to create an additional invite link for a chat.
-        The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
+        Use this method to create an additional invite link for a chat. The bot must be an administrator in the chat for this to work and
+        must have the appropriate administrator rights.
+        The link can be revoked using the method revokeChatInviteLink.
+        Returns the new invite link as ChatInviteLink object.
 
         Telegram documentation: https://core.telegram.org/bots/api#createchatinvitelink
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param name: Invite link name; 0-32 characters
+        :type name: :obj:`str`
+
         :param expire_date: Point in time (Unix timestamp) when the link will expire
+        :type expire_date: :obj:`int` or :obj:`datetime`
+
         :param member_limit: Maximum number of users that can be members of the chat simultaneously
+        :type member_limit: :obj:`int`
+
         :param creates_join_request: True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified
-        :return:
+        :type creates_join_request: :obj:`bool`
+
+        :return: Returns the new invite link as ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
             apihelper.create_chat_invite_link(self.token, chat_id, name, expire_date, member_limit, creates_join_request)
@@ -2637,12 +2951,25 @@ class TeleBot:
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param name: Invite link name; 0-32 characters
+        :type name: :obj:`str`
+
         :param invite_link: The invite link to edit
+        :type invite_link: :obj:`str`
+
         :param expire_date: Point in time (Unix timestamp) when the link will expire
+        :type expire_date: :obj:`int` or :obj:`datetime`
+
         :param member_limit: Maximum number of users that can be members of the chat simultaneously
+        :type member_limit: :obj:`int`
+
         :param creates_join_request: True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified
-        :return:
+        :type creates_join_request: :obj:`bool`
+
+        :return: Returns the new invite link as ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
             apihelper.edit_chat_invite_link(self.token, chat_id, name, invite_link, expire_date, member_limit, creates_join_request)
@@ -2659,8 +2986,13 @@ class TeleBot:
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param invite_link: The invite link to revoke
-        :return:
+        :type invite_link: :obj:`str`
+
+        :return: Returns the new invite link as ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
             apihelper.revoke_chat_invite_link(self.token, chat_id, invite_link)
@@ -2675,7 +3007,10 @@ class TeleBot:
 
         :param chat_id: Id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :return: exported invite link as String on success.
+        :rtype: :obj:`str`
         """
         return apihelper.export_chat_invite_link(self.token, chat_id)
 
@@ -2689,8 +3024,13 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int` or :obj:`str`
+
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.approve_chat_join_request(self.token, chat_id, user_id)
 
@@ -2704,8 +3044,13 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup
             (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int` or :obj:`str`
+
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.decline_chat_join_request(self.token, chat_id, user_id)
 
@@ -2721,8 +3066,12 @@ class TeleBot:
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param photo: InputFile: New chat photo, uploaded using multipart/form-data
-        :return:
+        :type photo: :obj:`typing.Union[file_like, str]`
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_chat_photo(self.token, chat_id, photo)
 
@@ -2737,6 +3086,10 @@ class TeleBot:
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.delete_chat_photo(self.token, chat_id)
     
@@ -2750,9 +3103,15 @@ class TeleBot:
 
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
+        :type scope: :class:`telebot.types.BotCommandScope`
+
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
             commands will be applied to all users from the given scope, 
             for whose language there are no dedicated commands
+        :type language_code: :obj:`str`
+
+        :return: List of BotCommand on success.
+        :rtype: :obj:`list` of :class:`telebot.types.BotCommand`
         """
         result = apihelper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
@@ -2768,7 +3127,13 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target private chat. 
             If not specified, default bot's menu button will be changed.
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param menu_button: A JSON-serialized object for the new bot's menu button. Defaults to MenuButtonDefault
+        :type menu_button: :class:`telebot.types.MenuButton`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_chat_menu_button(self.token, chat_id, menu_button)
 
@@ -2782,12 +3147,15 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target private chat.
             If not specified, default bot's menu button will be returned.
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :return: types.MenuButton
+        :rtype: :class:`telebot.types.MenuButton`
         """
         return types.MenuButton.de_json(apihelper.get_chat_menu_button(self.token, chat_id))
 
     def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None, 
-                                    for_channels: bool=None) -> bool:
+                                    for_channels: Optional[bool]=None) -> bool:
         """
         Use this method to change the default administrator rights requested by the bot
         when it's added as an administrator to groups or channels.
@@ -2797,12 +3165,20 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#setmydefaultadministratorrights
 
-        :param rights: A JSON-serialized object describing new default administrator rights. If not specified, the default administrator rights will be cleared.
-        :param for_channels: Pass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
+        :param rights: A JSON-serialized object describing new default administrator rights. If not specified,
+            the default administrator rights will be cleared.
+        :type rights: :class:`telebot.types.ChatAdministratorRights`
+
+        :param for_channels: Pass True to change the default administrator rights of the bot in channels.
+            Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
+        :type for_channels: :obj:`bool`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_my_default_administrator_rights(self.token, rights, for_channels)
 
-    def get_my_default_administrator_rights(self, for_channels: bool=None) -> types.ChatAdministratorRights:
+    def get_my_default_administrator_rights(self, for_channels: Optional[bool]=None) -> types.ChatAdministratorRights:
         """
         Use this method to get the current default administrator rights of the bot.
         Returns ChatAdministratorRights on success.
@@ -2810,7 +3186,10 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#getmydefaultadministratorrights
 
         :param for_channels: Pass True to get the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be returned.
-        :return: types.ChatAdministratorRights
+        :type for_channels: :obj:`bool`
+
+        :return: Returns ChatAdministratorRights on success.
+        :rtype: :class:`telebot.types.ChatAdministratorRights`
         """
         return types.ChatAdministratorRights.de_json(apihelper.get_my_default_administrator_rights(self.token, for_channels))
         
@@ -2823,12 +3202,19 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#setmycommands
 
         :param commands: List of BotCommand. At most 100 commands can be specified.
+        :type commands: :obj:`list` of :class:`telebot.types.BotCommand`
+
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
+        :type scope: :class:`telebot.types.BotCommandScope`
+
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
             commands will be applied to all users from the given scope, 
             for whose language there are no dedicated commands
-        :return:
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_my_commands(self.token, commands, scope, language_code)
     
@@ -2843,9 +3229,15 @@ class TeleBot:
         
         :param scope: The scope of users for which the commands are relevant. 
             Defaults to BotCommandScopeDefault.
+        :type scope: :class:`telebot.types.BotCommandScope`
+
         :param language_code: A two-letter ISO 639-1 language code. If empty, 
             commands will be applied to all users from the given scope, 
             for whose language there are no dedicated commands
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.delete_my_commands(self.token, scope, language_code)
 
@@ -2859,10 +3251,15 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#setchattitle
 
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param title: New chat title, 1-255 characters
-        :return:
+        :type title: :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_chat_title(self.token, chat_id, title)
 
@@ -2873,10 +3270,15 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatdescription
 
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param description: Str: New chat description, 0-255 characters
+        :type description: :obj:`str`
+
         :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_chat_description(self.token, chat_id, description)
 
@@ -2890,12 +3292,19 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#pinchatmessage
 
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :param message_id: Int: Identifier of a message to pin
-        :param disable_notification: Bool: Pass True, if it is not necessary to send a notification
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of a message to pin
+        :type message_id: :obj:`int`
+
+        :param disable_notification: Pass True, if it is not necessary to send a notification
             to all group members about the new pinned message
-        :return:
+        :type disable_notification: :obj:`bool`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
@@ -2907,10 +3316,15 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#unpinchatmessage
 
-        :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
         :param message_id: Int: Identifier of a message to unpin
-        :return:
+        :type message_id: :obj:`int`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.unpin_chat_message(self.token, chat_id, message_id)
 
@@ -2924,7 +3338,10 @@ class TeleBot:
 
         :param chat_id: Int or Str: Unique identifier for the target chat or username of the target channel
             (in the format @channelusername)
-        :return:
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
         """
         return apihelper.unpin_all_chat_messages(self.token, chat_id)
 
@@ -2942,15 +3359,32 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagetext
 
-        :param text:
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :param parse_mode:
-        :param entities:
-        :param disable_web_page_preview:
-        :param reply_markup:
-        :return:
+        :param text: New text of the message, 1-4096 characters after entities parsing
+        :type text: :obj:`str`
+
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
+        :type inline_message_id: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message text.
+        :type parse_mode: :obj:`str`
+
+        :param entities: List of special entities that appear in the message text, which can be specified instead of parse_mode
+        :type entities: List of :obj:`telebot.types.MessageEntity`
+
+        :param disable_web_page_preview: Disables link previews for links in this message
+        :type disable_web_page_preview: :obj:`bool`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard.
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+        :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -2973,12 +3407,22 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagemedia
 
-        :param media:
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :param reply_markup:
-        :return:
+        :param media: A JSON-serialized object for a new media content of the message
+        :type media: :obj:`InputMedia`
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message 
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
+        :type inline_message_id: :obj:`str`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard.
+        :type reply_markup: :obj:`telebot.types.InlineKeyboardMarkup` or :obj:`ReplyKeyboardMarkup` or :obj:`ReplyKeyboardRemove` or :obj:`ForceReply`
+
+        :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+        :rtype: :obj:`types.Message` or :obj:`bool`
         """
         result = apihelper.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup)
         if type(result) == bool:  # if edit inline message return is bool not Message.
@@ -2995,11 +3439,20 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagereplymarkup
 
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :param reply_markup:
-        :return:
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
+        :type inline_message_id: :obj:`str`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard.
+        :type reply_markup: :obj:`InlineKeyboardMarkup` or :obj:`ReplyKeyboardMarkup` or :obj:`ReplyKeyboardRemove` or :obj:`ForceReply`
+
+        :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+        :rtype: :obj:`types.Message` or :obj:`bool`
         """
         result = apihelper.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
         if type(result) == bool:
@@ -3019,15 +3472,32 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendgame
 
-        :param chat_id:
-        :param game_short_name:
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param reply_markup:
-        :param timeout:
-        :param allow_sending_without_reply:
-        :param protect_content:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param game_short_name: Short name of the game, serves as the unique identifier for the game. Set up your games via @BotFather.
+        :type game_short_name: :obj:`str`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message 
+        :type reply_to_message_id: :obj:`int`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :obj:`InlineKeyboardMarkup` or :obj:`ReplyKeyboardMarkup` or :obj:`ReplyKeyboardRemove` or :obj:`ForceReply`
+
+        :param timeout: Timeout in seconds for waiting for a response from the bot.
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if one of the specified replied-to messages is not found.
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param protect_content: Pass True, if content of the message needs to be protected from being viewed by the bot.
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :obj:`types.Message`
         """
         result = apihelper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
@@ -3045,16 +3515,31 @@ class TeleBot:
         """
         Sets the value of points in the game to a specific user.
 
-        Telegram documentation: https://core.telegram.org/bots/api#setgamecore
+        Telegram documentation: https://core.telegram.org/bots/api#setgamescore
 
-        :param user_id:
-        :param score:
-        :param force:
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :param disable_edit_message:
-        :return:
+        :param user_id: User identifier
+        :type user_id: :obj:`int` or :obj:`str`
+
+        :param score: New score, must be non-negative
+        :type score: :obj:`int`
+
+        :param force: Pass True, if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters
+        :type force: :obj:`bool`
+
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
+        :type inline_message_id: :obj:`str`
+
+        :param disable_edit_message: Pass True, if the game message should not be automatically edited to include the current scoreboard
+        :type disable_edit_message: :obj:`bool`
+
+        :return: On success, if the message was sent by the bot, returns the edited Message, otherwise returns True.
+        :rtype: :obj:`types.Message` or :obj:`bool`
         """
         result = apihelper.set_game_score(self.token, user_id, score, force, disable_edit_message, chat_id,
                                           message_id, inline_message_id)
@@ -3071,11 +3556,20 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getgamehighscores
 
-        :param user_id:
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :return:
+        :param user_id: User identifier
+        :type user_id: :obj:`int`
+
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
+        :type inline_message_id: :obj:`str`
+
+        :return: On success, returns an Array of GameHighScore objects.
+        :rtype: List[types.GameHighScore]
         """
         result = apihelper.get_game_high_scores(self.token, user_id, chat_id, message_id, inline_message_id)
         return [types.GameHighScore.de_json(r) for r in result]
@@ -3107,43 +3601,100 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#sendinvoice
 
         :param chat_id: Unique identifier for the target private chat
-        :param title: Product name
-        :param description: Product description
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param title: Product name, 1-32 characters
+        :type title: :obj:`str`
+
+        :param description: Product description, 1-255 characters
+        :type description: :obj:`str`
+
         :param invoice_payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
             use for your internal processes.
+        :type invoice_payload: :obj:`str`
+
         :param provider_token: Payments provider token, obtained via @Botfather
+        :type provider_token: :obj:`str`
+
         :param currency: Three-letter ISO 4217 currency code,
             see https://core.telegram.org/bots/payments#supported-currencies
+        :type currency: :obj:`str`
+
         :param prices: Price breakdown, a list of components
             (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :type prices: List[:obj:`types.LabeledPrice`]
+
         :param start_parameter: Unique deep-linking parameter that can be used to generate this invoice
             when used as a start parameter
+        :type start_parameter: :obj:`str`
+
         :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
             or a marketing image for a service. People like it better when they see what they are paying for.
-        :param photo_size: Photo size
-        :param photo_width: Photo width
+        :type photo_url: :obj:`str`
+
+        :param photo_size: Photo size in bytes
+        :type photo_size: :obj:`int`
+
+        :param photo_width: Photo width 
+        :type photo_width: :obj:`int`
+
         :param photo_height: Photo height
+        :type photo_height: :obj:`int`
+
         :param need_name: Pass True, if you require the user's full name to complete the order
+        :type need_name: :obj:`bool`
+
         :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :type need_phone_number: :obj:`bool`
+
         :param need_email: Pass True, if you require the user's email to complete the order
+        :type need_email: :obj:`bool`
+
         :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :type need_shipping_address: :obj:`bool`
+
         :param is_flexible: Pass True, if the final price depends on the shipping method
+        :type is_flexible: :obj:`bool`
+
         :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :type send_phone_number_to_provider: :obj:`bool`
+
         :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :type send_email_to_provider: :obj:`bool`
+
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
         :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
         :param reply_markup: A JSON-serialized object for an inline keyboard. If empty,
             one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button
+        :type reply_markup: :obj:`str`
+
         :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
             A detailed description of required fields should be provided by the payment provider.
-        :param timeout:
-        :param allow_sending_without_reply:
+        :type provider_data: :obj:`str`
+
+        :param timeout: Timeout of a request, defaults to None
+        :type timeout: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
+        :type allow_sending_without_reply: :obj:`bool`
+
         :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :type max_tip_amount: :obj:`int`
+
         :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
             units of the currency.  At most 4 suggested tip amounts can be specified. The suggested tip
             amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
-        :param protect_content:
-        :return:
+        :type suggested_tip_amounts: :obj:`list` of :obj:`int`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :obj:`types.Message`
         """
         result = apihelper.send_invoice(
             self.token, chat_id, title, description, invoice_payload, provider_token,
@@ -3180,31 +3731,74 @@ class TeleBot:
         https://core.telegram.org/bots/api#createinvoicelink
 
         :param title: Product name, 1-32 characters
+        :type title: :obj:`str`
+
         :param description: Product description, 1-255 characters
+        :type description: :obj:`str`
+
         :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
             use for your internal processes.
+        :type payload: :obj:`str`
+
         :param provider_token: Payments provider token, obtained via @Botfather
+        :type provider_token: :obj:`str`
+
         :param currency: Three-letter ISO 4217 currency code,
             see https://core.telegram.org/bots/payments#supported-currencies
+        :type currency: :obj:`str`
+
         :param prices: Price breakdown, a list of components
             (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :type prices: :obj:`list` of :obj:`types.LabeledPrice`
+
         :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :type max_tip_amount: :obj:`int`
+
         :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
+            units of the currency.  At most 4 suggested tip amounts can be specified. The suggested tip
+            amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+        :type suggested_tip_amounts: :obj:`list` of :obj:`int`
+
         :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
             A detailed description of required fields should be provided by the payment provider.
+        :type provider_data: :obj:`str`
+
         :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
+            or a photo of the invoice. People like it better when they see a photo of what they are paying for.
+        :type photo_url: :obj:`str`
+
         :param photo_size: Photo size in bytes
+        :type photo_size: :obj:`int`
+
         :param photo_width: Photo width
+        :type photo_width: :obj:`int`
+
         :param photo_height: Photo height
+        :type photo_height: :obj:`int`
+
         :param need_name: Pass True, if you require the user's full name to complete the order
+        :type need_name: :obj:`bool`
+
         :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :type need_phone_number: :obj:`bool`
+
         :param need_email: Pass True, if you require the user's email to complete the order
+        :type need_email: :obj:`bool`
+
         :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :type need_shipping_address: :obj:`bool`
+
         :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :type send_phone_number_to_provider: :obj:`bool`
+
         :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :type send_email_to_provider: :obj:`bool`
+
         :param is_flexible: Pass True, if the final price depends on the shipping method
+        :type is_flexible: :obj:`bool`
 
         :return: Created invoice link as String on success.
+        :rtype: :obj:`str`
         """
         result = apihelper.create_invoice_link(
             self.token, title, description, payload, provider_token,
@@ -3234,30 +3828,74 @@ class TeleBot:
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None) -> types.Message:
         """
-        Sends a poll.
+        Use this method to send a native poll.
+        On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendpoll
 
-        :param chat_id:
-        :param question:
-        :param options: array of str with answers
-        :param is_anonymous:
-        :param type:
-        :param allows_multiple_answers:
-        :param correct_option_id:
-        :param explanation:
-        :param explanation_parse_mode:
-        :param open_period:
-        :param close_date:
-        :param is_closed:
-        :param disable_notification:
-        :param reply_to_message_id:
-        :param allow_sending_without_reply:
-        :param reply_markup:
-        :param timeout:
-        :param explanation_entities:
-        :param protect_content:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param question: Poll question, 1-300 characters
+        :type question: :obj:`str`
+
+        :param options: A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
+        :type options: :obj:`list` of :obj:`str`
+
+        :param is_anonymous: True, if the poll needs to be anonymous, defaults to True
+        :type is_anonymous: :obj:`bool`
+
+        :param type: Poll type, “quiz” or “regular”, defaults to “regular”
+        :type type: :obj:`str`
+
+        :param allows_multiple_answers: True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
+        :type allows_multiple_answers: :obj:`bool`
+
+        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode,
+            defaults to None
+        :type correct_option_id: :obj:`int`
+
+        :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll,
+            0-200 characters with at most 2 line feeds after entities parsing
+        :type explanation: :obj:`str`
+
+        :param explanation_parse_mode: Mode for parsing entities in the explanation. See formatting options for more details.
+        :type explanation_parse_mode: :obj:`str`
+
+        :param open_period: Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
+        :type open_period: :obj:`int`
+
+        :param close_date: Point in time (Unix timestamp) when the poll will be automatically closed.
+        :type close_date: :obj:`int` | :obj:`datetime`
+
+        :param is_closed: Pass True, if the poll needs to be immediately closed. This can be useful for poll preview.
+        :type is_closed: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param reply_to_message_id: If the message is a reply, ID of the original message
+        :type reply_to_message_id: :obj:`int`
+
+        :param allow_sending_without_reply: Pass True, if the poll allows multiple options to be voted simultaneously.
+        :type allow_sending_without_reply: :obj:`bool`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
+            instructions to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`
+
+        :param timeout: Timeout in seconds for waiting for a response from the user.
+        :type timeout: :obj:`int`
+
+        :param explanation_entities: A JSON-serialized list of special entities that appear in the explanation,
+            which can be specified instead of parse_mode
+        :type explanation_entities: :obj:`list` of :obj:`MessageEntity`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :obj:`types.Message`
         """
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
@@ -3277,14 +3915,21 @@ class TeleBot:
             self, chat_id: Union[int, str], message_id: int, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Poll:
         """
-        Stops a poll.
+        Use this method to stop a poll which was sent by the bot. On success, the stopped Poll is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#stoppoll
 
-        :param chat_id:
-        :param message_id:
-        :param reply_markup:
-        :return:
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param message_id: Identifier of the original message with the poll
+        :type message_id: :obj:`int`
+
+        :param reply_markup: A JSON-serialized object for a new message markup.
+        :type reply_markup: :obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`
+
+        :return: On success, the stopped Poll is returned.
+        :rtype: :obj:`types.Poll`
         """
         return types.Poll.de_json(apihelper.stop_poll(self.token, chat_id, message_id, reply_markup))
 
@@ -3297,11 +3942,21 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#answershippingquery
 
-        :param shipping_query_id:
-        :param ok:
-        :param shipping_options:
-        :param error_message:
-        :return:
+        :param shipping_query_id: Unique identifier for the query to be answered
+        :type shipping_query_id: :obj:`str`
+
+        :param ok: Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
+        :type ok: :obj:`bool`
+
+        :param shipping_options: Required if ok is True. A JSON-serialized array of available shipping options.
+        :type shipping_options: :obj:`list` of :obj:`ShippingOption`
+
+        :param error_message: Required if ok is False. Error message in human readable form that explains why it is impossible to complete the order
+            (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
+        :type error_message: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
@@ -3309,14 +3964,28 @@ class TeleBot:
             self, pre_checkout_query_id: int, ok: bool, 
             error_message: Optional[str]=None) -> bool:
         """
-        Response to a request for pre-inspection.
+        Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the
+        field pre_checkout_query. Use this method to respond to such pre-checkout queries.
+        On success, True is returned.
+
+        .. note::
+            The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
 
         Telegram documentation: https://core.telegram.org/bots/api#answerprecheckoutquery
 
-        :param pre_checkout_query_id:
-        :param ok:
-        :param error_message:
-        :return:
+        :param pre_checkout_query_id: Unique identifier for the query to be answered 
+        :type pre_checkout_query_id: :obj:`int`
+
+        :param ok: Specify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
+        :type ok: :obj:`bool`
+
+        :param error_message: Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout
+            (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different
+            color or garment!"). Telegram will display this message to the user.
+        :type error_message: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
 
@@ -3332,14 +4001,29 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagecaption
 
-        :param caption:
-        :param chat_id:
-        :param message_id:
-        :param inline_message_id:
-        :param parse_mode:
-        :param caption_entities:
-        :param reply_markup:
-        :return:
+        :param caption: New caption of the message
+        :type caption: :obj:`str`
+
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified.
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if inline_message_id is not specified. Identifier of the inline message.
+        :type inline_message_id: :obj:`str`
+
+        :param parse_mode: New caption of the message, 0-1024 characters after entities parsing
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized array of objects that describe how the caption should be parsed.
+        :type caption_entities: :obj:`list` of :obj:`types.MessageEntity`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard.
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+        :rtype: :obj:`types.Message` | :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
@@ -3353,10 +4037,16 @@ class TeleBot:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
         
-        :param message:
-        :param text:
-        :param kwargs:
-        :return:
+        :param message: Instance of :class:`telebot.types.Message`
+        :type message: :obj:`types.Message`
+
+        :param text: Text of the message.
+        :type text: :obj:`str`
+
+        :param kwargs: Additional keyword arguments which are passed to :meth:`telebot.TeleBot.send_message`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
         """
         return self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
 
@@ -3375,17 +4065,36 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#answerinlinequery
 
         :param inline_query_id: Unique identifier for the answered query
+        :type inline_query_id: :obj:`str`
+
         :param results: Array of results for the inline query
+        :type results: :obj:`list` of :obj:`types.InlineQueryResult`
+
         :param cache_time: The maximum amount of time in seconds that the result of the inline query
             may be cached on the server.
+        :type cache_time: :obj:`int`
+
         :param is_personal: Pass True, if results may be cached on the server side only for
             the user that sent the query.
+        :type is_personal: :obj:`bool`
+
         :param next_offset: Pass the offset that a client should send in the next query with the same text
             to receive more results.
-        :param switch_pm_parameter: If passed, clients will display a button with specified text that switches the user
-            to a private chat with the bot and sends the bot a start message with the parameter switch_pm_parameter
-        :param switch_pm_text: 	Parameter for the start message sent to the bot when user presses the switch button
-        :return: True means success.
+        :type next_offset: :obj:`str`
+
+        :param switch_pm_parameter: Deep-linking parameter for the /start message sent to the bot when user presses the switch button. 1-64 characters,
+            only A-Z, a-z, 0-9, _ and - are allowed.
+            Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly.
+            To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a
+            private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an OAuth link. Once done, the bot can offer a switch_inline
+            button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities.
+        :type switch_pm_parameter: :obj:`str`
+
+        :param switch_pm_text: Parameter for the start message sent to the bot when user presses the switch button
+        :type switch_pm_text: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
                                              switch_pm_text, switch_pm_parameter)
@@ -3400,12 +4109,24 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#answercallbackquery
 
-        :param callback_query_id:
-        :param text:
-        :param show_alert:
-        :param url:
-        :param cache_time:
-        :return:
+        :param callback_query_id: Unique identifier for the query to be answered
+        :type callback_query_id: :obj:`int`
+
+        :param text: Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
+        :type text: :obj:`str`
+
+        :param show_alert: If True, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false.
+        :type show_alert: :obj:`bool`
+
+        :param url: URL that will be opened by the user's client. If you have created a Game and accepted the conditions via @BotFather, specify the URL that opens your
+            game - note that this will only work if the query comes from a callback_game button.
+        :type url: :obj:`str`
+
+        :param cache_time: The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching
+            starting in version 3.14. Defaults to 0.
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
@@ -3418,8 +4139,16 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
 
         :param name: Sticker set name
+        :type name: :obj:`str`
+
         :param user_id: User identifier
+        :type user_id: :obj:`int`
+
         :param thumb:
+        :type thumb: :obj:`filelike object`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_sticker_set_thumb(self.token, name, user_id, thumb)
 
@@ -3429,8 +4158,11 @@ class TeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#getstickerset
 
-        :param name:
-        :return:
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :return: On success, a StickerSet object is returned.
+        :rtype: :class:`telebot.types.StickerSet`
         """
         result = apihelper.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
@@ -3442,9 +4174,15 @@ class TeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
 
-        :param user_id:
-        :param png_sticker:
-        :return:
+        :param user_id: User identifier of sticker set owner
+        :type user_id: :obj:`int`
+
+        :param png_sticker: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
+            and either width or height must be exactly 512px.
+        :type png_sticker: :obj:`filelike object`
+
+        :return: On success, the sent file is returned.
+        :rtype: :class:`telebot.types.File`
         """
         result = apihelper.upload_sticker_file(self.token, user_id, png_sticker)
         return types.File.de_json(result)
@@ -3464,16 +4202,39 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#createnewstickerset
 
-        :param user_id:
-        :param name:
-        :param title:
-        :param emojis:
-        :param png_sticker: 
-        :param tgs_sticker:
-        :param webm_sticker:
-        :param contains_masks:
-        :param mask_position:
-        :return:
+        :param user_id: User identifier of created sticker set owner
+        :type user_id: :obj:`int`
+
+        :param name: Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only English letters,
+            digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in "_by_<bot_username>".
+            <bot_username> is case insensitive. 1-64 characters.
+        :type name: :obj:`str`
+
+        :param title: Sticker set title, 1-64 characters
+        :type title: :obj:`str`
+
+        :param emojis: One or more emoji corresponding to the sticker
+        :type emojis: :obj:`str`
+
+        :param png_sticker: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width
+            or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL
+            as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+        :type png_sticker: :obj:`str`
+
+        :param tgs_sticker: TGS animation with the sticker, uploaded using multipart/form-data.
+        :type tgs_sticker: :obj:`str`
+
+        :param webm_sticker: WebM animation with the sticker, uploaded using multipart/form-data.
+        :type webm_sticker: :obj:`str`
+
+        :param contains_masks: Pass True, if a set of mask stickers should be created
+        :type contains_masks: :obj:`bool`
+
+        :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
+        :type mask_position: :class:`telebot.types.MaskPosition`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.create_new_sticker_set(
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
@@ -3492,14 +4253,31 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
 
-        :param user_id:
-        :param name:
-        :param emojis:
-        :param png_sticker: Required if `tgs_sticker` is None
-        :param tgs_sticker: Required if `png_sticker` is None
-        :param webm_sticker:
-        :param mask_position:
-        :return:
+        :param user_id: User identifier of created sticker set owner
+        :type user_id: :obj:`int`
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param emojis: One or more emoji corresponding to the sticker
+        :type emojis: :obj:`str`
+
+        :param png_sticker: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either
+            width or height must be exactly 512px. Pass a file_id as a String to send a file that already exists on the Telegram servers,
+            pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+        :type png_sticker: :obj:`str` or :obj:`filelike object`
+
+        :param tgs_sticker: TGS animation with the sticker, uploaded using multipart/form-data.
+        :type tgs_sticker: :obj:`str` or :obj:`filelike object`
+
+        :param webm_sticker: WebM animation with the sticker, uploaded using multipart/form-data.
+        :type webm_sticker: :obj:`str` or :obj:`filelike object`
+
+        :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
+        :type mask_position: :class:`telebot.types.MaskPosition`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.add_sticker_to_set(
             self.token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker)
@@ -3510,9 +4288,14 @@ class TeleBot:
         
         Telegram documentation: https://core.telegram.org/bots/api#setstickerpositioninset
 
-        :param sticker:
-        :param position:
-        :return:
+        :param sticker: File identifier of the sticker
+        :type sticker: :obj:`str`
+
+        :param position: New sticker position in the set, zero-based
+        :type position: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.set_sticker_position_in_set(self.token, sticker, position)
 
@@ -3522,8 +4305,9 @@ class TeleBot:
        
         Telegram documentation: https://core.telegram.org/bots/api#deletestickerfromset
 
-        :param sticker:
-        :return:
+        :param sticker: File identifier of the sticker
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
         """
         return apihelper.delete_sticker_from_set(self.token, sticker)
 
@@ -3537,8 +4321,13 @@ class TeleBot:
         Telegram Documentation: https://core.telegram.org/bots/api#answerwebappquery
 
         :param web_app_query_id: Unique identifier for the query to be answered
+        :type web_app_query_id: :obj:`str`
+
         :param result: A JSON-serialized object describing the message to be sent
-        :return:
+        :type result: :class:`telebot.types.InlineQueryResultBase`
+
+        :return: On success, a SentWebAppMessage object is returned.
+        :rtype: :class:`telebot.types.SentWebAppMessage`
         """
         return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
 
@@ -3548,9 +4337,17 @@ class TeleBot:
 
         Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
-        :param message:     The message for which we are awaiting a reply.
-        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
-                            parameter, which will contain the replied message.
+        :param message: The message for which we are awaiting a reply.
+        :type message: :class:`telebot.types.Message`
+
+        :param callback: The callback function to be called when a reply arrives. Must accept one `message`
+            parameter, which will contain the replied message.
+        :type callback: :obj:`Callable[[telebot.types.Message], None]`
+
+        :param args: Optional arguments for the callback function.
+        :param kwargs: Optional keyword arguments for the callback function.
+        
+        :return: None
         """
         message_id = message.message_id
         self.register_for_reply_by_message_id(message_id, callback, *args, **kwargs)
@@ -3562,9 +4359,17 @@ class TeleBot:
 
         Warning: In case `callback` as lambda function, saving reply handlers will not work.
 
-        :param message_id:  The id of the message for which we are awaiting a reply.
-        :param callback:    The callback function to be called when a reply arrives. Must accept one `message`
-                            parameter, which will contain the replied message.
+        :param message_id: The id of the message for which we are awaiting a reply.
+        :type message_id: :obj:`int`
+
+        :param callback: The callback function to be called when a reply arrives. Must accept one `message`
+            parameter, which will contain the replied message.
+        :type callback: :obj:`Callable[[telebot.types.Message], None]`
+
+        :param args: Optional arguments for the callback function.
+        :param kwargs: Optional keyword arguments for the callback function.
+
+        :return: None
         """
         self.reply_backend.register_handler(message_id, Handler(callback, *args, **kwargs))
 
@@ -3588,10 +4393,17 @@ class TeleBot:
 
         Warning: In case `callback` as lambda function, saving next step handlers will not work.
 
-        :param message:     The message for which we want to handle new message in the same chat.
-        :param callback:    The callback function which next new message arrives.
-        :param args:        Args to pass in callback func
-        :param kwargs:      Args to pass in callback func
+        :param message: The message for which we want to handle new message in the same chat.
+        :type message: :class:`telebot.types.Message`
+
+        :param callback: The callback function which next new message arrives.
+        :type callback: :obj:`Callable[[telebot.types.Message], None]`
+
+        :param args: Args to pass in callback func
+
+        :param kwargs: Args to pass in callback func
+
+        :return: None
         """
         chat_id = message.chat.id
         self.register_next_step_handler_by_chat_id(chat_id, callback, *args, **kwargs)
@@ -3600,7 +4412,8 @@ class TeleBot:
         """
         Registers class-based middleware.
 
-        :param middleware: Subclass of `telebot.handler_backends.BaseMiddleware`
+        :param middleware: Subclass of :class:`telebot.handler_backends.BaseMiddleware`
+        :type middleware: :class:`telebot.handler_backends.BaseMiddleware`
         :return: None
         """
         if not self.use_class_middlewares:
@@ -3621,9 +4434,16 @@ class TeleBot:
         """
         Sets a new state of a user.
 
-        :param user_id:
-        :param state: new state. can be string or integer.
-        :param chat_id:
+        :param user_id: User's identifier
+        :type user_id: :obj:`int`
+
+        :param state: new state. can be string, integer, or :class:`telebot.types.State`
+        :type state: :obj:`int` or :obj:`str` or :class:`telebot.types.State`
+
+        :param chat_id: Chat's identifier
+        :type chat_id: :obj:`int`
+
+        :return: None
         """
         if chat_id is None:
             chat_id = user_id
@@ -3633,8 +4453,13 @@ class TeleBot:
         """
         Reset data for a user in chat.
 
-        :param user_id:
-        :param chat_id:
+        :param user_id: User's identifier
+        :type user_id: :obj:`int`
+
+        :param chat_id: Chat's identifier
+        :type chat_id: :obj:`int`
+
+        :return: None
         """
         if chat_id is None:
             chat_id = user_id
@@ -3644,26 +4469,36 @@ class TeleBot:
         """
         Delete the current state of a user.
 
-        :param user_id:
-        :param chat_id:
-        :return:
+        :param user_id: User's identifier
+        :type user_id: :obj:`int`
+        
+        :param chat_id: Chat's identifier
+        :type chat_id: :obj:`int`
+
+        :return: None
         """
         if chat_id is None:
             chat_id = user_id
         self.current_states.delete_state(chat_id, user_id)
 
-    def retrieve_data(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
+    def retrieve_data(self, user_id: int, chat_id: int=None) -> Optional[Any]:
         if chat_id is None:
             chat_id = user_id
         return self.current_states.get_interactive_data(chat_id, user_id)
 
-    def get_state(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str]]:
+    def get_state(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str, State]]:
         """
-        Get current state of a user.
+        Gets current state of a user.
+        Not recommended to use this method. But it is ok for debugging.
 
-        :param user_id:
-        :param chat_id:
+        :param user_id: User's identifier
+        :type user_id: :obj:`int`
+
+        :param chat_id: Chat's identifier
+        :type chat_id: :obj:`int`
+
         :return: state of a user
+        :rtype: :obj:`int` or :obj:`str` or :class:`telebot.types.State`
         """
         if chat_id is None:
             chat_id = user_id
@@ -3673,8 +4508,14 @@ class TeleBot:
         """
         Add data to states.
 
-        :param user_id:
-        :param chat_id:
+        :param user_id: User's identifier
+        :type user_id: :obj:`int`
+
+        :param chat_id: Chat's identifier
+        :type chat_id: :obj:`int`
+
+        :param kwargs: Data to add
+        :return: None
         """
         if chat_id is None:
             chat_id = user_id
@@ -3688,10 +4529,17 @@ class TeleBot:
 
         Warning: In case `callback` as lambda function, saving next step handlers will not work.
 
-        :param chat_id:     The chat for which we want to handle new message.
-        :param callback:    The callback function which next new message arrives.
-        :param args:        Args to pass in callback func
-        :param kwargs:      Args to pass in callback func
+        :param chat_id: The chat for which we want to handle new message.
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param callback: The callback function which next new message arrives.
+        :type callback: :obj:`Callable[[telebot.types.Message], None]`
+
+        :param args: Args to pass in callback func
+        
+        :param kwargs: Args to pass in callback func
+
+        :return: None
         """
         self.next_step_backend.register_handler(chat_id, Handler(callback, *args, **kwargs))
 
@@ -3699,7 +4547,10 @@ class TeleBot:
         """
         Clears all callback functions registered by register_next_step_handler().
 
-        :param message:     The message for which we want to handle new message after that in same chat.
+        :param message: The message for which we want to handle new message after that in same chat.
+        :type message: :class:`telebot.types.Message`
+
+        :return: None
         """
         chat_id = message.chat.id
         self.clear_step_handler_by_chat_id(chat_id)
@@ -3709,6 +4560,9 @@ class TeleBot:
         Clears all callback functions registered by register_next_step_handler().
 
         :param chat_id: The chat for which we want to clear next step handlers
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :return: None
         """
         self.next_step_backend.clear_handlers(chat_id)
 
@@ -3717,6 +4571,9 @@ class TeleBot:
         Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
 
         :param message: The message for which we want to clear reply handlers
+        :type message: :class:`telebot.types.Message`
+
+        :return: None
         """
         message_id = message.message_id
         self.clear_reply_handlers_by_message_id(message_id)
@@ -3726,6 +4583,9 @@ class TeleBot:
         Clears all callback functions registered by register_for_reply() and register_for_reply_by_message_id().
 
         :param message_id: The message id for which we want to clear reply handlers
+        :type message_id: :obj:`int`
+
+        :return: None
         """
         self.reply_backend.clear_handlers(message_id)
 
@@ -3764,7 +4624,7 @@ class TeleBot:
             #'filters': filters
         }
 
-    def middleware_handler(self, update_types=None):
+    def middleware_handler(self, update_types: Optional[List[str]]=None):
         """
         Function-based middleware handler decorator.
 
@@ -3789,6 +4649,9 @@ class TeleBot:
                 print(update.update_id)
 
         :param update_types: Optional list of update types that can be passed into the middleware handler.
+        :type update_types: :obj:`list` of :obj:`str`
+
+        :return: function
         """
         def decorator(handler):
             self.add_middleware_handler(handler, update_types)
@@ -3799,6 +4662,8 @@ class TeleBot:
     def add_middleware_handler(self, handler, update_types=None):
         """
         Add middleware handler.
+
+        :meta private:
 
         :param handler:
         :param update_types:
@@ -3833,23 +4698,35 @@ class TeleBot:
         bot = TeleBot('TOKEN')
 
         bot.register_middleware_handler(print_channel_post_text, update_types=['channel_post', 'edited_channel_post'])
+ 
+        :param callback: Function that will be used as a middleware handler.
+        :type callback: :obj:`function`
 
-        :param callback:
         :param update_types: Optional list of update types that can be passed into the middleware handler.
+        :type update_types: :obj:`list` of :obj:`str`
+
+        :return: None
         """
         self.add_middleware_handler(callback, update_types)
 
     @staticmethod
     def check_commands_input(commands, method_name):
+        """
+        :meta private:
+        """
         if not isinstance(commands, list) or not all(isinstance(item, str) for item in commands):
             logger.error(f"{method_name}: Commands filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use the supplied type.")
 
     @staticmethod
     def check_regexp_input(regexp, method_name):
+        """
+        :meta private:
+        """
         if not isinstance(regexp, str):
             logger.error(f"{method_name}: Regexp filter should be string. Not able to use the supplied type.")
 
-    def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
+    def message_handler(self, commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
+                    content_types: Optional[List[str]]=None, chat_types: Optional[List[str]]=None, **kwargs):
         """
         Message handler decorator.
         This decorator can be used to decorate functions that must handle certain types of messages.
@@ -3884,7 +4761,11 @@ class TeleBot:
                 bot.send_message(message.chat.id, "This is the default command handler.")
 
         :param commands: Optional list of strings (commands to handle).
+        :type commands: :obj:`list` of :obj:`str`
+
         :param regexp: Optional regular expression.
+        :type regexp: :obj:`str`
+
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
             It must return True if the command should handle the message.
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
@@ -3925,23 +4806,42 @@ class TeleBot:
         Adds a message handler
         Note that you should use register_message_handler to add message_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.message_handlers.append(handler_dict)
 
-    def register_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
+    def register_message_handler(self, callback: Callable, content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
+            regexp: Optional[str]=None, func: Optional[Callable]=None, chat_types: Optional[List[str]]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers message handler.
 
         :param callback: function to be called
-        :param content_types: list of content_types
+        :type callback: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
         :param commands: list of commands
+        :type commands: :obj:`list` of :obj:`str`
+
         :param regexp:
-        :param func:
-        :param chat_types: True for private chat
-        :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param chat_types: List of chat types
+        :type chat_types: :obj:`list` of :obj:`str`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
         """
         method_name = "register_message_handler"
 
@@ -3973,13 +4873,23 @@ class TeleBot:
         """
         Edit message handler decorator
 
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
+        :param commands: Optional list of strings (commands to handle).
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Optional regular expression.
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
         :param chat_types: list of chat types
-        :param kwargs:
-        :return:
+        :type chat_types: :obj:`list` of :obj:`str`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
         """
         if content_types is None:
             content_types = ["text"]
@@ -4015,24 +4925,41 @@ class TeleBot:
         """
         Adds the edit message handler
         Note that you should use register_edited_message_handler to add edited_message_handler to the bot.
-        
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.edited_message_handlers.append(handler_dict)
 
-    def register_edited_message_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, chat_types=None, pass_bot=False, **kwargs):
+    def register_edited_message_handler(self, callback: Callable, content_types: Optional[List[str]]=None,
+        commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
+        chat_types: Optional[List[str]]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers edited message handler.
 
         :param callback: function to be called
-        :param content_types: list of content_types
+        :type callback: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
         :param commands: list of commands
-        :param regexp:
-        :param func:
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Regular expression
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param chat_types: True for private chat
+        :type chat_types: :obj:`bool`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         method_name = "register_edited_message_handler"
 
@@ -4060,14 +4987,22 @@ class TeleBot:
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
-        Channel post handler decorator
+        Channel post handler decorator.
 
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param kwargs:
-        :return:
+        :param commands: Optional list of strings (commands to handle).
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Optional regular expression.
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
         """
         if content_types is None:
             content_types = ["text"]
@@ -4102,23 +5037,38 @@ class TeleBot:
         """
         Adds channel post handler
         Note that you should use register_channel_post_handler to add channel_post_handler to the bot.
+
+        :meta private:
         
         :param handler_dict:
         :return:
         """
         self.channel_post_handlers.append(handler_dict)
     
-    def register_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
+    def register_channel_post_handler(self, callback: Callable, content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
+            regexp: Optional[str]=None, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers channel post message handler.
 
         :param callback: function to be called
-        :param content_types: list of content_types
+        :type callback: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
         :param commands: list of commands
-        :param regexp:
-        :param func:
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Regular expression
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         method_name = "register_channel_post_handler"
 
@@ -4147,11 +5097,20 @@ class TeleBot:
         """
         Edit channel post handler decorator
 
-        :param commands:
-        :param regexp:
-        :param func:
-        :param content_types:
-        :param kwargs:
+        :param commands: Optional list of strings (commands to handle).
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Optional regular expression.
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return:
         """
         if content_types is None:
@@ -4188,21 +5147,36 @@ class TeleBot:
         Adds the edit channel post handler
         Note that you should use register_edited_channel_post_handler to add edited_channel_post_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.edited_channel_post_handlers.append(handler_dict)
 
-    def register_edited_channel_post_handler(self, callback, content_types=None, commands=None, regexp=None, func=None, pass_bot=False, **kwargs):
+    def register_edited_channel_post_handler(self, callback: Callable, content_types: Optional[List[str]]=None,
+            commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers edited channel post message handler.
 
         :param callback: function to be called
-        :param content_types: list of content_types
+        :type callback: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
         :param commands: list of commands
-        :param regexp:
-        :param func:
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Regular expression
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
+        :type pass_bot: :obj:`bool`
+
         :return: decorated function
         """
         method_name = "register_edited_channel_post_handler"
@@ -4232,9 +5206,12 @@ class TeleBot:
         """
         Inline call handler decorator
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4248,18 +5225,26 @@ class TeleBot:
         Adds inline call handler
         Note that you should use register_inline_handler to add inline_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.inline_handlers.append(handler_dict)
 
-    def register_inline_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_inline_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers inline handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
+        :type pass_bot: :obj:`bool`
+
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -4267,11 +5252,14 @@ class TeleBot:
 
     def chosen_inline_handler(self, func, **kwargs):
         """
-        Description: TBD
+        Description: The result of an inline query that was chosen by a user and sent to their chat partner. 
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+        
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4285,19 +5273,27 @@ class TeleBot:
         Description: TBD
         Note that you should use register_chosen_inline_handler to add chosen_inline_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.chosen_inline_handlers.append(handler_dict)
 
-    def register_chosen_inline_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_chosen_inline_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers chosen inline handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chosen_inline_handler(handler_dict)
@@ -4306,9 +5302,12 @@ class TeleBot:
         """
         Callback request handler decorator
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4322,19 +5321,27 @@ class TeleBot:
         Adds a callback request handler
         Note that you should use register_callback_query_handler to add callback_query_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.callback_query_handlers.append(handler_dict)
 
-    def register_callback_query_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_callback_query_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers callback query handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_callback_query_handler(handler_dict)
@@ -4343,9 +5350,12 @@ class TeleBot:
         """
         Shipping request handler
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4359,19 +5369,27 @@ class TeleBot:
         Adds a shipping request handler.
         Note that you should use register_shipping_query_handler to add shipping_query_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.shipping_query_handlers.append(handler_dict)
 
-    def register_shipping_query_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_shipping_query_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers shipping query handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_shipping_query_handler(handler_dict)
@@ -4380,9 +5398,12 @@ class TeleBot:
         """
         Pre-checkout request handler
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4396,18 +5417,25 @@ class TeleBot:
         Adds a pre-checkout request handler
         Note that you should use register_pre_checkout_query_handler to add pre_checkout_query_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
     
-    def register_pre_checkout_query_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_pre_checkout_query_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers pre-checkout request handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+
         :param pass_bot: Pass TeleBot to handler.
+        :type pass_bot: :obj:`bool`
+
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -4417,9 +5445,11 @@ class TeleBot:
         """
         Poll request handler
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4433,19 +5463,27 @@ class TeleBot:
         Adds a poll request handler
         Note that you should use register_poll_handler to add poll_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.poll_handlers.append(handler_dict)
 
-    def register_poll_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_poll_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers poll handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_handler(handler_dict)
@@ -4454,9 +5492,12 @@ class TeleBot:
         """
         Poll_answer request handler
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4475,25 +5516,35 @@ class TeleBot:
         """
         self.poll_answer_handlers.append(handler_dict)
 
-    def register_poll_answer_handler(self, callback, func, pass_bot=False, **kwargs):
+    def register_poll_answer_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers poll answer handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_poll_answer_handler(handler_dict)
 
     def my_chat_member_handler(self, func=None, **kwargs):
         """
-        my_chat_member handler.
+        The bot's chat member status was updated in a chat. For private chats,
+        this update is received only when the bot is blocked or unblocked by the user.
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4507,30 +5558,42 @@ class TeleBot:
         Adds a my_chat_member handler.
         Note that you should use register_my_chat_member_handler to add my_chat_member_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.my_chat_member_handlers.append(handler_dict)
 
-    def register_my_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
+    def register_my_chat_member_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[Callable]=False, **kwargs):
         """
         Registers my chat member handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_my_chat_member_handler(handler_dict)
 
     def chat_member_handler(self, func=None, **kwargs):
         """
-        chat_member handler.
+        A chat member's status was updated in a chat. The bot must be an administrator
+        in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4544,30 +5607,43 @@ class TeleBot:
         Adds a chat_member handler.
         Note that you should use register_chat_member_handler to add chat_member_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.chat_member_handlers.append(handler_dict)
 
-    def register_chat_member_handler(self, callback, func=None, pass_bot=False, **kwargs):
+    def register_chat_member_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers chat member handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function``
+
+        :param func: Function executed as a filter
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return:None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_member_handler(handler_dict)
 
     def chat_join_request_handler(self, func=None, **kwargs):
         """
-        chat_join_request handler
+        A request to join the chat has been sent. The bot must have the can_invite_users
+        administrator right in the chat to receive these updates.
 
-        :param func:
-        :param kwargs:
-        :return:
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        
+        :return: None
         """
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
@@ -4581,19 +5657,27 @@ class TeleBot:
         Adds a chat_join_request handler.
         Note that you should use register_chat_join_request_handler to add chat_join_request_handler to the bot.
 
+        :meta private:
+
         :param handler_dict:
         :return:
         """
         self.chat_join_request_handlers.append(handler_dict)
 
-    def register_chat_join_request_handler(self, callback, func=None, pass_bot=False, **kwargs):
+    def register_chat_join_request_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
         """
         Registers chat join request handler.
 
         :param callback: function to be called
-        :param func:
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
         :param pass_bot: Pass TeleBot to handler.
-        :return: decorated function
+        :type pass_bot: :obj:`bool`
+
+        :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_join_request_handler(handler_dict)
