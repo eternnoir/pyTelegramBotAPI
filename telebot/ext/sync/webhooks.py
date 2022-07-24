@@ -1,8 +1,7 @@
 """
-This file is used by TeleBot.run_webhooks() &
-AsyncTeleBot.run_webhooks() functions.
+This file is used by TeleBot.run_webhooks() function.
 
-Flask/fastapi is required to run this script.
+Fastapi is required to run this script.
 """
 
 # modules required for running this script
@@ -34,16 +33,36 @@ class SyncWebhookListener:
                 debug: Optional[bool]=False
                 ) -> None:
         """
-        Synchronous implementation of webhook listener
-        for synchronous version of telebot.
+        Aynchronous implementation of webhook listener
+        for asynchronous version of telebot.
+        Not supposed to be used manually by user.
+        Use AsyncTeleBot.run_webhooks() instead.
 
-        :param bot: TeleBot instance
+        :param bot: AsyncTeleBot instance.
+        :type bot: telebot.async_telebot.AsyncTeleBot
+
         :param secret_token: Telegram secret token
+        :type secret_token: str
+
         :param host: Webhook host
+        :type host: str
+
         :param port: Webhook port
+        :type port: int
+
         :param ssl_context: SSL context
+        :type ssl_context: tuple
+
         :param url_path: Webhook url path
+        :type url_path: str
+
         :param debug: Debug mode
+        :type debug: bool
+
+        :raises ImportError: If FastAPI or uvicorn is not installed.
+        :raises ImportError: If Starlette version is too old.
+
+        :return: None
         """
         self._check_dependencies()
 
@@ -75,6 +94,8 @@ class SyncWebhookListener:
     def process_update(self, request: Request, update: dict):
         """
         Processes updates.
+
+        :meta private:
         """
         # header containsX-Telegram-Bot-Api-Secret-Token
         if request.headers.get('X-Telegram-Bot-Api-Secret-Token') != self._secret_token:
@@ -89,7 +110,10 @@ class SyncWebhookListener:
 
     def run_app(self):
         """
-        Run app with the given parameters.
+        Run app with the given parameters to init.
+        Not supposed to be used manually by user.
+
+        :return: None
         """
 
         uvicorn.run(app=self.app,

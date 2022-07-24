@@ -1,4 +1,8 @@
 """
+Callback data factory's file.
+"""
+
+"""
 Copyright (c) 2017-2018 Alex Root Junior
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this
@@ -29,17 +33,23 @@ import typing
 
 
 class CallbackDataFilter:
+    """
+    Filter for CallbackData.
+    """
 
     def __init__(self, factory, config: typing.Dict[str, str]):
         self.config = config
         self.factory = factory
 
-    def check(self, query):
+    def check(self, query) -> bool:
         """
         Checks if query.data appropriates to specified config
 
         :param query: telebot.types.CallbackQuery
-        :return: bool
+        :type query: telebot.types.CallbackQuery
+
+        :return: True if query.data appropriates to specified config
+        :rtype: bool
         """
 
         try:
@@ -135,7 +145,7 @@ class CallbackData:
         """
         Generate filter
 
-        :param config: specified named parameters will be checked with CallbackQury.data
+        :param config: specified named parameters will be checked with CallbackQuery.data
         :return: CallbackDataFilter class
         """
 

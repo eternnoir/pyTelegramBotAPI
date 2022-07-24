@@ -20,6 +20,7 @@ class JsonSerializable(object):
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
+
     """
 
     def to_json(self):
@@ -36,6 +37,7 @@ class Dictionaryable(object):
     """
     Subclasses of this class are guaranteed to be able to be converted to dictionary.
     All subclasses of this class must override to_dict.
+
     """
 
     def to_dict(self):
@@ -90,6 +92,65 @@ class JsonDeserializable(object):
 
 
 class Update(JsonDeserializable):
+    """
+    This object represents an incoming update.
+
+    https://core.telegram.org/bots/api#update
+
+    :attribute update_id: The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially.
+        This ID becomes especially handy if you're using webhooks, since it allows you to ignore repeated updates or to restore the correct
+        update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will
+        be chosen randomly instead of sequentially.
+    :type update_id: int
+
+    :attribute message: New incoming message of any kind — text, photo, sticker, etc.
+    :type message: :class:`telebot.types.Message`
+
+    :attribute edited_message: New version of a message that is known to the bot and was edited.
+    :type edited_message: :class:`telebot.types.Message`
+    
+    :attribute channel_post: New incoming channel post of any kind — text, photo, sticker, etc.
+    :type channel_post: :class:`telebot.types.Message`
+
+    :attribute edited_channel_post: New version of a channel post that is known to the bot and was edited.
+    :type edited_channel_post: :class:`telebot.types.Message`
+
+    :attribute inline_query: New incoming query from a user, which is answered by a bot and can be further processed.
+    :type inline_query: :class:`telebot.types.InlineQuery`
+
+    :attribute chosen_inline_result: New incoming result of an inline query that was chosen by a user and sent to their chat partner.
+    :type chosen_inline_result: :class:`telebot.types.ChosenInlineResult`
+
+    :attribute callback_query: New incoming callback query from a user.
+    :type callback_query: :class:`telebot.types.CallbackQuery`
+
+    :attribute shipping_query: New incoming shipping query. Only for invoices with flexible price
+    :type shipping_query: :class:`telebot.types.ShippingQuery`
+
+    :attribute pre_checkout_query: New incoming pre-checkout query. Contains full information about checkout
+    :type pre_checkout_query: :class:`telebot.types.PreCheckoutQuery`
+
+    :attribute poll: New poll state. Bots receive only updates about stopped polls and polls, which are sent by the bot
+    :type poll: :class:`telebot.types.Poll`
+
+    :attribute poll_answer: A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
+    :type poll_answer: :class:`telebot.types.PollAnswer`
+
+    :attribute my_chat_member: The bot's chat member status was updated in a chat. For private chats,
+        this update is received only when the bot is blocked or unblocked by the user.
+    :type my_chat_member: :class:`telebot.types.ChatMember`
+
+    :attribute chat_member:  A chat member's status was updated in a chat. The bot must be an administrator in the chat and must 
+        explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
+    :type chat_member: :class:`telebot.types.ChatMember`
+
+    :attribute chat_join_request: A request to join the chat has been sent. The bot must have the can_invite_users
+        administrator right in the chat to receive these updates.
+    :type chat_join_request: :class:`telebot.types.ChatJoinRequest`
+
+    :return: An Update object.
+    :rtype: :class:`telebot.types.Update`
+    """
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None

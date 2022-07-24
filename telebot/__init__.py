@@ -84,10 +84,13 @@ class TeleBot:
 
     Usage:
 
-    .. code-block:: python
+    .. code-block:: python3
+        :caption: Creating instance of TeleBot
 
         from telebot import TeleBot
         bot = TeleBot('token') # get token from @BotFather
+        # now you can register other handlers/update listeners, 
+        # and use bot methods.
 
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
@@ -243,7 +246,7 @@ class TeleBot:
         Enable saving states (by default saving disabled)
 
         .. note::
-            It is recommended to pass a :class:`~telebot.storage.StateMemoryStorage` instance as state_storage
+            It is recommended to pass a :class:`~telebot.storage.StatePickleStorage` instance as state_storage
             to TeleBot class.
 
         :param filename: Filename of saving file, defaults to "./.state-save/states.pkl"
@@ -547,8 +550,6 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#getupdates
 
-        :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
-        :type allowed_updates: :obj:`list`, optional
 
         :param offset: Identifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates.
             By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset
@@ -561,6 +562,9 @@ class TeleBot:
 
         :param timeout: Request connection timeout
         :type timeout: :obj:`int`, optional
+
+        :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
+        :type allowed_updates: :obj:`list`, optional
 
         :param long_polling_timeout: Timeout in seconds for long polling.
         :type long_polling_timeout: :obj:`int`, optional
@@ -604,6 +608,9 @@ class TeleBot:
         Processes new updates. Just pass list of subclasses of Update to this method.
 
         :param updates: List of :class:`telebot.types.Update` objects.
+        :type updates: :obj:`list` of :class:`telebot.types.Update`
+
+        :return None:
         """
         upd_count = len(updates)
         logger.debug('Received {0} new updates'.format(upd_count))
@@ -885,11 +892,11 @@ class TeleBot:
                 none_stop: Optional[bool]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
-        This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
+        This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
 
         Warning: Do not call this function more than once!
         
-        Always get updates.
+        Always gets updates.
 
         .. deprecated:: 4.1.1
             Use :meth:`infinity_polling` instead.
@@ -921,7 +928,7 @@ class TeleBot:
             
             Please note that this parameter doesn't affect updates created before the call to the get_updates, 
             so unwanted updates may be received for a short period of time.
-        :type allowed_updates: :obj:`list`] of :obj:`str`
+        :type allowed_updates: :obj:`list` of :obj:`str`
 
         :param none_stop: Deprecated, use non_stop. Old typo, kept for backward compatibility.
         :type none_stop: :obj:`bool`
@@ -1104,6 +1111,8 @@ class TeleBot:
     def stop_polling(self):
         """
         Stops polling.
+
+        Does not accept any arguments.
         """
         self.__stop_polling.set()
 
@@ -1170,6 +1179,15 @@ class TeleBot:
 
 
     def download_file(self, file_path: str) -> bytes:
+        """
+        Downloads file.
+
+        :param file_path: Path where the file should be downloaded.
+        :type file_path: str
+
+        :return: bytes
+        :rtype: :obj:`bytes`
+        """
         return apihelper.download_file(self.token, file_path)
 
 
@@ -1209,7 +1227,7 @@ class TeleBot:
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Use this method to get a list of profile pictures for a user.
-        Returns a UserProfilePhotos object.
+        Returns a :class:`telebot.types.UserProfilePhotos` object.
 
         Telegram documentation: https://core.telegram.org/bots/api#getuserprofilephotos
 
@@ -1240,7 +1258,7 @@ class TeleBot:
         :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
-        :return: :class:`telebot.types.Chat`
+        :return: Chat information
         :rtype: :class:`telebot.types.Chat`
         """
         result = apihelper.get_chat(self.token, chat_id)
@@ -1384,8 +1402,8 @@ class TeleBot:
         """
         Use this method to send text messages.
 
-        Warning: Do not send more than about 4000 characters each message, otherwise you'll risk an HTTP 414 error.
-        If you must send more than 4000 characters, 
+        Warning: Do not send more than about 4096 characters each message, otherwise you'll risk an HTTP 414 error.
+        If you must send more than 4096 characters, 
         use the `split_string` or `smart_split` function in util.py.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
@@ -3552,7 +3570,12 @@ class TeleBot:
             message_id: Optional[int]=None, 
             inline_message_id: Optional[str]=None) -> List[types.GameHighScore]:
         """
-        Gets top points and game play.
+        Use this method to get data for high score tables. Will return the score of the specified user and several of
+        their neighbors in a game. On success, returns an Array of GameHighScore objects.
+
+        This method will currently return scores for the target user, plus two of their closest neighbors on each side.
+        Will also return the top three users if the user and their neighbors are not among them.
+        Please note that this behavior is subject to change.
 
         Telegram documentation: https://core.telegram.org/bots/api#getgamehighscores
 
@@ -4430,9 +4453,15 @@ class TeleBot:
 
         self.middlewares.append(middleware)
 
-    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: int=None) -> None:
+    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: Optional[int]=None) -> None:
         """
         Sets a new state of a user.
+
+        .. note::
+
+            You should set both user id and chat id in order to set state for a user in a chat.
+            Otherwise, if you only set user_id, chat_id will equal to user_id, this means that
+            state will be set for the user in his private chat with a bot.
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
@@ -4449,7 +4478,7 @@ class TeleBot:
             chat_id = user_id
         self.current_states.set_state(chat_id, user_id, state)
 
-    def reset_data(self, user_id: int, chat_id: int=None):
+    def reset_data(self, user_id: int, chat_id: Optional[int]=None):
         """
         Reset data for a user in chat.
 
@@ -4465,7 +4494,7 @@ class TeleBot:
             chat_id = user_id
         self.current_states.reset_data(chat_id, user_id)
 
-    def delete_state(self, user_id: int, chat_id: int=None) -> None:
+    def delete_state(self, user_id: int, chat_id: Optional[int]=None) -> None:
         """
         Delete the current state of a user.
 
@@ -4481,12 +4510,24 @@ class TeleBot:
             chat_id = user_id
         self.current_states.delete_state(chat_id, user_id)
 
-    def retrieve_data(self, user_id: int, chat_id: int=None) -> Optional[Any]:
+    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None) -> Optional[Any]:
+        """
+        Returns context manager with data for a user in chat.
+
+        :param user_id: User identifier
+        :type user_id: int
+
+        :param chat_id: Chat's unique identifier, defaults to user_id
+        :type chat_id: int, optional
+
+        :return: Context manager with data for a user in chat
+        :rtype: Optional[Any]
+        """
         if chat_id is None:
             chat_id = user_id
         return self.current_states.get_interactive_data(chat_id, user_id)
 
-    def get_state(self, user_id: int, chat_id: int=None) -> Optional[Union[int, str, State]]:
+    def get_state(self, user_id: int, chat_id: Optional[int]=None) -> Optional[Union[int, str, State]]:
         """
         Gets current state of a user.
         Not recommended to use this method. But it is ok for debugging.
@@ -4504,7 +4545,7 @@ class TeleBot:
             chat_id = user_id
         return self.current_states.get_state(chat_id, user_id)
 
-    def add_data(self, user_id: int, chat_id:int=None, **kwargs):
+    def add_data(self, user_id: int, chat_id: Optional[int]=None, **kwargs):
         """
         Add data to states.
 
@@ -4635,6 +4676,7 @@ class TeleBot:
         Example:
 
         .. code-block:: python3
+            :caption: Usage of middleware_handler
 
             bot = TeleBot('TOKEN')
 
@@ -4728,13 +4770,14 @@ class TeleBot:
     def message_handler(self, commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
                     content_types: Optional[List[str]]=None, chat_types: Optional[List[str]]=None, **kwargs):
         """
-        Message handler decorator.
-        This decorator can be used to decorate functions that must handle certain types of messages.
+        Handles New incoming message of any kind - text, photo, sticker, etc.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
         All message handlers are tested in the order they were added.
 
         Example:
 
-        .. code-block:: python
+        .. code-block:: python3
+            :caption: Usage of message_handler
 
             bot = TeleBot('TOKEN')
 
@@ -4768,8 +4811,17 @@ class TeleBot:
 
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
             It must return True if the command should handle the message.
+        :type func: :obj:`lambda`
+
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
         :param chat_types: list of chat types
+        :type chat_types: :obj:`list` of :obj:`str`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: decorated function
         """
         if content_types is None:
             content_types = ["text"]
@@ -4871,7 +4923,8 @@ class TeleBot:
 
     def edited_message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
-        Edit message handler decorator
+        Handles new version of a message that is known to the bot and was edited.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
 
         :param commands: Optional list of strings (commands to handle).
         :type commands: :obj:`list` of :obj:`str`
@@ -4889,6 +4942,7 @@ class TeleBot:
         :type chat_types: :obj:`list` of :obj:`str`
 
         :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         if content_types is None:
@@ -4960,6 +5014,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         method_name = "register_edited_message_handler"
@@ -4988,7 +5044,8 @@ class TeleBot:
 
     def channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
-        Channel post handler decorator.
+        Handles new incoming channel post of any kind - text, photo, sticker, etc.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
 
         :param commands: Optional list of strings (commands to handle).
         :type commands: :obj:`list` of :obj:`str`
@@ -5003,6 +5060,7 @@ class TeleBot:
         :type content_types: :obj:`list` of :obj:`str`
 
         :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         if content_types is None:
@@ -5069,6 +5127,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         method_name = "register_channel_post_handler"
@@ -5096,7 +5156,8 @@ class TeleBot:
 
     def edited_channel_post_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
-        Edit channel post handler decorator
+        Handles new version of a channel post that is known to the bot and was edited.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
 
         :param commands: Optional list of strings (commands to handle).
         :type commands: :obj:`list` of :obj:`str`
@@ -5178,6 +5239,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: decorated function
         """
         method_name = "register_edited_channel_post_handler"
@@ -5205,7 +5268,8 @@ class TeleBot:
 
     def inline_handler(self, func, **kwargs):
         """
-        Inline call handler decorator
+        Handles new incoming inline query.
+        As a parameter to the decorator function, it passes :class:`telebot.types.InlineQuery` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5246,6 +5310,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5253,7 +5319,9 @@ class TeleBot:
 
     def chosen_inline_handler(self, func, **kwargs):
         """
-        Description: The result of an inline query that was chosen by a user and sent to their chat partner. 
+        Handles the result of an inline query that was chosen by a user and sent to their chat partner.
+        Please see our documentation on the feedback collecting for details on how to enable these updates for your bot.
+        As a parameter to the decorator function, it passes :class:`telebot.types.ChosenInlineResult` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5294,6 +5362,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5301,7 +5371,8 @@ class TeleBot:
 
     def callback_query_handler(self, func, **kwargs):
         """
-        Callback request handler decorator
+        Handles new incoming callback query.
+        As a parameter to the decorator function, it passes :class:`telebot.types.CallbackQuery` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5342,6 +5413,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5349,7 +5422,8 @@ class TeleBot:
 
     def shipping_query_handler(self, func, **kwargs):
         """
-        Shipping request handler
+        Handles new incoming shipping query. Only for invoices with flexible price.
+        As a parameter to the decorator function, it passes :class:`telebot.types.ShippingQuery` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5390,6 +5464,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5397,7 +5473,8 @@ class TeleBot:
 
     def pre_checkout_query_handler(self, func, **kwargs):
         """
-        Pre-checkout request handler
+        New incoming pre-checkout query. Contains full information about checkout.
+        As a parameter to the decorator function, it passes :class:`telebot.types.PreCheckoutQuery` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5437,6 +5514,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: decorated function
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5444,7 +5523,8 @@ class TeleBot:
 
     def poll_handler(self, func, **kwargs):
         """
-        Poll request handler
+        Handles new state of a poll. Bots receive only updates about stopped polls and polls, which are sent by the bot
+        As a parameter to the decorator function, it passes :class:`telebot.types.Poll` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5484,6 +5564,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5491,7 +5573,9 @@ class TeleBot:
 
     def poll_answer_handler(self, func=None, **kwargs):
         """
-        Poll_answer request handler
+        Handles change of user's answer in a non-anonymous poll(when user changes the vote).
+        Bots receive new votes only in polls that were sent by the bot itself.
+        As a parameter to the decorator function, it passes :class:`telebot.types.PollAnswer` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5532,6 +5616,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5539,8 +5625,9 @@ class TeleBot:
 
     def my_chat_member_handler(self, func=None, **kwargs):
         """
-        The bot's chat member status was updated in a chat. For private chats,
+        Handles update in a status of a bot. For private chats,
         this update is received only when the bot is blocked or unblocked by the user.
+        As a parameter to the decorator function, it passes :class:`telebot.types.ChatMemberUpdated` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5581,6 +5668,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5588,8 +5677,10 @@ class TeleBot:
 
     def chat_member_handler(self, func=None, **kwargs):
         """
-        A chat member's status was updated in a chat. The bot must be an administrator
-        in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
+        Handles update in a status of a user in a chat.
+        The bot must be an administrator in the chat and must explicitly specify “chat_member”
+        in the list of allowed_updates to receive these updates.
+        As a parameter to the decorator function, it passes :class:`telebot.types.ChatMemberUpdated` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5639,8 +5730,9 @@ class TeleBot:
 
     def chat_join_request_handler(self, func=None, **kwargs):
         """
-        A request to join the chat has been sent. The bot must have the can_invite_users
+        Handles a request to join the chat has been sent. The bot must have the can_invite_users
         administrator right in the chat to receive these updates.
+        As a parameter to the decorator function, it passes :class:`telebot.types.ChatJoinRequest` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -5681,6 +5773,8 @@ class TeleBot:
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
 
+        :param kwargs: Optional keyword arguments(custom filters)
+
         :return: None
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
@@ -5706,6 +5800,15 @@ class TeleBot:
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):
         """
         Create custom filter.
+
+        .. code-block:: python3
+            :caption: Example on checking the text of a message
+
+            class TextMatchFilter(AdvancedCustomFilter):
+                key = 'text'
+
+                async def check(self, message, text):
+                    return text == message.text
 
         :param custom_filter: Class with check(message) method.
         :param custom_filter: Custom filter class with key.
