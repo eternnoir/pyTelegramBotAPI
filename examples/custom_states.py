@@ -47,7 +47,7 @@ def start_ex(message):
  
 
 # Any state
-@bot.message_handler(state="*", commands='cancel')
+@bot.message_handler(state="*", commands=['cancel'])
 def any_state(message):
     """
     Cancel state
