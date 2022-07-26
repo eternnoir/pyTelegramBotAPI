@@ -37,3 +37,13 @@ handler_backends file
    :undoc-members:
    :show-inheritance:
 
+
+Extensions
+------------------------
+
+
+
+.. automodule:: telebot.ext.aio.webhooks
+   :members:
+   :undoc-members:
+   :show-inheritance:
