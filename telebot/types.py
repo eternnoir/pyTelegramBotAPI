@@ -643,7 +643,7 @@ class MessageID(JsonDeserializable):
         self.message_id = message_id
 
 
-class WebAppData(JsonDeserializable):
+class WebAppData(JsonDeserializable, Dictionaryable):
     """
     Describes data sent from a Web App to the bot.
 
@@ -1916,7 +1916,7 @@ class ReplyKeyboardRemove(JsonSerializable):
         return json.dumps(json_dict)
 
 
-class WebAppInfo(JsonDeserializable):
+class WebAppInfo(JsonDeserializable, Dictionaryable):
     """
     Describes a Web App.
 
@@ -2059,11 +2059,6 @@ class ReplyKeyboardMarkup(JsonSerializable):
         return self.add(*args, row_width=self.max_row_keys)
 
     def to_json(self):
-        """
-        Converts this object to its json representation following the Telegram API guidelines described here:
-        https://core.telegram.org/bots/api#replykeyboardmarkup
-        :return:
-        """
         json_dict = {'keyboard': self.keyboard}
         if self.one_time_keyboard is not None:
             json_dict['one_time_keyboard'] = self.one_time_keyboard
@@ -2848,7 +2843,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         return json_dict
 
 
-class BotCommand(JsonSerializable, JsonDeserializable):
+class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
     """
     This object represents a bot command.
 
@@ -3569,7 +3564,7 @@ class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
         return json_dict
 
 
-class SentWebAppMessage(JsonDeserializable):
+class SentWebAppMessage(JsonDeserializable, Dictionaryable):
     """
     Describes an inline message sent by a Web App on behalf of a user.
 
@@ -5100,7 +5095,7 @@ class GameHighScore(JsonDeserializable):
 
 # Payments
 
-class LabeledPrice(JsonSerializable):
+class LabeledPrice(JsonSerializable, Dictionaryable):
     """
     This object represents a portion of the price for goods or services.
 
@@ -6400,7 +6395,7 @@ class MessageAutoDeleteTimerChanged(JsonDeserializable):
         self.message_auto_delete_time = message_auto_delete_time
 
 
-class MenuButton(JsonDeserializable, JsonSerializable):
+class MenuButton(JsonDeserializable, JsonSerializable, Dictionaryable):
     """
     This object describes the bot's menu button in a private chat. It should be one of
 
@@ -6423,6 +6418,15 @@ class MenuButton(JsonDeserializable, JsonSerializable):
         return map[obj['type']](**obj)
     
     def to_json(self):
+        """
+        :meta private:
+        """
+        raise NotImplementedError
+
+    def to_dict(self):
+        """
+        :meta private:
+        """
         raise NotImplementedError
         
 
@@ -6501,7 +6505,7 @@ class MenuButtonDefault(MenuButton):
         return json.dumps(self.to_dict())
 
     
-class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
+class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryable):
     """
     Represents the rights of an administrator in a chat.
 
