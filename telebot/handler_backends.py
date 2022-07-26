@@ -12,7 +12,9 @@ except:
 
 class HandlerBackend(object):
     """
-    Class for saving (next step|reply) handlers
+    Class for saving (next step|reply) handlers.
+
+    :meta private:
     """
     def __init__(self, handlers=None):
         if handlers is None:
@@ -30,6 +32,9 @@ class HandlerBackend(object):
 
 
 class MemoryHandlerBackend(HandlerBackend):
+    """
+    :meta private:
+    """
     def register_handler(self, handler_group_id, handler):
         if handler_group_id in self.handlers:
             self.handlers[handler_group_id].append(handler)
@@ -47,6 +52,9 @@ class MemoryHandlerBackend(HandlerBackend):
 
 
 class FileHandlerBackend(HandlerBackend):
+    """
+    :meta private:
+    """
     def __init__(self, handlers=None, filename='./.handler-saves/handlers.save', delay=120):
         super(FileHandlerBackend, self).__init__(handlers)
         self.filename = filename
@@ -119,6 +127,9 @@ class FileHandlerBackend(HandlerBackend):
 
 
 class RedisHandlerBackend(HandlerBackend):
+    """
+    :meta private:
+    """
     def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot', password=None):
         super(RedisHandlerBackend, self).__init__(handlers)
         if not redis_installed:
@@ -150,6 +161,14 @@ class RedisHandlerBackend(HandlerBackend):
 
 
 class State:
+    """
+    Class representing a state.
+
+    .. code-block:: python3
+
+        class MyStates(StatesGroup):
+            my_state = State() # returns my_state:State string.
+    """
     def __init__(self) -> None:
         self.name = None
     def __str__(self) -> str:
@@ -158,6 +177,14 @@ class State:
     
 
 class StatesGroup:
+    """
+    Class representing common states.
+
+    .. code-block:: python3
+
+        class MyStates(StatesGroup):
+            my_state = State() # returns my_state:State string.
+    """
     def __init_subclass__(cls) -> None:
         for name, value in cls.__dict__.items():
             if not name.startswith('__') and not callable(value) and isinstance(value, State):
@@ -179,8 +206,13 @@ class BaseMiddleware:
     message update, then you will have to create pre_process_message function, and
     so on. Same applies to post_process.
 
-    .. code-block:: python
-    
+    .. note::
+        If you want to use middleware, you have to set use_class_middlewares=True in your
+        TeleBot instance.
+
+    .. code-block:: python3
+        :caption: Example of class-based middlewares.
+
         class MyMiddleware(BaseMiddleware):
             def __init__(self):
                 self.update_sensitive = True

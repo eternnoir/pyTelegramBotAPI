@@ -1,3 +1,10 @@
+"""
+File with all middleware classes, states.
+"""
+
+
+
+
 class BaseMiddleware:
     """
     Base class for middleware.
@@ -9,23 +16,25 @@ class BaseMiddleware:
     so on. Same applies to post_process.
 
     .. code-block:: python
+        :caption: Example of class-based middlewares
+
         class MyMiddleware(BaseMiddleware):
             def __init__(self):
                 self.update_sensitive = True
                 self.update_types = ['message', 'edited_message']
             
-            def pre_process_message(self, message, data):
+            async def pre_process_message(self, message, data):
                 # only message update here
                 pass
 
-            def post_process_message(self, message, data, exception):
+            async def post_process_message(self, message, data, exception):
                 pass # only message update here for post_process
 
-            def pre_process_edited_message(self, message, data):
+            async def pre_process_edited_message(self, message, data):
                 # only edited_message update here
                 pass
 
-            def post_process_edited_message(self, message, data, exception):
+            async def post_process_edited_message(self, message, data, exception):
                 pass # only edited_message update here for post_process
     """
 
@@ -42,6 +51,14 @@ class BaseMiddleware:
 
 
 class State:
+    """
+    Class representing a state.
+
+    .. code-block:: python3
+
+        class MyStates(StatesGroup):
+            my_state = State() # returns my_state:State string.
+    """
     def __init__(self) -> None:
         self.name = None
 
@@ -50,6 +67,14 @@ class State:
 
 
 class StatesGroup:
+    """
+    Class representing common states.
+
+    .. code-block:: python3
+
+        class MyStates(StatesGroup):
+            my_state = State() # returns my_state:State string.
+    """
     def __init_subclass__(cls) -> None:
 
         for name, value in cls.__dict__.items():

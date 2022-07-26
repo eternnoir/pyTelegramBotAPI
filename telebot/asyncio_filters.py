@@ -10,8 +10,19 @@ class SimpleCustomFilter(ABC):
     Simple Custom Filter base class.
     Create child class with check() method.
     Accepts only message, returns bool value, that is compared with given in handler.
-    
+
     Child classes should have .key property.
+
+    .. code-block:: python3
+        :caption: Example on creating a simple custom filter.
+
+        class ForwardFilter(SimpleCustomFilter):
+            # Check whether message was forwarded from channel or group.
+            key = 'is_forwarded'
+
+            def check(self, message):
+                return message.forward_date is not None
+
     """
 
     key: str = None
@@ -25,13 +36,23 @@ class SimpleCustomFilter(ABC):
 
 class AdvancedCustomFilter(ABC):
     """
-    Simple Custom Filter base class.
+    Advanced Custom Filter base class.
     Create child class with check() method.
     Accepts two parameters, returns bool: True - filter passed, False - filter failed.
     message: Message class
     text: Filter value given in handler
 
     Child classes should have .key property.
+
+    .. code-block:: python3
+        :caption: Example on creating an advanced custom filter.
+
+        class TextStartsFilter(AdvancedCustomFilter):
+            # Filter to check whether message starts with some text.
+            key = 'text_startswith'
+
+            def check(self, message, text):
+                return message.text.startswith(text)
     """
 
     key: str = None
@@ -48,6 +69,25 @@ class TextFilter:
     Advanced text filter to check (types.Message, types.CallbackQuery, types.InlineQuery, types.Poll)
 
     example of usage is in examples/asynchronous_telebot/custom_filters/advanced_text_filter.py
+
+    :param equals: string, True if object's text is equal to passed string
+    :type equals: :obj:`str`
+
+    :param contains: list[str] or tuple[str], True if any string element of iterable is in text
+    :type contains: list[str] or tuple[str]
+
+    :param starts_with: string, True if object's text starts with passed string
+    :type starts_with: :obj:`str`
+
+    :param ends_with: string, True if object's text starts with passed string
+    :type ends_with: :obj:`str`
+
+    :param ignore_case: bool (default False), case insensitive
+    :type ignore_case: :obj:`bool`
+
+    :raises ValueError: if incorrect value for a parameter was supplied
+
+    :return: None
     """
 
     def __init__(self,
@@ -56,13 +96,25 @@ class TextFilter:
                  starts_with: Optional[Union[str, list, tuple]] = None,
                  ends_with: Optional[Union[str, list, tuple]] = None,
                  ignore_case: bool = False):
-
         """
         :param equals: string, True if object's text is equal to passed string
+        :type equals: :obj:`str`
+
         :param contains: list[str] or tuple[str], True if any string element of iterable is in text
+        :type contains: list[str] or tuple[str]
+
         :param starts_with: string, True if object's text starts with passed string
+        :type starts_with: :obj:`str`
+
         :param ends_with: string, True if object's text starts with passed string
+        :type ends_with: :obj:`str`
+
         :param ignore_case: bool (default False), case insensitive
+        :type ignore_case: :obj:`bool`
+
+        :raises ValueError: if incorrect value for a parameter was supplied
+
+        :return: None
         """
 
         to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
@@ -87,7 +139,9 @@ class TextFilter:
         return iterable
 
     async def check(self, obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll]):
-
+        """
+        :meta private:
+        """
         if isinstance(obj, types.Poll):
             text = obj.question
         elif isinstance(obj, types.Message):
@@ -135,15 +189,20 @@ class TextFilter:
 class TextMatchFilter(AdvancedCustomFilter):
     """
     Filter to check Text message.
-    key: text
 
-    Example:
-    @bot.message_handler(text=['account'])
+    .. code-block:: python3
+        :caption: Example on using this filter:
+
+        @bot.message_handler(text=['account'])
+        # your function
     """
 
     key = 'text'
 
     async def check(self, message, text):
+        """
+        :meta private:
+        """
         if isinstance(text, TextFilter):
             return await text.check(message)
         elif type(text) is list:
@@ -157,14 +216,21 @@ class TextContainsFilter(AdvancedCustomFilter):
     Filter to check Text message.
     key: text
 
-    Example:
-    # Will respond if any message.text contains word 'account'
-    @bot.message_handler(text_contains=['account'])
+
+    .. code-block:: python3
+        :caption: Example on using this filter:
+
+        # Will respond if any message.text contains word 'account'
+        @bot.message_handler(text_contains=['account'])
+        # your function
     """
 
     key = 'text_contains'
 
     async def check(self, message, text):
+        """
+        :meta private:
+        """
         if not isinstance(text, str) and not isinstance(text, list) and not isinstance(text, tuple):
             raise ValueError("Incorrect text_contains value")
         elif isinstance(text, str):
@@ -179,14 +245,20 @@ class TextStartsFilter(AdvancedCustomFilter):
     """
     Filter to check whether message starts with some text.
 
-    Example:
-    # Will work if message.text starts with 'Sir'.
-    @bot.message_handler(text_startswith='Sir')
+    .. code-block:: python3
+        :caption: Example on using this filter:
+
+        # Will work if message.text starts with 'sir'.
+        @bot.message_handler(text_startswith='sir')
+        # your function
     """
 
     key = 'text_startswith'
 
     async def check(self, message, text):
+        """
+        :meta private:
+        """
         return message.text.startswith(text)
 
 
@@ -194,13 +266,19 @@ class ChatFilter(AdvancedCustomFilter):
     """
     Check whether chat_id corresponds to given chat_id.
 
-    Example:
-    @bot.message_handler(chat_id=[99999])
+    .. code-block:: python3
+        :caption: Example on using this filter:
+
+        @bot.message_handler(chat_id=[99999])
+        # your function
     """
 
     key = 'chat_id'
 
     async def check(self, message, text):
+        """
+        :meta private:
+        """
         if isinstance(message, types.CallbackQuery):
             return message.message.chat.id in text
         return message.chat.id in text
@@ -210,14 +288,19 @@ class ForwardFilter(SimpleCustomFilter):
     """
     Check whether message was forwarded from channel or group.
 
-    Example:
+    .. code-block:: python3 
+        :caption: Example on using this filter:
 
-    @bot.message_handler(is_forwarded=True)
+        @bot.message_handler(is_forwarded=True)
+        # your function
     """
 
     key = 'is_forwarded'
 
     async def check(self, message):
+        """
+        :meta private:
+        """
         return message.forward_date is not None
 
 
@@ -225,14 +308,19 @@ class IsReplyFilter(SimpleCustomFilter):
     """
     Check whether message is a reply.
 
-    Example:
+    .. code-block:: python3
+        :caption: Example on using this filter:
 
-    @bot.message_handler(is_reply=True)
+        @bot.message_handler(is_reply=True)
+        # your function
     """
 
     key = 'is_reply'
 
     async def check(self, message):
+        """
+        :meta private:
+        """
         if isinstance(message, types.CallbackQuery):
             return message.message.reply_to_message is not None
         return message.reply_to_message is not None
@@ -242,14 +330,19 @@ class LanguageFilter(AdvancedCustomFilter):
     """
     Check users language_code.
 
-    Example:
+    .. code-block:: python3
+        :caption: Example on using this filter:
 
-    @bot.message_handler(language_code=['ru'])
+        @bot.message_handler(language_code=['ru'])
+        # your function
     """
 
     key = 'language_code'
 
     async def check(self, message, text):
+        """
+        :meta private:
+        """
         if type(text) is list:
             return message.from_user.language_code in text
         else:
@@ -260,8 +353,11 @@ class IsAdminFilter(SimpleCustomFilter):
     """
     Check whether the user is administrator / owner of the chat.
 
-    Example:
-    @bot.message_handler(chat_types=['supergroup'], is_chat_admin=True)
+    .. code-block:: python3
+        :caption: Example on using this filter:
+
+        @bot.message_handler(chat_types=['supergroup'], is_chat_admin=True)
+        # your function
     """
 
     key = 'is_chat_admin'
@@ -270,6 +366,9 @@ class IsAdminFilter(SimpleCustomFilter):
         self._bot = bot
 
     async def check(self, message):
+        """
+        :meta private:
+        """
         if isinstance(message, types.CallbackQuery):
             result = await self._bot.get_chat_member(message.message.chat.id, message.from_user.id)
             return result.status ('creator', 'administrator')
@@ -281,8 +380,11 @@ class StateFilter(AdvancedCustomFilter):
     """
     Filter to check state.
 
-    Example:
-    @bot.message_handler(state=1)
+    .. code-block:: python3
+        :caption: Example on using this filter:
+        
+        @bot.message_handler(state=1)
+        # your function
     """
 
     def __init__(self, bot):
@@ -291,6 +393,9 @@ class StateFilter(AdvancedCustomFilter):
     key = 'state'
 
     async def check(self, message, text):
+        """
+        :meta private:
+        """
         if text == '*': return True
 
         # needs to work with callbackquery
@@ -334,10 +439,16 @@ class IsDigitFilter(SimpleCustomFilter):
     """
     Filter to check whether the string is made up of only digits.
 
-    Example:
-    @bot.message_handler(is_digit=True)
+    .. code-block:: python3
+        :caption: Example on using this filter:
+
+        @bot.message_handler(is_digit=True)
+        # your function
     """
     key = 'is_digit'
 
     async def check(self, message):
+        """
+        :meta private:
+        """
         return message.text.isdigit()

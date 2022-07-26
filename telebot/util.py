@@ -35,11 +35,13 @@ logger = logging.getLogger('TeleBot')
 
 thread_local = threading.local()
 
+#: Contains all media content types.
 content_type_media = [
     'text', 'audio', 'animation', 'document', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact', 'dice', 'poll',
     'venue', 'location'
 ]
 
+#: Contains all service content types such as `User joined the group`.
 content_type_service = [
     'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo', 'group_chat_created',
     'supergroup_chat_created', 'channel_chat_created', 'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message',
@@ -47,6 +49,7 @@ content_type_service = [
     'video_chat_participants_invited', 'message_auto_delete_timer_changed'
 ]
 
+#: All update types, should be used for allowed_updates parameter in polling.
 update_types = [
     "message", "edited_message", "channel_post", "edited_channel_post", "inline_query",
     "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer",
@@ -55,6 +58,9 @@ update_types = [
 
 
 class WorkerThread(threading.Thread):
+    """
+    :meta private:
+    """
     count = 0
 
     def __init__(self, exception_callback=None, queue=None, name=None):
@@ -118,7 +124,9 @@ class WorkerThread(threading.Thread):
 
 
 class ThreadPool:
-
+    """
+    :meta private:
+    """
     def __init__(self, telebot, num_threads=2):
         self.telebot = telebot
         self.tasks = Queue.Queue()
@@ -156,6 +164,9 @@ class ThreadPool:
 
 
 class AsyncTask:
+    """
+    :meta private:
+    """
     def __init__(self, target, *args, **kwargs):
         self.target = target
         self.args = args
@@ -182,6 +193,9 @@ class AsyncTask:
 
 
 class CustomRequestResponse():
+    """
+    :meta private:
+    """
     def __init__(self, json_text, status_code = 200, reason = ""):
         self.status_code = status_code
         self.text = json_text
@@ -192,6 +206,9 @@ class CustomRequestResponse():
 
 
 def async_dec():
+    """
+    :meta private:
+    """
     def decorator(fn):
         def wrapper(*args, **kwargs):
             return AsyncTask(fn, *args, **kwargs)
@@ -201,19 +218,49 @@ def async_dec():
     return decorator
 
 
-def is_string(var):
+def is_string(var) -> bool:
+    """
+    Returns True if the given object is a string.
+    """
     return isinstance(var, str)
 
 
-def is_dict(var):
+def is_dict(var) -> bool:
+    """
+    Returns True if the given object is a dictionary.
+
+    :param var: object to be checked
+    :type var: :obj:`object`
+
+    :return: True if the given object is a dictionary.
+    :rtype: :obj:`bool`
+    """
     return isinstance(var, dict)
 
 
-def is_bytes(var):
+def is_bytes(var) -> bool:
+    """
+    Returns True if the given object is a bytes object.
+
+    :param var: object to be checked
+    :type var: :obj:`object`
+
+    :return: True if the given object is a bytes object.
+    :rtype: :obj:`bool`
+    """
     return isinstance(var, bytes)
 
 
-def is_pil_image(var):
+def is_pil_image(var) -> bool:
+    """
+    Returns True if the given object is a PIL.Image.Image object.
+
+    :param var: object to be checked
+    :type var: :obj:`object`
+
+    :return: True if the given object is a PIL.Image.Image object.
+    :rtype: :obj:`bool`
+    """
     return pil_imported and isinstance(var, Image.Image)
 
 
@@ -233,7 +280,10 @@ def is_command(text: str) -> bool:
     Checks if `text` is a command. Telegram chat commands start with the '/' character.
     
     :param text: Text to check.
+    :type text: :obj:`str`
+
     :return: True if `text` is a command, else False.
+    :rtype: :obj:`bool`
     """
     if text is None: return False
     return text.startswith('/')
@@ -244,30 +294,40 @@ def extract_command(text: str) -> Union[str, None]:
     Extracts the command from `text` (minus the '/') if `text` is a command (see is_command).
     If `text` is not a command, this function returns None.
 
-    Examples:
-    extract_command('/help'): 'help'
-    extract_command('/help@BotName'): 'help'
-    extract_command('/search black eyed peas'): 'search'
-    extract_command('Good day to you'): None
+    .. code-block:: python3
+        :caption: Examples:
+        
+        extract_command('/help'): 'help'
+        extract_command('/help@BotName'): 'help'
+        extract_command('/search black eyed peas'): 'search'
+        extract_command('Good day to you'): None
 
     :param text: String to extract the command from
+    :type text: :obj:`str`
+
     :return: the command if `text` is a command (according to is_command), else None.
+    :rtype: :obj:`str` or :obj:`None`
     """
     if text is None: return None
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
 
 
-def extract_arguments(text: str) -> str:
+def extract_arguments(text: str) -> str or None:
     """
     Returns the argument after the command.
     
-    Examples:
-    extract_arguments("/get name"): 'name'
-    extract_arguments("/get"): ''
-    extract_arguments("/get@botName name"): 'name'
+    .. code-block:: python3
+        :caption: Examples:
+
+        extract_arguments("/get name"): 'name'
+        extract_arguments("/get"): ''
+        extract_arguments("/get@botName name"): 'name'
     
     :param text: String to extract the arguments from a command
+    :type text: :obj:`str`
+
     :return: the arguments if `text` is a command (according to is_command), else None.
+    :rtype: :obj:`str` or :obj:`None`
     """
     regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     result = regexp.match(text)
@@ -280,8 +340,13 @@ def split_string(text: str, chars_per_string: int) -> List[str]:
     This is very useful for splitting one giant message into multiples.
 
     :param text: The text to split
+    :type text: :obj:`str`
+
     :param chars_per_string: The number of characters per line the text is split into.
+    :type chars_per_string: :obj:`int`
+
     :return: The splitted text as a list of strings.
+    :rtype: :obj:`list` of :obj:`str`
     """
     return [text[i:i + chars_per_string] for i in range(0, len(text), chars_per_string)]
 
@@ -294,8 +359,13 @@ def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str
     Splits by '\n', '. ' or ' ' in exactly this priority.
 
     :param text: The text to split
+    :type text: :obj:`str`
+
     :param chars_per_string: The number of maximum characters per part the text is split to.
+    :type chars_per_string: :obj:`int`
+
     :return: The splitted text as a list of strings.
+    :rtype: :obj:`list` of :obj:`str`
     """
 
     def _text_before_last(substr: str) -> str:
@@ -336,12 +406,25 @@ def user_link(user: types.User, include_id: bool=False) -> str:
     Returns an HTML user link. This is useful for reports.
     Attention: Don't forget to set parse_mode to 'HTML'!
 
-    Example:
-    bot.send_message(your_user_id, user_link(message.from_user) + ' started the bot!', parse_mode='HTML')
+
+    .. code-block:: python3
+        :caption: Example:
+
+        bot.send_message(your_user_id, user_link(message.from_user) + ' started the bot!', parse_mode='HTML')
+
+    .. note::
+        You can use formatting.* for all other formatting options(bold, italic, links, and etc.)
+        This method is kept for backward compatibility, and it is recommended to use formatting.* for
+        more options.
 
     :param user: the user (not the user_id)
+    :type user: :obj:`telebot.types.User`
+
     :param include_id: include the user_id
+    :type include_id: :obj:`bool`
+
     :return: HTML user link
+    :rtype: :obj:`str`
     """
     name = escape(user.first_name)
     return (f"<a href='tg://user?id={user.id}'>{name}</a>"
@@ -355,15 +438,16 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
     
     Example:
 
-    .. code-block:: python
+    .. code-block:: python3
+        :caption: Using quick_markup:
 
         quick_markup({
             'Twitter': {'url': 'https://twitter.com'},
             'Facebook': {'url': 'https://facebook.com'},
             'Back': {'callback_data': 'whatever'}
         }, row_width=2): 
-            # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
-            # and a back button below
+        # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
+        # and a back button below
 
         # kwargs can be: 
         {
@@ -378,8 +462,13 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
         }
     
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
+    :type values: :obj:`dict`
+
     :param row_width: int row width
+    :type row_width: :obj:`int`
+
     :return: InlineKeyboardMarkup
+    :rtype: :obj:`types.InlineKeyboardMarkup`
     """
     markup = types.InlineKeyboardMarkup(row_width=row_width)
     buttons = [
@@ -392,16 +481,25 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.I
 
 # CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
 def or_set(self):
+    """
+    :meta private:
+    """
     self._set()
     self.changed()
 
 
 def or_clear(self):
+    """
+    :meta private:
+    """
     self._clear()
     self.changed()
 
 
 def orify(e, changed_callback):
+    """
+    :meta private:
+    """
     if not hasattr(e, "_set"):
         e._set = e.set
     if not hasattr(e, "_clear"):
@@ -412,6 +510,9 @@ def orify(e, changed_callback):
 
 
 def OrEvent(*events):
+    """
+    :meta private:
+    """
     or_event = threading.Event()
 
     def changed():
@@ -435,6 +536,9 @@ def OrEvent(*events):
 
 
 def per_thread(key, construct_value, reset=False):
+    """
+    :meta private:
+    """
     if reset or not hasattr(thread_local, key):
         value = construct_value()
         setattr(thread_local, key, value)
@@ -449,7 +553,13 @@ def chunks(lst, n):
         yield lst[i:i + n]
 
 
-def generate_random_token():
+def generate_random_token() -> str:
+    """
+    Generates a random token consisting of letters and digits, 16 characters long.
+
+    :return: a random token
+    :rtype: :obj:`str`
+    """
     return ''.join(random.sample(string.ascii_letters, 16))
 
 
@@ -457,10 +567,19 @@ def deprecated(warn: bool=True, alternative: Optional[Callable]=None, deprecatio
     """
     Use this decorator to mark functions as deprecated.
     When the function is used, an info (or warning if `warn` is True) is logged.
+
+    :meta private:
     
     :param warn: If True a warning is logged else an info
+    :type warn: :obj:`bool`
+
     :param alternative: The new function to use instead
+    :type alternative: :obj:`Callable`
+
     :param deprecation_text: Custom deprecation text
+    :type deprecation_text: :obj:`str`
+
+    :return: The decorated function
     """
     def decorator(function):
         def wrapper(*args, **kwargs):
@@ -480,7 +599,17 @@ def deprecated(warn: bool=True, alternative: Optional[Callable]=None, deprecatio
 
 # Cloud helpers
 def webhook_google_functions(bot, request):
-    """A webhook endpoint for Google Cloud Functions FaaS."""
+    """
+    A webhook endpoint for Google Cloud Functions FaaS.
+    
+    :param bot: The bot instance
+    :type bot: :obj:`telebot.TeleBot` or :obj:`telebot.async_telebot.AsyncTeleBot`
+
+    :param request: The request object
+    :type request: :obj:`flask.Request`
+
+    :return: The response object
+    """
     if request.is_json:
         try:
             request_json = request.get_json()
@@ -494,7 +623,7 @@ def webhook_google_functions(bot, request):
         return 'Bot ON'
 
 
-def antiflood(function, *args, **kwargs):
+def antiflood(function: Callable, *args, **kwargs):
     """
     Use this function inside loops in order to avoid getting TooManyRequests error.
     Example:
@@ -505,9 +634,15 @@ def antiflood(function, *args, **kwargs):
         for chat_id in chat_id_list:
         msg = antiflood(bot.send_message, chat_id, text)
         
-    :param function:
-    :param args:
-    :param kwargs:
+    :param function: The function to call
+    :type function: :obj:`Callable`
+
+    :param args: The arguments to pass to the function
+    :type args: :obj:`tuple`
+
+    :param kwargs: The keyword arguments to pass to the function
+    :type kwargs: :obj:`dict`
+
     :return: None
     """
     from telebot.apihelper import ApiTelegramException
@@ -524,6 +659,17 @@ def antiflood(function, *args, **kwargs):
     
     
 def parse_web_app_data(token: str, raw_init_data: str):
+    """
+    Parses web app data.
+
+    :param token: The bot token
+    :type token: :obj:`str`
+
+    :param raw_init_data: The raw init data
+    :type raw_init_data: :obj:`str`
+
+    :return: The parsed init data
+    """
     is_valid = validate_web_app_data(token, raw_init_data)
     if not is_valid:
         return False
@@ -539,7 +685,18 @@ def parse_web_app_data(token: str, raw_init_data: str):
     return result
 
 
-def validate_web_app_data(token, raw_init_data):
+def validate_web_app_data(token: str, raw_init_data: str):
+    """
+    Validates web app data.
+
+    :param token: The bot token
+    :type token: :obj:`str`
+
+    :param raw_init_data: The raw init data
+    :type raw_init_data: :obj:`str`
+
+    :return: The parsed init data
+    """
     try:
         parsed_data = dict(parse_qsl(raw_init_data))
     except ValueError:
