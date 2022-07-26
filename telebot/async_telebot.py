@@ -755,7 +755,7 @@ class AsyncTeleBot:
             Take a look at the :class:`telebot.asyncio_handler_backends.BaseMiddleware` section for more.
 
         :param middleware: Middleware-class.
-        :type middleware: :class:`telebot.middlewares.BaseMiddleware`
+        :type middleware: :class:`telebot.asyncio_handler_backends.BaseMiddleware`
     
         :return: None
         """
