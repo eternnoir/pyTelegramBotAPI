@@ -21,14 +21,6 @@ custom_filters file
    :undoc-members:
    :show-inheritance:
 
-Synchronous storage for states
--------------------------------
-
-.. automodule:: telebot.storage
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 handler_backends file
 --------------------------------
 
@@ -43,7 +35,7 @@ Extensions
 
 
 
-.. automodule:: telebot.ext.aio.webhooks
+.. automodule:: telebot.ext.sync.webhooks
    :members:
    :undoc-members:
    :show-inheritance:

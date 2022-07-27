@@ -26,15 +26,6 @@ Asyncio filters
    :undoc-members:
    :show-inheritance:
 
-Asynchronous storage for states
--------------------------------
-
-.. automodule:: telebot.asyncio_storage
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 Asyncio handler backends
 ------------------------
 
