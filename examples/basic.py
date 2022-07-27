@@ -17,6 +17,4 @@ async def echo(message: tg.Message):
     await bot.reply_to(message, message.text_content)
 
 
-asyncio.run(
-    BotRunner(bot_prefix="echo-bot", bot=bot).run_polling(),
-)
+asyncio.run(BotRunner(bot_prefix="echo-bot", bot=bot).run_polling())

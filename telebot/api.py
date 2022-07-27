@@ -67,7 +67,7 @@ async def _request(
         timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
     ) as resp:
 
-        json_result = await _check_response(route, resp)
+        json_result = await _check_response(resp)
         if json_result:
             return json_result["result"]
 
@@ -142,7 +142,7 @@ async def download_file(token, file_path):
         async with session.get(url) as response:
             result = await response.read()
             if response.status != 200:
-                raise ApiHTTPException("Download file", result)
+                raise ApiHTTPException("Error downloading file", response)
 
     return result
 
@@ -208,7 +208,7 @@ async def get_updates(
     return await _request(token, route="getUpdates", params=params, request_timeout=request_timeout)
 
 
-async def _check_response(method_name: str, response: aiohttp.ClientResponse):
+async def _check_response(response: aiohttp.ClientResponse):
     """
     Checks whether `result` is a valid API response.
     A result is considered invalid if:
@@ -221,15 +221,19 @@ async def _check_response(method_name: str, response: aiohttp.ClientResponse):
     :param result: The returned result of the method request
     :return: The result parsed to a JSON dictionary.
     """
-    if response.status != 200:
-        raise ApiHTTPException(method_name, response)
     try:
         result_json = await response.json(encoding="utf-8")
     except Exception:
-        raise ApiInvalidJSONException(method_name, response)
-    if not result_json["ok"]:
-        raise ApiTelegramException(method_name, response, result_json)
-    return result_json
+        raise ApiInvalidJSONException(response)
+    if not isinstance(result_json, dict) or "ok" not in result_json:
+        raise ApiHTTPException(f"JSON response is malformed: {result_json}", response)
+    if result_json["ok"] is True:
+        return result_json
+    else:
+        if "description" not in result_json:
+            raise ApiHTTPException(f"JSON response misses 'description' field: {result_json}", response)
+        else:
+            raise ApiHTTPException(result_json["description"], response)
 
 
 async def send_message(
@@ -2017,27 +2021,23 @@ async def stop_poll(token, chat_id, message_id, reply_markup=None):
     return await _request(token, method_url, params=payload)
 
 
-# exceptions
 class ApiException(Exception):
     """
     This class represents a base Exception thrown when a call to the Telegram API fails.
-    In addition to an informative message, it has a `function_name` and a `result` attribute, which respectively
-    contain the name of the failed function and the returned result that made the function to be considered  as
-    failed.
+    It contains aiohttp client response in case you want to do some advanced error handling.
     """
 
     API_URL_REGEX = re.compile(r"api\.telegram\.org/bot(?P<token>.*?)/.*")
 
-    def __init__(self, msg: str, function_name: str, result: Any):
+    def __init__(self, msg: str, response: aiohttp.ClientResponse):
         match = self.API_URL_REGEX.search(msg)
         if match is not None:
             bot_token = match.group("token")
             masked_token = bot_token[:3] + "*" * (len(bot_token) - 3)
             msg = msg.replace(bot_token, masked_token)
 
-        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
-        self.function_name = function_name
-        self.result = result
+        super().__init__(msg)
+        self.response = response
 
 
 class ApiHTTPException(ApiException):
@@ -2046,12 +2046,9 @@ class ApiHTTPException(ApiException):
     Telegram API server returns HTTP code that is not 200.
     """
 
-    def __init__(self, function_name: str, response: aiohttp.ClientResponse):
-        super(ApiHTTPException, self).__init__(
-            "The server returned HTTP {0} {1}. Response body:\n[{2}]".format(
-                response.status, response.reason, response
-            ),
-            function_name,
+    def __init__(self, error_description: str, response: aiohttp.ClientResponse):
+        super().__init__(
+            f"{error_description} ({response.url} responded with {response.status} {response.reason})",
             response,
         )
 
@@ -2062,34 +2059,8 @@ class ApiInvalidJSONException(ApiException):
     Telegram API server returns invalid json.
     """
 
-    def __init__(self, function_name: str, response: aiohttp.ClientResponse):
-        super(ApiInvalidJSONException, self).__init__(
-            "The server returned an invalid JSON response. Response body:\n[{0}]".format(response),
-            function_name,
+    def __init__(self, response: aiohttp.ClientResponse):
+        super().__init__(
+            f"The server returned an invalid JSON response. Response body:\n[{response}]",
             response,
         )
-
-
-class ApiTelegramException(ApiException):
-    """
-    This class represents an Exception thrown when a Telegram API returns error code.
-    """
-
-    def __init__(self, function_name: str, response: aiohttp.ClientResponse, response_json: dict):
-        error_code = response_json.get("error_code", "NO ERROR CODE FOUND IN JSON")
-        description = response_json.get("description", "NO DESCRIPTION FOUND IN JSON")
-        super(ApiTelegramException, self).__init__(
-            "Error code: {0}. Description: {1}".format(error_code, description),
-            function_name,
-            response,
-        )
-        self.result_json = response_json
-        self.error_code = error_code
-
-
-class RequestTimeout(Exception):
-    """
-    This class represents a request timeout.
-    """
-
-    pass
