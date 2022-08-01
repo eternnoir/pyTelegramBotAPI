@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 from datetime import datetime
+import os
 
 try:
     import ujson as json
@@ -87,6 +88,14 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files).replace(token, token.split(':')[0] + ":{TOKEN}"))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
+
+    if files:
+        # process types.InputFile
+        for key, value in files.items():
+            if isinstance(value, types.InputFile):
+                files[key] = value.file
+                
+    
     if files and format_header_param:
         fields.format_header_param = _no_encode(format_header_param)
     if params:

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from io import IOBase
 import logging
+import os
+from pathlib import Path
 from typing import Dict, List, Optional, Union
 from abc import ABC
 
@@ -6601,3 +6604,23 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     
 
 
+class InputFile:
+    def __init__(self, file) -> None:
+        self._file, self.file_name = self._resolve_file(file)
+
+    def _resolve_file(self, file):
+        if isinstance(file, str):
+            _file = open(file, 'rb')
+            return _file, os.path.basename(file.name)
+        elif isinstance(file, IOBase):
+            return file, os.path.basename(file.name)
+        elif isinstance(file, Path):
+            _file = open(file, 'rb')
+            return _file, os.path.basename(file.name)
+        else:
+            raise TypeError("File must be a string or a file-like object(pathlib.Path, io.IOBase).")
+
+
+    @property
+    def file(self):
+        return self._file
