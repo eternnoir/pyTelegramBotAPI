@@ -57,7 +57,7 @@ class SessionManager:
 session_manager = SessionManager()
 
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
-    params = prepare_data(params, files)
+    params = _prepare_data(params, files)
     if request_timeout is None:
         request_timeout = REQUEST_TIMEOUT
     timeout = aiohttp.ClientTimeout(total=request_timeout)
@@ -85,20 +85,7 @@ async def _process_request(token, url, method='get', params=None, files=None, re
         
 
 
-
-def prepare_file(obj):
-    """
-    returns os.path.basename for a given file
-
-    :param obj:
-    :return:
-    """
-    name = getattr(obj, 'name', None)
-    if name and isinstance(name, str) and name[0] != '<' and name[-1] != '>':
-        return os.path.basename(name)
-
-
-def prepare_data(params=None, files=None):
+def _prepare_data(params=None, files=None):
     """
     prepare data for request.
 
@@ -114,15 +101,10 @@ def prepare_data(params=None, files=None):
 
     if files:
         for key, f in files.items():
-            if isinstance(f, tuple):
-                if len(f) == 2:
-                    filename, fileobj = f
-                else:
-                    raise ValueError('Tuple must have exactly 2 elements: filename, fileobj')
-            else:
-                filename, fileobj = prepare_file(f) or key, f
+            if isinstance(f, types.InputFile):
+                f = f.file
 
-            data.add_field(key, fileobj, filename=filename)
+            data.add_field(key, f, filename=key)
 
     return data
 
