@@ -33,7 +33,7 @@ telebot.logger.setLevel(logging.INFO)
 
 bot = telebot.TeleBot(API_TOKEN)
 
-app = fastapi.FastAPI()
+app = fastapi.FastAPI(docs=None, redoc_url=None)
 
 
 # Process webhook calls
