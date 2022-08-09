@@ -34,7 +34,7 @@ WEBHOOK_URL_PATH = "/{}/".format(API_TOKEN)
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = AsyncTeleBot(API_TOKEN)
 auxbot = telebot.TeleBot(API_TOKEN)
 app = web.Application()
 
