@@ -6,6 +6,7 @@
 
 import logging
 import fastapi
+import uvicorn
 import telebot
 
 API_TOKEN = 'TOKEN'
@@ -33,12 +34,14 @@ telebot.logger.setLevel(logging.INFO)
 
 bot = telebot.TeleBot(API_TOKEN)
 
-app = fastapi.FastAPI()
+app = fastapi.FastAPI(docs=None, redoc_url=None)
 
 
-# Process webhook calls
 @app.post(f'/{API_TOKEN}/')
 def process_webhook(update: dict):
+    """
+    Process webhook calls
+    """
     if update:
         update = telebot.types.Update.de_json(update)
         bot.process_new_updates([update])
@@ -46,18 +49,21 @@ def process_webhook(update: dict):
         return
 
 
-
-# Handle '/start' and '/help'
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
+    """
+    Handle '/start' and '/help'
+    """
     bot.reply_to(message,
                  ("Hi there, I am EchoBot.\n"
                   "I am here to echo your kind words back to you."))
 
 
-# Handle all other messages
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def echo_message(message):
+    """
+    Handle all other messages
+    """
     bot.reply_to(message, message.text)
 
 
@@ -65,11 +71,12 @@ def echo_message(message):
 bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+bot.set_webhook(
+    url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
+    certificate=open(WEBHOOK_SSL_CERT, 'r')
+)
 
 
-import uvicorn
 uvicorn.run(
     app,
     host=WEBHOOK_LISTEN,
