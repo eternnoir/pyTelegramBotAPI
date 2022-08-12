@@ -5028,6 +5028,20 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
 
+    async def get_custom_emoji_stickers(self, custom_emoji_ids: List[str]) -> List[types.Sticker]:
+        """
+        Use this method to get information about custom emoji stickers by their identifiers.
+        Returns an Array of Sticker objects.
+
+        :param custom_emoji_ids: List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified.
+        :type custom_emoji_ids: :obj:`list` of :obj:`str`
+
+        :return: Returns an Array of Sticker objects.
+        :rtype: :obj:`list` of :class:`telebot.types.Sticker`
+        """
+        result = asyncio_helper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
+        return [types.Sticker.de_json(sticker) for sticker in result]
+
     async def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]) -> types.File:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
@@ -5055,6 +5069,7 @@ class AsyncTeleBot:
             tgs_sticker: Union[Any, str]=None, 
             webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
+            sticker_type: Optional[str]=None,
             mask_position: Optional[types.MaskPosition]=None) -> bool:
         """
         Use this method to create new sticker set owned by a user. 
@@ -5088,8 +5103,13 @@ class AsyncTeleBot:
         :param webm_sticker: WebM animation with the sticker, uploaded using multipart/form-data.
         :type webm_sticker: :obj:`str`
 
-        :param contains_masks: Pass True, if a set of mask stickers should be created
+        :param contains_masks: Pass True, if a set of mask stickers should be created. Deprecated since Bot API 6.2,
+            use sticker_type instead.
         :type contains_masks: :obj:`bool`
+
+        :param sticker_type: Optional, Type of stickers in the set, pass “regular” or “mask”. Custom emoji sticker sets can't be created
+            via the Bot API at the moment. By default, a regular sticker set is created.
+        :type sticker_type: :obj:`str`
 
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
@@ -5099,7 +5119,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.create_new_sticker_set(
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
-            contains_masks, mask_position, webm_sticker)
+            contains_masks, mask_position, webm_sticker, sticker_type)
 
 
     async def add_sticker_to_set(

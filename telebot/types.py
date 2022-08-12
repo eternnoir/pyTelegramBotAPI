@@ -525,6 +525,10 @@ class Chat(JsonDeserializable):
         allows to use tg://user?id=<user_id> links only in chats with the user. Returned only in getChat.
     :type has_private_forwards: :obj:`bool`
 
+    :param has_restricted_voice_and_video_messages: Optional. True, if the privacy settings of the other party restrict sending voice and video note messages
+        in the private chat. Returned only in getChat.
+    :type :obj:`bool`
+
     :param join_to_send_messages: Optional. :obj:`bool`, if users need to join the supergroup before they can send 
         messages. Returned only in getChat.
     :type join_to_send_messages: :obj:`bool`
@@ -599,7 +603,7 @@ class Chat(JsonDeserializable):
                  permissions=None, slow_mode_delay=None,
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
-                 join_to_send_messages=None, join_by_request=None, **kwargs):
+                 join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -611,6 +615,7 @@ class Chat(JsonDeserializable):
         self.join_to_send_messages: bool = join_to_send_messages
         self.join_by_request: bool = join_by_request
         self.has_private_forwards: bool = has_private_forwards
+        self.has_restricted_voice_and_video_messages: bool = has_restricted_voice_and_video_messages
         self.description: str = description
         self.invite_link: str = invite_link
         self.pinned_message: Message = pinned_message
@@ -1251,7 +1256,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
         (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bold” (bold text), “italic” (italic text), 
         “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “code” 
         (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users 
-        without usernames)
+        without usernames), “custom_emoji” (for inline custom emoji stickers)
     :type type: :obj:`str`
 
     :param offset: Offset in UTF-16 code units to the start of the entity
@@ -1268,6 +1273,10 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
 
     :param language: Optional. For “pre” only, the programming language of the entity text
     :type language: :obj:`str`
+
+    :param custom_emoji_id: Optional. For “custom_emoji” only, unique identifier of the custom emoji.
+        Use getCustomEmojiStickers to get full information about the sticker.
+    :type custom_emoji_id: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.MessageEntity`
@@ -1290,13 +1299,14 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
             obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
-    def __init__(self, type, offset, length, url=None, user=None, language=None, **kwargs):
+    def __init__(self, type, offset, length, url=None, user=None, language=None, custom_emoji_id=None, **kwargs):
         self.type: str = type
         self.offset: int = offset
         self.length: int = length
         self.url: str = url
         self.user: User = user
         self.language: str = language
+        self.custom_emoji_id: str = custom_emoji_id
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1307,7 +1317,8 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
                 "length": self.length,
                 "url": self.url,
                 "user": self.user,
-                "language":  self.language}
+                "language":  self.language,
+                "custom_emoji_id": self.custom_emoji_id}
 
 
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
@@ -5439,13 +5450,17 @@ class StickerSet(JsonDeserializable):
     :param title: Sticker set title
     :type title: :obj:`str`
 
+    :param sticker_type: Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”
+    :type sticker_type: :obj:`str`
+
     :param is_animated: True, if the sticker set contains animated stickers
     :type is_animated: :obj:`bool`
 
     :param is_video: True, if the sticker set contains video stickers
     :type is_video: :obj:`bool`
 
-    :param contains_masks: True, if the sticker set contains masks
+    :param contains_masks: True, if the sticker set contains masks. Deprecated since Bot API 6.2,
+        use sticker_type instead.
     :type contains_masks: :obj:`bool`
 
     :param stickers: List of all set stickers
@@ -5471,9 +5486,10 @@ class StickerSet(JsonDeserializable):
             obj['thumb'] = None
         return cls(**obj)
 
-    def __init__(self, name, title, is_animated, is_video, contains_masks, stickers, thumb=None, **kwargs):
+    def __init__(self, name, title, sticker_type, is_animated, is_video, contains_masks, stickers, thumb=None, **kwargs):
         self.name: str = name
         self.title: str = title
+        self.sticker_type: str = sticker_type
         self.is_animated: bool = is_animated
         self.is_video: bool = is_video
         self.contains_masks: bool = contains_masks
@@ -5493,6 +5509,10 @@ class Sticker(JsonDeserializable):
     :param file_unique_id: Unique identifier for this file, which is supposed to be the same over time and for different 
         bots. Can't be used to download or reuse the file.
     :type file_unique_id: :obj:`str`
+
+    :param type: Type of the sticker, currently one of “regular”, “mask”, “custom_emoji”. The type of the sticker is
+        independent from its format, which is determined by the fields is_animated and is_video.
+    :type type: :obj:`str`
 
     :param width: Sticker width
     :type width: :obj:`int`
@@ -5521,6 +5541,9 @@ class Sticker(JsonDeserializable):
     :param mask_position: Optional. For mask stickers, the position where the mask should be placed
     :type mask_position: :class:`telebot.types.MaskPosition`
 
+    :param custom_emoji_id: Optional. For custom emoji stickers, unique identifier of the custom emoji
+    :type custom_emoji_id: :obj:`str`
+
     :param file_size: Optional. File size in bytes
     :type file_size: :obj:`int`
 
@@ -5542,11 +5565,12 @@ class Sticker(JsonDeserializable):
             obj['premium_animation'] = File.de_json(obj['premium_animation'])
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, width, height, is_animated, 
+    def __init__(self, file_id, file_unique_id, type, width, height, is_animated, 
                 is_video, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, 
-                premium_animation=None, **kwargs):
+                premium_animation=None, custom_emoji_id=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
+        self.type: str = type
         self.width: int = width
         self.height: int = height
         self.is_animated: bool = is_animated
@@ -5557,6 +5581,7 @@ class Sticker(JsonDeserializable):
         self.mask_position: MaskPosition = mask_position
         self.file_size: int = file_size
         self.premium_animation: File = premium_animation
+        self.custom_emoji_id: int = custom_emoji_id
         
 
 
