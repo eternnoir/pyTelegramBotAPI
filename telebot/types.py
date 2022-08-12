@@ -6605,22 +6605,61 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
 
 
 class InputFile:
+    """
+    A class to send files through Telegram Bot API.
+
+    You need to pass a file, which should be an instance of :class:`io.IOBase` or 
+    :class:`pathlib.Path`, or :obj:`str`.
+
+    If you pass an :obj:`str` as a file, it will be opened and closed by the class.
+
+    :param file: A file to send.
+    :type file: :class:`io.IOBase` or :class:`pathlib.Path` or :obj:`str`
+
+    .. code-block:: python3
+        :caption: Example on sending a file using this class
+
+        from telebot.types import InputFile
+
+        # Sending a file from disk
+        bot.send_document(
+            chat_id,
+            InputFile('/path/to/file/file.txt')
+        )
+
+
+        # Sending a file from an io.IOBase object
+        with open('/path/to/file/file.txt', 'rb') as f:
+            bot.send_document(
+                chat_id,
+                InputFile(f)
+            )
+
+        # Sending a file using pathlib.Path:
+        bot.send_document(
+            chat_id,
+            InputFile(pathlib.Path('/path/to/file/file.txt'))
+        )
+    """
     def __init__(self, file) -> None:
         self._file, self.file_name = self._resolve_file(file)
 
     def _resolve_file(self, file):
         if isinstance(file, str):
             _file = open(file, 'rb')
-            return _file, os.path.basename(file.name)
+            return _file, os.path.basename(_file.name)
         elif isinstance(file, IOBase):
             return file, os.path.basename(file.name)
         elif isinstance(file, Path):
             _file = open(file, 'rb')
-            return _file, os.path.basename(file.name)
+            return _file, os.path.basename(_file.name)
         else:
             raise TypeError("File must be a string or a file-like object(pathlib.Path, io.IOBase).")
 
 
     @property
     def file(self):
+        """
+        File object.
+        """
         return self._file
