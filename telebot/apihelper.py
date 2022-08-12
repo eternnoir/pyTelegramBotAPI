@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import time
 from datetime import datetime
 
@@ -89,8 +90,9 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     connect_timeout = CONNECT_TIMEOUT
 
     if files:
+        files_copy = copy.deepcopy(files)
         # process types.InputFile
-        for key, value in files.items():
+        for key, value in files_copy.items():
             if isinstance(value, types.InputFile):
                 files[key] = value.file
                 
