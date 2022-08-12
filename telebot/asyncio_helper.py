@@ -57,7 +57,7 @@ class SessionManager:
 session_manager = SessionManager()
 
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
-    params = prepare_data(params, files)
+    params = _prepare_data(params, files)
     if request_timeout is None:
         request_timeout = REQUEST_TIMEOUT
     timeout = aiohttp.ClientTimeout(total=request_timeout)
@@ -83,24 +83,17 @@ async def _process_request(token, url, method='get', params=None, files=None, re
         if not got_result:
             raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
         
-
-
-
-def prepare_file(obj):
+def _prepare_file(obj):
     """
-    returns os.path.basename for a given file
-
-    :param obj:
-    :return:
+    Prepares file for upload.
     """
     name = getattr(obj, 'name', None)
     if name and isinstance(name, str) and name[0] != '<' and name[-1] != '>':
         return os.path.basename(name)
 
-
-def prepare_data(params=None, files=None):
+def _prepare_data(params=None, files=None):
     """
-    prepare data for request.
+    Adds the parameters and files to the request.
 
     :param params:
     :param files:
@@ -111,18 +104,20 @@ def prepare_data(params=None, files=None):
     if params:
         for key, value in params.items():
             data.add_field(key, str(value))
-
     if files:
         for key, f in files.items():
             if isinstance(f, tuple):
                 if len(f) == 2:
-                    filename, fileobj = f
+                    file_name, file = f
                 else:
                     raise ValueError('Tuple must have exactly 2 elements: filename, fileobj')
+            elif isinstance(f, types.InputFile):
+                file_name = f.file_name
+                file = f.file
             else:
-                filename, fileobj = prepare_file(f) or key, f
+                file_name, file = _prepare_file(f) or key, f
 
-            data.add_field(key, fileobj, filename=filename)
+            data.add_field(key, file, filename=file_name)
 
     return data
 
