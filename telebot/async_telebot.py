@@ -5039,7 +5039,7 @@ class AsyncTeleBot:
         :return: Returns an Array of Sticker objects.
         :rtype: :obj:`list` of :class:`telebot.types.Sticker`
         """
-        result = asyncio_helper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
+        result = await asyncio_helper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
         return [types.Sticker.de_json(sticker) for sticker in result]
 
     async def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]) -> types.File:
