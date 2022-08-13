@@ -4281,8 +4281,10 @@ class TeleBot:
         """
         if contains_masks is not None:
             logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
-            if sticker_type is None:
+            if contains_masks:
                 sticker_type = 'mask'
+            else:
+                sticker_type = 'regular'
 
         return apihelper.create_new_sticker_set(
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
