@@ -56,7 +56,7 @@
     * [Logging](#logging)
     * [Proxy](#proxy)
     * [Testing](#testing)
-  * [API conformance limitations](#api-conformance)
+  * [API conformance limitations](#api-conformance-limitations)
   * [AsyncTeleBot](#asynctelebot)
   * [F.A.Q.](#faq)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
