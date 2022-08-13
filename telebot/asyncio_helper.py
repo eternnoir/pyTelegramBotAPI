@@ -1534,7 +1534,7 @@ async def get_sticker_set(token, name):
 
 async def get_custom_emoji_stickers(token, custom_emoji_ids):
     method_url = r'getCustomEmojiStickers'
-    return _process_request(token, method_url, params={'custom_emoji_ids': custom_emoji_ids})
+    return await _process_request(token, method_url, params={'custom_emoji_ids': custom_emoji_ids})
 
 async def upload_sticker_file(token, user_id, png_sticker):
     method_url = 'uploadStickerFile'
