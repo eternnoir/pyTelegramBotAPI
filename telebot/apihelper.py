@@ -1574,7 +1574,7 @@ def upload_sticker_file(token, user_id, png_sticker):
 
 def create_new_sticker_set(
         token, user_id, name, title, emojis, png_sticker, tgs_sticker,
-        contains_masks=None, mask_position=None, webm_sticker=None, sticker_type=None):
+        mask_position=None, webm_sticker=None, sticker_type=None):
     method_url = 'createNewStickerSet'
     payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
     if png_sticker:
@@ -1589,8 +1589,6 @@ def create_new_sticker_set(
         files = {stype: sticker}
     else:
         payload[stype] = sticker
-    if contains_masks is not None:
-        payload['contains_masks'] = contains_masks
     if mask_position:
         payload['mask_position'] = mask_position.to_json()
     if webm_sticker:

@@ -1275,7 +1275,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     :type language: :obj:`str`
 
     :param custom_emoji_id: Optional. For “custom_emoji” only, unique identifier of the custom emoji.
-        Use getCustomEmojiStickers to get full information about the sticker.
+        Use get_custom_emoji_stickers to get full information about the sticker.
     :type custom_emoji_id: :obj:`str`
 
     :return: Instance of the class
@@ -5486,15 +5486,22 @@ class StickerSet(JsonDeserializable):
             obj['thumb'] = None
         return cls(**obj)
 
-    def __init__(self, name, title, sticker_type, is_animated, is_video, contains_masks, stickers, thumb=None, **kwargs):
+    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumb=None, **kwargs):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
         self.is_animated: bool = is_animated
         self.is_video: bool = is_video
-        self.contains_masks: bool = contains_masks
         self.stickers: List[Sticker] = stickers
         self.thumb: PhotoSize = thumb
+
+    @property
+    def contains_masks(self):
+        """
+        Deprecated since Bot API 6.2, use sticker_type instead.
+        """
+        logger.warning("contains_masks is deprecated, use sticker_type instead")
+        return self.sticker_type == 'mask'
 
 
 class Sticker(JsonDeserializable):

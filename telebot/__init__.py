@@ -4279,9 +4279,14 @@ class TeleBot:
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        if contains_masks is not None:
+            logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
+            if sticker_type is None:
+                sticker_type = 'mask'
+
         return apihelper.create_new_sticker_set(
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
-            contains_masks, mask_position, webm_sticker, sticker_type)
+            mask_position, webm_sticker, sticker_type)
 
     def add_sticker_to_set(
             self, user_id: int, name: str, emojis: str,
