@@ -56,7 +56,7 @@
     * [Logging](#logging)
     * [Proxy](#proxy)
     * [Testing](#testing)
-  * [API conformance](#api-conformance)
+  * [API conformance limitations](#api-conformance-limitations)
   * [AsyncTeleBot](#asynctelebot)
   * [F.A.Q.](#faq)
     * [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)
@@ -726,27 +726,10 @@ Result will be:
 
 
 
-## API conformance
-* ✔ [Bot API 6.1](https://core.telegram.org/bots/api#june-20-2022)	
-* ✔ [Bot API 6.0](https://core.telegram.org/bots/api#april-16-2022)	
-* ✔ [Bot API 5.7](https://core.telegram.org/bots/api#january-31-2022)
-* ✔ [Bot API 5.6](https://core.telegram.org/bots/api#december-30-2021)
-* ✔ [Bot API 5.5](https://core.telegram.org/bots/api#december-7-2021)
-* ✔ [Bot API 5.4](https://core.telegram.org/bots/api#november-5-2021)
-* ➕ [Bot API 5.3](https://core.telegram.org/bots/api#june-25-2021) - ChatMember* classes are full copies of ChatMember
-* ✔ [Bot API 5.2](https://core.telegram.org/bots/api#april-26-2021)
-* ✔ [Bot API 5.1](https://core.telegram.org/bots/api#march-9-2021)
-* ✔ [Bot API 5.0](https://core.telegram.org/bots/api-changelog#november-4-2020)
-* ✔ [Bot API 4.9](https://core.telegram.org/bots/api-changelog#june-4-2020)
-* ✔ [Bot API 4.8](https://core.telegram.org/bots/api-changelog#april-24-2020)
-* ✔ [Bot API 4.7](https://core.telegram.org/bots/api-changelog#march-30-2020)
-* ✔ [Bot API 4.6](https://core.telegram.org/bots/api-changelog#january-23-2020)
+## API conformance limitations
 * ➕ [Bot API 4.5](https://core.telegram.org/bots/api-changelog#december-31-2019) - No nested MessageEntities and Markdown2 support
-* ✔ [Bot API 4.4](https://core.telegram.org/bots/api-changelog#july-29-2019)
-* ✔ [Bot API 4.3](https://core.telegram.org/bots/api-changelog#may-31-2019)
-* ✔ [Bot API 4.2](https://core.telegram.org/bots/api-changelog#april-14-2019)
-* ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018) - No Passport support
-* ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018)   - No Passport support
+* ➕ [Bot API 4.1](https://core.telegram.org/bots/api-changelog#august-27-2018)   - No Passport support
+* ➕ [Bot API 4.0](https://core.telegram.org/bots/api-changelog#july-26-2018)     - No Passport support
 
 
 ## AsyncTeleBot
