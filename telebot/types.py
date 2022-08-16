@@ -1223,11 +1223,19 @@ class Message(JsonDeserializable):
                 html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
                 offset += entity.length
             else:
-                # TODO: process nested entities from Bot API 4.5
-                # Now ignoring them
-                pass
+                # Here we are processing nested entities.
+                # We shouldn't update offset, because they are the same as entity before.
+                # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
+                # And we don't change it).
+                entity_string = utf16_text[entity.offset * 2 : (entity.offset + entity.length) * 2]
+                formatted_string = func(entity_string, entity.type, entity.url, entity.user)
+                entity_string_decoded = entity_string.decode("utf-16-le")
+                last_occurence = html_text.rfind(entity_string_decoded)
+                string_length = len(entity_string_decoded)
+                html_text = html_text.replace(html_text[last_occurence:last_occurence+string_length], formatted_string)
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
+
         return html_text
 
     @property
