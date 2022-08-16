@@ -563,35 +563,35 @@ class AsyncTeleBot:
         """
         await self._process_updates(self.edited_channel_post_handlers, edited_channel_post, 'edited_channel_post')
 
-    async def process_new_inline_query(self, new_inline_querys):
+    async def process_new_inline_query(self, new_inline_queries):
         """
         :meta private:
         """
-        await self._process_updates(self.inline_handlers, new_inline_querys, 'inline_query')
+        await self._process_updates(self.inline_handlers, new_inline_queries, 'inline_query')
 
-    async def process_new_chosen_inline_query(self, new_chosen_inline_querys):
+    async def process_new_chosen_inline_query(self, new_chosen_inline_queries):
         """
         :meta private:
         """
-        await self._process_updates(self.chosen_inline_handlers, new_chosen_inline_querys, 'chosen_inline_query')
+        await self._process_updates(self.chosen_inline_handlers, new_chosen_inline_queries, 'chosen_inline_query')
 
-    async def process_new_callback_query(self, new_callback_querys):
+    async def process_new_callback_query(self, new_callback_queries):
         """
         :meta private:
         """
-        await self._process_updates(self.callback_query_handlers, new_callback_querys, 'callback_query')
+        await self._process_updates(self.callback_query_handlers, new_callback_queries, 'callback_query')
 
-    async def process_new_shipping_query(self, new_shipping_querys):
+    async def process_new_shipping_query(self, new_shipping_queries):
         """
         :meta private:
         """
-        await self._process_updates(self.shipping_query_handlers, new_shipping_querys, 'shipping_query')
+        await self._process_updates(self.shipping_query_handlers, new_shipping_queries, 'shipping_query')
 
-    async def process_new_pre_checkout_query(self, pre_checkout_querys):
+    async def process_new_pre_checkout_query(self, pre_checkout_queries):
         """
         :meta private:
         """
-        await self._process_updates(self.pre_checkout_query_handlers, pre_checkout_querys, 'pre_checkout_query')
+        await self._process_updates(self.pre_checkout_query_handlers, pre_checkout_queries, 'pre_checkout_query')
 
     async def process_new_poll(self, polls):
         """

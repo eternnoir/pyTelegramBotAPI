@@ -744,35 +744,35 @@ class TeleBot:
         """
         self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post, 'edited_channel_post')
 
-    def process_new_inline_query(self, new_inline_querys):
+    def process_new_inline_query(self, new_inline_queries):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.inline_handlers, new_inline_querys, 'inline_query')
+        self._notify_command_handlers(self.inline_handlers, new_inline_queries, 'inline_query')
 
-    def process_new_chosen_inline_query(self, new_chosen_inline_querys):
+    def process_new_chosen_inline_query(self, new_chosen_inline_queries):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_querys, 'chosen_inline_query')
+        self._notify_command_handlers(self.chosen_inline_handlers, new_chosen_inline_queries, 'chosen_inline_query')
 
-    def process_new_callback_query(self, new_callback_querys):
+    def process_new_callback_query(self, new_callback_queries):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.callback_query_handlers, new_callback_querys, 'callback_query')
+        self._notify_command_handlers(self.callback_query_handlers, new_callback_queries, 'callback_query')
 
-    def process_new_shipping_query(self, new_shipping_querys):
+    def process_new_shipping_query(self, new_shipping_queries):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.shipping_query_handlers, new_shipping_querys, 'shipping_query')
+        self._notify_command_handlers(self.shipping_query_handlers, new_shipping_queries, 'shipping_query')
 
-    def process_new_pre_checkout_query(self, pre_checkout_querys):
+    def process_new_pre_checkout_query(self, pre_checkout_queries):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_querys, 'pre_checkout_query')
+        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_queries, 'pre_checkout_query')
 
     def process_new_poll(self, polls):
         """
@@ -1087,12 +1087,10 @@ class TeleBot:
 
 
     def _exec_task(self, task, *args, **kwargs):
-        if kwargs and kwargs.get('task_type') == 'handler':
-            pass_bot = kwargs.get('pass_bot')
-            kwargs.pop('pass_bot')
-            kwargs.pop('task_type')
-            if pass_bot:
-                kwargs['bot'] = self
+        if kwargs:
+            if kwargs.pop('task_type', "") == 'handler':
+                if kwargs.pop('pass_bot', False):
+                    kwargs['bot'] = self
         
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
@@ -5977,16 +5975,16 @@ class TeleBot:
         :param new_messages:
         :return:
         """
-        if len(handlers) == 0 and not self.use_class_middlewares:
+        if not(handlers) and not(self.use_class_middlewares):
             return
 
         for message in new_messages:
-            if self.use_class_middlewares:
-                middleware = self._check_middleware(update_type)
-                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware, update_type=update_type)
-                return
-            else:
+            if not self.use_class_middlewares:
                 for message_handler in handlers:
                     if self._test_message_handler(message_handler, message):
                         self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
                         break
+            else:
+                middleware = self._check_middleware(update_type)
+                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware, update_type=update_type)
+                return
