@@ -5951,7 +5951,9 @@ class TeleBot:
                 handler_error = e
                 if self.exception_handler:
                     self.exception_handler.handle(e)
-                else: logging.error(str(e))
+                else:
+                    logging.error(str(e))
+                    logger.debug("Exception traceback:\n%s", traceback.format_exc())
 
         if middlewares:
             for middleware in middlewares:
