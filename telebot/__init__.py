@@ -5678,7 +5678,7 @@ class TeleBot:
         """
         self.my_chat_member_handlers.append(handler_dict)
 
-    def register_my_chat_member_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[Callable]=False, **kwargs):
+    def register_my_chat_member_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers my chat member handler.
 
@@ -5898,7 +5898,8 @@ class TeleBot:
         data = {}
         params =[]
         handler_error = None
-        skip_handler = False
+        skip_handlers = False
+
         if middlewares:
             for middleware in middlewares:
                 if middleware.update_sensitive:
@@ -5913,60 +5914,54 @@ class TeleBot:
                 # Also, we will not run other middlewares
                 if isinstance(result, CancelUpdate):
                     return
-                elif isinstance(result, SkipHandler) and skip_handler is False:
-                    skip_handler = True
+                elif isinstance(result, SkipHandler):
+                    skip_handlers = True
 
-        try:
-            if handlers and not skip_handler:
+        if handlers and not(skip_handlers):
+            try:
                 for handler in handlers:
                     process_handler = self._test_message_handler(handler, message)
                     if not process_handler: continue
-                    else:
-                        for i in inspect.signature(handler['function']).parameters:
-                            params.append(i)
-                        if len(params) == 1:
-                            handler['function'](message)
+                    for i in inspect.signature(handler['function']).parameters:
+                        params.append(i)
+                    if len(params) == 1:
+                        handler['function'](message)
+                    elif "data" in params:
+                        if len(params) == 2:
+                            handler['function'](message, data)
+                        elif len(params) == 3:
+                            handler['function'](message, data=data, bot=self)
                         else:
-                            if "data" in params:
-                                if len(params) == 2:
-                                    handler['function'](message, data)
-                                elif len(params) == 3:
-                                    handler['function'](message, data=data, bot=self)
-                                else:
-                                    logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
-                                    return
-                            
-                            else:
-
-                                data_copy = data.copy()
-                                
-                                for key in list(data_copy):
-                                    # remove data from data_copy if handler does not accept it
-                                    if key not in params:
-                                        del data_copy[key]
-                                if handler.get('pass_bot'): data_copy["bot"] = self
-                                if len(data_copy) > len(params) - 1: # remove the message parameter
-                                    logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
-                                    return
-                                
-                                handler["function"](message, **data_copy)
-                        break
-        except Exception as e:
-            handler_error = e
-            if self.exception_handler:
-                self.exception_handler.handle(e)
-            else: logging.error(str(e))
-        
+                            logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                            return
+                    else:
+                        data_copy = data.copy()
+                        for key in list(data_copy):
+                            # remove data from data_copy if handler does not accept it
+                            if key not in params:
+                                del data_copy[key]
+                        if handler.get('pass_bot'):
+                            data_copy["bot"] = self
+                        if len(data_copy) > len(params) - 1: # remove the message parameter
+                            logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
+                            return
+                        handler["function"](message, **data_copy)
+                    break
+            except Exception as e:
+                handler_error = e
+                if self.exception_handler:
+                    self.exception_handler.handle(e)
+                else: logging.error(str(e))
 
         if middlewares:
             for middleware in middlewares:
                 if middleware.update_sensitive:
                     if hasattr(middleware, f'post_process_{update_type}'):
-                        result = getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+                        getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
                     else:
                         logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
                 else:
-                    result = middleware.post_process(message, data, handler_error)
+                    middleware.post_process(message, data, handler_error)
 
     def _notify_command_handlers(self, handlers, new_messages, update_type):
         """
