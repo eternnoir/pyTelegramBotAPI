@@ -5950,6 +5950,7 @@ class TeleBot:
                                     return
                                 
                                 handler["function"](message, **data_copy)
+                        break
         except Exception as e:
             handler_error = e
             if self.exception_handler:
