@@ -6,7 +6,10 @@ redis_installed = True
 try:
     import aioredis
 except:
-    redis_installed = False
+    try:
+        from redis import asyncio as aioredis
+    except:
+        redis_installed = False
 
 
 class StateRedisStorage(StateStorageBase):
