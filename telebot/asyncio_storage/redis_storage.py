@@ -5,10 +5,10 @@ import json
 redis_installed = True
 try:
     import aioredis
-except:
+except ImportError:
     try:
         from redis import asyncio as aioredis
-    except:
+    except ImportError:
         redis_installed = False
 
 
