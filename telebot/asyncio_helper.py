@@ -13,8 +13,10 @@ API_URL = 'https://api.telegram.org/bot{0}/{1}'
 
 from datetime import datetime
 
-from telebot import util, logger
+from telebot import util
+import logging
 
+logger = logging.getLogger('TeleBot')
 
 proxy = None
 session = None
