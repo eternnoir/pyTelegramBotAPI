@@ -1,36 +1,36 @@
 """
 This file is used by AsyncTeleBot.run_webhooks() function.
 
-Fastapi and starlette(0.20.2+) libraries are required to run this script.
+Starlette(0.20.2+) and uvicorn libraries are required to run this script.
 """
 
 # modules required for running this script
-fastapi_installed = True
+deps_installed = True
 try:
-    import fastapi
-    from fastapi.responses import JSONResponse
-    from fastapi.requests import Request
-    from uvicorn import Server, Config
+    from starlette import Starlette
+    from starlette.requests import Request
+    from starlette.responses import JSONResponse, Response
+    from uvicorn import Config, Server
 except ImportError:
-    fastapi_installed = False
-
-import asyncio
-
-
-from telebot.types import Update
+    deps_installed = False
 
 
 from typing import Optional
 
+from telebot.types import Update
+
 
 class AsyncWebhookListener:
-    def __init__(self, bot, 
-                secret_token: str, host: Optional[str]="127.0.0.1", 
-                port: Optional[int]=443,
-                ssl_context: Optional[tuple]=None,
-                url_path: Optional[str]=None,
-                debug: Optional[bool]=False
-                ) -> None:
+    def __init__(
+        self,
+        bot,
+        secret_token: str,
+        host: Optional[str] = "127.0.0.1",
+        port: Optional[int] = 443,
+        ssl_context: Optional[tuple] = None,
+        url_path: Optional[str] = None,
+        debug: Optional[bool] = False,
+    ) -> None:
         """
         Aynchronous implementation of webhook listener
         for asynchronous version of telebot.
@@ -58,14 +58,14 @@ class AsyncWebhookListener:
         :param debug: Debug mode
         :type debug: bool
 
-        :raises ImportError: If FastAPI or uvicorn is not installed.
+        :raises ImportError: If Starlette or uvicorn is not installed.
         :raises ImportError: If Starlette version is too old.
 
         :return: None
         """
         self._check_dependencies()
 
-        self.app = fastapi.FastAPI()
+        self.app = Starlette()
         self._secret_token = secret_token
         self._bot = bot
         self._port = port
@@ -75,38 +75,38 @@ class AsyncWebhookListener:
         self._debug = debug
         self._prepare_endpoint_urls()
 
-
     def _check_dependencies(self):
-        if not fastapi_installed:
-            raise ImportError('Fastapi or uvicorn is not installed. Please install it via pip.')
-            
+        if not deps_installed:
+            raise ImportError(
+                "Starlette or uvicorn is not installed. Please install it via pip."
+            )
+
         import starlette
-        if starlette.__version__ < '0.20.2':
-            raise ImportError('Starlette version is too old. Please upgrade it: `pip3 install starlette -U`')
+
+        if starlette.__version__ < "0.20.2":
+            raise ImportError(
+                "Starlette version is too old. Please upgrade it: `pip3 install starlette -U`"
+            )
         return
 
-    
     def _prepare_endpoint_urls(self):
-        self.app.add_api_route(endpoint=self.process_update,path= self._url_path, methods=["POST"])
+        self.app.add_route(f"/{self._url_path}", self.process_update, methods=["POST"])
 
-
-    async def process_update(self, request: Request, update: dict):
+    async def process_update(self, request: Request) -> Response:
         """
         Processes updates.
 
         :meta private:
         """
-        # header containsX-Telegram-Bot-Api-Secret-Token
-        if request.headers.get('X-Telegram-Bot-Api-Secret-Token') != self._secret_token:
-            # secret token didn't match
-            return JSONResponse(status_code=403, content={"error": "Forbidden"})
-        if request.headers.get('content-type') == 'application/json':
-            json_string = update
-            asyncio.create_task(self._bot.process_new_updates([Update.de_json(json_string)]))
-            return JSONResponse('', status_code=200)
-
-        return JSONResponse(status_code=403, content={"error": "Forbidden"})
-
+        # header contains X-Telegram-Bot-Api-Secret-Token
+        secret_token = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
+        content_type = request.headers.get("content-type")
+        if (secret_token != self._secret_token) or (content_type != "application/json"):
+            # secret token didn't match or wrong content type
+            return JSONResponse({"error": "Forbidden"}, status_code=403)
+        json_string = await request.json()
+        await self._bot.process_new_updates([Update.de_json(json_string)])
+        return JSONResponse("")
 
     async def run_app(self):
         """
@@ -116,12 +116,13 @@ class AsyncWebhookListener:
         :return: None
         """
 
-        config = Config(app=self.app,
+        config = Config(
+            app=self.app,
             host=self._host,
             port=self._port,
             debug=self._debug,
             ssl_certfile=self._ssl_context[0],
-            ssl_keyfile=self._ssl_context[1]
+            ssl_keyfile=self._ssl_context[1],
         )
         server = Server(config)
         await server.serve()

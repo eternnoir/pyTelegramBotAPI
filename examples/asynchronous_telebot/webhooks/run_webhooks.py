@@ -37,7 +37,7 @@ async def echo_message(message):
     await bot.reply_to(message, message.text)
 
 
-# it uses fastapi + uvicorn
+# it uses starlette + uvicorn
 asyncio.run(bot.run_webhooks(
     listen=DOMAIN,
     certificate=WEBHOOK_SSL_CERT,
