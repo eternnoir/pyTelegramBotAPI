@@ -3,6 +3,7 @@ from datetime import datetime
 
 import logging
 import re
+import sys
 import time
 import traceback
 from typing import Any, Awaitable, Callable, List, Optional, Union
@@ -18,12 +19,11 @@ from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipH
 
 from inspect import signature
 
-from telebot import logger
-
 from telebot import util, types, asyncio_helper
 import asyncio
 from telebot import asyncio_filters
 
+logger = logging.getLogger('TeleBot')
 
 REPLY_MARKUP_TYPES = Union[
     types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
@@ -99,16 +99,29 @@ class AsyncTeleBot:
     :param state_storage: Storage for states, defaults to StateMemoryStorage()
     :type state_storage: :class:`telebot.asyncio_storage.StateMemoryStorage`, optional
 
+    :param colorful_logs: Outputs colorful logs
+    :type colorful_logs: :obj:`bool`, optional
+
     """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset: Optional[int]=None,
-                exception_handler: Optional[ExceptionHandler]=None, state_storage: Optional[StateStorageBase]=StateMemoryStorage()) -> None:
+                exception_handler: Optional[ExceptionHandler]=None, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
+                colorful_logs: Optional[bool]=False) -> None:
         self.token = token
 
         self.offset = offset
         self.token = token
         self.parse_mode = parse_mode
         self.update_listener = []
+
+        if colorful_logs:
+            try:
+                import coloredlogs
+                coloredlogs.install(logger=logger, level=logger.level)
+            except ImportError:
+                raise ImportError(
+                    'Install colorredlogs module to use colorful_logs option.'
+                )
 
 
 
@@ -134,6 +147,12 @@ class AsyncTeleBot:
         self.current_states = state_storage
 
         self.middlewares = []
+
+        self._user = None # set during polling
+
+    @property
+    def user(self):
+        return self._user
 
     async def close_session(self):
         """
@@ -176,7 +195,7 @@ class AsyncTeleBot:
 
     async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
             request_timeout: Optional[int]=None, allowed_updates: Optional[List[str]]=None,
-            none_stop: Optional[bool]=None):
+            none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False):
         """
         Runs bot in long-polling mode in a main loop.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -217,6 +236,9 @@ class AsyncTeleBot:
 
         :param none_stop: Deprecated, use non_stop. Old typo, kept for backward compatibility.
         :type none_stop: :obj:`bool`
+
+        :param restart_on_change: Restart a file on file(s) change. Defaults to False
+        :type restart_on_change: :obj:`bool`
         
         :return:
         """
@@ -226,10 +248,11 @@ class AsyncTeleBot:
 
         if skip_pending:
             await self.skip_updates()
-        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates)
+        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates, restart_on_change)
 
     async def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, request_timeout: Optional[int]=None,
-            logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None, *args, **kwargs):
+            logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
+            restart_on_change: Optional[bool]=False, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
@@ -256,6 +279,9 @@ class AsyncTeleBot:
             so unwanted updates may be received for a short period of time.
         :type allowed_updates: :obj:`list` of :obj:`str`
 
+        :param restart_on_change: Restart a file on file(s) change. Defaults to False
+        :type restart_on_change: :obj:`bool`
+
         :return: None
         """
         if skip_pending:
@@ -264,7 +290,7 @@ class AsyncTeleBot:
         while self._polling:
             try:
                 await self._process_polling(non_stop=False, timeout=timeout, request_timeout=request_timeout,
-                             allowed_updates=allowed_updates, *args, **kwargs)
+                             allowed_updates=allowed_updates, restart_on_change=restart_on_change, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))
@@ -278,7 +304,7 @@ class AsyncTeleBot:
             logger.error("Break infinity polling")
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
-            request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
+            request_timeout: int=None, allowed_updates: Optional[List[str]]=None, restart_on_change: Optional[bool]=False):
         """
         Function to process polling.
 
@@ -294,9 +320,34 @@ class AsyncTeleBot:
 
             Please note that this parameter doesn't affect updates created before the call to the get_updates,
             so unwanted updates may be received for a short period of time.
+
+        :param restart_on_change: Restart a file on file(s) change. Defaults to False
+        :type restart_on_change: :obj:`bool`
+
         :return:
 
         """
+
+        self._user = await self.get_me()
+
+
+        if restart_on_change:
+            try:
+                from watchdog.observers import Observer
+                from telebot.ext.reloader import EventHandler
+            except ImportError:
+                raise ImportError(
+                    'Please install watchdog and psutil before using restart_on_change option.'
+                )
+
+            event_handler = EventHandler()
+            path = sys.argv[1] if len(sys.argv) > 1 else '.'
+            observer = Observer()
+            observer.schedule(event_handler, path, recursive=True)
+            observer.start()
+            
+        logger.info('Starting your bot with username: [@%s]', self.user.username)
+
         self._polling = True
 
         try:
