@@ -19,6 +19,8 @@ API_TOKEN = "TOKEN"
 WEBHOOK_HOST = "<ip/domain>"
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
 WEBHOOK_LISTEN = "0.0.0.0"
+WEBHOOK_SSL_CERT = "./webhook_cert.pem"  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = "./webhook_pkey.pem"  # Path to the ssl private key
 WEBHOOK_URL = f"https://{WEBHOOK_HOST}:{WEBHOOK_PORT}/telegram"
 WEBHOOK_SECRET_TOKEN = "SECRET_TOKEN"
 
@@ -82,4 +84,6 @@ uvicorn.run(
     app,
     host=WEBHOOK_HOST,
     port=WEBHOOK_LISTEN,
+    ssl_certfile=WEBHOOK_SSL_CERT,
+    ssl_keyfile=WEBHOOK_SSL_PRIV,
 )
