@@ -3065,7 +3065,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None, 
             timeout: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None) -> List[types.Message]:
+            allow_sending_without_reply: Optional[bool]=None,
+            request_timeout: Optional[int]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -3090,6 +3091,9 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
+        :param request_timeout: Timeout in seconds for the aiohttp.ClientTimeout 'total'.
+        :type request_timeout: :obj:`int`
+
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
 
@@ -3098,7 +3102,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
-            allow_sending_without_reply, protect_content)
+            allow_sending_without_reply, protect_content, request_timeout)
         return [types.Message.de_json(msg) for msg in result]
 
     async def send_location(

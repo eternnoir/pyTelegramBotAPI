@@ -472,7 +472,7 @@ async def send_photo(
 async def send_media_group(
         token, chat_id, media,
         disable_notification=None, reply_to_message_id=None,
-        timeout=None, allow_sending_without_reply=None, protect_content=None):
+        timeout=None, allow_sending_without_reply=None, protect_content=None, request_timeout=None):
     method_url = r'sendMediaGroup'
     media_json, files = await convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
@@ -489,7 +489,9 @@ async def send_media_group(
     return await _process_request(
         token, method_url, params=payload,
         method='post' if files else 'get',
-        files=files if files else None)
+        files=files if files else None,
+        request_timeout=request_timeout
+    )
 
 
 async def send_location(
