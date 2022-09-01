@@ -60,7 +60,7 @@ async def _process_request(token, url, method='get', params=None, files=None, re
     params = _prepare_data(params, files)
     if request_timeout is None:
         if params and ("timeout" in params):
-            request_timeout = params["timeout"]
+            request_timeout = params.pop("timeout")
         else:
             request_timeout = REQUEST_TIMEOUT
     timeout = aiohttp.ClientTimeout(total=request_timeout)
