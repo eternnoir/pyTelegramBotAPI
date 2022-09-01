@@ -59,7 +59,10 @@ session_manager = SessionManager()
 async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
     params = _prepare_data(params, files)
     if request_timeout is None:
-        request_timeout = REQUEST_TIMEOUT
+        if params and ("timeout" in params):
+            request_timeout = params["timeout"]
+        else:
+            request_timeout = REQUEST_TIMEOUT
     timeout = aiohttp.ClientTimeout(total=request_timeout)
     got_result = False
     current_try=0
