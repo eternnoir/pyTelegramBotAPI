@@ -110,7 +110,10 @@ class WebhookApp:
                 if not self._is_cleaning_up:
                     # during cleanup we iterate over background tasks set, so we can't change its size!
                     self.background_tasks.discard(task)
-                logger.info(f"Backgound job completed: {task}")
+                if task.cancelled():
+                    logger.info(f"Backgound job cancelled: {task}")
+                else:
+                    logger.info(f"Backgound job completed: {task}")
 
             task.add_done_callback(background_job_done)
             logger.info(f"Background task created for {runner.bot_prefix} ({idx}/{len(runner.background_jobs)})")
