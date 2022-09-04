@@ -1,10 +1,14 @@
 import asyncio
 import logging
+import signal
+from types import FrameType
 from typing import Any, Callable, Coroutine, Optional
 
 from aiohttp import web
+from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import api, types
+from telebot.graceful_shutdown import GracefulShutdownCondition
 from telebot.runner import BotRunner
 
 logger = logging.getLogger(__name__)
@@ -19,15 +23,20 @@ class WebhookApp:
         self.bot_runner_by_subroute: dict[str, BotRunner] = dict()
         self.background_tasks: set[asyncio.Task] = set()
         self.aiohttp_app = web.Application()
-        self.aiohttp_app.router.add_post(WEBHOOK_ROUTE, self.bot_webhook_handler)
+        self.aiohttp_app.router.add_post(WEBHOOK_ROUTE, self._bot_webhook_handler)
+        self.aiohttp_app.middlewares.append(self._graceful_shutdown_middleware)
+        self._current_request_count = 0
+        self._is_shutting_down = False
+        self._is_cleaning_up = False
 
-    async def bot_webhook_handler(self, request: web.Request):
+    async def _bot_webhook_handler(self, request: web.Request):
         subroute = request.match_info.get("subroute")
         if subroute is None:
             return web.Response(status=404)
         bot_runner = self.bot_runner_by_subroute.get(subroute)
         if bot_runner is None:
             return web.Response(status=404)
+        update = None
         try:
             update = types.Update.de_json(await request.json())
             if update is not None:
@@ -37,6 +46,41 @@ class WebhookApp:
             logger.exception(f"Unexpected error processing update #{update_id}:\n{update}")
         finally:
             return web.Response()
+
+    @web.middleware
+    async def _graceful_shutdown_middleware(self, request: web.Request, handler: AiohttpHandler) -> web.StreamResponse:
+        if self._is_shutting_down:
+            raise web.HTTPInternalServerError(reason="Server is going offline, try again later")
+        self._current_request_count += 1
+        try:
+            return await handler(request)
+        finally:
+            self._current_request_count -= 1
+
+    def _graceful_shutdown_signal_handler(self, sig: int, frame: Optional[FrameType]):
+        if not self._is_shutting_down:
+            logger.info(f"Shutdown signal received: {signal.Signals(sig).name}, entering shutdown state")
+            self._is_shutting_down = True
+        else:
+            logger.info(f"Repeated shutdown signal received: {signal.Signals(sig).name}, ignoring")
+
+    async def _graceful_shutdown_monitor(self):
+        while True:
+            await asyncio.sleep(1)
+            if not self._is_shutting_down:
+                continue
+            if self._current_request_count > 0:
+                logger.info(
+                    f"Not ready to shutdown, still processing {self._current_request_count} request(s), waiting"
+                )
+                continue
+            for condition in GracefulShutdownCondition.instances:
+                if not await condition.is_ready():
+                    logger.info(f"Custom shutdown condition is not yet satisfied, waiting: {condition.description!r}")
+                    break
+            else:
+                logger.info("All shutdown conditions are satisfied, shutting down")
+                raise SystemExit()
 
     async def add_bot_runner(self, runner: BotRunner) -> bool:
         subroute = runner.webhook_subroute()
@@ -63,7 +107,9 @@ class WebhookApp:
             self.background_tasks.add(task)
 
             def background_job_done(task: asyncio.Task):
-                self.background_tasks.discard(task)
+                if not self._is_cleaning_up:
+                    # during cleanup we iterate over background tasks set, so we can't change its size!
+                    self.background_tasks.discard(task)
                 logger.info(f"Backgound job completed: {task}")
 
             task.add_done_callback(background_job_done)
@@ -87,7 +133,12 @@ class WebhookApp:
         self.bot_runner_by_subroute.pop(subroute)
         return True
 
-    async def run(self, port: int, on_server_listening: Optional[Callable[[], Coroutine[None, None, Any]]] = None):
+    async def run(
+        self,
+        port: int,
+        graceful_shutdown: bool = True,
+        on_server_listening: Optional[Callable[[], Coroutine[None, None, Any]]] = None,
+    ):
         aiohttp_runner = web.AppRunner(self.aiohttp_app, access_log=None)
         await aiohttp_runner.setup()
         site = web.TCPSite(aiohttp_runner, "0.0.0.0", port)
@@ -95,13 +146,23 @@ class WebhookApp:
             await site.start()
             if on_server_listening is not None:
                 await on_server_listening()
-            while True:
-                await asyncio.sleep(3600)
+            if graceful_shutdown:
+                signal.signal(signal.SIGINT, self._graceful_shutdown_signal_handler)
+                signal.signal(signal.SIGTERM, self._graceful_shutdown_signal_handler)
+                await self._graceful_shutdown_monitor()
+            else:
+                while True:
+                    await asyncio.sleep(3600)
         finally:
+            self._is_cleaning_up = True
             logger.debug("Cleanup started")
             await api.session_manager.close_session()
             for t in self.background_tasks:
                 logger.debug(f"Cancelling background task {t}")
                 t.cancel()
+                try:
+                    await t
+                except asyncio.CancelledError:
+                    pass
             logger.debug("Cleanup completed")
             await aiohttp_runner.cleanup()

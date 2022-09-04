@@ -1,8 +1,9 @@
+import socket
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from telebot import AsyncTeleBot, api, types, util
+from telebot import AsyncTeleBot, api, constants, filters, types
 
 
 def mock_message(text: str) -> types.Message:
@@ -65,7 +66,16 @@ def capturing(method):
 class MockTeleBot(AsyncTeleBot):
     """Please patch methods as needed when you add new tests"""
 
-    method_calls: dict[str, list[MethodCall]] = defaultdict(list)
+    def __init__(
+        self,
+        token: str,
+        parse_mode: Optional[str] = None,
+        offset: Optional[int] = None,
+        custom_filters: Optional[list[filters.AnyCustomFilter]] = None,
+        force_allowed_updates: Optional[list[constants.UpdateType]] = None,
+    ):
+        super().__init__(token, parse_mode, offset, custom_filters, force_allowed_updates)
+        self.method_calls: dict[str, list[MethodCall]] = defaultdict(list)
 
     @capturing
     async def delete_webhook(self, drop_pending_updates: Optional[bool] = None, timeout: Optional[float] = None):
@@ -82,3 +92,10 @@ class MockTeleBot(AsyncTeleBot):
         timeout: Optional[float] = None,
     ):
         return True
+
+
+def find_free_port():
+    """https://stackoverflow.com/a/36331860/14418929"""
+    with socket.socket() as s:
+        s.bind(("", 0))  # Bind to a free port provided by the host.
+        return s.getsockname()[1]

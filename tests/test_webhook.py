@@ -1,5 +1,7 @@
 import asyncio
 import datetime
+import gc
+import signal
 from typing import Generator
 from uuid import uuid4
 
@@ -7,9 +9,10 @@ import aiohttp
 import pytest
 
 from telebot import AsyncTeleBot, types
+from telebot.graceful_shutdown import GracefulShutdownCondition, PreventShutdown
 from telebot.runner import BotRunner
 from telebot.webhook import WebhookApp
-from tests.utils import MockTeleBot
+from tests.utils import MockTeleBot, find_free_port
 
 MOCK_BOT_NAME = "testing-bot"
 MOCK_TOKEN = uuid4().hex
@@ -113,3 +116,128 @@ def test_webhook_route_generation(bot_name: str, token: str, expected_route_pref
     bot = AsyncTeleBot(token)
     bot_runner = BotRunner(bot_prefix=bot_name, bot=bot)
     assert bot_runner.webhook_subroute().startswith(expected_route_prefix)
+
+
+async def test_webhook_app_graceful_shutdown():
+    # constructing bot object
+    bot = MockTeleBot("")
+    message_processing_started = False
+    message_processing_ended = False
+
+    @bot.message_handler()
+    async def time_consuming_message_processing(message: types.Message):
+        nonlocal message_processing_started
+        nonlocal message_processing_ended
+        message_processing_started = True
+        await asyncio.sleep(2)
+        message_processing_ended = True
+
+    # adding background task that prevents shutdown
+    background_job_1_completed = False
+    background_job_2_completed = False
+
+    async def background_job_1():
+        async with PreventShutdown("performing background task 1"):
+            await asyncio.sleep(3)
+            nonlocal background_job_1_completed
+            background_job_1_completed = True
+
+    prevent_shutdown = PreventShutdown("performing background task 2")
+
+    @prevent_shutdown
+    async def background_job_2():
+        await asyncio.sleep(4)
+        nonlocal background_job_2_completed
+        background_job_2_completed = True
+        async with prevent_shutdown.negate():
+            await asyncio.sleep(10)
+
+    # constructing bot runner
+    bot_runner = BotRunner("testing", bot, background_jobs=[background_job_1(), background_job_2()])
+    subroute = bot_runner.webhook_subroute()
+    base_url = "http://localhost"
+    route = "/webhook/" + subroute + "/"
+    webhook_app = WebhookApp(base_url)
+    await webhook_app.add_bot_runner(bot_runner)
+
+    # creating and running webhook app with system exit catching wrapper
+    port = find_free_port()
+    server_listening = asyncio.Future()
+    server_exited_with_sys_exit = asyncio.Future()
+
+    async def on_server_listening():
+        server_listening.set_result(None)
+
+    async def safe_run_webhook_app():
+        try:
+            await webhook_app.run(port, graceful_shutdown=True, on_server_listening=on_server_listening)
+        except SystemExit:
+            server_exited_with_sys_exit.set_result(None)
+
+    server_task = asyncio.create_task(safe_run_webhook_app())
+    await server_listening
+
+    # validating setup sequence in bot
+    assert len(bot.method_calls["delete_webhook"]) == 1
+    assert len(bot.method_calls["set_webhook"]) == 1
+    assert bot.method_calls["set_webhook"][0].kwargs == {"url": base_url + route}
+
+    MESSAGE_UPDATE_JSON = {
+        "update_id": 10001110101,
+        "message": {
+            "message_id": 53,
+            "from": {
+                "id": 1312,
+                "is_bot": False,
+                "first_name": "раз",
+                "last_name": "два",
+                "username": "testing",
+                "language_code": "en",
+            },
+            "chat": {
+                "id": 1312,
+                "first_name": "раз",
+                "last_name": "два",
+                "username": "testing",
+                "type": "private",
+            },
+            "date": 1653769757,
+            "text": "hello world",
+        },
+    }
+
+    async def kill_bot_after(delay: float) -> None:
+        await asyncio.sleep(delay)
+        signal.raise_signal(signal.SIGTERM)
+
+    async def send_message_update_after(delay: float) -> aiohttp.ClientResponse:
+        await asyncio.sleep(delay)
+        async with aiohttp.ClientSession(base_url=f"http://localhost:{port}") as session:
+            return await session.post(route, json=MESSAGE_UPDATE_JSON)
+
+    resp_completed, _, resp_rejected = await asyncio.gather(
+        send_message_update_after(0),
+        kill_bot_after(0.5),
+        send_message_update_after(0.7),
+    )
+
+    await asyncio.wait_for(server_exited_with_sys_exit, timeout=30)
+
+    assert resp_completed.status == 200
+    assert resp_rejected.status == 500
+    assert message_processing_started
+    assert message_processing_ended
+    assert background_job_1_completed
+    assert background_job_2_completed
+
+
+async def test_graceful_shutdown_conditions():
+    GracefulShutdownCondition.instances.clear()
+
+    for _ in range(1000):
+        async with PreventShutdown("dummy"):
+            i = 1 + 2
+
+    actual_conditions = GracefulShutdownCondition.instances
+    gc.collect()
+    assert len(actual_conditions) == 0
