@@ -47,7 +47,7 @@ class PreventShutdown(GracefulShutdownCondition):
     ...         users = await fetch_users()
     ...         updated_users = await process_users(users)
     ...         await update_users(updated_users)
-    ...         async with prevent_shutdown.negate():
+    ...         async with prevent_shutdown.allow_shutdown():
     ...             await asyncio.sleep(120)
 
 
@@ -75,7 +75,7 @@ class PreventShutdown(GracefulShutdownCondition):
         return decorated  # type: ignore
 
     @contextlib.asynccontextmanager
-    async def negate(self):
+    async def allow_shutdown(self):
         initial_state = self._is_preventing_shutdown
         logger.debug(f"Entering negated shutdown prevention context ({self._reason = }, {initial_state = })")
         self._is_preventing_shutdown = False

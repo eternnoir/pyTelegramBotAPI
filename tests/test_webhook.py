@@ -149,7 +149,7 @@ async def test_webhook_app_graceful_shutdown():
         await asyncio.sleep(4)
         nonlocal background_job_2_completed
         background_job_2_completed = True
-        async with prevent_shutdown.negate():
+        async with prevent_shutdown.allow_shutdown():
             await asyncio.sleep(10)
 
     # constructing bot runner
