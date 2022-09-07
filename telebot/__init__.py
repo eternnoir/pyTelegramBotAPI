@@ -4,7 +4,6 @@ import logging
 import re
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
-from inspect import signature
 from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
 
 from telebot import api, callback_data, filters, types, util
@@ -206,19 +205,7 @@ class AsyncTeleBot:
             if is_match:
                 logger.debug(f"Using handler {handler_name!r} to process {update_content_log}")
                 try:
-                    handler_func = handler["function"]
-                    handler_func_n_params = len(list(signature(handler_func).parameters.keys()))
-                    if handler_func_n_params == 1:
-                        await handler_func(update_content)
-                        return
-                    elif handler_func_n_params == 2:
-                        await handler_func(update_content, self)
-                        return
-                    else:
-                        raise TypeError(
-                            "Handler function must have one (update content) or two (update content and bot) parameters, "
-                            + f"but found function with {handler_func_n_params} params"
-                        )
+                    await util.invoke_hanlder(handler["function"], self, update_content)
                 except Exception:
                     logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
                     return
