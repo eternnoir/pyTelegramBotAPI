@@ -159,15 +159,13 @@ async def get_file_url(token, file_id):
 async def download_file(token, file_path):
     if FILE_URL is None:
         url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
-    else:
-        # noinspection PyUnresolvedReferences
-        url =  FILE_URL.format(token, file_path)
-    async with await session_manager.get_session() as session:
-        async with session.get(url, proxy=proxy) as response:
-            result = await response.read()
-            if response.status != 200:
-                raise ApiHTTPException('Download file', result)
-        
+    else: url =  FILE_URL.format(token, file_path)
+    session = await session_manager.get_session()
+    async with session.get(url, proxy=proxy) as response:
+        if response.status != 200:
+            raise ApiHTTPException('Download file', result)
+        result = await response.read()
+    
     return result
 
 
