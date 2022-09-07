@@ -5,12 +5,9 @@ import random
 import re
 import string
 import threading
-from inspect import signature
 from typing import Any, Callable, Coroutine, List, Optional, Type, TypeVar, Union, cast
 
-from telebot import AsyncTeleBot
 from telebot.types import constants
-from telebot.types import service as service_types
 
 MAX_MESSAGE_LENGTH = 4096
 
@@ -277,20 +274,3 @@ def deprecated(warn: bool = True, alternative: Optional[Callable] = None, deprec
         return wrapper
 
     return decorator
-
-
-async def invoke_hanlder(
-    handler_func: service_types.HandlerFunction, bot: AsyncTeleBot, update_content: service_types.UpdateContent
-) -> None:
-    arg_count = len(list(signature(handler_func).parameters.keys()))
-    if arg_count == 1:
-        await handler_func(update_content)
-        return
-    elif arg_count == 2:
-        await handler_func(update_content, bot)
-        return
-    else:
-        raise TypeError(
-            "Handler function must have one (update content) or two (update content and bot) parameters, "
-            + f"but found function with {arg_count} params"
-        )
