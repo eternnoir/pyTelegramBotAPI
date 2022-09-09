@@ -14,7 +14,7 @@ import telebot.types
 
 # storages
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage, StateStorageBase
-from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipHandler, State
+from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipHandler, State, Continue
 
 from inspect import signature
 
@@ -385,16 +385,15 @@ class AsyncTeleBot:
                     if not process_update: continue
                     for i in signature(handler['function']).parameters:
                         params.append(i)
+                    ret = None
                     if len(params) == 1:
-                        await handler['function'](message)
+                        ret = await handler['function'](message)
                         break
                     elif "data" in params:
                         if len(params) == 2:
-                            await handler['function'](message, data)
-                            break
+                            ret = await handler['function'](message, data)
                         elif len(params) == 3:
-                            await handler['function'](message, data=data, bot=self)
-                            break
+                            ret = await handler['function'](message, data=data, bot=self)
                         else:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
@@ -409,7 +408,8 @@ class AsyncTeleBot:
                         if len(data_copy) > len(params) - 1: # remove the message parameter
                             logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
                             return
-                        await handler["function"](message, **data_copy)
+                        ret = await handler["function"](message, **data_copy)
+                    if not isinstance(ret, Continue):
                         break
             except Exception as e:
                 if self.exception_handler:

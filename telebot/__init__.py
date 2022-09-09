@@ -37,7 +37,10 @@ logger.addHandler(console_output_handler)
 logger.setLevel(logging.ERROR)
 
 from telebot import apihelper, util, types
-from telebot.handler_backends import HandlerBackend, MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware, CancelUpdate, SkipHandler, State
+from telebot.handler_backends import (
+    HandlerBackend, MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware,
+    CancelUpdate, SkipHandler, State, Continue
+)
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
@@ -5924,13 +5927,14 @@ class TeleBot:
                     if not process_handler: continue
                     for i in inspect.signature(handler['function']).parameters:
                         params.append(i)
+                    ret = None
                     if len(params) == 1:
-                        handler['function'](message)
+                        ret = handler['function'](message)
                     elif "data" in params:
                         if len(params) == 2:
-                            handler['function'](message, data)
+                            ret = handler['function'](message, data)
                         elif len(params) == 3:
-                            handler['function'](message, data=data, bot=self)
+                            ret = handler['function'](message, data=data, bot=self)
                         else:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
@@ -5945,8 +5949,9 @@ class TeleBot:
                         if len(data_copy) > len(params) - 1: # remove the message parameter
                             logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
                             return
-                        handler["function"](message, **data_copy)
-                    break
+                        ret = handler["function"](message, **data_copy)
+                    if not isinstance(ret, Continue):
+                        break
             except Exception as e:
                 handler_error = e
                 if self.exception_handler:
