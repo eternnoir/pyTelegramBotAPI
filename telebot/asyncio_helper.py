@@ -56,10 +56,29 @@ class SessionManager:
 
 session_manager = SessionManager()
 
-async def _process_request(token, url, method='get', params=None, files=None, request_timeout=None):
+async def _process_request(token, url, method='get', params=None, files=None, **kwargs):
+    # Let's resolve all timeout parameters.
+    # getUpdates parameter may contain 2 parameters: request_timeout & timeout.
+    # other methods may contain timeout parameter that should be applied to
+    # ClientTimeout only.
+    # timeout should be added to params for getUpdates. All other timeout's should be used
+    # for request timeout.
+    try:
+        request_timeout = kwargs.pop('request_timeout')
+        # if exception wasn't raised, then we have request_timeout in kwargs(this is getUpdates method)
+        # so we will simply apply that request_timeout to ClientTimeout
+    except KeyError:
+        # exception was raised, so we know that this method is not getUpdates.
+        # let's check for timeout in params
+        request_timeout = kwargs.pop('timeout', None)
+        # we will apply default request_timeout if there is no timeout in params
+        # otherwise, we will use timeout parameter applied for payload.
+        request_timeout = REQUEST_TIMEOUT if request_timeout is None else request_timeout
+    
+
+    # Preparing data by adding all parameters and files to FormData
     params = _prepare_data(params, files)
-    if request_timeout is None:
-        request_timeout = REQUEST_TIMEOUT
+
     timeout = aiohttp.ClientTimeout(total=request_timeout)
     got_result = False
     current_try=0
