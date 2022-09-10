@@ -388,7 +388,6 @@ class AsyncTeleBot:
                     ret = None
                     if len(params) == 1:
                         ret = await handler['function'](message)
-                        break
                     elif "data" in params:
                         if len(params) == 2:
                             ret = await handler['function'](message, data)
