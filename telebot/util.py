@@ -647,19 +647,15 @@ def antiflood(function: Callable, *args, **kwargs):
     """
     from telebot.apihelper import ApiTelegramException
     from time import sleep
-    msg = None
+
     try:
-        msg = function(*args, **kwargs)
+        return function(*args, **kwargs)
     except ApiTelegramException as ex:
         if ex.error_code == 429:
             sleep(ex.result_json['parameters']['retry_after'])
-            msg = function(*args, **kwargs)
+            return function(*args, **kwargs)
         else:
             raise
-    except:
-        raise
-    finally:
-        return msg
     
     
 def parse_web_app_data(token: str, raw_init_data: str):
