@@ -589,7 +589,7 @@ class Message(JsonDeserializable):
             content_type = "message_auto_delete_timer_changed"
         if "reply_markup" in obj:
             opts["reply_markup"] = InlineKeyboardMarkup.de_json(obj["reply_markup"])
-        return cls(message_id, from_user, date, chat, content_type, opts, json_string)
+        return cls(message_id, from_user, date, chat, content_type or "<unset>", opts, json_string)
 
     @classmethod
     def parse_chat(cls, chat):
@@ -612,7 +612,9 @@ class Message(JsonDeserializable):
             ret.append(MessageEntity.de_json(me))
         return ret
 
-    def __init__(self, message_id, from_user, date, chat, content_type, options, json_string):
+    def __init__(
+        self, message_id: int, from_user: User, date: int, chat: Chat, content_type: str, options, json_string
+    ):
         self.content_type: str = content_type
         self.id: int = message_id  # Lets fix the telegram usability ####up with ID in Message :)
         self.message_id: int = message_id
@@ -3511,26 +3513,26 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
 
     def __init__(
         self,
-        invite_link,
-        creator,
-        creates_join_request,
-        is_primary,
-        is_revoked,
-        name=None,
-        expire_date=None,
-        member_limit=None,
-        pending_join_request_count=None,
+        invite_link: str,
+        creator: User,
+        creates_join_request: bool,
+        is_primary: bool,
+        is_revoked: bool,
+        name: Optional[str] = None,
+        expire_date: Optional[int] = None,
+        member_limit: Optional[int] = None,
+        pending_join_request_count: Optional[int] = None,
         **kwargs
     ):
-        self.invite_link: str = invite_link
-        self.creator: User = creator
-        self.creates_join_request: bool = creates_join_request
-        self.is_primary: bool = is_primary
-        self.is_revoked: bool = is_revoked
-        self.name: str = name
-        self.expire_date: int = expire_date
-        self.member_limit: int = member_limit
-        self.pending_join_request_count: int = pending_join_request_count
+        self.invite_link = invite_link
+        self.creator = creator
+        self.creates_join_request = creates_join_request
+        self.is_primary = is_primary
+        self.is_revoked = is_revoked
+        self.name = name
+        self.expire_date = expire_date
+        self.member_limit = member_limit
+        self.pending_join_request_count = pending_join_request_count
 
     def to_json(self):
         return json.dumps(self.to_dict())

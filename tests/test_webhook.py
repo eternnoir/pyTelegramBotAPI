@@ -11,8 +11,9 @@ import pytest
 from telebot import AsyncTeleBot, types
 from telebot.graceful_shutdown import GracefulShutdownCondition, PreventShutdown
 from telebot.runner import BotRunner
+from telebot.test_util import MockedAsyncTeleBot
 from telebot.webhook import WebhookApp
-from tests.utils import MockTeleBot, find_free_port
+from tests.utils import find_free_port
 
 MOCK_BOT_NAME = "testing-bot"
 MOCK_TOKEN = uuid4().hex
@@ -24,8 +25,8 @@ RECEIVED_MESSAGES: list[types.Message] = []
 
 
 @pytest.fixture
-def bot() -> MockTeleBot:
-    bot = MockTeleBot(MOCK_TOKEN)
+def bot() -> MockedAsyncTeleBot:
+    bot = MockedAsyncTeleBot(MOCK_TOKEN)
 
     @bot.message_handler(commands=["start", "help"])
     async def receive_cmd(m: types.Message):
@@ -53,7 +54,7 @@ def bot_runner(bot: AsyncTeleBot) -> BotRunner:
     )
 
 
-async def test_bot_runner(bot_runner: BotRunner, bot: MockTeleBot, aiohttp_client):
+async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohttp_client):
     subroute = bot_runner.webhook_subroute()
     route = "/webhook/" + subroute + "/"
     webhook_app = WebhookApp("http://127.0.0.1")
@@ -120,7 +121,7 @@ def test_webhook_route_generation(bot_name: str, token: str, expected_route_pref
 
 async def test_webhook_app_graceful_shutdown():
     # constructing bot object
-    bot = MockTeleBot("")
+    bot = MockedAsyncTeleBot("")
     message_processing_started = False
     message_processing_ended = False
 

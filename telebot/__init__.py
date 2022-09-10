@@ -747,7 +747,7 @@ class AsyncTeleBot:
         """
         return await api.delete_webhook(self.token, drop_pending_updates, timeout)
 
-    async def get_webhook_info(self, timeout=None):
+    async def get_webhook_info(self, timeout=None) -> types.WebhookInfo:
         """
         Use this method to get current webhook status. Requires no parameters.
         If the bot is using getUpdates, will return an object with the url field empty.

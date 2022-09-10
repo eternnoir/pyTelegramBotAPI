@@ -1,9 +1,6 @@
 import socket
-from collections import defaultdict
-from dataclasses import dataclass
-from typing import Any, Optional
 
-from telebot import AsyncTeleBot, api, constants, filters, types
+from telebot import types
 
 
 def mock_message(text: str) -> types.Message:
@@ -47,51 +44,6 @@ def mock_message_update(text: str) -> types.Update:
         chat_join_request,
         _json_dict={"json": "data", "here": 1},
     )
-
-
-@dataclass
-class MethodCall:
-    args: tuple[Any, ...]
-    kwargs: dict[str, Any]
-
-
-def capturing(method):
-    async def decorated(self: "MockTeleBot", *args, **kwargs):
-        self.method_calls[method.__name__].append(MethodCall(args, kwargs))
-        return await method(self, *args, **kwargs)
-
-    return decorated
-
-
-class MockTeleBot(AsyncTeleBot):
-    """Please patch methods as needed when you add new tests"""
-
-    def __init__(
-        self,
-        token: str,
-        parse_mode: Optional[str] = None,
-        offset: Optional[int] = None,
-        custom_filters: Optional[list[filters.AnyCustomFilter]] = None,
-        force_allowed_updates: Optional[list[constants.UpdateType]] = None,
-    ):
-        super().__init__(token, parse_mode, offset, custom_filters, force_allowed_updates)
-        self.method_calls: dict[str, list[MethodCall]] = defaultdict(list)
-
-    @capturing
-    async def delete_webhook(self, drop_pending_updates: Optional[bool] = None, timeout: Optional[float] = None):
-        pass
-
-    @capturing
-    async def set_webhook(
-        self,
-        url: str,
-        certificate: Optional[api.FileObject] = None,
-        max_connections: Optional[int] = None,
-        ip_address: Optional[str] = None,
-        drop_pending_updates: Optional[bool] = None,
-        timeout: Optional[float] = None,
-    ):
-        return True
 
 
 def find_free_port():
