@@ -14,7 +14,7 @@ import telebot.types
 
 # storages
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage, StateStorageBase
-from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipHandler, State, Continue
+from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipHandler, State, ContinueHandling
 
 from inspect import signature
 
@@ -385,14 +385,14 @@ class AsyncTeleBot:
                     if not process_update: continue
                     for i in signature(handler['function']).parameters:
                         params.append(i)
-                    ret = None
+                    result = None
                     if len(params) == 1:
-                        ret = await handler['function'](message)
+                        result = await handler['function'](message)
                     elif "data" in params:
                         if len(params) == 2:
-                            ret = await handler['function'](message, data)
+                            result = await handler['function'](message, data)
                         elif len(params) == 3:
-                            ret = await handler['function'](message, data=data, bot=self)
+                            result = await handler['function'](message, data=data, bot=self)
                         else:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
@@ -407,8 +407,8 @@ class AsyncTeleBot:
                         if len(data_copy) > len(params) - 1: # remove the message parameter
                             logger.error("You are passing more data than the handler needs. Check your handler: {}".format(handler['function']))
                             return
-                        ret = await handler["function"](message, **data_copy)
-                    if not isinstance(ret, Continue):
+                        result = await handler["function"](message, **data_copy)
+                    if not isinstance(result, ContinueHandling):
                         break
             except Exception as e:
                 if self.exception_handler:

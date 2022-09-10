@@ -262,7 +262,7 @@ class CancelUpdate:
     """
 
 
-class Continue:
+class ContinueHandling:
     """
     Class for continue updates in handlers.
     Just return instance of this class 

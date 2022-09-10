@@ -39,7 +39,7 @@ logger.setLevel(logging.ERROR)
 from telebot import apihelper, util, types
 from telebot.handler_backends import (
     HandlerBackend, MemoryHandlerBackend, FileHandlerBackend, BaseMiddleware,
-    CancelUpdate, SkipHandler, State, Continue
+    CancelUpdate, SkipHandler, State, ContinueHandling
 )
 from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
@@ -5927,14 +5927,14 @@ class TeleBot:
                     if not process_handler: continue
                     for i in inspect.signature(handler['function']).parameters:
                         params.append(i)
-                    ret = None
+                    result = None
                     if len(params) == 1:
-                        ret = handler['function'](message)
+                        result = handler['function'](message)
                     elif "data" in params:
                         if len(params) == 2:
-                            ret = handler['function'](message, data)
+                            result = handler['function'](message, data)
                         elif len(params) == 3:
-                            ret = handler['function'](message, data=data, bot=self)
+                            result = handler['function'](message, data=data, bot=self)
                         else:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
@@ -5949,8 +5949,8 @@ class TeleBot:
                         if len(data_copy) > len(params) - 1: # remove the message parameter
                             logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
                             return
-                        ret = handler["function"](message, **data_copy)
-                    if not isinstance(ret, Continue):
+                        result = handler["function"](message, **data_copy)
+                    if not isinstance(result, ContinueHandling):
                         break
             except Exception as e:
                 handler_error = e
