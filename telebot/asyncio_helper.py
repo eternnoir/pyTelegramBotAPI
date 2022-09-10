@@ -63,16 +63,17 @@ async def _process_request(token, url, method='get', params=None, files=None, **
     # ClientTimeout only.
     # timeout should be added to params for getUpdates. All other timeout's should be used
     # for request timeout.
-    request_timeout = kwargs.pop('request_timeout', False)
-    # if we got some value, then we have request_timeout in kwargs(this is getUpdates method)
-    # so we will simply apply that request_timeout to ClientTimeout
-    # and if we got False, then we don't have request_timeout in kwargs(this is not getUpdates method)
-    if request_timeout is False:
+    # here we got request_timeout, so this is getUpdates method.
+    if 'request_timeout' in kwargs:
+        request_timeout = kwargs.pop('request_timeout')
+
+    else:
         # let's check for timeout in params
         request_timeout = params.pop('timeout', None)
         # we will apply default request_timeout if there is no timeout in params
         # otherwise, we will use timeout parameter applied for payload.
-        request_timeout = REQUEST_TIMEOUT if request_timeout is None else request_timeout
+    
+    request_timeout = REQUEST_TIMEOUT if request_timeout is None else request_timeout
     
 
     # Preparing data by adding all parameters and files to FormData
