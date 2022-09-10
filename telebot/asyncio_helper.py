@@ -70,7 +70,7 @@ async def _process_request(token, url, method='get', params=None, files=None, **
     except KeyError:
         # exception was raised, so we know that this method is not getUpdates.
         # let's check for timeout in params
-        request_timeout = kwargs.pop('timeout', None)
+        request_timeout = params.pop('timeout', None)
         # we will apply default request_timeout if there is no timeout in params
         # otherwise, we will use timeout parameter applied for payload.
         request_timeout = REQUEST_TIMEOUT if request_timeout is None else request_timeout
