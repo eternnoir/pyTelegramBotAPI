@@ -654,6 +654,10 @@ def antiflood(function: Callable, *args, **kwargs):
         if ex.error_code == 429:
             sleep(ex.result_json['parameters']['retry_after'])
             msg = function(*args, **kwargs)
+        else:
+            raise
+    except:
+        raise
     finally:
         return msg
     
