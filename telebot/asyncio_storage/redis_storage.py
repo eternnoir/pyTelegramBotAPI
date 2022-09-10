@@ -5,8 +5,11 @@ import json
 redis_installed = True
 try:
     import aioredis
-except:
-    redis_installed = False
+except ImportError:
+    try:
+        from redis import asyncio as aioredis
+    except ImportError:
+        redis_installed = False
 
 
 class StateRedisStorage(StateStorageBase):
