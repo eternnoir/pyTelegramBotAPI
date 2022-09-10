@@ -3,16 +3,11 @@ import socket
 from telebot import types
 
 
-def mock_message(text: str) -> types.Message:
-    params = {"text": text}
-    chat = types.User(11, False, "test")
-    return types.Message(1, None, None, chat, "text", params, "")
-
-
 def mock_message_update(text: str) -> types.Update:
     params = {"text": text}
-    chat = types.User(11, False, "test")
-    message = types.Message(1, None, None, chat, "text", params, "")
+    chat = types.Chat(1312, "private")
+    user = types.User(11, False, "John Doe")
+    message = types.Message(1, user, 25, chat, "text", params, "")
     edited_message = None
     channel_post = None
     edited_channel_post = None

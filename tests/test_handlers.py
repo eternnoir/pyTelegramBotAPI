@@ -6,7 +6,7 @@ import pytest
 import telebot
 from telebot import AsyncTeleBot, types
 from telebot.types import constants
-from tests.utils import mock_message, mock_message_update
+from tests.utils import mock_message_update
 
 
 async def test_message_listener_receives_updates():
