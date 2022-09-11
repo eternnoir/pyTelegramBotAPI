@@ -17,6 +17,7 @@ class MethodCall:
     timestamp: float
     args: tuple[Any, ...]
     kwargs: dict[str, Any]
+    full_kwargs: dict[str, Any]  # dict with args converted to kwargs for easy access
 
 
 MOCKED_METHOD_NAMES: set[str] = set()
@@ -73,11 +74,17 @@ def mocked(method: AsyncTeleBotMethodT, method_name: Optional[str] = None) -> As
     MOCKED_METHOD_NAMES.add(method_name_)
 
     async def decorated(self: "MockedAsyncTeleBot", *args, **kwargs):
+        method_param_names = [
+            param_name for param_name in inspect.signature(method).parameters.values() if param_name != "self"
+        ]
+        full_kwargs = dict(zip(args, method_param_names))
+        full_kwargs.update(kwargs)
         method_call = MethodCall(
             method_name=method_name_,
             timestamp=time.time(),
             args=args,
             kwargs=kwargs,
+            full_kwargs=full_kwargs,
         )
         self.method_calls[method_name_].append(method_call)
         try:
@@ -87,8 +94,8 @@ def mocked(method: AsyncTeleBotMethodT, method_name: Optional[str] = None) -> As
         return_value = self._from_return_values_queue(method_name_, default)
         if default is NO_DEFAULT_RETURN_VALUE and return_value is NO_DEFAULT_RETURN_VALUE:
             raise RuntimeError(
-                f"Test misconfiguration: {method_name_!r} was called, but this mocked method does not specify "
-                + "default return value and no return values found in the queue; to fix this, call "
+                f"Bad test setup: {method_name_!r} was called, but this mocked method does not specify "
+                + "default return value and no return values were found in the queue; to fix this, call "
                 + f'mocked_bot_instance.add_return_values("{method_name_}", return_value_1, return_value_2, ...); '
                 + f"method call details: {method_call}"
             )
