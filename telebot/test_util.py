@@ -75,9 +75,9 @@ def mocked(method: AsyncTeleBotMethodT, method_name: Optional[str] = None) -> As
 
     async def decorated(self: "MockedAsyncTeleBot", *args, **kwargs):
         method_param_names = [
-            param_name for param_name in inspect.signature(method).parameters.values() if param_name != "self"
+            param_name for param_name in inspect.signature(method).parameters.keys() if param_name != "self"
         ]
-        full_kwargs = dict(zip(args, method_param_names))
+        full_kwargs = dict(zip(method_param_names, args))
         full_kwargs.update(kwargs)
         method_call = MethodCall(
             method_name=method_name_,

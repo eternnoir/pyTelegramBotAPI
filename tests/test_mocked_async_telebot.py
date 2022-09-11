@@ -19,7 +19,7 @@ def test_mocked_async_telebot_mocks_all_mockable_parent_methods():
 
 async def test_mocked_async_telebot_defaults():
     bot = MockedAsyncTeleBot("testing")
-    message = await bot.send_message(chat_id=1312, text="hello world")
+    message = await bot.send_message(1312, text="hello world")
     reply_to_first = await bot.reply_to(message, "again")
     assert reply_to_first.from_user == message.from_user
     assert message.text_content == "hello world"
@@ -28,6 +28,25 @@ async def test_mocked_async_telebot_defaults():
     assert reply_to_first.text_content == "again"
     assert reply_to_first.id == 4
     assert reply_to_first.chat.id == 1312
+
+    assert list(bot.method_calls) == ["send_message"]
+    send_message_full_kwargs = [mc.full_kwargs for mc in bot.method_calls["send_message"]]
+    assert send_message_full_kwargs == [
+        {"chat_id": 1312, "text": "hello world"},
+        {
+            "chat_id": 1312,
+            "text": "again",
+            "reply_to_message_id": 2,
+            "parse_mode": None,
+            "entities": None,
+            "disable_web_page_preview": None,
+            "disable_notification": None,
+            "protect_content": None,
+            "allow_sending_without_reply": None,
+            "reply_markup": None,
+            "timeout": None,
+        },
+    ]
 
 
 async def test_mocked_async_telebot_custom_values():
