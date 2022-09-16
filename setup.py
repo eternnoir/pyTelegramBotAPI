@@ -31,6 +31,9 @@ setup(name='pyTelegramBotAPI',
           'aiohttp': 'aiohttp',
           'fastapi': 'fastapi',
           'uvicorn': 'uvicorn',
+          'psutil': 'psutil',
+          'coloredlogs': 'coloredlogs',
+          'watchdog': 'watchdog'
       },
       classifiers=[
           'Development Status :: 5 - Production/Stable',
