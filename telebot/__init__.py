@@ -469,6 +469,7 @@ class TeleBot:
             webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
 
         if certificate and certificate_key:
+            # noinspection PyTypeChecker
             ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_ctx.load_cert_chain(certificate, certificate_key)
 
@@ -5875,7 +5876,7 @@ class TeleBot:
             return False
 
     # middleware check-up method
-    def _check_middleware(self, update_type):
+    def _check_middlewares(self, update_type):
         """
         Check middleware
 
@@ -5889,100 +5890,111 @@ class TeleBot:
 
     def _run_middlewares_and_handler(self, message, handlers, middlewares, update_type):
         """
-        This class is made to run handler and middleware in queue.
+        This class is made to run handlers and middlewares in queue.
 
-        :param handler: handler that should be executed.
-        :param middleware: middleware that should be executed.
+        :param message: received message (update part) to process with handlers and/or middlewares
+        :param handlers: all created handlers (not filtered)
+        :param middlewares: middlewares that should be executed (already filtered)
+        :param update_type: handler/update type (Update field name)
         :return:
         """
-        data = {}
-        params =[]
-        handler_error = None
-        skip_handlers = False
 
-        if middlewares:
-            for middleware in middlewares:
-                if middleware.update_sensitive:
-                    if hasattr(middleware, f'pre_process_{update_type}'):
-                        result = getattr(middleware, f'pre_process_{update_type}')(message, data)
-                    else: 
-                        logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
-                        result = None
-                else:
-                    result = middleware.pre_process(message, data)
-                # We will break this loop if CancelUpdate is returned
-                # Also, we will not run other middlewares
-                if isinstance(result, CancelUpdate):
-                    return
-                elif isinstance(result, SkipHandler):
-                    skip_handlers = True
-
-        if handlers and not(skip_handlers):
-            try:
-                for handler in handlers:
-                    process_handler = self._test_message_handler(handler, message)
-                    if not process_handler: continue
-                    for i in inspect.signature(handler['function']).parameters:
-                        params.append(i)
-                    if len(params) == 1:
-                        handler['function'](message)
-                    elif "data" in params:
-                        if len(params) == 2:
-                            handler['function'](message, data)
-                        elif len(params) == 3:
-                            handler['function'](message, data=data, bot=self)
-                        else:
-                            logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
-                            return
-                    else:
-                        data_copy = data.copy()
-                        for key in list(data_copy):
-                            # remove data from data_copy if handler does not accept it
-                            if key not in params:
-                                del data_copy[key]
-                        if handler.get('pass_bot'):
-                            data_copy["bot"] = self
-                        if len(data_copy) > len(params) - 1: # remove the message parameter
-                            logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
-                            return
-                        handler["function"](message, **data_copy)
+        if not self.use_class_middlewares:
+            for message_handler in handlers:
+                if self._test_message_handler(message_handler, message):
+                    self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
                     break
-            except Exception as e:
-                handler_error = e
-                if self.exception_handler:
-                    self.exception_handler.handle(e)
-                else:
-                    logging.error(str(e))
-                    logger.debug("Exception traceback:\n%s", traceback.format_exc())
+        else:
+            data = {}
+            params =[]
+            handler_error = None
+            skip_handlers = False
 
-        if middlewares:
-            for middleware in middlewares:
-                if middleware.update_sensitive:
-                    if hasattr(middleware, f'post_process_{update_type}'):
-                        getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+            if middlewares:
+                for middleware in middlewares:
+                    if middleware.update_sensitive:
+                        if hasattr(middleware, f'pre_process_{update_type}'):
+                            result = getattr(middleware, f'pre_process_{update_type}')(message, data)
+                        else:
+                            logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                            result = None
                     else:
-                        logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
-                else:
-                    middleware.post_process(message, data, handler_error)
+                        result = middleware.pre_process(message, data)
+                    # We will break this loop if CancelUpdate is returned
+                    # Also, we will not run other middlewares
+                    if isinstance(result, CancelUpdate):
+                        return
+                    elif isinstance(result, SkipHandler):
+                        skip_handlers = True
+
+            if handlers and not(skip_handlers):
+                try:
+                    for handler in handlers:
+                        process_handler = self._test_message_handler(handler, message)
+                        if not process_handler: continue
+                        for i in inspect.signature(handler['function']).parameters:
+                            params.append(i)
+                        if len(params) == 1:
+                            handler['function'](message)
+                        elif "data" in params:
+                            if len(params) == 2:
+                                handler['function'](message, data)
+                            elif len(params) == 3:
+                                handler['function'](message, data=data, bot=self)
+                            else:
+                                logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                                return
+                        else:
+                            data_copy = data.copy()
+                            for key in list(data_copy):
+                                # remove data from data_copy if handler does not accept it
+                                if key not in params:
+                                    del data_copy[key]
+                            if handler.get('pass_bot'):
+                                data_copy["bot"] = self
+                            if len(data_copy) > len(params) - 1: # remove the message parameter
+                                logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
+                                return
+                            handler["function"](message, **data_copy)
+                        break
+                except Exception as e:
+                    handler_error = e
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                    else:
+                        logging.error(str(e))
+                        logger.debug("Exception traceback:\n%s", traceback.format_exc())
+
+            if middlewares:
+                for middleware in middlewares:
+                    if middleware.update_sensitive:
+                        if hasattr(middleware, f'post_process_{update_type}'):
+                            getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+                        else:
+                            logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
+                    else:
+                        middleware.post_process(message, data, handler_error)
 
     def _notify_command_handlers(self, handlers, new_messages, update_type):
         """
         Notifies command handlers.
 
-        :param handlers:
-        :param new_messages:
+        :param handlers: all created handlers
+        :param new_messages: received messages to proceed
+        :param update_type: handler/update type (Update fields)
         :return:
         """
         if not(handlers) and not(self.use_class_middlewares):
             return
 
+        if self.use_class_middlewares:
+            middlewares = self._check_middlewares(update_type)
+        else:
+            middlewares = None
         for message in new_messages:
-            if not self.use_class_middlewares:
-                for message_handler in handlers:
-                    if self._test_message_handler(message_handler, message):
-                        self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
-                        break
-            else:
-                middleware = self._check_middleware(update_type)
-                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware, update_type=update_type)
-                return
+            self._exec_task(
+                self._run_middlewares_and_handler,
+                message,
+                handlers=handlers,
+                middlewares=middlewares,
+                update_type=update_type)

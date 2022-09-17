@@ -41,7 +41,10 @@ class StateStorageBase:
     
     def get_state(self, chat_id, user_id):
         raise NotImplementedError
-        
+
+    def get_interactive_data(self, chat_id, user_id):
+        raise NotImplementedError
+
     def save(self, chat_id, user_id, data):
         raise NotImplementedError
 
