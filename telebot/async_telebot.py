@@ -339,7 +339,8 @@ class AsyncTeleBot:
             await self.close_session()
             logger.warning('Polling is stopped.')
 
-    def _loop_create_task(self, coro):
+    @staticmethod
+    def _loop_create_task(coro):
         return asyncio.create_task(coro)
 
     async def _process_updates(self, handlers, messages, update_type):
@@ -351,12 +352,12 @@ class AsyncTeleBot:
         :return:
         """
         tasks = []
+        middlewares = await self._get_middlewares(update_type)
         for message in messages:
-            middleware = await self.process_middlewares(update_type)
-            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware, update_type))
+            tasks.append(self._run_middlewares_and_handlers(message, handlers, middlewares, update_type))
         await asyncio.gather(*tasks)
 
-    async def _run_middlewares_and_handlers(self, handlers, message, middlewares, update_type):
+    async def _run_middlewares_and_handlers(self, message, handlers, middlewares, update_type):
         handler_error = None
         data = {}
         skip_handlers = False
@@ -426,7 +427,7 @@ class AsyncTeleBot:
                     else:
                         logger.error('Middleware {} does not have post_process_{} method. post_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
                 else: await middleware.post_process(message, data, handler_error)
-    # update handling
+
     async def process_new_updates(self, updates: List[types.Update]):
         """
         Process new updates.
@@ -615,7 +616,7 @@ class AsyncTeleBot:
         """
         await self._process_updates(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
-    async def process_middlewares(self, update_type):
+    async def _get_middlewares(self, update_type):
         """
         :meta private:
         """
