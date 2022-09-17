@@ -270,7 +270,7 @@ class AsyncTeleBot:
                     logger.error("Infinity polling exception: %s", str(e))
                 if logger_level and logger_level >= logging.DEBUG:
                     logger.error("Exception traceback:\n%s", traceback.format_exc())
-                time.sleep(3)
+                await asyncio.sleep(3)
                 continue
             if logger_level and logger_level >= logging.INFO:
                 logger.error("Infinity polling: polling exited")
