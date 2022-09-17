@@ -1088,11 +1088,6 @@ class TeleBot:
 
 
     def _exec_task(self, task, *args, **kwargs):
-        if kwargs:
-            if kwargs.pop('task_type', "") == 'handler':
-                if kwargs.pop('pass_bot', False):
-                    kwargs['bot'] = self
-        
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
         else:
@@ -4791,8 +4786,14 @@ class TeleBot:
         if not isinstance(regexp, str):
             logger.error(f"{method_name}: Regexp filter should be string. Not able to use the supplied type.")
 
-    def message_handler(self, commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
-                    content_types: Optional[List[str]]=None, chat_types: Optional[List[str]]=None, **kwargs):
+    def message_handler(
+            self,
+            commands: Optional[List[str]]=None,
+            regexp: Optional[str]=None,
+            func: Optional[Callable]=None,
+            content_types: Optional[List[str]]=None,
+            chat_types: Optional[List[str]]=None,
+            **kwargs):
         """
         Handles New incoming message of any kind - text, photo, sticker, etc.
         As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
@@ -5890,7 +5891,7 @@ class TeleBot:
 
     def _run_middlewares_and_handler(self, message, handlers, middlewares, update_type):
         """
-        This class is made to run handlers and middlewares in queue.
+        This method is made to run handlers and middlewares in queue.
 
         :param message: received message (update part) to process with handlers and/or middlewares
         :param handlers: all created handlers (not filtered)
@@ -5900,10 +5901,14 @@ class TeleBot:
         """
 
         if not self.use_class_middlewares:
-            for message_handler in handlers:
-                if self._test_message_handler(message_handler, message):
-                    self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
-                    break
+            if handlers:
+                for handler in handlers:
+                    if self._test_message_handler(handler, message):
+                        if handler.get('pass_bot', False):
+                            handler['function'](message, bot = self)
+                        else:
+                            handler['function'](message)
+                        break
         else:
             data = {}
             params =[]
@@ -5962,7 +5967,7 @@ class TeleBot:
                     if self.exception_handler:
                         self.exception_handler.handle(e)
                     else:
-                        logging.error(str(e))
+                        logger.error(str(e))
                         logger.debug("Exception traceback:\n%s", traceback.format_exc())
 
             if middlewares:

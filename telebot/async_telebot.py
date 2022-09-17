@@ -358,6 +358,16 @@ class AsyncTeleBot:
         await asyncio.gather(*tasks)
 
     async def _run_middlewares_and_handlers(self, message, handlers, middlewares, update_type):
+        """
+        This method is made to run handlers and middlewares in queue.
+
+        :param message: received message (update part) to process with handlers and/or middlewares
+        :param handlers: all created handlers (not filtered)
+        :param middlewares: middlewares that should be executed (already filtered)
+        :param update_type: handler/update type (Update field name)
+        :return:
+        """
+
         handler_error = None
         data = {}
         skip_handlers = False
