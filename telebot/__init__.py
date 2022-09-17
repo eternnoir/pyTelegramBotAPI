@@ -5876,7 +5876,7 @@ class TeleBot:
             return False
 
     # middleware check-up method
-    def _check_middlewares(self, update_type):
+    def _get_middlewares(self, update_type):
         """
         Check middleware
 
@@ -5988,7 +5988,7 @@ class TeleBot:
             return
 
         if self.use_class_middlewares:
-            middlewares = self._check_middlewares(update_type)
+            middlewares = self._get_middlewares(update_type)
         else:
             middlewares = None
         for message in new_messages:
