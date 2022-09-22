@@ -245,7 +245,7 @@ class AsyncTeleBot:
             )
         elif filter_key == "commands":
             message = update_content_as_message()
-            command = util.extract_command(message.text)
+            command = util.extract_command(message.text_content)
             return (
                 message.content_type == "text"
                 and command is not None
