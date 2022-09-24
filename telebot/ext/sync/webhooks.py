@@ -1,6 +1,5 @@
 """
 This file is used by TeleBot.run_webhooks() function.
-
 Fastapi is required to run this script.
 """
 
@@ -15,13 +14,9 @@ try:
 except ImportError:
     fastapi_installed = False
 
-
 from telebot.types import Update
 
-
 from typing import Optional
-
-
 
 
 class SyncWebhookListener:
@@ -33,13 +28,13 @@ class SyncWebhookListener:
                 debug: Optional[bool]=False
                 ) -> None:
         """
-        Aynchronous implementation of webhook listener
-        for asynchronous version of telebot.
+        Synchronous implementation of webhook listener
+        for synchronous version of telebot.
         Not supposed to be used manually by user.
-        Use AsyncTeleBot.run_webhooks() instead.
+        Use TeleBot.run_webhooks() instead.
 
-        :param bot: AsyncTeleBot instance.
-        :type bot: telebot.async_telebot.AsyncTeleBot
+        :param bot: TeleBot instance.
+        :type bot: telebot.TeleBot
 
         :param secret_token: Telegram secret token
         :type secret_token: str
@@ -77,7 +72,8 @@ class SyncWebhookListener:
         self._prepare_endpoint_urls()
 
 
-    def _check_dependencies(self):
+    @staticmethod
+    def _check_dependencies():
         if not fastapi_installed:
             raise ImportError('Fastapi or uvicorn is not installed. Please install it via pip.')
             

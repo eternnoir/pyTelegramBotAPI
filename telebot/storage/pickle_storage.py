@@ -5,8 +5,8 @@ import pickle
 
 
 class StatePickleStorage(StateStorageBase):
-    # noinspection PyMissingConstructor
     def __init__(self, file_path="./.state-save/states.pkl") -> None:
+        super().__init__()
         self.file_path = file_path
         self.create_dir()
         self.data = self.read()
