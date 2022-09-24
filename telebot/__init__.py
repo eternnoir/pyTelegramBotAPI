@@ -131,6 +131,18 @@ class TeleBot:
 
     :param use_class_middlewares: Use class middlewares, defaults to False
     :type use_class_middlewares: :obj:`bool`, optional
+
+    :param disable_web_page_preview: Default value for disable_web_page_preview, defaults to None
+    :type disable_web_page_preview: :obj:`bool`, optional
+
+    :param disable_notification: Default value for disable_notification, defaults to None
+    :type disable_notification: :obj:`bool`, optional
+
+    :param protect_content: Default value for protect_content, defaults to None
+    :type protect_content: :obj:`bool`, optional
+
+    :param allow_sending_without_reply: Default value for allow_sending_without_reply, defaults to None
+    :type allow_sending_without_reply: :obj:`bool`, optional
     """
 
     def __init__(
@@ -139,18 +151,32 @@ class TeleBot:
             next_step_backend: Optional[HandlerBackend]=None, reply_backend: Optional[HandlerBackend]=None,
             exception_handler: Optional[ExceptionHandler]=None, last_update_id: Optional[int]=0,
             suppress_middleware_excepions: Optional[bool]=False, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
-            use_class_middlewares: Optional[bool]=False
+            use_class_middlewares: Optional[bool]=False, 
+            disable_web_page_preview: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_sending_without_reply: Optional[bool]=None
     ):
-        self.token = token
-        self.parse_mode = parse_mode
-        self.update_listener = []
-        self.skip_pending = skip_pending
-        self.suppress_middleware_excepions = suppress_middleware_excepions
 
-        self.__stop_polling = threading.Event()
+        # update-related
+        self.token = token
+        self.skip_pending = skip_pending # backward compatibility
         self.last_update_id = last_update_id
+        
+        # propertys
+        self.suppress_middleware_excepions = suppress_middleware_excepions
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.disable_notification = disable_notification
+        self.protect_content = protect_content
+        self.allow_sending_without_reply = allow_sending_without_reply
+
+        # threading-related
+        self.__stop_polling = threading.Event()
         self.exc_info = None
 
+        # states & register_next_step_handler
+        self.current_states = state_storage
         self.next_step_backend = next_step_backend
         if not self.next_step_backend:
             self.next_step_backend = MemoryHandlerBackend()
@@ -159,8 +185,9 @@ class TeleBot:
         if not self.reply_backend:
             self.reply_backend = MemoryHandlerBackend()
 
+        # handlers
         self.exception_handler = exception_handler
-
+        self.update_listener = []
         self.message_handlers = []
         self.edited_message_handlers = []
         self.channel_post_handlers = []
@@ -178,8 +205,7 @@ class TeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = state_storage
-
+        # middlewares
         self.use_class_middlewares = use_class_middlewares
         if apihelper.ENABLE_MIDDLEWARE and not use_class_middlewares:
             self.typed_middleware_handlers = {
@@ -205,6 +231,8 @@ class TeleBot:
                 'You are using class based middlewares while having ENABLE_MIDDLEWARE set to True. This is not recommended.'
             )
         self.middlewares = [] if use_class_middlewares else None
+
+        # threads
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
@@ -1440,6 +1468,10 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_message(
@@ -1478,6 +1510,9 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
         return types.Message.de_json(
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout, protect_content))
 
@@ -1540,6 +1575,11 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
@@ -1617,6 +1657,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_dice(
                 self.token, chat_id, emoji, disable_notification, reply_to_message_id,
@@ -1680,6 +1724,9 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_photo(
@@ -1765,6 +1812,9 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_audio(
@@ -1833,6 +1883,9 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_voice(
@@ -1913,6 +1966,10 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(document):
             # function typo miss compatibility
             document = data
@@ -1977,9 +2034,14 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(sticker):
             # function typo miss compatibility
             sticker = data
+
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, sticker, 'sticker',
@@ -2067,6 +2129,10 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(video):
             # function typo miss compatibility
             video = data
@@ -2153,6 +2219,9 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_animation(
@@ -2220,6 +2289,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
@@ -2266,6 +2339,10 @@ class TeleBot:
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
             allow_sending_without_reply, protect_content)
@@ -2334,6 +2411,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_location(
                 self.token, chat_id, latitude, longitude, live_period, 
@@ -2505,6 +2586,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
@@ -2567,6 +2652,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
@@ -3318,6 +3407,8 @@ class TeleBot:
         :return: True on success.
         :rtype: :obj:`bool`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+
         return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
     def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None) -> bool:
@@ -3399,6 +3490,7 @@ class TeleBot:
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
 
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              entities, disable_web_page_preview, reply_markup)
@@ -3511,6 +3603,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = apihelper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
             reply_to_message_id, reply_markup, timeout, 
@@ -3713,6 +3809,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = apihelper.send_invoice(
             self.token, chat_id, title, description, invoice_payload, provider_token,
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
@@ -3914,6 +4014,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
