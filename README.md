@@ -885,5 +885,6 @@ Here are some examples of template:
 * [Gugumoe-bot](http://t.me/gugumoe_bot) ([source](https://github.com/GooGuJiang/Gugumoe-bot)) by [咕谷酱](https://gmoe.cc) GuXiaoJiang is a multi-functional robot, such as OSU game information query, IP test, animation screenshot search and other functions.
 * [Feedback-bot](https://github.com/coder2020official/feedbackbot) A feedback bot for user-admin communication. Made on AsyncTeleBot, using [template](https://github.com/coder2020official/asynctelebot_template).
 * [TeleServ](https://github.com/ablakely/TeleServ) by [ablakely](https://github.com/ablakely) This is a Telegram to IRC bridge which links as an IRC server and makes Telegram users appear as native IRC users.
+* [Simple Store Bot](https://github.com/AntonGlyzin/myshopbot) by [Anton Glyzin](https://github.com/AntonGlyzin) This is a simple telegram-store with an admin panel. Designed according to a template.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
