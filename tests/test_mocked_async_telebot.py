@@ -1,4 +1,5 @@
 from telebot import AsyncTeleBot, types
+from telebot.callback_data import CallbackData
 from telebot.test_util import (
     MOCKED_METHOD_NAMES,
     UNMOCKABLE_METHOD_NAMES,
@@ -79,3 +80,68 @@ async def test_mocked_async_telebot_custom_values():
     assert message_default.text_content == "default"
 
     assert len(bot.method_calls["send_message"]) == 2
+
+
+async def test_callback_query_handler_auto_answer():
+    bot = MockedAsyncTeleBot("testing")
+
+    cbd1 = CallbackData("foo", prefix="one")
+    cbd2 = CallbackData("bar", prefix="two")
+
+    cbd1_handler_run_count = 0
+    cbd2_handler_run_count = 0
+
+    @bot.callback_query_handler(callback_data=cbd1)
+    async def cbd1_regular_handler(cq: types.CallbackQuery):
+        nonlocal cbd1_handler_run_count
+        cbd1_handler_run_count += 1
+
+    @bot.callback_query_handler(callback_data=cbd2, auto_answer=True)
+    async def cbd2_auto_answering_handler(cq: types.CallbackQuery):
+        nonlocal cbd2_handler_run_count
+        cbd2_handler_run_count += 1
+
+    def inline_button_press_update(cbk_data: str, cbk_id: int):
+        return types.Update.de_json(
+            {
+                "update_id": 13,
+                "callback_query": {
+                    "id": cbk_id,
+                    "data": cbk_data,
+                    "chat_instance": "whatever",
+                    "from": {
+                        "id": 100,
+                        "is_bot": False,
+                        "first_name": "John",
+                    },
+                    "message": {
+                        "message_id": 4444,
+                        "from": {
+                            "id": 101,
+                            "is_bot": True,
+                            "first_name": "Myself",
+                        },
+                        "date": 15555555,
+                        "chat": {
+                            "id": "dummy",
+                            "type": "private",
+                        },
+                    },
+                },
+            }
+        )
+
+    await bot.process_new_updates(
+        [
+            inline_button_press_update("one:hello", 1),
+            inline_button_press_update("two:world", 2),
+        ]
+    )
+
+    assert cbd1_handler_run_count == 1
+    assert cbd2_handler_run_count == 1
+
+    assert len(bot.method_calls) == 1
+    answering_calls = bot.method_calls.get("answer_callback_query")
+    assert answering_calls is not None and len(answering_calls) == 1
+    assert answering_calls[0].full_kwargs == {"callback_query_id": 2}

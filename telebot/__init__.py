@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import json
 import logging
 import re
@@ -492,13 +493,26 @@ class AsyncTeleBot:
         func: Optional[service_types.FilterFunc[types.CallbackQuery]] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
+        auto_answer: bool = False,
         **kwargs,
     ):
         def decorator(decorated: service_types.HandlerFunction[types.CallbackQuery]):
+            decorated = util.ensure_async(decorated)
+            if auto_answer:
+
+                @functools.wraps(decorated)
+                async def handler_func(cq: types.CallbackQuery, *args):
+                    try:
+                        await invoke_handler(decorated, cq, self)
+                    finally:
+                        await self.answer_callback_query(cq.id)
+
+            else:
+                handler_func = decorated
             self.allowed_updates.add(constants.UpdateType.callback_query)
             self.callback_query_handlers.append(
                 service_types.Handler(
-                    function=util.ensure_async(decorated),
+                    function=cast(service_types.HandlerFunction[types.CallbackQuery], handler_func),
                     filters={
                         "callback_data": callback_data,
                         "func": func,
@@ -3167,7 +3181,8 @@ async def invoke_handler(
     update_content: service_types.UpdateContent,
     bot: "AsyncTeleBot",
 ) -> None:
-    arg_count = len(list(signature(handler_func).parameters.keys()))
+    handler_signature = signature(handler_func)
+    arg_count = len(list(handler_signature.parameters.keys()))
     if arg_count == 1:
         await handler_func(update_content)
         return
@@ -3177,5 +3192,5 @@ async def invoke_handler(
     else:
         raise TypeError(
             "Handler function must have one (update content) or two (update content and bot) parameters, "
-            + f"but found function with {arg_count} params"
+            + f"but found function with {arg_count} params: {handler_signature}"
         )
