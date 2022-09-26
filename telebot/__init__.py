@@ -134,6 +134,18 @@ class TeleBot:
 
     :param use_class_middlewares: Use class middlewares, defaults to False
     :type use_class_middlewares: :obj:`bool`, optional
+
+    :param disable_web_page_preview: Default value for disable_web_page_preview, defaults to None
+    :type disable_web_page_preview: :obj:`bool`, optional
+
+    :param disable_notification: Default value for disable_notification, defaults to None
+    :type disable_notification: :obj:`bool`, optional
+
+    :param protect_content: Default value for protect_content, defaults to None
+    :type protect_content: :obj:`bool`, optional
+
+    :param allow_sending_without_reply: Default value for allow_sending_without_reply, defaults to None
+    :type allow_sending_without_reply: :obj:`bool`, optional
     """
 
     def __init__(
@@ -142,18 +154,32 @@ class TeleBot:
             next_step_backend: Optional[HandlerBackend]=None, reply_backend: Optional[HandlerBackend]=None,
             exception_handler: Optional[ExceptionHandler]=None, last_update_id: Optional[int]=0,
             suppress_middleware_excepions: Optional[bool]=False, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
-            use_class_middlewares: Optional[bool]=False
+            use_class_middlewares: Optional[bool]=False, 
+            disable_web_page_preview: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_sending_without_reply: Optional[bool]=None
     ):
-        self.token = token
-        self.parse_mode = parse_mode
-        self.update_listener = []
-        self.skip_pending = skip_pending
-        self.suppress_middleware_excepions = suppress_middleware_excepions
 
-        self.__stop_polling = threading.Event()
+        # update-related
+        self.token = token
+        self.skip_pending = skip_pending # backward compatibility
         self.last_update_id = last_update_id
+        
+        # propertys
+        self.suppress_middleware_excepions = suppress_middleware_excepions
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.disable_notification = disable_notification
+        self.protect_content = protect_content
+        self.allow_sending_without_reply = allow_sending_without_reply
+
+        # threading-related
+        self.__stop_polling = threading.Event()
         self.exc_info = None
 
+        # states & register_next_step_handler
+        self.current_states = state_storage
         self.next_step_backend = next_step_backend
         if not self.next_step_backend:
             self.next_step_backend = MemoryHandlerBackend()
@@ -162,8 +188,9 @@ class TeleBot:
         if not self.reply_backend:
             self.reply_backend = MemoryHandlerBackend()
 
+        # handlers
         self.exception_handler = exception_handler
-
+        self.update_listener = []
         self.message_handlers = []
         self.edited_message_handlers = []
         self.channel_post_handlers = []
@@ -181,8 +208,7 @@ class TeleBot:
         self.custom_filters = {}
         self.state_handlers = []
 
-        self.current_states = state_storage
-
+        # middlewares
         self.use_class_middlewares = use_class_middlewares
         if apihelper.ENABLE_MIDDLEWARE and not use_class_middlewares:
             self.typed_middleware_handlers = {
@@ -208,6 +234,8 @@ class TeleBot:
                 'You are using class based middlewares while having ENABLE_MIDDLEWARE set to True. This is not recommended.'
             )
         self.middlewares = [] if use_class_middlewares else None
+
+        # threads
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
@@ -472,6 +500,7 @@ class TeleBot:
             webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
 
         if certificate and certificate_key:
+            # noinspection PyTypeChecker
             ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_ctx.load_cert_chain(certificate, certificate_key)
 
@@ -1090,11 +1119,6 @@ class TeleBot:
 
 
     def _exec_task(self, task, *args, **kwargs):
-        if kwargs:
-            if kwargs.pop('task_type', "") == 'handler':
-                if kwargs.pop('pass_bot', False):
-                    kwargs['bot'] = self
-        
         if self.threaded:
             self.worker_pool.put(task, *args, **kwargs)
         else:
@@ -1447,6 +1471,10 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_message(
@@ -1485,6 +1513,9 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
         return types.Message.de_json(
             apihelper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout, protect_content))
 
@@ -1547,6 +1578,11 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
                                    disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
@@ -1624,6 +1660,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_dice(
                 self.token, chat_id, emoji, disable_notification, reply_to_message_id,
@@ -1687,6 +1727,9 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_photo(
@@ -1772,6 +1815,9 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_audio(
@@ -1840,6 +1886,9 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_voice(
@@ -1920,6 +1969,10 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(document):
             # function typo miss compatibility
             document = data
@@ -1984,9 +2037,14 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(sticker):
             # function typo miss compatibility
             sticker = data
+
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, sticker, 'sticker',
@@ -2074,6 +2132,10 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(video):
             # function typo miss compatibility
             video = data
@@ -2160,6 +2222,9 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             apihelper.send_animation(
@@ -2227,6 +2292,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
@@ -2273,6 +2342,10 @@ class TeleBot:
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
             allow_sending_without_reply, protect_content)
@@ -2341,6 +2414,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_location(
                 self.token, chat_id, latitude, longitude, live_period, 
@@ -2512,6 +2589,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
@@ -2574,6 +2655,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
@@ -3325,6 +3410,8 @@ class TeleBot:
         :return: True on success.
         :rtype: :obj:`bool`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+
         return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
     def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None) -> bool:
@@ -3406,6 +3493,7 @@ class TeleBot:
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
 
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              entities, disable_web_page_preview, reply_markup)
@@ -3518,6 +3606,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = apihelper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
             reply_to_message_id, reply_markup, timeout, 
@@ -3720,6 +3812,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = apihelper.send_invoice(
             self.token, chat_id, title, description, invoice_payload, provider_token,
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
@@ -3921,6 +4017,10 @@ class TeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
@@ -4793,8 +4893,14 @@ class TeleBot:
         if not isinstance(regexp, str):
             logger.error(f"{method_name}: Regexp filter should be string. Not able to use the supplied type.")
 
-    def message_handler(self, commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
-                    content_types: Optional[List[str]]=None, chat_types: Optional[List[str]]=None, **kwargs):
+    def message_handler(
+            self,
+            commands: Optional[List[str]]=None,
+            regexp: Optional[str]=None,
+            func: Optional[Callable]=None,
+            content_types: Optional[List[str]]=None,
+            chat_types: Optional[List[str]]=None,
+            **kwargs):
         """
         Handles New incoming message of any kind - text, photo, sticker, etc.
         As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
@@ -5878,7 +5984,7 @@ class TeleBot:
             return False
 
     # middleware check-up method
-    def _check_middleware(self, update_type):
+    def _get_middlewares(self, update_type):
         """
         Check middleware
 
@@ -5892,102 +5998,117 @@ class TeleBot:
 
     def _run_middlewares_and_handler(self, message, handlers, middlewares, update_type):
         """
-        This class is made to run handler and middleware in queue.
+        This method is made to run handlers and middlewares in queue.
 
-        :param handler: handler that should be executed.
-        :param middleware: middleware that should be executed.
+        :param message: received message (update part) to process with handlers and/or middlewares
+        :param handlers: all created handlers (not filtered)
+        :param middlewares: middlewares that should be executed (already filtered)
+        :param update_type: handler/update type (Update field name)
         :return:
         """
-        data = {}
-        params =[]
-        handler_error = None
-        skip_handlers = False
 
-        if middlewares:
-            for middleware in middlewares:
-                if middleware.update_sensitive:
-                    if hasattr(middleware, f'pre_process_{update_type}'):
-                        result = getattr(middleware, f'pre_process_{update_type}')(message, data)
-                    else: 
-                        logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
-                        result = None
-                else:
-                    result = middleware.pre_process(message, data)
-                # We will break this loop if CancelUpdate is returned
-                # Also, we will not run other middlewares
-                if isinstance(result, CancelUpdate):
-                    return
-                elif isinstance(result, SkipHandler):
-                    skip_handlers = True
-
-        if handlers and not(skip_handlers):
-            try:
+        if not self.use_class_middlewares:
+            if handlers:
                 for handler in handlers:
-                    process_handler = self._test_message_handler(handler, message)
-                    if not process_handler: continue
-                    for i in inspect.signature(handler['function']).parameters:
-                        params.append(i)
-                    result = None
-                    if len(params) == 1:
-                        result = handler['function'](message)
-                    elif "data" in params:
-                        if len(params) == 2:
-                            result = handler['function'](message, data)
-                        elif len(params) == 3:
-                            result = handler['function'](message, data=data, bot=self)
+                    if self._test_message_handler(handler, message):
+                        if handler.get('pass_bot', False):
+                            handler['function'](message, bot = self)
                         else:
-                            logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
-                            return
-                    else:
-                        data_copy = data.copy()
-                        for key in list(data_copy):
-                            # remove data from data_copy if handler does not accept it
-                            if key not in params:
-                                del data_copy[key]
-                        if handler.get('pass_bot'):
-                            data_copy["bot"] = self
-                        if len(data_copy) > len(params) - 1: # remove the message parameter
-                            logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
-                            return
-                        result = handler["function"](message, **data_copy)
-                    if not isinstance(result, ContinueHandling):
+                            handler['function'](message)
                         break
-            except Exception as e:
-                handler_error = e
-                if self.exception_handler:
-                    self.exception_handler.handle(e)
-                else:
-                    logging.error(str(e))
-                    logger.debug("Exception traceback:\n%s", traceback.format_exc())
+        else:
+            data = {}
+            params =[]
+            handler_error = None
+            skip_handlers = False
 
-        if middlewares:
-            for middleware in middlewares:
-                if middleware.update_sensitive:
-                    if hasattr(middleware, f'post_process_{update_type}'):
-                        getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+            if middlewares:
+                for middleware in middlewares:
+                    if middleware.update_sensitive:
+                        if hasattr(middleware, f'pre_process_{update_type}'):
+                            result = getattr(middleware, f'pre_process_{update_type}')(message, data)
+                        else:
+                            logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                            result = None
                     else:
-                        logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
-                else:
-                    middleware.post_process(message, data, handler_error)
+                        result = middleware.pre_process(message, data)
+                    # We will break this loop if CancelUpdate is returned
+                    # Also, we will not run other middlewares
+                    if isinstance(result, CancelUpdate):
+                        return
+                    elif isinstance(result, SkipHandler):
+                        skip_handlers = True
+
+            if handlers and not(skip_handlers):
+                try:
+                    for handler in handlers:
+                        process_handler = self._test_message_handler(handler, message)
+                        if not process_handler: continue
+                        for i in inspect.signature(handler['function']).parameters:
+                            params.append(i)
+                        result = None
+                        if len(params) == 1:
+                            result = handler['function'](message)
+                        elif "data" in params:
+                            if len(params) == 2:
+                                result = handler['function'](message, data)
+                            elif len(params) == 3:
+                                result = handler['function'](message, data=data, bot=self)
+                            else:
+                                logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
+                                return
+                        else:
+                            data_copy = data.copy()
+                            for key in list(data_copy):
+                                # remove data from data_copy if handler does not accept it
+                                if key not in params:
+                                    del data_copy[key]
+                            if handler.get('pass_bot'):
+                                data_copy["bot"] = self
+                            if len(data_copy) > len(params) - 1: # remove the message parameter
+                                logger.error("You are passing more parameters than the handler needs. Check your handler: {}".format(handler['function']))
+                                return
+                            result = handler["function"](message, **data_copy)
+                        if not isinstance(result, ContinueHandling):
+                            break
+                except Exception as e:
+                    handler_error = e
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                    else:
+                        logger.error(str(e))
+                        logger.debug("Exception traceback:\n%s", traceback.format_exc())
+
+            if middlewares:
+                for middleware in middlewares:
+                    if middleware.update_sensitive:
+                        if hasattr(middleware, f'post_process_{update_type}'):
+                            getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
+                        else:
+                            logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
+                    else:
+                        middleware.post_process(message, data, handler_error)
 
     def _notify_command_handlers(self, handlers, new_messages, update_type):
         """
         Notifies command handlers.
 
-        :param handlers:
-        :param new_messages:
+        :param handlers: all created handlers
+        :param new_messages: received messages to proceed
+        :param update_type: handler/update type (Update fields)
         :return:
         """
         if not(handlers) and not(self.use_class_middlewares):
             return
 
+        if self.use_class_middlewares:
+            middlewares = self._get_middlewares(update_type)
+        else:
+            middlewares = None
         for message in new_messages:
-            if not self.use_class_middlewares:
-                for message_handler in handlers:
-                    if self._test_message_handler(message_handler, message):
-                        self._exec_task(message_handler['function'], message, pass_bot=message_handler['pass_bot'], task_type='handler')
-                        break
-            else:
-                middleware = self._check_middleware(update_type)
-                self._exec_task(self._run_middlewares_and_handler, message, handlers=handlers, middlewares=middleware, update_type=update_type)
-                return
+            self._exec_task(
+                self._run_middlewares_and_handler,
+                message,
+                handlers=handlers,
+                middlewares=middlewares,
+                update_type=update_type)

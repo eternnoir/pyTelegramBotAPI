@@ -16,6 +16,7 @@ class StateRedisStorage(StateStorageBase):
     TeleBot(storage=StateRedisStorage())
     """
     def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_'):
+        super().__init__()
         self.redis = ConnectionPool(host=host, port=port, db=db, password=password)
         #self.con = Redis(connection_pool=self.redis) -> use this when necessary
         #
