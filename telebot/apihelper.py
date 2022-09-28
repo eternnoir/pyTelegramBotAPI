@@ -45,6 +45,7 @@ CUSTOM_SERIALIZER = None
 CUSTOM_REQUEST_SENDER = None
 
 ENABLE_MIDDLEWARE = False
+TEST = True
 
 
 def _get_req_session(reset=False):
@@ -82,7 +83,10 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         # noinspection PyUnresolvedReferences
         request_url = API_URL.format(token, method_name)
     else:
-        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
+        if TEST:
+            request_url = "https://api.telegram.org/bot{0}/test/{1}".format(token, method_name)
+        else:
+            request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
 
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files).replace(token, token.split(':')[0] + ":{TOKEN}"))
     read_timeout = READ_TIMEOUT
