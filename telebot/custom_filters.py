@@ -428,7 +428,7 @@ class StateFilter(AdvancedCustomFilter):
             text = text.name
         
         if message.chat.type in ['group', 'supergroup']:
-            group_state = self.bot.current_states.get_state(user_id, chat_id)
+            group_state = self.bot.current_states.get_state(chat_id, user_id)
             if group_state == text:
                 return True
             elif type(text) is list and group_state in text:
@@ -436,7 +436,7 @@ class StateFilter(AdvancedCustomFilter):
 
 
         else:
-            user_state = self.bot.current_states.get_state(user_id, chat_id)
+            user_state = self.bot.current_states.get_state(chat_id, user_id)
             if user_state == text:
                 return True
             elif type(text) is list and user_state in text:

@@ -3,8 +3,6 @@ from datetime import datetime
 
 import logging
 import re
-import sys
-import time
 import traceback
 from typing import Any, Awaitable, Callable, List, Optional, Union
 
@@ -99,21 +97,37 @@ class AsyncTeleBot:
     :param state_storage: Storage for states, defaults to StateMemoryStorage()
     :type state_storage: :class:`telebot.asyncio_storage.StateMemoryStorage`, optional
 
+    :param disable_web_page_preview: Default value for disable_web_page_preview, defaults to None
+    :type disable_web_page_preview: :obj:`bool`, optional
+
+    :param disable_notification: Default value for disable_notification, defaults to None
+    :type disable_notification: :obj:`bool`, optional
+
+    :param protect_content: Default value for protect_content, defaults to None
+    :type protect_content: :obj:`bool`, optional
+
+    :param allow_sending_without_reply: Default value for allow_sending_without_reply, defaults to None
+    :type allow_sending_without_reply: :obj:`bool`, optional
+    
     :param colorful_logs: Outputs colorful logs
     :type colorful_logs: :obj:`bool`, optional
 
     """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset: Optional[int]=None,
-                exception_handler: Optional[ExceptionHandler]=None, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
+                exception_handler: Optional[ExceptionHandler]=None,
+                state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
+                disable_web_page_preview: Optional[bool]=None,
+                disable_notification: Optional[bool]=None,
+                protect_content: Optional[bool]=None,
+                allow_sending_without_reply: Optional[bool]=None,
                 colorful_logs: Optional[bool]=False) -> None:
+        
+        # update-related
         self.token = token
-
         self.offset = offset
-        self.token = token
-        self.parse_mode = parse_mode
-        self.update_listener = []
 
+        # logs-related
         if colorful_logs:
             try:
                 import coloredlogs
@@ -122,11 +136,20 @@ class AsyncTeleBot:
                 raise ImportError(
                     'Install colorredlogs module to use colorful_logs option.'
                 )
+                
+        # properties
+        self.parse_mode = parse_mode
+        self.disable_web_page_preview = disable_web_page_preview
+        self.disable_notification = disable_notification
+        self.protect_content = protect_content
+        self.allow_sending_without_reply = allow_sending_without_reply
 
+        # states
+        self.current_states = state_storage
 
-
+        # handlers
+        self.update_listener = []
         self.exception_handler = exception_handler
-
         self.message_handlers = []
         self.edited_message_handlers = []
         self.channel_post_handlers = []
@@ -143,9 +166,6 @@ class AsyncTeleBot:
         self.chat_join_request_handlers = []
         self.custom_filters = {}
         self.state_handlers = []
-
-        self.current_states = state_storage
-
         self.middlewares = []
 
         self._user = None # set during polling
@@ -296,7 +316,7 @@ class AsyncTeleBot:
                     logger.error("Infinity polling exception: %s", str(e))
                 if logger_level and logger_level >= logging.DEBUG:
                     logger.error("Exception traceback:\n%s", traceback.format_exc())
-                time.sleep(3)
+                await asyncio.sleep(3)
                 continue
             if logger_level and logger_level >= logging.INFO:
                 logger.error("Infinity polling: polling exited")
@@ -390,7 +410,8 @@ class AsyncTeleBot:
             await self.close_session()
             logger.warning('Polling is stopped.')
 
-    def _loop_create_task(self, coro):
+    @staticmethod
+    def _loop_create_task(coro):
         return asyncio.create_task(coro)
 
     async def _process_updates(self, handlers, messages, update_type):
@@ -402,12 +423,22 @@ class AsyncTeleBot:
         :return:
         """
         tasks = []
+        middlewares = await self._get_middlewares(update_type)
         for message in messages:
-            middleware = await self.process_middlewares(update_type)
-            tasks.append(self._run_middlewares_and_handlers(handlers, message, middleware, update_type))
+            tasks.append(self._run_middlewares_and_handlers(message, handlers, middlewares, update_type))
         await asyncio.gather(*tasks)
 
-    async def _run_middlewares_and_handlers(self, handlers, message, middlewares, update_type):
+    async def _run_middlewares_and_handlers(self, message, handlers, middlewares, update_type):
+        """
+        This method is made to run handlers and middlewares in queue.
+
+        :param message: received message (update part) to process with handlers and/or middlewares
+        :param handlers: all created handlers (not filtered)
+        :param middlewares: middlewares that should be executed (already filtered)
+        :param update_type: handler/update type (Update field name)
+        :return:
+        """
+
         handler_error = None
         data = {}
         skip_handlers = False
@@ -477,7 +508,7 @@ class AsyncTeleBot:
                     else:
                         logger.error('Middleware {} does not have post_process_{} method. post_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
                 else: await middleware.post_process(message, data, handler_error)
-    # update handling
+
     async def process_new_updates(self, updates: List[types.Update]):
         """
         Process new updates.
@@ -666,7 +697,7 @@ class AsyncTeleBot:
         """
         await self._process_updates(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
 
-    async def process_middlewares(self, update_type):
+    async def _get_middlewares(self, update_type):
         """
         :meta private:
         """
@@ -2328,6 +2359,10 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             await asyncio_helper.send_message(
@@ -2366,6 +2401,9 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
         return types.Message.de_json(
             await asyncio_helper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout, protect_content))
 
@@ -2428,6 +2466,9 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.MessageID.de_json(
             await asyncio_helper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
@@ -2506,6 +2547,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             await asyncio_helper.send_dice(
                 self.token, chat_id, emoji, disable_notification, reply_to_message_id,
@@ -2568,6 +2613,9 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             await asyncio_helper.send_photo(
@@ -2652,6 +2700,9 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             await asyncio_helper.send_audio(
@@ -2719,6 +2770,9 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             await asyncio_helper.send_voice(
@@ -2798,6 +2852,10 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(document):
             # function typo miss compatibility
             document = data
@@ -2858,6 +2916,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(sticker):
             # function typo miss compatibility
             logger.warning("send_sticker: data parameter is deprecated. Use sticker instead.")
@@ -2949,6 +3011,10 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         if data and not(video):
             # function typo miss compatibility
             logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
@@ -3036,6 +3102,9 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
         return types.Message.de_json(
             await asyncio_helper.send_animation(
@@ -3102,6 +3171,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             await asyncio_helper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
@@ -3147,6 +3220,10 @@ class AsyncTeleBot:
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = await asyncio_helper.send_media_group(
             self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
             allow_sending_without_reply, protect_content)
@@ -3214,6 +3291,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             await asyncio_helper.send_location(
                 self.token, chat_id, latitude, longitude, live_period, 
@@ -3384,6 +3465,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             await asyncio_helper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
@@ -3445,6 +3530,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         return types.Message.de_json(
             await asyncio_helper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
@@ -4205,6 +4294,8 @@ class AsyncTeleBot:
         :return: True on success.
         :rtype: :obj:`bool`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+
         return await asyncio_helper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
 
     async def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None) -> bool:
@@ -4286,6 +4377,7 @@ class AsyncTeleBot:
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
 
         result = await asyncio_helper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              entities, disable_web_page_preview, reply_markup)
@@ -4398,6 +4490,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = await asyncio_helper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
             reply_to_message_id, reply_markup, timeout, 
@@ -4599,6 +4695,10 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
         result = await asyncio_helper.send_invoice(
             self.token, chat_id, title, description, invoice_payload, provider_token,
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
@@ -4800,11 +4900,13 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
-
-        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         return types.Message.de_json(
             await asyncio_helper.send_poll(
