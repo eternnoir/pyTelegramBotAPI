@@ -5,6 +5,7 @@ import logging
 import re
 import traceback
 from typing import Any, Awaitable, Callable, List, Optional, Union
+import sys
 
 # this imports are used to avoid circular import error
 import telebot.util
@@ -213,9 +214,27 @@ class AsyncTeleBot:
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
+    def _setup_change_detector(self, path_to_watch: str) -> None:
+        try:
+            from watchdog.observers import Observer
+            from telebot.ext.reloader import EventHandler
+        except ImportError:
+            raise ImportError(
+                'Please install watchdog and psutil before using restart_on_change option.'
+            )
+
+        self.event_handler = EventHandler()
+        path = path_to_watch if path_to_watch else None
+        if path is None:
+            path = sys.argv[1] if len(sys.argv) > 1 else '.' # current directory
+            
+        self.observer = Observer()
+        self.observer.schedule(self.event_handler, path, recursive=True)
+        self.observer.start()
+
     async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
             request_timeout: Optional[int]=None, allowed_updates: Optional[List[str]]=None,
-            none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False):
+            none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None):
         """
         Runs bot in long-polling mode in a main loop.
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
@@ -259,6 +278,9 @@ class AsyncTeleBot:
 
         :param restart_on_change: Restart a file on file(s) change. Defaults to False
         :type restart_on_change: :obj:`bool`
+
+        :param path_to_watch: Path to watch for changes. Defaults to current directory
+        :type path_to_watch: :obj:`str`
         
         :return:
         """
@@ -268,11 +290,15 @@ class AsyncTeleBot:
 
         if skip_pending:
             await self.skip_updates()
-        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates, restart_on_change)
+
+        if restart_on_change:
+            self._setup_change_detector(path_to_watch)
+
+        await self._process_polling(non_stop, interval, timeout, request_timeout, allowed_updates)
 
     async def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, request_timeout: Optional[int]=None,
             logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
-            restart_on_change: Optional[bool]=False, *args, **kwargs):
+            restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
@@ -302,15 +328,24 @@ class AsyncTeleBot:
         :param restart_on_change: Restart a file on file(s) change. Defaults to False
         :type restart_on_change: :obj:`bool`
 
+        :param path_to_watch: Path to watch for changes. Defaults to current directory
+        :type path_to_watch: :obj:`str`
+
         :return: None
         """
         if skip_pending:
             await self.skip_updates()
         self._polling = True
+
+        if restart_on_change:
+            restart_on_change = False
+
+            self._setup_change_detector(path_to_watch)
+
         while self._polling:
             try:
                 await self._process_polling(non_stop=False, timeout=timeout, request_timeout=request_timeout,
-                             allowed_updates=allowed_updates, restart_on_change=restart_on_change, *args, **kwargs)
+                             allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))
@@ -324,7 +359,7 @@ class AsyncTeleBot:
             logger.error("Break infinity polling")
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
-            request_timeout: int=None, allowed_updates: Optional[List[str]]=None, restart_on_change: Optional[bool]=False):
+            request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
         """
         Function to process polling.
 
@@ -341,30 +376,11 @@ class AsyncTeleBot:
             Please note that this parameter doesn't affect updates created before the call to the get_updates,
             so unwanted updates may be received for a short period of time.
 
-        :param restart_on_change: Restart a file on file(s) change. Defaults to False
-        :type restart_on_change: :obj:`bool`
-
         :return:
 
         """
 
         self._user = await self.get_me()
-
-
-        if restart_on_change:
-            try:
-                from watchdog.observers import Observer
-                from telebot.ext.reloader import EventHandler
-            except ImportError:
-                raise ImportError(
-                    'Please install watchdog and psutil before using restart_on_change option.'
-                )
-
-            event_handler = EventHandler()
-            path = sys.argv[1] if len(sys.argv) > 1 else '.'
-            observer = Observer()
-            observer.schedule(event_handler, path, recursive=True)
-            observer.start()
             
         logger.info('Starting your bot with username: [@%s]', self.user.username)
 

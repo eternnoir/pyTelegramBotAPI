@@ -880,10 +880,27 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
+    def _setup_change_detector(self):
+        try:
+            from watchdog.observers import Observer
+            from telebot.ext.reloader import EventHandler
+        except ImportError:
+            raise ImportError(
+                'Please install watchdog and psutil before using restart_on_change option.'
+            )
+
+        self.event_handler = EventHandler()
+        path = path_to_watch if path_to_watch else None
+        if path is None:
+            path = sys.argv[1] if len(sys.argv) > 1 else '.' # current directory
+            
+        self.observer = Observer()
+        self.observer.schedule(self.event_handler, path, recursive=True)
+        self.observer.start()
 
     def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, long_polling_timeout: Optional[int]=20,
                          logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
-                         restart_on_change: Optional[bool]=False, *args, **kwargs):
+                         restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
@@ -912,10 +929,17 @@ class TeleBot:
         :param restart_on_change: Restart a file on file(s) change. Defaults to False
         :type restart_on_change: :obj:`bool`
 
+        :param path_to_watch: Path to watch for changes. Defaults to current directory
+        :type path_to_watch: :obj:`str`
+
         :return:
         """
         if skip_pending:
             self.__skip_updates()
+
+        if restart_on_change:
+            self._setup_change_detector(path_to_watch)
+            restart_on_change = False
 
         while not self.__stop_polling.is_set():
             try:
@@ -938,7 +962,7 @@ class TeleBot:
     def polling(self, non_stop: Optional[bool]=False, skip_pending: Optional[bool]=False, interval: Optional[int]=0,
                 timeout: Optional[int]=20, long_polling_timeout: Optional[int]=20,
                 logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
-                none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False):
+                none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
@@ -984,6 +1008,9 @@ class TeleBot:
 
         :param restart_on_change: Restart a file on file(s) change. Defaults to False
         :type restart_on_change: :obj:`bool`
+
+        :param path_to_watch: Path to watch for changes. Defaults to None
+        :type path_to_watch: :obj:`str`
         
         :return:
         """
@@ -995,19 +1022,7 @@ class TeleBot:
             self.__skip_updates()
 
         if restart_on_change:
-            try:
-                from watchdog.observers import Observer
-                from telebot.ext.reloader import EventHandler
-            except ImportError:
-                raise ImportError(
-                    'Please install watchdog and psutil before using restart_on_change option.'
-                )
-
-            event_handler = EventHandler()
-            path = sys.argv[1] if len(sys.argv) > 1 else '.'
-            observer = Observer()
-            observer.schedule(event_handler, path, recursive=True)
-            observer.start()
+            self._setup_change_detector(path_to_watch)
 
         logger.info('Starting your bot with username: [@%s]', self.user.username)
             

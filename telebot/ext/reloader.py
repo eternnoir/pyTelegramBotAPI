@@ -8,11 +8,9 @@ import logging
 
 logger = logging.getLogger('TeleBot')
 
-
-
 class EventHandler(FileSystemEventHandler):
     def on_any_event(self, event: FileSystemEvent):
-        logger.info('* Detected changes in: %s , reloading', (event.src_path))
+        logger.info('* Detected changes in: %s, reloading', (event.src_path))
         restart_file()
 
 def restart_file():
