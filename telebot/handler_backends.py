@@ -174,7 +174,6 @@ class State:
     def __str__(self) -> str:
         return self.name
 
-    
 
 class StatesGroup:
     """
@@ -191,9 +190,6 @@ class StatesGroup:
                 # change value of that variable
                 value.name = ':'.join((cls.__name__, name))
                 value.group = cls
-
-
-
 
     
 class BaseMiddleware:
@@ -254,8 +250,6 @@ class SkipHandler:
     but will skip execution of handler.
     """
 
-    def __init__(self) -> None:
-        pass
 
 class CancelUpdate:
     """
@@ -266,5 +260,9 @@ class CancelUpdate:
     of post_process in middlewares.
     """
 
-    def __init__(self) -> None:
-        pass
+class ContinueHandling:
+    """
+    Class for continue updates in handlers.
+    Just return instance of this class 
+    in handlers to continue process.
+    """
