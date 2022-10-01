@@ -82,6 +82,10 @@ class AsyncTeleBot:
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
 
+    .. note::
+
+        Install coloredlogs module to specify colorful_logs=True
+
 
     :param token: Token of a bot, obtained from @BotFather
     :type token: :obj:`str`
@@ -248,6 +252,10 @@ class AsyncTeleBot:
             Set non_stop=True if you want your bot to continue receiving updates
             if there is an error.
 
+        .. note::
+
+            Install watchdog and psutil before using restart_on_change option.
+
         :param non_stop: Do not stop polling when an ApiException occurs.
         :type non_stop: :obj:`bool`
         
@@ -276,7 +284,7 @@ class AsyncTeleBot:
         :param none_stop: Deprecated, use non_stop. Old typo, kept for backward compatibility.
         :type none_stop: :obj:`bool`
 
-        :param restart_on_change: Restart a file on file(s) change. Defaults to False
+        :param restart_on_change: Restart a file on file(s) change. Defaults to False.
         :type restart_on_change: :obj:`bool`
 
         :param path_to_watch: Path to watch for changes. Defaults to current directory
@@ -301,6 +309,9 @@ class AsyncTeleBot:
             restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
+
+        .. note::
+            Install watchdog and psutil before using restart_on_change option.
 
         :param timeout: Timeout in seconds for get_updates(Defaults to None)
         :type timeout: :obj:`int`

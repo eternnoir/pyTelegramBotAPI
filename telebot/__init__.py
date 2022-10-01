@@ -95,6 +95,10 @@ class TeleBot:
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
 
+    .. note::
+
+        Install coloredlogs module to specify colorful_logs=True
+
 
     :param token: Token of a bot, should be obtained from @BotFather
     :type token: :obj:`str`
@@ -904,6 +908,10 @@ class TeleBot:
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
+        .. note::
+        
+            Install watchdog and psutil before using restart_on_change option.
+
         :param timeout: Request connection timeout.
         :type timeout: :obj:`int`
 
@@ -973,6 +981,10 @@ class TeleBot:
 
         .. deprecated:: 4.1.1
             Use :meth:`infinity_polling` instead.
+
+        .. note::
+        
+            Install watchdog and psutil before using restart_on_change option.
 
         :param interval: Delay between two update retrivals
         :type interval: :obj:`int`
