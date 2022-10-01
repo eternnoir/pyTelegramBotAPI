@@ -949,12 +949,11 @@ class TeleBot:
 
         if restart_on_change:
             self._setup_change_detector(path_to_watch)
-            restart_on_change = False
 
         while not self.__stop_polling.is_set():
             try:
                 self.polling(non_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
-                             logger_level=logger_level, allowed_updates=allowed_updates, restart_on_change=restart_on_change,
+                             logger_level=logger_level, allowed_updates=allowed_updates, restart_on_change=False,
                              *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:

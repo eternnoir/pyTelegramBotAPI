@@ -350,8 +350,6 @@ class AsyncTeleBot:
         self._polling = True
 
         if restart_on_change:
-            restart_on_change = False
-
             self._setup_change_detector(path_to_watch)
 
         while self._polling:
