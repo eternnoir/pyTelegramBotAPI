@@ -95,6 +95,10 @@ class TeleBot:
     See more examples in examples/ directory:
     https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples
 
+    .. note::
+
+        Install coloredlogs module to specify colorful_logs=True
+
 
     :param token: Token of a bot, should be obtained from @BotFather
     :type token: :obj:`str`
@@ -131,7 +135,7 @@ class TeleBot:
 
     :param use_class_middlewares: Use class middlewares, defaults to False
     :type use_class_middlewares: :obj:`bool`, optional
-
+    
     :param disable_web_page_preview: Default value for disable_web_page_preview, defaults to None
     :type disable_web_page_preview: :obj:`bool`, optional
 
@@ -143,6 +147,10 @@ class TeleBot:
 
     :param allow_sending_without_reply: Default value for allow_sending_without_reply, defaults to None
     :type allow_sending_without_reply: :obj:`bool`, optional
+    
+
+    :param colorful_logs: Outputs colorful logs
+    :type colorful_logs: :obj:`bool`, optional
     """
 
     def __init__(
@@ -155,7 +163,8 @@ class TeleBot:
             disable_web_page_preview: Optional[bool]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            allow_sending_without_reply: Optional[bool]=None
+            allow_sending_without_reply: Optional[bool]=None,
+            colorful_logs: Optional[bool]=False
     ):
 
         # update-related
@@ -170,6 +179,16 @@ class TeleBot:
         self.disable_notification = disable_notification
         self.protect_content = protect_content
         self.allow_sending_without_reply = allow_sending_without_reply
+
+        # logs-related
+        if colorful_logs:
+            try:
+                import coloredlogs
+                coloredlogs.install(logger=logger, level=logger.level)
+            except ImportError:
+                raise ImportError(
+                    'Install colorredlogs module to use colorful_logs option.'
+                )
 
         # threading-related
         self.__stop_polling = threading.Event()
@@ -865,11 +884,35 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
+    def _setup_change_detector(self, path_to_watch: str):
+        try:
+            from watchdog.observers import Observer
+            from telebot.ext.reloader import EventHandler
+        except ImportError:
+            raise ImportError(
+                'Please install watchdog and psutil before using restart_on_change option.'
+            )
+
+        self.event_handler = EventHandler()
+        path = path_to_watch if path_to_watch else None
+        if path is None:
+            # Make it possible to specify --path argument to the script
+            path = sys.argv[sys.argv.index('--path') + 1] if '--path' in sys.argv else '.'
+
+            
+        self.event_observer = Observer()
+        self.event_observer.schedule(self.event_handler, path, recursive=True)
+        self.event_observer.start()
 
     def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, long_polling_timeout: Optional[int]=20,
-                         logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None, *args, **kwargs):
+                         logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
+                         restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None, *args, **kwargs):
         """
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
+
+        .. note::
+        
+            Install watchdog and psutil before using restart_on_change option.
 
         :param timeout: Request connection timeout.
         :type timeout: :obj:`int`
@@ -893,15 +936,25 @@ class TeleBot:
             so unwanted updates may be received for a short period of time.
         :type allowed_updates: :obj:`list` of :obj:`str`
 
+        :param restart_on_change: Restart a file on file(s) change. Defaults to False
+        :type restart_on_change: :obj:`bool`
+
+        :param path_to_watch: Path to watch for changes. Defaults to current directory
+        :type path_to_watch: :obj:`str`
+
         :return:
         """
         if skip_pending:
             self.__skip_updates()
 
+        if restart_on_change:
+            self._setup_change_detector(path_to_watch)
+
         while not self.__stop_polling.is_set():
             try:
                 self.polling(non_stop=True, timeout=timeout, long_polling_timeout=long_polling_timeout,
-                             logger_level=logger_level, allowed_updates=allowed_updates, *args, **kwargs)
+                             logger_level=logger_level, allowed_updates=allowed_updates, restart_on_change=False,
+                             *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
                     logger.error("Infinity polling exception: %s", str(e))
@@ -918,7 +971,7 @@ class TeleBot:
     def polling(self, non_stop: Optional[bool]=False, skip_pending: Optional[bool]=False, interval: Optional[int]=0,
                 timeout: Optional[int]=20, long_polling_timeout: Optional[int]=20,
                 logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
-                none_stop: Optional[bool]=None):
+                none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None):
         """
         This function creates a new Thread that calls an internal __retrieve_updates function.
         This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
@@ -929,6 +982,10 @@ class TeleBot:
 
         .. deprecated:: 4.1.1
             Use :meth:`infinity_polling` instead.
+
+        .. note::
+        
+            Install watchdog and psutil before using restart_on_change option.
 
         :param interval: Delay between two update retrivals
         :type interval: :obj:`int`
@@ -961,6 +1018,12 @@ class TeleBot:
 
         :param none_stop: Deprecated, use non_stop. Old typo, kept for backward compatibility.
         :type none_stop: :obj:`bool`
+
+        :param restart_on_change: Restart a file on file(s) change. Defaults to False
+        :type restart_on_change: :obj:`bool`
+
+        :param path_to_watch: Path to watch for changes. Defaults to None
+        :type path_to_watch: :obj:`str`
         
         :return:
         """
@@ -970,6 +1033,11 @@ class TeleBot:
 
         if skip_pending:
             self.__skip_updates()
+
+        if restart_on_change:
+            self._setup_change_detector(path_to_watch)
+
+        logger.info('Starting your bot with username: [@%s]', self.user.username)
             
         if self.threaded:
             self.__threaded_polling(non_stop=non_stop, interval=interval, timeout=timeout, long_polling_timeout=long_polling_timeout,

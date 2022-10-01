@@ -13,8 +13,10 @@ API_URL = 'https://api.telegram.org/bot{0}/{1}'
 
 from datetime import datetime
 
-from telebot import util, logger
+from telebot import util
+import logging
 
+logger = logging.getLogger('TeleBot')
 
 proxy = None
 session = None
@@ -69,7 +71,7 @@ async def _process_request(token, url, method='get', params=None, files=None, **
 
     else:
         # let's check for timeout in params
-        request_timeout = params.pop('timeout', None)
+        request_timeout = params.pop('timeout', None) if params else None
         # we will apply default request_timeout if there is no timeout in params
         # otherwise, we will use timeout parameter applied for payload.
     
