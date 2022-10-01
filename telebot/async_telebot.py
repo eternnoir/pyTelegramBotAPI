@@ -230,7 +230,8 @@ class AsyncTeleBot:
         self.event_handler = EventHandler()
         path = path_to_watch if path_to_watch else None
         if path is None:
-            path = sys.argv[1] if len(sys.argv) > 1 else '.' # current directory
+            # Make it possible to specify --path argument to the script
+            path = sys.argv[sys.argv.index('--path') + 1] if '--path' in sys.argv else '.'
             
         self.observer = Observer()
         self.observer.schedule(self.event_handler, path, recursive=True)
