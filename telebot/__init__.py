@@ -880,7 +880,7 @@ class TeleBot:
         for listener in self.update_listener:
             self._exec_task(listener, new_messages)
 
-    def _setup_change_detector(self):
+    def _setup_change_detector(self, path_to_watch: str):
         try:
             from watchdog.observers import Observer
             from telebot.ext.reloader import EventHandler
