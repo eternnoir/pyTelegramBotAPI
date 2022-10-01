@@ -900,9 +900,9 @@ class TeleBot:
             path = sys.argv[sys.argv.index('--path') + 1] if '--path' in sys.argv else '.'
 
             
-        self.observer = Observer()
-        self.observer.schedule(self.event_handler, path, recursive=True)
-        self.observer.start()
+        self.event_observer = Observer()
+        self.event_observer.schedule(self.event_handler, path, recursive=True)
+        self.event_observer.start()
 
     def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, long_polling_timeout: Optional[int]=20,
                          logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,

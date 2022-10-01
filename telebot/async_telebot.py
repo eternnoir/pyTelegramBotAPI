@@ -233,9 +233,9 @@ class AsyncTeleBot:
             # Make it possible to specify --path argument to the script
             path = sys.argv[sys.argv.index('--path') + 1] if '--path' in sys.argv else '.'
             
-        self.observer = Observer()
-        self.observer.schedule(self.event_handler, path, recursive=True)
-        self.observer.start()
+        self.event_observer = Observer()
+        self.event_observer.schedule(self.event_handler, path, recursive=True)
+        self.event_observer.start()
 
     async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
             request_timeout: Optional[int]=None, allowed_updates: Optional[List[str]]=None,
