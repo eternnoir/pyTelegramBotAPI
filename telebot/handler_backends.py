@@ -249,6 +249,8 @@ class SkipHandler:
     Update will go to post_process,
     but will skip execution of handler.
     """
+    def __init__(self) -> None:
+        pass
 
 
 class CancelUpdate:
@@ -259,6 +261,9 @@ class CancelUpdate:
     Update will skip handler and execution
     of post_process in middlewares.
     """
+    def __init__(self) -> None:
+        pass
+
 
 class ContinueHandling:
     """
@@ -266,3 +271,6 @@ class ContinueHandling:
     Just return instance of this class 
     in handlers to continue process.
     """
+    def __init__(self) -> None:
+        pass
+
