@@ -12,6 +12,7 @@ from typing import Any, Callable, List, Optional, Union
 # these imports are used to avoid circular import error
 import telebot.util
 import telebot.types
+import telebot.formatting
 
 # storage
 from telebot.storage import StatePickleStorage, StateMemoryStorage, StateStorageBase
