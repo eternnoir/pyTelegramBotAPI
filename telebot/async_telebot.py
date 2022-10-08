@@ -390,6 +390,10 @@ class AsyncTeleBot:
 
         """
 
+        if not non_stop:
+            # show warning
+            logger.warning("Important: Set non_stop=True for production so that polling won't crash during errors.")
+
         self._user = await self.get_me()
             
         logger.info('Starting your bot with username: [@%s]', self.user.username)
