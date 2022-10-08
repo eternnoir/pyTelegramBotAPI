@@ -3,8 +3,6 @@ File with all middleware classes, states.
 """
 
 
-
-
 class BaseMiddleware:
     """
     Base class for middleware.
@@ -96,6 +94,7 @@ class SkipHandler:
     def __init__(self) -> None:
         pass
 
+
 class CancelUpdate:
     """
     Class for canceling updates.
@@ -105,5 +104,15 @@ class CancelUpdate:
     of post_process in middlewares.
     """
 
+    def __init__(self) -> None:
+        pass
+
+
+class ContinueHandling:
+    """
+    Class for continue updates in handlers.
+    Just return instance of this class 
+    in handlers to continue process.
+    """
     def __init__(self) -> None:
         pass
