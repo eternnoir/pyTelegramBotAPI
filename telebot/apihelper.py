@@ -111,7 +111,13 @@ def _make_request(token, method_name, method='get', params=None, files=None):
 
     params = params or None # Set params to None if empty
     result = None
-    if RETRY_ON_ERROR and RETRY_ENGINE == 1:
+
+    if CUSTOM_REQUEST_SENDER:
+        # noinspection PyCallingNonCallable
+        result = CUSTOM_REQUEST_SENDER(
+            method, request_url, params=params, files=files,
+            timeout=(connect_timeout, read_timeout), proxies=proxy)
+    elif RETRY_ON_ERROR and RETRY_ENGINE == 1:
         got_result = False
         current_try = 0
         while not got_result and current_try<MAX_RETRIES-1:
@@ -144,11 +150,6 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         for prefix in ('http://', 'https://'):
             http.mount(prefix, adapter)
         result = http.request(
-            method, request_url, params=params, files=files,
-            timeout=(connect_timeout, read_timeout), proxies=proxy)
-    elif CUSTOM_REQUEST_SENDER:
-        # noinspection PyCallingNonCallable
-        result = CUSTOM_REQUEST_SENDER(
             method, request_url, params=params, files=files,
             timeout=(connect_timeout, read_timeout), proxies=proxy)
     else:
