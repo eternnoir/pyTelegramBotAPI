@@ -392,7 +392,7 @@ class AsyncTeleBot:
 
         if not non_stop:
             # show warning
-            logger.warning("Important: Set non_stop=True for production so that polling won't crash during errors.")
+            logger.warning("Setting non_stop to False will stop polling on API and system exceptions.")
 
         self._user = await self.get_me()
             
