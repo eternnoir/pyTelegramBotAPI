@@ -42,10 +42,12 @@ class AsyncTeleBot:
         offset: Optional[int] = None,
         custom_filters: Optional[list[filters.AnyCustomFilter]] = None,
         force_allowed_updates: Optional[list[constants.UpdateType]] = None,
+        log_marker: Optional[str] = None,
     ):
         self.token = token
         self.offset = offset
         self.parse_mode = parse_mode
+        self.log_marker = log_marker
 
         self.update_listeners: list[Callable[[types.Update], service_types.NoneCoro]] = []
 
@@ -78,6 +80,13 @@ class AsyncTeleBot:
 
         # updated automatically from added handlers
         self.allowed_updates: set[constants.UpdateType] = set(force_allowed_updates) if force_allowed_updates else set()
+
+    @property
+    def logger(self) -> logging.Logger:
+        if self.log_marker is None:
+            return logger
+        else:
+            return logging.getLogger(f"telebot[{self.log_marker}]")
 
     async def close_session(self):
         """
@@ -115,7 +124,7 @@ class AsyncTeleBot:
     ):
         interval = max(interval, 0.3)
         try:
-            logger.info("Running polling")
+            self.logger.info("Running polling")
             if skip_pending:
                 await self.skip_updates()
             while True:
@@ -129,16 +138,16 @@ class AsyncTeleBot:
                         self.offset = updates[-1].update_id + 1
                         asyncio.create_task(self.process_new_updates(updates))
                 except TimeoutError:
-                    logger.debug("Long polling timed out, sending new request")
+                    self.logger.debug("Long polling timed out, sending new request")
                 except Exception:
-                    logger.exception("Unexpected exception while processing updates")
-                    logger.info("Resuming polling")
+                    self.logger.exception("Unexpected exception while processing updates")
+                    self.logger.info("Resuming polling")
                 finally:
                     await asyncio.sleep(interval)
 
         finally:
             await self.close_session()
-            logger.info("Stopping polling")
+            self.logger.info("Stopping polling")
 
     # update handling
 
@@ -149,9 +158,9 @@ class AsyncTeleBot:
 
         try:
             update_dumps = [json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates]
-            logger.debug(f"{upd_count} update(s) received:\n" + "\n\n".join(update_dumps) + "\n")
+            self.logger.debug(f"{upd_count} update(s) received:\n" + "\n\n".join(update_dumps) + "\n")
         except Exception:
-            logger.exception(f"{upd_count} update(s) received, but error occured trying to dump them")
+            self.logger.exception(f"{upd_count} update(s) received, but error occured trying to dump them")
 
         coroutines: list[Coroutine[None, None, None]] = []
         for update in updates:
@@ -201,18 +210,18 @@ class AsyncTeleBot:
             try:
                 is_match = await self._test_handler(handler, update_content)
             except Exception:
-                logger.exception(f"Error testing handler {handler_name!r} for {update_content_log}")
+                self.logger.exception(f"Error testing handler {handler_name!r} for {update_content_log}")
                 is_match = False
 
             if is_match:
-                logger.debug(f"Using handler {handler_name!r} to process {update_content_log}")
+                self.logger.debug(f"Using handler {handler_name!r} to process {update_content_log}")
                 try:
                     return await invoke_handler(handler["function"], update_content, self)
                 except Exception:
-                    logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
+                    self.logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
                     return
         else:
-            logger.debug(f"No matching handler found for {update_content_log}, ignoring")
+            self.logger.debug(f"No matching handler found for {update_content_log}, ignoring")
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
         for filter_key, filter_value in handler["filters"].items():
@@ -282,7 +291,7 @@ class AsyncTeleBot:
         try:
             custom_filter = self.custom_filters.get(filter_key)
             if custom_filter is None:
-                logger.error(
+                self.logger.error(
                     f"Invalid filter key: {filter_key!r}. Did you forgot to add your custom filter to the bot?"
                 )
                 return False
@@ -291,13 +300,13 @@ class AsyncTeleBot:
             elif isinstance(custom_filter, filters.AdvancedCustomFilter):
                 return await custom_filter.check(update_content, filter_value)
             else:
-                logger.error(
+                self.logger.error(
                     "Invalid custom filter type, expected either SimpleCustomFilter "
                     + f"or AdvancedCustomFilter, got {custom_filter!r}."
                 )
                 return False
         except Exception as e:
-            logger.exception(f"Unexpected error testing custom filters")
+            self.logger.exception(f"Unexpected error testing custom filters")
             return False
 
     # handlers building decorators and methods
@@ -505,7 +514,10 @@ class AsyncTeleBot:
                     try:
                         await invoke_handler(decorated, cq, self)
                     finally:
-                        await self.answer_callback_query(cq.id)
+                        try:
+                            await self.answer_callback_query(cq.id)
+                        except:
+                            pass
 
             else:
                 handler_func = decorated

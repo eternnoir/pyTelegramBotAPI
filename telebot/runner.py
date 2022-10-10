@@ -28,6 +28,10 @@ class BotRunner:
     background_jobs: list[Coroutine[None, None, None]] = field(default_factory=list)
     aux_endpoints: list[AuxBotEndpoint] = field(default_factory=list)
 
+    def __post_init__(self):
+        if self.bot.log_marker is None:
+            self.bot.log_marker = self.bot_prefix
+
     async def run_polling(self):
         """For local run / testing only"""
         await asyncio.gather(
