@@ -25,6 +25,7 @@ MOCKED_METHOD_NAMES: set[str] = set()
 # MockAsyncTeleBot aims at mocking only "active" bot actions like sending a message,
 # so these should work as usual
 UNMOCKABLE_METHOD_NAMES = {
+    "logger",
     "close",
     "log_out",
     "reply_to",  # conveniense method, calls, send_message
