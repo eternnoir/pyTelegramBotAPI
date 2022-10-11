@@ -270,6 +270,19 @@ class ContinueHandling:
     Class for continue updates in handlers.
     Just return instance of this class 
     in handlers to continue process.
+    
+    .. code-block:: python3
+        :caption: Example of using ContinueHandling
+
+        @bot.message_handler(commands=['start'])
+        def start(message):
+            bot.send_message(message.chat.id, 'Hello World!')
+            return ContinueHandling()
+        
+        @bot.message_handler(commands=['start'])
+        def start2(message):
+            bot.send_message(message.chat.id, 'Hello World2!')
+    
     """
     def __init__(self) -> None:
         pass
