@@ -174,7 +174,6 @@ class State:
     def __str__(self) -> str:
         return self.name
 
-    
 
 class StatesGroup:
     """
@@ -191,9 +190,6 @@ class StatesGroup:
                 # change value of that variable
                 value.name = ':'.join((cls.__name__, name))
                 value.group = cls
-
-
-
 
     
 class BaseMiddleware:
@@ -253,9 +249,9 @@ class SkipHandler:
     Update will go to post_process,
     but will skip execution of handler.
     """
-
     def __init__(self) -> None:
         pass
+
 
 class CancelUpdate:
     """
@@ -265,6 +261,28 @@ class CancelUpdate:
     Update will skip handler and execution
     of post_process in middlewares.
     """
+    def __init__(self) -> None:
+        pass
 
+
+class ContinueHandling:
+    """
+    Class for continue updates in handlers.
+    Just return instance of this class 
+    in handlers to continue process.
+    
+    .. code-block:: python3
+        :caption: Example of using ContinueHandling
+
+        @bot.message_handler(commands=['start'])
+        def start(message):
+            bot.send_message(message.chat.id, 'Hello World!')
+            return ContinueHandling()
+        
+        @bot.message_handler(commands=['start'])
+        def start2(message):
+            bot.send_message(message.chat.id, 'Hello World2!')
+    
+    """
     def __init__(self) -> None:
         pass
