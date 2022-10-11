@@ -118,13 +118,13 @@ class ContinueHandling:
         :caption: Example of using ContinueHandling
 
         @bot.message_handler(commands=['start'])
-        def start(message):
-            bot.send_message(message.chat.id, 'Hello World!')
+        async def start(message):
+            await bot.send_message(message.chat.id, 'Hello World!')
             return ContinueHandling()
         
         @bot.message_handler(commands=['start'])
-        def start2(message):
-            bot.send_message(message.chat.id, 'Hello World2!')
+        async def start2(message):
+            await bot.send_message(message.chat.id, 'Hello World2!')
    
     """
     def __init__(self) -> None:
