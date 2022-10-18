@@ -51,9 +51,9 @@ content_type_service = [
 
 #: All update types, should be used for allowed_updates parameter in polling.
 update_types = [
-    "message", "edited_message", "channel_post", "edited_channel_post", "inline_query",
-    "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer",
-    "my_chat_member", "chat_member", "chat_join_request"
+    'message', 'edited_message', 'channel_post', 'edited_channel_post', 'inline_query',
+    'chosen_inline_result', 'callback_query', 'shipping_query', 'pre_checkout_query', 'poll', 'poll_answer',
+    'my_chat_member', 'chat_member', 'chat_join_request'
 ]
 
 
@@ -65,7 +65,7 @@ class WorkerThread(threading.Thread):
 
     def __init__(self, exception_callback=None, queue=None, name=None):
         if not name:
-            name = "WorkerThread{0}".format(self.__class__.count + 1)
+            name = 'WorkerThread{0}'.format(self.__class__.count + 1)
             self.__class__.count += 1
         if not queue:
             queue = Queue.Queue()
@@ -92,16 +92,16 @@ class WorkerThread(threading.Thread):
                 self.received_task_event.clear()
                 self.done_event.clear()
                 self.exception_event.clear()
-                logger.debug("Received task")
+                logger.debug('Received task')
                 self.received_task_event.set()
 
                 task(*args, **kwargs)
-                logger.debug("Task complete")
+                logger.debug('Task complete')
                 self.done_event.set()
             except Queue.Empty:
                 pass
             except Exception as e:
-                logger.debug(type(e).__name__ + " occurred, args=" + str(e.args) + "\n" + traceback.format_exc())
+                logger.debug(type(e).__name__ + ' occurred, args=' + str(e.args) + '\n' + traceback.format_exc())
                 self.exception_info = e
                 self.exception_event.set()
                 if self.exception_callback:
@@ -196,7 +196,7 @@ class CustomRequestResponse():
     """
     :meta private:
     """
-    def __init__(self, json_text, status_code = 200, reason = ""):
+    def __init__(self, json_text, status_code=200, reason=''):
         self.status_code = status_code
         self.text = json_text
         self.reason = reason
@@ -319,9 +319,9 @@ def extract_arguments(text: str) -> str or None:
     .. code-block:: python3
         :caption: Examples:
 
-        extract_arguments("/get name"): 'name'
-        extract_arguments("/get"): ''
-        extract_arguments("/get@botName name"): 'name'
+        extract_arguments('/get name'): 'name'
+        extract_arguments('/get'): ''
+        extract_arguments('/get@botName name'): 'name'
     
     :param text: String to extract the arguments from a command
     :type text: :obj:`str`
@@ -329,7 +329,7 @@ def extract_arguments(text: str) -> str or None:
     :return: the arguments if `text` is a command (according to is_command), else None.
     :rtype: :obj:`str` or :obj:`None`
     """
-    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
+    regexp = re.compile(r'/\w*(@\w*)*\s*([\s\S]*)', re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
 
@@ -381,9 +381,9 @@ def smart_split(text: str, chars_per_string: int=MAX_MESSAGE_LENGTH) -> List[str
 
         part = text[:chars_per_string]
 
-        if "\n" in part: part = _text_before_last("\n")
-        elif ". " in part: part = _text_before_last(". ")
-        elif " " in part: part = _text_before_last(" ")
+        if '\n' in part: part = _text_before_last('\n')
+        elif '. ' in part: part = _text_before_last('. ')
+        elif ' ' in part: part = _text_before_last(' ')
 
         parts.append(part)
         text = text[len(part):]
@@ -396,7 +396,7 @@ def escape(text: str) -> str:
     :param text: the text to escape
     :return: the escaped text
     """
-    chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;"}
+    chars = {'&': '&amp;', '<': '&lt;', '>': '&gt;'}
     for old, new in chars.items(): text = text.replace(old, new)
     return text
 
@@ -427,8 +427,8 @@ def user_link(user: types.User, include_id: bool=False) -> str:
     :rtype: :obj:`str`
     """
     name = escape(user.first_name)
-    return (f"<a href='tg://user?id={user.id}'>{name}</a>"
-        + (f" (<pre>{user.id}</pre>)" if include_id else ""))
+    return (f'<a href="tg://user?id={user.id}">{name}</a>'
+            + (f' (<pre>{user.id}</pre>)' if include_id else ''))
 
 
 def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int=2) -> types.InlineKeyboardMarkup:
@@ -500,9 +500,9 @@ def orify(e, changed_callback):
     """
     :meta private:
     """
-    if not hasattr(e, "_set"):
+    if not hasattr(e, '_set'):
         e._set = e.set
-    if not hasattr(e, "_clear"):
+    if not hasattr(e, '_clear'):
         e._clear = e.clear
     e.changed = changed_callback
     e.set = lambda: or_set(e)
@@ -583,11 +583,11 @@ def deprecated(warn: bool=True, alternative: Optional[Callable]=None, deprecatio
     """
     def decorator(function):
         def wrapper(*args, **kwargs):
-            info = f"`{function.__name__}` is deprecated."
+            info = f'`{function.__name__}` is deprecated.'
             if alternative:
-                info += f" Use `{alternative.__name__}` instead"
+                info += f' Use `{alternative.__name__}` instead'
             if deprecation_text:
-                info += " " + deprecation_text
+                info += ' ' + deprecation_text
             if not warn:
                 logger.info(info)
             else:
@@ -701,12 +701,12 @@ def validate_web_app_data(token: str, raw_init_data: str):
         parsed_data = dict(parse_qsl(raw_init_data))
     except ValueError:
         return False
-    if "hash" not in parsed_data:
+    if 'hash' not in parsed_data:
         return False
 
     init_data_hash = parsed_data.pop('hash')
-    data_check_string = "\n".join(f"{key}={value}" for key, value in sorted(parsed_data.items()))
-    secret_key = hmac.new(key=b"WebAppData", msg=token.encode(), digestmod=sha256)
+    data_check_string = '\n'.join(f'{key}={value}' for key, value in sorted(parsed_data.items()))
+    secret_key = hmac.new(key=b'WebAppData', msg=token.encode(), digestmod=sha256)
 
     return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
 
