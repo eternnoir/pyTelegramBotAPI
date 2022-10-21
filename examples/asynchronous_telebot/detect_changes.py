@@ -24,5 +24,5 @@ async def echo_message(message):
 
 
 import asyncio
-# only new versions(4.7.0+)
+# only for versions 4.7.0+
 asyncio.run(bot.polling(restart_on_change=True))
