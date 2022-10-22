@@ -421,17 +421,30 @@ class AsyncTeleBot:
                         continue
                     else:
                         return
-                except asyncio_helper.ApiTelegramException as e:
-                    logger.error(str(e))
-                    if non_stop:
+                except asyncio_helper.ApiException as e:
+                    handled = False
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                        handled = True
+
+                    if not handled:
+                        logger.debug(traceback.format_exc())
+
+                    if non_stop or handled:
                         continue
                     else:
-                        break
+                        raise e
                 except Exception as e:
-                    logger.error('Cause exception while getting updates.')
-                    if non_stop:
-                        logger.error(str(e))
-                        await asyncio.sleep(3)
+                    handled = False
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                        handled = True
+
+                    if not handled:
+                        logger.error('Cause exception while getting updates. Enable debug logging for more info.')
+                        logger.debug(traceback.format_exc())
+
+                    if non_stop or handled:
                         continue
                     else:
                         raise e
