@@ -42,7 +42,7 @@ def query_video(inline_query):
     try:
         r = types.InlineQueryResultVideo('1',
                                          'https://github.com/eternnoir/pyTelegramBotAPI/blob/master/tests/test_data/test_video.mp4?raw=true',
-                                         'video/mp4', 'Video',
+                                         'video/mp4', 
                                          'https://raw.githubusercontent.com/eternnoir/pyTelegramBotAPI/master/examples/detailed_example/rooster.jpg',
                                          'Title'
                                          )
