@@ -174,6 +174,10 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError as e:
+            asyncio.set_event_loop(asyncio.new_event_loop())
 
     @property
     def user(self):
