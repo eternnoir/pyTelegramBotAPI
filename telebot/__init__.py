@@ -451,8 +451,7 @@ class TeleBot:
                     drop_pending_updates: Optional[bool] = None,
                     timeout: Optional[int]=None,
                     secret_token: Optional[str]=None,
-                    secret_token_length: Optional[int]=20,
-                    debug: Optional[bool]=False):
+                    secret_token_length: Optional[int]=20,):
         """
         This class sets webhooks and listens to a given url and port.
 
@@ -501,9 +500,6 @@ class TeleBot:
         :param secret_token_length: Length of a secret token, defaults to 20
         :type secret_token_length: :obj:`int`, optional
 
-        :param debug: set True if you want to set debugging on for webserver, defaults to False
-        :type debug: :obj:`bool`, optional
-
         :raises ImportError: If necessary libraries were not installed.
         """
 
@@ -544,7 +540,7 @@ class TeleBot:
             from telebot.ext.sync import SyncWebhookListener
         except (NameError, ImportError):
             raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
-        self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
+        self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path)
         self.webhook_listener.run_app()
 
 
