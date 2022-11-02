@@ -29,7 +29,6 @@ class AsyncWebhookListener:
                 port: Optional[int]=443,
                 ssl_context: Optional[tuple]=None,
                 url_path: Optional[str]=None,
-                debug: Optional[bool]=False
                 ) -> None:
         """
         Aynchronous implementation of webhook listener
@@ -55,9 +54,6 @@ class AsyncWebhookListener:
         :param url_path: Webhook url path
         :type url_path: str
 
-        :param debug: Debug mode
-        :type debug: bool
-
         :raises ImportError: If FastAPI or uvicorn is not installed.
         :raises ImportError: If Starlette version is too old.
 
@@ -72,7 +68,6 @@ class AsyncWebhookListener:
         self._host = host
         self._ssl_context = ssl_context
         self._url_path = url_path
-        self._debug = debug
         self._prepare_endpoint_urls()
 
 
@@ -119,7 +114,6 @@ class AsyncWebhookListener:
         config = Config(app=self.app,
             host=self._host,
             port=self._port,
-            debug=self._debug,
             ssl_certfile=self._ssl_context[0],
             ssl_keyfile=self._ssl_context[1]
         )
