@@ -428,12 +428,13 @@ class AsyncTeleBot:
                         handled = True
 
                     if not handled:
+                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
                         logger.debug(traceback.format_exc())
 
                     if non_stop or handled:
                         continue
                     else:
-                        raise e
+                        break
                 except Exception as e:
                     handled = False
                     if self.exception_handler:
@@ -441,13 +442,13 @@ class AsyncTeleBot:
                         handled = True
 
                     if not handled:
-                        logger.error('Cause exception while getting updates. Enable debug logging for more info.')
+                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
                         logger.debug(traceback.format_exc())
 
                     if non_stop or handled:
                         continue
                     else:
-                        raise e
+                        break
         finally:
             self._polling = False
             await self.close_session()
