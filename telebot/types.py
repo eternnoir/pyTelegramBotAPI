@@ -889,6 +889,15 @@ class Message(JsonDeserializable):
         proximity alert while sharing Live Location.
     :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
 
+    :param forum_topic_created: Optional. Service message: forum topic created
+    :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
+
+    :param forum_topic_closed: Optional. Service message: forum topic closed
+    :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
+
+    :param forum_topic_reopened: Optional. Service message: forum topic reopened
+    :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
+
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
 
@@ -1078,6 +1087,15 @@ class Message(JsonDeserializable):
             content_type = 'message_auto_delete_timer_changed'
         if 'reply_markup' in obj:
             opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
+        if 'forum_topic_created' in obj:
+            opts['forum_topic_created'] = ForumTopicCreated.de_json(obj['forum_topic_created'])
+            content_type = 'forum_topic_created'
+        if 'forum_topic_closed' in obj:
+            opts['forum_topic_closed'] = ForumTopicClosed.de_json(obj['forum_topic_closed'])
+            content_type = 'forum_topic_closed'
+        if 'forum_topic_reopened' in obj:
+            opts['forum_topic_reopened'] = ForumTopicReopened.de_json(obj['forum_topic_reopened'])
+            content_type = 'forum_topic_reopened'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1165,6 +1183,9 @@ class Message(JsonDeserializable):
         self.reply_markup: Optional[InlineKeyboardMarkup] = None
         self.message_thread_id: Optional[int] = None
         self.is_topic_message: Optional[bool] = None
+        self.forum_topic_created: Optional[ForumTopicCreated] = None
+        self.forum_topic_closed: Optional[ForumTopicClosed] = None
+        self.forum_topic_reopened: Optional[ForumTopicReopened] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -6716,3 +6737,56 @@ class InputFile:
         File object.
         """
         return self._file
+
+
+class ForumTopicCreated(JsonDeserializable):
+    """
+    This object represents a service message about a new forum topic created in the chat.
+    
+
+    :param name: Name of the topic
+    :type name: :obj:`str`
+
+    :param icon_color: Color of the topic icon in RGB format
+    :type icon_color: :obj:`int`
+
+    :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
+    :type icon_custom_emoji_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ForumTopicCreated`
+    """
+    def de_json(self, json_string):
+        if json_string is None: return None
+        obj = self.check_json(json_string)
+        return self(**obj)
+
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]) -> None:
+        self.name: str = name
+        self.icon_color: int = icon_color
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
+
+class ForumTopicClosed(JsonDeserializable):
+    """This object represents a service message about a forum topic closed in the chat. Currently holds no information."""
+    # for future use
+    def de_json(self, json_string):
+        return self()
+
+    def __init__(self) -> None:
+        pass
+
+
+class ForumTopicReopened(JsonDeserializable):
+    """This object represents a service message about a forum topic reopened in the chat. Currently holds no information."""
+    # for future use
+    def de_json(self, json_string):
+        return self()
+
+    def __init__(self) -> None:
+        pass
+
+
+
+
+
