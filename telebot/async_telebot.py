@@ -354,7 +354,7 @@ class AsyncTeleBot:
 
         while self._polling:
             try:
-                await self._process_polling(non_stop=False, timeout=timeout, request_timeout=request_timeout,
+                await self._process_polling(non_stop=True, timeout=timeout, request_timeout=request_timeout,
                              allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
