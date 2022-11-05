@@ -515,6 +515,9 @@ class Chat(JsonDeserializable):
     :param last_name: Optional. Last name of the other party in a private chat
     :type last_name: :obj:`str`
 
+    :param is_forum: Optional. True, if the supergroup chat is a forum (has topics enabled)
+    :type is_forum: :obj:`bool`
+
     :param photo: Optional. Chat photo. Returned only in getChat.
     :type photo: :class:`telebot.types.ChatPhoto`
 
@@ -603,13 +606,15 @@ class Chat(JsonDeserializable):
                  permissions=None, slow_mode_delay=None,
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
-                 join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, **kwargs):
+                 join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
+                 is_forum=None, ,**kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
         self.username: str = username
         self.first_name: str = first_name
         self.last_name: str = last_name
+        self.is_forum: bool = is_forum
         self.photo: ChatPhoto = photo
         self.bio: str = bio
         self.join_to_send_messages: bool = join_to_send_messages
