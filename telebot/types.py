@@ -607,7 +607,7 @@ class Chat(JsonDeserializable):
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
-                 is_forum=None, ,**kwargs):
+                 is_forum=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
