@@ -695,6 +695,9 @@ class Message(JsonDeserializable):
     :param message_id: Unique message identifier inside this chat
     :type message_id: :obj:`int`
 
+    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
+    :type message_thread_id: :obj:`int`
+
     :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the 
         field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
     :type from_user: :class:`telebot.types.User`
@@ -732,6 +735,9 @@ class Message(JsonDeserializable):
 
     :param forward_date: Optional. For forwarded messages, date the original message was sent in Unix time
     :type forward_date: :obj:`int`
+
+    :param is_topic_message: Optional. True, if the message is sent to a forum topic
+    :type is_topic_message: :obj:`bool`
 
     :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically 
         forwarded to the connected discussion group
@@ -1157,6 +1163,8 @@ class Message(JsonDeserializable):
         self.successful_payment: Optional[SuccessfulPayment] = None
         self.connected_website: Optional[str] = None
         self.reply_markup: Optional[InlineKeyboardMarkup] = None
+        self.message_thread_id: Optional[int] = None
+        self.is_topic_message: Optional[bool] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
