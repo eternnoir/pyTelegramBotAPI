@@ -6779,10 +6779,11 @@ class ForumTopicCreated(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ForumTopicCreated`
     """
-    def de_json(self, json_string):
+    @classmethod
+    def de_json(cls, json_string):
         if json_string is None: return None
-        obj = self.check_json(json_string)
-        return self(**obj)
+        obj = cls.check_json(json_string)
+        return cls(**obj)
 
     def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None) -> None:
         self.name: str = name
@@ -6793,8 +6794,9 @@ class ForumTopicCreated(JsonDeserializable):
 class ForumTopicClosed(JsonDeserializable):
     """This object represents a service message about a forum topic closed in the chat. Currently holds no information."""
     # for future use
-    def de_json(self, json_string):
-        return self()
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
 
     def __init__(self) -> None:
         pass
@@ -6803,11 +6805,43 @@ class ForumTopicClosed(JsonDeserializable):
 class ForumTopicReopened(JsonDeserializable):
     """This object represents a service message about a forum topic reopened in the chat. Currently holds no information."""
     # for future use
-    def de_json(self, json_string):
-        return self()
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
 
     def __init__(self) -> None:
         pass
+
+
+class ForumTopic(JsonDeserializable):
+    """
+    This object represents a forum topic.
+
+    :param message_thread_id: Unique identifier of the forum topic
+    :type message_thread_id: :obj:`int`
+
+    :param name: Name of the topic
+    :type name: :obj:`str`
+
+    :param icon_color: Color of the topic icon in RGB format
+    :type icon_color: :obj:`int`
+
+    :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
+    :type icon_custom_emoji_id: :obj:`str`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None) -> None:
+        self.message_thread_id: int = message_thread_id
+        self.name: str = name
+        self.icon_color: int = icon_color
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
 
 
 
