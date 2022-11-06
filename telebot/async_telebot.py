@@ -354,7 +354,7 @@ class AsyncTeleBot:
 
         while self._polling:
             try:
-                await self._process_polling(non_stop=False, timeout=timeout, request_timeout=request_timeout,
+                await self._process_polling(non_stop=True, timeout=timeout, request_timeout=request_timeout,
                              allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
@@ -421,20 +421,34 @@ class AsyncTeleBot:
                         continue
                     else:
                         return
-                except asyncio_helper.ApiTelegramException as e:
-                    logger.error(str(e))
-                    if non_stop:
+                except asyncio_helper.ApiException as e:
+                    handled = False
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                        handled = True
+
+                    if not handled:
+                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
+                        logger.debug(traceback.format_exc())
+
+                    if non_stop or handled:
                         continue
                     else:
                         break
                 except Exception as e:
-                    logger.error('Cause exception while getting updates.')
-                    if non_stop:
-                        logger.error(str(e))
-                        await asyncio.sleep(3)
+                    handled = False
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                        handled = True
+
+                    if not handled:
+                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
+                        logger.debug(traceback.format_exc())
+
+                    if non_stop or handled:
                         continue
                     else:
-                        raise e
+                        break
         finally:
             self._polling = False
             await self.close_session()
