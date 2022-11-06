@@ -6761,7 +6761,7 @@ class ForumTopicCreated(JsonDeserializable):
         obj = self.check_json(json_string)
         return self(**obj)
 
-    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]) -> None:
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None) -> None:
         self.name: str = name
         self.icon_color: int = icon_color
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
