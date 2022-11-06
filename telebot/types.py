@@ -2597,7 +2597,7 @@ class ChatMember(JsonDeserializable):
                  can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
                  can_send_other_messages=None, can_add_web_page_previews=None,  
                  can_manage_chat=None, can_manage_video_chats=None, 
-                 until_date=None, **kwargs):
+                 until_date=None, can_manage_topics=None, **kwargs):
         self.user: User = user
         self.status: str = status
         self.custom_title: str = custom_title
@@ -2621,6 +2621,7 @@ class ChatMember(JsonDeserializable):
         self.can_manage_video_chats: bool = can_manage_video_chats
         self.can_manage_voice_chats: bool = self.can_manage_video_chats   # deprecated, for backward compatibility
         self.until_date: int = until_date
+        self.can_manage_topics: bool = can_manage_topics
 
 
 class ChatMemberOwner(ChatMember):
@@ -2700,6 +2701,10 @@ class ChatMemberAdministrator(ChatMember):
     :param can_pin_messages: Optional. True, if the user is allowed to pin messages; groups and supergroups only
     :type can_pin_messages: :obj:`bool`
 
+    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics;
+        supergroups only
+    :type can_manage_topics: :obj:`bool`
+
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
 
@@ -2750,6 +2755,9 @@ class ChatMemberRestricted(ChatMember):
 
     :param can_pin_messages: True, if the user is allowed to pin messages
     :type can_pin_messages: :obj:`bool`
+
+    :param can_manage_topics: True, if the user is allowed to create forum topics
+    :type can_manage_topics: :obj:`bool`
 
     :param can_send_messages: True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
@@ -2853,6 +2861,10 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     :param can_pin_messages: Optional. True, if the user is allowed to pin messages. Ignored in public supergroups
     :type can_pin_messages: :obj:`bool`
 
+    :param can_manage_topics: Optional. True, if the user is allowed to create forum topics. If omitted defaults to the
+        value of can_pin_messages
+    :type can_manage_topics: :obj:`bool`    
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatPermissions`
     """
@@ -2865,7 +2877,8 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     def __init__(self, can_send_messages=None, can_send_media_messages=None,
                  can_send_polls=None, can_send_other_messages=None,
                  can_add_web_page_previews=None, can_change_info=None,
-                 can_invite_users=None, can_pin_messages=None, **kwargs):
+                 can_invite_users=None, can_pin_messages=None, 
+                 can_manage_topics=None, **kwargs):
         self.can_send_messages: bool = can_send_messages
         self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
@@ -2874,6 +2887,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_change_info: bool = can_change_info
         self.can_invite_users: bool = can_invite_users
         self.can_pin_messages: bool = can_pin_messages
+        self.can_manage_topics: bool = can_manage_topics
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -2896,6 +2910,9 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             json_dict['can_invite_users'] = self.can_invite_users
         if self.can_pin_messages is not None:
             json_dict['can_pin_messages'] = self.can_pin_messages
+        if self.can_manage_topics is not None:
+            json_dict['can_manage_topics'] = self.can_manage_topics
+        
         return json_dict
 
 
@@ -6626,6 +6643,9 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_pin_messages: Optional. True, if the user is allowed to pin messages; groups and supergroups only
     :type can_pin_messages: :obj:`bool`
 
+    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
+    :type can_manage_topics: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatAdministratorRights`
     """
@@ -6640,7 +6660,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_delete_messages: bool, can_manage_video_chats: bool, can_restrict_members: bool,
         can_promote_members: bool, can_change_info: bool, can_invite_users: bool,
         can_post_messages: bool=None, can_edit_messages: bool=None,
-        can_pin_messages: bool=None) -> None:
+        can_pin_messages: bool=None, can_manage_topics: bool=None) -> None:
         
         self.is_anonymous: bool = is_anonymous
         self.can_manage_chat: bool = can_manage_chat
@@ -6653,6 +6673,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         self.can_post_messages: bool = can_post_messages
         self.can_edit_messages: bool = can_edit_messages
         self.can_pin_messages: bool = can_pin_messages
+        self.can_manage_topics: bool = can_manage_topics
 
     def to_dict(self):
         json_dict = {
@@ -6671,6 +6692,8 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
             json_dict['can_edit_messages'] = self.can_edit_messages
         if self.can_pin_messages is not None:
             json_dict['can_pin_messages'] = self.can_pin_messages
+        if self.can_manage_topics is not None:
+            json_dict['can_manage_topics'] = self.can_manage_topics
         return json_dict
     
     def to_json(self):
