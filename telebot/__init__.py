@@ -2910,7 +2910,8 @@ class TeleBot:
             is_anonymous: Optional[bool]=None, 
             can_manage_chat: Optional[bool]=None, 
             can_manage_video_chats: Optional[bool]=None,
-            can_manage_voice_chats: Optional[bool]=None) -> bool:
+            can_manage_voice_chats: Optional[bool]=None,
+            can_manage_topics: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -2967,6 +2968,10 @@ class TeleBot:
         :param can_manage_voice_chats: Deprecated, use can_manage_video_chats.
         :type can_manage_voice_chats: :obj:`bool`
 
+        :param can_manage_topics: Pass True if the user is allowed to create, rename, close,
+            and reopen forum topics, supergroups only
+        :type can_manage_topics: :obj:`bool`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
@@ -2979,7 +2984,7 @@ class TeleBot:
             self.token, chat_id, user_id, can_change_info, can_post_messages,
             can_edit_messages, can_delete_messages, can_invite_users,
             can_restrict_members, can_pin_messages, can_promote_members,
-            is_anonymous, can_manage_chat, can_manage_video_chats)
+            is_anonymous, can_manage_chat, can_manage_video_chats, can_manage_topics)
 
     def set_chat_administrator_custom_title(
             self, chat_id: Union[int, str], user_id: int, custom_title: str) -> bool:
