@@ -1732,6 +1732,43 @@ def send_poll(
         payload['protect_content'] = protect_content
     return _make_request(token, method_url, params=payload)
 
+def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
+    method_url = r'createForumTopic'
+    payload = {'chat_id': chat_id, 'name': name}
+    if icon_color:
+        payload['icon_color'] = icon_color
+    if icon_custom_emoji_id:
+        payload['icon_custom_emoji_id'] = icon_custom_emoji_id
+    return _make_request(token, method_url, params=payload)
+
+def edit_forum_topic(token, chat_id, message_thread_id, name, icon_custom_emoji_id):
+    method_url = r'editForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id, 'name': name, 'icon_custom_emoji_id': icon_custom_emoji_id}
+    return _make_request(token, method_url, params=payload)
+
+def close_forum_topic(token, chat_id, message_thread_id):
+    method_url = r'closeForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return _make_request(token, method_url, params=payload)
+
+def reopen_forum_topic(token, chat_id, message_thread_id):
+    method_url = r'reopenForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return _make_request(token, method_url, params=payload)
+
+def delete_forum_topic(token, chat_id, message_thread_id):
+    method_url = r'deleteForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return _make_request(token, method_url, params=payload)
+
+def unpin_all_forum_topic_messages(token, chat_id, message_thread_id):
+    method_url = r'unpinAllForumTopicMessages'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return _make_request(token, method_url, params=payload)
+
+def get_forum_topic_icon_stickers(token):
+    method_url = r'getForumTopicIconStickers'
+    return _make_request(token, method_url)
 
 def stop_poll(token, chat_id, message_id, reply_markup=None):
     method_url = r'stopPoll'

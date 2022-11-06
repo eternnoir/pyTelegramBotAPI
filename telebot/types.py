@@ -6766,6 +6766,7 @@ class ForumTopicCreated(JsonDeserializable):
     """
     This object represents a service message about a new forum topic created in the chat.
     
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopiccreated
 
     :param name: Name of the topic
     :type name: :obj:`str`
@@ -6792,7 +6793,11 @@ class ForumTopicCreated(JsonDeserializable):
 
 
 class ForumTopicClosed(JsonDeserializable):
-    """This object represents a service message about a forum topic closed in the chat. Currently holds no information."""
+    """
+    This object represents a service message about a forum topic closed in the chat. Currently holds no information.
+    
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicclosed
+    """
     # for future use
     @classmethod
     def de_json(cls, json_string):
@@ -6803,7 +6808,11 @@ class ForumTopicClosed(JsonDeserializable):
 
 
 class ForumTopicReopened(JsonDeserializable):
-    """This object represents a service message about a forum topic reopened in the chat. Currently holds no information."""
+    """
+    This object represents a service message about a forum topic reopened in the chat. Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicreopened
+    """
     # for future use
     @classmethod
     def de_json(cls, json_string):
@@ -6817,6 +6826,8 @@ class ForumTopic(JsonDeserializable):
     """
     This object represents a forum topic.
 
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopic
+
     :param message_thread_id: Unique identifier of the forum topic
     :type message_thread_id: :obj:`int`
 
@@ -6828,6 +6839,9 @@ class ForumTopic(JsonDeserializable):
 
     :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
     :type icon_custom_emoji_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ForumTopic`
     """
 
     @classmethod

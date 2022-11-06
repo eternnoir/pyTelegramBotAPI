@@ -5378,6 +5378,149 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.delete_sticker_from_set(self.token, sticker)
 
+    async def create_forum_topic(self,
+            chat_id: int, name: str, icon_color: Optional[int]=None,
+            icon_custom_emoji_id: Optional[str]=None) -> types.ForumTopic:
+        """
+        Use this method to create a topic in a forum supergroup chat. The bot must be an administrator
+        in the chat for this to work and must have the can_manage_topics administrator rights.
+        Returns information about the created topic as a ForumTopic object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param name: Name of the topic, 1-128 characters
+        :type name: :obj:`str`
+
+        :param icon_color: Color of the topic icon in RGB format. Currently, must be one of 0x6FB9F0, 0xFFD67E, 0xCB86DB, 0x8EEE98, 0xFF93B2, or 0xFB6F5F
+        :type icon_color: :obj:`int`
+
+        :param icon_custom_emoji_id: Custom emoji for the topic icon. Must be an emoji of type “tgs” and must be exactly 1 character long
+        :type icon_custom_emoji_id: :obj:`str`
+
+        :return: On success, information about the created topic is returned as a ForumTopic object.
+        :rtype: :class:`telebot.types.ForumTopic`
+        """
+        return await asyncio_helper.create_forum_topic(self.token, chat_id, name, icon_color, icon_custom_emoji_id)
+
+    async def edit_forum_topic(
+            self, chat_id: Union[int, str],
+            message_thread_id: int, name: str,
+            icon_custom_emoji_id: str,
+        ) -> bool:
+        """
+        Use this method to edit name and icon of a topic in a forum supergroup chat. The bot must be an
+        administrator in the chat for this to work and must have can_manage_topics administrator rights,
+        unless it is the creator of the topic. Returns True on success.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#editforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_thread_id: Identifier of the topic to edit
+        :type message_thread_id: :obj:`int`
+
+        :param name: New name of the topic, 1-128 characters
+        :type name: :obj:`str`
+
+        :param icon_custom_emoji_id: New custom emoji for the topic icon. Must be an emoji of type “tgs” and must be exactly 1 character long
+        :type icon_custom_emoji_id: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.edit_forum_topic(self.token, chat_id, message_thread_id, name, icon_custom_emoji_id)
+
+    async def close_forum_topic(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to close an open topic in a forum supergroup chat. The bot must be an administrator
+        in the chat for this to work and must have the can_manage_topics administrator rights, unless it is
+        the creator of the topic. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#closeforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_thread_id: Identifier of the topic to close
+        :type message_thread_id: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.close_forum_topic(self.token, chat_id, message_thread_id)
+
+    async def reopen_forum_topic(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to reopen a closed topic in a forum supergroup chat. The bot must be an administrator in the chat
+        for this to work and must have the can_manage_topics administrator rights, unless it is the creator of the topic.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#reopenforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_thread_id: Identifier of the topic to reopen
+        :type message_thread_id: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.reopen_forum_topic(self.token, chat_id, message_thread_id)
+
+    async def delete_forum_topic(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to delete a topic in a forum supergroup chat. The bot must be an administrator in the chat for this
+        to work and must have the can_manage_topics administrator rights, unless it is the creator of the topic. Returns True
+        on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deleteforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_thread_id: Identifier of the topic to delete
+        :type message_thread_id: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.delete_forum_topic(self.token, chat_id, message_thread_id)
+
+    async def unpin_all_forum_topic_messages(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to clear the list of pinned messages in a forum topic. The bot must be an administrator in the
+        chat for this to work and must have the can_pin_messages administrator right in the supergroup.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinallforumtopicmessages
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_thread_id: Identifier of the topic
+        :type message_thread_id: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.unpin_all_forum_topic_messages(self.token, chat_id, message_thread_id)
+
+    async def get_forum_topic_icon_stickers(self) -> List[types.Sticker]:
+        """
+        Use this method to get custom emoji stickers, which can be used as a forum topic icon by any user.
+        Requires no parameters. Returns an Array of Sticker objects.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getforumtopiciconstickers
+
+        :return: On success, a list of StickerSet objects is returned.
+        :rtype: List[:class:`telebot.types.StickerSet`]
+        """
+        return await asyncio_helper.get_forum_topic_icon_stickers(self.token)
 
     async def set_state(self, user_id: int, state: Union[State, int, str], chat_id: Optional[int]=None):
         """

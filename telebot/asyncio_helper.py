@@ -1720,6 +1720,45 @@ async def send_poll(
         payload['protect_content'] = protect_content
     return await _process_request(token, method_url, params=payload)
 
+
+async def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
+    method_url = r'createForumTopic'
+    payload = {'chat_id': chat_id, 'name': name}
+    if icon_color:
+        payload['icon_color'] = icon_color
+    if icon_custom_emoji_id:
+        payload['icon_custom_emoji_id'] = icon_custom_emoji_id
+    return await _process_request(token, method_url, params=payload)
+
+async def edit_forum_topic(token, chat_id, message_thread_id, name, icon_custom_emoji_id):
+    method_url = r'editForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id, 'name': name, 'icon_custom_emoji_id': icon_custom_emoji_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def close_forum_topic(token, chat_id, message_thread_id):
+    method_url = r'closeForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def reopen_forum_topic(token, chat_id, message_thread_id):
+    method_url = r'reopenForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def delete_forum_topic(token, chat_id, message_thread_id):
+    method_url = r'deleteForumTopic'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def unpin_all_forum_topic_messages(token, chat_id, message_thread_id):
+    method_url = r'unpinAllForumTopicMessages'
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def get_forum_topic_icon_stickers(token):
+    method_url = r'getForumTopicIconStickers'
+    return await _process_request(token, method_url)
+
 async def _convert_list_json_serializable(results):
     ret = ''
     for r in results:
