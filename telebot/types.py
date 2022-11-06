@@ -521,6 +521,14 @@ class Chat(JsonDeserializable):
     :param photo: Optional. Chat photo. Returned only in getChat.
     :type photo: :class:`telebot.types.ChatPhoto`
 
+    :param active_usernames: Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels.
+        Returned only in getChat.
+    :type active_usernames: :obj:`list` of :obj:`str`
+
+    :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of emoji status of the other party in a private chat.
+        Returned only in getChat.
+    :type emoji_status_custom_emoji_id: :obj:`str`
+
     :param bio: Optional. Bio of the other party in a private chat. Returned only in getChat.
     :type bio: :obj:`str`
 
@@ -607,7 +615,7 @@ class Chat(JsonDeserializable):
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
-                 is_forum=None, **kwargs):
+                 is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -632,6 +640,8 @@ class Chat(JsonDeserializable):
         self.can_set_sticker_set: bool = can_set_sticker_set
         self.linked_chat_id: int = linked_chat_id
         self.location: ChatLocation = location
+        self.active_usernames: List[str] = active_usernames
+        self.emoji_status_custom_emoji_id: str = emoji_status_custom_emoji_id
 
 
 class MessageID(JsonDeserializable):
