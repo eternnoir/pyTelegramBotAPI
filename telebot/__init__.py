@@ -4630,7 +4630,7 @@ class TeleBot:
         :return: On success, information about the created topic is returned as a ForumTopic object.
         :rtype: :class:`telebot.types.ForumTopic`
         """
-        return types.ForumTopic(
+        return types.ForumTopic.de_json(
             apihelper.create_forum_topic(self.token, chat_id, name, icon_color, icon_custom_emoji_id)
         )
 
