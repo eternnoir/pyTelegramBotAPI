@@ -956,6 +956,8 @@ class Message(JsonDeserializable):
             opts['forward_date'] = obj.get('forward_date')
         if 'is_automatic_forward' in obj:
             opts['is_automatic_forward'] = obj.get('is_automatic_forward')
+        if 'is_topic_message' in obj:
+            opts['is_topic_message'] = obj.get('is_topic_message')
         if 'reply_to_message' in obj:
             opts['reply_to_message'] = Message.de_json(obj['reply_to_message'])
         if 'via_bot' in obj:
