@@ -1280,7 +1280,8 @@ class Message(JsonDeserializable):
                 entity_string_decoded = entity_string.decode("utf-16-le")
                 last_occurence = html_text.rfind(entity_string_decoded)
                 string_length = len(entity_string_decoded)
-                html_text = html_text.replace(html_text[last_occurence:last_occurence+string_length], formatted_string)
+                #html_text = html_text.replace(html_text[last_occurence:last_occurence+string_length], formatted_string)
+                html_text = html_text[:last_occurence] + formatted_string + html_text[last_occurence+string_length:]
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
 
