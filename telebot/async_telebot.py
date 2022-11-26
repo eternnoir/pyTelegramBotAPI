@@ -486,7 +486,6 @@ class AsyncTeleBot:
         handler_error = None
         data = {}
         skip_handlers = False
-        params = []
 
         if middlewares:
             for middleware in middlewares:
@@ -507,6 +506,7 @@ class AsyncTeleBot:
         if handlers and not(skip_handlers):
             try:
                 for handler in handlers:
+                    params = []
                     process_update = await self._test_message_handler(handler, message)
                     if not process_update: continue
                     for i in signature(handler['function']).parameters:
