@@ -6311,7 +6311,6 @@ class TeleBot:
             return
 
         data = {}
-        params =[]
         handler_error = None
         skip_handlers = False
 
@@ -6335,6 +6334,7 @@ class TeleBot:
         if handlers and not skip_handlers:
             try:
                 for handler in handlers:
+                    params = []
                     process_handler = self._test_message_handler(handler, message)
                     if not process_handler: continue
                     for i in inspect.signature(handler['function']).parameters:
