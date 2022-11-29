@@ -48,12 +48,12 @@ msgstr "Напрямую используя pip"
 
 #: ../../install.rst:37
 msgid "It is generally recommended to use the first option."
-msgstr "Рекомендуется использовать первый варант."
+msgstr "Рекомендуется использовать первый вариант."
 
 #: ../../install.rst:39
 msgid ""
 "While the API is production-ready, it is still under development and it "
 "has regular updates, do not forget to update it regularly by calling:"
 msgstr "Новые версии библиотеки имеют больше фич, улучшений и баг фиксов. Не забывайте"
-"обновляться вызывая:"
+" обновляться вызывая:"
 
