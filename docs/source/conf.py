@@ -69,4 +69,4 @@ html_theme_options = {
     "dark_logo": "logo2.png",
 }
 
-locale_dirs = ["locales"]
+locale_dirs = ["locales/"]
