@@ -20,39 +20,40 @@ msgstr ""
 
 #: ../../install.rst:3
 msgid "Installation Guide"
-msgstr ""
+msgstr "Гайд по установке"
 
 #: ../../install.rst:5
 msgid "Installation of pyTelegramBotAPI"
-msgstr ""
+msgstr "Установка pyTelegramBotAPI"
 
 #: ../../install.rst:5
 msgid "ptba, pytba, pyTelegramBotAPI, installation, guide"
-msgstr ""
+msgstr "ptba, pytba, pyTelegramBotAPI, установка, гайд"
 
 #: ../../install.rst:11
 msgid "Using PIP"
-msgstr ""
+msgstr "Используя PIP"
 
 #: ../../install.rst:17
 msgid "Using pipenv"
-msgstr ""
+msgstr "Используя pipenv"
 
 #: ../../install.rst:23
 msgid "By cloning repository"
-msgstr ""
+msgstr "Клонируя репозиторий"
 
 #: ../../install.rst:31
 msgid "Directly using pip"
-msgstr ""
+msgstr "Напрямую используя pip"
 
 #: ../../install.rst:37
 msgid "It is generally recommended to use the first option."
-msgstr ""
+msgstr "Рекомендуется использовать первый варант."
 
 #: ../../install.rst:39
 msgid ""
 "While the API is production-ready, it is still under development and it "
 "has regular updates, do not forget to update it regularly by calling:"
-msgstr ""
+msgstr "Новые версии библиотеки имеют больше фич, улучшений и баг фиксов. Не забывайте"
+"обновляться вызывая:"
 
