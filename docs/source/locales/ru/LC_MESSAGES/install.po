@@ -36,7 +36,7 @@ msgstr "Используя PIP"
 
 #: ../../install.rst:17
 msgid "Using pipenv"
-msgstr "Используя pipend"
+msgstr "Используя pipenv"
 
 #: ../../install.rst:23
 msgid "By cloning repository"
