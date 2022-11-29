@@ -20,21 +20,21 @@ msgstr ""
 
 #: ../../quick_start.rst:4
 msgid "Quick start"
-msgstr ""
+msgstr "Быстрый старт"
 
 #: ../../quick_start.rst:6
 msgid "Quickstart guide"
-msgstr ""
+msgstr "Быстрый старт - гайд"
 
 #: ../../quick_start.rst:6
 msgid "ptba, pytba, pyTelegramBotAPI, quickstart, guide"
-msgstr ""
+msgstr "ptba, pytba, pyTelegramBotAPI, быстрый старт, гайд"
 
 #: ../../quick_start.rst:11
 msgid "Synchronous TeleBot"
-msgstr ""
+msgstr "Синхронный телебот"
 
 #: ../../quick_start.rst:16
 msgid "Asynchronous TeleBot"
-msgstr ""
+msgstr "Асинхронный телебот"
 
