@@ -20,23 +20,23 @@ msgstr ""
 
 #: ../../formatting.rst:3
 msgid "Formatting options"
-msgstr ""
+msgstr "Параметры форматирования"
 
 #: ../../formatting.rst:5
 msgid "Formatting options in pyTelegramBotAPI"
-msgstr ""
+msgstr "Параметры форматирования в pyTelegramBotAPI"
 
 #: ../../formatting.rst:5
 msgid "html, markdown, parse_mode, formatting, ptba, pytba, pyTelegramBotAPI"
-msgstr ""
+msgstr "html, markdown, parse_mode, форматирование, ptba, pytba, pyTelergamBotAPI"
 
 #: of telebot.formatting:1
 msgid "Markdown & HTML formatting functions."
-msgstr ""
+msgstr "Функции форматирования Markdown & HTML."
 
 #: of telebot.formatting.escape_html:1
 msgid "Escapes HTML characters in a string of HTML."
-msgstr ""
+msgstr "Экранирует HTML символы в HTML строке."
 
 #: of telebot.formatting.escape_html telebot.formatting.escape_markdown
 #: telebot.formatting.format_text telebot.formatting.hbold
@@ -52,7 +52,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_html:3
 msgid "The string of HTML to escape."
-msgstr ""
+msgstr "HTML строка для экранирования."
 
 #: of telebot.formatting.escape_html telebot.formatting.escape_markdown
 #: telebot.formatting.format_text telebot.formatting.hbold
@@ -68,7 +68,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_html:6 telebot.formatting.escape_markdown:8
 msgid "The escaped string."
-msgstr ""
+msgstr "Экранированная строка."
 
 #: of telebot.formatting.escape_html telebot.formatting.escape_markdown
 #: telebot.formatting.format_text telebot.formatting.hbold
@@ -97,7 +97,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_markdown:1
 msgid "Escapes Markdown characters in a string of Markdown."
-msgstr ""
+msgstr "Экранирует Markdown символы в Markdown строке."
 
 #: of telebot.formatting.escape_markdown:3
 msgid "Credits to: simonsmh"
@@ -105,19 +105,19 @@ msgstr ""
 
 #: of telebot.formatting.escape_markdown:5
 msgid "The string of Markdown to escape."
-msgstr ""
+msgstr "Markdown строка для экранирования."
 
 #: of telebot.formatting.format_text:1
 msgid "Formats a list of strings into a single string."
-msgstr ""
+msgstr "Преобразовывает набор строк в одну."
 
 #: of telebot.formatting.format_text:10
 msgid "Strings to format."
-msgstr ""
+msgstr "Строки для преобразования."
 
 #: of telebot.formatting.format_text:13
 msgid "The separator to use between each string."
-msgstr ""
+msgstr "Символ для разделения строк."
 
 #: of telebot.formatting.format_text:16 telebot.formatting.hbold:9
 #: telebot.formatting.hcode:9 telebot.formatting.hitalic:9
@@ -128,15 +128,15 @@ msgstr ""
 #: telebot.formatting.mlink:12 telebot.formatting.mspoiler:9
 #: telebot.formatting.mstrikethrough:9 telebot.formatting.munderline:9
 msgid "The formatted string."
-msgstr ""
+msgstr "Преобразованная строка."
 
 #: of telebot.formatting.hbold:1
 msgid "Returns an HTML-formatted bold string."
-msgstr ""
+msgstr "Возвращает выделенную жирным шрифтом HTML строку."
 
 #: of telebot.formatting.hbold:3 telebot.formatting.mbold:3
 msgid "The string to bold."
-msgstr ""
+msgstr "Строка для выделения жирным шрифтом."
 
 #: of telebot.formatting.hbold:6 telebot.formatting.hcode:6
 #: telebot.formatting.hitalic:6 telebot.formatting.hlink:9
@@ -147,105 +147,105 @@ msgstr ""
 #: telebot.formatting.mspoiler:6 telebot.formatting.mstrikethrough:6
 #: telebot.formatting.munderline:6
 msgid "True if you need to escape special characters. Defaults to True."
-msgstr ""
+msgstr "True если вам нужно экранировать спец. символы. По умолчанию True."
 
 #: of telebot.formatting.hcode:1
 msgid "Returns an HTML-formatted code string."
-msgstr ""
+msgstr "Возвращает выделенную как код HTML строку."
 
 #: of telebot.formatting.hcode:3 telebot.formatting.mcode:3
 msgid "The string to code."
-msgstr ""
+msgstr "Строка для выделения как код."
 
 #: of telebot.formatting.hide_link:1
 msgid "Hide url of an image."
-msgstr ""
+msgstr "Делает невидимым URL изображения."
 
 #: of telebot.formatting.hide_link:3
 msgid "The url of the image."
-msgstr ""
+msgstr "URL изображения."
 
 #: of telebot.formatting.hide_link:6
 msgid "The hidden url."
-msgstr ""
+msgstr "Невидимый URL."
 
 #: of telebot.formatting.hitalic:1
 msgid "Returns an HTML-formatted italic string."
-msgstr ""
+msgstr "Возвращает выделенную курсивом HTML строку."
 
 #: of telebot.formatting.hitalic:3 telebot.formatting.mitalic:3
 msgid "The string to italicize."
-msgstr ""
+msgstr "Строка для выделения курсивом."
 
 #: of telebot.formatting.hlink:1
 msgid "Returns an HTML-formatted link string."
-msgstr ""
+msgstr "Возвращает HTML строку с гиперссылкой."
 
 #: of telebot.formatting.hlink:3 telebot.formatting.mlink:3
 msgid "The string to link."
-msgstr ""
+msgstr "Строка для добавления гиперссылки."
 
 #: of telebot.formatting.hlink:6 telebot.formatting.mlink:6
 msgid "The URL to link to."
-msgstr ""
+msgstr "URL для создания гиперссылки."
 
 #: of telebot.formatting.hpre:1
 msgid "Returns an HTML-formatted preformatted string."
-msgstr ""
+msgstr "Возвращает предварительно отформатированную HTML строку."
 
 #: of telebot.formatting.hpre:3
 msgid "The string to preformatted."
-msgstr ""
+msgstr "Строка для предварительного форматирования."
 
 #: of telebot.formatting.hspoiler:1
 msgid "Returns an HTML-formatted spoiler string."
-msgstr ""
+msgstr "Возвращает выделенную как спойлер HTML строку."
 
 #: of telebot.formatting.hspoiler:3 telebot.formatting.mspoiler:3
 msgid "The string to spoiler."
-msgstr ""
+msgstr "Строка для выделения как спойлер."
 
 #: of telebot.formatting.hstrikethrough:1
 msgid "Returns an HTML-formatted strikethrough string."
-msgstr ""
+msgstr "Возвращает зачеркнутую HTML строку."
 
 #: of telebot.formatting.hstrikethrough:3 telebot.formatting.mstrikethrough:3
 msgid "The string to strikethrough."
-msgstr ""
+msgstr "Строка для зачеркивания."
 
 #: of telebot.formatting.hunderline:1
 msgid "Returns an HTML-formatted underline string."
-msgstr ""
+msgstr "Возвращает подчеркнутую HTML строку."
 
 #: of telebot.formatting.hunderline:3 telebot.formatting.munderline:3
 msgid "The string to underline."
-msgstr ""
+msgstr "Строка для подчёркивания."
 
 #: of telebot.formatting.mbold:1
 msgid "Returns a Markdown-formatted bold string."
-msgstr ""
+msgstr "Возвращает выделенную жирным шрифтом Markdown строку."
 
 #: of telebot.formatting.mcode:1
 msgid "Returns a Markdown-formatted code string."
-msgstr ""
+msgstr "Возвращает выделенную как код Markdown строку."
 
 #: of telebot.formatting.mitalic:1
 msgid "Returns a Markdown-formatted italic string."
-msgstr ""
+msgstr "Возвращает выделенную курсивом Markdown строку."
 
 #: of telebot.formatting.mlink:1
 msgid "Returns a Markdown-formatted link string."
-msgstr ""
+msgstr "Возвращает Markdown строку с гиперссылкой."
 
 #: of telebot.formatting.mspoiler:1
 msgid "Returns a Markdown-formatted spoiler string."
-msgstr ""
+msgstr "Возвращает выделенную как спойлер Markdown строку."
 
 #: of telebot.formatting.mstrikethrough:1
 msgid "Returns a Markdown-formatted strikethrough string."
-msgstr ""
+msgstr "Возвращает зачеркнутую Markdown строку."
 
 #: of telebot.formatting.munderline:1
 msgid "Returns a Markdown-formatted underline string."
-msgstr ""
+msgstr "Возвращает подчеркнутую Markdown строку."
 
