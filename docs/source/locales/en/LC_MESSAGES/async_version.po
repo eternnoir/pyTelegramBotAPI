@@ -1,0 +1,4805 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, coder2020official
+# This file is distributed under the same license as the pyTelegramBotAPI
+# Documentation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pyTelegramBotAPI Documentation \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../async_version/index.rst:3
+msgid "AsyncTeleBot"
+msgstr ""
+
+#: ../../async_version/index.rst:6
+msgid "Asynchronous pyTelegramBotAPI"
+msgstr ""
+
+#: ../../async_version/index.rst:6
+msgid "ptba, pytba, pyTelegramBotAPI, asynctelebot, documentation"
+msgstr ""
+
+#: ../../async_version/index.rst:12
+msgid "AsyncTeleBot methods"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:1
+#: telebot.async_telebot.ExceptionHandler:1 telebot.async_telebot.Handler:1
+#: telebot.asyncio_filters.TextFilter:1
+#: telebot.asyncio_handler_backends.BaseMiddleware:1
+#: telebot.asyncio_handler_backends.CancelUpdate:1
+#: telebot.asyncio_handler_backends.ContinueHandling:1
+#: telebot.asyncio_handler_backends.SkipHandler:1
+#: telebot.asyncio_handler_backends.State:1
+#: telebot.asyncio_handler_backends.StatesGroup:1
+#: telebot.ext.aio.webhooks.AsyncWebhookListener:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:1
+msgid "This is the main asynchronous class for Bot."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:3
+msgid "It allows you to add handlers for different kind of updates."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:5
+msgid "Usage:"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:7
+msgid "Using asynchronous implementation of TeleBot."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:16
+msgid ""
+"See more examples in examples/ directory: "
+"https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:21
+msgid "Install coloredlogs module to specify colorful_logs=True"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot
+#: telebot.async_telebot.AsyncTeleBot.add_custom_filter
+#: telebot.async_telebot.AsyncTeleBot.add_data
+#: telebot.async_telebot.AsyncTeleBot.add_sticker_to_set
+#: telebot.async_telebot.AsyncTeleBot.answer_callback_query
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query
+#: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query
+#: telebot.async_telebot.AsyncTeleBot.answer_shipping_query
+#: telebot.async_telebot.AsyncTeleBot.answer_web_app_query
+#: telebot.async_telebot.AsyncTeleBot.approve_chat_join_request
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_member
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.callback_query_handler
+#: telebot.async_telebot.AsyncTeleBot.channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler
+#: telebot.async_telebot.AsyncTeleBot.chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler
+#: telebot.async_telebot.AsyncTeleBot.close_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.copy_message
+#: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.create_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.create_invoice_link
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_photo
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.delete_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.delete_message
+#: telebot.async_telebot.AsyncTeleBot.delete_my_commands
+#: telebot.async_telebot.AsyncTeleBot.delete_state
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
+#: telebot.async_telebot.AsyncTeleBot.delete_webhook
+#: telebot.async_telebot.AsyncTeleBot.download_file
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.edit_message_caption
+#: telebot.async_telebot.AsyncTeleBot.edit_message_live_location
+#: telebot.async_telebot.AsyncTeleBot.edit_message_media
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler
+#: telebot.async_telebot.AsyncTeleBot.enable_saving_states
+#: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.forward_message
+#: telebot.async_telebot.AsyncTeleBot.get_chat
+#: telebot.async_telebot.AsyncTeleBot.get_chat_administrators
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member_count
+#: telebot.async_telebot.AsyncTeleBot.get_chat_menu_button
+#: telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers
+#: telebot.async_telebot.AsyncTeleBot.get_file
+#: telebot.async_telebot.AsyncTeleBot.get_file_url
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores
+#: telebot.async_telebot.AsyncTeleBot.get_my_commands
+#: telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.get_state
+#: telebot.async_telebot.AsyncTeleBot.get_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.get_updates
+#: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
+#: telebot.async_telebot.AsyncTeleBot.get_webhook_info
+#: telebot.async_telebot.AsyncTeleBot.infinity_polling
+#: telebot.async_telebot.AsyncTeleBot.inline_handler
+#: telebot.async_telebot.AsyncTeleBot.leave_chat
+#: telebot.async_telebot.AsyncTeleBot.message_handler
+#: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.pin_chat_message
+#: telebot.async_telebot.AsyncTeleBot.poll_answer_handler
+#: telebot.async_telebot.AsyncTeleBot.poll_handler
+#: telebot.async_telebot.AsyncTeleBot.polling
+#: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler
+#: telebot.async_telebot.AsyncTeleBot.process_new_updates
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member
+#: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler
+#: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.reply_to
+#: telebot.async_telebot.AsyncTeleBot.reset_data
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member
+#: telebot.async_telebot.AsyncTeleBot.retrieve_data
+#: telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.run_webhooks
+#: telebot.async_telebot.AsyncTeleBot.send_animation
+#: telebot.async_telebot.AsyncTeleBot.send_audio
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action
+#: telebot.async_telebot.AsyncTeleBot.send_contact
+#: telebot.async_telebot.AsyncTeleBot.send_dice
+#: telebot.async_telebot.AsyncTeleBot.send_document
+#: telebot.async_telebot.AsyncTeleBot.send_game
+#: telebot.async_telebot.AsyncTeleBot.send_invoice
+#: telebot.async_telebot.AsyncTeleBot.send_location
+#: telebot.async_telebot.AsyncTeleBot.send_media_group
+#: telebot.async_telebot.AsyncTeleBot.send_message
+#: telebot.async_telebot.AsyncTeleBot.send_photo
+#: telebot.async_telebot.AsyncTeleBot.send_poll
+#: telebot.async_telebot.AsyncTeleBot.send_sticker
+#: telebot.async_telebot.AsyncTeleBot.send_venue
+#: telebot.async_telebot.AsyncTeleBot.send_video
+#: telebot.async_telebot.AsyncTeleBot.send_video_note
+#: telebot.async_telebot.AsyncTeleBot.send_voice
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title
+#: telebot.async_telebot.AsyncTeleBot.set_chat_description
+#: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions
+#: telebot.async_telebot.AsyncTeleBot.set_chat_photo
+#: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.set_chat_title
+#: telebot.async_telebot.AsyncTeleBot.set_game_score
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands
+#: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.set_state
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb
+#: telebot.async_telebot.AsyncTeleBot.set_update_listener
+#: telebot.async_telebot.AsyncTeleBot.set_webhook
+#: telebot.async_telebot.AsyncTeleBot.setup_middleware
+#: telebot.async_telebot.AsyncTeleBot.shipping_query_handler
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location
+#: telebot.async_telebot.AsyncTeleBot.stop_poll
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_member
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
+#: telebot.async_telebot.AsyncTeleBot.upload_sticker_file
+#: telebot.asyncio_filters.TextFilter
+msgid "Parameters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:24
+msgid "Token of a bot, obtained from @BotFather"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:27
+msgid "Default parse mode, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:30
+msgid "Offset used in get_updates, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:33
+msgid ""
+"Exception handler, which will handle the exception occured, defaults to "
+"None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:36
+msgid "Storage for states, defaults to StateMemoryStorage()"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:39
+msgid "Default value for disable_web_page_preview, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:42
+msgid "Default value for disable_notification, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:45
+msgid "Default value for protect_content, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:48
+msgid "Default value for allow_sending_without_reply, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot:51
+msgid "Outputs colorful logs"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_custom_filter:1
+msgid "Create custom filter."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_custom_filter:3
+msgid "Example on checking the text of a message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_custom_filter:12
+msgid "Class with check(message) method."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_custom_filter
+#: telebot.async_telebot.AsyncTeleBot.add_data
+#: telebot.async_telebot.AsyncTeleBot.add_sticker_to_set
+#: telebot.async_telebot.AsyncTeleBot.answer_callback_query
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query
+#: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query
+#: telebot.async_telebot.AsyncTeleBot.answer_shipping_query
+#: telebot.async_telebot.AsyncTeleBot.answer_web_app_query
+#: telebot.async_telebot.AsyncTeleBot.approve_chat_join_request
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_member
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.callback_query_handler
+#: telebot.async_telebot.AsyncTeleBot.channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler
+#: telebot.async_telebot.AsyncTeleBot.chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler
+#: telebot.async_telebot.AsyncTeleBot.close
+#: telebot.async_telebot.AsyncTeleBot.close_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.copy_message
+#: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.create_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.create_invoice_link
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_photo
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.delete_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.delete_message
+#: telebot.async_telebot.AsyncTeleBot.delete_my_commands
+#: telebot.async_telebot.AsyncTeleBot.delete_state
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
+#: telebot.async_telebot.AsyncTeleBot.delete_webhook
+#: telebot.async_telebot.AsyncTeleBot.download_file
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.edit_message_caption
+#: telebot.async_telebot.AsyncTeleBot.edit_message_live_location
+#: telebot.async_telebot.AsyncTeleBot.edit_message_media
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler
+#: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.forward_message
+#: telebot.async_telebot.AsyncTeleBot.get_chat
+#: telebot.async_telebot.AsyncTeleBot.get_chat_administrators
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member_count
+#: telebot.async_telebot.AsyncTeleBot.get_chat_menu_button
+#: telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers
+#: telebot.async_telebot.AsyncTeleBot.get_file
+#: telebot.async_telebot.AsyncTeleBot.get_file_url
+#: telebot.async_telebot.AsyncTeleBot.get_forum_topic_icon_stickers
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores
+#: telebot.async_telebot.AsyncTeleBot.get_my_commands
+#: telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.get_state
+#: telebot.async_telebot.AsyncTeleBot.get_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.get_updates
+#: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
+#: telebot.async_telebot.AsyncTeleBot.get_webhook_info
+#: telebot.async_telebot.AsyncTeleBot.infinity_polling
+#: telebot.async_telebot.AsyncTeleBot.inline_handler
+#: telebot.async_telebot.AsyncTeleBot.leave_chat
+#: telebot.async_telebot.AsyncTeleBot.log_out
+#: telebot.async_telebot.AsyncTeleBot.message_handler
+#: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.pin_chat_message
+#: telebot.async_telebot.AsyncTeleBot.poll_answer_handler
+#: telebot.async_telebot.AsyncTeleBot.poll_handler
+#: telebot.async_telebot.AsyncTeleBot.polling
+#: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler
+#: telebot.async_telebot.AsyncTeleBot.process_new_updates
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member
+#: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler
+#: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.reply_to
+#: telebot.async_telebot.AsyncTeleBot.reset_data
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member
+#: telebot.async_telebot.AsyncTeleBot.retrieve_data
+#: telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.run_webhooks
+#: telebot.async_telebot.AsyncTeleBot.send_animation
+#: telebot.async_telebot.AsyncTeleBot.send_audio
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action
+#: telebot.async_telebot.AsyncTeleBot.send_contact
+#: telebot.async_telebot.AsyncTeleBot.send_dice
+#: telebot.async_telebot.AsyncTeleBot.send_document
+#: telebot.async_telebot.AsyncTeleBot.send_game
+#: telebot.async_telebot.AsyncTeleBot.send_invoice
+#: telebot.async_telebot.AsyncTeleBot.send_location
+#: telebot.async_telebot.AsyncTeleBot.send_media_group
+#: telebot.async_telebot.AsyncTeleBot.send_message
+#: telebot.async_telebot.AsyncTeleBot.send_photo
+#: telebot.async_telebot.AsyncTeleBot.send_poll
+#: telebot.async_telebot.AsyncTeleBot.send_sticker
+#: telebot.async_telebot.AsyncTeleBot.send_venue
+#: telebot.async_telebot.AsyncTeleBot.send_video
+#: telebot.async_telebot.AsyncTeleBot.send_video_note
+#: telebot.async_telebot.AsyncTeleBot.send_voice
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title
+#: telebot.async_telebot.AsyncTeleBot.set_chat_description
+#: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions
+#: telebot.async_telebot.AsyncTeleBot.set_chat_photo
+#: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.set_chat_title
+#: telebot.async_telebot.AsyncTeleBot.set_game_score
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands
+#: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.set_state
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb
+#: telebot.async_telebot.AsyncTeleBot.set_update_listener
+#: telebot.async_telebot.AsyncTeleBot.set_webhook
+#: telebot.async_telebot.AsyncTeleBot.setup_middleware
+#: telebot.async_telebot.AsyncTeleBot.shipping_query_handler
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location
+#: telebot.async_telebot.AsyncTeleBot.stop_poll
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_member
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
+#: telebot.async_telebot.AsyncTeleBot.upload_sticker_file
+#: telebot.asyncio_filters.TextFilter
+#: telebot.ext.aio.webhooks.AsyncWebhookListener.run_app
+msgid "Returns"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_custom_filter:15
+#: telebot.async_telebot.AsyncTeleBot.add_data:10
+#: telebot.async_telebot.AsyncTeleBot.callback_query_handler:9
+#: telebot.async_telebot.AsyncTeleBot.channel_post_handler:17
+#: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:10
+#: telebot.async_telebot.AsyncTeleBot.chat_member_handler:11
+#: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:10
+#: telebot.async_telebot.AsyncTeleBot.delete_state:9
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler:22
+#: telebot.async_telebot.AsyncTeleBot.infinity_polling:35
+#: telebot.async_telebot.AsyncTeleBot.inline_handler:9
+#: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:10
+#: telebot.async_telebot.AsyncTeleBot.poll_answer_handler:10
+#: telebot.async_telebot.AsyncTeleBot.poll_handler:8
+#: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:9
+#: telebot.async_telebot.AsyncTeleBot.process_new_updates:8
+#: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:23
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:26
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:26
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:14
+#: telebot.async_telebot.AsyncTeleBot.reset_data:9
+#: telebot.async_telebot.AsyncTeleBot.set_state:18
+#: telebot.async_telebot.AsyncTeleBot.set_update_listener:15
+#: telebot.async_telebot.AsyncTeleBot.setup_middleware:10
+#: telebot.async_telebot.AsyncTeleBot.shipping_query_handler:9
+#: telebot.asyncio_filters.TextFilter:22
+#: telebot.ext.aio.webhooks.AsyncWebhookListener.run_app:4
+msgid "None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_data:1
+msgid "Add data to states."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_data:3
+#: telebot.async_telebot.AsyncTeleBot.delete_state:3
+#: telebot.async_telebot.AsyncTeleBot.get_state:4
+#: telebot.async_telebot.AsyncTeleBot.reset_data:3
+#: telebot.async_telebot.AsyncTeleBot.set_state:9
+msgid "User's identifier"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_data:6
+#: telebot.async_telebot.AsyncTeleBot.delete_state:6
+#: telebot.async_telebot.AsyncTeleBot.get_state:7
+#: telebot.async_telebot.AsyncTeleBot.reset_data:6
+#: telebot.async_telebot.AsyncTeleBot.set_state:15
+msgid "Chat's identifier"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_data:9
+msgid "Data to add"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:1
+msgid ""
+"Use this method to add a new sticker to a set created by the bot. It's "
+"required to pass `png_sticker` or `tgs_sticker`. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:5
+msgid "Telegram documentation: https://core.telegram.org/bots/api#addstickertoset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:7
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:7
+msgid "User identifier of created sticker set owner"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:10
+#: telebot.async_telebot.AsyncTeleBot.get_sticker_set:5
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:6
+msgid "Sticker set name"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:13
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:18
+msgid "One or more emoji corresponding to the sticker"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:16
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:21
+msgid ""
+"PNG image with the sticker, must be up to 512 kilobytes in size, "
+"dimensions must not exceed 512px, and either width or height must be "
+"exactly 512px. Pass a file_id as a String to send a file that already "
+"exists on the Telegram servers, pass an HTTP URL as a String for Telegram"
+" to get a file from the Internet, or upload a new one using multipart"
+"/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:21
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:26
+msgid "TGS animation with the sticker, uploaded using multipart/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:24
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:29
+msgid "WebM animation with the sticker, uploaded using multipart/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:27
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:40
+msgid ""
+"A JSON-serialized object for position where the mask should be placed on "
+"faces"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:30
+#: telebot.async_telebot.AsyncTeleBot.answer_callback_query:22
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query:35
+#: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:21
+#: telebot.async_telebot.AsyncTeleBot.answer_shipping_query:18
+#: telebot.async_telebot.AsyncTeleBot.close_forum_topic:13
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:43
+#: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:13
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:6
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:19
+#: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:13
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:11
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:15
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:13
+msgid "On success, True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set
+#: telebot.async_telebot.AsyncTeleBot.answer_callback_query
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query
+#: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query
+#: telebot.async_telebot.AsyncTeleBot.answer_shipping_query
+#: telebot.async_telebot.AsyncTeleBot.answer_web_app_query
+#: telebot.async_telebot.AsyncTeleBot.approve_chat_join_request
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_member
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.close_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.copy_message
+#: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.create_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.create_invoice_link
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_photo
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.delete_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.delete_message
+#: telebot.async_telebot.AsyncTeleBot.delete_my_commands
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
+#: telebot.async_telebot.AsyncTeleBot.delete_webhook
+#: telebot.async_telebot.AsyncTeleBot.download_file
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.edit_message_caption
+#: telebot.async_telebot.AsyncTeleBot.edit_message_live_location
+#: telebot.async_telebot.AsyncTeleBot.edit_message_media
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text
+#: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.forward_message
+#: telebot.async_telebot.AsyncTeleBot.get_chat
+#: telebot.async_telebot.AsyncTeleBot.get_chat_administrators
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member_count
+#: telebot.async_telebot.AsyncTeleBot.get_chat_menu_button
+#: telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers
+#: telebot.async_telebot.AsyncTeleBot.get_file_url
+#: telebot.async_telebot.AsyncTeleBot.get_forum_topic_icon_stickers
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores
+#: telebot.async_telebot.AsyncTeleBot.get_my_commands
+#: telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.get_state
+#: telebot.async_telebot.AsyncTeleBot.get_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.get_updates
+#: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
+#: telebot.async_telebot.AsyncTeleBot.get_webhook_info
+#: telebot.async_telebot.AsyncTeleBot.log_out
+#: telebot.async_telebot.AsyncTeleBot.pin_chat_message
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member
+#: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.reply_to
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member
+#: telebot.async_telebot.AsyncTeleBot.retrieve_data
+#: telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link
+#: telebot.async_telebot.AsyncTeleBot.send_animation
+#: telebot.async_telebot.AsyncTeleBot.send_audio
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action
+#: telebot.async_telebot.AsyncTeleBot.send_contact
+#: telebot.async_telebot.AsyncTeleBot.send_dice
+#: telebot.async_telebot.AsyncTeleBot.send_document
+#: telebot.async_telebot.AsyncTeleBot.send_game
+#: telebot.async_telebot.AsyncTeleBot.send_invoice
+#: telebot.async_telebot.AsyncTeleBot.send_location
+#: telebot.async_telebot.AsyncTeleBot.send_media_group
+#: telebot.async_telebot.AsyncTeleBot.send_message
+#: telebot.async_telebot.AsyncTeleBot.send_photo
+#: telebot.async_telebot.AsyncTeleBot.send_poll
+#: telebot.async_telebot.AsyncTeleBot.send_sticker
+#: telebot.async_telebot.AsyncTeleBot.send_venue
+#: telebot.async_telebot.AsyncTeleBot.send_video
+#: telebot.async_telebot.AsyncTeleBot.send_video_note
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title
+#: telebot.async_telebot.AsyncTeleBot.set_chat_description
+#: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions
+#: telebot.async_telebot.AsyncTeleBot.set_chat_photo
+#: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set
+#: telebot.async_telebot.AsyncTeleBot.set_chat_title
+#: telebot.async_telebot.AsyncTeleBot.set_game_score
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands
+#: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb
+#: telebot.async_telebot.AsyncTeleBot.set_webhook
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location
+#: telebot.async_telebot.AsyncTeleBot.stop_poll
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_member
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
+#: telebot.async_telebot.AsyncTeleBot.upload_sticker_file
+msgid "Return type"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:31
+#: telebot.async_telebot.AsyncTeleBot.answer_callback_query:23
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query:36
+#: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:22
+#: telebot.async_telebot.AsyncTeleBot.answer_shipping_query:19
+#: telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:15
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_member:25
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:17
+#: telebot.async_telebot.AsyncTeleBot.close:9
+#: telebot.async_telebot.AsyncTeleBot.close_forum_topic:14
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:44
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:15
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_photo:13
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:11
+#: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:14
+#: telebot.async_telebot.AsyncTeleBot.delete_message:23
+#: telebot.async_telebot.AsyncTeleBot.delete_my_commands:17
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:7
+#: telebot.async_telebot.AsyncTeleBot.delete_webhook:13
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:20
+#: telebot.async_telebot.AsyncTeleBot.leave_chat:8
+#: telebot.async_telebot.AsyncTeleBot.log_out:11
+#: telebot.async_telebot.AsyncTeleBot.pin_chat_message:19
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:61
+#: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:14
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:48
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action:23
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:18
+#: telebot.async_telebot.AsyncTeleBot.set_chat_description:14
+#: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:15
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:15
+#: telebot.async_telebot.AsyncTeleBot.set_chat_photo:16
+#: telebot.async_telebot.AsyncTeleBot.set_chat_title:17
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands:18
+#: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:18
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:12
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:16
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_member:20
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:15
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:12
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:14
+#: telebot.async_telebot.AsyncTeleBot.unpin_chat_message:15
+msgid ":obj:`bool`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:1
+msgid ""
+"Use this method to send answers to callback queries sent from inline "
+"keyboards. The answer will be displayed to the user as a notification at "
+"the top of the chat screen or as an alert."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#answercallbackquery"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:6
+#: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:10
+#: telebot.async_telebot.AsyncTeleBot.answer_shipping_query:5
+#: telebot.async_telebot.AsyncTeleBot.answer_web_app_query:8
+msgid "Unique identifier for the query to be answered"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:9
+msgid ""
+"Text of the notification. If not specified, nothing will be shown to the "
+"user, 0-200 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:12
+msgid ""
+"If True, an alert will be shown by the client instead of a notification "
+"at the top of the chat screen. Defaults to false."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:15
+msgid ""
+"URL that will be opened by the user's client. If you have created a Game "
+"and accepted the conditions via @BotFather, specify the URL that opens "
+"your game - note that this will only work if the query comes from a "
+"callback_game button."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_callback_query:19
+msgid ""
+"The maximum amount of time in seconds that the result of the callback "
+"query may be cached client-side. Telegram apps will support caching "
+"starting in version 3.14. Defaults to 0."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:1
+msgid ""
+"Use this method to send answers to an inline query. On success, True is "
+"returned. No more than 50 results per query are allowed."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#answerinlinequery"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:6
+msgid "Unique identifier for the answered query"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:9
+msgid "Array of results for the inline query"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:12
+msgid ""
+"The maximum amount of time in seconds that the result of the inline query"
+" may be cached on the server."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:16
+msgid ""
+"Pass True, if results may be cached on the server side only for the user "
+"that sent the query."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:20
+msgid ""
+"Pass the offset that a client should send in the next query with the same"
+" text to receive more results."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:24
+msgid ""
+"Deep-linking parameter for the /start message sent to the bot when user "
+"presses the switch button. 1-64 characters, only A-Z, a-z, 0-9, _ and - "
+"are allowed. Example: An inline bot that sends YouTube videos can ask the"
+" user to connect the bot to their YouTube account to adapt search results"
+" accordingly. To do this, it displays a 'Connect your YouTube account' "
+"button above the results, or even before showing any. The user presses "
+"the button, switches to a private chat with the bot and, in doing so, "
+"passes a start parameter that instructs the bot to return an OAuth link. "
+"Once done, the bot can offer a switch_inline button so that the user can "
+"easily return to the chat where they wanted to use the bot's inline "
+"capabilities."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:32
+msgid ""
+"Parameter for the start message sent to the bot when user presses the "
+"switch button"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:1
+msgid ""
+"Once the user has confirmed their payment and shipping details, the Bot "
+"API sends the final confirmation in the form of an Update with the field "
+"pre_checkout_query. Use this method to respond to such pre-checkout "
+"queries. On success, True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:6
+msgid ""
+"The Bot API must receive an answer within 10 seconds after the pre-"
+"checkout query was sent."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:8
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#answerprecheckoutquery"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:13
+msgid ""
+"Specify True if everything is alright (goods are available, etc.) and the"
+" bot is ready to proceed with the order. Use False if there are any "
+"problems."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:16
+msgid ""
+"Required if ok is False. Error message in human readable form that "
+"explains the reason for failure to proceed with the checkout (e.g. "
+"\"Sorry, somebody just bought the last of our amazing black T-shirts "
+"while you were busy filling out your payment details. Please choose a "
+"different color or garment!\"). Telegram will display this message to the"
+" user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_shipping_query:1
+msgid "Asks for an answer to a shipping question."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_shipping_query:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#answershippingquery"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_shipping_query:8
+msgid ""
+"Specify True if delivery to the specified address is possible and False "
+"if there are any problems (for example, if delivery to the specified "
+"address is not possible)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_shipping_query:11
+msgid ""
+"Required if ok is True. A JSON-serialized array of available shipping "
+"options."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_shipping_query:14
+msgid ""
+"Required if ok is False. Error message in human readable form that "
+"explains why it is impossible to complete the order (e.g. \"Sorry, "
+"delivery to your desired address is unavailable'). Telegram will display "
+"this message to the user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_web_app_query:1
+msgid ""
+"Use this method to set the result of an interaction with a Web App and "
+"send a corresponding message on behalf of the user to the chat from which"
+" the query originated. On success, a SentWebAppMessage object is "
+"returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_web_app_query:6
+msgid ""
+"Telegram Documentation: "
+"https://core.telegram.org/bots/api#answerwebappquery"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_web_app_query:11
+msgid "A JSON-serialized object describing the message to be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_web_app_query:14
+msgid "On success, a SentWebAppMessage object is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_web_app_query:15
+msgid ":class:`telebot.types.SentWebAppMessage`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:1
+msgid ""
+"Use this method to approve a chat join request. The bot must be an "
+"administrator in the chat for this to work and must have the "
+"can_invite_users administrator right. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#approvechatjoinrequest"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:7
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:7
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:7
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member:5
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:6
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:7
+#: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:7
+msgid ""
+"Unique identifier for the target chat or username of the target "
+"supergroup (in the format @supergroupusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:11
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_member:12
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:11
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member:8
+#: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:6
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:11
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:11
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:10
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_member:13
+msgid "Unique identifier of the target user"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:14
+#: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:16
+#: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:14
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_photo:12
+#: telebot.async_telebot.AsyncTeleBot.delete_my_commands:16
+#: telebot.async_telebot.AsyncTeleBot.log_out:10
+#: telebot.async_telebot.AsyncTeleBot.pin_chat_message:18
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:60
+#: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:17
+#: telebot.async_telebot.AsyncTeleBot.set_chat_description:13
+#: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:14
+#: telebot.async_telebot.AsyncTeleBot.set_chat_photo:15
+#: telebot.async_telebot.AsyncTeleBot.set_chat_title:16
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands:17
+#: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:17
+#: telebot.async_telebot.AsyncTeleBot.set_webhook:46
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:14
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:11
+#: telebot.async_telebot.AsyncTeleBot.unpin_chat_message:14
+msgid "True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:1
+msgid ""
+"Use this method to ban a user in a group, a supergroup or a channel. In "
+"the case of supergroups and channels, the user will not be able to return"
+" to the chat on their own using invite links, etc., unless unbanned "
+"first. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:6
+msgid "Telegram documentation: https://core.telegram.org/bots/api#banchatmember"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:8
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:7
+msgid ""
+"Unique identifier for the target group or username of the target "
+"supergroup or channel (in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:15
+msgid ""
+"Date when the user will be unbanned, unix time. If user is banned for "
+"more than 366 days or less than 30 seconds from the current time they are"
+" considered to be banned forever"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:19
+msgid ""
+"Bool: Pass True to delete all messages from the chat for the user that is"
+" being removed. If False, the user will be able to see messages in the "
+"group that were sent before the user was removed. Always True for "
+"supergroups and channels."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:24
+#: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:10
+#: telebot.async_telebot.AsyncTeleBot.delete_message:22
+#: telebot.async_telebot.AsyncTeleBot.delete_webhook:12
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action:22
+msgid "Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:1
+msgid ""
+"Use this method to ban a channel chat in a supergroup or a channel. The "
+"owner of the chat will not be able to send messages and join live streams"
+" on behalf of the chat, unless it is unbanned first. The bot must be an "
+"administrator in the supergroup or channel for this to work and must have"
+" the appropriate administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:8
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#banchatsenderchat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:10
+#: telebot.async_telebot.AsyncTeleBot.close_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.copy_message:5
+#: telebot.async_telebot.AsyncTeleBot.create_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.delete_message:13
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.edit_message_live_location:13
+#: telebot.async_telebot.AsyncTeleBot.forward_message:8
+#: telebot.async_telebot.AsyncTeleBot.pin_chat_message:7
+#: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.send_animation:6
+#: telebot.async_telebot.AsyncTeleBot.send_audio:9
+#: telebot.async_telebot.AsyncTeleBot.send_dice:5
+#: telebot.async_telebot.AsyncTeleBot.send_document:5
+#: telebot.async_telebot.AsyncTeleBot.send_game:5
+#: telebot.async_telebot.AsyncTeleBot.send_location:5
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:6
+#: telebot.async_telebot.AsyncTeleBot.send_message:9
+#: telebot.async_telebot.AsyncTeleBot.send_photo:5
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:6
+#: telebot.async_telebot.AsyncTeleBot.send_video:5
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:6
+#: telebot.async_telebot.AsyncTeleBot.send_voice:7
+#: telebot.async_telebot.AsyncTeleBot.set_chat_description:6
+#: telebot.async_telebot.AsyncTeleBot.set_chat_title:9
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location:6
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:8
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:7
+#: telebot.async_telebot.AsyncTeleBot.unpin_chat_message:7
+msgid ""
+"Unique identifier for the target chat or username of the target channel "
+"(in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:13
+msgid "Unique identifier of the target sender chat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.callback_query_handler:1
+msgid ""
+"Handles new incoming callback query. As a parameter to the decorator "
+"function, it passes :class:`telebot.types.CallbackQuery` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.callback_query_handler:4
+#: telebot.async_telebot.AsyncTeleBot.channel_post_handler:10
+#: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:5
+#: telebot.async_telebot.AsyncTeleBot.chat_member_handler:6
+#: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:5
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:10
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler:11
+#: telebot.async_telebot.AsyncTeleBot.inline_handler:4
+#: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:5
+#: telebot.async_telebot.AsyncTeleBot.poll_answer_handler:5
+#: telebot.async_telebot.AsyncTeleBot.poll_handler:4
+#: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:4
+#: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:15
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:15
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:15
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:15
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:6
+#: telebot.async_telebot.AsyncTeleBot.shipping_query_handler:4
+msgid "Function executed as a filter"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.callback_query_handler:7
+#: telebot.async_telebot.AsyncTeleBot.channel_post_handler:16
+#: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:8
+#: telebot.async_telebot.AsyncTeleBot.chat_member_handler:9
+#: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:8
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:16
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler:20
+#: telebot.async_telebot.AsyncTeleBot.inline_handler:7
+#: telebot.async_telebot.AsyncTeleBot.message_handler:50
+#: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:8
+#: telebot.async_telebot.AsyncTeleBot.poll_answer_handler:8
+#: telebot.async_telebot.AsyncTeleBot.poll_handler:7
+#: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:7
+#: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:21
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:21
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:24
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:24
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:11
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:12
+#: telebot.async_telebot.AsyncTeleBot.shipping_query_handler:7
+msgid "Optional keyword arguments(custom filters)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.channel_post_handler:1
+msgid ""
+"Handles new incoming channel post of any kind - text, photo, sticker, "
+"etc. As a parameter to the decorator function, it passes "
+":class:`telebot.types.Message` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.channel_post_handler:4
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:4
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler:5
+#: telebot.async_telebot.AsyncTeleBot.message_handler:34
+msgid "Optional list of strings (commands to handle)."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.channel_post_handler:7
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:7
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler:8
+#: telebot.async_telebot.AsyncTeleBot.message_handler:37
+msgid "Optional regular expression."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.channel_post_handler:13
+#: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:13
+#: telebot.async_telebot.AsyncTeleBot.edited_message_handler:14
+#: telebot.async_telebot.AsyncTeleBot.message_handler:44
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:6
+msgid "Supported message content types. Must be a list. Defaults to ['text']."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:1
+msgid ""
+"Handles a request to join the chat has been sent. The bot must have the "
+"can_invite_users administrator right in the chat to receive these "
+"updates. As a parameter to the decorator function, it passes "
+":class:`telebot.types.ChatJoinRequest` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.chat_member_handler:1
+msgid ""
+"Handles update in a status of a user in a chat. The bot must be an "
+"administrator in the chat and must explicitly specify “chat_member” in "
+"the list of allowed_updates to receive these updates. As a parameter to "
+"the decorator function, it passes "
+":class:`telebot.types.ChatMemberUpdated` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:1
+msgid ""
+"The result of an inline query that was chosen by a user and sent to their"
+" chat partner. Please see our documentation on the feedback collecting "
+"for details on how to enable these updates for your bot. As a parameter "
+"to the decorator function, it passes "
+":class:`telebot.types.ChosenInlineResult` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close:1
+msgid ""
+"Use this method to close the bot instance before moving it from one local"
+" server to another. You need to delete the webhook before calling this "
+"method to ensure that the bot isn't launched again after server restart. "
+"The method will return error 429 in the first 10 minutes after the bot is"
+" launched. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#close"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close_forum_topic:1
+msgid ""
+"Use this method to close an open topic in a forum supergroup chat. The "
+"bot must be an administrator in the chat for this to work and must have "
+"the can_manage_topics administrator rights, unless it is the creator of "
+"the topic. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close_forum_topic:5
+msgid "Telegram documentation: https://core.telegram.org/bots/api#closeforumtopic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close_forum_topic:10
+msgid "Identifier of the topic to close"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close_session:1
+msgid ""
+"Closes existing session of aiohttp. Use this function if you stop "
+"polling/webhooks."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:1
+msgid "Use this method to copy messages of any kind."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#copymessage"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:8
+#: telebot.async_telebot.AsyncTeleBot.forward_message:11
+msgid ""
+"Unique identifier for the chat where the original message was sent (or "
+"channel username in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:10
+#: telebot.async_telebot.AsyncTeleBot.forward_message:14
+msgid "Message identifier in the chat specified in from_chat_id"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:13
+msgid ""
+"New caption for media, 0-1024 characters after entities parsing. If not "
+"specified, the original caption is kept"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:16
+msgid "Mode for parsing entities in the new caption."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:19
+msgid ""
+"A JSON-serialized list of special entities that appear in the new "
+"caption, which can be specified instead of parse_mode"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:22
+#: telebot.async_telebot.AsyncTeleBot.send_animation:45
+#: telebot.async_telebot.AsyncTeleBot.send_audio:39
+#: telebot.async_telebot.AsyncTeleBot.send_contact:20
+#: telebot.async_telebot.AsyncTeleBot.send_dice:12
+#: telebot.async_telebot.AsyncTeleBot.send_document:26
+#: telebot.async_telebot.AsyncTeleBot.send_game:11
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:67
+#: telebot.async_telebot.AsyncTeleBot.send_location:25
+#: telebot.async_telebot.AsyncTeleBot.send_message:24
+#: telebot.async_telebot.AsyncTeleBot.send_photo:22
+#: telebot.async_telebot.AsyncTeleBot.send_poll:44
+#: telebot.async_telebot.AsyncTeleBot.send_venue:27
+#: telebot.async_telebot.AsyncTeleBot.send_video:35
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:27
+#: telebot.async_telebot.AsyncTeleBot.send_voice:31
+msgid ""
+"Sends the message silently. Users will receive a notification with no "
+"sound."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:25
+#: telebot.async_telebot.AsyncTeleBot.send_animation:34
+#: telebot.async_telebot.AsyncTeleBot.send_audio:57
+#: telebot.async_telebot.AsyncTeleBot.send_contact:38
+#: telebot.async_telebot.AsyncTeleBot.send_document:50
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:95
+#: telebot.async_telebot.AsyncTeleBot.send_location:43
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:15
+#: telebot.async_telebot.AsyncTeleBot.send_photo:25
+#: telebot.async_telebot.AsyncTeleBot.send_poll:64
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:30
+#: telebot.async_telebot.AsyncTeleBot.send_venue:51
+#: telebot.async_telebot.AsyncTeleBot.send_video:38
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:42
+#: telebot.async_telebot.AsyncTeleBot.send_voice:43
+msgid "Protects the contents of the sent message from forwarding and saving"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:28
+#: telebot.async_telebot.AsyncTeleBot.send_animation:37
+#: telebot.async_telebot.AsyncTeleBot.send_audio:29
+#: telebot.async_telebot.AsyncTeleBot.send_contact:23
+#: telebot.async_telebot.AsyncTeleBot.send_dice:15
+#: telebot.async_telebot.AsyncTeleBot.send_document:12
+#: telebot.async_telebot.AsyncTeleBot.send_game:14
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:70
+#: telebot.async_telebot.AsyncTeleBot.send_location:17
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:18
+#: telebot.async_telebot.AsyncTeleBot.send_message:30
+#: telebot.async_telebot.AsyncTeleBot.send_photo:28
+#: telebot.async_telebot.AsyncTeleBot.send_poll:47
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:13
+#: telebot.async_telebot.AsyncTeleBot.send_venue:30
+#: telebot.async_telebot.AsyncTeleBot.send_video:41
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:19
+#: telebot.async_telebot.AsyncTeleBot.send_voice:20
+msgid "If the message is a reply, ID of the original message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:31
+#: telebot.async_telebot.AsyncTeleBot.send_animation:54
+#: telebot.async_telebot.AsyncTeleBot.send_audio:54
+#: telebot.async_telebot.AsyncTeleBot.send_dice:26
+#: telebot.async_telebot.AsyncTeleBot.send_document:38
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:84
+#: telebot.async_telebot.AsyncTeleBot.send_location:40
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:24
+#: telebot.async_telebot.AsyncTeleBot.send_message:33
+#: telebot.async_telebot.AsyncTeleBot.send_photo:31
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:27
+#: telebot.async_telebot.AsyncTeleBot.send_video:44
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:39
+#: telebot.async_telebot.AsyncTeleBot.send_voice:40
+msgid ""
+"Pass True, if the message should be sent even if the specified replied-to"
+" message is not found"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:34
+#: telebot.async_telebot.AsyncTeleBot.send_animation:40
+#: telebot.async_telebot.AsyncTeleBot.send_contact:26
+#: telebot.async_telebot.AsyncTeleBot.send_dice:18
+#: telebot.async_telebot.AsyncTeleBot.send_document:18
+#: telebot.async_telebot.AsyncTeleBot.send_game:17
+#: telebot.async_telebot.AsyncTeleBot.send_location:20
+#: telebot.async_telebot.AsyncTeleBot.send_message:36
+#: telebot.async_telebot.AsyncTeleBot.send_photo:34
+#: telebot.async_telebot.AsyncTeleBot.send_poll:53
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:16
+#: telebot.async_telebot.AsyncTeleBot.send_venue:33
+#: telebot.async_telebot.AsyncTeleBot.send_video:47
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:22
+#: telebot.async_telebot.AsyncTeleBot.send_voice:23
+msgid ""
+"Additional interface options. A JSON-serialized object for an inline "
+"keyboard, custom reply keyboard, instructions to remove reply keyboard or"
+" to force a reply from the user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:39
+#: telebot.async_telebot.AsyncTeleBot.delete_message:19
+#: telebot.async_telebot.AsyncTeleBot.edit_message_live_location:23
+#: telebot.async_telebot.AsyncTeleBot.forward_message:20
+#: telebot.async_telebot.AsyncTeleBot.send_animation:48
+#: telebot.async_telebot.AsyncTeleBot.send_audio:42
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action:19
+#: telebot.async_telebot.AsyncTeleBot.send_contact:31
+#: telebot.async_telebot.AsyncTeleBot.send_dice:23
+#: telebot.async_telebot.AsyncTeleBot.send_document:29
+#: telebot.async_telebot.AsyncTeleBot.send_location:28
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:21
+#: telebot.async_telebot.AsyncTeleBot.send_message:40
+#: telebot.async_telebot.AsyncTeleBot.send_photo:39
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:24
+#: telebot.async_telebot.AsyncTeleBot.send_venue:38
+#: telebot.async_telebot.AsyncTeleBot.send_video:52
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:30
+#: telebot.async_telebot.AsyncTeleBot.send_voice:34
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location:19
+msgid "Timeout in seconds for the request."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:42
+#: telebot.async_telebot.AsyncTeleBot.send_audio:60
+#: telebot.async_telebot.AsyncTeleBot.send_document:53
+#: telebot.async_telebot.AsyncTeleBot.send_location:46
+#: telebot.async_telebot.AsyncTeleBot.send_photo:42
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:36
+#: telebot.async_telebot.AsyncTeleBot.send_voice:46
+msgid "Identifier of a message thread, in which the message will be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:45
+#: telebot.async_telebot.AsyncTeleBot.forward_message:26
+#: telebot.async_telebot.AsyncTeleBot.reply_to:11
+#: telebot.async_telebot.AsyncTeleBot.send_animation:60
+#: telebot.async_telebot.AsyncTeleBot.send_audio:63
+#: telebot.async_telebot.AsyncTeleBot.send_contact:44
+#: telebot.async_telebot.AsyncTeleBot.send_dice:35
+#: telebot.async_telebot.AsyncTeleBot.send_document:56
+#: telebot.async_telebot.AsyncTeleBot.send_game:32
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:101
+#: telebot.async_telebot.AsyncTeleBot.send_location:49
+#: telebot.async_telebot.AsyncTeleBot.send_message:46
+#: telebot.async_telebot.AsyncTeleBot.send_photo:45
+#: telebot.async_telebot.AsyncTeleBot.send_poll:70
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:39
+#: telebot.async_telebot.AsyncTeleBot.send_venue:57
+#: telebot.async_telebot.AsyncTeleBot.send_video:61
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:48
+#: telebot.async_telebot.AsyncTeleBot.send_voice:49
+msgid "On success, the sent Message is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:46
+#: telebot.async_telebot.AsyncTeleBot.forward_message:27
+#: telebot.async_telebot.AsyncTeleBot.reply_to:12
+#: telebot.async_telebot.AsyncTeleBot.send_animation:61
+#: telebot.async_telebot.AsyncTeleBot.send_audio:64
+#: telebot.async_telebot.AsyncTeleBot.send_contact:45
+#: telebot.async_telebot.AsyncTeleBot.send_dice:36
+#: telebot.async_telebot.AsyncTeleBot.send_document:57
+#: telebot.async_telebot.AsyncTeleBot.send_location:50
+#: telebot.async_telebot.AsyncTeleBot.send_message:47
+#: telebot.async_telebot.AsyncTeleBot.send_photo:46
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:40
+#: telebot.async_telebot.AsyncTeleBot.send_venue:58
+#: telebot.async_telebot.AsyncTeleBot.send_video:62
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:49
+msgid ":class:`telebot.types.Message`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:1
+msgid ""
+"Use this method to create an additional invite link for a chat. The bot "
+"must be an administrator in the chat for this to work and must have the "
+"appropriate administrator rights. The link can be revoked using the "
+"method revokeChatInviteLink. Returns the new invite link as "
+"ChatInviteLink object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:6
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#createchatinvitelink"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:8
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:6
+#: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link:6
+#: telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link:7
+msgid ""
+"Id: Unique identifier for the target chat or username of the target "
+"channel (in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:12
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:10
+msgid "Invite link name; 0-32 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:15
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:16
+msgid "Point in time (Unix timestamp) when the link will expire"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:18
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:19
+msgid "Maximum number of users that can be members of the chat simultaneously"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:21
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:22
+msgid ""
+"True, if users joining the chat via the link need to be approved by chat "
+"administrators. If True, member_limit can't be specified"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:24
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:25
+#: telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link:14
+msgid "Returns the new invite link as ChatInviteLink object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:25
+#: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:26
+#: telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link:15
+msgid ":class:`telebot.types.ChatInviteLink`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:1
+msgid ""
+"Use this method to create a topic in a forum supergroup chat. The bot "
+"must be an administrator in the chat for this to work and must have the "
+"can_manage_topics administrator rights. Returns information about the "
+"created topic as a ForumTopic object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#createforumtopic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:10
+msgid "Name of the topic, 1-128 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:13
+msgid ""
+"Color of the topic icon in RGB format. Currently, must be one of "
+"0x6FB9F0, 0xFFD67E, 0xCB86DB, 0x8EEE98, 0xFF93B2, or 0xFB6F5F"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:16
+msgid ""
+"Custom emoji for the topic icon. Must be an emoji of type “tgs” and must "
+"be exactly 1 character long"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:19
+msgid ""
+"On success, information about the created topic is returned as a "
+"ForumTopic object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_forum_topic:20
+msgid ":class:`telebot.types.ForumTopic`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:1
+msgid ""
+"Use this method to create a link for an invoice. Returns the created "
+"invoice link as String on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#createinvoicelink"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:7
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:8
+msgid "Product name, 1-32 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:10
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:11
+msgid "Product description, 1-255 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:13
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:14
+msgid ""
+"Bot-defined invoice payload, 1-128 bytes. This will not be displayed to "
+"the user, use for your internal processes."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:17
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:18
+msgid "Payments provider token, obtained via @Botfather"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:20
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:21
+msgid ""
+"Three-letter ISO 4217 currency code, see "
+"https://core.telegram.org/bots/payments#supported-currencies"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:24
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:25
+msgid ""
+"Price breakdown, a list of components (e.g. product price, tax, discount,"
+" delivery cost, delivery tax, bonus, etc.)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:28
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:87
+msgid "The maximum accepted amount for tips in the smallest units of the currency"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:31
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:90
+msgid ""
+"A JSON-serialized array of suggested amounts of tips in the smallest "
+"units of the currency.  At most 4 suggested tip amounts can be specified."
+" The suggested tip amounts must be positive, passed in a strictly "
+"increased order and must not exceed max_tip_amount."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:36
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:77
+msgid ""
+"A JSON-serialized data about the invoice, which will be shared with the "
+"payment provider. A detailed description of required fields should be "
+"provided by the payment provider."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:40
+msgid ""
+"URL of the product photo for the invoice. Can be a photo of the goods or "
+"a photo of the invoice. People like it better when they see a photo of "
+"what they are paying for."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:44
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:37
+msgid "Photo size in bytes"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:47
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:40
+msgid "Photo width"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:50
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:43
+msgid "Photo height"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:53
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:46
+msgid "Pass True, if you require the user's full name to complete the order"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:56
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:49
+msgid "Pass True, if you require the user's phone number to complete the order"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:59
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:52
+msgid "Pass True, if you require the user's email to complete the order"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:62
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:55
+msgid ""
+"Pass True, if you require the user's shipping address to complete the "
+"order"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:65
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:61
+msgid "Pass True, if user's phone number should be sent to provider"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:68
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:64
+msgid "Pass True, if user's email address should be sent to provider"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:71
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:58
+msgid "Pass True, if the final price depends on the shipping method"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:74
+msgid "Created invoice link as String on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_invoice_link:75
+#: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link:11
+#: telebot.async_telebot.AsyncTeleBot.get_file_url:7
+msgid ":obj:`str`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:1
+msgid ""
+"Use this method to create new sticker set owned by a user. The bot will "
+"be able to edit the created sticker set. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#createnewstickerset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:10
+msgid ""
+"Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., "
+"animals). Can contain only English letters, digits and underscores. Must "
+"begin with a letter, can't contain consecutive underscores and must end "
+"in \"_by_<bot_username>\". <bot_username> is case insensitive. 1-64 "
+"characters."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:15
+msgid "Sticker set title, 1-64 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:32
+msgid ""
+"Pass True, if a set of mask stickers should be created. Deprecated since "
+"Bot API 6.2, use sticker_type instead."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:36
+msgid ""
+"Optional, Type of stickers in the set, pass “regular” or “mask”. Custom "
+"emoji sticker sets can't be created via the Bot API at the moment. By "
+"default, a regular sticker set is created."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:1
+msgid ""
+"Use this method to decline a chat join request. The bot must be an "
+"administrator in the chat for this to work and must have the "
+"can_invite_users administrator right. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#declinechatjoinrequest"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_chat_photo:1
+msgid ""
+"Use this method to delete a chat photo. Photos can't be changed for "
+"private chats. The bot must be an administrator in the chat for this to "
+"work and must have the appropriate admin rights. Returns True on success."
+" Note: In regular groups (non-supergroups), this method will only work if"
+" the ‘All Members Are Admins’ setting is off in the target group."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_chat_photo:6
+msgid "Telegram documentation: https://core.telegram.org/bots/api#deletechatphoto"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_chat_photo:8
+#: telebot.async_telebot.AsyncTeleBot.set_chat_photo:9
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:7
+msgid ""
+"Int or Str: Unique identifier for the target chat or username of the "
+"target channel (in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:1
+msgid ""
+"Use this method to delete a group sticker set from a supergroup. The bot "
+"must be an administrator in the chat for this to work and must have the "
+"appropriate admin rights. Use the field can_set_sticker_set optionally "
+"returned in getChat requests to check if the bot can use this method. "
+"Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#deletechatstickerset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_forum_topic:1
+msgid ""
+"Use this method to delete a topic in a forum supergroup chat. The bot "
+"must be an administrator in the chat for this to work and must have the "
+"can_manage_topics administrator rights, unless it is the creator of the "
+"topic. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#deleteforumtopic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_forum_topic:10
+msgid "Identifier of the topic to delete"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_message:1
+msgid ""
+"Use this method to delete a message, including service messages, with the"
+" following limitations: - A message can only be deleted if it was sent "
+"less than 48 hours ago. - A dice message in a private chat can only be "
+"deleted if it was sent more than 24 hours ago. - Bots can delete outgoing"
+" messages in private chats, groups, and supergroups. - Bots can delete "
+"incoming messages in private chats. - Bots granted can_post_messages "
+"permissions can delete outgoing messages in channels. - If the bot is an "
+"administrator of a group, it can delete any message there. - If the bot "
+"has can_delete_messages permission in a supergroup or a channel, it can "
+"delete any message there. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_message:11
+msgid "Telegram documentation: https://core.telegram.org/bots/api#deletemessage"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_message:16
+msgid "Identifier of the message to delete"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_my_commands:1
+msgid ""
+"Use this method to delete the list of the bot's commands for the given "
+"scope and user language. After deletion, higher level commands will be "
+"shown to affected users. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_my_commands:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#deletemycommands"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_my_commands:7
+#: telebot.async_telebot.AsyncTeleBot.get_my_commands:6
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands:8
+msgid ""
+"The scope of users for which the commands are relevant. Defaults to "
+"BotCommandScopeDefault."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_my_commands:11
+#: telebot.async_telebot.AsyncTeleBot.get_my_commands:10
+#: telebot.async_telebot.AsyncTeleBot.set_my_commands:12
+msgid ""
+"A two-letter ISO 639-1 language code. If empty, commands will be applied "
+"to all users from the given scope, for whose language there are no "
+"dedicated commands"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_state:1
+msgid "Delete the current state of a user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:1
+msgid ""
+"Use this method to delete a sticker from a set created by the bot. "
+"Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#deletestickerfromset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:5
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:5
+msgid "File identifier of the sticker"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_webhook:1
+msgid ""
+"Use this method to remove webhook integration if you decide to switch "
+"back to getUpdates. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_webhook:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#deletewebhook"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_webhook:6
+#: telebot.async_telebot.AsyncTeleBot.set_webhook:36
+msgid "Pass True to drop all pending updates, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_webhook:9
+msgid "Request connection timeout, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.download_file:1
+msgid "Downloads file."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.download_file:3
+msgid "Path where the file should be downloaded."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.download_file:6
+msgid "bytes"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.download_file:7
+msgid ":obj:`bytes`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:1
+msgid ""
+"Use this method to edit a non-primary invite link created by the bot. The"
+" bot must be an administrator in the chat for this to work and must have "
+"the appropriate admin rights."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editchatinvitelink"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link:13
+msgid "The invite link to edit"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:1
+msgid ""
+"Use this method to edit name and icon of a topic in a forum supergroup "
+"chat. The bot must be an administrator in the chat for this to work and "
+"must have can_manage_topics administrator rights, unless it is the "
+"creator of the topic. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:5
+msgid "Telegram Documentation: https://core.telegram.org/bots/api#editforumtopic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:10
+msgid "Identifier of the topic to edit"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:13
+msgid "New name of the topic, 1-128 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:16
+msgid ""
+"New custom emoji for the topic icon. Must be an emoji of type “tgs” and "
+"must be exactly 1 character long"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:1
+msgid "Use this method to edit captions of messages."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editmessagecaption"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:5
+msgid "New caption of the message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:8
+msgid ""
+"Required if inline_message_id is not specified. Unique identifier for the"
+" target chat or username of the target channel"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:11
+msgid "Required if inline_message_id is not specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:14
+msgid ""
+"Required if inline_message_id is not specified. Identifier of the inline "
+"message."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:17
+msgid "New caption of the message, 0-1024 characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:20
+msgid ""
+"A JSON-serialized array of objects that describe how the caption should "
+"be parsed."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:23
+#: telebot.async_telebot.AsyncTeleBot.edit_message_media:19
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:14
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:26
+msgid "A JSON-serialized object for an inline keyboard."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:26
+#: telebot.async_telebot.AsyncTeleBot.edit_message_media:22
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:17
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:29
+msgid ""
+"On success, if edited message is sent by the bot, the edited Message is "
+"returned, otherwise True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:27
+msgid ":obj:`types.Message` | :obj:`bool`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:3
+msgid ""
+"Use this method to edit live location messages. A location can be edited "
+"until its live_period expires or editing is explicitly"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:2
+msgid ""
+"disabled by a call to stopMessageLiveLocation. On success, if the edited "
+"message is not an inline message, the edited Message is returned, "
+"otherwise True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editmessagelivelocation"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:7
+msgid "Latitude of new location"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:10
+msgid "Longitude of new location"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:16
+msgid ""
+"Required if inline_message_id is not specified. Identifier of the message"
+" to edit"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:19
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location:15
+msgid "A JSON-serialized object for a new inline keyboard."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:26
+#: telebot.async_telebot.AsyncTeleBot.edit_message_media:16
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:11
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:14
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores:19
+#: telebot.async_telebot.AsyncTeleBot.set_game_score:20
+msgid ""
+"Required if chat_id and message_id are not specified. Identifier of the "
+"inline message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:29
+#: telebot.async_telebot.AsyncTeleBot.send_location:31
+msgid "The radius of uncertainty for the location, measured in meters; 0-1500"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:32
+msgid ""
+"Direction in which the user is moving, in degrees. Must be between 1 and "
+"360 if specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:35
+msgid ""
+"The maximum distance for proximity alerts about approaching another chat "
+"member, in meters. Must be between 1 and 100000 if specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:38
+msgid ""
+"On success, if the edited message is not an inline message, the edited "
+"Message is returned, otherwise True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:39
+#: telebot.async_telebot.AsyncTeleBot.stop_message_live_location:23
+msgid ":class:`telebot.types.Message` or bool"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_media:1
+msgid ""
+"Use this method to edit animation, audio, document, photo, or video "
+"messages. If a message is a part of a message album, then it can be "
+"edited only to a photo or a video. Otherwise, message type can be changed"
+" arbitrarily. When inline message is edited, new file can't be uploaded. "
+"Use previously uploaded file via its file_id or specify a URL."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_media:6
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editmessagemedia"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_media:8
+msgid "A JSON-serialized object for a new media content of the message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_media:10
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:5
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:8
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores:13
+#: telebot.async_telebot.AsyncTeleBot.set_game_score:14
+msgid ""
+"Required if inline_message_id is not specified. Unique identifier for the"
+" target chat or username of the target channel (in the format "
+"@channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_media:13
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:8
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:11
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores:16
+#: telebot.async_telebot.AsyncTeleBot.set_game_score:17
+msgid ""
+"Required if inline_message_id is not specified. Identifier of the sent "
+"message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_media:23
+#: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:18
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:30
+#: telebot.async_telebot.AsyncTeleBot.set_game_score:27
+msgid ":obj:`types.Message` or :obj:`bool`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:1
+msgid "Use this method to edit only the reply markup of messages."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editmessagereplymarkup"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:1
+msgid "Use this method to edit text and game messages."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#editmessagetext"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:5
+msgid "New text of the message, 1-4096 characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:17
+#: telebot.async_telebot.AsyncTeleBot.send_message:15
+msgid "Mode for parsing entities in the message text."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:20
+msgid ""
+"List of special entities that appear in the message text, which can be "
+"specified instead of parse_mode"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:23
+#: telebot.async_telebot.AsyncTeleBot.send_message:21
+msgid "Disables link previews for links in this message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:1
+msgid ""
+"Handles new version of a channel post that is known to the bot and was "
+"edited. As a parameter to the decorator function, it passes "
+":class:`telebot.types.Message` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edited_message_handler:1
+msgid "Handles new version of a message that is known to the bot and was edited."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edited_message_handler:3
+msgid ""
+"As a parameter to the decorator function, it passes "
+":class:`telebot.types.Message` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edited_message_handler:17
+#: telebot.async_telebot.AsyncTeleBot.message_handler:47
+msgid "list of chat types"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.enable_saving_states:1
+msgid "Enable saving states (by default saving disabled)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.enable_saving_states:4
+msgid ""
+"It is recommended to pass a "
+":class:`~telebot.asyncio_storage.StatePickleStorage` instance as "
+"state_storage to TeleBot class."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.enable_saving_states:7
+msgid "Filename of saving file, defaults to \"./.state-save/states.pkl\""
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.export_chat_invite_link:1
+msgid ""
+"Use this method to export an invite link to a supergroup or a channel. "
+"The bot must be an administrator in the chat for this to work and must "
+"have the appropriate admin rights."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.export_chat_invite_link:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#exportchatinvitelink"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.export_chat_invite_link:10
+msgid "exported invite link as String on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:1
+msgid "Use this method to forward messages of any kind."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#forwardmessage"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:5
+msgid ""
+"Sends the message silently. Users will receive a notification with no "
+"sound"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:17
+msgid "Protects the contents of the forwarded message from forwarding and saving"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:23
+#: telebot.async_telebot.AsyncTeleBot.send_message:43
+msgid ""
+"Unique identifier for the target message thread (topic) of the forum; for"
+" forum supergroups only"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat:1
+msgid ""
+"Use this method to get up to date information about the chat (current "
+"name of the user for one-on-one conversations, current username of a "
+"user, group or channel, etc.). Returns a Chat object on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getchat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat:6
+#: telebot.async_telebot.AsyncTeleBot.get_chat_administrators:7
+#: telebot.async_telebot.AsyncTeleBot.get_chat_member_count:5
+#: telebot.async_telebot.AsyncTeleBot.leave_chat:5
+msgid ""
+"Unique identifier for the target chat or username of the target "
+"supergroup or channel (in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat:9
+msgid "Chat information"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat:10
+msgid ":class:`telebot.types.Chat`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_administrators:1
+msgid ""
+"Use this method to get a list of administrators in a chat. On success, "
+"returns an Array of ChatMember objects that contains information about "
+"all chat administrators except other bots."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_administrators:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getchatadministrators"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_administrators:9
+msgid "List made of ChatMember objects."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_administrators:10
+msgid ":obj:`list` of :class:`telebot.types.ChatMember`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member:1
+msgid ""
+"Use this method to get information about a member of a chat. Returns a "
+"ChatMember object on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getchatmember"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member:11
+msgid "Returns ChatMember object on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member:12
+msgid ":class:`telebot.types.ChatMember`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member_count:1
+msgid "Use this method to get the number of members in a chat."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member_count:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getchatmembercount"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member_count:8
+msgid "Number of members in the chat."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_member_count:9
+msgid ":obj:`int`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_menu_button:1
+msgid ""
+"Use this method to get the current value of the bot's menu button in a "
+"private chat, or the default menu button. Returns MenuButton on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_menu_button:5
+msgid ""
+"Telegram Documentation: "
+"https://core.telegram.org/bots/api#getchatmenubutton"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_menu_button:7
+msgid ""
+"Unique identifier for the target private chat. If not specified, default "
+"bot's menu button will be returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_menu_button:11
+msgid "types.MenuButton"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_chat_menu_button:12
+msgid ":class:`telebot.types.MenuButton`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers:1
+msgid ""
+"Use this method to get information about custom emoji stickers by their "
+"identifiers. Returns an Array of Sticker objects."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers:4
+msgid ""
+"List of custom emoji identifiers. At most 200 custom emoji identifiers "
+"can be specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers:7
+msgid "Returns an Array of Sticker objects."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_custom_emoji_stickers:8
+msgid ":obj:`list` of :class:`telebot.types.Sticker`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file:1
+msgid ""
+"Use this method to get basic info about a file and prepare it for "
+"downloading. For the moment, bots can download files of up to 20MB in "
+"size. On success, a File object is returned. It is guaranteed that the "
+"link will be valid for at least 1 hour. When the link expires, a new one "
+"can be requested by calling get_file again."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getfile"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file:9
+msgid "File identifier"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file:12
+#: telebot.async_telebot.AsyncTeleBot.upload_sticker_file:14
+msgid ":class:`telebot.types.File`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file_url:1
+msgid "Get a valid URL for downloading a file."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file_url:3
+msgid "File identifier to get download URL for."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_file_url:6
+msgid "URL for downloading the file."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_forum_topic_icon_stickers:1
+msgid ""
+"Use this method to get custom emoji stickers, which can be used as a "
+"forum topic icon by any user. Requires no parameters. Returns an Array of"
+" Sticker objects."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_forum_topic_icon_stickers:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getforumtopiciconstickers"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_forum_topic_icon_stickers:6
+msgid "On success, a list of StickerSet objects is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_forum_topic_icon_stickers:7
+msgid "List[:class:`telebot.types.StickerSet`]"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_game_high_scores:1
+msgid ""
+"Use this method to get data for high score tables. Will return the score "
+"of the specified user and several of their neighbors in a game. On "
+"success, returns an Array of GameHighScore objects."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_game_high_scores:4
+msgid ""
+"This method will currently return scores for the target user, plus two of"
+" their closest neighbors on each side. Will also return the top three "
+"users if the user and their neighbors are not among them. Please note "
+"that this behavior is subject to change."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_game_high_scores:8
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getgamehighscores"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_game_high_scores:10
+#: telebot.async_telebot.AsyncTeleBot.retrieve_data:3
+#: telebot.async_telebot.AsyncTeleBot.set_game_score:5
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:9
+msgid "User identifier"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_game_high_scores:22
+msgid "On success, returns an Array of GameHighScore objects."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_me:1
+msgid "Returns basic information about the bot in form of a User object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_me:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getme"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_commands:1
+msgid ""
+"Use this method to get the current list of the bot's commands. Returns "
+"List of BotCommand on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_commands:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getmycommands"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_commands:15
+msgid "List of BotCommand on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_commands:16
+msgid ":obj:`list` of :class:`telebot.types.BotCommand`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights:1
+msgid ""
+"Use this method to get the current default administrator rights of the "
+"bot. Returns ChatAdministratorRights on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getmydefaultadministratorrights"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights:6
+msgid ""
+"Pass True to get the default administrator rights of the bot in channels."
+" Otherwise, the default administrator rights of the bot for groups and "
+"supergroups will be returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights:9
+msgid "Returns ChatAdministratorRights on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights:10
+msgid ":class:`telebot.types.ChatAdministratorRights`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_state:1
+msgid ""
+"Gets current state of a user. Not recommended to use this method. But it "
+"is ok for debugging."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_state:10
+msgid "state of a user"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_state:11
+msgid ":obj:`int` or :obj:`str` or :class:`telebot.types.State`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_sticker_set:1
+msgid ""
+"Use this method to get a sticker set. On success, a StickerSet object is "
+"returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_sticker_set:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getstickerset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_sticker_set:8
+msgid "On success, a StickerSet object is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_sticker_set:9
+#: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:14
+msgid ":class:`telebot.types.StickerSet`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:1
+msgid ""
+"Use this method to receive incoming updates using long polling (wiki). An"
+" Array of Update objects is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getupdates"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:6
+msgid ""
+"Identifier of the first update to be returned. Must be greater by one "
+"than the highest among the identifiers of previously received updates. By"
+" default, updates starting with the earliest unconfirmed update are "
+"returned. An update is considered confirmed as soon as getUpdates is "
+"called with an offset higher than its update_id. The negative offset can "
+"be specified to retrieve updates starting from -offset update from the "
+"end of the updates queue. All previous updates will forgotten."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:12
+msgid ""
+"Limits the number of updates to be retrieved. Values between 1-100 are "
+"accepted. Defaults to 100."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:15
+#: telebot.async_telebot.AsyncTeleBot.get_webhook_info:6
+#: telebot.async_telebot.AsyncTeleBot.polling:26
+msgid "Request connection timeout"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:18
+msgid "Array of string. List the types of updates you want your bot to receive."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:21
+msgid "Timeout in seconds for long polling."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:24
+msgid "An Array of Update objects is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_updates:25
+msgid ":obj:`list` of :class:`telebot.types.Update`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:1
+msgid ""
+"Use this method to get a list of profile pictures for a user. Returns a "
+":class:`telebot.types.UserProfilePhotos` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getuserprofilephotos"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:9
+msgid ""
+"Sequential number of the first photo to be returned. By default, all "
+"photos are returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:12
+msgid ""
+"Limits the number of photos to be retrieved. Values between 1-100 are "
+"accepted. Defaults to 100."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:15
+msgid ""
+"`UserProfilePhotos "
+"<https://core.telegram.org/bots/api#userprofilephotos>`_"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:16
+msgid ":class:`telebot.types.UserProfilePhotos`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_webhook_info:1
+msgid ""
+"Use this method to get current webhook status. Requires no parameters. On"
+" success, returns a WebhookInfo object. If the bot is using getUpdates, "
+"will return an object with the url field empty."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_webhook_info:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_webhook_info:9
+msgid "On success, returns a WebhookInfo object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_webhook_info:10
+msgid ":class:`telebot.types.WebhookInfo`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:1
+msgid ""
+"Wrap polling with infinite loop and exception handling to avoid bot stops"
+" polling."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:4
+#: telebot.async_telebot.AsyncTeleBot.polling:15
+msgid "Install watchdog and psutil before using restart_on_change option."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:6
+#: telebot.async_telebot.AsyncTeleBot.polling:29
+msgid "Timeout in seconds for get_updates(Defaults to None)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:9
+#: telebot.async_telebot.AsyncTeleBot.polling:20
+msgid "skip old updates"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:12
+msgid "Aiohttp's request timeout. Defaults to 5 minutes(aiohttp.ClientTimeout)."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:15
+msgid ""
+"Custom logging level for infinity_polling logging. Use logger levels from"
+" logging as a value. None/NOTSET = no error logging"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:19
+#: telebot.async_telebot.AsyncTeleBot.polling:32
+msgid ""
+"A list of the update types you want your bot to receive. For example, "
+"specify [“message”, “edited_channel_post”, “callback_query”] to only "
+"receive updates of these types. See util.update_types for a complete list"
+" of available update types. Specify an empty list to receive all update "
+"types except chat_member (default). If not specified, the previous "
+"setting will be used.  Please note that this parameter doesn't affect "
+"updates created before the call to the get_updates, so unwanted updates "
+"may be received for a short period of time."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:19
+#: telebot.async_telebot.AsyncTeleBot.polling:32
+msgid ""
+"A list of the update types you want your bot to receive. For example, "
+"specify [“message”, “edited_channel_post”, “callback_query”] to only "
+"receive updates of these types. See util.update_types for a complete list"
+" of available update types. Specify an empty list to receive all update "
+"types except chat_member (default). If not specified, the previous "
+"setting will be used."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:25
+#: telebot.async_telebot.AsyncTeleBot.polling:38
+msgid ""
+"Please note that this parameter doesn't affect updates created before the"
+" call to the get_updates, so unwanted updates may be received for a short"
+" period of time."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:29
+msgid "Restart a file on file(s) change. Defaults to False"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.infinity_polling:32
+#: telebot.async_telebot.AsyncTeleBot.polling:48
+msgid "Path to watch for changes. Defaults to current directory"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.inline_handler:1
+msgid ""
+"Handles new incoming inline query. As a parameter to the decorator "
+"function, it passes :class:`telebot.types.InlineQuery` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.kick_chat_member:1
+msgid "This function is deprecated. Use `ban_chat_member` instead"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.leave_chat:1
+msgid ""
+"Use this method for your bot to leave a group, supergroup or channel. "
+"Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.leave_chat:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#leavechat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.log_out:1
+msgid ""
+"Use this method to log out from the cloud Bot API server before launching"
+" the bot locally. You MUST log out the bot before running it locally, "
+"otherwise there is no guarantee that the bot will receive updates. After "
+"a successful call, you can immediately log in on a local server, but will"
+" not be able to log in back to the cloud Bot API server for 10 minutes. "
+"Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.log_out:8
+msgid "Telegram documentation: https://core.telegram.org/bots/api#logout"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.message_handler:1
+msgid ""
+"Handles ew incoming message of any kind - text, photo, sticker, etc. As a"
+" parameter to the decorator function, it passes "
+":class:`telebot.types.Message` object. All message handlers are tested in"
+" the order they were added."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.message_handler:5
+msgid "Example:"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.message_handler:7
+msgid "Usage of message_handler"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.message_handler:40
+msgid ""
+"Optional lambda function. The lambda receives the message to test as the "
+"first parameter. It must return True if the command should handle the "
+"message."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.message_handler:52
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:23
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:13
+msgid "decorated function"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:1
+msgid ""
+"Handles update in a status of a bot. For private chats, this update is "
+"received only when the bot is blocked or unblocked by the user. As a "
+"parameter to the decorator function, it passes "
+":class:`telebot.types.ChatMemberUpdated` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:1
+msgid ""
+"Use this method to pin a message in a supergroup. The bot must be an "
+"administrator in the chat for this to work and must have the appropriate "
+"admin rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:5
+msgid "Telegram documentation: https://core.telegram.org/bots/api#pinchatmessage"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:11
+msgid "Identifier of a message to pin"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:14
+msgid ""
+"Pass True, if it is not necessary to send a notification to all group "
+"members about the new pinned message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.poll_answer_handler:1
+msgid ""
+"Handles change of user's answer in a non-anonymous poll(when user changes"
+" the vote). Bots receive new votes only in polls that were sent by the "
+"bot itself. As a parameter to the decorator function, it passes "
+":class:`telebot.types.PollAnswer` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.poll_handler:1
+msgid ""
+"Handles new state of a poll. Bots receive only updates about stopped "
+"polls and polls, which are sent by the bot As a parameter to the "
+"decorator function, it passes :class:`telebot.types.Poll` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:1
+msgid ""
+"Runs bot in long-polling mode in a main loop. This allows the bot to "
+"retrieve Updates automagically and notify listeners and message handlers "
+"accordingly."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:4
+msgid "Warning: Do not call this function more than once!"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:6
+msgid "Always gets updates."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:10
+msgid ""
+"Set non_stop=True if you want your bot to continue receiving updates if "
+"there is an error."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:17
+msgid "Do not stop polling when an ApiException occurs."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:23
+msgid "Delay between two update retrivals"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:42
+msgid "Deprecated, use non_stop. Old typo, kept for backward compatibility."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.polling:45
+msgid "Restart a file on file(s) change. Defaults to False."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:1
+msgid ""
+"New incoming pre-checkout query. Contains full information about "
+"checkout. As a parameter to the decorator function, it passes "
+":class:`telebot.types.PreCheckoutQuery` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.process_new_updates:1
+msgid ""
+"Process new updates. Just pass list of updates - each update should be "
+"instance of Update object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.process_new_updates:5
+msgid "list of updates"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:1
+msgid ""
+"Use this method to promote or demote a user in a supergroup or a channel."
+" The bot must be an administrator in the chat for this to work and must "
+"have the appropriate admin rights. Pass False for all boolean parameters "
+"to demote a user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#promotechatmember"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:7
+msgid ""
+"Unique identifier for the target chat or username of the target channel ("
+" in the format @channelusername)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:14
+msgid ""
+"Pass True, if the administrator can change chat title, photo and other "
+"settings"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:17
+msgid "Pass True, if the administrator can create channel posts, channels only"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:20
+msgid ""
+"Pass True, if the administrator can edit messages of other users, "
+"channels only"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:23
+msgid "Pass True, if the administrator can delete messages of other users"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:26
+msgid "Pass True, if the administrator can invite new users to the chat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:29
+msgid "Pass True, if the administrator can restrict, ban or unban chat members"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:32
+msgid "Pass True, if the administrator can pin messages, supergroups only"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:35
+msgid ""
+"Pass True, if the administrator can add new administrators with a subset "
+"of his own privileges or demote administrators that he has promoted, "
+"directly or indirectly (promoted by administrators that were appointed by"
+" him)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:40
+msgid "Pass True, if the administrator's presence in the chat is hidden"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:43
+msgid ""
+"Pass True, if the administrator can access the chat event log, chat "
+"statistics, message statistics in channels, see channel members, see "
+"anonymous administrators in supergroups and ignore slow mode. Implied by "
+"any other administrator privilege"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:49
+msgid ""
+"Pass True, if the administrator can manage voice chats For now, bots can "
+"use this privilege only for passing to other administrators."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:53
+msgid "Deprecated, use can_manage_video_chats."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:56
+msgid ""
+"Pass True if the user is allowed to create, rename, close, and reopen "
+"forum topics, supergroups only"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:1
+msgid "Registers callback query handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:3
+msgid "function to be called"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:18
+#: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:18
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:21
+#: telebot.async_telebot.AsyncTeleBot.register_inline_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:21
+#: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_poll_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:8
+#: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:9
+msgid ""
+"True if you need to pass TeleBot instance to handler(useful for "
+"separating handlers into different files)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:1
+msgid "Registers channel post message handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_message_handler:9
+msgid "list of commands"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:12
+msgid "Regular expression"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:1
+msgid "Registers chat join request handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:1
+msgid "Registers chat member handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:14
+msgid ":return:None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:1
+msgid "Registers chosen inline handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:1
+msgid "Registers edited channel post message handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:1
+msgid "Registers edited message handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:18
+msgid "True for private chat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_inline_handler:1
+msgid "Registers inline handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_message_handler:1
+msgid "Registers message handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_message_handler:18
+msgid "List of chat types"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:1
+msgid "Registers my chat member handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:1
+msgid "Registers poll answer handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_poll_handler:1
+msgid "Registers poll handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:1
+msgid "Registers pre-checkout request handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:1
+msgid "Registers shipping query handler."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.remove_webhook:1
+msgid "Alternative for delete_webhook but uses set_webhook"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:1
+msgid ""
+"Use this method to reopen a closed topic in a forum supergroup chat. The "
+"bot must be an administrator in the chat for this to work and must have "
+"the can_manage_topics administrator rights, unless it is the creator of "
+"the topic. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#reopenforumtopic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:10
+msgid "Identifier of the topic to reopen"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reply_to:1
+msgid ""
+"Convenience function for `send_message(message.chat.id, text, "
+"reply_to_message_id=message.message_id, **kwargs)`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reply_to:3
+msgid "Instance of :class:`telebot.types.Message`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reply_to:6
+msgid "Text of the message."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reply_to:9
+msgid ""
+"Additional keyword arguments which are passed to "
+":meth:`telebot.TeleBot.send_message`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reset_data:1
+msgid "Reset data for a user in chat."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:1
+msgid ""
+"Use this method to restrict a user in a supergroup. The bot must be an "
+"administrator in the supergroup for this to work and must have the "
+"appropriate admin rights. Pass True for all boolean parameters to lift "
+"restrictions from a user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#restrictchatmember"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:14
+msgid ""
+"Date when restrictions will be lifted for the user, unix time. If user is"
+" restricted for more than 366 days or less than 30 seconds from the "
+"current time, they are considered to be restricted forever"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:19
+msgid ""
+"Pass True, if the user can send text messages, contacts, locations and "
+"venues"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:22
+msgid ""
+"Pass True, if the user can send audios, documents, photos, videos, video "
+"notes and voice notes, implies can_send_messages"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:26
+msgid "Pass True, if the user is allowed to send polls, implies can_send_messages"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:29
+msgid ""
+"Pass True, if the user can send animations, games, stickers and use "
+"inline bots, implies can_send_media_messages"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:32
+msgid ""
+"Pass True, if the user may add web page previews to their messages, "
+"implies can_send_media_messages"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:36
+msgid ""
+"Pass True, if the user is allowed to change the chat title, photo and "
+"other settings. Ignored in public supergroups"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:40
+msgid ""
+"Pass True, if the user is allowed to invite new users to the chat, "
+"implies can_invite_users"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:44
+msgid ""
+"Pass True, if the user is allowed to pin messages. Ignored in public "
+"supergroups"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:47
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:14
+#: telebot.async_telebot.AsyncTeleBot.unban_chat_member:19
+msgid "True on success"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.retrieve_data:1
+msgid "Returns context manager with data for a user in chat."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.retrieve_data:6
+msgid "Chat's unique identifier, defaults to user_id"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.retrieve_data:9
+msgid "Context manager with data for a user in chat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link:1
+msgid ""
+"Use this method to revoke an invite link created by the bot. Note: If the"
+" primary link is revoked, a new link is automatically generated The bot "
+"must be an administrator in the chat for this to work and must have the "
+"appropriate admin rights."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#revokechatinvitelink"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.revoke_chat_invite_link:11
+msgid "The invite link to revoke"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:1
+msgid "This class sets webhooks and listens to a given url and port."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:3
+msgid "IP address to listen to. Defaults to 0.0.0.0"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:5
+msgid "A port which will be used to listen to webhooks."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:6
+msgid "Path to the webhook. Defaults to /token"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:7
+msgid "Path to the certificate file."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:8
+msgid "Path to the certificate key file."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:9
+msgid "Webhook URL."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:10
+msgid ""
+"Maximum allowed number of simultaneous HTTPS connections to the webhook "
+"for update delivery, 1-100. Defaults to 40. Use lower values to limit the"
+" load on your bot's server, and higher values to increase your bot's "
+"throughput."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:11
+msgid ""
+"A JSON-serialized list of the update types you want your bot to receive. "
+"For example, specify [“message”, “edited_channel_post”, “callback_query”]"
+" to only receive updates of these types. See Update for a complete list "
+"of available update types. Specify an empty list to receive all updates "
+"regardless of type (default). If not specified, the previous setting will"
+" be used."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:12
+msgid ""
+"The fixed IP address which will be used to send webhook requests instead "
+"of the IP address resolved through DNS"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:13
+msgid "Pass True to drop all pending updates"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:14
+msgid "Integer. Request connection timeout"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:15
+msgid "Secret token to be used to verify the webhook request."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:1
+msgid ""
+"Use this method to send animation files (GIF or H.264/MPEG-4 AVC video "
+"without sound). On success, the sent Message is returned. Bots can "
+"currently send animation files of up to 50 MB in size, this limit may be "
+"changed in the future."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendanimation"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:9
+msgid ""
+"Animation to send. Pass a file_id as String to send an animation that "
+"exists on the Telegram servers (recommended), pass an HTTP URL as a "
+"String for Telegram to get an animation from the Internet, or upload a "
+"new animation using multipart/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:13
+msgid "Duration of sent animation in seconds"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:16
+msgid "Animation width"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:19
+msgid "Animation height"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:22
+#: telebot.async_telebot.AsyncTeleBot.send_video:20
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:33
+msgid ""
+"Thumbnail of the file sent; can be ignored if thumbnail generation for "
+"the file is supported server-side. The thumbnail should be in JPEG format"
+" and less than 200 kB in size. A thumbnail's width and height should not "
+"exceed 320. Ignored if the file is not uploaded using multipart/form-"
+"data. Thumbnails can't be reused and can be only uploaded as a new file, "
+"so you can pass “attach://<file_attach_name>” if the thumbnail was "
+"uploaded using multipart/form-data under <file_attach_name>."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:28
+msgid ""
+"Animation caption (may also be used when resending animation by file_id),"
+" 0-1024 characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:31
+msgid "Mode for parsing entities in the animation caption"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:51
+#: telebot.async_telebot.AsyncTeleBot.send_video:29
+msgid ""
+"List of special entities that appear in the caption, which can be "
+"specified instead of parse_mode"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:57
+#: telebot.async_telebot.AsyncTeleBot.send_video:58
+msgid "Identifier of a message thread, in which the video will be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:1
+msgid ""
+"Use this method to send audio files, if you want Telegram clients to "
+"display them in the music player. Your audio must be in the .MP3 or .M4A "
+"format. On success, the sent Message is returned. Bots can currently send"
+" audio files of up to 50 MB in size, this limit may be changed in the "
+"future."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:5
+msgid "For sending voice messages, use the send_voice method instead."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendaudio"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:12
+msgid ""
+"Audio file to send. Pass a file_id as String to send an audio file that "
+"exists on the Telegram servers (recommended), pass an HTTP URL as a "
+"String for Telegram to get an audio file from the Internet, or upload a "
+"new one using multipart/form-data. Audio must be in the .MP3 or .M4A "
+"format."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:17
+msgid "Audio caption, 0-1024 characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:20
+msgid "Duration of the audio in seconds"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:23
+msgid "Performer"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:26
+msgid "Track name"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:36
+msgid ""
+"Mode for parsing entities in the audio caption. See formatting options "
+"for more details."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:45
+msgid ""
+"Thumbnail of the file sent; can be ignored if thumbnail generation for "
+"the file is supported server-side. The thumbnail should be in JPEG format"
+" and less than 200 kB in size. A thumbnail's width and height should not "
+"exceed 320. Ignored if the file is not uploaded using multipart/form-"
+"data. Thumbnails can't be reused and can be only uploaded as a new file, "
+"so you can pass “attach://<file_attach_name>” if the thumbnail was "
+"uploaded using multipart/form-data under <file_attach_name>"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_audio:51
+#: telebot.async_telebot.AsyncTeleBot.send_document:35
+#: telebot.async_telebot.AsyncTeleBot.send_photo:19
+#: telebot.async_telebot.AsyncTeleBot.send_voice:37
+msgid ""
+"A JSON-serialized list of special entities that appear in the caption, "
+"which can be specified instead of parse_mode"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:1
+msgid ""
+"Use this method when you need to tell the user that something is "
+"happening on the bot's side. The status is set for 5 seconds or less "
+"(when a message arrives from your bot, Telegram clients clear its typing "
+"status). Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:5
+msgid ""
+"Example: The ImageBot needs some time to process a request and upload the"
+" image. Instead of sending a text message along the lines of “Retrieving "
+"image, please wait…”, the bot may use sendChatAction with action = "
+"upload_photo. The user will see a “sending photo” status for the bot."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:8
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendchataction"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:10
+#: telebot.async_telebot.AsyncTeleBot.send_contact:5
+#: telebot.async_telebot.AsyncTeleBot.send_poll:6
+#: telebot.async_telebot.AsyncTeleBot.send_venue:5
+#: telebot.async_telebot.AsyncTeleBot.stop_poll:5
+msgid "Unique identifier for the target chat or username of the target channel"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:13
+msgid ""
+"Type of action to broadcast. Choose one, depending on what the user is "
+"about to receive: typing for text messages, upload_photo for photos, "
+"record_video or upload_video for videos, record_voice or upload_voice for"
+" voice notes, upload_document for general files, choose_sticker for "
+"stickers, find_location for location data, record_video_note or "
+"upload_video_note for video notes."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:1
+msgid ""
+"Use this method to send phone contacts. On success, the sent Message is "
+"returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendcontact"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:8
+msgid "Contact's phone number"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:11
+msgid "Contact's first name"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:14
+msgid "Contact's last name"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:17
+msgid "Additional data about the contact in the form of a vCard, 0-2048 bytes"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:34
+#: telebot.async_telebot.AsyncTeleBot.send_game:23
+#: telebot.async_telebot.AsyncTeleBot.send_venue:41
+msgid ""
+"Pass True, if the message should be sent even if one of the specified "
+"replied-to messages is not found."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_contact:41
+#: telebot.async_telebot.AsyncTeleBot.send_venue:54
+msgid "The thread to which the message will be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_dice:1
+msgid ""
+"Use this method to send an animated emoji that will display a random "
+"value. On success, the sent Message is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_dice:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#senddice"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_dice:8
+msgid ""
+"Emoji on which the dice throw animation is based. Currently, must be one "
+"of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯”"
+" and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults "
+"to “🎲”"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_dice:29
+msgid "Protects the contents of the sent message from forwarding"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_dice:32
+msgid ""
+"The identifier of a message thread, unique within the chat to which the "
+"message with the thread identifier belongs"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:1
+msgid "Use this method to send general files."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#senddocument"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:8
+msgid ""
+"(document) File to send. Pass a file_id as String to send a file that "
+"exists on the Telegram servers (recommended), pass an HTTP URL as a "
+"String for Telegram to get a file from the Internet, or upload a new one "
+"using multipart/form-data"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:15
+msgid ""
+"Document caption (may also be used when resending documents by file_id), "
+"0-1024 characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:23
+msgid "Mode for parsing entities in the document caption"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:32
+msgid ""
+"InputFile or String : Thumbnail of the file sent; can be ignored if "
+"thumbnail generation for the file is supported server-side. The thumbnail"
+" should be in JPEG format and less than 200 kB in size. A thumbnail's "
+"width and height should not exceed 320. Ignored if the file is not "
+"uploaded using multipart/form-data. Thumbnails can't be reused and can be"
+" only uploaded as a new file, so you can pass "
+"“attach://<file_attach_name>” if the thumbnail was uploaded using "
+"multipart/form-data under <file_attach_name>"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:41
+msgid ""
+"allows to define file name that will be visible in the Telegram instead "
+"of original file name"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:44
+msgid ""
+"Disables automatic server-side content type detection for files uploaded "
+"using multipart/form-data"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_document:47
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:33
+#: telebot.async_telebot.AsyncTeleBot.send_video:55
+msgid "function typo miss compatibility: do not use it"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:1
+msgid "Used to send the game."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendgame"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:8
+msgid ""
+"Short name of the game, serves as the unique identifier for the game. Set"
+" up your games via @BotFather."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:20
+msgid "Timeout in seconds for waiting for a response from the bot."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:26
+msgid ""
+"Pass True, if content of the message needs to be protected from being "
+"viewed by the bot."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:29
+msgid "Identifier of the thread to which the message will be sent."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_game:33
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:102
+#: telebot.async_telebot.AsyncTeleBot.send_poll:71
+msgid ":obj:`types.Message`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:1
+msgid "Sends invoice."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendinvoice"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:5
+msgid "Unique identifier for the target private chat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:29
+msgid ""
+"Unique deep-linking parameter that can be used to generate this invoice "
+"when used as a start parameter"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:33
+msgid ""
+"URL of the product photo for the invoice. Can be a photo of the goods or "
+"a marketing image for a service. People like it better when they see what"
+" they are paying for."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:73
+msgid ""
+"A JSON-serialized object for an inline keyboard. If empty, one 'Pay total"
+" price' button will be shown. If not empty, the first button must be a "
+"Pay button"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:81
+#: telebot.async_telebot.AsyncTeleBot.set_webhook:39
+msgid "Timeout of a request, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_invoice:98
+msgid ""
+"The identifier of a message thread, in which the invoice message will be "
+"sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:1
+msgid ""
+"Use this method to send point on the map. On success, the sent Message is"
+" returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendlocation"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:8
+msgid "Latitude of the location"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:11
+msgid "Longitude of the location"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:14
+msgid ""
+"Period in seconds for which the location will be updated (see Live "
+"Locations, should be between 60 and 86400."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:34
+msgid ""
+"For live locations, a direction in which the user is moving, in degrees. "
+"Must be between 1 and 360 if specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_location:37
+msgid ""
+"For live locations, a maximum distance for proximity alerts about "
+"approaching another chat member, in meters. Must be between 1 and 100000 "
+"if specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:1
+msgid ""
+"Use this method to send a group of photos, videos, documents or audios as"
+" an album. Documents and audio files can be only grouped in an album with"
+" messages of the same type. On success, an array of Messages that were "
+"sent is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:9
+msgid ""
+"A JSON-serialized array describing messages to be sent, must include 2-10"
+" items"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:12
+msgid ""
+"Sends the messages silently. Users will receive a notification with no "
+"sound."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:27
+msgid "Identifier of a message thread, in which the messages will be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:30
+msgid "On success, an array of Messages that were sent is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:1
+msgid "Use this method to send text messages."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:3
+msgid ""
+"Warning: Do not send more than about 4096 characters each message, "
+"otherwise you'll risk an HTTP 414 error. If you must send more than 4096 "
+"characters, use the `split_string` or `smart_split` function in util.py."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendmessage"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:12
+msgid "Text of the message to be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:18
+msgid ""
+"List of special entities that appear in message text, which can be "
+"specified instead of parse_mode"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:27
+msgid ""
+"If True, the message content will be hidden for all users except for the "
+"target user"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_photo:1
+msgid "Use this method to send photos. On success, the sent Message is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_photo:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendphoto"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_photo:8
+msgid ""
+"Photo to send. Pass a file_id as String to send a photo that exists on "
+"the Telegram servers (recommended), pass an HTTP URL as a String for "
+"Telegram to get a photo from the Internet, or upload a new photo using "
+"multipart/form-data. The photo must be at most 10 MB in size. The photo's"
+" width and height must not exceed 10000 in total. Width and height ratio "
+"must be at most 20."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_photo:13
+msgid ""
+"Photo caption (may also be used when resending photos by file_id), 0-1024"
+" characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_photo:16
+msgid "Mode for parsing entities in the photo caption."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:1
+msgid ""
+"Use this method to send a native poll. On success, the sent Message is "
+"returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendpoll"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:9
+msgid "Poll question, 1-300 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:12
+msgid ""
+"A JSON-serialized list of answer options, 2-10 strings 1-100 characters "
+"each"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:15
+msgid "True, if the poll needs to be anonymous, defaults to True"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:18
+msgid "Poll type, “quiz” or “regular”, defaults to “regular”"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:21
+msgid ""
+"True, if the poll allows multiple answers, ignored for polls in quiz "
+"mode, defaults to False"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:24
+msgid ""
+"0-based identifier of the correct answer option. Available only for polls"
+" in quiz mode, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:28
+msgid ""
+"Text that is shown when a user chooses an incorrect answer or taps on the"
+" lamp icon in a quiz-style poll, 0-200 characters with at most 2 line "
+"feeds after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:32
+msgid ""
+"Mode for parsing entities in the explanation. See formatting options for "
+"more details."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:35
+msgid ""
+"Amount of time in seconds the poll will be active after creation, 5-600. "
+"Can't be used together with close_date."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:38
+msgid "Point in time (Unix timestamp) when the poll will be automatically closed."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:41
+msgid ""
+"Pass True, if the poll needs to be immediately closed. This can be useful"
+" for poll preview."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:50
+msgid "Pass True, if the poll allows multiple options to be voted simultaneously."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:57
+msgid "Timeout in seconds for waiting for a response from the user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:60
+msgid ""
+"A JSON-serialized list of special entities that appear in the "
+"explanation, which can be specified instead of parse_mode"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_poll:67
+msgid "The identifier of a message thread, in which the poll will be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_sticker:1
+msgid ""
+"Use this method to send static .WEBP, animated .TGS, or video .WEBM "
+"stickers. On success, the sent Message is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_sticker:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendsticker"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_sticker:9
+msgid ""
+"Sticker to send. Pass a file_id as String to send a file that exists on "
+"the Telegram servers (recommended), pass an HTTP URL as a String for "
+"Telegram to get a .webp file from the Internet, or upload a new one using"
+" multipart/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_sticker:21
+msgid "to disable the notification"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:1
+msgid ""
+"Use this method to send information about a venue. On success, the sent "
+"Message is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvenue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:8
+msgid "Latitude of the venue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:11
+msgid "Longitude of the venue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:14
+msgid "Name of the venue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:17
+msgid "Address of the venue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:20
+msgid "Foursquare identifier of the venue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:23
+msgid ""
+"Foursquare type of the venue, if known. (For example, "
+"“arts_entertainment/default”, “arts_entertainment/aquarium” or "
+"“food/icecream”.)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:45
+msgid "Google Places identifier of the venue"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_venue:48
+msgid "Google Places type of the venue."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:1
+msgid ""
+"Use this method to send video files, Telegram clients support mp4 videos "
+"(other formats may be sent as Document)."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvideo"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:8
+msgid ""
+"Video to send. You can either pass a file_id as String to resend a video "
+"that is already on the Telegram servers, or upload a new video file using"
+" multipart/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:11
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:13
+msgid "Duration of sent video in seconds"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:14
+msgid "Video width"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:17
+msgid "Video height"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:23
+msgid ""
+"Video caption (may also be used when resending videos by file_id), 0-1024"
+" characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:26
+msgid "Mode for parsing entities in the video caption"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:32
+msgid "Pass True, if the uploaded video is suitable for streaming"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video_note:1
+msgid ""
+"As of v.4.0, Telegram clients support rounded square MPEG4 videos of up "
+"to 1 minute long. Use this method to send video messages. On success, the"
+" sent Message is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video_note:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvideonote"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video_note:9
+msgid ""
+"Video note to send. Pass a file_id as String to send a video note that "
+"exists on the Telegram servers (recommended) or upload a new video using "
+"multipart/form-data. Sending video notes by a URL is currently "
+"unsupported"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video_note:16
+msgid "Video width and height, i.e. diameter of the video message"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video_note:45
+msgid "Identifier of a message thread, in which the video note will be sent"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_voice:1
+msgid ""
+"Use this method to send audio files, if you want Telegram clients to "
+"display the file as a playable voice message. For this to work, your "
+"audio must be in an .OGG file encoded with OPUS (other formats may be "
+"sent as Audio or Document). On success, the sent Message is returned. "
+"Bots can currently send voice messages of up to 50 MB in size, this limit"
+" may be changed in the future."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_voice:5
+msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvoice"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_voice:10
+msgid ""
+"Audio file to send. Pass a file_id as String to send a file that exists "
+"on the Telegram servers (recommended), pass an HTTP URL as a String for "
+"Telegram to get a file from the Internet, or upload a new one using "
+"multipart/form-data."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_voice:14
+msgid "Voice message caption, 0-1024 characters after entities parsing"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_voice:17
+msgid "Duration of the voice message in seconds"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_voice:28
+msgid ""
+"Mode for parsing entities in the voice message caption. See formatting "
+"options for more details."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:1
+msgid ""
+"Use this method to set a custom title for an administrator in a "
+"supergroup promoted by the bot. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setchatadministratorcustomtitle"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:13
+msgid ""
+"New custom title for the administrator; 0-16 characters, emoji are not "
+"allowed"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_description:1
+msgid ""
+"Use this method to change the description of a supergroup or a channel. "
+"The bot must be an administrator in the chat for this to work and must "
+"have the appropriate admin rights."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_description:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setchatdescription"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_description:10
+msgid "Str: New chat description, 0-255 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:1
+msgid ""
+"Use this method to change the bot's menu button in a private chat, or the"
+" default menu button. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setchatmenubutton"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:7
+msgid ""
+"Unique identifier for the target private chat. If not specified, default "
+"bot's menu button will be changed."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:11
+msgid ""
+"A JSON-serialized object for the new bot's menu button. Defaults to "
+"MenuButtonDefault"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_permissions:1
+msgid ""
+"Use this method to set default chat permissions for all members. The bot "
+"must be an administrator in the group or a supergroup for this to work "
+"and must have the can_restrict_members admin rights."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_permissions:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setchatpermissions"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_permissions:11
+msgid "New default chat permissions"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_photo:1
+msgid ""
+"Use this method to set a new profile photo for the chat. Photos can't be "
+"changed for private chats. The bot must be an administrator in the chat "
+"for this to work and must have the appropriate admin rights. Returns True"
+" on success. Note: In regular groups (non-supergroups), this method will "
+"only work if the ‘All Members Are Admins’ setting is off in the target "
+"group."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_photo:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#setchatphoto"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_photo:13
+msgid "InputFile: New chat photo, uploaded using multipart/form-data"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:1
+msgid ""
+"Use this method to set a new group sticker set for a supergroup. The bot "
+"must be an administrator in the chat for this to work and must have the "
+"appropriate administrator rights. Use the field can_set_sticker_set "
+"optionally returned in getChat requests to check if the bot can use this "
+"method. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setchatstickerset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:10
+msgid "Name of the sticker set to be set as the group sticker set"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:13
+msgid "StickerSet object"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_title:1
+msgid ""
+"Use this method to change the title of a chat. Titles can't be changed "
+"for private chats. The bot must be an administrator in the chat for this "
+"to work and must have the appropriate admin rights. Returns True on "
+"success. Note: In regular groups (non-supergroups), this method will only"
+" work if the ‘All Members Are Admins’ setting is off in the target group."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_title:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#setchattitle"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_chat_title:13
+msgid "New chat title, 1-255 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_game_score:1
+msgid "Sets the value of points in the game to a specific user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_game_score:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#setgamescore"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_game_score:8
+msgid "New score, must be non-negative"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_game_score:11
+msgid ""
+"Pass True, if the high score is allowed to decrease. This can be useful "
+"when fixing mistakes or banning cheaters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_game_score:23
+msgid ""
+"Pass True, if the game message should not be automatically edited to "
+"include the current scoreboard"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_game_score:26
+msgid ""
+"On success, if the message was sent by the bot, returns the edited "
+"Message, otherwise returns True."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_commands:1
+msgid "Use this method to change the list of the bot's commands."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_commands:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#setmycommands"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_commands:5
+msgid "List of BotCommand. At most 100 commands can be specified."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:1
+msgid ""
+"Use this method to change the default administrator rights requested by "
+"the bot when it's added as an administrator to groups or channels. These "
+"rights will be suggested to users, but they are are free to modify the "
+"list before adding the bot. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:7
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setmydefaultadministratorrights"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:9
+msgid ""
+"A JSON-serialized object describing new default administrator rights. If "
+"not specified, the default administrator rights will be cleared."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:13
+msgid ""
+"Pass True to change the default administrator rights of the bot in "
+"channels. Otherwise, the default administrator rights of the bot for "
+"groups and supergroups will be changed."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_state:1
+msgid "Sets a new state of a user."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_state:5
+msgid ""
+"You should set both user id and chat id in order to set state for a user "
+"in a chat. Otherwise, if you only set user_id, chat_id will equal to "
+"user_id, this means that state will be set for the user in his private "
+"chat with a bot."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_state:12
+msgid "new state. can be string, integer, or :class:`telebot.types.State`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:1
+msgid ""
+"Use this method to move a sticker in a set created by the bot to a "
+"specific position . Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setstickerpositioninset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:8
+msgid "New sticker position in the set, zero-based"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:1
+msgid ""
+"Use this method to set the thumbnail of a sticker set. Animated "
+"thumbnails can be set for animated sticker sets only. Returns True on "
+"success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setstickersetthumb"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_update_listener:1
+msgid "Update listener is a function that gets any update."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_update_listener:3
+msgid "function that should get update."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_update_listener:6
+msgid "Example on asynchronous update listeners."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:1
+msgid ""
+"Use this method to specify a URL and receive incoming updates via an "
+"outgoing webhook. Whenever there is an update for the bot, we will send "
+"an HTTPS POST request to the specified URL, containing a JSON-serialized "
+"Update. In case of an unsuccessful request, we will give up after a "
+"reasonable amount of attempts. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:6
+msgid ""
+"If you'd like to make sure that the webhook was set by you, you can "
+"specify secret data in the parameter secret_token. If specified, the "
+"request will contain a header “X-Telegram-Bot-Api-Secret-Token” with the "
+"secret token as content."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:9
+msgid "Telegram Documentation: https://core.telegram.org/bots/api#setwebhook"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:11
+msgid ""
+"HTTPS URL to send updates to. Use an empty string to remove webhook "
+"integration, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:14
+msgid ""
+"Upload your public key certificate so that the root certificate in use "
+"can be checked, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:17
+msgid ""
+"The maximum allowed number of simultaneous HTTPS connections to the "
+"webhook for update delivery, 1-100. Defaults to 40. Use lower values to "
+"limit the load on your bot's server, and higher values to increase your "
+"bot's throughput, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:22
+msgid ""
+"A JSON-serialized list of the update types you want your bot to receive. "
+"For example, specify [“message”, “edited_channel_post”, “callback_query”]"
+" to only receive updates of these types. See Update for a complete list "
+"of available update types. Specify an empty list to receive all update "
+"types except chat_member (default). If not specified, the previous "
+"setting will be used.  Please note that this parameter doesn't affect "
+"updates created before the call to the setWebhook, so unwanted updates "
+"may be received for a short period of time. Defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:22
+msgid ""
+"A JSON-serialized list of the update types you want your bot to receive. "
+"For example, specify [“message”, “edited_channel_post”, “callback_query”]"
+" to only receive updates of these types. See Update for a complete list "
+"of available update types. Specify an empty list to receive all update "
+"types except chat_member (default). If not specified, the previous "
+"setting will be used."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:27
+msgid ""
+"Please note that this parameter doesn't affect updates created before the"
+" call to the setWebhook, so unwanted updates may be received for a short "
+"period of time. Defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:32
+msgid ""
+"The fixed IP address which will be used to send webhook requests instead "
+"of the IP address resolved through DNS, defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:42
+msgid ""
+"A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token” "
+"in every webhook request, 1-256 characters. Only characters A-Z, a-z, "
+"0-9, _ and - are allowed. The header is useful to ensure that the request"
+" comes from a webhook set by you. Defaults to None"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_webhook:47
+msgid ":obj:`bool` if the request was successful."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.setup_middleware:1
+msgid "Setup middleware."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.setup_middleware:5
+msgid ""
+"Take a look at the "
+":class:`telebot.asyncio_handler_backends.BaseMiddleware` section for "
+"more."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.setup_middleware:7
+msgid "Middleware-class."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.shipping_query_handler:1
+msgid ""
+"Handles new incoming shipping query. Only for invoices with flexible "
+"price. As a parameter to the decorator function, it passes "
+":class:`telebot.types.ShippingQuery` object."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.skip_updates:1
+msgid "Skip existing updates. Only last update will remain on server."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:1
+msgid ""
+"Use this method to stop updating a live location message before "
+"live_period expires. On success, if the message is not an inline message,"
+" the edited Message is returned, otherwise True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#stopmessagelivelocation"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:9
+msgid ""
+"Required if inline_message_id is not specified. Identifier of the message"
+" with live location to stop"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:12
+msgid ""
+"Required if chat_id and message_id are not specified. Identifier of the "
+"inline message with live location to stop"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:22
+msgid ""
+"On success, if the message is not an inline message, the edited Message "
+"is returned, otherwise True is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_poll:1
+msgid ""
+"Use this method to stop a poll which was sent by the bot. On success, the"
+" stopped Poll is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_poll:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#stoppoll"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_poll:8
+msgid "Identifier of the original message with the poll"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_poll:11
+msgid "A JSON-serialized object for a new message markup."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_poll:14
+msgid "On success, the stopped Poll is returned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.stop_poll:15
+msgid ":obj:`types.Poll`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:1
+msgid ""
+"Use this method to unban a previously kicked user in a supergroup or "
+"channel. The user will not return to the group or channel automatically, "
+"but will be able to join via link, etc. The bot must be an administrator "
+"for this to work. By default, this method guarantees that after the call "
+"the user is not a member of the chat, but will be able to join it. So if "
+"the user is a member of the chat they will also be removed from the chat."
+" If you don't want this, use the parameter only_if_banned."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:7
+msgid "Telegram documentation: https://core.telegram.org/bots/api#unbanchatmember"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:9
+msgid ""
+"Unique identifier for the target group or username of the target "
+"supergroup or channel (in the format @username)"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:16
+msgid "Do nothing if the user is not banned"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:1
+msgid ""
+"Use this method to unban a previously banned channel chat in a supergroup"
+" or channel. The bot must be an administrator for this to work and must "
+"have the appropriate administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:6
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unbanchatsenderchat"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:11
+msgid "Unique identifier of the target sender chat."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:1
+msgid ""
+"Use this method to unpin a all pinned messages in a supergroup chat. The "
+"bot must be an administrator in the chat for this to work and must have "
+"the appropriate admin rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unpinallchatmessages"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:1
+msgid ""
+"Use this method to clear the list of pinned messages in a forum topic. "
+"The bot must be an administrator in the chat for this to work and must "
+"have the can_pin_messages administrator right in the supergroup. Returns "
+"True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unpinallforumtopicmessages"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:10
+msgid "Identifier of the topic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:1
+msgid ""
+"Use this method to unpin specific pinned message in a supergroup chat. "
+"The bot must be an administrator in the chat for this to work and must "
+"have the appropriate admin rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unpinchatmessage"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:11
+msgid "Int: Identifier of a message to unpin"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:1
+msgid ""
+"Use this method to upload a .png file with a sticker for later use in "
+"createNewStickerSet and addStickerToSet methods (can be used multiple "
+"times). Returns the uploaded File on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#uploadstickerfile"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:6
+msgid "User identifier of sticker set owner"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:9
+msgid ""
+"PNG image with the sticker, must be up to 512 kilobytes in size, "
+"dimensions must not exceed 512px, and either width or height must be "
+"exactly 512px."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:13
+msgid "On success, the sent file is returned."
+msgstr ""
+
+#: of telebot.async_telebot.ExceptionHandler:1
+msgid "Class for handling exceptions while Polling"
+msgstr ""
+
+#: of telebot.async_telebot.Handler:1
+msgid "Class for (next step|reply) handlers"
+msgstr ""
+
+#: ../../async_version/index.rst:22
+msgid "Asyncio filters"
+msgstr ""
+
+#: of telebot.asyncio_filters.AdvancedCustomFilter:1
+#: telebot.asyncio_filters.SimpleCustomFilter:1
+msgid "Bases: :py:class:`abc.ABC`"
+msgstr ""
+
+#: of telebot.asyncio_filters.AdvancedCustomFilter:1
+msgid ""
+"Advanced Custom Filter base class. Create child class with check() "
+"method. Accepts two parameters, returns bool: True - filter passed, False"
+" - filter failed. message: Message class text: Filter value given in "
+"handler"
+msgstr ""
+
+#: of telebot.asyncio_filters.AdvancedCustomFilter:7
+#: telebot.asyncio_filters.SimpleCustomFilter:5
+msgid "Child classes should have .key property."
+msgstr ""
+
+#: of telebot.asyncio_filters.AdvancedCustomFilter:9
+msgid "Example on creating an advanced custom filter."
+msgstr ""
+
+#: of telebot.asyncio_filters.AdvancedCustomFilter.check:1
+#: telebot.asyncio_filters.SimpleCustomFilter.check:1
+msgid "Perform a check."
+msgstr ""
+
+#: of telebot.asyncio_filters.ChatFilter:1
+#: telebot.asyncio_filters.LanguageFilter:1
+#: telebot.asyncio_filters.StateFilter:1
+#: telebot.asyncio_filters.TextContainsFilter:1
+#: telebot.asyncio_filters.TextMatchFilter:1
+#: telebot.asyncio_filters.TextStartsFilter:1
+msgid "Bases: :py:class:`telebot.asyncio_filters.AdvancedCustomFilter`"
+msgstr ""
+
+#: of telebot.asyncio_filters.ChatFilter:1
+msgid "Check whether chat_id corresponds to given chat_id."
+msgstr ""
+
+#: of telebot.asyncio_filters.ChatFilter:3
+#: telebot.asyncio_filters.ForwardFilter:3
+#: telebot.asyncio_filters.IsAdminFilter:3
+#: telebot.asyncio_filters.IsDigitFilter:3
+#: telebot.asyncio_filters.IsReplyFilter:3
+#: telebot.asyncio_filters.LanguageFilter:3
+#: telebot.asyncio_filters.StateFilter:3
+#: telebot.asyncio_filters.TextContainsFilter:5
+#: telebot.asyncio_filters.TextMatchFilter:3
+#: telebot.asyncio_filters.TextStartsFilter:3
+msgid "Example on using this filter:"
+msgstr ""
+
+#: of telebot.asyncio_filters.ForwardFilter:1
+#: telebot.asyncio_filters.IsAdminFilter:1
+#: telebot.asyncio_filters.IsDigitFilter:1
+#: telebot.asyncio_filters.IsReplyFilter:1
+msgid "Bases: :py:class:`telebot.asyncio_filters.SimpleCustomFilter`"
+msgstr ""
+
+#: of telebot.asyncio_filters.ForwardFilter:1
+msgid "Check whether message was forwarded from channel or group."
+msgstr ""
+
+#: of telebot.asyncio_filters.IsAdminFilter:1
+msgid "Check whether the user is administrator / owner of the chat."
+msgstr ""
+
+#: of telebot.asyncio_filters.IsDigitFilter:1
+msgid "Filter to check whether the string is made up of only digits."
+msgstr ""
+
+#: of telebot.asyncio_filters.IsReplyFilter:1
+msgid "Check whether message is a reply."
+msgstr ""
+
+#: of telebot.asyncio_filters.LanguageFilter:1
+msgid "Check users language_code."
+msgstr ""
+
+#: of telebot.asyncio_filters.SimpleCustomFilter:1
+msgid ""
+"Simple Custom Filter base class. Create child class with check() method. "
+"Accepts only message, returns bool value, that is compared with given in "
+"handler."
+msgstr ""
+
+#: of telebot.asyncio_filters.SimpleCustomFilter:7
+msgid "Example on creating a simple custom filter."
+msgstr ""
+
+#: of telebot.asyncio_filters.StateFilter:1
+msgid "Filter to check state."
+msgstr ""
+
+#: of telebot.asyncio_filters.TextContainsFilter:1
+msgid "Filter to check Text message. key: text"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:1
+msgid ""
+"Advanced text filter to check (types.Message, types.CallbackQuery, "
+"types.InlineQuery, types.Poll)"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:3
+msgid ""
+"example of usage is in "
+"examples/asynchronous_telebot/custom_filters/advanced_text_filter.py"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:5
+msgid "string, True if object's text is equal to passed string"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:8
+msgid "list[str] or tuple[str], True if any string element of iterable is in text"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:11
+#: telebot.asyncio_filters.TextFilter:14
+msgid "string, True if object's text starts with passed string"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:17
+msgid "bool (default False), case insensitive"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter
+msgid "Raises"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextFilter:20
+msgid "if incorrect value for a parameter was supplied"
+msgstr ""
+
+#: of telebot.asyncio_filters.TextMatchFilter:1
+msgid "Filter to check Text message."
+msgstr ""
+
+#: of telebot.asyncio_filters.TextStartsFilter:1
+msgid "Filter to check whether message starts with some text."
+msgstr ""
+
+#: ../../async_version/index.rst:30
+msgid "Asyncio handler backends"
+msgstr ""
+
+#: of telebot.asyncio_handler_backends:1
+msgid "File with all middleware classes, states."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.BaseMiddleware:1
+msgid ""
+"Base class for middleware. Your middlewares should be inherited from this"
+" class."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.BaseMiddleware:4
+msgid ""
+"Set update_sensitive=True if you want to get different updates on "
+"different functions. For example, if you want to handle pre_process for "
+"message update, then you will have to create pre_process_message "
+"function, and so on. Same applies to post_process."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.BaseMiddleware:9
+msgid "Example of class-based middlewares"
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.CancelUpdate:1
+msgid ""
+"Class for canceling updates. Just return instance of this class in "
+"middleware to skip update. Update will skip handler and execution of "
+"post_process in middlewares."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.ContinueHandling:1
+msgid ""
+"Class for continue updates in handlers. Just return instance of this "
+"class in handlers to continue process."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.ContinueHandling:5
+msgid "Example of using ContinueHandling"
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.SkipHandler:1
+msgid ""
+"Class for skipping handlers. Just return instance of this class in "
+"middleware to skip handler. Update will go to post_process, but will skip"
+" execution of handler."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.State:1
+msgid "Class representing a state."
+msgstr ""
+
+#: of telebot.asyncio_handler_backends.StatesGroup:1
+msgid "Class representing common states."
+msgstr ""
+
+#: ../../async_version/index.rst:41
+msgid "Extensions"
+msgstr ""
+
+#: of telebot.ext.aio.webhooks:1
+msgid "This file is used by AsyncTeleBot.run_webhooks() function."
+msgstr ""
+
+#: of telebot.ext.aio.webhooks:3
+msgid "Fastapi and starlette(0.20.2+) libraries are required to run this script."
+msgstr ""
+
+#: of telebot.ext.aio.webhooks.AsyncWebhookListener.run_app:1
+msgid ""
+"Run app with the given parameters to init. Not supposed to be used "
+"manually by user."
+msgstr ""
+

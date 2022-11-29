@@ -1,0 +1,58 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, coder2020official
+# This file is distributed under the same license as the pyTelegramBotAPI
+# Documentation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pyTelegramBotAPI Documentation \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../install.rst:3
+msgid "Installation Guide"
+msgstr ""
+
+#: ../../install.rst:5
+msgid "Installation of pyTelegramBotAPI"
+msgstr ""
+
+#: ../../install.rst:5
+msgid "ptba, pytba, pyTelegramBotAPI, installation, guide"
+msgstr ""
+
+#: ../../install.rst:11
+msgid "Using PIP"
+msgstr ""
+
+#: ../../install.rst:17
+msgid "Using pipenv"
+msgstr ""
+
+#: ../../install.rst:23
+msgid "By cloning repository"
+msgstr ""
+
+#: ../../install.rst:31
+msgid "Directly using pip"
+msgstr ""
+
+#: ../../install.rst:37
+msgid "It is generally recommended to use the first option."
+msgstr ""
+
+#: ../../install.rst:39
+msgid ""
+"While the API is production-ready, it is still under development and it "
+"has regular updates, do not forget to update it regularly by calling:"
+msgstr ""
+

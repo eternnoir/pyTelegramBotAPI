@@ -1,0 +1,251 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, coder2020official
+# This file is distributed under the same license as the pyTelegramBotAPI
+# Documentation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pyTelegramBotAPI Documentation \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../formatting.rst:3
+msgid "Formatting options"
+msgstr ""
+
+#: ../../formatting.rst:5
+msgid "Formatting options in pyTelegramBotAPI"
+msgstr ""
+
+#: ../../formatting.rst:5
+msgid "html, markdown, parse_mode, formatting, ptba, pytba, pyTelegramBotAPI"
+msgstr ""
+
+#: of telebot.formatting:1
+msgid "Markdown & HTML formatting functions."
+msgstr ""
+
+#: of telebot.formatting.escape_html:1
+msgid "Escapes HTML characters in a string of HTML."
+msgstr ""
+
+#: of telebot.formatting.escape_html telebot.formatting.escape_markdown
+#: telebot.formatting.format_text telebot.formatting.hbold
+#: telebot.formatting.hcode telebot.formatting.hide_link
+#: telebot.formatting.hitalic telebot.formatting.hlink telebot.formatting.hpre
+#: telebot.formatting.hspoiler telebot.formatting.hstrikethrough
+#: telebot.formatting.hunderline telebot.formatting.mbold
+#: telebot.formatting.mcode telebot.formatting.mitalic telebot.formatting.mlink
+#: telebot.formatting.mspoiler telebot.formatting.mstrikethrough
+#: telebot.formatting.munderline
+msgid "Parameters"
+msgstr ""
+
+#: of telebot.formatting.escape_html:3
+msgid "The string of HTML to escape."
+msgstr ""
+
+#: of telebot.formatting.escape_html telebot.formatting.escape_markdown
+#: telebot.formatting.format_text telebot.formatting.hbold
+#: telebot.formatting.hcode telebot.formatting.hide_link
+#: telebot.formatting.hitalic telebot.formatting.hlink telebot.formatting.hpre
+#: telebot.formatting.hspoiler telebot.formatting.hstrikethrough
+#: telebot.formatting.hunderline telebot.formatting.mbold
+#: telebot.formatting.mcode telebot.formatting.mitalic telebot.formatting.mlink
+#: telebot.formatting.mspoiler telebot.formatting.mstrikethrough
+#: telebot.formatting.munderline
+msgid "Returns"
+msgstr ""
+
+#: of telebot.formatting.escape_html:6 telebot.formatting.escape_markdown:8
+msgid "The escaped string."
+msgstr ""
+
+#: of telebot.formatting.escape_html telebot.formatting.escape_markdown
+#: telebot.formatting.format_text telebot.formatting.hbold
+#: telebot.formatting.hcode telebot.formatting.hide_link
+#: telebot.formatting.hitalic telebot.formatting.hlink telebot.formatting.hpre
+#: telebot.formatting.hspoiler telebot.formatting.hstrikethrough
+#: telebot.formatting.hunderline telebot.formatting.mbold
+#: telebot.formatting.mcode telebot.formatting.mitalic telebot.formatting.mlink
+#: telebot.formatting.mspoiler telebot.formatting.mstrikethrough
+#: telebot.formatting.munderline
+msgid "Return type"
+msgstr ""
+
+#: of telebot.formatting.escape_html:7 telebot.formatting.escape_markdown:9
+#: telebot.formatting.format_text:17 telebot.formatting.hbold:10
+#: telebot.formatting.hcode:10 telebot.formatting.hide_link:7
+#: telebot.formatting.hitalic:10 telebot.formatting.hlink:13
+#: telebot.formatting.hpre:10 telebot.formatting.hspoiler:10
+#: telebot.formatting.hstrikethrough:10 telebot.formatting.hunderline:10
+#: telebot.formatting.mbold:10 telebot.formatting.mcode:10
+#: telebot.formatting.mitalic:10 telebot.formatting.mlink:13
+#: telebot.formatting.mspoiler:10 telebot.formatting.mstrikethrough:10
+#: telebot.formatting.munderline:10
+msgid ":obj:`str`"
+msgstr ""
+
+#: of telebot.formatting.escape_markdown:1
+msgid "Escapes Markdown characters in a string of Markdown."
+msgstr ""
+
+#: of telebot.formatting.escape_markdown:3
+msgid "Credits to: simonsmh"
+msgstr ""
+
+#: of telebot.formatting.escape_markdown:5
+msgid "The string of Markdown to escape."
+msgstr ""
+
+#: of telebot.formatting.format_text:1
+msgid "Formats a list of strings into a single string."
+msgstr ""
+
+#: of telebot.formatting.format_text:10
+msgid "Strings to format."
+msgstr ""
+
+#: of telebot.formatting.format_text:13
+msgid "The separator to use between each string."
+msgstr ""
+
+#: of telebot.formatting.format_text:16 telebot.formatting.hbold:9
+#: telebot.formatting.hcode:9 telebot.formatting.hitalic:9
+#: telebot.formatting.hlink:12 telebot.formatting.hpre:9
+#: telebot.formatting.hspoiler:9 telebot.formatting.hstrikethrough:9
+#: telebot.formatting.hunderline:9 telebot.formatting.mbold:9
+#: telebot.formatting.mcode:9 telebot.formatting.mitalic:9
+#: telebot.formatting.mlink:12 telebot.formatting.mspoiler:9
+#: telebot.formatting.mstrikethrough:9 telebot.formatting.munderline:9
+msgid "The formatted string."
+msgstr ""
+
+#: of telebot.formatting.hbold:1
+msgid "Returns an HTML-formatted bold string."
+msgstr ""
+
+#: of telebot.formatting.hbold:3 telebot.formatting.mbold:3
+msgid "The string to bold."
+msgstr ""
+
+#: of telebot.formatting.hbold:6 telebot.formatting.hcode:6
+#: telebot.formatting.hitalic:6 telebot.formatting.hlink:9
+#: telebot.formatting.hpre:6 telebot.formatting.hspoiler:6
+#: telebot.formatting.hstrikethrough:6 telebot.formatting.hunderline:6
+#: telebot.formatting.mbold:6 telebot.formatting.mcode:6
+#: telebot.formatting.mitalic:6 telebot.formatting.mlink:9
+#: telebot.formatting.mspoiler:6 telebot.formatting.mstrikethrough:6
+#: telebot.formatting.munderline:6
+msgid "True if you need to escape special characters. Defaults to True."
+msgstr ""
+
+#: of telebot.formatting.hcode:1
+msgid "Returns an HTML-formatted code string."
+msgstr ""
+
+#: of telebot.formatting.hcode:3 telebot.formatting.mcode:3
+msgid "The string to code."
+msgstr ""
+
+#: of telebot.formatting.hide_link:1
+msgid "Hide url of an image."
+msgstr ""
+
+#: of telebot.formatting.hide_link:3
+msgid "The url of the image."
+msgstr ""
+
+#: of telebot.formatting.hide_link:6
+msgid "The hidden url."
+msgstr ""
+
+#: of telebot.formatting.hitalic:1
+msgid "Returns an HTML-formatted italic string."
+msgstr ""
+
+#: of telebot.formatting.hitalic:3 telebot.formatting.mitalic:3
+msgid "The string to italicize."
+msgstr ""
+
+#: of telebot.formatting.hlink:1
+msgid "Returns an HTML-formatted link string."
+msgstr ""
+
+#: of telebot.formatting.hlink:3 telebot.formatting.mlink:3
+msgid "The string to link."
+msgstr ""
+
+#: of telebot.formatting.hlink:6 telebot.formatting.mlink:6
+msgid "The URL to link to."
+msgstr ""
+
+#: of telebot.formatting.hpre:1
+msgid "Returns an HTML-formatted preformatted string."
+msgstr ""
+
+#: of telebot.formatting.hpre:3
+msgid "The string to preformatted."
+msgstr ""
+
+#: of telebot.formatting.hspoiler:1
+msgid "Returns an HTML-formatted spoiler string."
+msgstr ""
+
+#: of telebot.formatting.hspoiler:3 telebot.formatting.mspoiler:3
+msgid "The string to spoiler."
+msgstr ""
+
+#: of telebot.formatting.hstrikethrough:1
+msgid "Returns an HTML-formatted strikethrough string."
+msgstr ""
+
+#: of telebot.formatting.hstrikethrough:3 telebot.formatting.mstrikethrough:3
+msgid "The string to strikethrough."
+msgstr ""
+
+#: of telebot.formatting.hunderline:1
+msgid "Returns an HTML-formatted underline string."
+msgstr ""
+
+#: of telebot.formatting.hunderline:3 telebot.formatting.munderline:3
+msgid "The string to underline."
+msgstr ""
+
+#: of telebot.formatting.mbold:1
+msgid "Returns a Markdown-formatted bold string."
+msgstr ""
+
+#: of telebot.formatting.mcode:1
+msgid "Returns a Markdown-formatted code string."
+msgstr ""
+
+#: of telebot.formatting.mitalic:1
+msgid "Returns a Markdown-formatted italic string."
+msgstr ""
+
+#: of telebot.formatting.mlink:1
+msgid "Returns a Markdown-formatted link string."
+msgstr ""
+
+#: of telebot.formatting.mspoiler:1
+msgid "Returns a Markdown-formatted spoiler string."
+msgstr ""
+
+#: of telebot.formatting.mstrikethrough:1
+msgid "Returns a Markdown-formatted strikethrough string."
+msgstr ""
+
+#: of telebot.formatting.munderline:1
+msgid "Returns a Markdown-formatted underline string."
+msgstr ""
+
