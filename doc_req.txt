@@ -2,4 +2,4 @@
 
 furo
 sphinx_copybutton
-git+https://github.com/eternnoir/pyTelegramBotAPI.git
+git+https://github.com/coder2020official/pyTelegramBotAPI.git
