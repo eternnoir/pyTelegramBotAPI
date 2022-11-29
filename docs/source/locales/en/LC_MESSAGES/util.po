@@ -1,0 +1,345 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, coder2020official
+# This file is distributed under the same license as the pyTelegramBotAPI
+# Documentation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pyTelegramBotAPI Documentation \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../util.rst:3
+msgid "Utils"
+msgstr ""
+
+#: ../../util.rst:5
+msgid "Utils in pyTelegramBotAPI"
+msgstr ""
+
+#: ../../util.rst:5
+msgid "ptba, pytba, pyTelegramBotAPI, utils, guide"
+msgstr ""
+
+#: ../../util.rst:11
+msgid "util file"
+msgstr ""
+
+#: of telebot.util.antiflood:1
+msgid ""
+"Use this function inside loops in order to avoid getting TooManyRequests "
+"error. Example:"
+msgstr ""
+
+#: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_bytes telebot.util.is_command
+#: telebot.util.is_dict telebot.util.is_pil_image
+#: telebot.util.parse_web_app_data telebot.util.quick_markup
+#: telebot.util.smart_split telebot.util.split_string telebot.util.user_link
+#: telebot.util.validate_web_app_data telebot.util.webhook_google_functions
+msgid "Parameters"
+msgstr ""
+
+#: of telebot.util.antiflood:10
+msgid "The function to call"
+msgstr ""
+
+#: of telebot.util.antiflood:13
+msgid "The arguments to pass to the function"
+msgstr ""
+
+#: of telebot.util.antiflood:16
+msgid "The keyword arguments to pass to the function"
+msgstr ""
+
+#: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.generate_random_token
+#: telebot.util.is_bytes telebot.util.is_command telebot.util.is_dict
+#: telebot.util.is_pil_image telebot.util.parse_web_app_data
+#: telebot.util.quick_markup telebot.util.smart_split telebot.util.split_string
+#: telebot.util.user_link telebot.util.validate_web_app_data
+#: telebot.util.webhook_google_functions
+msgid "Returns"
+msgstr ""
+
+#: of telebot.util.antiflood:19
+msgid "None"
+msgstr ""
+
+#: of telebot.util.chunks:1
+msgid "Yield successive n-sized chunks from lst."
+msgstr ""
+
+#: ../../docstring of telebot.util.content_type_media:1
+msgid "Contains all media content types."
+msgstr ""
+
+#: ../../docstring of telebot.util.content_type_service:1
+msgid "Contains all service content types such as `User joined the group`."
+msgstr ""
+
+#: of telebot.util.escape:1
+msgid ""
+"Replaces the following chars in `text` ('&' with '&amp;', '<' with '&lt;'"
+" and '>' with '&gt;')."
+msgstr ""
+
+#: of telebot.util.escape:3
+msgid "the text to escape"
+msgstr ""
+
+#: of telebot.util.escape:4
+msgid "the escaped text"
+msgstr ""
+
+#: of telebot.util.extract_arguments:1
+msgid "Returns the argument after the command."
+msgstr ""
+
+#: of telebot.util.extract_arguments:3 telebot.util.extract_command:4
+msgid "Examples:"
+msgstr ""
+
+#: of telebot.util.extract_arguments:10
+msgid "String to extract the arguments from a command"
+msgstr ""
+
+#: of telebot.util.extract_arguments:13
+msgid "the arguments if `text` is a command (according to is_command), else None."
+msgstr ""
+
+#: of telebot.util.extract_arguments telebot.util.extract_command
+#: telebot.util.generate_random_token telebot.util.is_bytes
+#: telebot.util.is_command telebot.util.is_dict telebot.util.is_pil_image
+#: telebot.util.quick_markup telebot.util.smart_split telebot.util.split_string
+#: telebot.util.user_link
+msgid "Return type"
+msgstr ""
+
+#: of telebot.util.extract_arguments:14 telebot.util.extract_command:16
+msgid ":obj:`str` or :obj:`None`"
+msgstr ""
+
+#: of telebot.util.extract_command:1
+msgid ""
+"Extracts the command from `text` (minus the '/') if `text` is a command "
+"(see is_command). If `text` is not a command, this function returns None."
+msgstr ""
+
+#: of telebot.util.extract_command:12
+msgid "String to extract the command from"
+msgstr ""
+
+#: of telebot.util.extract_command:15
+msgid "the command if `text` is a command (according to is_command), else None."
+msgstr ""
+
+#: of telebot.util.generate_random_token:1
+msgid ""
+"Generates a random token consisting of letters and digits, 16 characters "
+"long."
+msgstr ""
+
+#: of telebot.util.generate_random_token:3
+msgid "a random token"
+msgstr ""
+
+#: of telebot.util.generate_random_token:4 telebot.util.user_link:22
+msgid ":obj:`str`"
+msgstr ""
+
+#: of telebot.util.is_bytes:1
+msgid "Returns True if the given object is a bytes object."
+msgstr ""
+
+#: of telebot.util.is_bytes:3 telebot.util.is_dict:3
+#: telebot.util.is_pil_image:3
+msgid "object to be checked"
+msgstr ""
+
+#: of telebot.util.is_bytes:6
+msgid "True if the given object is a bytes object."
+msgstr ""
+
+#: of telebot.util.is_bytes:7 telebot.util.is_command:7 telebot.util.is_dict:7
+#: telebot.util.is_pil_image:7
+msgid ":obj:`bool`"
+msgstr ""
+
+#: of telebot.util.is_command:1
+msgid ""
+"Checks if `text` is a command. Telegram chat commands start with the '/' "
+"character."
+msgstr ""
+
+#: of telebot.util.is_command:3
+msgid "Text to check."
+msgstr ""
+
+#: of telebot.util.is_command:6
+msgid "True if `text` is a command, else False."
+msgstr ""
+
+#: of telebot.util.is_dict:1
+msgid "Returns True if the given object is a dictionary."
+msgstr ""
+
+#: of telebot.util.is_dict:6
+msgid "True if the given object is a dictionary."
+msgstr ""
+
+#: of telebot.util.is_pil_image:1
+msgid "Returns True if the given object is a PIL.Image.Image object."
+msgstr ""
+
+#: of telebot.util.is_pil_image:6
+msgid "True if the given object is a PIL.Image.Image object."
+msgstr ""
+
+#: of telebot.util.is_string:1
+msgid "Returns True if the given object is a string."
+msgstr ""
+
+#: of telebot.util.parse_web_app_data:1
+msgid "Parses web app data."
+msgstr ""
+
+#: of telebot.util.parse_web_app_data:3 telebot.util.validate_web_app_data:3
+msgid "The bot token"
+msgstr ""
+
+#: of telebot.util.parse_web_app_data:6 telebot.util.validate_web_app_data:6
+msgid "The raw init data"
+msgstr ""
+
+#: of telebot.util.parse_web_app_data:9 telebot.util.validate_web_app_data:9
+msgid "The parsed init data"
+msgstr ""
+
+#: of telebot.util.quick_markup:1
+msgid ""
+"Returns a reply markup from a dict in this format: {'text': kwargs} This "
+"is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2"
+" = InlineKeyboardButton(...)'"
+msgstr ""
+
+#: of telebot.util.quick_markup:4 telebot.util.user_link:5
+msgid "Example:"
+msgstr ""
+
+#: of telebot.util.quick_markup:6
+msgid "Using quick_markup:"
+msgstr ""
+
+#: of telebot.util.quick_markup:29
+msgid ""
+"a dict containing all buttons to create in this format: {text: kwargs} "
+"{str:}"
+msgstr ""
+
+#: of telebot.util.quick_markup:32
+msgid "int row width"
+msgstr ""
+
+#: of telebot.util.quick_markup:35
+msgid "InlineKeyboardMarkup"
+msgstr ""
+
+#: of telebot.util.quick_markup:36
+msgid ":obj:`types.InlineKeyboardMarkup`"
+msgstr ""
+
+#: of telebot.util.smart_split:1
+msgid ""
+"Splits one string into multiple strings, with a maximum amount of "
+"`chars_per_string` characters per string. This is very useful for "
+"splitting one giant message into multiples. If `chars_per_string` > 4096:"
+" `chars_per_string` = 4096. Splits by '\\n', '. ' or ' ' in exactly this "
+"priority."
+msgstr ""
+
+#: of telebot.util.smart_split:6 telebot.util.split_string:4
+msgid "The text to split"
+msgstr ""
+
+#: of telebot.util.smart_split:9
+msgid "The number of maximum characters per part the text is split to."
+msgstr ""
+
+#: of telebot.util.smart_split:12 telebot.util.split_string:10
+msgid "The splitted text as a list of strings."
+msgstr ""
+
+#: of telebot.util.smart_split:13 telebot.util.split_string:11
+msgid ":obj:`list` of :obj:`str`"
+msgstr ""
+
+#: of telebot.util.split_string:1
+msgid ""
+"Splits one string into multiple strings, with a maximum amount of "
+"`chars_per_string` characters per string. This is very useful for "
+"splitting one giant message into multiples."
+msgstr ""
+
+#: of telebot.util.split_string:7
+msgid "The number of characters per line the text is split into."
+msgstr ""
+
+#: ../../docstring of telebot.util.update_types:1
+msgid "All update types, should be used for allowed_updates parameter in polling."
+msgstr ""
+
+#: of telebot.util.user_link:1
+msgid ""
+"Returns an HTML user link. This is useful for reports. Attention: Don't "
+"forget to set parse_mode to 'HTML'!"
+msgstr ""
+
+#: of telebot.util.user_link:11
+msgid ""
+"You can use formatting.* for all other formatting options(bold, italic, "
+"links, and etc.) This method is kept for backward compatibility, and it "
+"is recommended to use formatting.* for more options."
+msgstr ""
+
+#: of telebot.util.user_link:15
+msgid "the user (not the user_id)"
+msgstr ""
+
+#: of telebot.util.user_link:18
+msgid "include the user_id"
+msgstr ""
+
+#: of telebot.util.user_link:21
+msgid "HTML user link"
+msgstr ""
+
+#: of telebot.util.validate_web_app_data:1
+msgid "Validates web app data."
+msgstr ""
+
+#: of telebot.util.webhook_google_functions:1
+msgid "A webhook endpoint for Google Cloud Functions FaaS."
+msgstr ""
+
+#: of telebot.util.webhook_google_functions:3
+msgid "The bot instance"
+msgstr ""
+
+#: of telebot.util.webhook_google_functions:6
+msgid "The request object"
+msgstr ""
+
+#: of telebot.util.webhook_google_functions:9
+msgid "The response object"
+msgstr ""
+

@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022, coder2020official
+# This file is distributed under the same license as the pyTelegramBotAPI
+# Documentation package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pyTelegramBotAPI Documentation \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: ../../calldata.rst:4
+msgid "Callback data factory"
+msgstr ""
+
+#: ../../calldata.rst:6
+msgid "Callback data factory in pyTelegramBotAPI"
+msgstr ""
+
+#: ../../calldata.rst:6
+msgid ""
+"ptba, pytba, pyTelegramBotAPI, callbackdatafactory, guide, callbackdata, "
+"factory"
+msgstr ""
+
+#: ../../calldata.rst:12
+msgid "callback\\_data file"
+msgstr ""
+
+#: of telebot.callback_data:1
+msgid "Callback data factory's file."
+msgstr ""
+
+#: of telebot.callback_data.CallbackData:1
+#: telebot.callback_data.CallbackDataFilter:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData:1
+msgid "Callback data factory This class will help you to work with CallbackQuery"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.filter:1
+msgid "Generate filter"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.filter
+#: telebot.callback_data.CallbackData.new
+#: telebot.callback_data.CallbackData.parse
+#: telebot.callback_data.CallbackDataFilter.check
+msgid "Parameters"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.filter:3
+msgid "specified named parameters will be checked with CallbackQuery.data"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.filter
+#: telebot.callback_data.CallbackData.new
+#: telebot.callback_data.CallbackData.parse
+#: telebot.callback_data.CallbackDataFilter.check
+msgid "Returns"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.filter:4
+msgid "CallbackDataFilter class"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.new:1
+msgid "Generate callback data"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.new:3
+msgid "positional parameters of CallbackData instance parts"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.new:4
+msgid "named parameters"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.new:5
+msgid "str"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.parse:1
+msgid "Parse data from the callback data"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.parse:3
+msgid ""
+"string, use to telebot.types.CallbackQuery to parse it from string to a "
+"dict"
+msgstr ""
+
+#: of telebot.callback_data.CallbackData.parse:4
+msgid "dict parsed from callback data"
+msgstr ""
+
+#: of telebot.callback_data.CallbackDataFilter:1
+msgid "Filter for CallbackData."
+msgstr ""
+
+#: of telebot.callback_data.CallbackDataFilter.check:1
+msgid "Checks if query.data appropriates to specified config"
+msgstr ""
+
+#: of telebot.callback_data.CallbackDataFilter.check:3
+msgid "telebot.types.CallbackQuery"
+msgstr ""
+
+#: of telebot.callback_data.CallbackDataFilter.check:6
+msgid "True if query.data appropriates to specified config"
+msgstr ""
+
+#: of telebot.callback_data.CallbackDataFilter.check
+msgid "Return type"
+msgstr ""
+
