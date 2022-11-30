@@ -55,7 +55,7 @@ msgstr "Вызываемая функция"
 
 #: of telebot.util.antiflood:13
 msgid "The arguments to pass to the function"
-msgstr "Аргументы, для передачи в function"
+msgstr "Аргументы, для передачи в функцию"
 
 #: of telebot.util.antiflood:16
 msgid "The keyword arguments to pass to the function"
