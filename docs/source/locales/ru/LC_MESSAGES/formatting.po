@@ -28,7 +28,7 @@ msgstr "Параметры форматирования в pyTelegramBotAPI"
 
 #: ../../formatting.rst:5
 msgid "html, markdown, parse_mode, formatting, ptba, pytba, pyTelegramBotAPI"
-msgstr "html, markdown, parse_mode, форматирование, ptba, pytba, pyTelergamBotAPI"
+msgstr "html, markdown, parse_mode, форматирование, ptba, pytba, pyTelegramBotAPI"
 
 #: of telebot.formatting:1
 msgid "Markdown & HTML formatting functions."
