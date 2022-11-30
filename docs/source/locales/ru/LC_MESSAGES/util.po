@@ -59,7 +59,7 @@ msgstr "Аргументы, для передачи в функцию"
 
 #: of telebot.util.antiflood:16
 msgid "The keyword arguments to pass to the function"
-msgstr "Именованные аргументы для передачи в function"
+msgstr "Именованные аргументы для передачи в функцию"
 
 #: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
 #: telebot.util.extract_command telebot.util.generate_random_token
