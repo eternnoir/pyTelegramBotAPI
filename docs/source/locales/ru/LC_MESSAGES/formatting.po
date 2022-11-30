@@ -28,7 +28,7 @@ msgstr "Параметры форматирования в pyTelegramBotAPI"
 
 #: ../../formatting.rst:5
 msgid "html, markdown, parse_mode, formatting, ptba, pytba, pyTelegramBotAPI"
-msgstr "html, markdown, parse_mode, форматирование, ptba, pytba, pyTelergamBotAPI"
+msgstr "html, markdown, parse_mode, форматирование, ptba, pytba, pyTelegramBotAPI"
 
 #: of telebot.formatting:1
 msgid "Markdown & HTML formatting functions."
@@ -36,7 +36,7 @@ msgstr "Функции форматирования Markdown & HTML."
 
 #: of telebot.formatting.escape_html:1
 msgid "Escapes HTML characters in a string of HTML."
-msgstr "Экранирует HTML символы в HTML строке."
+msgstr "Пропускает HTML символы в HTML строке."
 
 #: of telebot.formatting.escape_html telebot.formatting.escape_markdown
 #: telebot.formatting.format_text telebot.formatting.hbold
@@ -52,7 +52,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_html:3
 msgid "The string of HTML to escape."
-msgstr "HTML строка для экранирования."
+msgstr "HTML строка, которую нужно пропустить."
 
 #: of telebot.formatting.escape_html telebot.formatting.escape_markdown
 #: telebot.formatting.format_text telebot.formatting.hbold
@@ -68,7 +68,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_html:6 telebot.formatting.escape_markdown:8
 msgid "The escaped string."
-msgstr "Экранированная строка."
+msgstr "Пропускаемая строка."
 
 #: of telebot.formatting.escape_html telebot.formatting.escape_markdown
 #: telebot.formatting.format_text telebot.formatting.hbold
@@ -97,7 +97,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_markdown:1
 msgid "Escapes Markdown characters in a string of Markdown."
-msgstr "Экранирует Markdown символы в Markdown строке."
+msgstr "Пропускает Markdown символы в Markdown строке."
 
 #: of telebot.formatting.escape_markdown:3
 msgid "Credits to: simonsmh"
@@ -105,7 +105,7 @@ msgstr ""
 
 #: of telebot.formatting.escape_markdown:5
 msgid "The string of Markdown to escape."
-msgstr "Markdown строка для экранирования."
+msgstr "Markdown строка, которую нужно пропустить."
 
 #: of telebot.formatting.format_text:1
 msgid "Formats a list of strings into a single string."
@@ -147,7 +147,7 @@ msgstr "Строка для выделения жирным шрифтом."
 #: telebot.formatting.mspoiler:6 telebot.formatting.mstrikethrough:6
 #: telebot.formatting.munderline:6
 msgid "True if you need to escape special characters. Defaults to True."
-msgstr "True если вам нужно экранировать спец. символы. По умолчанию True."
+msgstr "True если вам нужно пропустить спец. символы. По умолчанию True."
 
 #: of telebot.formatting.hcode:1
 msgid "Returns an HTML-formatted code string."
