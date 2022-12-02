@@ -4981,14 +4981,14 @@ class TeleBot:
             self.current_states.set_data(chat_id, user_id, key, value)
 
     def register_next_step_handler_by_chat_id(
-            self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:
+            self, chat_id: int, callback: Callable, *args, **kwargs) -> None:
         """
-        Registers a callback function to be notified when new message arrives after `message`.
+        Registers a callback function to be notified when new message arrives in the given chat.
 
         Warning: In case `callback` as lambda function, saving next step handlers will not work.
 
-        :param chat_id: The chat for which we want to handle new message.
-        :type chat_id: :obj:`int` or :obj:`str`
+        :param chat_id: The chat (chat ID) for which we want to handle new message.
+        :type chat_id: :obj:`int`
 
         :param callback: The callback function which next new message arrives.
         :type callback: :obj:`Callable[[telebot.types.Message], None]`
