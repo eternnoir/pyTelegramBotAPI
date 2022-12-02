@@ -5765,9 +5765,6 @@ class InputMediaPhoto(InputMedia):
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediaphoto
 
-    :param type: Type of the result, must be photo
-    :type type: :obj:`str`
-
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
@@ -5787,11 +5784,12 @@ class InputMediaPhoto(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaPhoto`
     """
-    def __init__(self, media, caption=None, parse_mode=None):
+    def __init__(self, media, caption=None, parse_mode=None, caption_entities=None):
         if util.is_pil_image(media):
             media = util.pil_image_to_file(media)
     
-        super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaPhoto, self).__init__(
+            type="photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
 
     def to_dict(self):
         return super(InputMediaPhoto, self).to_dict()
@@ -5802,9 +5800,6 @@ class InputMediaVideo(InputMedia):
     Represents a video to be sent.
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediavideo
-
-    :param type: Type of the result, must be video
-    :type type: :obj:`str`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
@@ -5844,9 +5839,10 @@ class InputMediaVideo(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaVideo`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None,
-                 supports_streaming=None):
-        super(InputMediaVideo, self).__init__(type="video", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 width=None, height=None, duration=None, supports_streaming=None):
+        super(InputMediaVideo, self).__init__(
+            type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.width = width
         self.height = height
@@ -5873,9 +5869,6 @@ class InputMediaAnimation(InputMedia):
     Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediaanimation
-
-    :param type: Type of the result, must be animation
-    :type type: :obj:`str`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
@@ -5912,8 +5905,10 @@ class InputMediaAnimation(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAnimation`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None):
-        super(InputMediaAnimation, self).__init__(type="animation", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 width=None, height=None, duration=None):
+        super(InputMediaAnimation, self).__init__(
+            type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.width = width
         self.height = height
@@ -5937,9 +5932,6 @@ class InputMediaAudio(InputMedia):
     Represents an audio file to be treated as music to be sent.
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediaaudio
-
-    :param type: Type of the result, must be audio
-    :type type: :obj:`str`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
@@ -5976,8 +5968,10 @@ class InputMediaAudio(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAudio`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, duration=None, performer=None, title=None):
-        super(InputMediaAudio, self).__init__(type="audio", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 duration=None, performer=None, title=None):
+        super(InputMediaAudio, self).__init__(
+            type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.duration = duration
         self.performer = performer
@@ -6002,10 +5996,7 @@ class InputMediaDocument(InputMedia):
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediadocument
 
-    :param type: Type of the result, must be document
-    :type type: :obj:`str`
-
-    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type media: :obj:`str`
@@ -6035,8 +6026,10 @@ class InputMediaDocument(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaDocument`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, disable_content_type_detection=None):
-        super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 disable_content_type_detection=None):
+        super(InputMediaDocument, self).__init__(
+            type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.disable_content_type_detection = disable_content_type_detection
 
