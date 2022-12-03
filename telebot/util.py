@@ -399,8 +399,12 @@ def escape(text: str) -> str:
     :return: the escaped text
     """
     chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;"}
-    for old, new in chars.items(): text = text.replace(old, new)
-    return text
+    if text == None:
+        return None
+    else:
+        for old, new in chars.items(): 
+            text = text.replace(old, new)
+        return text
 
 
 def user_link(user: types.User, include_id: bool=False) -> str:
