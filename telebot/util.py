@@ -401,8 +401,7 @@ def escape(text: str) -> str:
     chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;"}
     if text is None:
         return None
-    else:
-        for old, new in chars.items(): text = text.replace(old, new)
+    for old, new in chars.items(): text = text.replace(old, new)
         return text
 
 
