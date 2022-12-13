@@ -18,8 +18,14 @@ def restart_file():
         p = psutil.Process(os.getpid())
         for handler in p.open_files() + p.connections():
             os.close(handler.fd)
+    except OSError:
+        pass
     except Exception as e:
         logger.error(e)
 
     python = sys.executable
-    os.execl(python, python, *sys.argv)
+    
+    if os.name == 'nt':
+        os.execv(sys.executable, ['python'] + sys.argv)
+    else:
+        os.execl(python, python, *sys.argv)
