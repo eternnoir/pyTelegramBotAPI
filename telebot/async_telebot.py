@@ -2116,7 +2116,7 @@ class AsyncTeleBot:
             from telebot.ext.aio import AsyncWebhookListener
         except (NameError, ImportError):
             raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
-        self.webhook_listener = AsyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path, debug)
+        self.webhook_listener = AsyncWebhookListener(bot=self, secret_token=secret_token, host=listen, port=port, ssl_context=ssl_context, url_path='/'+url_path)
         await self.webhook_listener.run_app()
 
 
