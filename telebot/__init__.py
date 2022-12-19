@@ -540,7 +540,7 @@ class TeleBot:
             from telebot.ext.sync import SyncWebhookListener
         except (NameError, ImportError):
             raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
-        self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path)
+        self.webhook_listener = SyncWebhookListener(bot=self, secret_token=secret_token, host=listen, port=port, ssl_context=ssl_context, url_path='/'+url_path)
         self.webhook_listener.run_app()
 
 
