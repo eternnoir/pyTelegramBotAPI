@@ -978,7 +978,7 @@ class AsyncTeleBot:
         """
         self.message_handlers.append(handler_dict)
 
-    def register_message_handler(self, callback: Awaitable, content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
+    def register_message_handler(self, callback: Callable[[Any], Awaitable], content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
             regexp: Optional[str]=None, func: Optional[Callable]=None, chat_types: Optional[List[str]]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers message handler.
@@ -1090,7 +1090,7 @@ class AsyncTeleBot:
         """
         self.edited_message_handlers.append(handler_dict)
 
-    def register_edited_message_handler(self, callback: Awaitable, content_types: Optional[List[str]]=None,
+    def register_edited_message_handler(self, callback: Callable[[Any], Awaitable], content_types: Optional[List[str]]=None,
         commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
         chat_types: Optional[List[str]]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
@@ -1195,7 +1195,7 @@ class AsyncTeleBot:
         """
         self.channel_post_handlers.append(handler_dict)
     
-    def register_channel_post_handler(self, callback: Awaitable, content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
+    def register_channel_post_handler(self, callback: Callable[[Any], Awaitable], content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
             regexp: Optional[str]=None, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers channel post message handler.
@@ -1295,7 +1295,7 @@ class AsyncTeleBot:
         """
         self.edited_channel_post_handlers.append(handler_dict)
 
-    def register_edited_channel_post_handler(self, callback: Awaitable, content_types: Optional[List[str]]=None,
+    def register_edited_channel_post_handler(self, callback: Callable[[Any], Awaitable], content_types: Optional[List[str]]=None,
             commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers edited channel post message handler.
@@ -1371,7 +1371,7 @@ class AsyncTeleBot:
         """
         self.inline_handlers.append(handler_dict)
 
-    def register_inline_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_inline_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers inline handler.
 
@@ -1424,7 +1424,7 @@ class AsyncTeleBot:
         """
         self.chosen_inline_handlers.append(handler_dict)
 
-    def register_chosen_inline_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_chosen_inline_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers chosen inline handler.
 
@@ -1476,7 +1476,7 @@ class AsyncTeleBot:
         """
         self.callback_query_handlers.append(handler_dict)
 
-    def register_callback_query_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_callback_query_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers callback query handler.
 
@@ -1528,7 +1528,7 @@ class AsyncTeleBot:
         """
         self.shipping_query_handlers.append(handler_dict)
 
-    def register_shipping_query_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_shipping_query_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers shipping query handler.
 
@@ -1580,7 +1580,7 @@ class AsyncTeleBot:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
     
-    def register_pre_checkout_query_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_pre_checkout_query_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers pre-checkout request handler.
 
@@ -1630,7 +1630,7 @@ class AsyncTeleBot:
         """
         self.poll_handlers.append(handler_dict)
 
-    def register_poll_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_poll_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers poll handler.
 
@@ -1683,7 +1683,7 @@ class AsyncTeleBot:
         """
         self.poll_answer_handlers.append(handler_dict)
 
-    def register_poll_answer_handler(self, callback: Awaitable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_poll_answer_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers poll answer handler.
 
@@ -1736,7 +1736,7 @@ class AsyncTeleBot:
         """
         self.my_chat_member_handlers.append(handler_dict)
 
-    def register_my_chat_member_handler(self, callback: Awaitable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+    def register_my_chat_member_handler(self, callback: Callable[[Any], Awaitable], func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers my chat member handler.
 
@@ -1790,7 +1790,7 @@ class AsyncTeleBot:
         """
         self.chat_member_handlers.append(handler_dict)
 
-    def register_chat_member_handler(self, callback: Awaitable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+    def register_chat_member_handler(self, callback: Callable[[Any], Awaitable], func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers chat member handler.
 
@@ -1843,7 +1843,7 @@ class AsyncTeleBot:
         """
         self.chat_join_request_handlers.append(handler_dict)
 
-    def register_chat_join_request_handler(self, callback: Awaitable, func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
+    def register_chat_join_request_handler(self, callback: Callable[[Any], Awaitable], func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
         """
         Registers chat join request handler.
 
