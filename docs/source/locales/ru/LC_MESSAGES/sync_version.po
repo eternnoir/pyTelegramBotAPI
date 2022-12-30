@@ -1209,10 +1209,14 @@ msgstr "Документация Telegram: https://core.telegram.org/bots/api#cl
 
 #: of telebot.TeleBot.close_forum_topic:1
 msgid ""
+"Use this method to close an open topic in a forum supergroup chat. The "
+"bot must be an administrator in the chat for this to work and must have "
+"the can_manage_topics administrator rights, unless it is the creator of "
+"the topic. Returns True on success."
+msgstr ""
 "Используйте этот метод, чтобы закрыть открытый топик в чате супергруппы. Бот должен "
 "быть администратором чата и иметь права администратора can_manage_topics, за исключением "
 "случаев, когда бот является создателем топика. Возвращает True в случае успеха."
-msgstr ""
 
 #: of telebot.TeleBot.close_forum_topic:5
 msgid "Telegram documentation: https://core.telegram.org/bots/api#closeforumtopic"
@@ -1383,7 +1387,7 @@ msgid ""
 "method revokeChatInviteLink. Returns the new invite link as "
 "ChatInviteLink object."
 msgstr ""
-"используйте этот метод, чтобы создать новую ссылку-приглашение в чат. Бот "
+"Используйте этот метод, чтобы создать новую ссылку-приглашение в чат. Бот "
 "должен быть администратором чата и иметь соответствующие права администратора. "
 "Ссылка может быть аннулирована методом revokeChatInviteLink. Возвращает новую "
 "ссылку-приглашение (ChatInviteLink)."
@@ -2064,10 +2068,13 @@ msgstr ""
 
 #: of telebot.TeleBot.edit_message_live_location:2
 msgid ""
+"disabled by a call to stopMessageLiveLocation. On success, if the edited "
+"message is not an inline message, the edited Message is returned, "
+"otherwise True is returned."
+msgstr ""
 "запрещено вызовом метода stopMessageLiveLocation. В случае успеха, если измененное "
 "сообщение не является inline сообщением, возвращается новый объект Message, "
 "иначе возвращается True."
-msgstr ""
 
 #: of telebot.TeleBot.edit_message_live_location:5
 msgid ""
@@ -2076,7 +2083,6 @@ msgid ""
 msgstr ""
 "Документация Telegram: "
 "https://core.telegram.org/bots/api#editmessagelivelocation"
-
 
 #: of telebot.TeleBot.edit_message_live_location:7
 msgid "Latitude of new location"
