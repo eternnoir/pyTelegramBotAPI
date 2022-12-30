@@ -5792,18 +5792,26 @@ class InputMediaPhoto(InputMedia):
         instead of parse_mode
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param has_spoiler: Optional. True, if the uploaded photo is a spoiler
+    :type has_spoiler: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaPhoto`
     """
-    def __init__(self, media, caption=None, parse_mode=None, caption_entities=None):
+    def __init__(self, media, caption=None, parse_mode=None, caption_entities=None, has_spoiler=None):
         if util.is_pil_image(media):
             media = util.pil_image_to_file(media)
     
         super(InputMediaPhoto, self).__init__(
             type="photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
 
+        self.has_spoiler: Optional[bool] = has_spoiler
+
     def to_dict(self):
-        return super(InputMediaPhoto, self).to_dict()
+        ret = super(InputMediaPhoto, self).to_dict()
+        if self.has_spoiler:
+            ret['has_spoiler'] = self.has_spoiler
+        return ret
 
 
 class InputMediaVideo(InputMedia):
@@ -5847,11 +5855,14 @@ class InputMediaVideo(InputMedia):
     :param supports_streaming: Optional. Pass True, if the uploaded video is suitable for streaming
     :type supports_streaming: :obj:`bool`
 
+    :param has_spoiler: Optional. True, if the uploaded video is a spoiler
+    :type has_spoiler: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaVideo`
     """
     def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
-                 width=None, height=None, duration=None, supports_streaming=None):
+                 width=None, height=None, duration=None, supports_streaming=None, has_spoiler=None):
         super(InputMediaVideo, self).__init__(
             type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
@@ -5859,6 +5870,7 @@ class InputMediaVideo(InputMedia):
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
         ret = super(InputMediaVideo, self).to_dict()
@@ -5872,6 +5884,8 @@ class InputMediaVideo(InputMedia):
             ret['duration'] = self.duration
         if self.supports_streaming:
             ret['supports_streaming'] = self.supports_streaming
+        if self.has_spoiler:
+            ret['has_spoiler'] = self.has_spoiler
         return ret
 
 
@@ -5913,17 +5927,21 @@ class InputMediaAnimation(InputMedia):
     :param duration: Optional. Animation duration in seconds
     :type duration: :obj:`int`
 
+    :param has_spoiler: Optional. True, if the uploaded animation is a spoiler
+    :type has_spoiler: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAnimation`
     """
     def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
-                 width=None, height=None, duration=None):
+                 width=None, height=None, duration=None, has_spoiler=None):
         super(InputMediaAnimation, self).__init__(
             type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
         ret = super(InputMediaAnimation, self).to_dict()
@@ -5935,6 +5953,8 @@ class InputMediaAnimation(InputMedia):
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
+        if self.has_spoiler:
+            ret['has_spoiler'] = self.has_spoiler
         return ret
 
 
