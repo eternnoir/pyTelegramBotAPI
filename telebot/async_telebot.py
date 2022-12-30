@@ -3409,7 +3409,7 @@ class AsyncTeleBot:
             chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None,
             horizontal_accuracy: Optional[float]=None, 
             heading: Optional[int]=None, 
@@ -3465,7 +3465,7 @@ class AsyncTeleBot:
             self, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None) -> types.Message:
         """
         Use this method to stop updating a live location message before live_period expires.
@@ -4458,7 +4458,7 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -4504,7 +4504,7 @@ class AsyncTeleBot:
             self, media: Any, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit animation, audio, document, photo, or video messages.
         If a message is a part of a message album, then it can be edited only to a photo or a video.
@@ -4539,7 +4539,7 @@ class AsyncTeleBot:
             self, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
 
@@ -5128,7 +5128,7 @@ class AsyncTeleBot:
             inline_message_id: Optional[str]=None,
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
 
