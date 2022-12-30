@@ -1266,7 +1266,8 @@ msgstr ""
 "Список отформатированных частей новой подписи в формате JSON, "
 "можно использовать вместо parse_mode"
 
-#: of telebot.TeleBot.copy_message:22 telebot.TeleBot.send_animation:45
+#: of telebot.TeleBot.forward_message:5
+#: telebot.TeleBot.copy_message:22 telebot.TeleBot.send_animation:45
 #: telebot.TeleBot.send_audio:39 telebot.TeleBot.send_contact:20
 #: telebot.TeleBot.send_dice:12 telebot.TeleBot.send_document:26
 #: telebot.TeleBot.send_game:11 telebot.TeleBot.send_invoice:67
@@ -1387,7 +1388,7 @@ msgid ""
 "method revokeChatInviteLink. Returns the new invite link as "
 "ChatInviteLink object."
 msgstr ""
-"Используйте этот метод, чтобы создать новую ссылку-приглашение в чат. Бот "
+"Используйте этот метод, чтобы создать дополнительную ссылку-приглашение в чат. Бот "
 "должен быть администратором чата и иметь соответствующие права администратора. "
 "Ссылка может быть аннулирована методом revokeChatInviteLink. Возвращает новую "
 "ссылку-приглашение (ChatInviteLink)."
@@ -2072,7 +2073,7 @@ msgid ""
 "message is not an inline message, the edited Message is returned, "
 "otherwise True is returned."
 msgstr ""
-"запрещено вызовом метода stopMessageLiveLocation. В случае успеха, если измененное "
+"отключено вызовом метода stopMessageLiveLocation. В случае успеха, если измененное "
 "сообщение не является inline сообщением, возвращается новый объект Message, "
 "иначе возвращается True."
 
@@ -2186,6 +2187,8 @@ msgid ""
 " target chat or username of the target channel (in the format "
 "@channelusername)"
 msgstr ""
+"Обязательный, если не указан inline_message_id. Уникальный id чата "
+"или username канала (в формате @channelusername)"
 
 #: of telebot.TeleBot.edit_message_media:13
 #: telebot.TeleBot.edit_message_reply_markup:8
@@ -2195,6 +2198,7 @@ msgid ""
 "Required if inline_message_id is not specified. Identifier of the sent "
 "message"
 msgstr ""
+"Обязательный, если не указан inline_message_id. id отправленного сообщения"
 
 #: of telebot.TeleBot.edit_message_media:23
 #: telebot.TeleBot.edit_message_reply_markup:18
@@ -2204,39 +2208,43 @@ msgstr ""
 
 #: of telebot.TeleBot.edit_message_reply_markup:1
 msgid "Use this method to edit only the reply markup of messages."
-msgstr ""
+msgstr "Используйте этот метод, чтобы изменить только reply markup сообщения."
 
 #: of telebot.TeleBot.edit_message_reply_markup:3
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#editmessagereplymarkup"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#editmessagereplymarkup"
 
 #: of telebot.TeleBot.edit_message_text:1
 msgid "Use this method to edit text and game messages."
-msgstr ""
+msgstr "Используйте этот метод, чтобы изменить текстовые и игровые сообщения."
 
 #: of telebot.TeleBot.edit_message_text:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#editmessagetext"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#editmessagetext"
 
 #: of telebot.TeleBot.edit_message_text:5
 msgid "New text of the message, 1-4096 characters after entities parsing"
-msgstr ""
+msgstr "Новый текст сообщения, 1-4096 символов после форматирования"
 
 #: of telebot.TeleBot.edit_message_text:17 telebot.TeleBot.send_message:15
 msgid "Mode for parsing entities in the message text."
-msgstr ""
+msgstr "Режим форматирования в тексте сообщения."
 
 #: of telebot.TeleBot.edit_message_text:20
 msgid ""
 "List of special entities that appear in the message text, which can be "
 "specified instead of parse_mode"
 msgstr ""
+"Список отформатированных частей в тексте сообщения, "
+"можно использовать вместо parse_mode"
 
 #: of telebot.TeleBot.edit_message_text:23 telebot.TeleBot.send_message:21
 msgid "Disables link previews for links in this message"
-msgstr ""
+msgstr "Отключает превью ссылок в сообщении"
 
 #: of telebot.TeleBot.edited_channel_post_handler:1
 msgid ""
@@ -2244,6 +2252,9 @@ msgid ""
 "edited. As a parameter to the decorator function, it passes "
 ":class:`telebot.types.Message` object."
 msgstr ""
+"Обрабатывает новую версию поста в канале, который доступен боту и был изменён. "
+"В качестве параметра, передаёт в декорируемую функцию объект "
+":class:`telebot.types.Message`."
 
 #: of telebot.TeleBot.edited_message_handler:1
 msgid ""
@@ -2251,15 +2262,18 @@ msgid ""
 " As a parameter to the decorator function, it passes "
 ":class:`telebot.types.Message` object."
 msgstr ""
+"Обрабатывает новую версию сообщения, которое доступно боту и было изменено. "
+"В качестве параметра, передаёт в декорируемую функцию объект "
+":class:`telebot.types.Message`."
 
 #: of telebot.TeleBot.edited_message_handler:16
 #: telebot.TeleBot.message_handler:47
 msgid "list of chat types"
-msgstr ""
+msgstr "список видов чатов"
 
 #: of telebot.TeleBot.enable_save_next_step_handlers:1
 msgid "Enable saving next step handlers (by default saving disabled)"
-msgstr ""
+msgstr "Разрешить сохранение next step хендлеров (по умолчанию сохранение отключено)"
 
 #: of telebot.TeleBot.enable_save_next_step_handlers:3
 #: telebot.TeleBot.enable_save_reply_handlers:3
@@ -2269,37 +2283,42 @@ msgid ""
 "saving capability for handlers. And the same implementation is now "
 "available with FileHandlerBackend"
 msgstr ""
+"Эта функция, целью которой было включить возможность сохранения файлов для обработчиков, "
+"явно назначает FileHandlerBackend (вместо Saver) просто для сохранения обратной совместимости. "
+"Та же реализация теперь доступна с FileHandlerBackend."
 
 #: of telebot.TeleBot.enable_save_next_step_handlers:7
 #: telebot.TeleBot.enable_save_reply_handlers:7
 msgid "Delay between changes in handlers and saving, defaults to 120"
-msgstr ""
+msgstr "Задержка между изменениями в хендлерах и сохранении, по умолчанию 120"
 
 #: of telebot.TeleBot.enable_save_next_step_handlers:10
 msgid "Filename of save file, defaults to \"./.handler-saves/step.save\""
-msgstr ""
+msgstr "Имя файла для сохранения, по умолчанию \"./.handler-saves/step.save\""
 
 #: of telebot.TeleBot.enable_save_reply_handlers:1
 msgid "Enable saving reply handlers (by default saving disable)"
-msgstr ""
+msgstr "Разрешить сохранение reply хендлеров (по умолчанию сохранение отключено)"
 
 #: of telebot.TeleBot.enable_save_reply_handlers:10
 msgid "Filename of save file, defaults to \"./.handler-saves/reply.save\""
-msgstr ""
+msgstr "Имя файла для сохранения, по умолчанию \"./.handler-saves/reply.save\""
 
 #: of telebot.TeleBot.enable_saving_states:1
 msgid "Enable saving states (by default saving disabled)"
-msgstr ""
+msgstr "Разрешить сохранение стейтов (по умолчанию сохранение отключено)"
 
 #: of telebot.TeleBot.enable_saving_states:4
 msgid ""
 "It is recommended to pass a :class:`~telebot.storage.StatePickleStorage` "
 "instance as state_storage to TeleBot class."
 msgstr ""
+"Рекомендуется передавать экземпляр класса :class:`~telebot.storage.StatePickleStorage` "
+"в качестве state_storage при инициализации класса TeleBot вместо использования этой функции."
 
 #: of telebot.TeleBot.enable_saving_states:7
 msgid "Filename of saving file, defaults to \"./.state-save/states.pkl\""
-msgstr ""
+msgstr "Имя файла для сохранения, по умолчанию \"./.state-save/states.pkl\""
 
 #: of telebot.TeleBot.export_chat_invite_link:1
 msgid ""
@@ -2307,34 +2326,33 @@ msgid ""
 "The bot must be an administrator in the chat for this to work and must "
 "have the appropriate admin rights."
 msgstr ""
+"Используйте этот метод, чтобы создать или заменить главную ссылку-приглашение "
+"в супер-группу или канал, созданную ботом. Бот должен быть администратором чата "
+"и иметь соответствующие права администратора."
 
 #: of telebot.TeleBot.export_chat_invite_link:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#exportchatinvitelink"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#exportchatinvitelink"
 
 #: of telebot.TeleBot.export_chat_invite_link:10
 msgid "exported invite link as String on success."
-msgstr ""
+msgstr "новая ссылка-приглашение (String) в случае успеха."
 
 #: of telebot.TeleBot.forward_message:1
 msgid "Use this method to forward messages of any kind."
-msgstr ""
+msgstr "Используйте этот метод, чтобы переслать любое сообщение."
 
 #: of telebot.TeleBot.forward_message:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#forwardmessage"
-msgstr ""
-
-#: of telebot.TeleBot.forward_message:5
-msgid ""
-"Sends the message silently. Users will receive a notification with no "
-"sound"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#forwardmessage"
 
 #: of telebot.TeleBot.forward_message:17
 msgid "Protects the contents of the forwarded message from forwarding and saving"
-msgstr ""
+msgstr "Запретить пересылку и сохранение содержимого пересланного сообщения"
 
 #: of telebot.TeleBot.get_chat:1
 msgid ""
@@ -2342,10 +2360,13 @@ msgid ""
 "name of the user for one-on-one conversations, current username of a "
 "user, group or channel, etc.). Returns a Chat object on success."
 msgstr ""
+"Используйте этот метод, чтобы получить актуальную информацию о чате (текущее "
+"имя пользователя для персональных диалогов, текущий username пользователя, "
+"группы или канала и т.д.). В случае успеха возвращает объект Chat."
 
 #: of telebot.TeleBot.get_chat:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getchat"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getchat"
 
 #: of telebot.TeleBot.get_chat:6 telebot.TeleBot.get_chat_administrators:7
 #: telebot.TeleBot.get_chat_member_count:5 telebot.TeleBot.leave_chat:5
@@ -2353,10 +2374,12 @@ msgid ""
 "Unique identifier for the target chat or username of the target "
 "supergroup or channel (in the format @channelusername)"
 msgstr ""
+"Уникальный id чата или username супер-группы или канала "
+"(в формате @channelusername)"
 
 #: of telebot.TeleBot.get_chat:9
 msgid "Chat information"
-msgstr ""
+msgstr "Информация о чате"
 
 #: of telebot.TeleBot.get_chat:10
 msgid ":class:`telebot.types.Chat`"
