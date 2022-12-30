@@ -570,6 +570,14 @@ class Chat(JsonDeserializable):
         automatically deleted; in seconds. Returned only in getChat.
     :type message_auto_delete_time: :obj:`int`
 
+    :param has_aggressive_anti_spam_enabled: Optional. :obj:`bool`, if the chat has enabled aggressive anti-spam
+        protection. Returned only in getChat.
+    :type has_aggressive_anti_spam_enabled: :obj:`bool`
+
+    :param has_hidden_members: Optional. :obj:`bool`, if the chat has enabled hidden members. Returned only in
+        getChat.
+    :type has_hidden_members: :obj:`bool`
+
     :param has_protected_content: Optional. :obj:`bool`, if messages from the chat can't be forwarded to other 
         chats. Returned only in getChat.
     :type has_protected_content: :obj:`bool`
@@ -615,7 +623,8 @@ class Chat(JsonDeserializable):
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
-                 is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None, **kwargs):
+                 is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
+                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -642,6 +651,8 @@ class Chat(JsonDeserializable):
         self.location: ChatLocation = location
         self.active_usernames: List[str] = active_usernames
         self.emoji_status_custom_emoji_id: str = emoji_status_custom_emoji_id
+        self.has_hidden_members: bool = has_hidden_members
+        self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
 
 
 class MessageID(JsonDeserializable):
