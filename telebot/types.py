@@ -812,6 +812,9 @@ class Message(JsonDeserializable):
         commands, etc. that appear in the caption
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
+    :type has_media_spoiler: :obj:`bool`
+
     :param contact: Optional. Message is a shared contact, information about the contact
     :type contact: :class:`telebot.types.Contact`
 
@@ -1110,6 +1113,8 @@ class Message(JsonDeserializable):
         if 'forum_topic_reopened' in obj:
             opts['forum_topic_reopened'] = ForumTopicReopened.de_json(obj['forum_topic_reopened'])
             content_type = 'forum_topic_reopened'
+        if 'has_media_spoiler' in obj:
+            opts['has_media_spoiler'] = obj['has_media_spoiler']
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1200,6 +1205,7 @@ class Message(JsonDeserializable):
         self.forum_topic_created: Optional[ForumTopicCreated] = None
         self.forum_topic_closed: Optional[ForumTopicClosed] = None
         self.forum_topic_reopened: Optional[ForumTopicReopened] = None
+        self.has_media_spoiler: Optional[bool] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
