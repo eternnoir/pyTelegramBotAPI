@@ -2806,7 +2806,7 @@ class TeleBot:
                 allow_sending_without_reply, protect_content, message_thread_id))
 
     def send_chat_action(
-            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None) -> bool:
+            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
@@ -2829,10 +2829,13 @@ class TeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
+        :param message_thread_id: The thread identifier of a message from which the reply will be sent(supergroups only)
+        :type message_thread_id: :obj:`int`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.send_chat_action(self.token, chat_id, action, timeout)
+        return apihelper.send_chat_action(self.token, chat_id, action, timeout, message_thread_id)
     
     @util.deprecated(deprecation_text="Use ban_chat_member instead")
     def kick_chat_member(

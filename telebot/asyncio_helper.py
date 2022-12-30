@@ -649,11 +649,13 @@ async def send_contact(
     return await _process_request(token, method_url, params=payload)
 
 
-async def send_chat_action(token, chat_id, action, timeout=None):
+async def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}
     if timeout:
         payload['timeout'] = timeout
+    if message_thread_id:
+        payload['message_thread_id'] = message_thread_id
     return await _process_request(token, method_url, params=payload)
 
 
