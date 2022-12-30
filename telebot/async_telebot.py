@@ -2627,7 +2627,8 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            has_spoiler: Optional[bool]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -2672,6 +2673,9 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
+
+        :param has_spoiler: Pass True, if the photo should be sent as a spoiler
+        :type has_spoiler: :obj:`bool`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -2685,7 +2689,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_photo(
                 self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                allow_sending_without_reply, protect_content, message_thread_id))
+                allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
 
     async def send_audio(
             self, chat_id: Union[int, str], audio: Union[Any, str], 
@@ -3031,7 +3035,8 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             data: Optional[Union[Any, str]]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            has_spoiler: Optional[bool]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -3093,6 +3098,9 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the video will be sent
         :type message_thread_id: :obj:`int`
 
+        :param has_spoiler: Pass True, if the video should be sent as a spoiler
+        :type has_spoiler: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3110,7 +3118,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_video(
                 self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
-                caption_entities, allow_sending_without_reply, protect_content, message_thread_id))
+                caption_entities, allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
 
     async def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
@@ -3127,7 +3135,8 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            has_spoiler: Optional[bool]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -3188,6 +3197,9 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the video will be sent
         :type message_thread_id: :obj:`int`
 
+        :param has_spoiler: Pass True, if the animation should be sent as a spoiler
+        :type has_spoiler: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3200,7 +3212,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_animation(
                 self.token, chat_id, animation, duration, caption, reply_to_message_id,
                 reply_markup, parse_mode, disable_notification, timeout, thumb,
-                caption_entities, allow_sending_without_reply, width, height, protect_content, message_thread_id))
+                caption_entities, allow_sending_without_reply, width, height, protect_content, message_thread_id, has_spoiler))
 
     async def send_video_note(
             self, chat_id: Union[int, str], data: Union[Any, str], 
