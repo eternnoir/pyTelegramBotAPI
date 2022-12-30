@@ -1813,6 +1813,31 @@ def stop_poll(token, chat_id, message_id, reply_markup=None):
         payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)
 
+def edit_general_forum_topic(token, chat_id, name):
+    method_url = r'editGeneralForumTopic'
+    payload = {'chat_id': chat_id, 'name': name}
+    return _make_request(token, method_url, params=payload)
+
+def close_general_forum_topic(token, chat_id):
+    method_url = r'closeGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+def reopen_general_forum_topic(token, chat_id):
+    method_url = r'reopenGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+def hide_general_forum_topic(token, chat_id):
+    method_url = r'hideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+def unhide_general_forum_topic(token, chat_id):
+    method_url = r'unhideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
 
 def _convert_list_json_serializable(results):
     ret = ''

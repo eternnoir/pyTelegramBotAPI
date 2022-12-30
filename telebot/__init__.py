@@ -4754,6 +4754,75 @@ class TeleBot:
         """
         return apihelper.unpin_all_forum_topic_messages(self.token, chat_id, message_thread_id)
 
+    def edit_general_forum_topic(self, chat_id: Union[int, str], name: str) -> bool:
+        """
+        Use this method to edit the name of the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#editgeneralforumtopic
+        
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param name: New topic name, 1-128 characters
+        :type name: :obj:`str`
+        """
+
+        return apihelper.edit_general_forum_topic(self.token, chat_id, name)
+
+    def close_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to close the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#closegeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.close_general_forum_topic(self.token, chat_id)
+
+    def reopen_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to reopen the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#reopengeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.reopen_general_forum_topic(self.token, chat_id)
+
+    def hide_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to hide the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#hidegeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.hide_general_forum_topic(self.token, chat_id)
+
+    def unhide_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to unhide the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unhidegeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.unhide_general_forum_topic(self.token, chat_id)
+
     def get_forum_topic_icon_stickers(self) -> List[types.Sticker]:
         """
         Use this method to get custom emoji stickers, which can be used as a forum topic icon by any user.

@@ -1797,6 +1797,31 @@ async def get_forum_topic_icon_stickers(token):
     method_url = r'getForumTopicIconStickers'
     return await _process_request(token, method_url)
 
+async def edit_general_forum_topic(token, chat_id, name):
+    method_url = r'editGeneralForumTopic'
+    payload = {'chat_id': chat_id, 'name': name}
+    return await _process_request(token, method_url, params=payload)
+
+async def close_general_forum_topic(token, chat_id):
+    method_url = r'closeGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def reopen_general_forum_topic(token, chat_id):
+    method_url = r'reopenGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def hide_general_forum_topic(token, chat_id):
+    method_url = r'hideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def unhide_general_forum_topic(token, chat_id):
+    method_url = r'unhideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
 async def _convert_list_json_serializable(results):
     ret = ''
     for r in results:
