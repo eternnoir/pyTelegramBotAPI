@@ -2055,13 +2055,21 @@ class ReplyKeyboardMarkup(JsonSerializable):
         replies to the request with a keyboard to select the new language. Other users in the group don't see the keyboard.
     :type selective: :obj:`bool`
 
+    :param is_persistent: Optional. Use this parameter if you want to show the keyboard to specific users only.
+        Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a
+        reply (has reply_to_message_id), sender of the original message.
+        
+        Example: A user requests to change the bot's language, bot replies to the request with a keyboard to
+        select the new language. Other users in the group don't see the keyboard.
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ReplyKeyboardMarkup`
     """
     max_row_keys = 12
 
     def __init__(self, resize_keyboard: Optional[bool]=None, one_time_keyboard: Optional[bool]=None, 
-            selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None):
+            selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None,
+            is_persistent: Optional[bool]=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             if not DISABLE_KEYLEN_ERROR:
@@ -2074,6 +2082,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.row_width: int = row_width
         self.input_field_placeholder: str = input_field_placeholder
         self.keyboard: List[List[KeyboardButton]] = []
+        self.is_persistent: bool = is_persistent
 
     def add(self, *args, row_width=None):
         """
@@ -2139,6 +2148,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
             json_dict['selective'] = self.selective
         if self.input_field_placeholder:
             json_dict['input_field_placeholder'] = self.input_field_placeholder
+        if self.is_persistent is not None:
+            json_dict['is_persistent'] = self.is_persistent
         return json.dumps(json_dict)
 
 
