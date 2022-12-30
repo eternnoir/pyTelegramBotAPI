@@ -1315,6 +1315,14 @@ msgstr "Документация Telegram: https://core.telegram.org/bots/api#cl
 msgid "Identifier of the topic to close"
 msgstr "id топика для закрытия"
 
+#: of telebot.async_telebot.AsyncTeleBot.close_session:1
+msgid ""
+"Closes existing session of aiohttp. Use this function if you stop "
+"polling/webhooks."
+msgstr ""
+"Закрывает текущую aiohttp сессию. Используйте эту функцию для завершения работы "
+"поллинга или вебхука."
+
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:1
 msgid "Use this method to copy messages of any kind."
 msgstr "Используйте этот метод для копирования любых сообщений."
@@ -2259,7 +2267,8 @@ msgstr "JSON-сериализованный объект новой inline кл�
 #: of telebot.async_telebot.AsyncTeleBot.edit_message_live_location:26
 #: telebot.async_telebot.AsyncTeleBot.edit_message_media:16
 #: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:11
-#: telebot.async_telebot.AsyncTeleBot.edit_message_text:14 telebot.async_telebot.AsyncTeleBot.get_game_high_scores:19
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:14
+#: telebot.async_telebot.AsyncTeleBot.get_game_high_scores:19
 #: telebot.async_telebot.AsyncTeleBot.set_game_score:20
 msgid ""
 "Required if chat_id and message_id are not specified. Identifier of the "
