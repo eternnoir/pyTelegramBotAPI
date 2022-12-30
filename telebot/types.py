@@ -895,6 +895,10 @@ class Message(JsonDeserializable):
         Telegram Login »
     :type connected_website: :obj:`str`
 
+    :param write_access_allowed: Optional. Service message: the user allowed the bot added to the attachment
+        menu to write messages
+    :type write_access_allowed: :class:`telebot.types.WriteAccessAllowed`
+
     :param passport_data: Optional. Telegram Passport data
     :type passport_data: :class:`telebot.types.PassportData`
 
@@ -905,11 +909,20 @@ class Message(JsonDeserializable):
     :param forum_topic_created: Optional. Service message: forum topic created
     :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
 
+    :param forum_topic_edited: Optional. Service message: forum topic edited
+    :type forum_topic_edited: :class:`telebot.types.ForumTopicEdited`
+
     :param forum_topic_closed: Optional. Service message: forum topic closed
     :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
 
     :param forum_topic_reopened: Optional. Service message: forum topic reopened
     :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
+
+    :param general_forum_topic_hidden: Optional. Service message: the 'General' forum topic hidden
+    :type general_forum_topic_hidden: :class:`telebot.types.GeneralForumTopicHidden`
+
+    :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
+    :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
 
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
@@ -1115,6 +1128,18 @@ class Message(JsonDeserializable):
             content_type = 'forum_topic_reopened'
         if 'has_media_spoiler' in obj:
             opts['has_media_spoiler'] = obj['has_media_spoiler']
+        if 'forum_topic_edited' in obj:
+            opts['forum_topic_edited'] = ForumTopicEdited.de_json(obj['forum_topic_edited'])
+            content_type = 'forum_topic_edited'
+        if 'general_forum_topic_hidden' in obj:
+            opts['general_forum_topic_hidden'] = GeneralForumTopicHidden.de_json(obj['general_forum_topic_hidden'])
+            content_type = 'general_forum_topic_hidden'
+        if 'general_forum_topic_unhidden' in obj:
+            opts['general_forum_topic_unhidden'] = GeneralForumTopicUnhidden.de_json(obj['general_forum_topic_unhidden'])
+            content_type = 'general_forum_topic_unhidden'
+        if 'write_access_allowed' in obj:
+            opts['write_access_allowed'] = WriteAccessAllowed.de_json(obj['write_access_allowed'])
+            content_type = 'write_access_allowed'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1206,6 +1231,10 @@ class Message(JsonDeserializable):
         self.forum_topic_closed: Optional[ForumTopicClosed] = None
         self.forum_topic_reopened: Optional[ForumTopicReopened] = None
         self.has_media_spoiler: Optional[bool] = None
+        self.forum_topic_edited: Optional[ForumTopicEdited] = None
+        self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
+        self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
+        self.write_access_allowed: Optional[WriteAccessAllowed] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -6866,6 +6895,61 @@ class ForumTopicReopened(JsonDeserializable):
     def __init__(self) -> None:
         pass
 
+class ForumTopicEdited(JsonDeserializable):
+    """
+    This object represents a service message about an edited forum topic.
+
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicedited
+
+    :param name: Optional, Name of the topic(if updated)
+    :type name: :obj:`str`
+
+    :param icon_custom_emoji_id: Optional. New identifier of the custom emoji shown as the topic icon, if it was edited;
+        an empty string if the icon was removed
+    :type icon_custom_emoji_id: :obj:`str`
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: Optional[str]=None, icon_custom_emoji_id: Optional[str]=None) -> None:
+        self.name: Optional[str] = name
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
+
+class GeneralForumTopicHidden(JsonDeserializable):
+    """
+    This object represents a service message about General forum topic hidden in the chat.
+    Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#generalforumtopichidden
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class GeneralForumTopicUnhidden(JsonDeserializable):
+    """
+    This object represents a service message about General forum topic unhidden in the chat.
+    Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#generalforumtopicunhidden
+    """
+    
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
 
 class ForumTopic(JsonDeserializable):
     """
@@ -6902,6 +6986,19 @@ class ForumTopic(JsonDeserializable):
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
 
 
+class WriteAccessAllowed(JsonDeserializable):
+    """
+    This object represents a service message about a user allowed to post messages in the chat.
+    Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#writeaccessallowed
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
 
 
 
