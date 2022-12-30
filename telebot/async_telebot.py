@@ -5514,8 +5514,8 @@ class AsyncTeleBot:
 
     async def edit_forum_topic(
             self, chat_id: Union[int, str],
-            message_thread_id: int, name: str,
-            icon_custom_emoji_id: str,
+            message_thread_id: int, name: Optional[str]=None,
+            icon_custom_emoji_id: Optional[str]=None
         ) -> bool:
         """
         Use this method to edit name and icon of a topic in a forum supergroup chat. The bot must be an
@@ -5530,10 +5530,13 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of the topic to edit
         :type message_thread_id: :obj:`int`
 
-        :param name: New name of the topic, 1-128 characters
+        :param name: Optional, New name of the topic, 1-128 characters. If not specififed or empty,
+            the current name of the topic will be kept
         :type name: :obj:`str`
 
-        :param icon_custom_emoji_id: New custom emoji for the topic icon. Must be an emoji of type “tgs” and must be exactly 1 character long
+        :param icon_custom_emoji_id: Optional, New unique identifier of the custom emoji shown as the topic icon.
+            Use getForumTopicIconStickers to get all allowed custom emoji identifiers. Pass an empty string to remove the
+            icon. If not specified, the current icon will be kept
         :type icon_custom_emoji_id: :obj:`str`
 
         :return: On success, True is returned.

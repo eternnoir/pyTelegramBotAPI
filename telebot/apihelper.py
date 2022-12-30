@@ -1773,9 +1773,13 @@ def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_
         payload['icon_custom_emoji_id'] = icon_custom_emoji_id
     return _make_request(token, method_url, params=payload)
 
-def edit_forum_topic(token, chat_id, message_thread_id, name, icon_custom_emoji_id):
+def edit_forum_topic(token, chat_id, message_thread_id, name=None, icon_custom_emoji_id=None):
     method_url = r'editForumTopic'
-    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id, 'name': name, 'icon_custom_emoji_id': icon_custom_emoji_id}
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    if name is not None:
+        payload['name'] = name
+    if icon_custom_emoji_id is not None:
+        payload['icon_custom_emoji_id'] = icon_custom_emoji_id
     return _make_request(token, method_url, params=payload)
 
 def close_forum_topic(token, chat_id, message_thread_id):
