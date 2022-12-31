@@ -2327,7 +2327,7 @@ msgid ""
 "have the appropriate admin rights."
 msgstr ""
 "Используйте этот метод, чтобы создать или заменить главную ссылку-приглашение "
-"в супер-группу или канал, созданную ботом. Бот должен быть администратором чата "
+"в супергруппу или канал, созданную ботом. Бот должен быть администратором чата "
 "и иметь соответствующие права администратора."
 
 #: of telebot.TeleBot.export_chat_invite_link:4
@@ -2374,7 +2374,7 @@ msgid ""
 "Unique identifier for the target chat or username of the target "
 "supergroup or channel (in the format @channelusername)"
 msgstr ""
-"Уникальный id чата или username супер-группы или канала "
+"Уникальный id чата или username супергруппы или канала "
 "(в формате @channelusername)"
 
 #: of telebot.TeleBot.get_chat:9
@@ -2391,16 +2391,21 @@ msgid ""
 "returns an Array of ChatMember objects that contains information about "
 "all chat administrators except other bots."
 msgstr ""
+"Используйте этот метод, чтобы получить список администраторов чата. "
+"В случае успеха, возвращает массив объектов ChatMember, содержащих информацию "
+"обо всех администраторах чата, кроме других ботов."
 
 #: of telebot.TeleBot.get_chat_administrators:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getchatadministrators"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getchatadministrators"
 
 #: of telebot.TeleBot.get_chat_administrators:9
 msgid "List made of ChatMember objects."
-msgstr ""
+msgstr "Список объектов ChatMember."
 
 #: of telebot.TeleBot.get_chat_administrators:10
 msgid ":obj:`list` of :class:`telebot.types.ChatMember`"
@@ -2411,14 +2416,16 @@ msgid ""
 "Use this method to get information about a member of a chat. Returns a "
 "ChatMember object on success."
 msgstr ""
+"Используйте этот метод, чтобы получить информацию об участнике чата. Возвращает "
+"объект ChatMember в случае успеха."
 
 #: of telebot.TeleBot.get_chat_member:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getchatmember"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getchatmember"
 
 #: of telebot.TeleBot.get_chat_member:11
 msgid "Returns ChatMember object on success."
-msgstr ""
+msgstr "Возвращает объект ChatMember в случае успеха."
 
 #: of telebot.TeleBot.get_chat_member:12
 msgid ":class:`telebot.types.ChatMember`"
@@ -2426,17 +2433,19 @@ msgstr ""
 
 #: of telebot.TeleBot.get_chat_member_count:1
 msgid "Use this method to get the number of members in a chat."
-msgstr ""
+msgstr "Используйте этот метод, чтобы получить количество участников чата."
 
 #: of telebot.TeleBot.get_chat_member_count:3
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getchatmembercount"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getchatmembercount"
 
 #: of telebot.TeleBot.get_chat_member_count:8
 msgid "Number of members in the chat."
-msgstr ""
+msgstr "Количество участников чата."
 
 #: of telebot.TeleBot.get_chat_member_count:9
 msgid ":obj:`int`"
@@ -2447,18 +2456,24 @@ msgid ""
 "Use this method to get the current value of the bot's menu button in a "
 "private chat, or the default menu button. Returns MenuButton on success."
 msgstr ""
+"Используйте этот метод, чтобы получить текущее значение кнопки menu в "
+"приватном чате, или кнопку menu по умолчанию. Возвращает MenuButton в случае успеха."
 
 #: of telebot.TeleBot.get_chat_menu_button:5
 msgid ""
 "Telegram Documentation: "
 "https://core.telegram.org/bots/api#getchatmenubutton"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getchatmenubutton"
 
 #: of telebot.TeleBot.get_chat_menu_button:7
 msgid ""
 "Unique identifier for the target private chat. If not specified, default "
 "bot's menu button will be returned."
 msgstr ""
+"Уникальный id приватного чата. Если не указан, будет возвращена "
+"кнопка menu по умолчанию."
 
 #: of telebot.TeleBot.get_chat_menu_button:11
 msgid "types.MenuButton"
@@ -2473,16 +2488,19 @@ msgid ""
 "Use this method to get information about custom emoji stickers by their "
 "identifiers. Returns an Array of Sticker objects."
 msgstr ""
+"Используйте этот метод, чтобы получить информацию о кастомных эмодзи по их "
+"id. Возвращает массив объектов Sticker."
 
 #: of telebot.TeleBot.get_custom_emoji_stickers:4
 msgid ""
 "List of custom emoji identifiers. At most 200 custom emoji identifiers "
 "can be specified."
 msgstr ""
+"Список id кастомных эмодзи. Можно указать не более 200 id."
 
 #: of telebot.TeleBot.get_custom_emoji_stickers:7
 msgid "Returns an Array of Sticker objects."
-msgstr ""
+msgstr "Возвращает массив объектов Sticker."
 
 #: of telebot.TeleBot.get_custom_emoji_stickers:8
 msgid ":obj:`list` of :class:`telebot.types.Sticker`"
@@ -2496,14 +2514,19 @@ msgid ""
 "link will be valid for at least 1 hour. When the link expires, a new one "
 "can be requested by calling get_file again."
 msgstr ""
+"Используйте этот метод, чтобы получить базовую информацию о файле и подготовить "
+"его к скачиванию. На текущий момент, боты могут скачивать файлы весом до 20MB. "
+"В случае успеха, возвращается объект File. Гарантируется, что ссылка на скачивание "
+"будет актуальна как минимум 1 час. Когда ссылка перестаёт быть актуальной, новая "
+"может быть снова запрошена с помощью get_file."
 
 #: of telebot.TeleBot.get_file:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getfile"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getfile"
 
 #: of telebot.TeleBot.get_file:9
 msgid "File identifier"
-msgstr ""
+msgstr "id файла"
 
 #: of telebot.TeleBot.get_file:12 telebot.TeleBot.upload_sticker_file:14
 msgid ":class:`telebot.types.File`"
@@ -2511,15 +2534,15 @@ msgstr ""
 
 #: of telebot.TeleBot.get_file_url:1
 msgid "Get a valid URL for downloading a file."
-msgstr ""
+msgstr "Получить актуальную ссылку для скачивания файла."
 
 #: of telebot.TeleBot.get_file_url:3
 msgid "File identifier to get download URL for."
-msgstr ""
+msgstr "id файла для получения ссылки на скачивание."
 
 #: of telebot.TeleBot.get_file_url:6
 msgid "URL for downloading the file."
-msgstr ""
+msgstr "Ссылка для скачивания файла."
 
 #: of telebot.TeleBot.get_forum_topic_icon_stickers:1
 msgid ""
@@ -2527,16 +2550,21 @@ msgid ""
 "forum topic icon by any user. Requires no parameters. Returns an Array of"
 " Sticker objects."
 msgstr ""
+"Используйте этот метод, чтобы получить кастомные эмодзи, которые могут быть "
+"использованы любыми пользователями в качестве иконок топиков. Не требует параметров. "
+"Возвращает массив объектов Sticker."
 
 #: of telebot.TeleBot.get_forum_topic_icon_stickers:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getforumtopiciconstickers"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getforumtopiciconstickers"
 
 #: of telebot.TeleBot.get_forum_topic_icon_stickers:6
 msgid "On success, a list of StickerSet objects is returned."
-msgstr ""
+msgstr "В случае успеха, возвращается список объектов StickerSet."
 
 #: of telebot.TeleBot.get_forum_topic_icon_stickers:7
 msgid "List[:class:`telebot.types.StickerSet`]"
@@ -2548,6 +2576,9 @@ msgid ""
 "of the specified user and several of their neighbors in a game. On "
 "success, returns an Array of GameHighScore objects."
 msgstr ""
+"Используйте этот метод, чтобы получить данные для таблицы рекордов. Вернёт "
+"очки указанного пользователя и несколько соседних результатов. В случае успеха, "
+"возвращает массив объектов GameHighScore."
 
 #: of telebot.TeleBot.get_game_high_scores:4
 msgid ""
@@ -2556,21 +2587,27 @@ msgid ""
 "users if the user and their neighbors are not among them. Please note "
 "that this behavior is subject to change."
 msgstr ""
+"На текущий момент этот метод вернёт очки указанного пользователя и по два соседних "
+"результата с каждой стороны. Также вернет результаты трёх лучших игроков, если "
+"результат пользователя и соседние не являются тремя лучшими. Пожалуйста учитывайте, "
+"что это поведение может быть изменено."
 
 #: of telebot.TeleBot.get_game_high_scores:8
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getgamehighscores"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getgamehighscores"
 
 #: of telebot.TeleBot.get_game_high_scores:10 telebot.TeleBot.retrieve_data:3
 #: telebot.TeleBot.set_game_score:5 telebot.TeleBot.set_sticker_set_thumb:9
 msgid "User identifier"
-msgstr ""
+msgstr "id пользователя"
 
 #: of telebot.TeleBot.get_game_high_scores:22
 msgid "On success, returns an Array of GameHighScore objects."
-msgstr ""
+msgstr "В случае успеха, возвращает массив объектов GameHighScore."
 
 #: of telebot.TeleBot.get_me:1
 msgid ""
@@ -2578,24 +2615,28 @@ msgid ""
 "parameters. Returns basic information about the bot in form of a User "
 "object."
 msgstr ""
+"Простой метод для тестирования токена бота. Не требует параметров. "
+"Возвращает базовую информацию о боте в виде объекта User."
 
 #: of telebot.TeleBot.get_me:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getme"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getme"
 
 #: of telebot.TeleBot.get_my_commands:1
 msgid ""
 "Use this method to get the current list of the bot's commands. Returns "
 "List of BotCommand on success."
 msgstr ""
+"Используйте этот метод, чтобы получить текущий список команд бота. Возвращает "
+"список объектов BotCommand в случае успеха."
 
 #: of telebot.TeleBot.get_my_commands:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getmycommands"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getmycommands"
 
 #: of telebot.TeleBot.get_my_commands:15
 msgid "List of BotCommand on success."
-msgstr ""
+msgstr "Список объектов BotCommand в случае успеха."
 
 #: of telebot.TeleBot.get_my_commands:16
 msgid ":obj:`list` of :class:`telebot.types.BotCommand`"
@@ -2606,12 +2647,16 @@ msgid ""
 "Use this method to get the current default administrator rights of the "
 "bot. Returns ChatAdministratorRights on success."
 msgstr ""
+"Используйте этот метод, чтобы получить текущие права администратора для бота по умолчанию. "
+"Возвращает объект ChatAdministratorRights в случае успеха."
 
 #: of telebot.TeleBot.get_my_default_administrator_rights:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getmydefaultadministratorrights"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getmydefaultadministratorrights"
 
 #: of telebot.TeleBot.get_my_default_administrator_rights:6
 msgid ""
@@ -2619,10 +2664,13 @@ msgid ""
 " Otherwise, the default administrator rights of the bot for groups and "
 "supergroups will be returned."
 msgstr ""
+"Передайте True, чтобы получить права администратора для бота по умолчанию в каналах. "
+"Иначе, будут возвращены права администратора для бота по умолчанию в группах и "
+"супергруппах."
 
 #: of telebot.TeleBot.get_my_default_administrator_rights:9
 msgid "Returns ChatAdministratorRights on success."
-msgstr ""
+msgstr "Возвращает объект ChatAdministratorRights в случае успеха."
 
 #: of telebot.TeleBot.get_my_default_administrator_rights:10
 msgid ":class:`telebot.types.ChatAdministratorRights`"
@@ -2633,10 +2681,12 @@ msgid ""
 "Gets current state of a user. Not recommended to use this method. But it "
 "is ok for debugging."
 msgstr ""
+"Получает текущее состояние (стейт) пользователя. Не рекомендуется "
+"использовать этот метод. Но это удобно для дебага."
 
 #: of telebot.TeleBot.get_state:10
 msgid "state of a user"
-msgstr ""
+msgstr "состояние (стейт) пользователя"
 
 #: of telebot.TeleBot.get_state:11
 msgid ":obj:`int` or :obj:`str` or :class:`telebot.types.State`"
@@ -2647,14 +2697,16 @@ msgid ""
 "Use this method to get a sticker set. On success, a StickerSet object is "
 "returned."
 msgstr ""
+"Используйте этот метод, чтобы получить стикерпак. В случае успеха, возвращается "
+"объект StickerSet."
 
 #: of telebot.TeleBot.get_sticker_set:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getstickerset"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getstickerset"
 
 #: of telebot.TeleBot.get_sticker_set:8
 msgid "On success, a StickerSet object is returned."
-msgstr ""
+msgstr "В случае успеха, возвращается объект StickerSet."
 
 #: of telebot.TeleBot.get_sticker_set:9 telebot.TeleBot.set_chat_sticker_set:14
 msgid ":class:`telebot.types.StickerSet`"
