@@ -5930,7 +5930,7 @@ class InputMediaVideo(InputMedia):
             ret['duration'] = self.duration
         if self.supports_streaming:
             ret['supports_streaming'] = self.supports_streaming
-        if self.has_spoiler:
+        if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
         return ret
 
