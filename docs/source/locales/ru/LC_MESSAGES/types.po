@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"POT-Creation-Date: 2023-01-02 19:24+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../types.rst:3
+#: ../../source/types.rst:3
 msgid "Types of API"
 msgstr ""
 
@@ -29,8 +29,10 @@ msgstr ""
 #: telebot.types.ChosenInlineResult:1 telebot.types.Contact:1
 #: telebot.types.Document:1 telebot.types.File:1 telebot.types.ForumTopic:1
 #: telebot.types.ForumTopicClosed:1 telebot.types.ForumTopicCreated:1
-#: telebot.types.ForumTopicReopened:1 telebot.types.Game:1
-#: telebot.types.GameHighScore:1 telebot.types.InlineQuery:1
+#: telebot.types.ForumTopicEdited:1 telebot.types.ForumTopicReopened:1
+#: telebot.types.Game:1 telebot.types.GameHighScore:1
+#: telebot.types.GeneralForumTopicHidden:1
+#: telebot.types.GeneralForumTopicUnhidden:1 telebot.types.InlineQuery:1
 #: telebot.types.Invoice:1 telebot.types.Message:1
 #: telebot.types.MessageAutoDeleteTimerChanged:1 telebot.types.MessageID:1
 #: telebot.types.OrderInfo:1 telebot.types.PhotoSize:1 telebot.types.Poll:1
@@ -43,6 +45,7 @@ msgstr ""
 #: telebot.types.VideoChatParticipantsInvited:1
 #: telebot.types.VideoChatScheduled:1 telebot.types.VideoChatStarted:1
 #: telebot.types.VideoNote:1 telebot.types.Voice:1 telebot.types.WebhookInfo:1
+#: telebot.types.WriteAccessAllowed:1
 msgid "Bases: :py:class:`telebot.types.JsonDeserializable`"
 msgstr ""
 
@@ -73,9 +76,10 @@ msgstr ""
 #: telebot.types.ChatPhoto telebot.types.ChosenInlineResult
 #: telebot.types.Contact telebot.types.Dice telebot.types.Document
 #: telebot.types.File telebot.types.ForceReply telebot.types.ForumTopic
-#: telebot.types.ForumTopicCreated telebot.types.Game
-#: telebot.types.GameHighScore telebot.types.InlineKeyboardButton
-#: telebot.types.InlineKeyboardMarkup telebot.types.InlineKeyboardMarkup.add
+#: telebot.types.ForumTopicCreated telebot.types.ForumTopicEdited
+#: telebot.types.Game telebot.types.GameHighScore
+#: telebot.types.InlineKeyboardButton telebot.types.InlineKeyboardMarkup
+#: telebot.types.InlineKeyboardMarkup.add
 #: telebot.types.InlineKeyboardMarkup.row telebot.types.InlineQuery
 #: telebot.types.InlineQueryResultArticle telebot.types.InlineQueryResultAudio
 #: telebot.types.InlineQueryResultCachedAudio
@@ -245,7 +249,7 @@ msgstr ""
 #: telebot.types.BotCommandScopeChatAdministrators:12
 #: telebot.types.BotCommandScopeChatMember:15
 #: telebot.types.BotCommandScopeDefault:8 telebot.types.CallbackQuery:30
-#: telebot.types.Chat:101 telebot.types.ChatAdministratorRights:46
+#: telebot.types.Chat:109 telebot.types.ChatAdministratorRights:46
 #: telebot.types.ChatInviteLink:34 telebot.types.ChatJoinRequest:20
 #: telebot.types.ChatLocation:11 telebot.types.ChatMemberAdministrator:59
 #: telebot.types.ChatMemberBanned:15 telebot.types.ChatMemberLeft:11
@@ -280,21 +284,21 @@ msgstr ""
 #: telebot.types.InputContactMessageContent:17
 #: telebot.types.InputInvoiceMessageContent:75
 #: telebot.types.InputLocationMessageContent:26
-#: telebot.types.InputMediaAnimation:40 telebot.types.InputMediaAudio:40
-#: telebot.types.InputMediaDocument:35 telebot.types.InputMediaPhoto:24
+#: telebot.types.InputMediaAnimation:40 telebot.types.InputMediaAudio:37
+#: telebot.types.InputMediaDocument:32 telebot.types.InputMediaPhoto:24
 #: telebot.types.InputMediaVideo:43 telebot.types.InputTextMessageContent:19
 #: telebot.types.InputVenueMessageContent:30 telebot.types.Invoice:22
 #: telebot.types.KeyboardButton:25 telebot.types.KeyboardButtonPollType:9
 #: telebot.types.LabeledPrice:13 telebot.types.Location:25
 #: telebot.types.LoginUrl:24 telebot.types.MaskPosition:20
 #: telebot.types.MenuButtonCommands:8 telebot.types.MenuButtonDefault:8
-#: telebot.types.MenuButtonWebApp:15 telebot.types.Message:230
+#: telebot.types.MenuButtonWebApp:15 telebot.types.Message:246
 #: telebot.types.MessageAutoDeleteTimerChanged:8 telebot.types.MessageEntity:32
 #: telebot.types.MessageID:8 telebot.types.OrderInfo:17
 #: telebot.types.PhotoSize:21 telebot.types.Poll:47 telebot.types.PollAnswer:15
 #: telebot.types.PollOption:11 telebot.types.PreCheckoutQuery:28
 #: telebot.types.ProximityAlertTriggered:14
-#: telebot.types.ReplyKeyboardMarkup:42 telebot.types.ReplyKeyboardRemove:18
+#: telebot.types.ReplyKeyboardMarkup:49 telebot.types.ReplyKeyboardRemove:18
 #: telebot.types.SentWebAppMessage:9 telebot.types.ShippingAddress:23
 #: telebot.types.ShippingOption:14 telebot.types.ShippingQuery:17
 #: telebot.types.Sticker:49 telebot.types.StickerSet:30
@@ -892,23 +896,35 @@ msgstr ""
 
 #: of telebot.types.Chat:80
 msgid ""
+"Optional. :obj:`bool`, if the chat has enabled aggressive anti-spam "
+"protection. Returned only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:84
+msgid ""
+"Optional. :obj:`bool`, if the chat has enabled hidden members. Returned "
+"only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:88
+msgid ""
 "Optional. :obj:`bool`, if messages from the chat can't be forwarded to "
 "other chats. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:84
+#: of telebot.types.Chat:92
 msgid ""
 "Optional. For supergroups, name of group sticker set. Returned only in "
 "getChat."
 msgstr ""
 
-#: of telebot.types.Chat:87
+#: of telebot.types.Chat:95
 msgid ""
 "Optional. :obj:`bool`, if the bot can change the group sticker set. "
 "Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:91
+#: of telebot.types.Chat:99
 msgid ""
 "Optional. Unique identifier for the linked chat, i.e. the discussion "
 "group identifier for a channel and vice versa; for supergroups and "
@@ -919,13 +935,13 @@ msgid ""
 "in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:97
+#: of telebot.types.Chat:105
 msgid ""
 "Optional. For supergroups, the location to which the supergroup is "
 "connected. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:102
+#: of telebot.types.Chat:110
 msgid ":class:`telebot.types.Chat`"
 msgstr ""
 
@@ -1750,6 +1766,26 @@ msgstr ""
 msgid ":class:`telebot.types.ForumTopicCreated`"
 msgstr ""
 
+#: of telebot.types.ForumTopicEdited:1
+msgid "This object represents a service message about an edited forum topic."
+msgstr ""
+
+#: of telebot.types.ForumTopicEdited:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#forumtopicedited"
+msgstr ""
+
+#: of telebot.types.ForumTopicEdited:5
+msgid "Optional, Name of the topic(if updated)"
+msgstr ""
+
+#: of telebot.types.ForumTopicEdited:8
+msgid ""
+"Optional. New identifier of the custom emoji shown as the topic icon, if "
+"it was edited; an empty string if the icon was removed"
+msgstr ""
+
 #: of telebot.types.ForumTopicReopened:1
 msgid ""
 "This object represents a service message about a forum topic reopened in "
@@ -1838,6 +1874,30 @@ msgstr ""
 
 #: of telebot.types.GameHighScore:15
 msgid ":class:`telebot.types.GameHighScore`"
+msgstr ""
+
+#: of telebot.types.GeneralForumTopicHidden:1
+msgid ""
+"This object represents a service message about General forum topic hidden"
+" in the chat. Currently holds no information."
+msgstr ""
+
+#: of telebot.types.GeneralForumTopicHidden:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#generalforumtopichidden"
+msgstr ""
+
+#: of telebot.types.GeneralForumTopicUnhidden:1
+msgid ""
+"This object represents a service message about General forum topic "
+"unhidden in the chat. Currently holds no information."
+msgstr ""
+
+#: of telebot.types.GeneralForumTopicUnhidden:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#generalforumtopicunhidden"
 msgstr ""
 
 #: of telebot.types.InlineKeyboardButton:1 telebot.types.InlineKeyboardMarkup:1
@@ -2163,7 +2223,7 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.InlineQueryResultAudio:5
-#: telebot.types.InlineQueryResultCachedAudio:5 telebot.types.InputMediaAudio:5
+#: telebot.types.InlineQueryResultCachedAudio:5
 msgid "Type of the result, must be audio"
 msgstr ""
 
@@ -2202,7 +2262,7 @@ msgstr ""
 
 #: of telebot.types.InlineQueryResultAudio:20
 #: telebot.types.InlineQueryResultCachedAudio:17
-#: telebot.types.InputMediaAudio:23
+#: telebot.types.InputMediaAudio:20
 msgid ""
 "Optional. Mode for parsing entities in the audio caption. See formatting "
 "options for more details."
@@ -2221,9 +2281,9 @@ msgstr ""
 #: telebot.types.InlineQueryResultMpeg4Gif:39
 #: telebot.types.InlineQueryResultPhoto:36
 #: telebot.types.InlineQueryResultVideo:30
-#: telebot.types.InlineQueryResultVoice:24 telebot.types.InputMediaAnimation:27
-#: telebot.types.InputMediaAudio:27 telebot.types.InputMediaDocument:27
-#: telebot.types.InputMediaPhoto:20 telebot.types.InputMediaVideo:27
+#: telebot.types.InlineQueryResultVoice:24 telebot.types.InputMediaAnimation:24
+#: telebot.types.InputMediaAudio:24 telebot.types.InputMediaDocument:24
+#: telebot.types.InputMediaPhoto:17 telebot.types.InputMediaVideo:24
 msgid ""
 "Optional. List of special entities that appear in the caption, which can "
 "be specified instead of parse_mode"
@@ -2396,7 +2456,7 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedDocument:5
-#: telebot.types.InlineQueryResultDocument:5 telebot.types.InputMediaDocument:5
+#: telebot.types.InlineQueryResultDocument:5
 msgid "Type of the result, must be document"
 msgstr ""
 
@@ -2413,7 +2473,7 @@ msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedDocument:20
 #: telebot.types.InlineQueryResultDocument:14
-#: telebot.types.InputMediaDocument:20
+#: telebot.types.InputMediaDocument:17
 msgid ""
 "Optional. Caption of the document to be sent, 0-1024 characters after "
 "entities parsing"
@@ -2421,7 +2481,7 @@ msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedDocument:23
 #: telebot.types.InlineQueryResultDocument:17
-#: telebot.types.InputMediaDocument:23
+#: telebot.types.InputMediaDocument:20
 msgid ""
 "Optional. Mode for parsing entities in the document caption. See "
 "formatting options for more details."
@@ -2548,7 +2608,7 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedPhoto:5
-#: telebot.types.InlineQueryResultPhoto:5 telebot.types.InputMediaPhoto:5
+#: telebot.types.InlineQueryResultPhoto:5
 msgid "Type of the result, must be photo"
 msgstr ""
 
@@ -2557,14 +2617,14 @@ msgid "A valid file identifier of the photo"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedPhoto:20
-#: telebot.types.InlineQueryResultPhoto:29 telebot.types.InputMediaPhoto:13
+#: telebot.types.InlineQueryResultPhoto:29 telebot.types.InputMediaPhoto:10
 msgid ""
 "Optional. Caption of the photo to be sent, 0-1024 characters after "
 "entities parsing"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedPhoto:23
-#: telebot.types.InlineQueryResultPhoto:32 telebot.types.InputMediaPhoto:16
+#: telebot.types.InlineQueryResultPhoto:32 telebot.types.InputMediaPhoto:13
 msgid ""
 "Optional. Mode for parsing entities in the photo caption. See formatting "
 "options for more details."
@@ -2624,7 +2684,7 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedVideo:5
-#: telebot.types.InlineQueryResultVideo:5 telebot.types.InputMediaVideo:5
+#: telebot.types.InlineQueryResultVideo:5
 msgid "Type of the result, must be video"
 msgstr ""
 
@@ -2633,14 +2693,14 @@ msgid "A valid file identifier for the video file"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedVideo:20
-#: telebot.types.InlineQueryResultVideo:23 telebot.types.InputMediaVideo:20
+#: telebot.types.InlineQueryResultVideo:23 telebot.types.InputMediaVideo:17
 msgid ""
 "Optional. Caption of the video to be sent, 0-1024 characters after "
 "entities parsing"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultCachedVideo:23
-#: telebot.types.InlineQueryResultVideo:26 telebot.types.InputMediaVideo:23
+#: telebot.types.InlineQueryResultVideo:26 telebot.types.InputMediaVideo:20
 msgid ""
 "Optional. Mode for parsing entities in the video caption. See formatting "
 "options for more details."
@@ -2916,17 +2976,17 @@ msgid "A valid URL for the MPEG4 file. File size must not exceed 1MB"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultMpeg4Gif:14
-#: telebot.types.InlineQueryResultVideo:34 telebot.types.InputMediaVideo:31
+#: telebot.types.InlineQueryResultVideo:34 telebot.types.InputMediaVideo:28
 msgid "Optional. Video width"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultMpeg4Gif:17
-#: telebot.types.InlineQueryResultVideo:37 telebot.types.InputMediaVideo:34
+#: telebot.types.InlineQueryResultVideo:37 telebot.types.InputMediaVideo:31
 msgid "Optional. Video height"
 msgstr ""
 
 #: of telebot.types.InlineQueryResultMpeg4Gif:20
-#: telebot.types.InlineQueryResultVideo:40 telebot.types.InputMediaVideo:37
+#: telebot.types.InlineQueryResultVideo:40 telebot.types.InputMediaVideo:34
 msgid "Optional. Video duration in seconds"
 msgstr ""
 
@@ -3357,13 +3417,9 @@ msgid ""
 "https://core.telegram.org/bots/api#inputmediaanimation"
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:5
-msgid "Type of the result, must be animation"
-msgstr ""
-
-#: of telebot.types.InputMediaAnimation:8 telebot.types.InputMediaAudio:8
-#: telebot.types.InputMediaDocument:8 telebot.types.InputMediaPhoto:8
-#: telebot.types.InputMediaVideo:8
+#: of telebot.types.InputMediaAnimation:5 telebot.types.InputMediaAudio:5
+#: telebot.types.InputMediaDocument:5 telebot.types.InputMediaPhoto:5
+#: telebot.types.InputMediaVideo:5
 msgid ""
 "File to send. Pass a file_id to send a file that exists on the Telegram "
 "servers (recommended), pass an HTTP URL for Telegram to get a file from "
@@ -3372,8 +3428,8 @@ msgid ""
 " on Sending Files »"
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:13 telebot.types.InputMediaAudio:13
-#: telebot.types.InputMediaDocument:13 telebot.types.InputMediaVideo:13
+#: of telebot.types.InputMediaAnimation:10 telebot.types.InputMediaAudio:10
+#: telebot.types.InputMediaDocument:10 telebot.types.InputMediaVideo:10
 msgid ""
 "Optional. Thumbnail of the file sent; can be ignored if thumbnail "
 "generation for the file is supported server-side. The thumbnail should be"
@@ -3385,28 +3441,32 @@ msgid ""
 "<file_attach_name>. More information on Sending Files »"
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:20
+#: of telebot.types.InputMediaAnimation:17
 msgid ""
 "Optional. Caption of the animation to be sent, 0-1024 characters after "
 "entities parsing"
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:23
+#: of telebot.types.InputMediaAnimation:20
 msgid ""
 "Optional. Mode for parsing entities in the animation caption. See "
 "formatting options for more details."
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:31
+#: of telebot.types.InputMediaAnimation:28
 msgid "Optional. Animation width"
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:34
+#: of telebot.types.InputMediaAnimation:31
 msgid "Optional. Animation height"
 msgstr ""
 
-#: of telebot.types.InputMediaAnimation:37
+#: of telebot.types.InputMediaAnimation:34
 msgid "Optional. Animation duration in seconds"
+msgstr ""
+
+#: of telebot.types.InputMediaAnimation:37
+msgid "Optional. True, if the uploaded animation is a spoiler"
 msgstr ""
 
 #: of telebot.types.InputMediaAnimation:41
@@ -3421,25 +3481,25 @@ msgstr ""
 msgid "Telegram Documentation: https://core.telegram.org/bots/api#inputmediaaudio"
 msgstr ""
 
-#: of telebot.types.InputMediaAudio:20
+#: of telebot.types.InputMediaAudio:17
 msgid ""
 "Optional. Caption of the audio to be sent, 0-1024 characters after "
 "entities parsing"
 msgstr ""
 
-#: of telebot.types.InputMediaAudio:31
+#: of telebot.types.InputMediaAudio:28
 msgid "Optional. Duration of the audio in seconds"
 msgstr ""
 
-#: of telebot.types.InputMediaAudio:34
+#: of telebot.types.InputMediaAudio:31
 msgid "Optional. Performer of the audio"
 msgstr ""
 
-#: of telebot.types.InputMediaAudio:37
+#: of telebot.types.InputMediaAudio:34
 msgid "Optional. Title of the audio"
 msgstr ""
 
-#: of telebot.types.InputMediaAudio:41
+#: of telebot.types.InputMediaAudio:38
 msgid ":class:`telebot.types.InputMediaAudio`"
 msgstr ""
 
@@ -3453,14 +3513,14 @@ msgid ""
 "https://core.telegram.org/bots/api#inputmediadocument"
 msgstr ""
 
-#: of telebot.types.InputMediaDocument:31
+#: of telebot.types.InputMediaDocument:28
 msgid ""
 "Optional. Disables automatic server-side content type detection for files"
 " uploaded using multipart/form-data. Always True, if the document is sent"
 " as part of an album."
 msgstr ""
 
-#: of telebot.types.InputMediaDocument:36
+#: of telebot.types.InputMediaDocument:33
 msgid ":class:`telebot.types.InputMediaDocument`"
 msgstr ""
 
@@ -3470,6 +3530,10 @@ msgstr ""
 
 #: of telebot.types.InputMediaPhoto:3
 msgid "Telegram Documentation: https://core.telegram.org/bots/api#inputmediaphoto"
+msgstr ""
+
+#: of telebot.types.InputMediaPhoto:21
+msgid "Optional. True, if the uploaded photo is a spoiler"
 msgstr ""
 
 #: of telebot.types.InputMediaPhoto:25
@@ -3484,8 +3548,12 @@ msgstr ""
 msgid "Telegram Documentation: https://core.telegram.org/bots/api#inputmediavideo"
 msgstr ""
 
-#: of telebot.types.InputMediaVideo:40
+#: of telebot.types.InputMediaVideo:37
 msgid "Optional. Pass True, if the uploaded video is suitable for streaming"
+msgstr ""
+
+#: of telebot.types.InputMediaVideo:40
+msgid "Optional. True, if the uploaded video is a spoiler"
 msgstr ""
 
 #: of telebot.types.InputMediaVideo:44
@@ -4118,63 +4186,67 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.Message:115
-msgid "Optional. Message is a shared contact, information about the contact"
+msgid "Optional. True, if the message media is covered by a spoiler animation"
 msgstr ""
 
 #: of telebot.types.Message:118
-msgid "Optional. Message is a dice with random value"
+msgid "Optional. Message is a shared contact, information about the contact"
 msgstr ""
 
 #: of telebot.types.Message:121
+msgid "Optional. Message is a dice with random value"
+msgstr ""
+
+#: of telebot.types.Message:124
 msgid ""
 "Optional. Message is a game, information about the game. More about games"
 " »"
 msgstr ""
 
-#: of telebot.types.Message:124
+#: of telebot.types.Message:127
 msgid "Optional. Message is a native poll, information about the poll"
 msgstr ""
 
-#: of telebot.types.Message:127
+#: of telebot.types.Message:130
 msgid ""
 "Optional. Message is a venue, information about the venue. For backward "
 "compatibility, when this field is set, the location field will also be "
 "set"
 msgstr ""
 
-#: of telebot.types.Message:131
+#: of telebot.types.Message:134
 msgid "Optional. Message is a shared location, information about the location"
 msgstr ""
 
-#: of telebot.types.Message:134
+#: of telebot.types.Message:137
 msgid ""
 "Optional. New members that were added to the group or supergroup and "
 "information about them (the bot itself may be one of these members)"
 msgstr ""
 
-#: of telebot.types.Message:138
+#: of telebot.types.Message:141
 msgid ""
 "Optional. A member was removed from the group, information about them "
 "(this member may be the bot itself)"
 msgstr ""
 
-#: of telebot.types.Message:142
+#: of telebot.types.Message:145
 msgid "Optional. A chat title was changed to this value"
 msgstr ""
 
-#: of telebot.types.Message:145
+#: of telebot.types.Message:148
 msgid "Optional. A chat photo was change to this value"
 msgstr ""
 
-#: of telebot.types.Message:148
+#: of telebot.types.Message:151
 msgid "Optional. Service message: the chat photo was deleted"
 msgstr ""
 
-#: of telebot.types.Message:151
+#: of telebot.types.Message:154
 msgid "Optional. Service message: the group has been created"
 msgstr ""
 
-#: of telebot.types.Message:154
+#: of telebot.types.Message:157
 msgid ""
 "Optional. Service message: the supergroup has been created. This field "
 "can't be received in a message coming through updates, because bot can't "
@@ -4183,7 +4255,7 @@ msgid ""
 " created supergroup."
 msgstr ""
 
-#: of telebot.types.Message:159
+#: of telebot.types.Message:162
 msgid ""
 "Optional. Service message: the channel has been created. This field can't"
 " be received in a message coming through updates, because bot can't be a "
@@ -4191,11 +4263,11 @@ msgid ""
 "reply_to_message if someone replies to a very first message in a channel."
 msgstr ""
 
-#: of telebot.types.Message:164
+#: of telebot.types.Message:167
 msgid "Optional. Service message: auto-delete timer settings changed in the chat"
 msgstr ""
 
-#: of telebot.types.Message:168
+#: of telebot.types.Message:171
 msgid ""
 "Optional. The group has been migrated to a supergroup with the specified "
 "identifier. This number may have more than 32 significant bits and some "
@@ -4204,7 +4276,7 @@ msgid ""
 " double-precision float type are safe for storing this identifier."
 msgstr ""
 
-#: of telebot.types.Message:174
+#: of telebot.types.Message:177
 msgid ""
 "Optional. The supergroup has been migrated from a group with the "
 "specified identifier. This number may have more than 32 significant bits "
@@ -4214,80 +4286,98 @@ msgid ""
 "identifier."
 msgstr ""
 
-#: of telebot.types.Message:180
+#: of telebot.types.Message:183
 msgid ""
 "Optional. Specified message was pinned. Note that the Message object in "
 "this field will not contain further reply_to_message fields even if it is"
 " itself a reply."
 msgstr ""
 
-#: of telebot.types.Message:184
+#: of telebot.types.Message:187
 msgid ""
 "Optional. Message is an invoice for a payment, information about the "
 "invoice. More about payments »"
 msgstr ""
 
-#: of telebot.types.Message:187
+#: of telebot.types.Message:190
 msgid ""
 "Optional. Message is a service message about a successful payment, "
 "information about the payment. More about payments »"
 msgstr ""
 
-#: of telebot.types.Message:191
+#: of telebot.types.Message:194
 msgid ""
 "Optional. The domain name of the website on which the user has logged in."
 " More about Telegram Login »"
 msgstr ""
 
-#: of telebot.types.Message:195
+#: of telebot.types.Message:198
+msgid ""
+"Optional. Service message: the user allowed the bot added to the "
+"attachment menu to write messages"
+msgstr ""
+
+#: of telebot.types.Message:202
 msgid "Optional. Telegram Passport data"
 msgstr ""
 
-#: of telebot.types.Message:198
+#: of telebot.types.Message:205
 msgid ""
 "Optional. Service message. A user in the chat triggered another user's "
 "proximity alert while sharing Live Location."
 msgstr ""
 
-#: of telebot.types.Message:202
+#: of telebot.types.Message:209
 msgid "Optional. Service message: forum topic created"
 msgstr ""
 
-#: of telebot.types.Message:205
+#: of telebot.types.Message:212
+msgid "Optional. Service message: forum topic edited"
+msgstr ""
+
+#: of telebot.types.Message:215
 msgid "Optional. Service message: forum topic closed"
 msgstr ""
 
-#: of telebot.types.Message:208
+#: of telebot.types.Message:218
 msgid "Optional. Service message: forum topic reopened"
 msgstr ""
 
-#: of telebot.types.Message:211
+#: of telebot.types.Message:221
+msgid "Optional. Service message: the 'General' forum topic hidden"
+msgstr ""
+
+#: of telebot.types.Message:224
+msgid "Optional. Service message: the 'General' forum topic unhidden"
+msgstr ""
+
+#: of telebot.types.Message:227
 msgid "Optional. Service message: video chat scheduled"
 msgstr ""
 
-#: of telebot.types.Message:214
+#: of telebot.types.Message:230
 msgid "Optional. Service message: video chat started"
 msgstr ""
 
-#: of telebot.types.Message:217
+#: of telebot.types.Message:233
 msgid "Optional. Service message: video chat ended"
 msgstr ""
 
-#: of telebot.types.Message:220
+#: of telebot.types.Message:236
 msgid "Optional. Service message: new participants invited to a video chat"
 msgstr ""
 
-#: of telebot.types.Message:223
+#: of telebot.types.Message:239
 msgid "Optional. Service message: data sent by a Web App"
 msgstr ""
 
-#: of telebot.types.Message:226
+#: of telebot.types.Message:242
 msgid ""
 "Optional. Inline keyboard attached to the message. login_url buttons are "
 "represented as ordinary url buttons."
 msgstr ""
 
-#: of telebot.types.Message:231
+#: of telebot.types.Message:247
 msgid ":class:`telebot.types.Message`"
 msgstr ""
 
@@ -4701,7 +4791,33 @@ msgid ""
 "the keyboard."
 msgstr ""
 
-#: of telebot.types.ReplyKeyboardMarkup:43
+#: of telebot.types.ReplyKeyboardMarkup:42
+msgid ""
+"Optional. Use this parameter if you want to show the keyboard to specific"
+" users only. Targets: 1) users that are @mentioned in the text of the "
+"Message object; 2) if the bot's message is a reply (has "
+"reply_to_message_id), sender of the original message.  Example: A user "
+"requests to change the bot's language, bot replies to the request with a "
+"keyboard to select the new language. Other users in the group don't see "
+"the keyboard."
+msgstr ""
+
+#: of telebot.types.ReplyKeyboardMarkup:42
+msgid ""
+"Optional. Use this parameter if you want to show the keyboard to specific"
+" users only. Targets: 1) users that are @mentioned in the text of the "
+"Message object; 2) if the bot's message is a reply (has "
+"reply_to_message_id), sender of the original message."
+msgstr ""
+
+#: of telebot.types.ReplyKeyboardMarkup:46
+msgid ""
+"Example: A user requests to change the bot's language, bot replies to the"
+" request with a keyboard to select the new language. Other users in the "
+"group don't see the keyboard."
+msgstr ""
+
+#: of telebot.types.ReplyKeyboardMarkup:50
 #: telebot.types.ReplyKeyboardMarkup.add:14
 #: telebot.types.ReplyKeyboardMarkup.row:9
 msgid ":class:`telebot.types.ReplyKeyboardMarkup`"
@@ -5504,4 +5620,19 @@ msgstr ""
 #: of telebot.types.WebhookInfo:38
 msgid ":class:`telebot.types.WebhookInfo`"
 msgstr ""
+
+#: of telebot.types.WriteAccessAllowed:1
+msgid ""
+"This object represents a service message about a user allowed to post "
+"messages in the chat. Currently holds no information."
+msgstr ""
+
+#: of telebot.types.WriteAccessAllowed:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#writeaccessallowed"
+msgstr ""
+
+#~ msgid "Type of the result, must be animation"
+#~ msgstr ""
 
