@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"POT-Creation-Date: 2023-01-02 19:24+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../async_version/index.rst:3
+#: ../../source/async_version/index.rst:3
 msgid "AsyncTeleBot"
 msgstr ""
 
-#: ../../async_version/index.rst:6
+#: ../../source/async_version/index.rst:6
 msgid "Asynchronous pyTelegramBotAPI"
 msgstr ""
 
-#: ../../async_version/index.rst:6
+#: ../../source/async_version/index.rst:6
 msgid "ptba, pytba, pyTelegramBotAPI, asynctelebot, documentation"
 msgstr ""
 
-#: ../../async_version/index.rst:12
+#: ../../source/async_version/index.rst:12
 msgid "AsyncTeleBot methods"
 msgstr ""
 
@@ -91,6 +91,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.close_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.copy_message
 #: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.create_forum_topic
@@ -108,6 +109,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.download_file
 #: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.edit_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.edit_message_caption
 #: telebot.async_telebot.AsyncTeleBot.edit_message_live_location
 #: telebot.async_telebot.AsyncTeleBot.edit_message_media
@@ -134,6 +136,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.get_updates
 #: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
 #: telebot.async_telebot.AsyncTeleBot.get_webhook_info
+#: telebot.async_telebot.AsyncTeleBot.hide_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.infinity_polling
 #: telebot.async_telebot.AsyncTeleBot.inline_handler
 #: telebot.async_telebot.AsyncTeleBot.leave_chat
@@ -161,6 +164,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic
+#: telebot.async_telebot.AsyncTeleBot.reopen_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.reply_to
 #: telebot.async_telebot.AsyncTeleBot.reset_data
 #: telebot.async_telebot.AsyncTeleBot.restrict_chat_member
@@ -206,6 +210,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.stop_poll
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_member
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat
+#: telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
@@ -533,7 +538,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:43
 #: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:13
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:6
-#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:19
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:22
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:13
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:11
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:15
@@ -658,14 +663,14 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands:17
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:7
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook:13
-#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:20
+#: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:23
 #: telebot.async_telebot.AsyncTeleBot.leave_chat:8
 #: telebot.async_telebot.AsyncTeleBot.log_out:11
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message:19
 #: telebot.async_telebot.AsyncTeleBot.promote_chat_member:61
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:14
 #: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:48
-#: telebot.async_telebot.AsyncTeleBot.send_chat_action:23
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action:26
 #: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:18
 #: telebot.async_telebot.AsyncTeleBot.set_chat_description:14
 #: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:15
@@ -981,7 +986,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:10
 #: telebot.async_telebot.AsyncTeleBot.delete_message:22
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook:12
-#: telebot.async_telebot.AsyncTeleBot.send_chat_action:22
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action:25
 msgid "Returns True on success."
 msgstr ""
 
@@ -1002,15 +1007,19 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:10
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.close_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.copy_message:5
 #: telebot.async_telebot.AsyncTeleBot.create_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.delete_message:13
 #: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.edit_message_live_location:13
 #: telebot.async_telebot.AsyncTeleBot.forward_message:8
+#: telebot.async_telebot.AsyncTeleBot.hide_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message:7
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:7
+#: telebot.async_telebot.AsyncTeleBot.reopen_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.send_animation:6
 #: telebot.async_telebot.AsyncTeleBot.send_audio:9
 #: telebot.async_telebot.AsyncTeleBot.send_dice:5
@@ -1028,6 +1037,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title:9
 #: telebot.async_telebot.AsyncTeleBot.stop_message_live_location:6
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:8
+#: telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:7
 #: telebot.async_telebot.AsyncTeleBot.unpin_chat_message:7
 msgid ""
@@ -1191,6 +1201,19 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.close_forum_topic:10
 msgid "Identifier of the topic to close"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close_general_forum_topic:1
+msgid ""
+"Use this method to close the 'General' topic in a forum supergroup chat. "
+"The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.close_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#closegeneralforumtopic"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.close_session:1
@@ -1371,7 +1394,7 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:45
 #: telebot.async_telebot.AsyncTeleBot.forward_message:26
 #: telebot.async_telebot.AsyncTeleBot.reply_to:11
-#: telebot.async_telebot.AsyncTeleBot.send_animation:60
+#: telebot.async_telebot.AsyncTeleBot.send_animation:63
 #: telebot.async_telebot.AsyncTeleBot.send_audio:63
 #: telebot.async_telebot.AsyncTeleBot.send_contact:44
 #: telebot.async_telebot.AsyncTeleBot.send_dice:35
@@ -1380,11 +1403,11 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.send_invoice:101
 #: telebot.async_telebot.AsyncTeleBot.send_location:49
 #: telebot.async_telebot.AsyncTeleBot.send_message:46
-#: telebot.async_telebot.AsyncTeleBot.send_photo:45
+#: telebot.async_telebot.AsyncTeleBot.send_photo:48
 #: telebot.async_telebot.AsyncTeleBot.send_poll:70
 #: telebot.async_telebot.AsyncTeleBot.send_sticker:39
 #: telebot.async_telebot.AsyncTeleBot.send_venue:57
-#: telebot.async_telebot.AsyncTeleBot.send_video:61
+#: telebot.async_telebot.AsyncTeleBot.send_video:64
 #: telebot.async_telebot.AsyncTeleBot.send_video_note:48
 #: telebot.async_telebot.AsyncTeleBot.send_voice:49
 msgid "On success, the sent Message is returned."
@@ -1393,17 +1416,17 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:46
 #: telebot.async_telebot.AsyncTeleBot.forward_message:27
 #: telebot.async_telebot.AsyncTeleBot.reply_to:12
-#: telebot.async_telebot.AsyncTeleBot.send_animation:61
+#: telebot.async_telebot.AsyncTeleBot.send_animation:64
 #: telebot.async_telebot.AsyncTeleBot.send_audio:64
 #: telebot.async_telebot.AsyncTeleBot.send_contact:45
 #: telebot.async_telebot.AsyncTeleBot.send_dice:36
 #: telebot.async_telebot.AsyncTeleBot.send_document:57
 #: telebot.async_telebot.AsyncTeleBot.send_location:50
 #: telebot.async_telebot.AsyncTeleBot.send_message:47
-#: telebot.async_telebot.AsyncTeleBot.send_photo:46
+#: telebot.async_telebot.AsyncTeleBot.send_photo:49
 #: telebot.async_telebot.AsyncTeleBot.send_sticker:40
 #: telebot.async_telebot.AsyncTeleBot.send_venue:58
-#: telebot.async_telebot.AsyncTeleBot.send_video:62
+#: telebot.async_telebot.AsyncTeleBot.send_video:65
 #: telebot.async_telebot.AsyncTeleBot.send_video_note:49
 msgid ":class:`telebot.types.Message`"
 msgstr ""
@@ -1892,13 +1915,35 @@ msgid "Identifier of the topic to edit"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:13
-msgid "New name of the topic, 1-128 characters"
+msgid ""
+"Optional, New name of the topic, 1-128 characters. If not specififed or "
+"empty, the current name of the topic will be kept"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:16
+#: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:17
 msgid ""
-"New custom emoji for the topic icon. Must be an emoji of type “tgs” and "
-"must be exactly 1 character long"
+"Optional, New unique identifier of the custom emoji shown as the topic "
+"icon. Use getForumTopicIconStickers to get all allowed custom emoji "
+"identifiers. Pass an empty string to remove the icon. If not specified, "
+"the current icon will be kept"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic:1
+msgid ""
+"Use this method to edit the name of the 'General' topic in a forum "
+"supergroup chat. The bot must be an administrator in the chat for this to"
+" work and must have can_manage_topics administrator rights. Returns True "
+"on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editgeneralforumtopic"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic:10
+msgid "New topic name, 1-128 characters"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:1
@@ -2608,6 +2653,19 @@ msgstr ""
 msgid ":class:`telebot.types.WebhookInfo`"
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.hide_general_forum_topic:1
+msgid ""
+"Use this method to hide the 'General' topic in a forum supergroup chat. "
+"The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.hide_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#hidegeneralforumtopic"
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.infinity_polling:1
 msgid ""
 "Wrap polling with infinite loop and exception handling to avoid bot stops"
@@ -3069,6 +3127,19 @@ msgstr ""
 msgid "Identifier of the topic to reopen"
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.reopen_general_forum_topic:1
+msgid ""
+"Use this method to reopen the 'General' topic in a forum supergroup chat."
+" The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.reopen_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#reopengeneralforumtopic"
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.reply_to:1
 msgid ""
 "Convenience function for `send_message(message.chat.id, text, "
@@ -3327,6 +3398,10 @@ msgstr ""
 msgid "Identifier of a message thread, in which the video will be sent"
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:60
+msgid "Pass True, if the animation should be sent as a spoiler"
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.send_audio:1
 msgid ""
 "Use this method to send audio files, if you want Telegram clients to "
@@ -3431,6 +3506,10 @@ msgid ""
 " voice notes, upload_document for general files, choose_sticker for "
 "stickers, find_location for location data, record_video_note or "
 "upload_video_note for video notes."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:22
+msgid "The thread to which the message will be sent(supergroups only)"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_contact:1
@@ -3761,6 +3840,10 @@ msgstr ""
 msgid "Mode for parsing entities in the photo caption."
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.send_photo:45
+msgid "Pass True, if the photo should be sent as a spoiler"
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:1
 msgid ""
 "Use this method to send a native poll. On success, the sent Message is "
@@ -3957,6 +4040,10 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:32
 msgid "Pass True, if the uploaded video is suitable for streaming"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_video:61
+msgid "Pass True, if the video should be sent as a spoiler"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video_note:1
@@ -4495,6 +4582,19 @@ msgstr ""
 msgid "Unique identifier of the target sender chat."
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic:1
+msgid ""
+"Use this method to unhide the 'General' topic in a forum supergroup chat."
+" The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unhidegeneralforumtopic"
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:1
 msgid ""
 "Use this method to unpin a all pinned messages in a supergroup chat. The "
@@ -4579,7 +4679,7 @@ msgstr ""
 msgid "Class for (next step|reply) handlers"
 msgstr ""
 
-#: ../../async_version/index.rst:22
+#: ../../source/async_version/index.rst:22
 msgid "Asyncio filters"
 msgstr ""
 
@@ -4727,7 +4827,7 @@ msgstr ""
 msgid "Filter to check whether message starts with some text."
 msgstr ""
 
-#: ../../async_version/index.rst:30
+#: ../../source/async_version/index.rst:30
 msgid "Asyncio handler backends"
 msgstr ""
 
@@ -4785,7 +4885,7 @@ msgstr ""
 msgid "Class representing common states."
 msgstr ""
 
-#: ../../async_version/index.rst:41
+#: ../../source/async_version/index.rst:41
 msgid "Extensions"
 msgstr ""
 
@@ -4802,4 +4902,14 @@ msgid ""
 "Run app with the given parameters to init. Not supposed to be used "
 "manually by user."
 msgstr ""
+
+#~ msgid "New name of the topic, 1-128 characters"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New custom emoji for the topic "
+#~ "icon. Must be an emoji of type "
+#~ "“tgs” and must be exactly 1 "
+#~ "character long"
+#~ msgstr ""
 
