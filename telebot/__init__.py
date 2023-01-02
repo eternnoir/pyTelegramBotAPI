@@ -540,7 +540,7 @@ class TeleBot:
             from telebot.ext.sync import SyncWebhookListener
         except (NameError, ImportError):
             raise ImportError("Please install uvicorn and fastapi in order to use `run_webhooks` method.")
-        self.webhook_listener = SyncWebhookListener(self, secret_token, listen, port, ssl_context, '/'+url_path)
+        self.webhook_listener = SyncWebhookListener(bot=self, secret_token=secret_token, host=listen, port=port, ssl_context=ssl_context, url_path='/'+url_path)
         self.webhook_listener.run_app()
 
 
@@ -1763,7 +1763,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            has_spoiler: Optional[bool]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -1808,6 +1809,9 @@ class TeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
+
+        :param has_spoiler: Pass True, if the photo should be sent as a spoiler
+        :type has_spoiler: :obj:`bool`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -1821,7 +1825,7 @@ class TeleBot:
             apihelper.send_photo(
                 self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                allow_sending_without_reply, protect_content, message_thread_id))
+                allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
 
     # TODO: Rewrite this method like in API.
     def send_audio(
@@ -2171,7 +2175,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             data: Optional[Union[Any, str]]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            has_spoiler: Optional[bool]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -2233,6 +2238,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the video will be sent
         :type message_thread_id: :obj:`int`
 
+        :param has_spoiler: Pass True, if the video should be sent as a spoiler
+        :type has_spoiler: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2249,7 +2257,7 @@ class TeleBot:
             apihelper.send_video(
                 self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
-                caption_entities, allow_sending_without_reply, protect_content, message_thread_id))
+                caption_entities, allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
 
     def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
@@ -2266,7 +2274,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            has_spoiler: Optional[bool]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -2327,6 +2336,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the video will be sent
         :type message_thread_id: :obj:`int`
 
+        :param has_spoiler: Pass True, if the animation should be sent as a spoiler
+        :type has_spoiler: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2339,7 +2351,7 @@ class TeleBot:
             apihelper.send_animation(
                 self.token, chat_id, animation, duration, caption, reply_to_message_id,
                 reply_markup, parse_mode, disable_notification, timeout, thumb,
-                caption_entities, allow_sending_without_reply, protect_content, width, height, message_thread_id))
+                caption_entities, allow_sending_without_reply, protect_content, width, height, message_thread_id, has_spoiler))
 
     # TODO: Rewrite this method like in API.
     def send_video_note(
@@ -2794,7 +2806,7 @@ class TeleBot:
                 allow_sending_without_reply, protect_content, message_thread_id))
 
     def send_chat_action(
-            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None) -> bool:
+            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
@@ -2817,10 +2829,13 @@ class TeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
+        :param message_thread_id: The thread identifier of a message from which the reply will be sent(supergroups only)
+        :type message_thread_id: :obj:`int`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.send_chat_action(self.token, chat_id, action, timeout)
+        return apihelper.send_chat_action(self.token, chat_id, action, timeout, message_thread_id)
     
     @util.deprecated(deprecation_text="Use ban_chat_member instead")
     def kick_chat_member(
@@ -4636,8 +4651,8 @@ class TeleBot:
 
     def edit_forum_topic(
             self, chat_id: Union[int, str],
-            message_thread_id: int, name: str,
-            icon_custom_emoji_id: str,
+            message_thread_id: int, name: Optional[str]=None,
+            icon_custom_emoji_id: Optional[str]=None
         ) -> bool:
         """
         Use this method to edit name and icon of a topic in a forum supergroup chat. The bot must be an
@@ -4652,10 +4667,13 @@ class TeleBot:
         :param message_thread_id: Identifier of the topic to edit
         :type message_thread_id: :obj:`int`
 
-        :param name: New name of the topic, 1-128 characters
+        :param name: Optional, New name of the topic, 1-128 characters. If not specififed or empty,
+            the current name of the topic will be kept
         :type name: :obj:`str`
 
-        :param icon_custom_emoji_id: New custom emoji for the topic icon. Must be an emoji of type “tgs” and must be exactly 1 character long
+        :param icon_custom_emoji_id: Optional, New unique identifier of the custom emoji shown as the topic icon.
+            Use getForumTopicIconStickers to get all allowed custom emoji identifiers. Pass an empty string to remove the
+            icon. If not specified, the current icon will be kept
         :type icon_custom_emoji_id: :obj:`str`
 
         :return: On success, True is returned.
@@ -4738,6 +4756,75 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.unpin_all_forum_topic_messages(self.token, chat_id, message_thread_id)
+
+    def edit_general_forum_topic(self, chat_id: Union[int, str], name: str) -> bool:
+        """
+        Use this method to edit the name of the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#editgeneralforumtopic
+        
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param name: New topic name, 1-128 characters
+        :type name: :obj:`str`
+        """
+
+        return apihelper.edit_general_forum_topic(self.token, chat_id, name)
+
+    def close_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to close the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#closegeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.close_general_forum_topic(self.token, chat_id)
+
+    def reopen_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to reopen the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#reopengeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.reopen_general_forum_topic(self.token, chat_id)
+
+    def hide_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to hide the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#hidegeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.hide_general_forum_topic(self.token, chat_id)
+
+    def unhide_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to unhide the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unhidegeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return apihelper.unhide_general_forum_topic(self.token, chat_id)
 
     def get_forum_topic_icon_stickers(self) -> List[types.Sticker]:
         """
@@ -4981,14 +5068,14 @@ class TeleBot:
             self.current_states.set_data(chat_id, user_id, key, value)
 
     def register_next_step_handler_by_chat_id(
-            self, chat_id: Union[int, str], callback: Callable, *args, **kwargs) -> None:
+            self, chat_id: int, callback: Callable, *args, **kwargs) -> None:
         """
-        Registers a callback function to be notified when new message arrives after `message`.
+        Registers a callback function to be notified when new message arrives in the given chat.
 
         Warning: In case `callback` as lambda function, saving next step handlers will not work.
 
-        :param chat_id: The chat for which we want to handle new message.
-        :type chat_id: :obj:`int` or :obj:`str`
+        :param chat_id: The chat (chat ID) for which we want to handle new message.
+        :type chat_id: :obj:`int`
 
         :param callback: The callback function which next new message arrives.
         :type callback: :obj:`Callable[[telebot.types.Message], None]`

@@ -171,10 +171,10 @@ async def get_file(token, file_id):
 
 async def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, await get_file(token, file_id)['file_path'])
+        return "https://api.telegram.org/file/bot{0}/{1}".format(token, (await get_file(token, file_id))['file_path'])
     else:
         # noinspection PyUnresolvedReferences
-        return FILE_URL.format(token, await get_file(token, file_id)['file_path'])
+        return FILE_URL.format(token, (await get_file(token, file_id))['file_path'])
 
 
 async def download_file(token, file_path):
@@ -453,7 +453,7 @@ async def send_photo(
         caption=None, reply_to_message_id=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, allow_sending_without_reply=None, protect_content=None,
-        message_thread_id=None):
+        message_thread_id=None, has_spoiler=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -483,6 +483,8 @@ async def send_photo(
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -647,18 +649,20 @@ async def send_contact(
     return await _process_request(token, method_url, params=payload)
 
 
-async def send_chat_action(token, chat_id, action, timeout=None):
+async def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}
     if timeout:
         payload['timeout'] = timeout
+    if message_thread_id:
+        payload['message_thread_id'] = message_thread_id
     return await _process_request(token, method_url, params=payload)
 
 
 async def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
                parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, 
                thumb=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None,
-               protect_content=None, message_thread_id=None):
+               protect_content=None, message_thread_id=None, has_spoiler=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -702,13 +706,16 @@ async def send_video(token, chat_id, data, duration=None, caption=None, reply_to
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_animation(
         token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumb=None, caption_entities=None,
-        allow_sending_without_reply=None, width=None, height=None, protect_content=None, message_thread_id=None):
+        allow_sending_without_reply=None, width=None, height=None, protect_content=None, message_thread_id=None,
+        has_spoiler=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -750,6 +757,8 @@ async def send_animation(
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1757,9 +1766,13 @@ async def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_
         payload['icon_custom_emoji_id'] = icon_custom_emoji_id
     return await _process_request(token, method_url, params=payload)
 
-async def edit_forum_topic(token, chat_id, message_thread_id, name, icon_custom_emoji_id):
+async def edit_forum_topic(token, chat_id, message_thread_id, name=None, icon_custom_emoji_id=None):
     method_url = r'editForumTopic'
-    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id, 'name': name, 'icon_custom_emoji_id': icon_custom_emoji_id}
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    if name is not None:
+        payload['name'] = name
+    if icon_custom_emoji_id is not None:
+        payload['icon_custom_emoji_id'] = icon_custom_emoji_id
     return await _process_request(token, method_url, params=payload)
 
 async def close_forum_topic(token, chat_id, message_thread_id):
@@ -1785,6 +1798,31 @@ async def unpin_all_forum_topic_messages(token, chat_id, message_thread_id):
 async def get_forum_topic_icon_stickers(token):
     method_url = r'getForumTopicIconStickers'
     return await _process_request(token, method_url)
+
+async def edit_general_forum_topic(token, chat_id, name):
+    method_url = r'editGeneralForumTopic'
+    payload = {'chat_id': chat_id, 'name': name}
+    return await _process_request(token, method_url, params=payload)
+
+async def close_general_forum_topic(token, chat_id):
+    method_url = r'closeGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def reopen_general_forum_topic(token, chat_id):
+    method_url = r'reopenGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def hide_general_forum_topic(token, chat_id):
+    method_url = r'hideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
+
+async def unhide_general_forum_topic(token, chat_id):
+    method_url = r'unhideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return await _process_request(token, method_url, params=payload)
 
 async def _convert_list_json_serializable(results):
     ret = ''

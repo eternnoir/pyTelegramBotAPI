@@ -25,7 +25,8 @@ from typing import Optional
 
 class AsyncWebhookListener:
     def __init__(self, bot, 
-                secret_token: str, host: Optional[str]="127.0.0.1", 
+                secret_token: str,
+                host: Optional[str]="127.0.0.1", 
                 port: Optional[int]=443,
                 ssl_context: Optional[tuple]=None,
                 url_path: Optional[str]=None,
