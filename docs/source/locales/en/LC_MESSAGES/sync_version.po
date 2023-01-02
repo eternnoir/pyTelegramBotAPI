@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"POT-Creation-Date: 2023-01-02 19:24+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../sync_version/index.rst:3
+#: ../../source/sync_version/index.rst:3
 msgid "TeleBot version"
 msgstr ""
 
-#: ../../sync_version/index.rst:5
+#: ../../source/sync_version/index.rst:5
 msgid "Synchronous pyTelegramBotAPI documentation"
 msgstr ""
 
-#: ../../sync_version/index.rst:5
+#: ../../source/sync_version/index.rst:5
 msgid "ptba, pytba, pyTelegramBotAPI, methods, guide, files, sync"
 msgstr ""
 
-#: ../../sync_version/index.rst:10
+#: ../../source/sync_version/index.rst:10
 msgid "TeleBot methods"
 msgstr ""
 
@@ -105,15 +105,17 @@ msgstr ""
 #: telebot.TeleBot.clear_reply_handlers_by_message_id
 #: telebot.TeleBot.clear_step_handler
 #: telebot.TeleBot.clear_step_handler_by_chat_id
-#: telebot.TeleBot.close_forum_topic telebot.TeleBot.copy_message
-#: telebot.TeleBot.create_chat_invite_link telebot.TeleBot.create_forum_topic
-#: telebot.TeleBot.create_invoice_link telebot.TeleBot.create_new_sticker_set
+#: telebot.TeleBot.close_forum_topic telebot.TeleBot.close_general_forum_topic
+#: telebot.TeleBot.copy_message telebot.TeleBot.create_chat_invite_link
+#: telebot.TeleBot.create_forum_topic telebot.TeleBot.create_invoice_link
+#: telebot.TeleBot.create_new_sticker_set
 #: telebot.TeleBot.decline_chat_join_request telebot.TeleBot.delete_chat_photo
 #: telebot.TeleBot.delete_chat_sticker_set telebot.TeleBot.delete_forum_topic
 #: telebot.TeleBot.delete_message telebot.TeleBot.delete_my_commands
 #: telebot.TeleBot.delete_state telebot.TeleBot.delete_sticker_from_set
 #: telebot.TeleBot.delete_webhook telebot.TeleBot.download_file
 #: telebot.TeleBot.edit_chat_invite_link telebot.TeleBot.edit_forum_topic
+#: telebot.TeleBot.edit_general_forum_topic
 #: telebot.TeleBot.edit_message_caption
 #: telebot.TeleBot.edit_message_live_location
 #: telebot.TeleBot.edit_message_media telebot.TeleBot.edit_message_reply_markup
@@ -132,13 +134,14 @@ msgstr ""
 #: telebot.TeleBot.get_my_default_administrator_rights
 #: telebot.TeleBot.get_state telebot.TeleBot.get_sticker_set
 #: telebot.TeleBot.get_updates telebot.TeleBot.get_user_profile_photos
-#: telebot.TeleBot.get_webhook_info telebot.TeleBot.infinity_polling
-#: telebot.TeleBot.inline_handler telebot.TeleBot.leave_chat
-#: telebot.TeleBot.load_next_step_handlers telebot.TeleBot.load_reply_handlers
-#: telebot.TeleBot.message_handler telebot.TeleBot.middleware_handler
-#: telebot.TeleBot.my_chat_member_handler telebot.TeleBot.pin_chat_message
-#: telebot.TeleBot.poll_answer_handler telebot.TeleBot.poll_handler
-#: telebot.TeleBot.polling telebot.TeleBot.pre_checkout_query_handler
+#: telebot.TeleBot.get_webhook_info telebot.TeleBot.hide_general_forum_topic
+#: telebot.TeleBot.infinity_polling telebot.TeleBot.inline_handler
+#: telebot.TeleBot.leave_chat telebot.TeleBot.load_next_step_handlers
+#: telebot.TeleBot.load_reply_handlers telebot.TeleBot.message_handler
+#: telebot.TeleBot.middleware_handler telebot.TeleBot.my_chat_member_handler
+#: telebot.TeleBot.pin_chat_message telebot.TeleBot.poll_answer_handler
+#: telebot.TeleBot.poll_handler telebot.TeleBot.polling
+#: telebot.TeleBot.pre_checkout_query_handler
 #: telebot.TeleBot.process_new_updates telebot.TeleBot.promote_chat_member
 #: telebot.TeleBot.register_callback_query_handler
 #: telebot.TeleBot.register_channel_post_handler
@@ -159,7 +162,8 @@ msgstr ""
 #: telebot.TeleBot.register_poll_handler
 #: telebot.TeleBot.register_pre_checkout_query_handler
 #: telebot.TeleBot.register_shipping_query_handler
-#: telebot.TeleBot.reopen_forum_topic telebot.TeleBot.reply_to
+#: telebot.TeleBot.reopen_forum_topic
+#: telebot.TeleBot.reopen_general_forum_topic telebot.TeleBot.reply_to
 #: telebot.TeleBot.reset_data telebot.TeleBot.restrict_chat_member
 #: telebot.TeleBot.retrieve_data telebot.TeleBot.revoke_chat_invite_link
 #: telebot.TeleBot.run_webhooks telebot.TeleBot.send_animation
@@ -184,6 +188,7 @@ msgstr ""
 #: telebot.TeleBot.shipping_query_handler
 #: telebot.TeleBot.stop_message_live_location telebot.TeleBot.stop_poll
 #: telebot.TeleBot.unban_chat_member telebot.TeleBot.unban_chat_sender_chat
+#: telebot.TeleBot.unhide_general_forum_topic
 #: telebot.TeleBot.unpin_all_chat_messages
 #: telebot.TeleBot.unpin_all_forum_topic_messages
 #: telebot.TeleBot.unpin_chat_message telebot.TeleBot.upload_sticker_file
@@ -490,7 +495,7 @@ msgstr ""
 #: telebot.TeleBot.create_new_sticker_set:43
 #: telebot.TeleBot.delete_forum_topic:13
 #: telebot.TeleBot.delete_sticker_from_set:6
-#: telebot.TeleBot.edit_forum_topic:19 telebot.TeleBot.reopen_forum_topic:13
+#: telebot.TeleBot.edit_forum_topic:22 telebot.TeleBot.reopen_forum_topic:13
 #: telebot.TeleBot.set_sticker_position_in_set:11
 #: telebot.TeleBot.set_sticker_set_thumb:15
 #: telebot.TeleBot.unpin_all_forum_topic_messages:13
@@ -570,11 +575,11 @@ msgstr ""
 #: telebot.TeleBot.delete_forum_topic:14 telebot.TeleBot.delete_message:23
 #: telebot.TeleBot.delete_my_commands:17
 #: telebot.TeleBot.delete_sticker_from_set:7 telebot.TeleBot.delete_webhook:13
-#: telebot.TeleBot.edit_forum_topic:20 telebot.TeleBot.leave_chat:8
+#: telebot.TeleBot.edit_forum_topic:23 telebot.TeleBot.leave_chat:8
 #: telebot.TeleBot.log_out:11 telebot.TeleBot.pin_chat_message:19
 #: telebot.TeleBot.promote_chat_member:61 telebot.TeleBot.remove_webhook:4
 #: telebot.TeleBot.reopen_forum_topic:14
-#: telebot.TeleBot.restrict_chat_member:48 telebot.TeleBot.send_chat_action:23
+#: telebot.TeleBot.restrict_chat_member:48 telebot.TeleBot.send_chat_action:26
 #: telebot.TeleBot.set_chat_administrator_custom_title:18
 #: telebot.TeleBot.set_chat_description:14
 #: telebot.TeleBot.set_chat_menu_button:15
@@ -878,7 +883,7 @@ msgstr ""
 
 #: of telebot.TeleBot.ban_chat_member:24
 #: telebot.TeleBot.delete_chat_sticker_set:10 telebot.TeleBot.delete_message:22
-#: telebot.TeleBot.delete_webhook:12 telebot.TeleBot.send_chat_action:22
+#: telebot.TeleBot.delete_webhook:12 telebot.TeleBot.send_chat_action:25
 msgid "Returns True on success."
 msgstr ""
 
@@ -898,21 +903,26 @@ msgid ""
 msgstr ""
 
 #: of telebot.TeleBot.ban_chat_sender_chat:10
-#: telebot.TeleBot.close_forum_topic:7 telebot.TeleBot.copy_message:5
+#: telebot.TeleBot.close_forum_topic:7
+#: telebot.TeleBot.close_general_forum_topic:7 telebot.TeleBot.copy_message:5
 #: telebot.TeleBot.create_forum_topic:7 telebot.TeleBot.delete_forum_topic:7
 #: telebot.TeleBot.delete_message:13 telebot.TeleBot.edit_forum_topic:7
+#: telebot.TeleBot.edit_general_forum_topic:7
 #: telebot.TeleBot.edit_message_live_location:13
-#: telebot.TeleBot.forward_message:8 telebot.TeleBot.pin_chat_message:7
-#: telebot.TeleBot.reopen_forum_topic:7 telebot.TeleBot.send_animation:6
-#: telebot.TeleBot.send_audio:9 telebot.TeleBot.send_dice:5
-#: telebot.TeleBot.send_document:5 telebot.TeleBot.send_game:5
-#: telebot.TeleBot.send_location:5 telebot.TeleBot.send_media_group:6
-#: telebot.TeleBot.send_message:9 telebot.TeleBot.send_photo:5
-#: telebot.TeleBot.send_sticker:6 telebot.TeleBot.send_video:5
-#: telebot.TeleBot.send_video_note:6 telebot.TeleBot.send_voice:7
-#: telebot.TeleBot.set_chat_description:6 telebot.TeleBot.set_chat_title:9
+#: telebot.TeleBot.forward_message:8 telebot.TeleBot.hide_general_forum_topic:7
+#: telebot.TeleBot.pin_chat_message:7 telebot.TeleBot.reopen_forum_topic:7
+#: telebot.TeleBot.reopen_general_forum_topic:7
+#: telebot.TeleBot.send_animation:6 telebot.TeleBot.send_audio:9
+#: telebot.TeleBot.send_dice:5 telebot.TeleBot.send_document:5
+#: telebot.TeleBot.send_game:5 telebot.TeleBot.send_location:5
+#: telebot.TeleBot.send_media_group:6 telebot.TeleBot.send_message:9
+#: telebot.TeleBot.send_photo:5 telebot.TeleBot.send_sticker:6
+#: telebot.TeleBot.send_video:5 telebot.TeleBot.send_video_note:6
+#: telebot.TeleBot.send_voice:7 telebot.TeleBot.set_chat_description:6
+#: telebot.TeleBot.set_chat_title:9
 #: telebot.TeleBot.stop_message_live_location:6
 #: telebot.TeleBot.unban_chat_sender_chat:8
+#: telebot.TeleBot.unhide_general_forum_topic:7
 #: telebot.TeleBot.unpin_all_forum_topic_messages:7
 #: telebot.TeleBot.unpin_chat_message:7
 msgid ""
@@ -1100,6 +1110,19 @@ msgstr ""
 msgid "Identifier of the topic to close"
 msgstr ""
 
+#: of telebot.TeleBot.close_general_forum_topic:1
+msgid ""
+"Use this method to close the 'General' topic in a forum supergroup chat. "
+"The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.TeleBot.close_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#closegeneralforumtopic"
+msgstr ""
+
 #: of telebot.TeleBot.copy_message:1
 msgid "Use this method to copy messages of any kind."
 msgstr ""
@@ -1218,25 +1241,25 @@ msgid "Identifier of a message thread, in which the message will be sent"
 msgstr ""
 
 #: of telebot.TeleBot.copy_message:45 telebot.TeleBot.forward_message:26
-#: telebot.TeleBot.reply_to:11 telebot.TeleBot.send_animation:60
+#: telebot.TeleBot.reply_to:11 telebot.TeleBot.send_animation:63
 #: telebot.TeleBot.send_audio:63 telebot.TeleBot.send_contact:44
 #: telebot.TeleBot.send_dice:35 telebot.TeleBot.send_document:56
 #: telebot.TeleBot.send_game:32 telebot.TeleBot.send_invoice:101
 #: telebot.TeleBot.send_location:49 telebot.TeleBot.send_message:46
-#: telebot.TeleBot.send_photo:45 telebot.TeleBot.send_poll:70
+#: telebot.TeleBot.send_photo:48 telebot.TeleBot.send_poll:70
 #: telebot.TeleBot.send_sticker:39 telebot.TeleBot.send_venue:57
-#: telebot.TeleBot.send_video:61 telebot.TeleBot.send_video_note:48
+#: telebot.TeleBot.send_video:64 telebot.TeleBot.send_video_note:48
 #: telebot.TeleBot.send_voice:49
 msgid "On success, the sent Message is returned."
 msgstr ""
 
 #: of telebot.TeleBot.copy_message:46 telebot.TeleBot.forward_message:27
-#: telebot.TeleBot.reply_to:12 telebot.TeleBot.send_animation:61
+#: telebot.TeleBot.reply_to:12 telebot.TeleBot.send_animation:64
 #: telebot.TeleBot.send_audio:64 telebot.TeleBot.send_contact:45
 #: telebot.TeleBot.send_dice:36 telebot.TeleBot.send_document:57
 #: telebot.TeleBot.send_location:50 telebot.TeleBot.send_message:47
-#: telebot.TeleBot.send_photo:46 telebot.TeleBot.send_sticker:40
-#: telebot.TeleBot.send_venue:58 telebot.TeleBot.send_video:62
+#: telebot.TeleBot.send_photo:49 telebot.TeleBot.send_sticker:40
+#: telebot.TeleBot.send_venue:58 telebot.TeleBot.send_video:65
 #: telebot.TeleBot.send_video_note:49
 msgid ":class:`telebot.types.Message`"
 msgstr ""
@@ -1723,13 +1746,35 @@ msgid "Identifier of the topic to edit"
 msgstr ""
 
 #: of telebot.TeleBot.edit_forum_topic:13
-msgid "New name of the topic, 1-128 characters"
+msgid ""
+"Optional, New name of the topic, 1-128 characters. If not specififed or "
+"empty, the current name of the topic will be kept"
 msgstr ""
 
-#: of telebot.TeleBot.edit_forum_topic:16
+#: of telebot.TeleBot.edit_forum_topic:17
 msgid ""
-"New custom emoji for the topic icon. Must be an emoji of type “tgs” and "
-"must be exactly 1 character long"
+"Optional, New unique identifier of the custom emoji shown as the topic "
+"icon. Use getForumTopicIconStickers to get all allowed custom emoji "
+"identifiers. Pass an empty string to remove the icon. If not specified, "
+"the current icon will be kept"
+msgstr ""
+
+#: of telebot.TeleBot.edit_general_forum_topic:1
+msgid ""
+"Use this method to edit the name of the 'General' topic in a forum "
+"supergroup chat. The bot must be an administrator in the chat for this to"
+" work and must have can_manage_topics administrator rights. Returns True "
+"on success."
+msgstr ""
+
+#: of telebot.TeleBot.edit_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#editgeneralforumtopic"
+msgstr ""
+
+#: of telebot.TeleBot.edit_general_forum_topic:10
+msgid "New topic name, 1-128 characters"
 msgstr ""
 
 #: of telebot.TeleBot.edit_message_caption:1
@@ -2448,6 +2493,19 @@ msgstr ""
 msgid ":class:`telebot.types.WebhookInfo`"
 msgstr ""
 
+#: of telebot.TeleBot.hide_general_forum_topic:1
+msgid ""
+"Use this method to hide the 'General' topic in a forum supergroup chat. "
+"The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.TeleBot.hide_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#hidegeneralforumtopic"
+msgstr ""
+
 #: of telebot.TeleBot.infinity_polling:1
 msgid ""
 "Wrap polling with infinite loop and exception handling to avoid bot stops"
@@ -3016,7 +3074,6 @@ msgid "Registers my chat member handler."
 msgstr ""
 
 #: of telebot.TeleBot.register_next_step_handler:1
-#: telebot.TeleBot.register_next_step_handler_by_chat_id:1
 msgid ""
 "Registers a callback function to be notified when new message arrives "
 "after `message`."
@@ -3045,8 +3102,14 @@ msgstr ""
 msgid "Args to pass in callback func"
 msgstr ""
 
+#: of telebot.TeleBot.register_next_step_handler_by_chat_id:1
+msgid ""
+"Registers a callback function to be notified when new message arrives in "
+"the given chat."
+msgstr ""
+
 #: of telebot.TeleBot.register_next_step_handler_by_chat_id:5
-msgid "The chat for which we want to handle new message."
+msgid "The chat (chat ID) for which we want to handle new message."
 msgstr ""
 
 #: of telebot.TeleBot.register_poll_answer_handler:1
@@ -3085,6 +3148,19 @@ msgstr ""
 
 #: of telebot.TeleBot.reopen_forum_topic:10
 msgid "Identifier of the topic to reopen"
+msgstr ""
+
+#: of telebot.TeleBot.reopen_general_forum_topic:1
+msgid ""
+"Use this method to reopen the 'General' topic in a forum supergroup chat."
+" The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.TeleBot.reopen_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#reopengeneralforumtopic"
 msgstr ""
 
 #: of telebot.TeleBot.reply_to:1
@@ -3349,6 +3425,10 @@ msgstr ""
 msgid "Identifier of a message thread, in which the video will be sent"
 msgstr ""
 
+#: of telebot.TeleBot.send_animation:60
+msgid "Pass True, if the animation should be sent as a spoiler"
+msgstr ""
+
 #: of telebot.TeleBot.send_audio:1
 msgid ""
 "Use this method to send audio files, if you want Telegram clients to "
@@ -3449,6 +3529,12 @@ msgid ""
 " voice notes, upload_document for general files, choose_sticker for "
 "stickers, find_location for location data, record_video_note or "
 "upload_video_note for video notes."
+msgstr ""
+
+#: of telebot.TeleBot.send_chat_action:22
+msgid ""
+"The thread identifier of a message from which the reply will be "
+"sent(supergroups only)"
 msgstr ""
 
 #: of telebot.TeleBot.send_contact:1
@@ -3774,6 +3860,10 @@ msgstr ""
 msgid "Mode for parsing entities in the photo caption."
 msgstr ""
 
+#: of telebot.TeleBot.send_photo:45
+msgid "Pass True, if the photo should be sent as a spoiler"
+msgstr ""
+
 #: of telebot.TeleBot.send_poll:1
 msgid ""
 "Use this method to send a native poll. On success, the sent Message is "
@@ -3969,6 +4059,10 @@ msgstr ""
 
 #: of telebot.TeleBot.send_video:32
 msgid "Pass True, if the uploaded video is suitable for streaming"
+msgstr ""
+
+#: of telebot.TeleBot.send_video:61
+msgid "Pass True, if the video should be sent as a spoiler"
 msgstr ""
 
 #: of telebot.TeleBot.send_video_note:1
@@ -4498,6 +4592,19 @@ msgstr ""
 msgid "Unique identifier of the target sender chat."
 msgstr ""
 
+#: of telebot.TeleBot.unhide_general_forum_topic:1
+msgid ""
+"Use this method to unhide the 'General' topic in a forum supergroup chat."
+" The bot must be an administrator in the chat for this to work and must "
+"have can_manage_topics administrator rights. Returns True on success."
+msgstr ""
+
+#: of telebot.TeleBot.unhide_general_forum_topic:5
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unhidegeneralforumtopic"
+msgstr ""
+
 #: of telebot.TeleBot.unpin_all_chat_messages:1
 msgid ""
 "Use this method to unpin a all pinned messages in a supergroup chat. The "
@@ -4588,7 +4695,7 @@ msgstr ""
 msgid ":class:`telebot.types.User`"
 msgstr ""
 
-#: ../../sync_version/index.rst:17
+#: ../../source/sync_version/index.rst:17
 msgid "custom_filters file"
 msgstr ""
 
@@ -4727,7 +4834,7 @@ msgstr ""
 msgid "Filter to check whether message starts with some text."
 msgstr ""
 
-#: ../../sync_version/index.rst:25
+#: ../../source/sync_version/index.rst:25
 msgid "handler_backends file"
 msgstr ""
 
@@ -4787,7 +4894,7 @@ msgstr ""
 msgid "Class representing common states."
 msgstr ""
 
-#: ../../sync_version/index.rst:34
+#: ../../source/sync_version/index.rst:34
 msgid "Extensions"
 msgstr ""
 
@@ -4802,4 +4909,17 @@ msgid ""
 "Run app with the given parameters to init. Not supposed to be used "
 "manually by user."
 msgstr ""
+
+#~ msgid "New name of the topic, 1-128 characters"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "New custom emoji for the topic "
+#~ "icon. Must be an emoji of type "
+#~ "“tgs” and must be exactly 1 "
+#~ "character long"
+#~ msgstr ""
+
+#~ msgid "The chat for which we want to handle new message."
+#~ msgstr ""
 
