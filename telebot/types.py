@@ -5999,7 +5999,7 @@ class InputMediaAnimation(InputMedia):
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
-        if self.has_spoiler:
+        if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
         return ret
 
