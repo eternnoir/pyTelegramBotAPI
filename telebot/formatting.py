@@ -61,8 +61,8 @@ def escape_markdown(content: str) -> str:
     :rtype: :obj:`str`
     """
     
-    parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\.!])", r"\\\1", content)
-    reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|\.!])", r"\1", parse)
+    parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\.!\{\}])", r"\\\1", content)
+    reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|\.!\{\}])", r"\1", parse)
     return reparse 
 
 

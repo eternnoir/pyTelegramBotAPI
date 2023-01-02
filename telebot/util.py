@@ -399,7 +399,10 @@ def escape(text: str) -> str:
     :return: the escaped text
     """
     chars = {"&": "&amp;", "<": "&lt;", ">": "&gt;"}
-    for old, new in chars.items(): text = text.replace(old, new)
+    if text is None:
+        return None
+    for old, new in chars.items(): 
+        text = text.replace(old, new)
     return text
 
 

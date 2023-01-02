@@ -459,7 +459,7 @@ def send_photo(
         caption=None, reply_to_message_id=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, allow_sending_without_reply=None, protect_content=None,
-        message_thread_id=None):
+        message_thread_id=None, has_spoiler=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -489,6 +489,8 @@ def send_photo(
         payload['protect_content'] = protect_content
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -655,18 +657,20 @@ def send_contact(
     return _make_request(token, method_url, params=payload)
 
 
-def send_chat_action(token, chat_id, action, timeout=None):
+def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}
     if timeout:
         payload['timeout'] = timeout
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
     return _make_request(token, method_url, params=payload)
 
 
 def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
                parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, 
                thumb=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None, protect_content=None,
-               message_thread_id=None):
+               message_thread_id=None, has_spoiler=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -710,13 +714,16 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_animation(
         token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumb=None, caption_entities=None,
-        allow_sending_without_reply=None, protect_content=None, width=None, height=None, message_thread_id=None):
+        allow_sending_without_reply=None, protect_content=None, width=None, height=None, message_thread_id=None,
+        has_spoiler=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -758,6 +765,8 @@ def send_animation(
         payload['height'] = height
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1766,9 +1775,13 @@ def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_
         payload['icon_custom_emoji_id'] = icon_custom_emoji_id
     return _make_request(token, method_url, params=payload)
 
-def edit_forum_topic(token, chat_id, message_thread_id, name, icon_custom_emoji_id):
+def edit_forum_topic(token, chat_id, message_thread_id, name=None, icon_custom_emoji_id=None):
     method_url = r'editForumTopic'
-    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id, 'name': name, 'icon_custom_emoji_id': icon_custom_emoji_id}
+    payload = {'chat_id': chat_id, 'message_thread_id': message_thread_id}
+    if name is not None:
+        payload['name'] = name
+    if icon_custom_emoji_id is not None:
+        payload['icon_custom_emoji_id'] = icon_custom_emoji_id
     return _make_request(token, method_url, params=payload)
 
 def close_forum_topic(token, chat_id, message_thread_id):
@@ -1800,6 +1813,31 @@ def stop_poll(token, chat_id, message_id, reply_markup=None):
     payload = {'chat_id': str(chat_id), 'message_id': message_id}
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+def edit_general_forum_topic(token, chat_id, name):
+    method_url = r'editGeneralForumTopic'
+    payload = {'chat_id': chat_id, 'name': name}
+    return _make_request(token, method_url, params=payload)
+
+def close_general_forum_topic(token, chat_id):
+    method_url = r'closeGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+def reopen_general_forum_topic(token, chat_id):
+    method_url = r'reopenGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+def hide_general_forum_topic(token, chat_id):
+    method_url = r'hideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload)
+
+def unhide_general_forum_topic(token, chat_id):
+    method_url = r'unhideGeneralForumTopic'
+    payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload)
 
 

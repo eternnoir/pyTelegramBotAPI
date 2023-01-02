@@ -570,6 +570,14 @@ class Chat(JsonDeserializable):
         automatically deleted; in seconds. Returned only in getChat.
     :type message_auto_delete_time: :obj:`int`
 
+    :param has_aggressive_anti_spam_enabled: Optional. :obj:`bool`, if the chat has enabled aggressive anti-spam
+        protection. Returned only in getChat.
+    :type has_aggressive_anti_spam_enabled: :obj:`bool`
+
+    :param has_hidden_members: Optional. :obj:`bool`, if the chat has enabled hidden members. Returned only in
+        getChat.
+    :type has_hidden_members: :obj:`bool`
+
     :param has_protected_content: Optional. :obj:`bool`, if messages from the chat can't be forwarded to other 
         chats. Returned only in getChat.
     :type has_protected_content: :obj:`bool`
@@ -615,7 +623,8 @@ class Chat(JsonDeserializable):
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
-                 is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None, **kwargs):
+                 is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
+                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -642,6 +651,8 @@ class Chat(JsonDeserializable):
         self.location: ChatLocation = location
         self.active_usernames: List[str] = active_usernames
         self.emoji_status_custom_emoji_id: str = emoji_status_custom_emoji_id
+        self.has_hidden_members: bool = has_hidden_members
+        self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
 
 
 class MessageID(JsonDeserializable):
@@ -812,6 +823,9 @@ class Message(JsonDeserializable):
         commands, etc. that appear in the caption
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
+    :type has_media_spoiler: :obj:`bool`
+
     :param contact: Optional. Message is a shared contact, information about the contact
     :type contact: :class:`telebot.types.Contact`
 
@@ -892,6 +906,10 @@ class Message(JsonDeserializable):
         Telegram Login »
     :type connected_website: :obj:`str`
 
+    :param write_access_allowed: Optional. Service message: the user allowed the bot added to the attachment
+        menu to write messages
+    :type write_access_allowed: :class:`telebot.types.WriteAccessAllowed`
+
     :param passport_data: Optional. Telegram Passport data
     :type passport_data: :class:`telebot.types.PassportData`
 
@@ -902,11 +920,20 @@ class Message(JsonDeserializable):
     :param forum_topic_created: Optional. Service message: forum topic created
     :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
 
+    :param forum_topic_edited: Optional. Service message: forum topic edited
+    :type forum_topic_edited: :class:`telebot.types.ForumTopicEdited`
+
     :param forum_topic_closed: Optional. Service message: forum topic closed
     :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
 
     :param forum_topic_reopened: Optional. Service message: forum topic reopened
     :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
+
+    :param general_forum_topic_hidden: Optional. Service message: the 'General' forum topic hidden
+    :type general_forum_topic_hidden: :class:`telebot.types.GeneralForumTopicHidden`
+
+    :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
+    :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
 
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
@@ -1110,6 +1137,20 @@ class Message(JsonDeserializable):
         if 'forum_topic_reopened' in obj:
             opts['forum_topic_reopened'] = ForumTopicReopened.de_json(obj['forum_topic_reopened'])
             content_type = 'forum_topic_reopened'
+        if 'has_media_spoiler' in obj:
+            opts['has_media_spoiler'] = obj['has_media_spoiler']
+        if 'forum_topic_edited' in obj:
+            opts['forum_topic_edited'] = ForumTopicEdited.de_json(obj['forum_topic_edited'])
+            content_type = 'forum_topic_edited'
+        if 'general_forum_topic_hidden' in obj:
+            opts['general_forum_topic_hidden'] = GeneralForumTopicHidden.de_json(obj['general_forum_topic_hidden'])
+            content_type = 'general_forum_topic_hidden'
+        if 'general_forum_topic_unhidden' in obj:
+            opts['general_forum_topic_unhidden'] = GeneralForumTopicUnhidden.de_json(obj['general_forum_topic_unhidden'])
+            content_type = 'general_forum_topic_unhidden'
+        if 'write_access_allowed' in obj:
+            opts['write_access_allowed'] = WriteAccessAllowed.de_json(obj['write_access_allowed'])
+            content_type = 'write_access_allowed'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1200,6 +1241,11 @@ class Message(JsonDeserializable):
         self.forum_topic_created: Optional[ForumTopicCreated] = None
         self.forum_topic_closed: Optional[ForumTopicClosed] = None
         self.forum_topic_reopened: Optional[ForumTopicReopened] = None
+        self.has_media_spoiler: Optional[bool] = None
+        self.forum_topic_edited: Optional[ForumTopicEdited] = None
+        self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
+        self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
+        self.write_access_allowed: Optional[WriteAccessAllowed] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -2055,13 +2101,21 @@ class ReplyKeyboardMarkup(JsonSerializable):
         replies to the request with a keyboard to select the new language. Other users in the group don't see the keyboard.
     :type selective: :obj:`bool`
 
+    :param is_persistent: Optional. Use this parameter if you want to show the keyboard to specific users only.
+        Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a
+        reply (has reply_to_message_id), sender of the original message.
+        
+        Example: A user requests to change the bot's language, bot replies to the request with a keyboard to
+        select the new language. Other users in the group don't see the keyboard.
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ReplyKeyboardMarkup`
     """
     max_row_keys = 12
 
     def __init__(self, resize_keyboard: Optional[bool]=None, one_time_keyboard: Optional[bool]=None, 
-            selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None):
+            selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None,
+            is_persistent: Optional[bool]=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             if not DISABLE_KEYLEN_ERROR:
@@ -2074,6 +2128,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.row_width: int = row_width
         self.input_field_placeholder: str = input_field_placeholder
         self.keyboard: List[List[KeyboardButton]] = []
+        self.is_persistent: bool = is_persistent
 
     def add(self, *args, row_width=None):
         """
@@ -2139,6 +2194,8 @@ class ReplyKeyboardMarkup(JsonSerializable):
             json_dict['selective'] = self.selective
         if self.input_field_placeholder:
             json_dict['input_field_placeholder'] = self.input_field_placeholder
+        if self.is_persistent is not None:
+            json_dict['is_persistent'] = self.is_persistent
         return json.dumps(json_dict)
 
 
@@ -5765,9 +5822,6 @@ class InputMediaPhoto(InputMedia):
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediaphoto
 
-    :param type: Type of the result, must be photo
-    :type type: :obj:`str`
-
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
@@ -5784,17 +5838,26 @@ class InputMediaPhoto(InputMedia):
         instead of parse_mode
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param has_spoiler: Optional. True, if the uploaded photo is a spoiler
+    :type has_spoiler: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaPhoto`
     """
-    def __init__(self, media, caption=None, parse_mode=None):
+    def __init__(self, media, caption=None, parse_mode=None, caption_entities=None, has_spoiler=None):
         if util.is_pil_image(media):
             media = util.pil_image_to_file(media)
     
-        super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaPhoto, self).__init__(
+            type="photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
+
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
-        return super(InputMediaPhoto, self).to_dict()
+        ret = super(InputMediaPhoto, self).to_dict()
+        if self.has_spoiler is not None:
+            ret['has_spoiler'] = self.has_spoiler
+        return ret
 
 
 class InputMediaVideo(InputMedia):
@@ -5802,9 +5865,6 @@ class InputMediaVideo(InputMedia):
     Represents a video to be sent.
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediavideo
-
-    :param type: Type of the result, must be video
-    :type type: :obj:`str`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
@@ -5841,17 +5901,22 @@ class InputMediaVideo(InputMedia):
     :param supports_streaming: Optional. Pass True, if the uploaded video is suitable for streaming
     :type supports_streaming: :obj:`bool`
 
+    :param has_spoiler: Optional. True, if the uploaded video is a spoiler
+    :type has_spoiler: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaVideo`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None,
-                 supports_streaming=None):
-        super(InputMediaVideo, self).__init__(type="video", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 width=None, height=None, duration=None, supports_streaming=None, has_spoiler=None):
+        super(InputMediaVideo, self).__init__(
+            type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
         ret = super(InputMediaVideo, self).to_dict()
@@ -5865,6 +5930,8 @@ class InputMediaVideo(InputMedia):
             ret['duration'] = self.duration
         if self.supports_streaming:
             ret['supports_streaming'] = self.supports_streaming
+        if self.has_spoiler is not None:
+            ret['has_spoiler'] = self.has_spoiler
         return ret
 
 
@@ -5873,9 +5940,6 @@ class InputMediaAnimation(InputMedia):
     Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediaanimation
-
-    :param type: Type of the result, must be animation
-    :type type: :obj:`str`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
@@ -5909,15 +5973,21 @@ class InputMediaAnimation(InputMedia):
     :param duration: Optional. Animation duration in seconds
     :type duration: :obj:`int`
 
+    :param has_spoiler: Optional. True, if the uploaded animation is a spoiler
+    :type has_spoiler: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAnimation`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, width=None, height=None, duration=None):
-        super(InputMediaAnimation, self).__init__(type="animation", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 width=None, height=None, duration=None, has_spoiler=None):
+        super(InputMediaAnimation, self).__init__(
+            type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
         ret = super(InputMediaAnimation, self).to_dict()
@@ -5929,6 +5999,8 @@ class InputMediaAnimation(InputMedia):
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
+        if self.has_spoiler is not None:
+            ret['has_spoiler'] = self.has_spoiler
         return ret
 
 
@@ -5937,9 +6009,6 @@ class InputMediaAudio(InputMedia):
     Represents an audio file to be treated as music to be sent.
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediaaudio
-
-    :param type: Type of the result, must be audio
-    :type type: :obj:`str`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
@@ -5976,8 +6045,10 @@ class InputMediaAudio(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAudio`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, duration=None, performer=None, title=None):
-        super(InputMediaAudio, self).__init__(type="audio", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 duration=None, performer=None, title=None):
+        super(InputMediaAudio, self).__init__(
+            type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.duration = duration
         self.performer = performer
@@ -6002,10 +6073,7 @@ class InputMediaDocument(InputMedia):
 
     Telegram Documentation: https://core.telegram.org/bots/api#inputmediadocument
 
-    :param type: Type of the result, must be document
-    :type type: :obj:`str`
-
-    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an 
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an
         HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using 
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type media: :obj:`str`
@@ -6035,8 +6103,10 @@ class InputMediaDocument(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaDocument`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, disable_content_type_detection=None):
-        super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
+    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+                 disable_content_type_detection=None):
+        super(InputMediaDocument, self).__init__(
+            type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumb = thumb
         self.disable_content_type_detection = disable_content_type_detection
 
@@ -6836,6 +6906,61 @@ class ForumTopicReopened(JsonDeserializable):
     def __init__(self) -> None:
         pass
 
+class ForumTopicEdited(JsonDeserializable):
+    """
+    This object represents a service message about an edited forum topic.
+
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicedited
+
+    :param name: Optional, Name of the topic(if updated)
+    :type name: :obj:`str`
+
+    :param icon_custom_emoji_id: Optional. New identifier of the custom emoji shown as the topic icon, if it was edited;
+        an empty string if the icon was removed
+    :type icon_custom_emoji_id: :obj:`str`
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: Optional[str]=None, icon_custom_emoji_id: Optional[str]=None) -> None:
+        self.name: Optional[str] = name
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
+
+class GeneralForumTopicHidden(JsonDeserializable):
+    """
+    This object represents a service message about General forum topic hidden in the chat.
+    Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#generalforumtopichidden
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class GeneralForumTopicUnhidden(JsonDeserializable):
+    """
+    This object represents a service message about General forum topic unhidden in the chat.
+    Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#generalforumtopicunhidden
+    """
+    
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
 
 class ForumTopic(JsonDeserializable):
     """
@@ -6872,6 +6997,19 @@ class ForumTopic(JsonDeserializable):
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
 
 
+class WriteAccessAllowed(JsonDeserializable):
+    """
+    This object represents a service message about a user allowed to post messages in the chat.
+    Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#writeaccessallowed
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
 
 
 
