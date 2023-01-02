@@ -2717,10 +2717,12 @@ msgid ""
 "Use this method to receive incoming updates using long polling (wiki). An"
 " Array of Update objects is returned."
 msgstr ""
+"Используйте этот метод, чтобы получить новые апдейты с помощью long polling-а (wiki). "
+"Возвращается массив объектов Update."
 
 #: of telebot.TeleBot.get_updates:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getupdates"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getupdates"
 
 #: of telebot.TeleBot.get_updates:6
 msgid ""
@@ -2732,29 +2734,37 @@ msgid ""
 "be specified to retrieve updates starting from -offset update from the "
 "end of the updates queue. All previous updates will forgotten."
 msgstr ""
+"id первого апдейта. Должен быть на единицу больше наибольшего id среди "
+"ранее полученных апдейтов. По умолчанию, возвращается список апдейтов, "
+"начиная с самого раннего неполученного. Апдейт считается полученным как "
+"только вызван метод getUpdates со смещением больше, чем id этого апдейта. "
+"Отрицательное смещение может быть указано для получения последних offset апдейтов. "
+"Все предыдущие апдейты будут считаться полученными."
 
 #: of telebot.TeleBot.get_updates:12
 msgid ""
 "Limits the number of updates to be retrieved. Values between 1-100 are "
 "accepted. Defaults to 100."
 msgstr ""
+"Максимальное число апдейтов для получения. Допускаются значения от 1 до 100. "
+"По умолчанию 100."
 
 #: of telebot.TeleBot.get_updates:15 telebot.TeleBot.get_webhook_info:6
 #: telebot.TeleBot.polling:21
 msgid "Request connection timeout"
-msgstr ""
+msgstr "Тайм-аут запроса"
 
 #: of telebot.TeleBot.get_updates:18
 msgid "Array of string. List the types of updates you want your bot to receive."
-msgstr ""
+msgstr "Массив строк. Список видов апдейтов, которые вы хотите получать."
 
 #: of telebot.TeleBot.get_updates:21
 msgid "Timeout in seconds for long polling."
-msgstr ""
+msgstr "Тайм-аут поллинга в секундах."
 
 #: of telebot.TeleBot.get_updates:24
 msgid "An Array of Update objects is returned."
-msgstr ""
+msgstr "Возвращается массив объектов Update."
 
 #: of telebot.TeleBot.get_updates:25
 msgid ":obj:`list` of :class:`telebot.types.Update`"
@@ -2765,24 +2775,32 @@ msgid ""
 "Use this method to get a list of profile pictures for a user. Returns a "
 ":class:`telebot.types.UserProfilePhotos` object."
 msgstr ""
+"Используйте этот метод, чтобы получить список аватарок пользователя. "
+"Возвращает объект :class:`telebot.types.UserProfilePhotos`."
 
 #: of telebot.TeleBot.get_user_profile_photos:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getuserprofilephotos"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#getuserprofilephotos"
 
 #: of telebot.TeleBot.get_user_profile_photos:9
 msgid ""
 "Sequential number of the first photo to be returned. By default, all "
 "photos are returned."
 msgstr ""
+"Порядковый номер первого фото для получения. По умолчанию, возвращаются "
+"все фото."
 
 #: of telebot.TeleBot.get_user_profile_photos:12
 msgid ""
 "Limits the number of photos to be retrieved. Values between 1-100 are "
 "accepted. Defaults to 100."
 msgstr ""
+"Максимальное число фото для получения. Допускаются значения от 1 до 100. "
+"По умолчанию 100."
 
 #: of telebot.TeleBot.get_user_profile_photos:15
 msgid ""
@@ -2800,14 +2818,17 @@ msgid ""
 " success, returns a WebhookInfo object. If the bot is using getUpdates, "
 "will return an object with the url field empty."
 msgstr ""
+"Используйте этот метод, чтобы получить текущий статус вебхука. Не требует параметров. "
+"В случае успеха возвращает объект WebhookInfo. Если бот использует getUpdates, "
+"вернёт объект с пустым атрибутом url."
 
 #: of telebot.TeleBot.get_webhook_info:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#getwebhookinfo"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getwebhookinfo"
 
 #: of telebot.TeleBot.get_webhook_info:9
 msgid "On success, returns a WebhookInfo object."
-msgstr ""
+msgstr "В случае успеха, возвращает объект WebhookInfo."
 
 #: of telebot.TeleBot.get_webhook_info:10
 msgid ":class:`telebot.types.WebhookInfo`"
@@ -2818,22 +2839,24 @@ msgid ""
 "Wrap polling with infinite loop and exception handling to avoid bot stops"
 " polling."
 msgstr ""
+"Запустить поллинг в бесконечном цикле с обработкой исключений, чтобы избежать "
+"непредвиденных остановок поллинга."
 
 #: of telebot.TeleBot.infinity_polling:5 telebot.TeleBot.polling:13
 msgid "Install watchdog and psutil before using restart_on_change option."
-msgstr ""
+msgstr "Установите watchdog и psutil, чтобы использовать restart_on_change."
 
 #: of telebot.TeleBot.infinity_polling:7
 msgid "Request connection timeout."
-msgstr ""
+msgstr "Тайм-аут запроса."
 
 #: of telebot.TeleBot.infinity_polling:10 telebot.TeleBot.polling:27
 msgid "Timeout in seconds for long polling (see API docs)"
-msgstr ""
+msgstr "Тайм-аут поллинга в секундах (см. документацию API)"
 
 #: of telebot.TeleBot.infinity_polling:13 telebot.TeleBot.polling:24
 msgid "skip old updates"
-msgstr ""
+msgstr "пропускать старые апдейты"
 
 #: of telebot.TeleBot.infinity_polling:16 telebot.TeleBot.polling:30
 msgid ""
@@ -2841,6 +2864,8 @@ msgid ""
 "logging. Use logger levels from logging as a value. None/NOTSET = no "
 "error logging"
 msgstr ""
+"Кастомный (отличающийся от логгера) уровень логирования для infinity_polling. "
+"Используйте уровни из logging в качестве значений. None/NOTSET = не логировать ошибки."
 
 #: of telebot.TeleBot.infinity_polling:20
 msgid ""
@@ -2853,34 +2878,46 @@ msgid ""
 "updates created before the call to the get_updates, so unwanted updates "
 "may be received for a short period of time."
 msgstr ""
+"Список видов апдейтов, которые вы хотите получать. Например, укажите "
+"[“message”, “edited_channel_post”, “callback_query”], чтобы получать "
+"апдейты только этих видов. Полный список доступных видов апдейтов - "
+"util.update_types. Укажите пустой список, чтобы получать все апдейты, "
+"кроме chat_member (по умолчанию). Если не задан, будет использована "
+"последняя настройка. Пожалуйста учитывайте, что этот параметр не влияет "
+"на апдейты, отправленные до вызова get_updates, поэтому нежелательные апдейты "
+"могут быть получены в течение короткого периода времени."
 
 #: of telebot.TeleBot.infinity_polling:29 telebot.TeleBot.polling:47
 msgid "Restart a file on file(s) change. Defaults to False"
-msgstr ""
+msgstr "Перезапуск при изменении файлов. По умолчанию False"
 
 #: of telebot.TeleBot.infinity_polling:32
 msgid "Path to watch for changes. Defaults to current directory"
-msgstr ""
+msgstr "Путь для мониторинга изменений. По умолчанию текущая директория."
 
 #: of telebot.TeleBot.inline_handler:1
 msgid ""
 "Handles new incoming inline query. As a parameter to the decorator "
 "function, it passes :class:`telebot.types.InlineQuery` object."
 msgstr ""
+"Обрабатывает inline query. В качестве параметра, передаёт в декорируемую "
+"функцию объект :class:`telebot.types.InlineQuery`."
 
 #: of telebot.TeleBot.leave_chat:1
 msgid ""
 "Use this method for your bot to leave a group, supergroup or channel. "
 "Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы покинуть группу, супергруппу или канал. "
+"Возвращает True в случае успеха."
 
 #: of telebot.TeleBot.leave_chat:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#leavechat"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#leavechat"
 
 #: of telebot.TeleBot.load_next_step_handlers:1
 msgid "Load next step handlers from save file"
-msgstr ""
+msgstr "Загрузить next step хендлеры из файла"
 
 #: of telebot.TeleBot.load_next_step_handlers:3
 msgid ""
@@ -2889,22 +2926,28 @@ msgid ""
 "recommended to use if next_step_backend was assigned as "
 "FileHandlerBackend before entering this function"
 msgstr ""
+"Эта функция оставлена для обратной совместимости, для загрузки хендлеров "
+"из файла с помощью FileHandlerBackend и рекомендуется к использованию только "
+"если next_step_backend был определён как FileHandlerBackend до вызова этой функции"
 
 #: of telebot.TeleBot.load_next_step_handlers:8
 msgid ""
 "Filename of the file where handlers was saved, defaults to \"./.handler-"
 "saves/step.save\""
 msgstr ""
+"Имя файла, в котором были сохранены хендлеры, по умолчанию \"./.handler-"
+"saves/step.save\""
 
 #: of telebot.TeleBot.load_next_step_handlers:11
 msgid ""
 "If True is passed, after the loading file will be deleted, defaults to "
 "True"
 msgstr ""
+"Если передано True, файл будет удалён после загрузки, по умолчанию True"
 
 #: of telebot.TeleBot.load_reply_handlers:1
 msgid "Load reply handlers from save file"
-msgstr ""
+msgstr "Загрузить reply хендлеры из файла"
 
 #: of telebot.TeleBot.load_reply_handlers:3
 msgid ""
@@ -2913,18 +2956,24 @@ msgid ""
 "recommended to use if reply_backend was assigned as FileHandlerBackend "
 "before entering this function"
 msgstr ""
+"Эта функция оставлена для обратной совместимости, для загрузки хендлеров "
+"из файла с помощью FileHandlerBackend и рекомендуется к использованию только "
+"если reply_backend был определён как FileHandlerBackend до вызова этой функции"
 
 #: of telebot.TeleBot.load_reply_handlers:7
 msgid ""
 "Filename of the file where handlers was saved, defaults to \"./.handler-"
 "saves/reply.save\""
 msgstr ""
+"Имя файла, в котором были сохранены хендлеры, по умолчанию \"./.handler-"
+"saves/reply.save\""
 
 #: of telebot.TeleBot.load_reply_handlers:10
 msgid ""
 "If True is passed, after the loading file will be deleted, defaults to "
 "True, defaults to True"
 msgstr ""
+"Если передано True, файл будет удалён после загрузки, по умолчанию True"
 
 #: of telebot.TeleBot.log_out:1
 msgid ""
@@ -2935,10 +2984,16 @@ msgid ""
 " not be able to log in back to the cloud Bot API server for 10 minutes. "
 "Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы отключиться от облачного Bot API сервера "
+"перед локальным запуском бота. Вы ДОЛЖНЫ отключить бота перед тем, как "
+"запускать его локально, иначе нет никаких гарантий, что бот будет получать "
+"апдейты. После успешного вызова, вы можете тут же подключиться к локальному "
+"серверу, но не сможете подключиться обратно к облачному Bot API серверу в "
+"течение 10 минут. Возвращает True в случае успеха."
 
 #: of telebot.TeleBot.log_out:8
 msgid "Telegram documentation: https://core.telegram.org/bots/api#logout"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#logout"
 
 #: of telebot.TeleBot.message_handler:1
 msgid ""
@@ -2947,6 +3002,10 @@ msgid ""
 ":class:`telebot.types.Message` object. All message handlers are tested in"
 " the order they were added."
 msgstr ""
+"Обрабатывает входящие сообщения всех видов - text, photo, sticker, и т.д. "
+"В качестве параметра передаёт в декорируемую функцию объект "
+":class:`telebot.types.Message`. Все хендлеры сообщений проверяются в том "
+"порядке, в котором были добавлены."
 
 #: of telebot.TeleBot.message_handler:5 telebot.TeleBot.middleware_handler:7
 #: telebot.TeleBot.register_middleware_handler:6
