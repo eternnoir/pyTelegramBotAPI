@@ -5855,7 +5855,7 @@ class InputMediaPhoto(InputMedia):
 
     def to_dict(self):
         ret = super(InputMediaPhoto, self).to_dict()
-        if self.has_spoiler:
+        if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
         return ret
 
