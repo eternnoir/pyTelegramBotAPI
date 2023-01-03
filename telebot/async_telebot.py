@@ -5061,7 +5061,7 @@ class AsyncTeleBot:
 
     async def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Poll:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> types.Poll:
         """
         Use this method to stop a poll which was sent by the bot. On success, the stopped Poll is returned.
 
@@ -5074,7 +5074,7 @@ class AsyncTeleBot:
         :type message_id: :obj:`int`
 
         :param reply_markup: A JSON-serialized object for a new message markup.
-        :type reply_markup: :obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
 
         :return: On success, the stopped Poll is returned.
         :rtype: :obj:`types.Poll`
