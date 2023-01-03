@@ -2198,6 +2198,8 @@ msgid ""
 "Optional, New name of the topic, 1-128 characters. If not specififed or "
 "empty, the current name of the topic will be kept"
 msgstr ""
+"Необязательный, новое имя топика, 1-128 символов. Если не задано или пустое, "
+"сохранится текущее имя топика"
 
 #: of telebot.async_telebot.AsyncTeleBot.edit_forum_topic:17
 msgid ""
@@ -2206,6 +2208,10 @@ msgid ""
 "identifiers. Pass an empty string to remove the icon. If not specified, "
 "the current icon will be kept"
 msgstr ""
+"Необязательный, новый уникальный id кастомного эмодзи, используемого в "
+"качестве иконки топика. Используйте getForumTopicIconStickers, чтобы "
+"получить все доступные id кастомных эмодзи. Передайте пустую строку, "
+"чтобы убрать иконку. Если не задан, сохранится текущая иконка топика"
 
 #: of telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic:1
 #, fuzzy
@@ -3220,11 +3226,11 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.message_handler:5
 msgid "Example:"
-msgstr ""
+msgstr "Пример:"
 
 #: of telebot.async_telebot.AsyncTeleBot.message_handler:7
 msgid "Usage of message_handler"
-msgstr ""
+msgstr "Использование message_handler"
 
 #: of telebot.async_telebot.AsyncTeleBot.message_handler:40
 msgid ""
@@ -3232,13 +3238,16 @@ msgid ""
 "first parameter. It must return True if the command should handle the "
 "message."
 msgstr ""
+"Необязательная lambda функция. Получает сообщение (объект Message) в качестве "
+"первого параметра. Функция должна вернуть True если хендлер должен обработать "
+"сообщение."
 
 #: of telebot.async_telebot.AsyncTeleBot.message_handler:52
 #: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:23
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:13
 msgid "decorated function"
-msgstr ""
+msgstr "декорируемая функция"
 
 #: of telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:1
 msgid ""
@@ -3247,6 +3256,10 @@ msgid ""
 "parameter to the decorator function, it passes "
 ":class:`telebot.types.ChatMemberUpdated` object."
 msgstr ""
+"Обрабатывает изменения статуса бота. Для приватных чатов, этот апдейт "
+"отправляется только когда бот был заблокирован или разблокирован "
+"пользователем. В качестве параметра передаёт в декорируемую функцию "
+"объект :class:`telebot.types.ChatMemberUpdated`."
 
 #: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:1
 msgid ""
@@ -3254,20 +3267,25 @@ msgid ""
 "administrator in the chat for this to work and must have the appropriate "
 "admin rights. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы закрепить сообщение в супергруппе. Бот должен "
+"быть администратором чата и иметь соответствующие права администратора. "
+"Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:5
 msgid "Telegram documentation: https://core.telegram.org/bots/api#pinchatmessage"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#pinchatmessage"
 
 #: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:11
 msgid "Identifier of a message to pin"
-msgstr ""
+msgstr "id сообщения, которое нужно закрепить"
 
 #: of telebot.async_telebot.AsyncTeleBot.pin_chat_message:14
 msgid ""
 "Pass True, if it is not necessary to send a notification to all group "
 "members about the new pinned message"
 msgstr ""
+"Передайте True, если всем участникам группы необходимо отправить уведомление "
+"о закреплённом сообщении"
 
 #: of telebot.async_telebot.AsyncTeleBot.poll_answer_handler:1
 msgid ""
@@ -3276,6 +3294,10 @@ msgid ""
 "bot itself. As a parameter to the decorator function, it passes "
 ":class:`telebot.types.PollAnswer` object."
 msgstr ""
+"Обрабатывает изменения ответа пользователя в не анонимном опросе(когда "
+"пользователь меняет выбор). Боты получают новые ответы только в опросах, "
+"которые отправили сами. В качестве параметра передаёт в декорируемую функцию "
+"объект :class:`telebot.types.PollAnswer`."
 
 #: of telebot.async_telebot.AsyncTeleBot.poll_handler:1
 msgid ""
@@ -3283,6 +3305,9 @@ msgid ""
 "polls and polls, which are sent by the bot As a parameter to the "
 "decorator function, it passes :class:`telebot.types.Poll` object."
 msgstr ""
+"Обрабатывает изменения в состоянии опроса. Боты получают только апдейты "
+"о завершенных опросах и опросах, которые отправили сами. В качестве "
+"параметра передаёт в декорируемую функцию объект :class:`telebot.types.Poll`."
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:1
 msgid ""
@@ -3290,36 +3315,43 @@ msgid ""
 "retrieve Updates automagically and notify listeners and message handlers "
 "accordingly."
 msgstr ""
+"Запускает бота в режиме поллинга в основном цикле событий. Это позволяет "
+"боту получать апдейты (Update) автоматически и вызывать соответствующие "
+"листенеры и хендлеры."
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:4
 msgid "Warning: Do not call this function more than once!"
-msgstr ""
+msgstr "Предупреждение: Не вызывайте эту функцию более одного раза!"
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:6
 msgid "Always gets updates."
-msgstr ""
+msgstr "Всегда получает апдейты."
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:10
 msgid ""
 "Set non_stop=True if you want your bot to continue receiving updates if "
 "there is an error."
 msgstr ""
+"Укажите non_stop=True, если хотите чтобы ваш бот продолжать получать апдейты "
+"при возникновении ошибок."
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:17
 msgid "Do not stop polling when an ApiException occurs."
-msgstr ""
+msgstr "Не останавливать поллинг при возникновении ApiException."
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:23
 msgid "Delay between two update retrivals"
-msgstr ""
+msgstr "Задержка между получением апдейтов"
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:42
 msgid "Deprecated, use non_stop. Old typo, kept for backward compatibility."
 msgstr ""
+"Устарело, используйте non_stop. "
+"Старая опечатка, оставлено для обратной совместимости"
 
 #: of telebot.async_telebot.AsyncTeleBot.polling:45
 msgid "Restart a file on file(s) change. Defaults to False."
-msgstr ""
+msgstr "Перезапускать при изменениях в файлах. По умолчанию False."
 
 #: of telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:1
 msgid ""
@@ -3327,16 +3359,21 @@ msgid ""
 "checkout. As a parameter to the decorator function, it passes "
 ":class:`telebot.types.PreCheckoutQuery` object."
 msgstr ""
+"Новая pre-checkout query. Содержит полную информацию о заказе. "
+"В качестве параметра передаёт в декорируемую функцию объект "
+":class:`telebot.types.PreCheckoutQuery`."
 
 #: of telebot.async_telebot.AsyncTeleBot.process_new_updates:1
 msgid ""
 "Process new updates. Just pass list of updates - each update should be "
 "instance of Update object."
 msgstr ""
+"Обрабатывает новые апдейты. Просто передайте список апдейтов(Update и "
+"его наследники)."
 
 #: of telebot.async_telebot.AsyncTeleBot.process_new_updates:5
 msgid "list of updates"
-msgstr ""
+msgstr "список апдейтов"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:1
 msgid ""
@@ -3345,50 +3382,60 @@ msgid ""
 "have the appropriate admin rights. Pass False for all boolean parameters "
 "to demote a user."
 msgstr ""
+"Используйте этот метод, чтобы повысить или понизить пользователя в супергруппе "
+"или канале. Бот должен быть администратором чатаи и иметь соответствующие права "
+"администратора. Передайте False во все boolean параметры, чтобы понизить пользователя."
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#promotechatmember"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#promotechatmember"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:7
 msgid ""
 "Unique identifier for the target chat or username of the target channel ("
 " in the format @channelusername)"
 msgstr ""
+"Уникальный id чата или username канала (в формате @channelusername)"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:14
 msgid ""
 "Pass True, if the administrator can change chat title, photo and other "
 "settings"
 msgstr ""
+"Передайте True, если администратор может менять название чата, аватарку "
+"и другие настройки"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:17
 msgid "Pass True, if the administrator can create channel posts, channels only"
-msgstr ""
+msgstr "Передайте True, если администратор может создавать посты в канале, только для каналов"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:20
 msgid ""
 "Pass True, if the administrator can edit messages of other users, "
 "channels only"
 msgstr ""
+"Передайте True, если администратор может изменять сообщения других пользователей, "
+"только для каналов"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:23
 msgid "Pass True, if the administrator can delete messages of other users"
-msgstr ""
+msgstr "Передайте True, если администратор может удалять сообщения других пользователей"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:26
 msgid "Pass True, if the administrator can invite new users to the chat"
-msgstr ""
+msgstr "Передайте True, если администратор может приглашать новых пользователей в чат"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:29
 msgid "Pass True, if the administrator can restrict, ban or unban chat members"
-msgstr ""
+msgstr "Передайте True, если администратор может ограничивать, банить или разбанивать участников чата"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:32
 msgid "Pass True, if the administrator can pin messages, supergroups only"
-msgstr ""
+msgstr "Передайте True, если администратор может закреплять сообщения, только для супергрупп"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:35
 msgid ""
@@ -3397,10 +3444,13 @@ msgid ""
 "directly or indirectly (promoted by administrators that were appointed by"
 " him)"
 msgstr ""
+"Передайте True, если администратор может добавлять новых администраторов с "
+"подмножеством его собственных прав администратора или понижать администраторов, "
+"которых он повысил, напрямую или косвенно (администраторами, которых он назначил)"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:40
 msgid "Pass True, if the administrator's presence in the chat is hidden"
-msgstr ""
+msgstr "Передайте True, если присутствие администратора в чате скрыто"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:43
 msgid ""
@@ -3409,26 +3459,35 @@ msgid ""
 "anonymous administrators in supergroups and ignore slow mode. Implied by "
 "any other administrator privilege"
 msgstr ""
+"Передайте True, если администратор имеет доступ к логу событий чата, статистике "
+"чата, статистике сообщений в каналах, видеть участников канала, видеть анонимных "
+"администраторов в супергруппах и игнорировать медленный режим. Подразумевается "
+"любым другим правом администратора"
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:49
 msgid ""
 "Pass True, if the administrator can manage voice chats For now, bots can "
 "use this privilege only for passing to other administrators."
 msgstr ""
+"Передайте True, если администратор может управлять голосовыми чатами. На текущий "
+"момент, боты могут использовать это право администратора только для передачи другим "
+"администраторам."
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:53
 msgid "Deprecated, use can_manage_video_chats."
-msgstr ""
+msgstr "Устарело, используйте can_manage_video_chats."
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:56
 msgid ""
 "Pass True if the user is allowed to create, rename, close, and reopen "
 "forum topics, supergroups only"
 msgstr ""
+"Передайте True, если пользователю разрешено создавать, переименовывать, закрывать, "
+"и возобновлять топики, только для супергрупп"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:1
 msgid "Registers callback query handler."
-msgstr ""
+msgstr "Регистрирует хендлер callback query."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:3
@@ -3445,7 +3504,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:3
 msgid "function to be called"
-msgstr ""
+msgstr "функция-хендлер"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:18
@@ -3465,31 +3524,33 @@ msgid ""
 "True if you need to pass TeleBot instance to handler(useful for "
 "separating handlers into different files)"
 msgstr ""
+"True, если вам нужно передать экземпляр класса TeleBot в хендлер(удобно для "
+"разбиения кода на файлы)"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:1
 msgid "Registers channel post message handler."
-msgstr ""
+msgstr "Регистрирует хендлер постов в каналах."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:9
 msgid "list of commands"
-msgstr ""
+msgstr "список команд"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:12
 msgid "Regular expression"
-msgstr ""
+msgstr "Регулярное выражение"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:1
 msgid "Registers chat join request handler."
-msgstr ""
+msgstr "Регистрирует хендлер запросов на вступление в чат."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:1
 msgid "Registers chat member handler."
-msgstr ""
+msgstr "Регистрирует хендлер смены состояний участников чата."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:14
 msgid ":return:None"
@@ -3497,55 +3558,55 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:1
 msgid "Registers chosen inline handler."
-msgstr ""
+msgstr "Регистрирует хендлер выбора результата inline query."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler:1
 msgid "Registers edited channel post message handler."
-msgstr ""
+msgstr "Регистрирует хендлер изменения постов в каналах."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:1
 msgid "Registers edited message handler."
-msgstr ""
+msgstr "Регистрирует хендлер изменения сообщений."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:18
 msgid "True for private chat"
-msgstr ""
+msgstr "True для приватных чатов"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_inline_handler:1
 msgid "Registers inline handler."
-msgstr ""
+msgstr "Регистрирует хендлер inline query."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_message_handler:1
 msgid "Registers message handler."
-msgstr ""
+msgstr "Регистрирует хендлер сообщений."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_message_handler:18
 msgid "List of chat types"
-msgstr ""
+msgstr "Список видов чатов"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:1
 msgid "Registers my chat member handler."
-msgstr ""
+msgstr "Регистрирует хендлер изменений статуса бота."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:1
 msgid "Registers poll answer handler."
-msgstr ""
+msgstr "Регистрирует хендлер ответов в опросах."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_poll_handler:1
 msgid "Registers poll handler."
-msgstr ""
+msgstr "Регистрирует хендлер изменений состояния опросов."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:1
 msgid "Registers pre-checkout request handler."
-msgstr ""
+msgstr "Регистрирует хендлер pre-checkout query."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:1
 msgid "Registers shipping query handler."
-msgstr ""
+msgstr "Регистрирует хендлер shipping query."
 
 #: of telebot.async_telebot.AsyncTeleBot.remove_webhook:1
 msgid "Alternative for delete_webhook but uses set_webhook"
-msgstr ""
+msgstr "Альтернатива delete_webhook, но использует set_webhook"
 
 #: of telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:1
 msgid ""
