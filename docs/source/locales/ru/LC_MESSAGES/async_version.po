@@ -1278,7 +1278,7 @@ msgid ""
 ":class:`telebot.types.ChatJoinRequest` object."
 msgstr ""
 "Обрабатывает запрос на вступление в чат. Бот должен иметь права "
-"администратораcan_invite_users в чате, чтобы получать такие апдейты. В "
+"администратора can_invite_users в чате, чтобы получать такие апдейты. В "
 "качестве параметра передаёт в декорируемую функцию объект "
 ":class:`telebot.types.ChatJoinRequest`."
 
@@ -3383,7 +3383,7 @@ msgid ""
 "to demote a user."
 msgstr ""
 "Используйте этот метод, чтобы повысить или понизить пользователя в супергруппе "
-"или канале. Бот должен быть администратором чатаи и иметь соответствующие права "
+"или канале. Бот должен быть администратором чата и иметь соответствующие права "
 "администратора. Передайте False во все boolean параметры, чтобы понизить пользователя."
 
 #: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:5
@@ -3687,7 +3687,7 @@ msgid ""
 "restrictions from a user."
 msgstr ""
 "Используйте этот метод, чтобы ограничить пользователя в супергруппе. Бот "
-"должн быть администратором супергруппы и иметь соответствующие права "
+"должен быть администратором супергруппы и иметь соответствующие права "
 "администратора. Передайте True во все boolean параметры, чтобы снять с "
 "пользователя ограничения."
 
@@ -3738,7 +3738,7 @@ msgid ""
 "Pass True, if the user can send animations, games, stickers and use "
 "inline bots, implies can_send_media_messages"
 msgstr ""
-"Передайте True, если пользователь может отправлять гиф-ки, игры, стикеры и "
+"Передайте True, если пользователь может отправлять гифки, игры, стикеры и "
 "использовать inline ботов, подразумевает can_send_media_messages"
 
 #: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:32
@@ -3897,9 +3897,9 @@ msgid ""
 "currently send animation files of up to 50 MB in size, this limit may be "
 "changed in the future."
 msgstr ""
-"Используйте этот метод, чтобы отправить гиф-ку (GIF или H.264/MPEG-4 AVC видео "
+"Используйте этот метод, чтобы отправить гифку (GIF или H.264/MPEG-4 AVC видео "
 "без звука). В случае успеха, возвращается отправленное сообщение (Message). На "
-"текущий момент, боты могут отправлять гиф-ки весом до 50 MB, это ограничение "
+"текущий момент, боты могут отправлять гифки весом до 50 MB, это ограничение "
 "может измениться в будущем."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:4
@@ -3913,22 +3913,22 @@ msgid ""
 "String for Telegram to get an animation from the Internet, or upload a "
 "new animation using multipart/form-data."
 msgstr ""
-"Гиф-ка для отправки. Передайте file_id (String), чтобы отправить гиф-ку, "
+"Гиф-ка для отправки. Передайте file_id (String), чтобы отправить гифку, "
 "которая уже загружена на сервера Telegram (рекомендуется), передайте HTTP URL "
-"(String), чтобы отправить гиф-ку из интернета или загрузите новую гиф-ку "
+"(String), чтобы отправить гифку из интернета или загрузите новую гифку "
 "с помощью multipart/form-data."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:13
 msgid "Duration of sent animation in seconds"
-msgstr "Длительность отправленной гиф-ки в секундах"
+msgstr "Длительность отправленной гифки в секундах"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:16
 msgid "Animation width"
-msgstr "Ширина гиф-ки"
+msgstr "Ширина гифки"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:19
 msgid "Animation height"
-msgstr "Высота гиф-ки"
+msgstr "Высота гифки"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:22
 #: telebot.async_telebot.AsyncTeleBot.send_video:20
@@ -3955,12 +3955,12 @@ msgid ""
 "Animation caption (may also be used when resending animation by file_id),"
 " 0-1024 characters after entities parsing"
 msgstr ""
-"Подпись к гиф-ке (может быть использована при повторной отправке гиф-ки по file_id), "
+"Подпись к гифке (может быть использована при повторной отправке гифки по file_id), "
 "0-1024 символа после форматирования"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:31
 msgid "Mode for parsing entities in the animation caption"
-msgstr "Режим форматирования подписи к гиф-ке"
+msgstr "Режим форматирования подписи к гифке"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:51
 #: telebot.async_telebot.AsyncTeleBot.send_video:29
@@ -3979,7 +3979,7 @@ msgstr "id топика, в который будет отправлено ви�
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:60
 #, fuzzy
 msgid "Pass True, if the animation should be sent as a spoiler"
-msgstr "Передайте True, если гиф-ку нужно отправить как спойлер"
+msgstr "Передайте True, если гифку нужно отправить как спойлер"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_audio:1
 msgid ""
@@ -4077,7 +4077,7 @@ msgid ""
 "status). Returns True on success."
 msgstr ""
 "Используйте этот метод, когда вам нужно показать пользователю, что бот "
-"что-то делает. Статус устанавливается на 5 секеунд или менее (когда от "
+"что-то делает. Статус устанавливается на 5 секунд или менее (когда от "
 "бота приходит сообщение, клиенты (приложения) Telegram убирают статус typing). "
 "Возвращает True в случае успеха."
 
@@ -4449,7 +4449,7 @@ msgstr "В случае успеха, возвращается массив от
 
 #: of telebot.async_telebot.AsyncTeleBot.send_message:1
 msgid "Use this method to send text messages."
-msgstr ""
+msgstr "Используйте этот метод, чтобы отправлять текстовые сообщения."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_message:3
 msgid ""
@@ -4457,34 +4457,43 @@ msgid ""
 "otherwise you'll risk an HTTP 414 error. If you must send more than 4096 "
 "characters, use the `split_string` or `smart_split` function in util.py."
 msgstr ""
+"Предупреждение: Не отправляйте больше 4096 символов в одном сообщении, "
+"иначе вы рискуете получить ошибку HTTP 414. Если вам нужно отправить больше "
+"4096 символов, используйте функцию `split_string` или `smart_split` из util.py."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_message:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendmessage"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendmessage"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_message:12
 msgid "Text of the message to be sent"
-msgstr ""
+msgstr "Текст сообщения для отправки"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_message:18
 msgid ""
 "List of special entities that appear in message text, which can be "
 "specified instead of parse_mode"
 msgstr ""
+"Список отформатированных частей в тексте сообщения, "
+"можно использовать вместо parse_mode"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_message:27
 msgid ""
 "If True, the message content will be hidden for all users except for the "
 "target user"
 msgstr ""
+"Если True, содержимое сообщения будет скрыто от всех пользователей, кроме "
+"заданного"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:1
 msgid "Use this method to send photos. On success, the sent Message is returned."
 msgstr ""
+"Используйте этот метод, чтобы отправить фото. В случае успеха, возвращается "
+"отправленное сообщение (Message)."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendphoto"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendphoto"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:8
 msgid ""
@@ -4495,63 +4504,74 @@ msgid ""
 " width and height must not exceed 10000 in total. Width and height ratio "
 "must be at most 20."
 msgstr ""
+"Фото для отправки. Передайте file_id (String), чтобы отправить фото, "
+"которое уже загружено на сервера Telegram (рекомендуется), передайте HTTP URL "
+"(String), чтобы отправить фото из интернета или загрузите новое с помощью "
+"multipart/form-data. Фото должно весить не более 10 MB. Ширина и высота фото не "
+"должны суммарно превышать 10000. Отношение ширины и высоты должно быть не более 20."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:13
 msgid ""
 "Photo caption (may also be used when resending photos by file_id), 0-1024"
 " characters after entities parsing"
 msgstr ""
+"Подпись к фото (может быть использована при повторной отправке файла по file_id), "
+"0-1024 символа после форматирования"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:16
 msgid "Mode for parsing entities in the photo caption."
-msgstr ""
+msgstr "Режим форматирования подписи к фото."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:45
 #, fuzzy
 msgid "Pass True, if the photo should be sent as a spoiler"
-msgstr ""
-"Передайте True, если номер телефона пользователя нужно отправить "
-"платежной системе"
+msgstr "Передайте True, если фото должно быть отправлено как спойлер"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:1
 msgid ""
 "Use this method to send a native poll. On success, the sent Message is "
 "returned."
 msgstr ""
+"Используйте этот метод, чтобы отправить опрос. В случае успеха, возвращается "
+"отправленное сообщение (Message)."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendpoll"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendpoll"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:9
 msgid "Poll question, 1-300 characters"
-msgstr ""
+msgstr "Тема опроса, 1-300 символов"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:12
 msgid ""
 "A JSON-serialized list of answer options, 2-10 strings 1-100 characters "
 "each"
-msgstr ""
+msgstr "JSON-сериализованный список вариантов ответа, 2-10 строк по 1-100 символов"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:15
 msgid "True, if the poll needs to be anonymous, defaults to True"
-msgstr ""
+msgstr "True, если опрос должен быть анонимным, по умолчанию True"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:18
 msgid "Poll type, “quiz” or “regular”, defaults to “regular”"
-msgstr ""
+msgstr "Вид опроса, “quiz” или “regular”, по умолчанию “regular”"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:21
 msgid ""
 "True, if the poll allows multiple answers, ignored for polls in quiz "
 "mode, defaults to False"
 msgstr ""
+"True, если опрос позволяет выбрать несколько вариантов ответа, игнорируется в "
+"опросах вида “quiz”, по умолчанию False"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:24
 msgid ""
 "0-based identifier of the correct answer option. Available only for polls"
 " in quiz mode, defaults to None"
 msgstr ""
+"Индекс правильного варианта ответа, начиная с 0. Доступно только для опросов "
+"вида “quiz”, по умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:28
 msgid ""
@@ -4559,56 +4579,70 @@ msgid ""
 " lamp icon in a quiz-style poll, 0-200 characters with at most 2 line "
 "feeds after entities parsing"
 msgstr ""
+"Текст, который будет показан при выборе неправильно варианта ответа или "
+"нажатии на иконку лампочки в опросах вида “quiz”, 0-200 символов и не "
+"более 2 строк после форматирования"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:32
 msgid ""
 "Mode for parsing entities in the explanation. See formatting options for "
 "more details."
 msgstr ""
+"Режим форматирования explanation. См. formatting options для получения "
+"подробностей."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:35
 msgid ""
 "Amount of time in seconds the poll will be active after creation, 5-600. "
 "Can't be used together with close_date."
 msgstr ""
+"Время в секундах, в течение которого опрос будет активен, 5-600. "
+"Нельзя использовать вместо с close_date."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:38
 msgid "Point in time (Unix timestamp) when the poll will be automatically closed."
-msgstr ""
+msgstr "Время (UNIX timestamp), когда опрос будет автоматически завершен."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:41
 msgid ""
 "Pass True, if the poll needs to be immediately closed. This can be useful"
 " for poll preview."
 msgstr ""
+"Передайте True, если опрос должен быть завершен немедленно. Может быть полезно "
+"для предпросмотра опроса."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:50
 msgid "Pass True, if the poll allows multiple options to be voted simultaneously."
-msgstr ""
+msgstr "Передайте True, если опрос позволяет выбрать несколько вариантов одновременно."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:57
 msgid "Timeout in seconds for waiting for a response from the user."
-msgstr ""
+msgstr "Тайм-аут в секундах, ожидание ответа от пользователя."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:60
 msgid ""
 "A JSON-serialized list of special entities that appear in the "
 "explanation, which can be specified instead of parse_mode"
 msgstr ""
+"JSON-сериализованный список отформатированных частей explanation, "
+"можно использовать вместо parse_mode"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_poll:67
 msgid "The identifier of a message thread, in which the poll will be sent"
-msgstr ""
+msgstr "id топика, в который будет отправлен опрос"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_sticker:1
 msgid ""
 "Use this method to send static .WEBP, animated .TGS, or video .WEBM "
 "stickers. On success, the sent Message is returned."
 msgstr ""
+"Используйте этот метод, чтобы отправить статичный .WEBP, анимированный .TGS, "
+"или видео .WEBM стикер. В случае успеха возвращает отправленное "
+"сообщение (Message)."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_sticker:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendsticker"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendsticker"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_sticker:9
 msgid ""
@@ -4617,40 +4651,46 @@ msgid ""
 "Telegram to get a .webp file from the Internet, or upload a new one using"
 " multipart/form-data."
 msgstr ""
+"Стикер для отправки. Передайте file_id (String), чтобы отправить файл, "
+"который уже загружен на сервера Telegram (рекомендуется), передайте HTTP URL "
+"(String), чтобы отправить .webp файл из интернета или загрузите новый с помощью "
+"multipart/form-data."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_sticker:21
 msgid "to disable the notification"
-msgstr ""
+msgstr "отключить уведомление"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:1
 msgid ""
 "Use this method to send information about a venue. On success, the sent "
 "Message is returned."
 msgstr ""
+"Используйте этот метод, чтобы отправить информацию о месте. В случае успеха "
+"возвращается отправленное сообщение (Message)."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvenue"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendvenue"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:8
 msgid "Latitude of the venue"
-msgstr ""
+msgstr "Широта"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:11
 msgid "Longitude of the venue"
-msgstr ""
+msgstr "Долгота"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:14
 msgid "Name of the venue"
-msgstr ""
+msgstr "Название места"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:17
 msgid "Address of the venue"
-msgstr ""
+msgstr "Адрес места"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:20
 msgid "Foursquare identifier of the venue"
-msgstr ""
+msgstr "id места на Foursquare"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:23
 msgid ""
@@ -4658,24 +4698,29 @@ msgid ""
 "“arts_entertainment/default”, “arts_entertainment/aquarium” or "
 "“food/icecream”.)"
 msgstr ""
+"Тип места на Foursquare, если известен. (Например, "
+"“arts_entertainment/default”, “arts_entertainment/aquarium” или "
+"“food/icecream”.)"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:45
 msgid "Google Places identifier of the venue"
-msgstr ""
+msgstr "id места на Google Places"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:48
 msgid "Google Places type of the venue."
-msgstr ""
+msgstr "Тип места на Google Places."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:1
 msgid ""
 "Use this method to send video files, Telegram clients support mp4 videos "
 "(other formats may be sent as Document)."
 msgstr ""
+"Используйте этот метод, чтобы отправить видео, клиенты (приложения) Telegram "
+"поддерживают mp4 видео (другие форматы могут быть отправлены как Document)."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvideo"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendvideo"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:8
 msgid ""
@@ -4683,40 +4728,43 @@ msgid ""
 "that is already on the Telegram servers, or upload a new video file using"
 " multipart/form-data."
 msgstr ""
+"Видео для отправки. Передайте file_id (String), чтобы отправить видео, "
+"которое уже загружено на сервера Telegram или загрузите новое с помощью "
+"multipart/form-data."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:11
 #: telebot.async_telebot.AsyncTeleBot.send_video_note:13
 msgid "Duration of sent video in seconds"
-msgstr ""
+msgstr "Длительность отправленного видео в секундах"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:14
 msgid "Video width"
-msgstr ""
+msgstr "Ширина видео"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:17
 msgid "Video height"
-msgstr ""
+msgstr "Высота видео"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:23
 msgid ""
 "Video caption (may also be used when resending videos by file_id), 0-1024"
 " characters after entities parsing"
 msgstr ""
+"Подпись к видео (может быть использована при повторной отправке файла по file_id), "
+"0-1024 символа после форматирования"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:26
 msgid "Mode for parsing entities in the video caption"
-msgstr ""
+msgstr "Режим форматирования подписи к видео"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:32
 msgid "Pass True, if the uploaded video is suitable for streaming"
-msgstr ""
+msgstr "Передайте True, если загруженное видео подходит для стриминга"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video:61
 #, fuzzy
 msgid "Pass True, if the video should be sent as a spoiler"
-msgstr ""
-"Передайте True, если номер телефона пользователя нужно отправить "
-"платежной системе"
+msgstr "Передайте True, если видео должно быть отправлено как спойлер"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video_note:1
 msgid ""
@@ -4724,10 +4772,14 @@ msgid ""
 "to 1 minute long. Use this method to send video messages. On success, the"
 " sent Message is returned."
 msgstr ""
+"Начиная с версии v.4.0, клиенты(приложения) Telegram поддерживают скругленные "
+"квадратные MPEG4 видео длительностью до минуты. Используйте этот метод, чтобы "
+"отправить видео заметку (кружочек). В случае успеха возвращается отправленное "
+"сообщение (Message)."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video_note:4
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvideonote"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendvideonote"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video_note:9
 msgid ""
@@ -4736,14 +4788,18 @@ msgid ""
 "multipart/form-data. Sending video notes by a URL is currently "
 "unsupported"
 msgstr ""
+"Видео заметка для отправки. Передайте file_id (String), чтобы отправить видео "
+"заметку, которая уже загружена на сервера Telegram или загрузите новую с помощью "
+"multipart/form-data. На текущий момент, отправка видео заметок по URL не "
+"поддерживается"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video_note:16
 msgid "Video width and height, i.e. diameter of the video message"
-msgstr ""
+msgstr "Ширина и высота видео (диаметр видео сообщения)"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_video_note:45
 msgid "Identifier of a message thread, in which the video note will be sent"
-msgstr ""
+msgstr "id топика, в который будет отправлена видео заметка"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_voice:1
 msgid ""
@@ -4754,10 +4810,16 @@ msgid ""
 "Bots can currently send voice messages of up to 50 MB in size, this limit"
 " may be changed in the future."
 msgstr ""
+"Используйте этот метод, чтобы отправить голосовое сообщение. Ваше аудио "
+"должно быть в формате .OGG и закодировано с помощью OPUS (другие форматы "
+"можно отправить как Audio или Document). В случае успеха возвращается "
+"отправленное сообщение (Message). На текущий момент, боты могут отправлять "
+"голосовые сообщения весом до 50 MB, это ограничение может быть изменено в "
+"будущем."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_voice:5
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendvoice"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendvoice"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_voice:10
 msgid ""
@@ -4766,38 +4828,50 @@ msgid ""
 "Telegram to get a file from the Internet, or upload a new one using "
 "multipart/form-data."
 msgstr ""
+"Аудио для отправки. Передайте file_id (String), чтобы отправить аудио, "
+"которое уже загружено на сервера Telegram (рекомендуется), передайте HTTP URL "
+"(String), чтобы отправить аудио из интернета или загрузите новое с помощью "
+"multipart/form-data."
 
 #: of telebot.async_telebot.AsyncTeleBot.send_voice:14
 msgid "Voice message caption, 0-1024 characters after entities parsing"
-msgstr ""
+msgstr "Подпись к голосовому сообщению, 0-1024 символа после форматирования"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_voice:17
 msgid "Duration of the voice message in seconds"
-msgstr ""
+msgstr "Длительность голосового сообщения в секундах"
 
 #: of telebot.async_telebot.AsyncTeleBot.send_voice:28
 msgid ""
 "Mode for parsing entities in the voice message caption. See formatting "
 "options for more details."
 msgstr ""
+"Режим форматирования подписи к голосовому сообщению. См. formatting options "
+"для получения подробностей."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:1
 msgid ""
 "Use this method to set a custom title for an administrator in a "
 "supergroup promoted by the bot. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы задать кастомное звание администратора "
+"супергруппы, повышенного ботом. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setchatadministratorcustomtitle"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setchatadministratorcustomtitle"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:13
 msgid ""
 "New custom title for the administrator; 0-16 characters, emoji are not "
 "allowed"
 msgstr ""
+"Новое кастомное звание администратора; 0-16 символов, эмодзи не "
+"разрешены"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_description:1
 msgid ""
@@ -4805,40 +4879,51 @@ msgid ""
 "The bot must be an administrator in the chat for this to work and must "
 "have the appropriate admin rights."
 msgstr ""
+"Используйте этот метод, чтобы изменить описание супергруппы или канала. "
+"Бот должен быть администратором чата и иметь соответствующие права "
+"администратора."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_description:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setchatdescription"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setchatdescription"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_description:10
 msgid "Str: New chat description, 0-255 characters"
-msgstr ""
+msgstr "Str: Новое описание чата, 0-255 символов"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:1
 msgid ""
 "Use this method to change the bot's menu button in a private chat, or the"
 " default menu button. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы изменить кнопку меню в приватном чате или "
+"кнопку меню по умолчанию. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setchatmenubutton"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setchatmenubutton"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:7
 msgid ""
 "Unique identifier for the target private chat. If not specified, default "
 "bot's menu button will be changed."
 msgstr ""
+"Уникальный id приватного чата. Если не указан, будет изменена кнопка меню "
+"по умолчанию."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:11
 msgid ""
 "A JSON-serialized object for the new bot's menu button. Defaults to "
 "MenuButtonDefault"
-msgstr ""
+msgstr "JSON-сериализованный объект новой кнопки меню. По умолчанию MenuButtonDefault"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_permissions:1
 msgid ""
@@ -4846,16 +4931,21 @@ msgid ""
 "must be an administrator in the group or a supergroup for this to work "
 "and must have the can_restrict_members admin rights."
 msgstr ""
+"Используйте этот метод, чтобы задать права по умолчанию для всех участников чата. "
+"Бот должен быть администратором группы или супергруппы и иметь права администратора "
+"can_restrict_members."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_permissions:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setchatpermissions"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setchatpermissions"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_permissions:11
 msgid "New default chat permissions"
-msgstr ""
+msgstr "Новые права по умолчанию"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_photo:1
 msgid ""
@@ -4866,14 +4956,19 @@ msgid ""
 "only work if the ‘All Members Are Admins’ setting is off in the target "
 "group."
 msgstr ""
+"Используйте этот метод, чтобы задать новую аватарку чата. В приватных чатах "
+"аватарки менять нельзя. Бот должен быть администратором чата и иметь "
+"соответствующие права администратора. Возвращает True в случае успеха. "
+"Примечание: В обычных группах (не супергруппы), этот метод будет работать "
+"только если настройка ‘All Members Are Admins’ отключена."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_photo:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#setchatphoto"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#setchatphoto"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_photo:13
 msgid "InputFile: New chat photo, uploaded using multipart/form-data"
-msgstr ""
+msgstr "InputFile: Новая аватарка чата, загруженная с помощью multipart/form-data"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:1
 msgid ""
@@ -4883,20 +4978,26 @@ msgid ""
 "optionally returned in getChat requests to check if the bot can use this "
 "method. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы задать стикерпак супергруппы. Бот должен быть "
+"администратором чата и иметь соответствующие права администратора. "
+"Используйте атрибут can_set_sticker_set, возвращаемые методом getChat, чтобы "
+"проверить, что бот может использовать этот метод. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setchatstickerset"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setchatstickerset"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:10
 msgid "Name of the sticker set to be set as the group sticker set"
-msgstr ""
+msgstr "Имя стикерпака для установки в качестве стикерпака группы"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set:13
 msgid "StickerSet object"
-msgstr ""
+msgstr "Объект StickerSet"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_title:1
 msgid ""
@@ -4906,56 +5007,67 @@ msgid ""
 "success. Note: In regular groups (non-supergroups), this method will only"
 " work if the ‘All Members Are Admins’ setting is off in the target group."
 msgstr ""
+"Используйте этот метод, чтобы изменить название чата. В приватных чатах "
+"изменить название нельзя. Бот должен быть администратором чата и иметь "
+"соответствующие права админа. Возвращает True в случае успеха. "
+"Примечание: В обычных группах (не супергруппы), этот метод будет работать "
+"только если настройка ‘All Members Are Admins’ отключена."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_title:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#setchattitle"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#setchattitle"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_chat_title:13
 msgid "New chat title, 1-255 characters"
-msgstr ""
+msgstr "Новое название чата, 1-255 символов"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:1
 msgid "Sets the value of points in the game to a specific user."
-msgstr ""
+msgstr "Задаёт количество очков пользователя в игре."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#setgamescore"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#setgamescore"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:8
 msgid "New score, must be non-negative"
-msgstr ""
+msgstr "Количество очков, должно быть неотрицательным"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:11
 msgid ""
 "Pass True, if the high score is allowed to decrease. This can be useful "
 "when fixing mistakes or banning cheaters"
 msgstr ""
+"Передайте True, если количество очков могут быть уменьшено. Может быть полезно "
+"при исправлении ошибок или бане читеров"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:23
 msgid ""
 "Pass True, if the game message should not be automatically edited to "
 "include the current scoreboard"
 msgstr ""
+"Передайте True, если сообщение с игрой должно быть автоматически "
+"отредактировано, чтобы отобразить новый результат"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:26
 msgid ""
 "On success, if the message was sent by the bot, returns the edited "
 "Message, otherwise returns True."
 msgstr ""
+"В случае успеха, если сообщение было отправлено ботом, возвращает измененное "
+"сообщение (Message), иначе возвращает True."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_commands:1
 msgid "Use this method to change the list of the bot's commands."
-msgstr ""
+msgstr "Используйте этот метод, чтобы изменить список команд бота."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_commands:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#setmycommands"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#setmycommands"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_commands:5
 msgid "List of BotCommand. At most 100 commands can be specified."
-msgstr ""
+msgstr "Список объектов BotCommand. Можно задать не более 100 команд."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:1
 msgid ""
@@ -4964,18 +5076,26 @@ msgid ""
 "rights will be suggested to users, but they are are free to modify the "
 "list before adding the bot. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы изменить права администратора по умолчанию, "
+"запрашиваемые при добавлении бота в группу или канал в качестве администратора. "
+"Эти права будут предложены пользователям, но пользователи могут изменить список "
+"перед добавлением бота. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:7
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setmydefaultadministratorrights"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setmydefaultadministratorrights"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:9
 msgid ""
 "A JSON-serialized object describing new default administrator rights. If "
 "not specified, the default administrator rights will be cleared."
 msgstr ""
+"JSON-сериалиованный объект, описывающий новые права администратора по умолчанию. "
+"Если не указан, права администратора по умолчанию будут сброшены."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:13
 msgid ""
@@ -4983,10 +5103,12 @@ msgid ""
 "channels. Otherwise, the default administrator rights of the bot for "
 "groups and supergroups will be changed."
 msgstr ""
+"Передайте True, чтобы изменить права администратора по умолчанию в каналах. "
+"Иначе, будут изменены права администратора по умолчанию для групп и супергрупп."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_state:1
 msgid "Sets a new state of a user."
-msgstr ""
+msgstr "Задаёт новое состояние (стейт) пользователя."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_state:5
 msgid ""
@@ -4995,26 +5117,34 @@ msgid ""
 "user_id, this means that state will be set for the user in his private "
 "chat with a bot."
 msgstr ""
+"Вы должны указать и user id и chat id, чтобы задать состояние (стейт) "
+"пользователя в чате. Иначе, если вы укажете только user_id, chat_id будет "
+"равен user_id, что означает смену состояния (стейта) пользователя в его "
+"приватном чате с ботом."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_state:12
 msgid "new state. can be string, integer, or :class:`telebot.types.State`"
-msgstr ""
+msgstr "новое состояние (стейт). может быть строкой, числом или :class:`telebot.types.State`"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:1
 msgid ""
 "Use this method to move a sticker in a set created by the bot to a "
 "specific position . Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы передвинуть стикер в стикерпаке, созданном ботом, на заданную "
+"позицию. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:3
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setstickerpositioninset"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setstickerpositioninset"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:8
 msgid "New sticker position in the set, zero-based"
-msgstr ""
+msgstr "Новая позиция стикера в стикерпаке, начиная с нуля"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:1
 msgid ""
@@ -5022,24 +5152,29 @@ msgid ""
 "thumbnails can be set for animated sticker sets only. Returns True on "
 "success."
 msgstr ""
+"Используйте этот метод, чтобы задать обложку стикерпака. Анимированные "
+"обложки могут быть заданы только для анимированных стикерпаков. Возвращает "
+"True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setstickersetthumb"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#setstickersetthumb"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_update_listener:1
 msgid "Update listener is a function that gets any update."
-msgstr ""
+msgstr "Задаёт функцию-листенер, которая будет вызвана при получении нового апдейта."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_update_listener:3
 msgid "function that should get update."
-msgstr ""
+msgstr "Функция-листенер."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_update_listener:6
 msgid "Example on asynchronous update listeners."
-msgstr ""
+msgstr "Пример асинхронного листенера апдейтов."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:1
 msgid ""
@@ -5049,6 +5184,11 @@ msgid ""
 "Update. In case of an unsuccessful request, we will give up after a "
 "reasonable amount of attempts. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы задать URL и получать входящие апдейты с "
+"помощью вебхука. Как только у бота появляется апдейт, он будет отправлен с "
+"помощью HTTPS POST запроса на заданный URL, содержащего JSON-сериализованный "
+"Update. В случае неудачного запроса, отправка апдейта будет отменена после "
+"разумного числа попыток. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:6
 msgid ""
@@ -5057,22 +5197,30 @@ msgid ""
 "request will contain a header “X-Telegram-Bot-Api-Secret-Token” with the "
 "secret token as content."
 msgstr ""
+"Если вы хотите удостовериться, что вебхук был задан вами, вы можете "
+"задать секретный токен в параметре secret_token. Если указан, запрос "
+"с апдейтом будет содержать хедер “X-Telegram-Bot-Api-Secret-Token” с "
+"секретным токеном в качестве значения."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:9
 msgid "Telegram Documentation: https://core.telegram.org/bots/api#setwebhook"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#setwebhook"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:11
 msgid ""
 "HTTPS URL to send updates to. Use an empty string to remove webhook "
 "integration, defaults to None"
 msgstr ""
+"HTTPS URL для отправки апдейтов. Используйте пустую строку, чтобы удалить "
+"вебхук, по умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:14
 msgid ""
 "Upload your public key certificate so that the root certificate in use "
 "can be checked, defaults to None"
 msgstr ""
+"Загрузите публичный ключ вашего SSL сертификата, чтобы корневой сертификат мог быть "
+"проверен, по умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:17
 msgid ""
@@ -5081,6 +5229,10 @@ msgid ""
 "limit the load on your bot's server, and higher values to increase your "
 "bot's throughput, defaults to None"
 msgstr ""
+"Максимально-допустимое количество одновременных HTTPS соединений для доставки "
+"апдейтов, 1-100. По умолчанию 40. Используйте меньшие значения для уменьшения "
+"нагрузки на ваш сервер и большие значения, чтобы увеличить пропускную способность "
+"вашего бота, по умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:22
 msgid ""
@@ -5093,6 +5245,14 @@ msgid ""
 "updates created before the call to the setWebhook, so unwanted updates "
 "may be received for a short period of time. Defaults to None"
 msgstr ""
+"Список видов апдейтов, которые вы хотите получать, в формате JSON. "
+"Например, укажите [“message”, “edited_channel_post”, “callback_query”], "
+"чтобы получать апдейты только этих видов. Полный список доступных видов "
+"апдейтов - util.update_types. Укажите пустой список, чтобы получать все "
+"апдейты, кроме chat_member (по умолчанию). Если не задан, будет использована "
+"последняя настройка. Пожалуйста учтите, чтобы этот параметр не влияет на апдейты, "
+"отправленные до вызова setWebhooks, поэтому нежелательные апдейты могут быть "
+"получены в течение короткого периода времени. По умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:22
 msgid ""
@@ -5103,6 +5263,12 @@ msgid ""
 "types except chat_member (default). If not specified, the previous "
 "setting will be used."
 msgstr ""
+"Список видов апдейтов, которые вы хотите получать, в формате JSON. "
+"Например, укажите [“message”, “edited_channel_post”, “callback_query”], "
+"чтобы получать апдейты только этих видов. Полный список доступных видов "
+"апдейтов - util.update_types. Укажите пустой список, чтобы получать все "
+"апдейты, кроме chat_member (по умолчанию). Если не задан, будет использована "
+"последняя настройка."
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:27
 msgid ""
@@ -5110,12 +5276,17 @@ msgid ""
 " call to the setWebhook, so unwanted updates may be received for a short "
 "period of time. Defaults to None"
 msgstr ""
+"Пожалуйста учтите, чтобы этот параметр не влияет на апдейты, "
+"отправленные до вызова setWebhooks, поэтому нежелательные апдейты могут быть "
+"получены в течение короткого периода времени. По умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:32
 msgid ""
 "The fixed IP address which will be used to send webhook requests instead "
 "of the IP address resolved through DNS, defaults to None"
 msgstr ""
+"Фиксированный IP адрес, который будет использоваться для отправки запросов к вебхуку"
+"вместо IP адреса, полученного с через DNS, по умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:42
 msgid ""
@@ -5124,14 +5295,18 @@ msgid ""
 "0-9, _ and - are allowed. The header is useful to ensure that the request"
 " comes from a webhook set by you. Defaults to None"
 msgstr ""
+"Секретный токен для отправки в хедере “X-Telegram-Bot-Api-Secret-Token” "
+"в каждом запросе с апдейтом, 1-256 символов. Разрешены только символы A-Z, a-z, "
+"0-9, _ и -. Хедер полезен для, того чтобы удостовериться, что запрос приходит"
+"с вебхука, установленного вами. По умолчанию None"
 
 #: of telebot.async_telebot.AsyncTeleBot.set_webhook:47
 msgid ":obj:`bool` if the request was successful."
-msgstr ""
+msgstr ":obj:`bool` если запрос был успешным."
 
 #: of telebot.async_telebot.AsyncTeleBot.setup_middleware:1
 msgid "Setup middleware."
-msgstr ""
+msgstr "Настраивает middleware"
 
 #: of telebot.async_telebot.AsyncTeleBot.setup_middleware:5
 msgid ""
@@ -5139,10 +5314,13 @@ msgid ""
 ":class:`telebot.asyncio_handler_backends.BaseMiddleware` section for "
 "more."
 msgstr ""
+"Взгляните на секцию "
+":class:`telebot.asyncio_handler_backends.BaseMiddleware` для получения "
+"подробностей."
 
 #: of telebot.async_telebot.AsyncTeleBot.setup_middleware:7
 msgid "Middleware-class."
-msgstr ""
+msgstr "Класс-Middleware."
 
 #: of telebot.async_telebot.AsyncTeleBot.shipping_query_handler:1
 msgid ""
@@ -5150,10 +5328,13 @@ msgid ""
 "price. As a parameter to the decorator function, it passes "
 ":class:`telebot.types.ShippingQuery` object."
 msgstr ""
+"Обрабатывает shipping query. Только для инвойсов с гибкой ценой. "
+"В качестве параметра передаёт в декорируемую функцию объект "
+":class:`telebot.types.ShippingQuery`."
 
 #: of telebot.async_telebot.AsyncTeleBot.skip_updates:1
 msgid "Skip existing updates. Only last update will remain on server."
-msgstr ""
+msgstr "Пропускает существующие апдейты. На сервере останется только последний апдейт."
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:1
 msgid ""
@@ -5161,52 +5342,65 @@ msgid ""
 "live_period expires. On success, if the message is not an inline message,"
 " the edited Message is returned, otherwise True is returned."
 msgstr ""
+"Используйте этот метод, чтобы остановить обновление live местоположения до "
+"истечения live_period. В случае успеха, если сообщение не является inline сообщением,"
+"возвращается измененное сообщение (Message), иначе возвращается True."
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#stopmessagelivelocation"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#stopmessagelivelocation"
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:9
 msgid ""
 "Required if inline_message_id is not specified. Identifier of the message"
 " with live location to stop"
 msgstr ""
+"Обязательный, если не указан inline_message_id. id сообщения live местоположением, "
+"которое нужно остановить"
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:12
 msgid ""
 "Required if chat_id and message_id are not specified. Identifier of the "
 "inline message with live location to stop"
 msgstr ""
+"Обязательный, если не указаны chat_id и message_id. id inline сообщения с live "
+"местоположением, которое нужно остановить"
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_message_live_location:22
 msgid ""
 "On success, if the message is not an inline message, the edited Message "
 "is returned, otherwise True is returned."
 msgstr ""
+"В случае успеха, если сообщение не является inline сообщением, возвращается "
+"измененное сообщение (Message), иначе возвращается True."
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_poll:1
 msgid ""
 "Use this method to stop a poll which was sent by the bot. On success, the"
 " stopped Poll is returned."
 msgstr ""
+"Используйте этот метод, чтобы завершить опрос, отправленный ботом. В случае успеха "
+"возвращается завершенный опрос (Poll)."
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_poll:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#stoppoll"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#stoppoll"
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_poll:8
 msgid "Identifier of the original message with the poll"
-msgstr ""
+msgstr "id сообщения с опросом"
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_poll:11
 msgid "A JSON-serialized object for a new message markup."
-msgstr ""
+msgstr "JSON-сериализованный объект новой inline клавиатуры."
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_poll:14
 msgid "On success, the stopped Poll is returned."
-msgstr ""
+msgstr "В случае успеха возвращается завершенный опрос (Poll)."
 
 #: of telebot.async_telebot.AsyncTeleBot.stop_poll:15
 msgid ":obj:`types.Poll`"
@@ -5222,20 +5416,27 @@ msgid ""
 "the user is a member of the chat they will also be removed from the chat."
 " If you don't want this, use the parameter only_if_banned."
 msgstr ""
+"Используйте этот метод, чтобы разбанить ранее кикнутого пользователя в "
+"супергруппе или канале. Пользовать не вернется в группу или канал автоматически, "
+"но сможет присоединиться с помощью ссылки и т.д. Бот должен быть администратором. "
+"По умолчанию, этот метод гарантирует, что после вызова, пользователь не является "
+"участником чата, но может присоединиться. Поэтому если пользовать является участником "
+"чата, он будет кикнут, но не забанен. Если вы хотите изменить это поведение, "
+"используйте параметр only_if_banned."
 
 #: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#unbanchatmember"
-msgstr ""
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#unbanchatmember"
 
 #: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:9
 msgid ""
 "Unique identifier for the target group or username of the target "
 "supergroup or channel (in the format @username)"
-msgstr ""
+msgstr "Уникальный id группы или username супергруппы или канала (в формате @username)"
 
 #: of telebot.async_telebot.AsyncTeleBot.unban_chat_member:16
 msgid "Do nothing if the user is not banned"
-msgstr ""
+msgstr "Ничего не делать, если пользователь не забанен"
 
 #: of telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:1
 msgid ""
@@ -5243,16 +5444,21 @@ msgid ""
 " or channel. The bot must be an administrator for this to work and must "
 "have the appropriate administrator rights. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы разбанить ране забаненный канал в супергруппе "
+"или канала. Бот должен быть администратором и иметь соответствующие права "
+"администратора. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:6
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#unbanchatsenderchat"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#unbanchatsenderchat"
 
 #: of telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:11
 msgid "Unique identifier of the target sender chat."
-msgstr ""
+msgstr "Уникальный id чата."
 
 #: of telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic:1
 #, fuzzy
@@ -5261,17 +5467,18 @@ msgid ""
 " The bot must be an administrator in the chat for this to work and must "
 "have can_manage_topics administrator rights. Returns True on success."
 msgstr ""
-"Используйте этот метод, чтобы удалить топик в супергруппе. Бот должен "
-"быть администратором чата и иметь права администратора can_manage_topics,"
-" за исключением случае, когда бот является создателем топика. Возвращает "
-"True в случае успеха."
+"Используйте этот метод, чтобы сделать топик 'General' видимым в супергруппе "
+"с топиками. Бот должен быть администратором чата и иметь права администратора "
+"can_manage_topics. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic:5
 #, fuzzy
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#unhidegeneralforumtopic"
-msgstr "Документация Telegram: https://core.telegram.org/bots/api#deleteforumtopic"
+msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#unhidegeneralforumtopic"
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:1
 msgid ""
@@ -5279,12 +5486,17 @@ msgid ""
 "bot must be an administrator in the chat for this to work and must have "
 "the appropriate admin rights. Returns True on success."
 msgstr ""
+"Используйте этот метод, что открепить все закрепленные сообщения в супергруппе. "
+"Бот должен быть администратором чата и иметь соответствующие права администратора. "
+"Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#unpinallchatmessages"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#unpinallchatmessages"
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:1
 msgid ""
@@ -5293,16 +5505,21 @@ msgid ""
 "have the can_pin_messages administrator right in the supergroup. Returns "
 "True on success."
 msgstr ""
+"Используйте этот метод, что открепить все закрепленные сообщения в топике. "
+"Бот должен быть администратором чата и иметь права администратора "
+"can_pin_messages в супергруппе. Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#unpinallforumtopicmessages"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#unpinallforumtopicmessages"
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:10
 msgid "Identifier of the topic"
-msgstr ""
+msgstr "id топика"
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:1
 msgid ""
@@ -5310,16 +5527,21 @@ msgid ""
 "The bot must be an administrator in the chat for this to work and must "
 "have the appropriate admin rights. Returns True on success."
 msgstr ""
+"Используйте этот метод, что открепить закрепленное сообщение в супергруппе. "
+"Бот должен быть администратором чата и иметь соответствующие права администратора. "
+"Возвращает True в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#unpinchatmessage"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#unpinchatmessage"
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:11
 msgid "Int: Identifier of a message to unpin"
-msgstr ""
+msgstr "Int: id сообщения, которое нужно открепить"
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:1
 msgid ""
@@ -5327,16 +5549,21 @@ msgid ""
 "createNewStickerSet and addStickerToSet methods (can be used multiple "
 "times). Returns the uploaded File on success."
 msgstr ""
+"Используйте этот метод, чтобы загрузить .png стикер, чтобы позже "
+"использовать в методах createNewStickerSet и addStickerToSet (может быть "
+"использован несколько раз). Возвращает загруженный файл (File) в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#uploadstickerfile"
 msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#uploadstickerfile"
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:6
 msgid "User identifier of sticker set owner"
-msgstr ""
+msgstr "id пользователя, создавшего стикерпак"
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:9
 msgid ""
@@ -5344,27 +5571,29 @@ msgid ""
 "dimensions must not exceed 512px, and either width or height must be "
 "exactly 512px."
 msgstr ""
+"PNG изображение стикера, должно весить не более 512 kB, измерения не "
+"должны превышать 512px и либо ширина, либо высота должна быть ровно 512px."
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:13
 msgid "On success, the sent file is returned."
-msgstr ""
+msgstr "В случае успеха возвращается отправленный файл."
 
 #: of telebot.async_telebot.ExceptionHandler:1
 msgid "Class for handling exceptions while Polling"
-msgstr ""
+msgstr "Класс для обработки исключений во время поллинга"
 
 #: of telebot.async_telebot.Handler:1
 msgid "Class for (next step|reply) handlers"
-msgstr ""
+msgstr "Класс для (next step|reply) хендлеров"
 
 #: ../../source/async_version/index.rst:22
 msgid "Asyncio filters"
-msgstr ""
+msgstr "Файл asyncio_filters"
 
 #: of telebot.asyncio_filters.AdvancedCustomFilter:1
 #: telebot.asyncio_filters.SimpleCustomFilter:1
 msgid "Bases: :py:class:`abc.ABC`"
-msgstr ""
+msgstr "Базовые классы: :py:class:`abc.ABC`"
 
 #: of telebot.asyncio_filters.AdvancedCustomFilter:1
 msgid ""
@@ -5373,20 +5602,23 @@ msgid ""
 " - filter failed. message: Message class text: Filter value given in "
 "handler"
 msgstr ""
+"Базовый класс Advanced Custom Filter. Создайте класс наследник с методом check(). "
+"Принимает два параметра, возвращает bool: True - фильтр пройден, False - фильтр "
+"не пройден. message: класс Message text: значение фильтра, полученное в хендлере"
 
 #: of telebot.asyncio_filters.AdvancedCustomFilter:7
 #: telebot.asyncio_filters.SimpleCustomFilter:5
 msgid "Child classes should have .key property."
-msgstr ""
+msgstr "Классы наследники должны иметь статический атрибут (property) .key"
 
 #: of telebot.asyncio_filters.AdvancedCustomFilter:9
 msgid "Example on creating an advanced custom filter."
-msgstr ""
+msgstr "Пример создания advanced custom filter."
 
 #: of telebot.asyncio_filters.AdvancedCustomFilter.check:1
 #: telebot.asyncio_filters.SimpleCustomFilter.check:1
 msgid "Perform a check."
-msgstr ""
+msgstr "Выполнить проверку."
 
 #: of telebot.asyncio_filters.ChatFilter:1
 #: telebot.asyncio_filters.LanguageFilter:1
@@ -5395,11 +5627,11 @@ msgstr ""
 #: telebot.asyncio_filters.TextMatchFilter:1
 #: telebot.asyncio_filters.TextStartsFilter:1
 msgid "Bases: :py:class:`telebot.asyncio_filters.AdvancedCustomFilter`"
-msgstr ""
+msgstr "Базовые классы: :py:class:`telebot.custom_filters.AdvancedCustomFilter`"
 
 #: of telebot.asyncio_filters.ChatFilter:1
 msgid "Check whether chat_id corresponds to given chat_id."
-msgstr ""
+msgstr "Проверяет, является ли chat_id заданным."
 
 #: of telebot.asyncio_filters.ChatFilter:3
 #: telebot.asyncio_filters.ForwardFilter:3
@@ -5412,34 +5644,34 @@ msgstr ""
 #: telebot.asyncio_filters.TextMatchFilter:3
 #: telebot.asyncio_filters.TextStartsFilter:3
 msgid "Example on using this filter:"
-msgstr ""
+msgstr "Пример использования этого фильтра:"
 
 #: of telebot.asyncio_filters.ForwardFilter:1
 #: telebot.asyncio_filters.IsAdminFilter:1
 #: telebot.asyncio_filters.IsDigitFilter:1
 #: telebot.asyncio_filters.IsReplyFilter:1
 msgid "Bases: :py:class:`telebot.asyncio_filters.SimpleCustomFilter`"
-msgstr ""
+msgstr "Базовые классы: :py:class:`telebot.asyncio_filters.SimpleCustomFilter`"
 
 #: of telebot.asyncio_filters.ForwardFilter:1
 msgid "Check whether message was forwarded from channel or group."
-msgstr ""
+msgstr "Проверяет, является ли сообщение пересланным из канала или группы."
 
 #: of telebot.asyncio_filters.IsAdminFilter:1
 msgid "Check whether the user is administrator / owner of the chat."
-msgstr ""
+msgstr "Проверяет, является ли пользователь администратором / владельцем чата."
 
 #: of telebot.asyncio_filters.IsDigitFilter:1
 msgid "Filter to check whether the string is made up of only digits."
-msgstr ""
+msgstr "Фильтр для проверки, состоит ли строка только из цифр."
 
 #: of telebot.asyncio_filters.IsReplyFilter:1
 msgid "Check whether message is a reply."
-msgstr ""
+msgstr "Проверяет, является ли сообщение ответом (reply)."
 
 #: of telebot.asyncio_filters.LanguageFilter:1
 msgid "Check users language_code."
-msgstr ""
+msgstr "Проверяет language_code пользователя."
 
 #: of telebot.asyncio_filters.SimpleCustomFilter:1
 msgid ""
@@ -5447,47 +5679,53 @@ msgid ""
 "Accepts only message, returns bool value, that is compared with given in "
 "handler."
 msgstr ""
+"Базовый класс Simple Custom Filter. Создайте класс наследник с методом check(). "
+"Принимает только сообщение, возвращает bool, который сравнивается с заданным в хендлере."
 
 #: of telebot.asyncio_filters.SimpleCustomFilter:7
 msgid "Example on creating a simple custom filter."
-msgstr ""
+msgstr "Пример создания simple custom filter."
 
 #: of telebot.asyncio_filters.StateFilter:1
 msgid "Filter to check state."
-msgstr ""
+msgstr "Фильтр для проверки состояния (стейта)."
 
 #: of telebot.asyncio_filters.TextContainsFilter:1
 msgid "Filter to check Text message. key: text"
-msgstr ""
+msgstr "Фильтр для проверки текста сообщения. key: text"
 
 #: of telebot.asyncio_filters.TextFilter:1
 msgid ""
 "Advanced text filter to check (types.Message, types.CallbackQuery, "
 "types.InlineQuery, types.Poll)"
 msgstr ""
+"Advanced текстовый фильтр для проверки (types.Message, types.CallbackQuery, "
+"types.InlineQuery, types.Poll)"
 
 #: of telebot.asyncio_filters.TextFilter:3
 msgid ""
 "example of usage is in "
 "examples/asynchronous_telebot/custom_filters/advanced_text_filter.py"
 msgstr ""
+"пример использования в "
+"examples/asynchronous_telebot/custom_filters/advanced_text_filter.py"
 
 #: of telebot.asyncio_filters.TextFilter:5
 msgid "string, True if object's text is equal to passed string"
-msgstr ""
+msgstr "строка, True если текст объекта идентичен заданной строке"
 
 #: of telebot.asyncio_filters.TextFilter:8
 msgid "list[str] or tuple[str], True if any string element of iterable is in text"
-msgstr ""
+msgstr "list[str] или tuple[str], True если хотя бы один из элементов есть в тексте"
 
 #: of telebot.asyncio_filters.TextFilter:11
 #: telebot.asyncio_filters.TextFilter:14
 msgid "string, True if object's text starts with passed string"
-msgstr ""
+msgstr "string, True если текст объекта начинается с заданной строки"
 
 #: of telebot.asyncio_filters.TextFilter:17
 msgid "bool (default False), case insensitive"
-msgstr ""
+msgstr "bool (по умолчанию False), независимый от регистра"
 
 #: of telebot.asyncio_filters.TextFilter
 msgid "Raises"
@@ -5495,29 +5733,31 @@ msgstr ""
 
 #: of telebot.asyncio_filters.TextFilter:20
 msgid "if incorrect value for a parameter was supplied"
-msgstr ""
+msgstr "если было задано некорректное значение параметра"
 
 #: of telebot.asyncio_filters.TextMatchFilter:1
 msgid "Filter to check Text message."
-msgstr ""
+msgstr "Фильтр для проверки текста сообщения."
 
 #: of telebot.asyncio_filters.TextStartsFilter:1
 msgid "Filter to check whether message starts with some text."
-msgstr ""
+msgstr "Фильтр для проверки, начинается ли сообщение с заданного текста."
 
 #: ../../source/async_version/index.rst:30
 msgid "Asyncio handler backends"
-msgstr ""
+msgstr "Файл asyncio_handler_backends"
 
 #: of telebot.asyncio_handler_backends:1
 msgid "File with all middleware classes, states."
-msgstr ""
+msgstr "Файл со всеми классами middleware и states."
 
 #: of telebot.asyncio_handler_backends.BaseMiddleware:1
 msgid ""
 "Base class for middleware. Your middlewares should be inherited from this"
 " class."
 msgstr ""
+"Базовый класс для middleware. Ваши middleware должны быть унаследованы от "
+"этого класса."
 
 #: of telebot.asyncio_handler_backends.BaseMiddleware:4
 msgid ""
@@ -5526,10 +5766,14 @@ msgid ""
 "message update, then you will have to create pre_process_message "
 "function, and so on. Same applies to post_process."
 msgstr ""
+"Задайте update_sensitive=True если хотите получать разные апдейты в "
+"разных функциях. Например, если вы хотите обрабатывать pre_process для "
+"апдейтов вида message, вам нужно будет создать функцию pre_process_message "
+"и т.д. Аналогично для post_process."
 
 #: of telebot.asyncio_handler_backends.BaseMiddleware:9
 msgid "Example of class-based middlewares"
-msgstr ""
+msgstr "Пример класса middleware"
 
 #: of telebot.asyncio_handler_backends.CancelUpdate:1
 msgid ""
@@ -5537,16 +5781,21 @@ msgid ""
 "middleware to skip update. Update will skip handler and execution of "
 "post_process in middlewares."
 msgstr ""
+"Класс для отмены апдейтов. Просто верните экземпляр этого класса в "
+"middleware, чтобы пропустить апдейт. Апдейт пропустит хендлер и исполнение "
+"post_process в middleware."
 
 #: of telebot.asyncio_handler_backends.ContinueHandling:1
 msgid ""
 "Class for continue updates in handlers. Just return instance of this "
 "class in handlers to continue process."
 msgstr ""
+"Класс для продолжения обработки апдейта в хендлерах. Просто верните экземпляр "
+"этого класса в хендлерах, чтобы продолжить обработку."
 
 #: of telebot.asyncio_handler_backends.ContinueHandling:5
 msgid "Example of using ContinueHandling"
-msgstr ""
+msgstr "Пример использования ContinueHandling"
 
 #: of telebot.asyncio_handler_backends.SkipHandler:1
 msgid ""
@@ -5554,32 +5803,37 @@ msgid ""
 "middleware to skip handler. Update will go to post_process, but will skip"
 " execution of handler."
 msgstr ""
+"Класс для пропуска хендлеров. Просто верните экземпляр этого класса в "
+"middleware, чтобы пропустить хендлер. Апдейт попадёт в post_process, но "
+"пропустит исполнение хендлера."
 
 #: of telebot.asyncio_handler_backends.State:1
 msgid "Class representing a state."
-msgstr ""
+msgstr "Класс, представляющий состояние (стейт)."
 
 #: of telebot.asyncio_handler_backends.StatesGroup:1
 msgid "Class representing common states."
-msgstr ""
+msgstr "Класс, представляющий похожие состояния (стейты)."
 
 #: ../../source/async_version/index.rst:41
 msgid "Extensions"
-msgstr ""
+msgstr "Расширения"
 
 #: of telebot.ext.aio.webhooks:1
 msgid "This file is used by AsyncTeleBot.run_webhooks() function."
-msgstr ""
+msgstr "Этот файл используется функцией AsyncTeleBot.run_webhooks()."
 
 #: of telebot.ext.aio.webhooks:3
 msgid "Fastapi and starlette(0.20.2+) libraries are required to run this script."
-msgstr ""
+msgstr "Для запуска этого скрипта требуются библиотеки Fastapi и starlette(0.20.2+)."
 
 #: of telebot.ext.aio.webhooks.AsyncWebhookListener.run_app:1
 msgid ""
 "Run app with the given parameters to init. Not supposed to be used "
 "manually by user."
 msgstr ""
+"Запустить приложение с заданными параметрами инициализации. Не предназначено "
+"для использования пользователем."
 
 #~ msgid "New name of the topic, 1-128 characters"
 #~ msgstr "Новое название топика, 1-128 символов"
