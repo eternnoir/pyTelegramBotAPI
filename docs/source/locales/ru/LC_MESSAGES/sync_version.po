@@ -1258,7 +1258,7 @@ msgid "Identifier of the topic to close"
 msgstr "id топика для закрытия"
 
 #: of telebot.TeleBot.close_general_forum_topic:1
-#, fuzzy
+
 msgid ""
 "Use this method to close the 'General' topic in a forum supergroup chat. "
 "The bot must be an administrator in the chat for this to work and must "
@@ -1270,7 +1270,7 @@ msgstr ""
 "топика. Возвращает True в случае успеха."
 
 #: of telebot.TeleBot.close_general_forum_topic:5
-#, fuzzy
+
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#closegeneralforumtopic"
@@ -2054,7 +2054,7 @@ msgstr ""
 "чтобы убрать иконку. Если не задан, сохранится текущая иконка топика"
 
 #: of telebot.TeleBot.edit_general_forum_topic:1
-#, fuzzy
+
 msgid ""
 "Use this method to edit the name of the 'General' topic in a forum "
 "supergroup chat. The bot must be an administrator in the chat for this to"
@@ -2067,14 +2067,14 @@ msgstr ""
 "True в случае успеха."
 
 #: of telebot.TeleBot.edit_general_forum_topic:5
-#, fuzzy
+
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#editgeneralforumtopic"
 msgstr "Документация Telegram: https://core.telegram.org/bots/api#editforumtopic"
 
 #: of telebot.TeleBot.edit_general_forum_topic:10
-#, fuzzy
+
 msgid "New topic name, 1-128 characters"
 msgstr "Название товара, 1-32 символа"
 
@@ -2926,7 +2926,7 @@ msgid ":class:`telebot.types.WebhookInfo`"
 msgstr ""
 
 #: of telebot.TeleBot.hide_general_forum_topic:1
-#, fuzzy
+
 msgid ""
 "Use this method to hide the 'General' topic in a forum supergroup chat. "
 "The bot must be an administrator in the chat for this to work and must "
@@ -2938,7 +2938,7 @@ msgstr ""
 "True в случае успеха."
 
 #: of telebot.TeleBot.hide_general_forum_topic:5
-#, fuzzy
+
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#hidegeneralforumtopic"
@@ -3673,7 +3673,7 @@ msgstr ""
 "Регистрирует функцию для вызова при получении нового сообщения в заданном чате."
 
 #: of telebot.TeleBot.register_next_step_handler_by_chat_id:5
-#, fuzzy
+
 msgid "The chat (chat ID) for which we want to handle new message."
 msgstr "Чат (id чата), в котором нужно обработать новое сообщение."
 
@@ -3721,7 +3721,7 @@ msgid "Identifier of the topic to reopen"
 msgstr "id топика для возобновления"
 
 #: of telebot.TeleBot.reopen_general_forum_topic:1
-#, fuzzy
+
 msgid ""
 "Use this method to reopen the 'General' topic in a forum supergroup chat."
 " The bot must be an administrator in the chat for this to work and must "
@@ -3732,7 +3732,7 @@ msgstr ""
 "кроме случаев, когда бот является создателем топика. Возвращает True в случае успеха."
 
 #: of telebot.TeleBot.reopen_general_forum_topic:5
-#, fuzzy
+
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#reopengeneralforumtopic"
@@ -4070,7 +4070,7 @@ msgid "Identifier of a message thread, in which the video will be sent"
 msgstr "id топика, в который будет отправлено видео"
 
 #: of telebot.TeleBot.send_animation:60
-#, fuzzy
+
 msgid "Pass True, if the animation should be sent as a spoiler"
 msgstr "Передайте True, если гифку нужно отправить как спойлер"
 
@@ -4211,7 +4211,7 @@ msgstr ""
 "upload_video_note для видео заметок (кружочков)."
 
 #: of telebot.TeleBot.send_chat_action:22
-#, fuzzy
+
 msgid ""
 "The thread identifier of a message from which the reply will be "
 "sent(supergroups only)"
@@ -4609,7 +4609,7 @@ msgid "Mode for parsing entities in the photo caption."
 msgstr "Режим форматирования подписи к фото."
 
 #: of telebot.TeleBot.send_photo:45
-#, fuzzy
+
 msgid "Pass True, if the photo should be sent as a spoiler"
 msgstr "Передайте True, если фото должно быть отправлено как спойлер"
 
@@ -4847,7 +4847,7 @@ msgid "Pass True, if the uploaded video is suitable for streaming"
 msgstr "Передайте True, если загруженное видео подходит для стриминга"
 
 #: of telebot.TeleBot.send_video:61
-#, fuzzy
+
 msgid "Pass True, if the video should be sent as a spoiler"
 msgstr "Передайте True, если видео должно быть отправлено как спойлер"
 
@@ -5532,7 +5532,7 @@ msgid "Unique identifier of the target sender chat."
 msgstr "Уникальный id чата."
 
 #: of telebot.TeleBot.unhide_general_forum_topic:1
-#, fuzzy
+
 msgid ""
 "Use this method to unhide the 'General' topic in a forum supergroup chat."
 " The bot must be an administrator in the chat for this to work and must "
@@ -5543,7 +5543,7 @@ msgstr ""
 "can_manage_topics. Возвращает True в случае успеха."
 
 #: of telebot.TeleBot.unhide_general_forum_topic:5
-#, fuzzy
+
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#unhidegeneralforumtopic"
