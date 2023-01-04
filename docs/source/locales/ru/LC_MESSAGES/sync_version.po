@@ -1316,8 +1316,7 @@ msgstr ""
 "Список отформатированных частей новой подписи в формате JSON, можно "
 "использовать вместо parse_mode"
 
-#: of telebot.TeleBot.forward_message:5
-#: telebot.TeleBot.copy_message:22 telebot.TeleBot.send_animation:45
+#: of telebot.TeleBot.copy_message:22 telebot.TeleBot.send_animation:45
 #: telebot.TeleBot.send_audio:39 telebot.TeleBot.send_contact:20
 #: telebot.TeleBot.send_dice:12 telebot.TeleBot.send_document:26
 #: telebot.TeleBot.send_game:11 telebot.TeleBot.send_invoice:67
@@ -2433,6 +2432,14 @@ msgstr "Используйте этот метод, чтобы переслат�
 #: of telebot.TeleBot.forward_message:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#forwardmessage"
 msgstr "Документация Telegram: https://core.telegram.org/bots/api#forwardmessage"
+
+#: of telebot.TeleBot.forward_message:5
+msgid ""
+"Sends the message silently. Users will receive a notification with no "
+"sound"
+msgstr ""
+"Отправить сообщение, при получении которого пользователи получат "
+"уведомление без звука"
 
 #: of telebot.TeleBot.forward_message:17
 msgid "Protects the contents of the forwarded message from forwarding and saving"
