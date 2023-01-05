@@ -20,15 +20,15 @@ msgstr ""
 
 #: ../../index.rst:8
 msgid "Welcome to pyTelegramBotAPI's documentation!"
-msgstr ""
+msgstr "Добро пожаловать в документацию pyTelegramBotAPI!"
 
 #: ../../index.rst:10
 msgid "Official documentation of pyTelegramBotAPI"
-msgstr ""
+msgstr "Официальная документация pyTelegramBotAPI"
 
 #: ../../index.rst:10
 msgid "ptba, pytba, pyTelegramBotAPI, documentation, guide"
-msgstr ""
+msgstr "ptba, pytba, pyTelegramBotAPI, документация, гайд"
 
 #: ../../index.rst:17
 msgid "TeleBot"
@@ -39,26 +39,32 @@ msgid ""
 "TeleBot is synchronous and asynchronous implementation of  `Telegram Bot "
 "API <https://core.telegram.org/bots/api>`_."
 msgstr ""
+"TeleBot это синхронная и асинхронная реализация `Telegram Bot "
+"API <https://core.telegram.org/bots/api>`_."
 
 #: ../../index.rst:21
 msgid "Chats"
-msgstr ""
+msgstr "Чаты"
 
 #: ../../index.rst:22
 msgid ""
 "English chat: `Private chat "
 "<https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A>`__"
 msgstr ""
+"Англоязычный чат: `Private chat "
+"<https://telegram.me/joinchat/Bn4ixj84FIZVkwhk2jag6A>`__"
 
 #: ../../index.rst:24
 msgid ""
 "Russian chat: `@pytelegrambotapi_talks_ru "
 "<https://t.me/pytelegrambotapi_talks_ru>`__"
 msgstr ""
+"Русскоязычный чат: `@pytelegrambotapi_talks_ru "
+"<https://t.me/pytelegrambotapi_talks_ru>`__"
 
 #: ../../index.rst:26
 msgid "News: `@pyTelegramBotAPI <https://t.me/pytelegrambotapi>`__"
-msgstr ""
+msgstr "Новости: `@pyTelegramBotAPI <https://t.me/pytelegrambotapi>`__"
 
 #: ../../index.rst:28
 msgid "Pypi: `Pypi <https://pypi.org/project/pyTelegramBotAPI/>`__"
@@ -69,42 +75,44 @@ msgid ""
 "Source: `Github repository "
 "<https://github.com/eternnoir/pyTelegramBotAPI>`__"
 msgstr ""
+"Исходники: `Github repository "
+"<https://github.com/eternnoir/pyTelegramBotAPI>`__"
 
 #: ../../index.rst:33
 msgid "Some features:"
-msgstr ""
+msgstr "Некоторые особенности:"
 
 #: ../../index.rst:34
 msgid "Easy to learn and use."
-msgstr ""
+msgstr "Простой в изучении и использовании."
 
 #: ../../index.rst:36
 msgid "Easy to understand."
-msgstr ""
+msgstr "Простой в понимании."
 
 #: ../../index.rst:38
 msgid "Both sync and async."
-msgstr ""
+msgstr "И синхронный, и асинхронный."
 
 #: ../../index.rst:40
 msgid "Examples on features."
-msgstr ""
+msgstr "Примеры возможностей."
 
 #: ../../index.rst:42
 msgid "States"
-msgstr ""
+msgstr "Состояния (стейты, FSM)"
 
 #: ../../index.rst:44
 msgid "And more..."
-msgstr ""
+msgstr "И другое..."
 
 #: ../../index.rst:47
 msgid "Content"
-msgstr ""
+msgstr "Содержимое"
 
 #: ../../index.rst:63
 msgid "Indices and tables"
-msgstr ""
+msgstr "Ссылки"
 
 #: ../../index.rst:65
 msgid ":ref:`genindex`"
