@@ -20,38 +20,40 @@ msgstr ""
 
 #: ../../calldata.rst:4
 msgid "Callback data factory"
-msgstr ""
+msgstr "Фабрика callback data"
 
 #: ../../calldata.rst:6
 msgid "Callback data factory in pyTelegramBotAPI"
-msgstr ""
+msgstr "Фабрика callback data в pyTelegramBotAPI"
 
 #: ../../calldata.rst:6
 msgid ""
 "ptba, pytba, pyTelegramBotAPI, callbackdatafactory, guide, callbackdata, "
 "factory"
 msgstr ""
+"ptba, pytba, pyTelegramBotAPI, callbackdatafactory, гайд, callbackdata, "
+"фабрика"
 
 #: ../../calldata.rst:12
 msgid "callback\\_data file"
-msgstr ""
+msgstr "Файл callback\\_data"
 
 #: of telebot.callback_data:1
 msgid "Callback data factory's file."
-msgstr ""
+msgstr "Файл фабрики callback data."
 
 #: of telebot.callback_data.CallbackData:1
 #: telebot.callback_data.CallbackDataFilter:1
 msgid "Bases: :py:class:`object`"
-msgstr ""
+msgstr "Базовые классы: :py:class:`object`"
 
 #: of telebot.callback_data.CallbackData:1
 msgid "Callback data factory This class will help you to work with CallbackQuery"
-msgstr ""
+msgstr "Фабрика Callback data. Этот класс поможет вам в работе с CallbackQuery"
 
 #: of telebot.callback_data.CallbackData.filter:1
 msgid "Generate filter"
-msgstr ""
+msgstr "Сгенерировать фильтр"
 
 #: of telebot.callback_data.CallbackData.filter
 #: telebot.callback_data.CallbackData.new
@@ -62,7 +64,7 @@ msgstr ""
 
 #: of telebot.callback_data.CallbackData.filter:3
 msgid "specified named parameters will be checked with CallbackQuery.data"
-msgstr ""
+msgstr "заданные именованные параметры будут проверены в CallbackQuery.data"
 
 #: of telebot.callback_data.CallbackData.filter
 #: telebot.callback_data.CallbackData.new
@@ -73,19 +75,19 @@ msgstr ""
 
 #: of telebot.callback_data.CallbackData.filter:4
 msgid "CallbackDataFilter class"
-msgstr ""
+msgstr "Класс CallbackDataFilter"
 
 #: of telebot.callback_data.CallbackData.new:1
 msgid "Generate callback data"
-msgstr ""
+msgstr "Сгенерировать callback data"
 
 #: of telebot.callback_data.CallbackData.new:3
 msgid "positional parameters of CallbackData instance parts"
-msgstr ""
+msgstr "позиционные параметры экземпляра CallbackData"
 
 #: of telebot.callback_data.CallbackData.new:4
 msgid "named parameters"
-msgstr ""
+msgstr "именованные параметры"
 
 #: of telebot.callback_data.CallbackData.new:5
 msgid "str"
@@ -93,25 +95,27 @@ msgstr ""
 
 #: of telebot.callback_data.CallbackData.parse:1
 msgid "Parse data from the callback data"
-msgstr ""
+msgstr "Получить данные из callback data"
 
 #: of telebot.callback_data.CallbackData.parse:3
 msgid ""
 "string, use to telebot.types.CallbackQuery to parse it from string to a "
 "dict"
 msgstr ""
+"string, примените к telebot.types.CallbackQuery, чтобы преобразовать "
+"callback_data из строки (str) в словарь (dict)"
 
 #: of telebot.callback_data.CallbackData.parse:4
 msgid "dict parsed from callback data"
-msgstr ""
+msgstr "словарь (dict), полученный из callback data"
 
 #: of telebot.callback_data.CallbackDataFilter:1
 msgid "Filter for CallbackData."
-msgstr ""
+msgstr "Фильтр для CallbackData."
 
 #: of telebot.callback_data.CallbackDataFilter.check:1
 msgid "Checks if query.data appropriates to specified config"
-msgstr ""
+msgstr "Проверяет, соответствует ли query.data заданной конфигурации"
 
 #: of telebot.callback_data.CallbackDataFilter.check:3
 msgid "telebot.types.CallbackQuery"
@@ -119,9 +123,8 @@ msgstr ""
 
 #: of telebot.callback_data.CallbackDataFilter.check:6
 msgid "True if query.data appropriates to specified config"
-msgstr ""
+msgstr "True, если query.data соответствует заданной конфигурации"
 
 #: of telebot.callback_data.CallbackDataFilter.check
 msgid "Return type"
 msgstr ""
-
