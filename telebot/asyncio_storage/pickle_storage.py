@@ -28,7 +28,7 @@ class StatePickleStorage(StateStorageBase):
         """
         Create directory .save-handlers.
         """
-        dirs = self.file_path.rsplit('/', maxsplit=1)[0]
+        dirs, filename = os.path.split(self.file_path)
         os.makedirs(dirs, exist_ok=True)
         if not os.path.isfile(self.file_path):
             with open(self.file_path,'wb') as file:

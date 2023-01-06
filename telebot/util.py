@@ -643,15 +643,15 @@ def validate_web_app_data(token: str, raw_init_data: str):
     return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
 
 
-__all__ = (
-    "content_type_media", "content_type_service", "update_types",
-    "WorkerThread", "AsyncTask", "CustomRequestResponse",
-    "async_dec", "deprecated",
-    "is_bytes", "is_string", "is_dict", "is_pil_image",
-    "chunks", "generate_random_token", "pil_image_to_file",
-    "is_command", "extract_command", "extract_arguments",
-    "split_string", "smart_split", "escape", "user_link", "quick_markup",
-    "antiflood", "parse_web_app_data", "validate_web_app_data",
-    "or_set", "or_clear", "orify", "OrEvent", "per_thread",
-    "webhook_google_functions"
-)
+# __all__ = (
+#     "content_type_media", "content_type_service", "update_types",
+#     "WorkerThread", "AsyncTask", "CustomRequestResponse",
+#     "async_dec", "deprecated",
+#     "is_bytes", "is_string", "is_dict", "is_pil_image",
+#     "chunks", "generate_random_token", "pil_image_to_file",
+#     "is_command", "extract_command", "extract_arguments",
+#     "split_string", "smart_split", "escape", "user_link", "quick_markup",
+#     "antiflood", "parse_web_app_data", "validate_web_app_data",
+#     "or_set", "or_clear", "orify", "OrEvent", "per_thread",
+#     "webhook_google_functions"
+# )
