@@ -12,7 +12,7 @@ import queue as Queue
 import logging
 
 from telebot import types
-from telebot._util import is_pil_image, is_dict, is_string, is_bytes, chunks, generate_random_token, pil_image_to_file
+from telebot.service_utils import is_pil_image, is_dict, is_string, is_bytes, chunks, generate_random_token, pil_image_to_file
 
 try:
     import ujson as json
