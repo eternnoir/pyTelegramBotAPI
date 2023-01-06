@@ -12,7 +12,7 @@ try:
 except ImportError:
     import json
 
-from telebot import util
+from telebot import _util
 
 DISABLE_KEYLEN_ERROR = False
 
@@ -87,9 +87,9 @@ class JsonDeserializable(object):
         :param dict_copy: if dict is passed and it is changed outside - should be True!
         :return: Dictionary parsed from json or original dict
         """
-        if util.is_dict(json_type):
+        if _util.is_dict(json_type):
             return json_type.copy() if dict_copy else json_type
-        elif util.is_string(json_type):
+        elif _util.is_string(json_type):
             return json.loads(json_type)
         else:
             raise ValueError("json_type should be a json dict or string.")
@@ -2156,12 +2156,12 @@ class ReplyKeyboardMarkup(JsonSerializable):
                 logger.error('Telegram does not support reply keyboard row width over %d.' % self.max_row_keys)
             row_width = self.max_row_keys
         
-        for row in util.chunks(args, row_width):
+        for row in _util.chunks(args, row_width):
             button_array = []
             for button in row:
-                if util.is_string(button):
+                if _util.is_string(button):
                     button_array.append({'text': button})
-                elif util.is_bytes(button):
+                elif _util.is_bytes(button):
                     button_array.append({'text': button.decode('utf-8')})
                 else:
                     button_array.append(button.to_dict())
@@ -2278,12 +2278,12 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     This object represents an inline keyboard that appears right next to the message it belongs to.
 
     .. note::
-        It is recommended to use :meth:`telebot.util.quick_markup` instead.
+        It is recommended to use :meth:`telebot._util.quick_markup` instead.
 
     .. code-block:: python3
         :caption: Example of a custom keyboard with buttons.
 
-        from telebot.util import quick_markup
+        from telebot._util.import quick_markup
 
         markup = quick_markup(
             {'text': 'Press me', 'callback_data': 'press'},
@@ -2345,7 +2345,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
             logger.error('Telegram does not support inline keyboard row width over %d.' % self.max_row_keys)
             row_width = self.max_row_keys
         
-        for row in util.chunks(args, row_width):
+        for row in _util.chunks(args, row_width):
             button_array = [button for button in row]
             self.keyboard.append(button_array)
         
@@ -5786,11 +5786,11 @@ class InputMedia(Dictionaryable, JsonSerializable):
         self.parse_mode: Optional[str] = parse_mode
         self.caption_entities: Optional[List[MessageEntity]] = caption_entities
 
-        if util.is_string(self.media):
+        if _util.is_string(self.media):
             self._media_name = ''
             self._media_dic = self.media
         else:
-            self._media_name = util.generate_random_token()
+            self._media_name = _util.generate_random_token()
             self._media_dic = 'attach://{0}'.format(self._media_name)
 
     def to_json(self):
@@ -5810,7 +5810,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
         """
         :meta private:
         """
-        if util.is_string(self.media):
+        if _util.is_string(self.media):
             return self.to_json(), None
 
         return self.to_json(), {self._media_name: self.media}
@@ -5845,8 +5845,8 @@ class InputMediaPhoto(InputMedia):
     :rtype: :class:`telebot.types.InputMediaPhoto`
     """
     def __init__(self, media, caption=None, parse_mode=None, caption_entities=None, has_spoiler=None):
-        if util.is_pil_image(media):
-            media = util.pil_image_to_file(media)
+        if _util.is_pil_image(media):
+            media = _util.pil_image_to_file(media)
     
         super(InputMediaPhoto, self).__init__(
             type="photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
