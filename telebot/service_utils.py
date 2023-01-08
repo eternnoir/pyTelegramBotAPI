@@ -6,7 +6,7 @@ try:
     # noinspection PyPackageRequirements
     from PIL import Image
     pil_imported = True
-except:
+except ImportError:
     pil_imported = False
 
 
