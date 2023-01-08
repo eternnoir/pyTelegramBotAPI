@@ -1,13 +1,12 @@
 import random
 import string
+from io import BytesIO
 
 try:
     # noinspection PyPackageRequirements
     from PIL import Image
-    from io import BytesIO
-
     pil_imported = True
-except:
+except ImportError:
     pil_imported = False
 
 
