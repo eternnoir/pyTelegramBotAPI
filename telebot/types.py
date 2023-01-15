@@ -3261,7 +3261,7 @@ class InlineQuery(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, id, from_user, query, offset, chat_type=None, location=None, **kwargs):
-        self.id: int = id
+        self.id: str = id
         self.from_user: User = from_user
         self.query: str = query
         self.offset: str = offset
