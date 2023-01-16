@@ -643,40 +643,6 @@ def validate_web_app_data(token: str, raw_init_data: str):
     return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
 
 
-def get_media_file_id(message: types.Message, content_types: Optional[List[str]] = None):
-    """
-    Use this method to get file id of message media if it's present.
-
-    :param message: The message to get media from
-    :type message: :class:`telebot.types.Message`
-
-    :param content_types: Types of media to look for, by default all types are considered.
-    :type content_types: :obj:`list[str]`, optional
-
-    :return: file_id or :obj:`None`
-    :rtype: :obj:`str` | :obj:`None`
-    """
-    if content_types is None:
-        content_types = content_type_media
-
-    if "animation" in content_types and message.animation is not None:
-        return message.animation.file_id
-    elif "audio" in content_types and message.audio is not None:
-        return message.audio.file_id
-    elif "document" in content_types and message.document is not None:
-        return message.document.file_id
-    elif "photo" in content_types and message.photo is not None:
-        return message.photo[0].file_id
-    elif "sticker" in content_types and message.sticker is not None:
-        return message.sticker.file_id
-    elif "video" in content_types and message.video is not None:
-        return message.video.file_id
-    elif "video_note" in content_types and message.video_note is not None:
-        return message.video_note.file_id
-    elif "voice" in content_types and message.voice is not None:
-        return message.voice.file_id
-
-
 __all__ = (
     "content_type_media", "content_type_service", "update_types",
     "WorkerThread", "AsyncTask", "CustomRequestResponse",
@@ -685,7 +651,7 @@ __all__ = (
     "chunks", "generate_random_token", "pil_image_to_file",
     "is_command", "extract_command", "extract_arguments",
     "split_string", "smart_split", "escape", "user_link", "quick_markup",
-    "antiflood", "get_media_file_id", "parse_web_app_data", "validate_web_app_data",
+    "antiflood", "parse_web_app_data", "validate_web_app_data",
     "or_set", "or_clear", "orify", "OrEvent", "per_thread",
     "webhook_google_functions"
 )
