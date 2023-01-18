@@ -1885,7 +1885,9 @@ class AsyncTeleBot:
         Skip existing updates.
         Only last update will remain on server.
         """
-        await self.get_updates(-1)
+        last_update = await self.get_updates(-1)
+        if last_update:
+            self.offset = last_update[0].update_id + 1
         return True
 
     # all methods begin here

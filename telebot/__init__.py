@@ -631,7 +631,9 @@ class TeleBot:
 
         :return:
         """
-        self.get_updates(offset=-1)
+        last_update = self.get_updates(offset=-1)
+        if last_update:
+            self.last_update_id = last_update[0].update_id
 
     def __retrieve_updates(self, timeout=20, long_polling_timeout=20, allowed_updates=None):
         """
