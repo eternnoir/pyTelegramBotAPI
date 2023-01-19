@@ -204,7 +204,7 @@ async def get_updates(
     if timeout:
         params["timeout"] = timeout
     if allowed_updates:
-        params["allowed_updates"] = allowed_updates
+        params["allowed_updates"] = json.dumps(allowed_updates)
     return await _request(token, route="getUpdates", params=params, request_timeout=request_timeout)
 
 
