@@ -4084,7 +4084,7 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
-            await asyncio_helper.edit_chat_invite_link(self.token, chat_id, name, invite_link, expire_date, member_limit, creates_join_request)
+            await asyncio_helper.edit_chat_invite_link(self.token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request)
         )
 
     async def revoke_chat_invite_link(
