@@ -266,7 +266,7 @@ def test_callback(call): # <- passes a CallbackQuery type object to your functio
 
 #### Shipping Query Handler
 Handle shipping queries
-`@bot.shipping_query_handeler() # <- passes a ShippingQuery type object to your function`
+`@bot.shipping_query_handler() # <- passes a ShippingQuery type object to your function`
 
 #### Pre Checkout Query Handler
 Handle pre checkoupt queries
