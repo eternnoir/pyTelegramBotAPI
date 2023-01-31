@@ -243,8 +243,8 @@ async def get_updates(token, offset=None, limit=None,
         params['limit'] = limit
     if timeout:
         params['timeout'] = timeout
-    if allowed_updates:
-        params['allowed_updates'] = allowed_updates
+    if allowed_updates is not None:  # Empty lists should pass
+        params['allowed_updates'] = json.dumps(allowed_updates)
     return await _process_request(token, method_name, params=params, request_timeout=request_timeout)
 
 async def _check_result(method_name, result):
