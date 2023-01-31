@@ -154,7 +154,8 @@ class ThreadPool:
         for worker in self.workers:
             worker.stop()
         for worker in self.workers:
-            worker.join()
+            if worker != threading.current_thread():
+                worker.join()
 
 
 class AsyncTask:
