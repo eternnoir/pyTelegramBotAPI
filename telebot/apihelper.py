@@ -993,7 +993,7 @@ def restrict_chat_member(
         permissions['can_pin_messages'] = can_pin_messages
     if use_independent_chat_permissions is not None:
         permissions['use_independent_chat_permissions'] = use_independent_chat_permissions
-        
+
     permissions_json = json.dumps(permissions)
     payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions_json}
     if until_date is not None:
@@ -1059,12 +1059,14 @@ def unban_chat_sender_chat(token, chat_id, sender_chat_id):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_chat_permissions(token, chat_id, permissions):
+def set_chat_permissions(token, chat_id, permissions, use_independent_chat_permissions=None):
     method_url = 'setChatPermissions'
     payload = {
         'chat_id': chat_id,
         'permissions': permissions.to_json()
     }
+    if use_independent_chat_permissions is not None:
+        payload['use_independent_chat_permissions'] = use_independent_chat_permissions
     return _make_request(token, method_url, params=payload, method='post')
 
 

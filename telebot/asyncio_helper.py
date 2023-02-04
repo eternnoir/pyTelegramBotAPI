@@ -1049,12 +1049,14 @@ async def unban_chat_sender_chat(token, chat_id, sender_chat_id):
     payload = {'chat_id': chat_id, 'sender_chat_id': sender_chat_id}
     return await _process_request(token, method_url, params=payload, method='post')
 
-async def set_chat_permissions(token, chat_id, permissions):
+async def set_chat_permissions(token, chat_id, permissions, use_independent_chat_permissions=None):
     method_url = 'setChatPermissions'
     payload = {
         'chat_id': chat_id,
         'permissions': permissions.to_json()
     }
+    if use_independent_chat_permissions is not None:
+        payload['use_independent_chat_permissions'] = use_independent_chat_permissions
     return await _process_request(token, method_url, params=payload, method='post')
 
 
