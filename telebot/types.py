@@ -2258,6 +2258,78 @@ class KeyboardButtonRequestUser(Dictionaryable):
         return data
 
 
+class KeyboardButtonRequestChat(Dictionaryable):
+    """
+    This object defines the criteria used to request a suitable chat. The identifier of the selected chat will
+    be shared with the bot when the corresponding button is pressed.
+
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestchat
+
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the ChatShared object.
+        Must be unique within the message
+    :type request_id: :obj:`int`
+
+    :param chat_is_channel: Pass True to request a channel chat, pass False to request a group or a supergroup chat.
+    :type chat_is_channel: :obj:`bool`
+
+    :param chat_is_forum: Optional. Pass True to request a forum supergroup, pass False to request a non-forum chat.
+        If not specified, no additional restrictions are applied.
+    :type chat_is_forum: :obj:`bool`
+
+    :param chat_has_username: Optional. Pass True to request a supergroup or a channel with a username, pass False to request a
+        chat without a username. If not specified, no additional restrictions are applied.
+    :type chat_has_username: :obj:`bool`
+
+    :param chat_is_created: Optional. Pass True to request a chat owned by the user. Otherwise, no additional restrictions are applied.
+    :type chat_is_created: :obj:`bool`
+
+    :param user_administrator_rights: Optional. A JSON-serialized object listing the required administrator rights of the user in the chat.
+        The rights must be a superset of bot_administrator_rights. If not specified, no additional restrictions are applied.
+    :type user_administrator_rights: :class:`telebot.types.ChatAdministratorRights`
+
+    :param bot_administrator_rights: Optional. A JSON-serialized object listing the required administrator rights of the bot in the chat.
+        The rights must be a subset of user_administrator_rights. If not specified, no additional restrictions are applied.
+    :type bot_administrator_rights: :class:`telebot.types.ChatAdministratorRights`
+
+    :param bot_is_member: Optional. Pass True to request a chat where the bot is a member. Otherwise, no additional restrictions are applied.
+    :type bot_is_member: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.KeyboardButtonRequestChat`
+    """
+
+    def __init__(self, request_id: int, chat_is_channel: bool, chat_is_forum: Optional[bool]=None,
+                 chat_has_username: Optional[bool]=None, chat_is_created: Optional[bool]=None,
+                 user_administrator_rights: Optional[ChatAdministratorRights]=None,
+                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None) -> None:
+        self.request_id: int = request_id
+        self.chat_is_channel: bool = chat_is_channel
+        self.chat_is_forum: Optional[bool] = chat_is_forum
+        self.chat_has_username: Optional[bool] = chat_has_username
+        self.chat_is_created: Optional[bool] = chat_is_created
+        self.user_administrator_rights: Optional[ChatAdministratorRights] = user_administrator_rights
+        self.bot_administrator_rights: Optional[ChatAdministratorRights] = bot_administrator_rights
+        self.bot_is_member: Optional[bool] = bot_is_member
+
+
+    def to_dict(self) -> dict:
+        data = {'request_id': self.request_id, 'chat_is_channel': self.chat_is_channel}
+        if self.chat_is_forum is not None:
+            data['chat_is_forum'] = self.chat_is_forum
+        if self.chat_has_username is not None:
+            data['chat_has_username'] = self.chat_has_username
+        if self.chat_is_created is not None:
+            data['chat_is_created'] = self.chat_is_created
+        if self.user_administrator_rights is not None:
+            data['user_administrator_rights'] = self.user_administrator_rights.to_dict()
+        if self.bot_administrator_rights is not None:
+            data['bot_administrator_rights'] = self.bot_administrator_rights.to_dict()
+        if self.bot_is_member is not None:
+            data['bot_is_member'] = self.bot_is_member
+        return data
+
+
+
 class KeyboardButton(Dictionaryable, JsonSerializable):
     """
     This object represents one button of the reply keyboard. For simple text buttons String can be used instead of this object to specify text of the button. Optional fields web_app, request_contact, request_location, and request_poll are mutually exclusive.
@@ -2288,18 +2360,25 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
     :type request_user: :class:`telebot.types.KeyboardButtonRequestUser`
 
+    :param request_chat: Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will
+        send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
+    :type request_chat: :class:`telebot.types.KeyboardButtonRequestChat`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButton`
     """
     def __init__(self, text: str, request_contact: Optional[bool]=None, 
             request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
-            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None):
+            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
+            request_chat: Optional[KeyboardButtonRequestChat]=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
         self.request_poll: KeyboardButtonPollType = request_poll
         self.web_app: WebAppInfo = web_app
         self.request_user: KeyboardButtonRequestUser = request_user
+        self.request_chat: KeyboardButtonRequestChat = request_chat
+
 
     def to_json(self):
         return json.dumps(self.to_dict())
