@@ -906,6 +906,9 @@ class Message(JsonDeserializable):
     :param user_shared: Optional. Service message: a user was shared with the bot
     :type user_shared: :class:`telebot.types.UserShared`
 
+    :param chat_shared: Optional. Service message: a chat was shared with the bot
+    :type chat_shared: :class:`telebot.types.ChatShared`
+
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about 
         Telegram Login »
     :type connected_website: :obj:`str`
@@ -1158,6 +1161,9 @@ class Message(JsonDeserializable):
         if 'user_shared' in obj:
             opts['user_shared'] = UserShared.de_json(obj['user_shared'])
             content_type = 'user_shared'
+        if 'chat_shared' in obj:
+            opts['chat_shared'] = ChatShared.de_json(obj['chat_shared'])
+            content_type = 'chat_shared'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1254,6 +1260,7 @@ class Message(JsonDeserializable):
         self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
         self.user_shared: Optional[UserShared] = None
+        self.chat_shared: Optional[ChatShared] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -7175,4 +7182,36 @@ class UserShared(JsonDeserializable):
         self.request_id: int = request_id
         self.user_id: int = user_id
 
+
     
+class ChatShared(JsonDeserializable):
+    """
+    This object contains information about the chat whose identifier was shared with the bot using a
+    `telebot.types.KeyboardButtonRequestChat` button.
+
+    Telegram documentation: https://core.telegram.org/bots/api#Chatshared
+
+    :param request_id: identifier of the request
+    :type request_id: :obj:`int`
+
+    :param chat_id: Identifier of the shared chat. This number may have more than 32 significant bits and some programming
+        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
+        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the chat
+        and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
+    :type chat_id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShared`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, request_id: int, chat_id: int) -> None:
+        self.request_id: int = request_id
+        self.chat_id: int = chat_id
+
+        
