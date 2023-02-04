@@ -2217,6 +2217,45 @@ class KeyboardButtonPollType(Dictionaryable):
 
     def to_dict(self):
         return {'type': self.type}
+    
+ 
+
+class KeyboardButtonRequestUser(Dictionaryable):
+    """
+    This object defines the criteria used to request a suitable user.
+    The identifier of the selected user will be shared with the bot when the corresponding button is pressed.
+
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestuser
+
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the UserShared object.
+        Must be unique within the message
+    :type request_id: :obj:`int`
+
+    :param user_is_bot: Optional. Pass True to request a bot, pass False to request a regular user.
+        If not specified, no additional restrictions are applied.
+    :type user_is_bot: :obj:`bool`
+
+    :param user_is_premium: Optional. Pass True to request a premium user, pass False to request a non-premium user.
+        If not specified, no additional restrictions are applied.
+    :type user_is_premium: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.KeyboardButtonRequestUser`
+
+    """
+
+    def __init__(self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None) -> None:
+        self.request_id: int = request_id
+        self.user_is_bot: Optional[bool] = user_is_bot
+        self.user_is_premium: Optional[bool] = user_is_premium
+
+    def to_dict(self) -> dict:
+        data = {'request_id': self.request_id}
+        if self.user_is_bot is not None:
+            data['user_is_bot'] = self.user_is_bot
+        if self.user_is_premium is not None:
+            data['user_is_premium'] = self.user_is_premium
+        return data
 
 
 class KeyboardButton(Dictionaryable, JsonSerializable):
@@ -7017,43 +7056,5 @@ class WriteAccessAllowed(JsonDeserializable):
 
     def __init__(self) -> None:
         pass
-
-
-class KeyboardButtonRequestUser(Dictionaryable):
-    """
-    This object defines the criteria used to request a suitable user.
-    The identifier of the selected user will be shared with the bot when the corresponding button is pressed.
-
-    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestuser
-
-    :param request_id: Signed 32-bit identifier of the request, which will be received back in the UserShared object.
-        Must be unique within the message
-    :type request_id: :obj:`int`
-
-    :param user_is_bot: Optional. Pass True to request a bot, pass False to request a regular user.
-        If not specified, no additional restrictions are applied.
-    :type user_is_bot: :obj:`bool`
-
-    :param user_is_premium: Optional. Pass True to request a premium user, pass False to request a non-premium user.
-        If not specified, no additional restrictions are applied.
-    :type user_is_premium: :obj:`bool`
-
-    :return: Instance of the class
-    :rtype: :class:`telebot.types.KeyboardButtonRequestUser`
-
-    """
-
-    def __init__(self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None) -> None:
-        self.request_id: int = request_id
-        self.user_is_bot: Optional[bool] = user_is_bot
-        self.user_is_premium: Optional[bool] = user_is_premium
-
-    def to_dict(self) -> dict:
-        data = {'request_id': self.request_id}
-        if self.user_is_bot is not None:
-            data['user_is_bot'] = self.user_is_bot
-        if self.user_is_premium is not None:
-            data['user_is_premium'] = self.user_is_premium
-        return data
 
 
