@@ -289,8 +289,15 @@ class ChatJoinRequest(JsonDeserializable):
     :param chat: Chat to which the request was sent
     :type chat: :class:`telebot.types.Chat`
 
-    :param from: User that sent the join request
+    :param from_user: User that sent the join request
     :type from_user: :class:`telebot.types.User`
+
+    :param user_chat_id: Optional. Identifier of a private chat with the user who sent the join request.
+        This number may have more than 32 significant bits and some programming languages may have difficulty/silent
+        defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision
+        float type are safe for storing this identifier. The bot can use this identifier for 24 hours to send messages
+        until the join request is processed, assuming no other administrator contacted the user.
+    :type user_chat_id: :obj:`int`
 
     :param date: Date the request was sent in Unix time
     :type date: :obj:`int`
@@ -313,12 +320,13 @@ class ChatJoinRequest(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
     
-    def __init__(self, chat, from_user, date, bio=None, invite_link=None, **kwargs):
-        self.chat = chat
-        self.from_user = from_user
-        self.date = date
-        self.bio = bio
-        self.invite_link = invite_link
+    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, **kwargs):
+        self.chat: Chat = chat
+        self.from_user: User = from_user
+        self.date: str = date
+        self.bio: str = bio
+        self.invite_link: ChatInviteLink = invite_link
+        self.user_chat_id: int = user_chat_id
 
 class WebhookInfo(JsonDeserializable):
     """
