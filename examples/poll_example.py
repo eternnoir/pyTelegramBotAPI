@@ -17,11 +17,16 @@ def create_poll(message):
         chat_id=message.chat.id,
         question="We are going to '' park.",
         options=answer_options,
-        type='quiz',
+        type="quiz",
         correct_option_id=2,
         is_anonymous=False,
     )
 
+
+@bot.poll_answer_handler()
+def handle_poll(poll):
+    # This handler can be used to log User answers and to send next poll
+    pass
 
 
 bot.infinity_polling()
