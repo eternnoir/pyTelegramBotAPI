@@ -964,7 +964,7 @@ async def restrict_chat_member(
         can_send_messages=None, can_send_media_messages=None,
         can_send_polls=None, can_send_other_messages=None,
         can_add_web_page_previews=None, can_change_info=None,
-        can_invite_users=None, can_pin_messages=None):
+        can_invite_users=None, can_pin_messages=None, use_independent_chat_permissions=None):
     method_url = 'restrictChatMember'
     permissions = {}
     if can_send_messages is not None:
@@ -983,6 +983,9 @@ async def restrict_chat_member(
         permissions['can_invite_users'] = can_invite_users
     if can_pin_messages is not None:
         permissions['can_pin_messages'] = can_pin_messages
+    if use_independent_chat_permissions is not None:
+        permissions['use_independent_chat_permissions'] = use_independent_chat_permissions
+        
     permissions_json = json.dumps(permissions)
     payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions_json}
     if until_date is not None:
