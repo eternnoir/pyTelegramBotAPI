@@ -903,6 +903,9 @@ class Message(JsonDeserializable):
         the payment. More about payments »
     :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
+    :param user_shared: Optional. Service message: a user was shared with the bot
+    :type user_shared: :class:`telebot.types.UserShared`
+
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about 
         Telegram Login »
     :type connected_website: :obj:`str`
@@ -1152,6 +1155,9 @@ class Message(JsonDeserializable):
         if 'write_access_allowed' in obj:
             opts['write_access_allowed'] = WriteAccessAllowed.de_json(obj['write_access_allowed'])
             content_type = 'write_access_allowed'
+        if 'user_shared' in obj:
+            opts['user_shared'] = UserShared.de_json(obj['user_shared'])
+            content_type = 'user_shared'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1247,6 +1253,7 @@ class Message(JsonDeserializable):
         self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
         self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
+        self.user_shared: Optional[UserShared] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -7138,3 +7145,34 @@ class WriteAccessAllowed(JsonDeserializable):
         pass
 
 
+class UserShared(JsonDeserializable):
+    """
+    This object contains information about the user whose identifier was shared with the bot using a
+    `telebot.types.KeyboardButtonRequestUser` button.
+
+    Telegram documentation: https://core.telegram.org/bots/api#usershared
+
+    :param request_id: identifier of the request
+    :type request_id: :obj:`int`
+
+    :param user_id: Identifier of the shared user. This number may have more than 32 significant bits and some programming
+        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
+        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the user
+        and could be unable to use this identifier, unless the user is already known to the bot by some other means.
+    :type user_id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.UserShared`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, request_id: int, user_id: int) -> None:
+        self.request_id: int = request_id
+        self.user_id: int = user_id
+
+    
