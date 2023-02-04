@@ -2418,6 +2418,8 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['web_app'] = self.web_app.to_dict()
         if self.request_user is not None:
             json_dict['request_user'] = self.request_user.to_dict()
+        if self.request_chat is not None:
+            json_dict['request_chat'] = self.request_chat.to_dict()
         return json_dict
 
 
@@ -3124,6 +3126,10 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         value of can_pin_messages
     :type can_manage_topics: :obj:`bool`    
 
+    :param can_send_media_messages: deprecated. True, if the user is allowed to send audios, documents, photos, videos,
+        video notes and voice notes
+    :type can_send_media_messages: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatPermissions`
     """
@@ -3133,7 +3139,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, can_send_messages=None, can_send_audios=None,
+    def __init__(self, can_send_messages=None, can_send_media_messages=None,can_send_audios=None,
                     can_send_documents=None, can_send_photos=None,
                     can_send_videos=None, can_send_video_notes=None,
                     can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
@@ -3155,6 +3161,14 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_send_videos: bool = can_send_videos
         self.can_send_video_notes: bool = can_send_video_notes
         self.can_send_voice_notes: bool = can_send_voice_notes
+
+        if can_send_media_messages is not None:
+            self.can_send_audios = can_send_media_messages
+            self.can_send_documents = can_send_media_messages
+            self.can_send_photos = can_send_media_messages
+            self.can_send_videos = can_send_media_messages
+            self.can_send_video_notes = can_send_media_messages
+            self.can_send_voice_notes = can_send_media_messages
 
 
     def to_json(self):

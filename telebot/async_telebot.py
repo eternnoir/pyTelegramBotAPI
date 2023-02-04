@@ -3776,6 +3776,7 @@ class AsyncTeleBot:
             can_change_info: Optional[bool]=None,
             can_invite_users: Optional[bool]=None, 
             can_pin_messages: Optional[bool]=None,
+            permissions: Optional[types.ChatPermissions]=None,
             use_independent_chat_permissions: Optional[bool]=None) -> bool:
         """
         Use this method to restrict a user in a supergroup.
@@ -3783,6 +3784,10 @@ class AsyncTeleBot:
         the appropriate admin rights. Pass True for all boolean parameters to lift restrictions from a user.
 
         Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
+
+        .. warning::
+            Please pass `telebot.types.ChatPermissions` object to `permissions` parameter instead of
+            passing all boolean parameters. Those boolean parameters won't be supported soon, so please take it into consideration.
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
@@ -3830,15 +3835,30 @@ class AsyncTeleBot:
             can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission.
         :type use_independent_chat_permissions: :obj:`bool`
 
+        :param permissions: Pass ChatPermissions object to set all permissions at once. Use this parameter instead of
+            passing all boolean parameters to avoid backward compatibility problems in future.
+        :type permissions: :obj:`types.ChatPermissions`
+
         :return: True on success
         :rtype: :obj:`bool`
         """
+        if permissions is None:
+            permissions = types.ChatPermissions(
+                can_send_messages=can_send_messages,
+                can_send_media_messages=can_send_media_messages,
+                can_send_polls=can_send_polls,
+                can_send_other_messages=can_send_other_messages,
+                can_add_web_page_previews=can_add_web_page_previews,
+                can_change_info=can_change_info,
+                can_invite_users=can_invite_users,
+                can_pin_messages=can_pin_messages
+            )
+            logger.warning(
+                'Please pass `telebot.types.ChatPermissions` object to `permissions` parameter instead of '
+                'passing all boolean parameters. Those boolean parameters won\'t be supported soon, so please take it into consideration.'
+            )
         return await asyncio_helper.restrict_chat_member(
-            self.token, chat_id, user_id, until_date,
-            can_send_messages, can_send_media_messages,
-            can_send_polls, can_send_other_messages,
-            can_add_web_page_previews, can_change_info,
-            can_invite_users, can_pin_messages, use_independent_chat_permissions)
+            self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)
 
     async def promote_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
