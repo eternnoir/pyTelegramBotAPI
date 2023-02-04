@@ -2806,10 +2806,14 @@ class ChatMember(JsonDeserializable):
                  can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
                  can_restrict_members=None, can_promote_members=None, can_change_info=None,
                  can_invite_users=None,  can_pin_messages=None, is_member=None,
-                 can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
+                 can_send_messages=None, can_send_audios=None, can_send_documents=None,
+                 can_send_photos=None, can_send_videos=None, can_send_video_notes=None,
+                 can_send_voice_notes=None,
+                 can_send_polls=None,
                  can_send_other_messages=None, can_add_web_page_previews=None,  
                  can_manage_chat=None, can_manage_video_chats=None, 
-                 until_date=None, can_manage_topics=None, **kwargs):
+                 until_date=None, can_manage_topics=None, 
+                 **kwargs):
         self.user: User = user
         self.status: str = status
         self.custom_title: str = custom_title
@@ -2825,7 +2829,7 @@ class ChatMember(JsonDeserializable):
         self.can_pin_messages: bool = can_pin_messages
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
-        self.can_send_media_messages: bool = can_send_media_messages
+        #self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
@@ -2834,6 +2838,13 @@ class ChatMember(JsonDeserializable):
         self.can_manage_voice_chats: bool = self.can_manage_video_chats   # deprecated, for backward compatibility
         self.until_date: int = until_date
         self.can_manage_topics: bool = can_manage_topics
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+        
 
 
 class ChatMemberOwner(ChatMember):
@@ -2974,9 +2985,23 @@ class ChatMemberRestricted(ChatMember):
     :param can_send_messages: True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
 
-    :param can_send_media_messages: True, if the user is allowed to send audios, documents, photos, videos, video 
-        notes and voice notes
-    :type can_send_media_messages: :obj:`bool`
+    :param can_send_audios: True, if the user is allowed to send audios
+    :type can_send_audios: :obj:`bool`
+
+    :param can_send_documents: True, if the user is allowed to send documents
+    :type can_send_documents: :obj:`bool`
+
+    :param can_send_photos: True, if the user is allowed to send photos
+    :type can_send_photos: :obj:`bool`
+
+    :param can_send_videos: True, if the user is allowed to send videos
+    :type can_send_videos: :obj:`bool`
+
+    :param can_send_video_notes: True, if the user is allowed to send video notes
+    :type can_send_video_notes: :obj:`bool`
+
+    :param can_send_voice_notes: True, if the user is allowed to send voice notes
+    :type can_send_voice_notes: :obj:`bool`
 
     :param can_send_polls: True, if the user is allowed to send polls
     :type can_send_polls: :obj:`bool`
@@ -3048,19 +3073,33 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         venues
     :type can_send_messages: :obj:`bool`
 
-    :param can_send_media_messages: Optional. True, if the user is allowed to send audios, documents, photos, videos, 
-        video notes and voice notes, implies can_send_messages
-    :type can_send_media_messages: :obj:`bool`
+    :param can_send_audios: Optional. True, if the user is allowed to send audios
+    :type can_send_audios: :obj:`bool`
+
+    :param can_send_documents: Optional. True, if the user is allowed to send documents
+    :type can_send_documents: :obj:`bool`
+
+    :param can_send_photos: Optional. True, if the user is allowed to send photos
+    :type can_send_photos: :obj:`bool`
+
+    :param can_send_videos: Optional. True, if the user is allowed to send videos
+    :type can_send_videos: :obj:`bool`
+
+    :param can_send_video_notes: Optional. True, if the user is allowed to send video notes
+    :type can_send_video_notes: :obj:`bool`
+
+    :param can_send_voice_notes: Optional. True, if the user is allowed to send voice notes
+    :type can_send_voice_notes: :obj:`bool`
 
     :param can_send_polls: Optional. True, if the user is allowed to send polls, implies can_send_messages
     :type can_send_polls: :obj:`bool`
 
     :param can_send_other_messages: Optional. True, if the user is allowed to send animations, games, stickers and use 
-        inline bots, implies can_send_media_messages
+        inline bots
     :type can_send_other_messages: :obj:`bool`
 
     :param can_add_web_page_previews: Optional. True, if the user is allowed to add web page previews to their 
-        messages, implies can_send_media_messages
+        messages
     :type can_add_web_page_previews: :obj:`bool`
 
     :param can_change_info: Optional. True, if the user is allowed to change the chat title, photo and other settings. 
@@ -3086,13 +3125,15 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, can_send_messages=None, can_send_media_messages=None,
-                 can_send_polls=None, can_send_other_messages=None,
-                 can_add_web_page_previews=None, can_change_info=None,
-                 can_invite_users=None, can_pin_messages=None, 
-                 can_manage_topics=None, **kwargs):
+    def __init__(self, can_send_messages=None, can_send_audios=None,
+                    can_send_documents=None, can_send_photos=None,
+                    can_send_videos=None, can_send_video_notes=None,
+                    can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
+                    can_add_web_page_previews=None, can_change_info=None,
+                    can_invite_users=None, can_pin_messages=None, 
+                    can_manage_topics=None, **kwargs):
         self.can_send_messages: bool = can_send_messages
-        self.can_send_media_messages: bool = can_send_media_messages
+        #self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
@@ -3100,6 +3141,13 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_invite_users: bool = can_invite_users
         self.can_pin_messages: bool = can_pin_messages
         self.can_manage_topics: bool = can_manage_topics
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -3108,8 +3156,19 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         json_dict = dict()
         if self.can_send_messages is not None:
             json_dict['can_send_messages'] = self.can_send_messages
-        if self.can_send_media_messages is not None:
-            json_dict['can_send_media_messages'] = self.can_send_media_messages
+        if self.can_send_audios is not None:
+            json_dict['can_send_audios'] = self.can_send_audios
+
+        if self.can_send_documents is not None:
+            json_dict['can_send_documents'] = self.can_send_documents
+        if self.can_send_photos is not None:
+            json_dict['can_send_photos'] = self.can_send_photos
+        if self.can_send_videos is not None:
+            json_dict['can_send_videos'] = self.can_send_videos
+        if self.can_send_video_notes is not None:
+            json_dict['can_send_video_notes'] = self.can_send_video_notes
+        if self.can_send_voice_notes is not None:
+            json_dict['can_send_voice_notes'] = self.can_send_voice_notes
         if self.can_send_polls is not None:
             json_dict['can_send_polls'] = self.can_send_polls
         if self.can_send_other_messages is not None:
@@ -7214,4 +7273,3 @@ class ChatShared(JsonDeserializable):
         self.request_id: int = request_id
         self.chat_id: int = chat_id
 
-        
