@@ -968,36 +968,19 @@ def unban_chat_member(token, chat_id, user_id, only_if_banned):
 
 
 def restrict_chat_member(
-        token, chat_id, user_id, until_date=None,
-        can_send_messages=None, can_send_media_messages=None,
-        can_send_polls=None, can_send_other_messages=None,
-        can_add_web_page_previews=None, can_change_info=None,
-        can_invite_users=None, can_pin_messages=None):
+        token, chat_id, user_id, permissions, until_date=None,
+        use_independent_chat_permissions=None):
     method_url = 'restrictChatMember'
-    permissions = {}
-    if can_send_messages is not None:
-        permissions['can_send_messages'] = can_send_messages
-    if can_send_media_messages is not None:
-        permissions['can_send_media_messages'] = can_send_media_messages
-    if can_send_polls is not None:
-        permissions['can_send_polls'] = can_send_polls
-    if can_send_other_messages is not None:
-        permissions['can_send_other_messages'] = can_send_other_messages
-    if can_add_web_page_previews is not None:
-        permissions['can_add_web_page_previews'] = can_add_web_page_previews
-    if can_change_info is not None:
-        permissions['can_change_info'] = can_change_info
-    if can_invite_users is not None:
-        permissions['can_invite_users'] = can_invite_users
-    if can_pin_messages is not None:
-        permissions['can_pin_messages'] = can_pin_messages
-    permissions_json = json.dumps(permissions)
-    payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions_json}
+    payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions.to_json()}
+
+    if use_independent_chat_permissions is not None:
+        permissions['use_independent_chat_permissions'] = use_independent_chat_permissions
     if until_date is not None:
         if isinstance(until_date, datetime):
             payload['until_date'] = until_date.timestamp()
         else:
             payload['until_date'] = until_date
+    
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1056,12 +1039,14 @@ def unban_chat_sender_chat(token, chat_id, sender_chat_id):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_chat_permissions(token, chat_id, permissions):
+def set_chat_permissions(token, chat_id, permissions, use_independent_chat_permissions=None):
     method_url = 'setChatPermissions'
     payload = {
         'chat_id': chat_id,
         'permissions': permissions.to_json()
     }
+    if use_independent_chat_permissions is not None:
+        payload['use_independent_chat_permissions'] = use_independent_chat_permissions
     return _make_request(token, method_url, params=payload, method='post')
 
 

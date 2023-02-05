@@ -2917,13 +2917,18 @@ class TeleBot:
             can_add_web_page_previews: Optional[bool]=None, 
             can_change_info: Optional[bool]=None,
             can_invite_users: Optional[bool]=None, 
-            can_pin_messages: Optional[bool]=None) -> bool:
+            can_pin_messages: Optional[bool]=None,
+            permissions: Optional[types.ChatPermissions]=None,
+            use_independent_chat_permissions: Optional[bool]=None) -> bool:
         """
         Use this method to restrict a user in a supergroup.
         The bot must be an administrator in the supergroup for this to work and must have
         the appropriate admin rights. Pass True for all boolean parameters to lift restrictions from a user.
 
         Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
+
+        .. warning::
+            Individual parameters are deprecated and will be removed, use 'permissions' instead.
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
@@ -2965,15 +2970,36 @@ class TeleBot:
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :type can_pin_messages: :obj:`bool`
 
+        :param use_independent_chat_permissions: Pass True if chat permissions are set independently. Otherwise,
+            the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages,
+            can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and
+            can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission.
+        :type use_independent_chat_permissions: :obj:`bool`
+
+        :param permissions: Pass ChatPermissions object to set all permissions at once. Use this param instead of
+            passing all boolean parameters.
+        :type permissions: :class:`telebot.types.ChatPermissions`
+
         :return: True on success
         :rtype: :obj:`bool`
         """
+
+        if permissions is None:
+            permissions = types.ChatPermissions(
+                can_send_messages=can_send_messages,
+                can_send_media_messages=can_send_media_messages,
+                can_send_polls=can_send_polls,
+                can_send_other_messages=can_send_other_messages,
+                can_add_web_page_previews=can_add_web_page_previews,
+                can_change_info=can_change_info,
+                can_invite_users=can_invite_users,
+                can_pin_messages=can_pin_messages
+            )
+            logger.warning(
+                "Individual parameters are deprecated and will be removed, use 'permissions' instead."
+            )
         return apihelper.restrict_chat_member(
-            self.token, chat_id, user_id, until_date,
-            can_send_messages, can_send_media_messages,
-            can_send_polls, can_send_other_messages,
-            can_add_web_page_previews, can_change_info,
-            can_invite_users, can_pin_messages)
+            self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)
 
     def promote_chat_member(
             self, chat_id: Union[int, str], user_id: int,
@@ -3131,7 +3157,8 @@ class TeleBot:
         return apihelper.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
     def set_chat_permissions(
-            self, chat_id: Union[int, str], permissions: types.ChatPermissions) -> bool:
+            self, chat_id: Union[int, str], permissions: types.ChatPermissions,
+            use_independent_chat_permissions: Optional[bool]=None) -> bool:
         """
         Use this method to set default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
@@ -3146,10 +3173,16 @@ class TeleBot:
         :param permissions: New default chat permissions
         :type permissions: :class:`telebot.types..ChatPermissions`
 
+        :param use_independent_chat_permissions: Pass True if chat permissions are set independently. Otherwise,
+            the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages,
+            can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and
+            can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission.
+        :type use_independent_chat_permissions: :obj:`bool`
+
         :return: True on success
         :rtype: :obj:`bool`
         """
-        return apihelper.set_chat_permissions(self.token, chat_id, permissions)
+        return apihelper.set_chat_permissions(self.token, chat_id, permissions, use_independent_chat_permissions)
 
     def create_chat_invite_link(
             self, chat_id: Union[int, str],

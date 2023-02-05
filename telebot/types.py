@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import annotations
 
 from io import IOBase
 import logging
@@ -288,8 +289,15 @@ class ChatJoinRequest(JsonDeserializable):
     :param chat: Chat to which the request was sent
     :type chat: :class:`telebot.types.Chat`
 
-    :param from: User that sent the join request
+    :param from_user: User that sent the join request
     :type from_user: :class:`telebot.types.User`
+
+    :param user_chat_id: Optional. Identifier of a private chat with the user who sent the join request.
+        This number may have more than 32 significant bits and some programming languages may have difficulty/silent
+        defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision
+        float type are safe for storing this identifier. The bot can use this identifier for 24 hours to send messages
+        until the join request is processed, assuming no other administrator contacted the user.
+    :type user_chat_id: :obj:`int`
 
     :param date: Date the request was sent in Unix time
     :type date: :obj:`int`
@@ -312,12 +320,13 @@ class ChatJoinRequest(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
     
-    def __init__(self, chat, from_user, date, bio=None, invite_link=None, **kwargs):
-        self.chat = chat
-        self.from_user = from_user
-        self.date = date
-        self.bio = bio
-        self.invite_link = invite_link
+    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, **kwargs):
+        self.chat: Chat = chat
+        self.from_user: User = from_user
+        self.date: str = date
+        self.bio: str = bio
+        self.invite_link: ChatInviteLink = invite_link
+        self.user_chat_id: int = user_chat_id
 
 class WebhookInfo(JsonDeserializable):
     """
@@ -902,6 +911,12 @@ class Message(JsonDeserializable):
         the payment. More about payments »
     :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
+    :param user_shared: Optional. Service message: a user was shared with the bot
+    :type user_shared: :class:`telebot.types.UserShared`
+
+    :param chat_shared: Optional. Service message: a chat was shared with the bot
+    :type chat_shared: :class:`telebot.types.ChatShared`
+
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about 
         Telegram Login »
     :type connected_website: :obj:`str`
@@ -1151,6 +1166,12 @@ class Message(JsonDeserializable):
         if 'write_access_allowed' in obj:
             opts['write_access_allowed'] = WriteAccessAllowed.de_json(obj['write_access_allowed'])
             content_type = 'write_access_allowed'
+        if 'user_shared' in obj:
+            opts['user_shared'] = UserShared.de_json(obj['user_shared'])
+            content_type = 'user_shared'
+        if 'chat_shared' in obj:
+            opts['chat_shared'] = ChatShared.de_json(obj['chat_shared'])
+            content_type = 'chat_shared'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1246,6 +1267,8 @@ class Message(JsonDeserializable):
         self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
         self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
+        self.user_shared: Optional[UserShared] = None
+        self.chat_shared: Optional[ChatShared] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -2217,6 +2240,117 @@ class KeyboardButtonPollType(Dictionaryable):
 
     def to_dict(self):
         return {'type': self.type}
+    
+ 
+
+class KeyboardButtonRequestUser(Dictionaryable):
+    """
+    This object defines the criteria used to request a suitable user.
+    The identifier of the selected user will be shared with the bot when the corresponding button is pressed.
+
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestuser
+
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the UserShared object.
+        Must be unique within the message
+    :type request_id: :obj:`int`
+
+    :param user_is_bot: Optional. Pass True to request a bot, pass False to request a regular user.
+        If not specified, no additional restrictions are applied.
+    :type user_is_bot: :obj:`bool`
+
+    :param user_is_premium: Optional. Pass True to request a premium user, pass False to request a non-premium user.
+        If not specified, no additional restrictions are applied.
+    :type user_is_premium: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.KeyboardButtonRequestUser`
+
+    """
+
+    def __init__(self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None) -> None:
+        self.request_id: int = request_id
+        self.user_is_bot: Optional[bool] = user_is_bot
+        self.user_is_premium: Optional[bool] = user_is_premium
+
+    def to_dict(self) -> dict:
+        data = {'request_id': self.request_id}
+        if self.user_is_bot is not None:
+            data['user_is_bot'] = self.user_is_bot
+        if self.user_is_premium is not None:
+            data['user_is_premium'] = self.user_is_premium
+        return data
+
+
+class KeyboardButtonRequestChat(Dictionaryable):
+    """
+    This object defines the criteria used to request a suitable chat. The identifier of the selected chat will
+    be shared with the bot when the corresponding button is pressed.
+
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestchat
+
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the ChatShared object.
+        Must be unique within the message
+    :type request_id: :obj:`int`
+
+    :param chat_is_channel: Pass True to request a channel chat, pass False to request a group or a supergroup chat.
+    :type chat_is_channel: :obj:`bool`
+
+    :param chat_is_forum: Optional. Pass True to request a forum supergroup, pass False to request a non-forum chat.
+        If not specified, no additional restrictions are applied.
+    :type chat_is_forum: :obj:`bool`
+
+    :param chat_has_username: Optional. Pass True to request a supergroup or a channel with a username, pass False to request a
+        chat without a username. If not specified, no additional restrictions are applied.
+    :type chat_has_username: :obj:`bool`
+
+    :param chat_is_created: Optional. Pass True to request a chat owned by the user. Otherwise, no additional restrictions are applied.
+    :type chat_is_created: :obj:`bool`
+
+    :param user_administrator_rights: Optional. A JSON-serialized object listing the required administrator rights of the user in the chat.
+        The rights must be a superset of bot_administrator_rights. If not specified, no additional restrictions are applied.
+    :type user_administrator_rights: :class:`telebot.types.ChatAdministratorRights`
+
+    :param bot_administrator_rights: Optional. A JSON-serialized object listing the required administrator rights of the bot in the chat.
+        The rights must be a subset of user_administrator_rights. If not specified, no additional restrictions are applied.
+    :type bot_administrator_rights: :class:`telebot.types.ChatAdministratorRights`
+
+    :param bot_is_member: Optional. Pass True to request a chat where the bot is a member. Otherwise, no additional restrictions are applied.
+    :type bot_is_member: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.KeyboardButtonRequestChat`
+    """
+
+    def __init__(self, request_id: int, chat_is_channel: bool, chat_is_forum: Optional[bool]=None,
+                 chat_has_username: Optional[bool]=None, chat_is_created: Optional[bool]=None,
+                 user_administrator_rights: Optional[ChatAdministratorRights]=None,
+                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None) -> None:
+        self.request_id: int = request_id
+        self.chat_is_channel: bool = chat_is_channel
+        self.chat_is_forum: Optional[bool] = chat_is_forum
+        self.chat_has_username: Optional[bool] = chat_has_username
+        self.chat_is_created: Optional[bool] = chat_is_created
+        self.user_administrator_rights: Optional[ChatAdministratorRights] = user_administrator_rights
+        self.bot_administrator_rights: Optional[ChatAdministratorRights] = bot_administrator_rights
+        self.bot_is_member: Optional[bool] = bot_is_member
+
+
+    def to_dict(self) -> dict:
+        data = {'request_id': self.request_id, 'chat_is_channel': self.chat_is_channel}
+        if self.chat_is_forum is not None:
+            data['chat_is_forum'] = self.chat_is_forum
+        if self.chat_has_username is not None:
+            data['chat_has_username'] = self.chat_has_username
+        if self.chat_is_created is not None:
+            data['chat_is_created'] = self.chat_is_created
+        if self.user_administrator_rights is not None:
+            data['user_administrator_rights'] = self.user_administrator_rights.to_dict()
+        if self.bot_administrator_rights is not None:
+            data['bot_administrator_rights'] = self.bot_administrator_rights.to_dict()
+        if self.bot_is_member is not None:
+            data['bot_is_member'] = self.bot_is_member
+        return data
+
 
 
 class KeyboardButton(Dictionaryable, JsonSerializable):
@@ -2245,17 +2379,29 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         will be able to send a “web_app_data” service message. Available in private chats only.
     :type web_app: :class:`telebot.types.WebAppInfo`
 
+    :param request_user: Optional. If specified, pressing the button will open a list of suitable users. Tapping on any user
+        will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
+    :type request_user: :class:`telebot.types.KeyboardButtonRequestUser`
+
+    :param request_chat: Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will
+        send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
+    :type request_chat: :class:`telebot.types.KeyboardButtonRequestChat`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButton`
     """
     def __init__(self, text: str, request_contact: Optional[bool]=None, 
             request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
-            web_app: WebAppInfo=None):
+            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
+            request_chat: Optional[KeyboardButtonRequestChat]=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
         self.request_poll: KeyboardButtonPollType = request_poll
         self.web_app: WebAppInfo = web_app
+        self.request_user: KeyboardButtonRequestUser = request_user
+        self.request_chat: KeyboardButtonRequestChat = request_chat
+
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -2270,6 +2416,10 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['request_poll'] = self.request_poll.to_dict()
         if self.web_app is not None:
             json_dict['web_app'] = self.web_app.to_dict()
+        if self.request_user is not None:
+            json_dict['request_user'] = self.request_user.to_dict()
+        if self.request_chat is not None:
+            json_dict['request_chat'] = self.request_chat.to_dict()
         return json_dict
 
 
@@ -2666,10 +2816,14 @@ class ChatMember(JsonDeserializable):
                  can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
                  can_restrict_members=None, can_promote_members=None, can_change_info=None,
                  can_invite_users=None,  can_pin_messages=None, is_member=None,
-                 can_send_messages=None, can_send_media_messages=None, can_send_polls=None,
+                 can_send_messages=None, can_send_audios=None, can_send_documents=None,
+                 can_send_photos=None, can_send_videos=None, can_send_video_notes=None,
+                 can_send_voice_notes=None,
+                 can_send_polls=None,
                  can_send_other_messages=None, can_add_web_page_previews=None,  
                  can_manage_chat=None, can_manage_video_chats=None, 
-                 until_date=None, can_manage_topics=None, **kwargs):
+                 until_date=None, can_manage_topics=None, 
+                 **kwargs):
         self.user: User = user
         self.status: str = status
         self.custom_title: str = custom_title
@@ -2685,7 +2839,7 @@ class ChatMember(JsonDeserializable):
         self.can_pin_messages: bool = can_pin_messages
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
-        self.can_send_media_messages: bool = can_send_media_messages
+        #self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
@@ -2694,6 +2848,13 @@ class ChatMember(JsonDeserializable):
         self.can_manage_voice_chats: bool = self.can_manage_video_chats   # deprecated, for backward compatibility
         self.until_date: int = until_date
         self.can_manage_topics: bool = can_manage_topics
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+        
 
 
 class ChatMemberOwner(ChatMember):
@@ -2834,9 +2995,23 @@ class ChatMemberRestricted(ChatMember):
     :param can_send_messages: True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
 
-    :param can_send_media_messages: True, if the user is allowed to send audios, documents, photos, videos, video 
-        notes and voice notes
-    :type can_send_media_messages: :obj:`bool`
+    :param can_send_audios: True, if the user is allowed to send audios
+    :type can_send_audios: :obj:`bool`
+
+    :param can_send_documents: True, if the user is allowed to send documents
+    :type can_send_documents: :obj:`bool`
+
+    :param can_send_photos: True, if the user is allowed to send photos
+    :type can_send_photos: :obj:`bool`
+
+    :param can_send_videos: True, if the user is allowed to send videos
+    :type can_send_videos: :obj:`bool`
+
+    :param can_send_video_notes: True, if the user is allowed to send video notes
+    :type can_send_video_notes: :obj:`bool`
+
+    :param can_send_voice_notes: True, if the user is allowed to send voice notes
+    :type can_send_voice_notes: :obj:`bool`
 
     :param can_send_polls: True, if the user is allowed to send polls
     :type can_send_polls: :obj:`bool`
@@ -2908,19 +3083,33 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         venues
     :type can_send_messages: :obj:`bool`
 
-    :param can_send_media_messages: Optional. True, if the user is allowed to send audios, documents, photos, videos, 
-        video notes and voice notes, implies can_send_messages
-    :type can_send_media_messages: :obj:`bool`
+    :param can_send_audios: Optional. True, if the user is allowed to send audios
+    :type can_send_audios: :obj:`bool`
+
+    :param can_send_documents: Optional. True, if the user is allowed to send documents
+    :type can_send_documents: :obj:`bool`
+
+    :param can_send_photos: Optional. True, if the user is allowed to send photos
+    :type can_send_photos: :obj:`bool`
+
+    :param can_send_videos: Optional. True, if the user is allowed to send videos
+    :type can_send_videos: :obj:`bool`
+
+    :param can_send_video_notes: Optional. True, if the user is allowed to send video notes
+    :type can_send_video_notes: :obj:`bool`
+
+    :param can_send_voice_notes: Optional. True, if the user is allowed to send voice notes
+    :type can_send_voice_notes: :obj:`bool`
 
     :param can_send_polls: Optional. True, if the user is allowed to send polls, implies can_send_messages
     :type can_send_polls: :obj:`bool`
 
     :param can_send_other_messages: Optional. True, if the user is allowed to send animations, games, stickers and use 
-        inline bots, implies can_send_media_messages
+        inline bots
     :type can_send_other_messages: :obj:`bool`
 
     :param can_add_web_page_previews: Optional. True, if the user is allowed to add web page previews to their 
-        messages, implies can_send_media_messages
+        messages
     :type can_add_web_page_previews: :obj:`bool`
 
     :param can_change_info: Optional. True, if the user is allowed to change the chat title, photo and other settings. 
@@ -2937,6 +3126,10 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         value of can_pin_messages
     :type can_manage_topics: :obj:`bool`    
 
+    :param can_send_media_messages: deprecated. True, if the user is allowed to send audios, documents, photos, videos,
+        video notes and voice notes
+    :type can_send_media_messages: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatPermissions`
     """
@@ -2946,13 +3139,15 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, can_send_messages=None, can_send_media_messages=None,
-                 can_send_polls=None, can_send_other_messages=None,
-                 can_add_web_page_previews=None, can_change_info=None,
-                 can_invite_users=None, can_pin_messages=None, 
-                 can_manage_topics=None, **kwargs):
+    def __init__(self, can_send_messages=None, can_send_media_messages=None,can_send_audios=None,
+                    can_send_documents=None, can_send_photos=None,
+                    can_send_videos=None, can_send_video_notes=None,
+                    can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
+                    can_add_web_page_previews=None, can_change_info=None,
+                    can_invite_users=None, can_pin_messages=None, 
+                    can_manage_topics=None, **kwargs):
         self.can_send_messages: bool = can_send_messages
-        self.can_send_media_messages: bool = can_send_media_messages
+        #self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
@@ -2960,6 +3155,22 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_invite_users: bool = can_invite_users
         self.can_pin_messages: bool = can_pin_messages
         self.can_manage_topics: bool = can_manage_topics
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+
+        if can_send_media_messages is not None:
+            logger.warning("can_send_media_messages is deprecated. Use individual parameters like can_send_audios, can_send_documents, etc.")
+            self.can_send_audios = can_send_media_messages
+            self.can_send_documents = can_send_media_messages
+            self.can_send_photos = can_send_media_messages
+            self.can_send_videos = can_send_media_messages
+            self.can_send_video_notes = can_send_media_messages
+            self.can_send_voice_notes = can_send_media_messages
+
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -2968,8 +3179,19 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         json_dict = dict()
         if self.can_send_messages is not None:
             json_dict['can_send_messages'] = self.can_send_messages
-        if self.can_send_media_messages is not None:
-            json_dict['can_send_media_messages'] = self.can_send_media_messages
+        if self.can_send_audios is not None:
+            json_dict['can_send_audios'] = self.can_send_audios
+
+        if self.can_send_documents is not None:
+            json_dict['can_send_documents'] = self.can_send_documents
+        if self.can_send_photos is not None:
+            json_dict['can_send_photos'] = self.can_send_photos
+        if self.can_send_videos is not None:
+            json_dict['can_send_videos'] = self.can_send_videos
+        if self.can_send_video_notes is not None:
+            json_dict['can_send_video_notes'] = self.can_send_video_notes
+        if self.can_send_voice_notes is not None:
+            json_dict['can_send_voice_notes'] = self.can_send_voice_notes
         if self.can_send_polls is not None:
             json_dict['can_send_polls'] = self.can_send_polls
         if self.can_send_other_messages is not None:
@@ -7012,5 +7234,65 @@ class WriteAccessAllowed(JsonDeserializable):
         pass
 
 
+class UserShared(JsonDeserializable):
+    """
+    This object contains information about the user whose identifier was shared with the bot using a
+    `telebot.types.KeyboardButtonRequestUser` button.
 
+    Telegram documentation: https://core.telegram.org/bots/api#usershared
+
+    :param request_id: identifier of the request
+    :type request_id: :obj:`int`
+
+    :param user_id: Identifier of the shared user. This number may have more than 32 significant bits and some programming
+        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
+        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the user
+        and could be unable to use this identifier, unless the user is already known to the bot by some other means.
+    :type user_id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.UserShared`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, request_id: int, user_id: int) -> None:
+        self.request_id: int = request_id
+        self.user_id: int = user_id
+
+
+    
+class ChatShared(JsonDeserializable):
+    """
+    This object contains information about the chat whose identifier was shared with the bot using a
+    `telebot.types.KeyboardButtonRequestChat` button.
+
+    Telegram documentation: https://core.telegram.org/bots/api#Chatshared
+
+    :param request_id: identifier of the request
+    :type request_id: :obj:`int`
+
+    :param chat_id: Identifier of the shared chat. This number may have more than 32 significant bits and some programming
+        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
+        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the chat
+        and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
+    :type chat_id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShared`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, request_id: int, chat_id: int) -> None:
+        self.request_id: int = request_id
+        self.chat_id: int = chat_id
 
