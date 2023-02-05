@@ -3786,8 +3786,7 @@ class AsyncTeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#restrictchatmember
 
         .. warning::
-            Please pass `telebot.types.ChatPermissions` object to `permissions` parameter instead of
-            passing all boolean parameters. Those boolean parameters won't be supported soon, so please take it into consideration.
+            Individual parameters are deprecated and will be removed, use 'permissions' instead
 
         :param chat_id: Unique identifier for the target group or username of the target supergroup
             or channel (in the format @channelusername)
@@ -3854,8 +3853,7 @@ class AsyncTeleBot:
                 can_pin_messages=can_pin_messages
             )
             logger.warning(
-                'Please pass `telebot.types.ChatPermissions` object to `permissions` parameter instead of '
-                'passing all boolean parameters. Those boolean parameters won\'t be supported soon, so please take it into consideration.'
+                "Individual parameters are deprecated and will be removed, use 'permissions' instead."
             )
         return await asyncio_helper.restrict_chat_member(
             self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)

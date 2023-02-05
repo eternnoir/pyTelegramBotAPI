@@ -3163,6 +3163,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_send_voice_notes: bool = can_send_voice_notes
 
         if can_send_media_messages is not None:
+            logger.warning("can_send_media_messages is deprecated. Use individual parameters like can_send_audios, can_send_documents, etc.")
             self.can_send_audios = can_send_media_messages
             self.can_send_documents = can_send_media_messages
             self.can_send_photos = can_send_media_messages
