@@ -7,7 +7,7 @@ import telebot
 
 API_TOKEN = '<api_token>'
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = telebot.TeleBot(5910159524:AAHdHYhOwBnU_7FoC6cjN_7_P_mczwYvGZ0)
 
 
 # Handle '/start' and '/help'
