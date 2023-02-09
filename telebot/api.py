@@ -1,9 +1,10 @@
 import logging
 import os
 import re
+import uuid
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Optional, Union, cast
+from typing import Any, Dict, Optional, Union, cast
 
 import aiohttp
 import ujson as json  # type: ignore
@@ -13,11 +14,11 @@ from telebot import types, util
 logger = logging.getLogger(__name__)
 
 
-FILE_URL = None
+FILE_URL: Optional[str] = None
 CUSTOM_SERIALIZER = None
 
 DEFAULT_REQUEST_TIMEOUT = None
-MAX_RETRIES = 10
+MAX_RETRIES = 5
 REQUEST_LIMIT = 50
 
 
@@ -58,18 +59,35 @@ async def _request(
     request_timeout: Optional[float] = None,
 ):
     session = await session_manager.get_session()
-    log_mesage = f"Making request: {method = } {route = } {params = } {files = } {request_timeout = }"
-    logger.debug(log_mesage.replace(token, token.split(":")[0] + ":{TOKEN}"))
-    async with session.request(
-        method=method,
-        url="https://api.telegram.org/bot{0}/{1}".format(token, route),
-        data=to_form_data(params, files),
-        timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
-    ) as resp:
-
-        json_result = await _check_response(resp)
-        if json_result:
-            return json_result["result"]
+    request_description = f"{method = } {route = } {params = } {files = } {request_timeout = }"
+    request_description = request_description.replace(token, "<bot-token>")
+    logger.debug("Making request: %s", request_description)
+    last_exception: Optional[Exception] = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            async with session.request(
+                method=method,
+                url="https://api.telegram.org/bot{0}/{1}".format(token, route),
+                data=to_form_data(params, files),
+                timeout=aiohttp.ClientTimeout(total=request_timeout or DEFAULT_REQUEST_TIMEOUT),
+            ) as resp:
+                json_result = await _check_response(resp)
+                if json_result:
+                    return json_result["result"]
+        except ApiException:
+            raise
+        except Exception as e:
+            last_exception = e
+            logger.exception(
+                "Unexpected error making request (%s), will retry (attempt %s/%s)",
+                request_description,
+                attempt + 1,
+                MAX_RETRIES,
+            )
+    else:
+        if last_exception is not None:
+            logger.error("Request (%s) didn't succeeded, reraising last exception", request_description)
+            raise last_exception
 
 
 def extract_filename(obj: Any) -> Optional[str]:
@@ -124,25 +142,23 @@ async def get_file(token, file_id):
     return await _request(token, "getFile", params={"file_id": file_id})
 
 
-async def get_file_url(token, file_id):
+async def get_file_url(token: str, file_id: str):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)["file_path"])
+        return "https://api.telegram.org/file/bot{0}/{1}".format(token, await get_file(token, file_id)["file_path"])
     else:
-        # noinspection PyUnresolvedReferences
-        return FILE_URL.format(token, get_file(token, file_id)["file_path"])
+        return FILE_URL.format(token, await get_file(token, file_id)["file_path"])
 
 
-async def download_file(token, file_path):
+async def download_file(token: str, file_path: str):
     if FILE_URL is None:
         url = "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
     else:
-        # noinspection PyUnresolvedReferences
         url = FILE_URL.format(token, file_path)
-    async with await session_manager.get_session() as session:
-        async with session.get(url) as response:
-            result = await response.read()
-            if response.status != 200:
-                raise ApiHTTPException("Error downloading file", response)
+    session = await session_manager.get_session()
+    async with session.get(url) as response:
+        result = await response.read()
+        if response.status != 200:
+            raise ApiHTTPException("Error downloading file", response)
 
     return result
 
@@ -156,6 +172,7 @@ async def set_webhook(
     ip_address: Optional[str] = None,
     drop_pending_updates: Optional[bool] = None,
     timeout: Optional[float] = None,
+    secret_token: Optional[str] = None,
 ):
     files: Optional[Files] = {"certificate": certificate} if certificate else None
     params: Params = {"url": url}
@@ -167,6 +184,8 @@ async def set_webhook(
         params["ip_address"] = ip_address
     if drop_pending_updates is not None:  # Any bool value should pass
         params["drop_pending_updates"] = drop_pending_updates
+    if secret_token:
+        params["secret_token"] = secret_token
     return await _request(token, route="setWebhook", params=params, files=files, request_timeout=timeout)
 
 
@@ -221,10 +240,11 @@ async def _check_response(response: aiohttp.ClientResponse):
     :param result: The returned result of the method request
     :return: The result parsed to a JSON dictionary.
     """
+    await response.text()  # loading response body
     try:
         result_json = await response.json(encoding="utf-8")
-    except Exception:
-        raise ApiInvalidJSONException(response)
+    except Exception as e:
+        raise ApiInvalidJSONException(response, e)
     if not isinstance(result_json, dict) or "ok" not in result_json:
         raise ApiHTTPException(f"JSON response is malformed: {result_json}", response)
     if result_json["ok"] is True:
@@ -234,6 +254,11 @@ async def _check_response(response: aiohttp.ClientResponse):
             raise ApiHTTPException(f"JSON response misses 'description' field: {result_json}", response)
         else:
             raise ApiHTTPException(result_json["description"], response)
+
+
+def _add_message_thread_id(params: Dict[str, Any], message_thread_id: Optional[int]) -> None:
+    if message_thread_id is not None:
+        params["message_thread_id"] = message_thread_id
 
 
 async def send_message(
@@ -249,6 +274,7 @@ async def send_message(
     entities=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     """
     Use this method to send text messages. On success, the sent Message is returned.
@@ -286,7 +312,7 @@ async def send_message(
         params["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         params["protect_content"] = protect_content
-
+    _add_message_thread_id(params, message_thread_id)
     return await _request(token, method_name, params=params)
 
 
@@ -371,6 +397,7 @@ async def forward_message(
     disable_notification=None,
     timeout=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"forwardMessage"
     payload = {
@@ -384,6 +411,7 @@ async def forward_message(
         payload["timeout"] = timeout
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -401,6 +429,7 @@ async def copy_message(
     reply_markup=None,
     timeout=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"copyMessage"
     payload = {
@@ -426,6 +455,7 @@ async def copy_message(
         payload["timeout"] = timeout
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -439,6 +469,7 @@ async def send_dice(
     timeout=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendDice"
     payload = {"chat_id": chat_id}
@@ -456,6 +487,7 @@ async def send_dice(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -472,6 +504,8 @@ async def send_photo(
     caption_entities=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
+    has_spoiler: Optional[bool] = None,
 ):
     method_url = r"sendPhoto"
     payload = {"chat_id": chat_id}
@@ -498,6 +532,9 @@ async def send_photo(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
+    if has_spoiler is not None:
+        payload["has_spoiler"] = has_spoiler
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -510,6 +547,7 @@ async def send_media_group(
     timeout=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendMediaGroup"
     media_json, files = await convert_input_media_array(media)
@@ -524,6 +562,7 @@ async def send_media_group(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(
         token,
         method_url,
@@ -548,6 +587,7 @@ async def send_location(
     proximity_alert_radius=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendLocation"
     payload = {"chat_id": chat_id, "latitude": latitude, "longitude": longitude}
@@ -571,6 +611,7 @@ async def send_location(
         payload["timeout"] = timeout
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -648,6 +689,7 @@ async def send_venue(
     google_place_id=None,
     google_place_type=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendVenue"
     payload = {
@@ -677,6 +719,7 @@ async def send_venue(
         payload["google_place_type"] = google_place_type
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -693,6 +736,7 @@ async def send_contact(
     timeout=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendContact"
     payload = {
@@ -716,15 +760,17 @@ async def send_contact(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
-async def send_chat_action(token, chat_id, action, timeout=None):
-    method_url = r"sendChatAction"
+async def send_chat_action(token, chat_id, action, timeout=None, message_thread_id: Optional[int] = None):
+    route = r"sendChatAction"
     payload = {"chat_id": chat_id, "action": action}
     if timeout:
         payload["timeout"] = timeout
-    return await _request(token, method_url, params=payload)
+    _add_message_thread_id(payload, message_thread_id)
+    return await _request(token, route, params=payload)
 
 
 async def send_video(
@@ -745,6 +791,8 @@ async def send_video(
     caption_entities=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
+    has_spoiler: Optional[bool] = None,
 ):
     method_url = r"sendVideo"
     payload = {"chat_id": chat_id}
@@ -787,6 +835,9 @@ async def send_video(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
+    if has_spoiler is not None:
+        payload["has_spoiler"] = has_spoiler
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -807,6 +858,8 @@ async def send_animation(
     width=None,
     height=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
+    has_spoiler: Optional[bool] = None,
 ):
     method_url = r"sendAnimation"
     payload = {"chat_id": chat_id}
@@ -847,6 +900,10 @@ async def send_animation(
         payload["height"] = height
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
+
+    if has_spoiler is not None:
+        payload["has_spoiler"] = has_spoiler
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -864,6 +921,7 @@ async def send_voice(
     caption_entities=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendVoice"
     payload = {"chat_id": chat_id}
@@ -892,6 +950,7 @@ async def send_voice(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -908,6 +967,7 @@ async def send_video_note(
     thumb=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendVideoNote"
     payload = {"chat_id": chat_id}
@@ -942,6 +1002,7 @@ async def send_video_note(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -962,6 +1023,7 @@ async def send_audio(
     caption_entities=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendAudio"
     payload = {"chat_id": chat_id}
@@ -1002,6 +1064,7 @@ async def send_audio(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -1022,6 +1085,7 @@ async def send_data(
     disable_content_type_detection=None,
     visible_file_name=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = await get_method_by_type(data_type)
     payload = {"chat_id": chat_id}
@@ -1061,6 +1125,7 @@ async def send_data(
         payload["protect_content"] = protect_content
     if method_url == "sendDocument" and disable_content_type_detection is not None:
         payload["disable_content_type_detection"] = disable_content_type_detection
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload, files=files, method="post")
 
 
@@ -1095,36 +1160,14 @@ async def restrict_chat_member(
     token,
     chat_id,
     user_id,
+    permissions,
     until_date=None,
-    can_send_messages=None,
-    can_send_media_messages=None,
-    can_send_polls=None,
-    can_send_other_messages=None,
-    can_add_web_page_previews=None,
-    can_change_info=None,
-    can_invite_users=None,
-    can_pin_messages=None,
+    use_independent_chat_permissions=None,
 ):
     method_url = "restrictChatMember"
-    permissions = {}
-    if can_send_messages is not None:
-        permissions["can_send_messages"] = can_send_messages
-    if can_send_media_messages is not None:
-        permissions["can_send_media_messages"] = can_send_media_messages
-    if can_send_polls is not None:
-        permissions["can_send_polls"] = can_send_polls
-    if can_send_other_messages is not None:
-        permissions["can_send_other_messages"] = can_send_other_messages
-    if can_add_web_page_previews is not None:
-        permissions["can_add_web_page_previews"] = can_add_web_page_previews
-    if can_change_info is not None:
-        permissions["can_change_info"] = can_change_info
-    if can_invite_users is not None:
-        permissions["can_invite_users"] = can_invite_users
-    if can_pin_messages is not None:
-        permissions["can_pin_messages"] = can_pin_messages
-    permissions_json = json.dumps(permissions)
-    payload = {"chat_id": chat_id, "user_id": user_id, "permissions": permissions_json}
+    payload = {"chat_id": chat_id, "user_id": user_id, "permissions": permissions.to_json()}
+    if use_independent_chat_permissions is not None:
+        permissions["use_independent_chat_permissions"] = use_independent_chat_permissions
     if until_date is not None:
         if isinstance(until_date, datetime):
             payload["until_date"] = until_date.timestamp()
@@ -1148,6 +1191,7 @@ async def promote_chat_member(
     is_anonymous=None,
     can_manage_chat=None,
     can_manage_video_chats=None,
+    can_manage_topics=None,
 ):
     method_url = "promoteChatMember"
     payload = {"chat_id": chat_id, "user_id": user_id}
@@ -1173,6 +1217,8 @@ async def promote_chat_member(
         payload["can_manage_chat"] = can_manage_chat
     if can_manage_video_chats is not None:
         payload["can_manage_video_chats"] = can_manage_video_chats
+    if can_manage_topics is not None:
+        payload["can_manage_topics"] = can_manage_topics
     return await _request(token, method_url, params=payload, method="post")
 
 
@@ -1194,10 +1240,12 @@ async def unban_chat_sender_chat(token, chat_id, sender_chat_id):
     return await _request(token, method_url, params=payload, method="post")
 
 
-async def set_chat_permissions(token, chat_id, permissions):
-    method_url = "setChatPermissions"
+async def set_chat_permissions(token, chat_id, permissions, use_independent_chat_permissions: Optional[bool] = None):
+    route = "setChatPermissions"
     payload = {"chat_id": chat_id, "permissions": permissions.to_json()}
-    return await _request(token, method_url, params=payload, method="post")
+    if use_independent_chat_permissions is not None:
+        payload["use_independent_chat_permissions"] = use_independent_chat_permissions
+    return await _request(token, route, params=payload, method="post")
 
 
 async def create_chat_invite_link(token, chat_id, name, expire_date, member_limit, creates_join_request):
@@ -1239,10 +1287,15 @@ async def edit_chat_invite_link(token, chat_id, invite_link, name, expire_date, 
     return await _request(token, method_url, params=payload, method="post")
 
 
+async def get_custom_emoji_stickers(token, custom_emoji_ids):
+    route = r"getCustomEmojiStickers"
+    return await _request(token, route, params={"custom_emoji_ids": custom_emoji_ids})
+
+
 async def revoke_chat_invite_link(token, chat_id, invite_link):
-    method_url = "revokeChatInviteLink"
+    route = "revokeChatInviteLink"
     payload = {"chat_id": chat_id, "invite_link": invite_link}
-    return await _request(token, method_url, params=payload, method="post")
+    return await _request(token, route, params=payload, method="post")
 
 
 async def export_chat_invite_link(token, chat_id):
@@ -1503,6 +1556,7 @@ async def send_game(
     timeout=None,
     allow_sending_without_reply=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendGame"
     payload = {"chat_id": chat_id, "game_short_name": game_short_name}
@@ -1518,6 +1572,7 @@ async def send_game(
         payload["allow_sending_without_reply"] = allow_sending_without_reply
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -1615,6 +1670,7 @@ async def send_invoice(
     max_tip_amount=None,
     suggested_tip_amounts=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     """
     Use this method to send invoices. On success, the sent Message is returned.
@@ -1702,6 +1758,7 @@ async def send_invoice(
         payload["suggested_tip_amounts"] = json.dumps(suggested_tip_amounts)
     if protect_content is not None:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
     return await _request(token, method_url, params=payload)
 
 
@@ -1817,11 +1874,11 @@ async def create_new_sticker_set(
     emojis,
     png_sticker,
     tgs_sticker,
-    contains_masks=None,
     mask_position=None,
     webm_sticker=None,
+    sticker_type=None,
 ):
-    method_url = "createNewStickerSet"
+    route = "createNewStickerSet"
     payload = {"user_id": user_id, "name": name, "title": title, "emojis": emojis}
     if png_sticker:
         stype = "png_sticker"
@@ -1835,13 +1892,13 @@ async def create_new_sticker_set(
         files = {stype: sticker}
     else:
         payload[stype] = sticker
-    if contains_masks is not None:
-        payload["contains_masks"] = contains_masks
     if mask_position:
         payload["mask_position"] = mask_position.to_json()
     if webm_sticker:
         payload["webm_sticker"] = webm_sticker
-    return await _request(token, method_url, params=payload, files=files, method="post")
+    if sticker_type:
+        payload["sticker_type"] = sticker_type
+    return await _request(token, route, params=payload, files=files, method="post")
 
 
 async def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
@@ -1880,6 +1937,69 @@ async def delete_sticker_from_set(token, sticker):
     return await _request(token, method_url, params=payload, method="post")
 
 
+async def create_invoice_link(
+    token,
+    title,
+    description,
+    payload,
+    provider_token,
+    currency,
+    prices,
+    max_tip_amount=None,
+    suggested_tip_amounts=None,
+    provider_data=None,
+    photo_url=None,
+    photo_size=None,
+    photo_width=None,
+    photo_height=None,
+    need_name=None,
+    need_phone_number=None,
+    need_email=None,
+    need_shipping_address=None,
+    send_phone_number_to_provider=None,
+    send_email_to_provider=None,
+    is_flexible=None,
+):
+    route = r"createInvoiceLink"
+    payload = {
+        "title": title,
+        "description": description,
+        "payload": payload,
+        "provider_token": provider_token,
+        "currency": currency,
+        "prices": await _convert_list_json_serializable(prices),
+    }
+    if max_tip_amount:
+        payload["max_tip_amount"] = max_tip_amount
+    if suggested_tip_amounts:
+        payload["suggested_tip_amounts"] = json.dumps(suggested_tip_amounts)
+    if provider_data:
+        payload["provider_data"] = provider_data
+    if photo_url:
+        payload["photo_url"] = photo_url
+    if photo_size:
+        payload["photo_size"] = photo_size
+    if photo_width:
+        payload["photo_width"] = photo_width
+    if photo_height:
+        payload["photo_height"] = photo_height
+    if need_name is not None:
+        payload["need_name"] = need_name
+    if need_phone_number is not None:
+        payload["need_phone_number"] = need_phone_number
+    if need_email is not None:
+        payload["need_email"] = need_email
+    if need_shipping_address is not None:
+        payload["need_shipping_address"] = need_shipping_address
+    if send_phone_number_to_provider is not None:
+        payload["send_phone_number_to_provider"] = send_phone_number_to_provider
+    if send_email_to_provider is not None:
+        payload["send_email_to_provider"] = send_email_to_provider
+    if is_flexible is not None:
+        payload["is_flexible"] = is_flexible
+    return await _request(token, route, params=payload, method="post")
+
+
 # noinspection PyShadowingBuiltins
 async def send_poll(
     token,
@@ -1902,6 +2022,7 @@ async def send_poll(
     timeout=None,
     explanation_entities=None,
     protect_content=None,
+    message_thread_id: Optional[int] = None,
 ):
     method_url = r"sendPoll"
     payload = {
@@ -1946,6 +2067,86 @@ async def send_poll(
         payload["explanation_entities"] = json.dumps(types.MessageEntity.to_list_of_dicts(explanation_entities))
     if protect_content:
         payload["protect_content"] = protect_content
+    _add_message_thread_id(payload, message_thread_id)
+    return await _request(token, method_url, params=payload)
+
+
+async def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
+    method_url = r"createForumTopic"
+    payload = {"chat_id": chat_id, "name": name}
+    if icon_color:
+        payload["icon_color"] = icon_color
+    if icon_custom_emoji_id:
+        payload["icon_custom_emoji_id"] = icon_custom_emoji_id
+    return await _request(token, method_url, params=payload)
+
+
+async def edit_forum_topic(token, chat_id, message_thread_id, name=None, icon_custom_emoji_id=None):
+    method_url = r"editForumTopic"
+    payload = {"chat_id": chat_id, "message_thread_id": message_thread_id}
+    if name is not None:
+        payload["name"] = name
+    if icon_custom_emoji_id is not None:
+        payload["icon_custom_emoji_id"] = icon_custom_emoji_id
+    return await _request(token, method_url, params=payload)
+
+
+async def close_forum_topic(token, chat_id, message_thread_id):
+    method_url = r"closeForumTopic"
+    payload = {"chat_id": chat_id, "message_thread_id": message_thread_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def reopen_forum_topic(token, chat_id, message_thread_id):
+    method_url = r"reopenForumTopic"
+    payload = {"chat_id": chat_id, "message_thread_id": message_thread_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def delete_forum_topic(token, chat_id, message_thread_id):
+    method_url = r"deleteForumTopic"
+    payload = {"chat_id": chat_id, "message_thread_id": message_thread_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def unpin_all_forum_topic_messages(token, chat_id, message_thread_id):
+    method_url = r"unpinAllForumTopicMessages"
+    payload = {"chat_id": chat_id, "message_thread_id": message_thread_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def get_forum_topic_icon_stickers(token):
+    method_url = r"getForumTopicIconStickers"
+    return await _request(token, method_url)
+
+
+async def edit_general_forum_topic(token, chat_id, name):
+    method_url = r"editGeneralForumTopic"
+    payload = {"chat_id": chat_id, "name": name}
+    return await _request(token, method_url, params=payload)
+
+
+async def close_general_forum_topic(token, chat_id):
+    method_url = r"closeGeneralForumTopic"
+    payload = {"chat_id": chat_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def reopen_general_forum_topic(token, chat_id):
+    method_url = r"reopenGeneralForumTopic"
+    payload = {"chat_id": chat_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def hide_general_forum_topic(token, chat_id):
+    method_url = r"hideGeneralForumTopic"
+    payload = {"chat_id": chat_id}
+    return await _request(token, method_url, params=payload)
+
+
+async def unhide_general_forum_topic(token, chat_id):
+    method_url = r"unhideGeneralForumTopic"
+    payload = {"chat_id": chat_id}
     return await _request(token, method_url, params=payload)
 
 
@@ -2051,6 +2252,7 @@ class ApiHTTPException(ApiException):
             f"{error_description} ({response.url} responded with {response.status} {response.reason})",
             response,
         )
+        self.error_description = error_description
 
 
 class ApiInvalidJSONException(ApiException):
@@ -2059,8 +2261,10 @@ class ApiInvalidJSONException(ApiException):
     Telegram API server returns invalid json.
     """
 
-    def __init__(self, response: aiohttp.ClientResponse):
+    def __init__(self, response: aiohttp.ClientResponse, json_parsing_error: Exception):
         super().__init__(
-            f"The server returned an invalid JSON response. Response body:\n[{response}]",
+            "The server returned an invalid JSON response. Response body:"
+            + f"\n[{response}]\nJSON parsing error: {json_parsing_error}",
             response,
         )
+        self.json_parsing_error = json_parsing_error

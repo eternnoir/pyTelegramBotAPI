@@ -25,6 +25,12 @@ class MediaContentType(StrEnum):
     poll = "poll"
     venue = "venue"
     location = "location"
+    invoice = "invoice"
+    successful_payment = "successful_payment"
+    connected_website = "connected_website"
+    game = "game"
+    passport_data = "passport_data"
+    web_app_data = "web_app_data"
 
 
 class ServiceContentType(StrEnum):
@@ -45,6 +51,9 @@ class ServiceContentType(StrEnum):
     video_chat_ended = "video_chat_ended"
     video_chat_participants_invited = "video_chat_participants_invited"
     message_auto_delete_timer_changed = "message_auto_delete_timer_changed"
+    forum_topic_created = "forum_topic_created"
+    forum_topic_closed = "forum_topic_closed"
+    forum_topic_reopened = "forum_topic_reopened"
 
 
 ContentType = Union[MediaContentType, ServiceContentType]

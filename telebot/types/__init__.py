@@ -1,7 +1,9 @@
 import logging
+import os
 from abc import ABC
 from dataclasses import dataclass
-from io import BytesIO
+from io import BytesIO, IOBase
+from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
 import ujson as json  # type: ignore
@@ -170,7 +172,7 @@ class ChatMemberUpdated(JsonDeserializable):
         old_chat_member: "ChatMember",
         new_chat_member: "ChatMember",
         invite_link: Optional["ChatInviteLink"] = None,
-        **kwargs
+        **kwargs,
     ):
         self.chat = chat
         self.from_user = from_user
@@ -212,16 +214,18 @@ class ChatJoinRequest(JsonDeserializable):
         self,
         chat: "Chat",
         from_user: "User",
+        user_chat_id: int,
         date: int,
         bio: Optional[str] = None,
         invite_link: Optional["ChatInviteLink"] = None,
-        **kwargs
+        **kwargs,
     ):
         self.chat = chat
         self.from_user = from_user
         self.date = date
         self.bio = bio
         self.invite_link = invite_link
+        self.user_chat_id = user_chat_id
 
 
 class WebhookInfo(JsonDeserializable):
@@ -243,7 +247,7 @@ class WebhookInfo(JsonDeserializable):
         last_synchronization_error_date=None,
         max_connections=None,
         allowed_updates=None,
-        **kwargs
+        **kwargs,
     ):
         self.url = url
         self.has_custom_certificate = has_custom_certificate
@@ -275,7 +279,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         can_join_groups: Optional[bool] = None,
         can_read_all_group_messages: Optional[bool] = None,
         supports_inline_queries: Optional[bool] = None,
-        **kwargs
+        is_premium: Optional[bool] = None,
+        added_to_attachment_menu: Optional[bool] = None,
+        **kwargs,
     ):
         self.id = id
         self.is_bot = is_bot
@@ -286,6 +292,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.can_join_groups = can_join_groups
         self.can_read_all_group_messages = can_read_all_group_messages
         self.supports_inline_queries = supports_inline_queries
+        self.is_premium = is_premium
+        self.added_to_attachment_menu = added_to_attachment_menu
 
     @property
     def full_name(self):
@@ -308,6 +316,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
             "can_join_groups": self.can_join_groups,
             "can_read_all_group_messages": self.can_read_all_group_messages,
             "supports_inline_queries": self.supports_inline_queries,
+            "is_premium": self.is_premium,
+            "added_to_attachment_menu": self.added_to_attachment_menu,
         }
 
 
@@ -362,7 +372,15 @@ class Chat(JsonDeserializable):
         can_set_sticker_set: Optional[bool] = None,
         linked_chat_id: Optional[int] = None,
         location: Optional["ChatLocation"] = None,
-        **kwargs
+        join_to_send_messages: Optional[bool] = None,
+        join_by_request: Optional[bool] = None,
+        has_restricted_voice_and_video_messages: Optional[bool] = None,
+        is_forum: Optional[bool] = None,
+        active_usernames: Optional[List[str]] = None,
+        emoji_status_custom_emoji_id: Optional[str] = None,
+        has_hidden_members: Optional[bool] = None,
+        has_aggressive_anti_spam_enabled: Optional[bool] = None,
+        **kwargs,
     ):
         self.id = id
         self.type = type
@@ -384,6 +402,14 @@ class Chat(JsonDeserializable):
         self.can_set_sticker_set = can_set_sticker_set
         self.linked_chat_id = linked_chat_id
         self.location = location
+        self.join_to_send_messages = join_to_send_messages
+        self.join_by_request = join_by_request
+        self.has_restricted_voice_and_video_messages = has_restricted_voice_and_video_messages
+        self.is_forum = is_forum
+        self.active_usernames = active_usernames
+        self.emoji_status_custom_emoji_id = emoji_status_custom_emoji_id
+        self.has_hidden_members = has_hidden_members
+        self.has_aggressive_anti_spam_enabled = has_aggressive_anti_spam_enabled
 
 
 class MessageID(JsonDeserializable):
@@ -443,6 +469,10 @@ class Message(JsonDeserializable):
             opts["forward_date"] = obj.get("forward_date")
         if "is_automatic_forward" in obj:
             opts["is_automatic_forward"] = obj.get("is_automatic_forward")
+        if "is_topic_message" in obj:
+            opts["is_topic_message"] = obj.get("is_topic_message")
+        if "message_thread_id" in obj:
+            opts["message_thread_id"] = obj.get("message_thread_id")
         if "reply_to_message" in obj:
             opts["reply_to_message"] = Message.de_json(obj["reply_to_message"])
         if "via_bot" in obj:
@@ -589,6 +619,37 @@ class Message(JsonDeserializable):
             content_type = "message_auto_delete_timer_changed"
         if "reply_markup" in obj:
             opts["reply_markup"] = InlineKeyboardMarkup.de_json(obj["reply_markup"])
+        if "forum_topic_created" in obj:
+            opts["forum_topic_created"] = ForumTopicCreated.de_json(obj["forum_topic_created"])
+            content_type = "forum_topic_created"
+        if "forum_topic_closed" in obj:
+            opts["forum_topic_closed"] = ForumTopicClosed.de_json(obj["forum_topic_closed"])
+            content_type = "forum_topic_closed"
+        if "forum_topic_reopened" in obj:
+            opts["forum_topic_reopened"] = ForumTopicReopened.de_json(obj["forum_topic_reopened"])
+            content_type = "forum_topic_reopened"
+        if "has_media_spoiler" in obj:
+            opts["has_media_spoiler"] = obj["has_media_spoiler"]
+        if "forum_topic_edited" in obj:
+            opts["forum_topic_edited"] = ForumTopicEdited.de_json(obj["forum_topic_edited"])
+            content_type = "forum_topic_edited"
+        if "general_forum_topic_hidden" in obj:
+            opts["general_forum_topic_hidden"] = GeneralForumTopicHidden.de_json(obj["general_forum_topic_hidden"])
+            content_type = "general_forum_topic_hidden"
+        if "general_forum_topic_unhidden" in obj:
+            opts["general_forum_topic_unhidden"] = GeneralForumTopicUnhidden.de_json(
+                obj["general_forum_topic_unhidden"]
+            )
+            content_type = "general_forum_topic_unhidden"
+        if "write_access_allowed" in obj:
+            opts["write_access_allowed"] = WriteAccessAllowed.de_json(obj["write_access_allowed"])
+            content_type = "write_access_allowed"
+        if "user_shared" in obj:
+            opts["user_shared"] = UserShared.de_json(obj["user_shared"])
+            content_type = "user_shared"
+        if "chat_shared" in obj:
+            opts["chat_shared"] = ChatShared.de_json(obj["chat_shared"])
+            content_type = "chat_shared"
         return cls(message_id, from_user, date, chat, content_type or "<unset>", opts, json_string)
 
     @classmethod
@@ -667,6 +728,18 @@ class Message(JsonDeserializable):
         self.successful_payment: Optional[SuccessfulPayment] = None
         self.connected_website: Optional[str] = None
         self.reply_markup: Optional[InlineKeyboardMarkup] = None
+        self.message_thread_id: Optional[int] = None
+        self.is_topic_message: Optional[bool] = None
+        self.forum_topic_created: Optional[ForumTopicCreated] = None
+        self.forum_topic_closed: Optional[ForumTopicClosed] = None
+        self.forum_topic_reopened: Optional[ForumTopicReopened] = None
+        self.has_media_spoiler: Optional[bool] = None
+        self.forum_topic_edited: Optional[ForumTopicEdited] = None
+        self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
+        self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
+        self.write_access_allowed: Optional[WriteAccessAllowed] = None
+        self.user_shared: Optional[UserShared] = None
+        self.chat_shared: Optional[ChatShared] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -744,9 +817,17 @@ class Message(JsonDeserializable):
                 )
                 offset += entity.length
             else:
-                # TODO: process nested entities from Bot API 4.5
-                # Now ignoring them
-                pass
+                # Here we are processing nested entities.
+                # We shouldn't update offset, because they are the same as entity before.
+                # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
+                # And we don't change it).
+                entity_string = utf16_text[entity.offset * 2 : (entity.offset + entity.length) * 2]
+                formatted_string = func(entity_string, entity.type, entity.url, entity.user)
+                entity_string_decoded = entity_string.decode("utf-16-le")
+                last_occurence = html_text.rfind(entity_string_decoded)
+                string_length = len(entity_string_decoded)
+                # html_text = html_text.replace(html_text[last_occurence:last_occurence+string_length], formatted_string)
+                html_text = html_text[:last_occurence] + formatted_string + html_text[last_occurence + string_length :]
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2 :])
         return html_text
@@ -781,13 +862,14 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
             obj["user"] = User.de_json(obj["user"])
         return cls(**obj)
 
-    def __init__(self, type, offset, length, url=None, user=None, language=None, **kwargs):
+    def __init__(self, type, offset, length, url=None, user=None, language=None, custom_emoji_id=None, **kwargs):
         self.type: str = type
         self.offset: int = offset
         self.length: int = length
         self.url: str = url
         self.user: User = user
         self.language: str = language
+        self.custom_emoji_id: str = custom_emoji_id
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -800,6 +882,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
             "url": self.url,
             "user": self.user,
             "language": self.language,
+            "custom_emoji_id": self.custom_emoji_id,
         }
 
 
@@ -864,7 +947,7 @@ class Audio(JsonDeserializable):
         mime_type=None,
         file_size=None,
         thumb=None,
-        **kwargs
+        **kwargs,
     ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
@@ -935,7 +1018,7 @@ class Video(JsonDeserializable):
         file_name=None,
         mime_type=None,
         file_size=None,
-        **kwargs
+        **kwargs,
     ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
@@ -999,7 +1082,7 @@ class Location(JsonDeserializable, JsonSerializable, Dictionaryable):
         live_period=None,
         heading=None,
         proximity_alert_radius=None,
-        **kwargs
+        **kwargs,
     ):
         self.longitude: float = longitude
         self.latitude: float = latitude
@@ -1040,7 +1123,7 @@ class Venue(JsonDeserializable):
         foursquare_type=None,
         google_place_id=None,
         google_place_type=None,
-        **kwargs
+        **kwargs,
     ):
         self.location: Location = location
         self.title: str = title
@@ -1136,6 +1219,7 @@ class ReplyKeyboardMarkup(JsonSerializable, Dictionaryable):
         selective: Optional[bool] = None,
         row_width: int = 3,
         input_field_placeholder: Optional[str] = None,
+        is_persistent: Optional[bool] = None,
     ):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
@@ -1149,6 +1233,7 @@ class ReplyKeyboardMarkup(JsonSerializable, Dictionaryable):
         self.row_width = row_width
         self.input_field_placeholder = input_field_placeholder
         self.keyboard: list[list[KeyboardButton]] = []
+        self.is_persistent = is_persistent
 
     def add(self, *args, row_width=None):
         """
@@ -1206,6 +1291,8 @@ class ReplyKeyboardMarkup(JsonSerializable, Dictionaryable):
             d["selective"] = self.selective
         if self.input_field_placeholder:
             d["input_field_placeholder"] = self.input_field_placeholder
+        if self.is_persistent is not None:
+            d["is_persistent"] = self.is_persistent
         return d
 
     def to_json(self):
@@ -1225,6 +1312,107 @@ class KeyboardButtonPollType(Dictionaryable):
         return {"type": self.type}
 
 
+class KeyboardButtonRequestUser(Dictionaryable):
+    """
+    This object defines the criteria used to request a suitable user.
+    The identifier of the selected user will be shared with the bot when the corresponding button is pressed.
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestuser
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the UserShared object.
+        Must be unique within the message
+    :type request_id: :obj:`int`
+    :param user_is_bot: Optional. Pass True to request a bot, pass False to request a regular user.
+        If not specified, no additional restrictions are applied.
+    :type user_is_bot: :obj:`bool`
+    :param user_is_premium: Optional. Pass True to request a premium user, pass False to request a non-premium user.
+        If not specified, no additional restrictions are applied.
+    :type user_is_premium: :obj:`bool`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.KeyboardButtonRequestUser`
+    """
+
+    def __init__(
+        self, request_id: int, user_is_bot: Optional[bool] = None, user_is_premium: Optional[bool] = None
+    ) -> None:
+        self.request_id: int = request_id
+        self.user_is_bot: Optional[bool] = user_is_bot
+        self.user_is_premium: Optional[bool] = user_is_premium
+
+    def to_dict(self) -> dict:
+        data = {"request_id": self.request_id}
+        if self.user_is_bot is not None:
+            data["user_is_bot"] = self.user_is_bot
+        if self.user_is_premium is not None:
+            data["user_is_premium"] = self.user_is_premium
+        return data
+
+
+class KeyboardButtonRequestChat(Dictionaryable):
+    """
+    This object defines the criteria used to request a suitable chat. The identifier of the selected chat will
+    be shared with the bot when the corresponding button is pressed.
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestchat
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the ChatShared object.
+        Must be unique within the message
+    :type request_id: :obj:`int`
+    :param chat_is_channel: Pass True to request a channel chat, pass False to request a group or a supergroup chat.
+    :type chat_is_channel: :obj:`bool`
+    :param chat_is_forum: Optional. Pass True to request a forum supergroup, pass False to request a non-forum chat.
+        If not specified, no additional restrictions are applied.
+    :type chat_is_forum: :obj:`bool`
+    :param chat_has_username: Optional. Pass True to request a supergroup or a channel with a username, pass False to request a
+        chat without a username. If not specified, no additional restrictions are applied.
+    :type chat_has_username: :obj:`bool`
+    :param chat_is_created: Optional. Pass True to request a chat owned by the user. Otherwise, no additional restrictions are applied.
+    :type chat_is_created: :obj:`bool`
+    :param user_administrator_rights: Optional. A JSON-serialized object listing the required administrator rights of the user in the chat.
+        The rights must be a superset of bot_administrator_rights. If not specified, no additional restrictions are applied.
+    :type user_administrator_rights: :class:`telebot.types.ChatAdministratorRights`
+    :param bot_administrator_rights: Optional. A JSON-serialized object listing the required administrator rights of the bot in the chat.
+        The rights must be a subset of user_administrator_rights. If not specified, no additional restrictions are applied.
+    :type bot_administrator_rights: :class:`telebot.types.ChatAdministratorRights`
+    :param bot_is_member: Optional. Pass True to request a chat where the bot is a member. Otherwise, no additional restrictions are applied.
+    :type bot_is_member: :obj:`bool`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.KeyboardButtonRequestChat`
+    """
+
+    def __init__(
+        self,
+        request_id: int,
+        chat_is_channel: bool,
+        chat_is_forum: Optional[bool] = None,
+        chat_has_username: Optional[bool] = None,
+        chat_is_created: Optional[bool] = None,
+        user_administrator_rights: Optional["ChatAdministratorRights"] = None,
+        bot_administrator_rights: Optional["ChatAdministratorRights"] = None,
+        bot_is_member: Optional[bool] = None,
+    ) -> None:
+        self.request_id: int = request_id
+        self.chat_is_channel: bool = chat_is_channel
+        self.chat_is_forum: Optional[bool] = chat_is_forum
+        self.chat_has_username: Optional[bool] = chat_has_username
+        self.chat_is_created: Optional[bool] = chat_is_created
+        self.user_administrator_rights: Optional[ChatAdministratorRights] = user_administrator_rights
+        self.bot_administrator_rights: Optional[ChatAdministratorRights] = bot_administrator_rights
+        self.bot_is_member: Optional[bool] = bot_is_member
+
+    def to_dict(self) -> dict:
+        data = {"request_id": self.request_id, "chat_is_channel": self.chat_is_channel}
+        if self.chat_is_forum is not None:
+            data["chat_is_forum"] = self.chat_is_forum
+        if self.chat_has_username is not None:
+            data["chat_has_username"] = self.chat_has_username
+        if self.chat_is_created is not None:
+            data["chat_is_created"] = self.chat_is_created
+        if self.user_administrator_rights is not None:
+            data["user_administrator_rights"] = self.user_administrator_rights.to_dict()
+        if self.bot_administrator_rights is not None:
+            data["bot_administrator_rights"] = self.bot_administrator_rights.to_dict()
+        if self.bot_is_member is not None:
+            data["bot_is_member"] = self.bot_is_member
+        return data
+
+
 class KeyboardButton(Dictionaryable, JsonSerializable):
     def __init__(
         self,
@@ -1233,12 +1421,16 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         request_location: Optional[bool] = None,
         request_poll: Optional[KeyboardButtonPollType] = None,
         web_app: Optional[WebAppInfo] = None,
+        request_user: Optional[KeyboardButtonRequestUser] = None,
+        request_chat: Optional[KeyboardButtonRequestChat] = None,
     ):
         self.text = text
         self.request_contact = request_contact
         self.request_location = request_location
         self.request_poll = request_poll
         self.web_app = web_app
+        self.request_user = request_user
+        self.request_chat = request_chat
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1373,7 +1565,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         callback_game=None,
         pay=None,
         login_url=None,
-        **kwargs
+        **kwargs,
     ):
         self.text: str = text
         self.url: str = url
@@ -1449,10 +1641,20 @@ class CallbackQuery(JsonDeserializable):
         obj["from_user"] = User.de_json(obj.pop("from"))
         if "message" in obj:
             obj["message"] = Message.de_json(obj.get("message"))
+        obj["json_string"] = json_string
         return cls(**obj)
 
     def __init__(
-        self, id, from_user, data, chat_instance, message=None, inline_message_id=None, game_short_name=None, **kwargs
+        self,
+        id,
+        from_user,
+        data,
+        chat_instance,
+        json_string,
+        message=None,
+        inline_message_id=None,
+        game_short_name=None,
+        **kwargs,
     ):
         self.id: int = id
         self.from_user: User = from_user
@@ -1461,6 +1663,7 @@ class CallbackQuery(JsonDeserializable):
         self.chat_instance: str = chat_instance
         self.data: str = data
         self.game_short_name: str = game_short_name
+        self.json = json_string
 
 
 class ChatPhoto(JsonDeserializable):
@@ -1485,7 +1688,23 @@ class ChatMember(JsonDeserializable):
             return None
         obj = cls.ensure_json_dict(json_string)
         obj["user"] = User.de_json(obj["user"])
-        return cls(**obj)
+        member_type = obj["status"]
+        # Ordered according to estimated appearance frequency.
+        if member_type == "member":
+            return ChatMemberMember(**obj)
+        elif member_type == "left":
+            return ChatMemberLeft(**obj)
+        elif member_type == "kicked":
+            return ChatMemberBanned(**obj)
+        elif member_type == "restricted":
+            return ChatMemberRestricted(**obj)
+        elif member_type == "administrator":
+            return ChatMemberAdministrator(**obj)
+        elif member_type == "creator":
+            return ChatMemberOwner(**obj)
+        else:
+            # Should not be here. For "if something happen" compatibility
+            return cls(**obj)
 
     def __init__(
         self,
@@ -1504,14 +1723,20 @@ class ChatMember(JsonDeserializable):
         can_pin_messages=None,
         is_member=None,
         can_send_messages=None,
-        can_send_media_messages=None,
+        can_send_audios=None,
+        can_send_documents=None,
+        can_send_photos=None,
+        can_send_videos=None,
+        can_send_video_notes=None,
+        can_send_voice_notes=None,
         can_send_polls=None,
         can_send_other_messages=None,
         can_add_web_page_previews=None,
         can_manage_chat=None,
         can_manage_video_chats=None,
         until_date=None,
-        **kwargs
+        can_manage_topics=None,
+        **kwargs,
     ):
         self.user: User = user
         self.status: str = status
@@ -1528,7 +1753,7 @@ class ChatMember(JsonDeserializable):
         self.can_pin_messages: bool = can_pin_messages
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
-        self.can_send_media_messages: bool = can_send_media_messages
+        # self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
@@ -1536,6 +1761,13 @@ class ChatMember(JsonDeserializable):
         self.can_manage_video_chats: bool = can_manage_video_chats
         self.can_manage_voice_chats: bool = self.can_manage_video_chats  # deprecated, for backward compatibility
         self.until_date: int = until_date
+        self.can_manage_topics: bool = can_manage_topics
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
 
 
 class ChatMemberOwner(ChatMember):
@@ -1574,22 +1806,47 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self,
         can_send_messages=None,
         can_send_media_messages=None,
+        can_send_audios=None,
+        can_send_documents=None,
+        can_send_photos=None,
+        can_send_videos=None,
+        can_send_video_notes=None,
+        can_send_voice_notes=None,
         can_send_polls=None,
         can_send_other_messages=None,
         can_add_web_page_previews=None,
         can_change_info=None,
         can_invite_users=None,
         can_pin_messages=None,
-        **kwargs
+        can_manage_topics=None,
+        **kwargs,
     ):
         self.can_send_messages: bool = can_send_messages
-        self.can_send_media_messages: bool = can_send_media_messages
+        # self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
         self.can_change_info: bool = can_change_info
         self.can_invite_users: bool = can_invite_users
         self.can_pin_messages: bool = can_pin_messages
+        self.can_manage_topics: bool = can_manage_topics
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+
+        if can_send_media_messages is not None:
+            logger.warning(
+                "can_send_media_messages is deprecated. Use individual parameters like can_send_audios, can_send_documents, etc."
+            )
+            self.can_send_audios = can_send_media_messages
+            self.can_send_documents = can_send_media_messages
+            self.can_send_photos = can_send_media_messages
+            self.can_send_videos = can_send_media_messages
+            self.can_send_video_notes = can_send_media_messages
+            self.can_send_voice_notes = can_send_media_messages
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1598,8 +1855,18 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         json_dict = dict()
         if self.can_send_messages is not None:
             json_dict["can_send_messages"] = self.can_send_messages
-        if self.can_send_media_messages is not None:
-            json_dict["can_send_media_messages"] = self.can_send_media_messages
+        if self.can_send_audios is not None:
+            json_dict["can_send_audios"] = self.can_send_audios
+        if self.can_send_documents is not None:
+            json_dict["can_send_documents"] = self.can_send_documents
+        if self.can_send_photos is not None:
+            json_dict["can_send_photos"] = self.can_send_photos
+        if self.can_send_videos is not None:
+            json_dict["can_send_videos"] = self.can_send_videos
+        if self.can_send_video_notes is not None:
+            json_dict["can_send_video_notes"] = self.can_send_video_notes
+        if self.can_send_voice_notes is not None:
+            json_dict["can_send_voice_notes"] = self.can_send_voice_notes
         if self.can_send_polls is not None:
             json_dict["can_send_polls"] = self.can_send_polls
         if self.can_send_other_messages is not None:
@@ -1612,10 +1879,11 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             json_dict["can_invite_users"] = self.can_invite_users
         if self.can_pin_messages is not None:
             json_dict["can_pin_messages"] = self.can_pin_messages
-        return json_dict
+        if self.can_manage_topics is not None:
+            json_dict["can_manage_topics"] = self.can_manage_topics
 
 
-class BotCommand(JsonSerializable, JsonDeserializable):
+class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None:
@@ -1756,7 +2024,7 @@ class InlineQuery(JsonDeserializable):
         :param location: Sender location, only for bots that request user location
         :return: InlineQuery Object
         """
-        self.id: int = id
+        self.id: str = id
         self.from_user: User = from_user
         self.query: str = query
         self.offset: str = offset
@@ -2027,7 +2295,7 @@ class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
         return json_dict
 
 
-class SentWebAppMessage(JsonDeserializable):
+class SentWebAppMessage(JsonDeserializable, Dictionaryable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None:
@@ -2059,26 +2327,8 @@ class InlineQueryResultArticle(InlineQueryResultBase):
         thumb_width=None,
         thumb_height=None,
     ):
-        """
-        Represents a link to an article or web page.
-        :param id: Unique identifier for this result, 1-64 Bytes.
-        :param title: Title of the result.
-        :param input_message_content: InputMessageContent : Content of the message to be sent
-        :param reply_markup: InlineKeyboardMarkup : Inline keyboard attached to the message
-        :param url: URL of the result.
-        :param hide_url: Pass True, if you don't want the URL to be shown in the message.
-        :param description: Short description of the result.
-        :param thumb_url: Url of the thumbnail for the result.
-        :param thumb_width: Thumbnail width.
-        :param thumb_height: Thumbnail height
-        :return:
-        """
         super().__init__(
-            "article",
-            id,
-            title=title,
-            input_message_content=input_message_content,
-            reply_markup=reply_markup,
+            "article", id, title=title, input_message_content=input_message_content, reply_markup=reply_markup
         )
         self.url = url
         self.hide_url = hide_url
@@ -2936,7 +3186,7 @@ class Animation(JsonDeserializable):
         file_name=None,
         mime_type=None,
         file_size=None,
-        **kwargs
+        **kwargs,
     ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
@@ -2967,7 +3217,7 @@ class GameHighScore(JsonDeserializable):
 # Payments
 
 
-class LabeledPrice(JsonSerializable):
+class LabeledPrice(JsonSerializable, Dictionaryable):
     def __init__(self, label, amount):
         self.label: str = label
         self.amount: int = amount
@@ -3070,7 +3320,7 @@ class SuccessfulPayment(JsonDeserializable):
         order_info=None,
         telegram_payment_charge_id=None,
         provider_payment_charge_id=None,
-        **kwargs
+        **kwargs,
     ):
         self.currency: str = currency
         self.total_amount: int = total_amount
@@ -3139,14 +3389,22 @@ class StickerSet(JsonDeserializable):
             obj["thumb"] = None
         return cls(**obj)
 
-    def __init__(self, name, title, is_animated, is_video, contains_masks, stickers, thumb=None, **kwargs):
+    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumb=None, **kwargs):
         self.name: str = name
         self.title: str = title
+        self.sticker_type: str = sticker_type
         self.is_animated: bool = is_animated
         self.is_video: bool = is_video
-        self.contains_masks: bool = contains_masks
         self.stickers: List[Sticker] = stickers
         self.thumb: PhotoSize = thumb
+
+    @property
+    def contains_masks(self):
+        """
+        Deprecated since Bot API 6.2, use sticker_type instead.
+        """
+        logger.warning("contains_masks is deprecated, use sticker_type instead")
+        return self.sticker_type == "mask"
 
 
 class Sticker(JsonDeserializable):
@@ -3161,12 +3419,15 @@ class Sticker(JsonDeserializable):
             obj["thumb"] = None
         if "mask_position" in obj:
             obj["mask_position"] = MaskPosition.de_json(obj["mask_position"])
+        if "premium_animation" in obj:
+            obj["premium_animation"] = File.de_json(obj["premium_animation"])
         return cls(**obj)
 
     def __init__(
         self,
         file_id,
         file_unique_id,
+        type,
         width,
         height,
         is_animated,
@@ -3176,10 +3437,13 @@ class Sticker(JsonDeserializable):
         set_name=None,
         mask_position=None,
         file_size=None,
-        **kwargs
+        premium_animation=None,
+        custom_emoji_id=None,
+        **kwargs,
     ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
+        self.type: str = type
         self.width: int = width
         self.height: int = height
         self.is_animated: bool = is_animated
@@ -3189,6 +3453,8 @@ class Sticker(JsonDeserializable):
         self.set_name: str = set_name
         self.mask_position: MaskPosition = mask_position
         self.file_size: int = file_size
+        self.premium_animation: File = premium_animation
+        self.custom_emoji_id: int = custom_emoji_id
 
 
 class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
@@ -3256,11 +3522,15 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
 
 class InputMediaPhoto(InputMedia):
-    def __init__(self, media: BytesIO, caption=None, parse_mode=None):
+    def __init__(self, media: BytesIO, caption=None, parse_mode=None, has_spoiler: Optional[bool] = None):
         super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
+        self.has_spoiler = has_spoiler
 
     def to_dict(self):
-        return super(InputMediaPhoto, self).to_dict()
+        d = super(InputMediaPhoto, self).to_dict()
+        if self.has_spoiler is not None:
+            d["has_spoiler"] = self.has_spoiler
+        return d
 
 
 class InputMediaVideo(InputMedia):
@@ -3270,17 +3540,22 @@ class InputMediaVideo(InputMedia):
         thumb=None,
         caption=None,
         parse_mode=None,
+        caption_entities=None,
         width=None,
         height=None,
         duration=None,
         supports_streaming=None,
+        has_spoiler=None,
     ):
-        super(InputMediaVideo, self).__init__(type="video", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaVideo, self).__init__(
+            type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+        )
         self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
         ret = super(InputMediaVideo, self).to_dict()
@@ -3294,6 +3569,8 @@ class InputMediaVideo(InputMedia):
             ret["duration"] = self.duration
         if self.supports_streaming:
             ret["supports_streaming"] = self.supports_streaming
+        if self.has_spoiler is not None:
+            ret["has_spoiler"] = self.has_spoiler
         return ret
 
 
@@ -3304,15 +3581,20 @@ class InputMediaAnimation(InputMedia):
         thumb=None,
         caption=None,
         parse_mode=None,
+        caption_entities=None,
         width=None,
         height=None,
         duration=None,
+        has_spoiler=None,
     ):
-        super(InputMediaAnimation, self).__init__(type="animation", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaAnimation, self).__init__(
+            type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+        )
         self.thumb = thumb
         self.width = width
         self.height = height
         self.duration = duration
+        self.has_spoiler: Optional[bool] = has_spoiler
 
     def to_dict(self):
         ret = super(InputMediaAnimation, self).to_dict()
@@ -3324,6 +3606,8 @@ class InputMediaAnimation(InputMedia):
             ret["height"] = self.height
         if self.duration:
             ret["duration"] = self.duration
+        if self.has_spoiler is not None:
+            ret["has_spoiler"] = self.has_spoiler
         return ret
 
 
@@ -3334,11 +3618,14 @@ class InputMediaAudio(InputMedia):
         thumb=None,
         caption=None,
         parse_mode=None,
+        caption_entities=None,
         duration=None,
         performer=None,
         title=None,
     ):
-        super(InputMediaAudio, self).__init__(type="audio", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaAudio, self).__init__(
+            type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+        )
         self.thumb = thumb
         self.duration = duration
         self.performer = performer
@@ -3364,9 +3651,12 @@ class InputMediaDocument(InputMedia):
         thumb=None,
         caption=None,
         parse_mode=None,
+        caption_entities=None,
         disable_content_type_detection=None,
     ):
-        super(InputMediaDocument, self).__init__(type="document", media=media, caption=caption, parse_mode=parse_mode)
+        super(InputMediaDocument, self).__init__(
+            type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+        )
         self.thumb = thumb
         self.disable_content_type_detection = disable_content_type_detection
 
@@ -3429,7 +3719,7 @@ class Poll(JsonDeserializable):
         open_period=None,
         close_date=None,
         poll_type=None,
-        **kwargs
+        **kwargs,
     ):
         self.id: str = poll_id
         self.question: str = question
@@ -3522,7 +3812,7 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
         expire_date: Optional[int] = None,
         member_limit: Optional[int] = None,
         pending_join_request_count: Optional[int] = None,
-        **kwargs
+        **kwargs,
     ):
         self.invite_link = invite_link
         self.creator = creator
@@ -3657,7 +3947,7 @@ class MessageAutoDeleteTimerChanged(JsonDeserializable):
         self.message_auto_delete_time = message_auto_delete_time
 
 
-class MenuButton(JsonDeserializable, JsonSerializable):
+class MenuButton(JsonDeserializable, JsonSerializable, Dictionaryable):
     """
     Base class for MenuButtons.
     """
@@ -3713,7 +4003,7 @@ class MenuButtonDefault(MenuButton):
         return json.dumps(self.to_dict())
 
 
-class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
+class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryable):
     """
     Class representation of:
     https://core.telegram.org/bots/api#chatadministratorrights
@@ -3739,6 +4029,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
         can_post_messages: Optional[bool] = None,
         can_edit_messages: Optional[bool] = None,
         can_pin_messages: Optional[bool] = None,
+        can_manage_topics: Optional[bool] = None,
     ) -> None:
 
         self.is_anonymous = is_anonymous
@@ -3752,6 +4043,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
         self.can_post_messages = can_post_messages
         self.can_edit_messages = can_edit_messages
         self.can_pin_messages = can_pin_messages
+        self.can_manage_topics = can_manage_topics
 
     def to_dict(self):
         json_dict = {
@@ -3770,10 +4062,279 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable):
             json_dict["can_edit_messages"] = self.can_edit_messages
         if self.can_pin_messages is not None:
             json_dict["can_pin_messages"] = self.can_pin_messages
+        if self.can_manage_topics is not None:
+            json_dict["can_manage_topics"] = self.can_manage_topics
         return json_dict
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+
+class InputFile:
+    """
+    A class to send files through Telegram Bot API.
+    You need to pass a file, which should be an instance of :class:`io.IOBase` or
+    :class:`pathlib.Path`, or :obj:`str`.
+    If you pass an :obj:`str` as a file, it will be opened and closed by the class.
+    :param file: A file to send.
+    :type file: :class:`io.IOBase` or :class:`pathlib.Path` or :obj:`str`
+    .. code-block:: python3
+        :caption: Example on sending a file using this class
+        from telebot.types import InputFile
+        # Sending a file from disk
+        bot.send_document(
+            chat_id,
+            InputFile('/path/to/file/file.txt')
+        )
+        # Sending a file from an io.IOBase object
+        with open('/path/to/file/file.txt', 'rb') as f:
+            bot.send_document(
+                chat_id,
+                InputFile(f)
+            )
+        # Sending a file using pathlib.Path:
+        bot.send_document(
+            chat_id,
+            InputFile(pathlib.Path('/path/to/file/file.txt'))
+        )
+    """
+
+    def __init__(self, file) -> None:
+        self._file, self.file_name = self._resolve_file(file)
+
+    def _resolve_file(self, file):
+        if isinstance(file, str):
+            _file = open(file, "rb")
+            return _file, os.path.basename(_file.name)
+        elif isinstance(file, IOBase):
+            return file, os.path.basename(file.name)
+        elif isinstance(file, Path):
+            _file = open(file, "rb")
+            return _file, os.path.basename(_file.name)
+        else:
+            raise TypeError("File must be a string or a file-like object(pathlib.Path, io.IOBase).")
+
+    @property
+    def file(self):
+        """
+        File object.
+        """
+        return self._file
+
+
+class ForumTopicCreated(JsonDeserializable):
+    """
+    This object represents a service message about a new forum topic created in the chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopiccreated
+    :param name: Name of the topic
+    :type name: :obj:`str`
+    :param icon_color: Color of the topic icon in RGB format
+    :type icon_color: :obj:`int`
+    :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
+    :type icon_custom_emoji_id: :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ForumTopicCreated`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str] = None) -> None:
+        self.name: str = name
+        self.icon_color: int = icon_color
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
+
+class ForumTopicClosed(JsonDeserializable):
+    """
+    This object represents a service message about a forum topic closed in the chat. Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicclosed
+    """
+
+    # for future use
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class ForumTopicReopened(JsonDeserializable):
+    """
+    This object represents a service message about a forum topic reopened in the chat. Currently holds no information.
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicreopened
+    """
+
+    # for future use
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class ForumTopicEdited(JsonDeserializable):
+    """
+    This object represents a service message about an edited forum topic.
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopicedited
+    :param name: Optional, Name of the topic(if updated)
+    :type name: :obj:`str`
+    :param icon_custom_emoji_id: Optional. New identifier of the custom emoji shown as the topic icon, if it was edited;
+        an empty string if the icon was removed
+    :type icon_custom_emoji_id: :obj:`str`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: Optional[str] = None, icon_custom_emoji_id: Optional[str] = None) -> None:
+        self.name: Optional[str] = name
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
+
+class GeneralForumTopicHidden(JsonDeserializable):
+    """
+    This object represents a service message about General forum topic hidden in the chat.
+    Currently holds no information.
+    Telegram documentation: https://core.telegram.org/bots/api#generalforumtopichidden
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class GeneralForumTopicUnhidden(JsonDeserializable):
+    """
+    This object represents a service message about General forum topic unhidden in the chat.
+    Currently holds no information.
+    Telegram documentation: https://core.telegram.org/bots/api#generalforumtopicunhidden
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class ForumTopic(JsonDeserializable):
+    """
+    This object represents a forum topic.
+    Telegram documentation: https://core.telegram.org/bots/api#forumtopic
+    :param message_thread_id: Unique identifier of the forum topic
+    :type message_thread_id: :obj:`int`
+    :param name: Name of the topic
+    :type name: :obj:`str`
+    :param icon_color: Color of the topic icon in RGB format
+    :type icon_color: :obj:`int`
+    :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
+    :type icon_custom_emoji_id: :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ForumTopic`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(
+        self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str] = None
+    ) -> None:
+        self.message_thread_id: int = message_thread_id
+        self.name: str = name
+        self.icon_color: int = icon_color
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+
+
+class WriteAccessAllowed(JsonDeserializable):
+    """
+    This object represents a service message about a user allowed to post messages in the chat.
+    Currently holds no information.
+    Telegram documentation: https://core.telegram.org/bots/api#writeaccessallowed
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
+
+class UserShared(JsonDeserializable):
+    """
+    This object contains information about the user whose identifier was shared with the bot using a
+    `telebot.types.KeyboardButtonRequestUser` button.
+    Telegram documentation: https://core.telegram.org/bots/api#usershared
+    :param request_id: identifier of the request
+    :type request_id: :obj:`int`
+    :param user_id: Identifier of the shared user. This number may have more than 32 significant bits and some programming
+        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
+        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the user
+        and could be unable to use this identifier, unless the user is already known to the bot by some other means.
+    :type user_id: :obj:`int`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.UserShared`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, request_id: int, user_id: int) -> None:
+        self.request_id: int = request_id
+        self.user_id: int = user_id
+
+
+class ChatShared(JsonDeserializable):
+    """
+    This object contains information about the chat whose identifier was shared with the bot using a
+    `telebot.types.KeyboardButtonRequestChat` button.
+    Telegram documentation: https://core.telegram.org/bots/api#Chatshared
+    :param request_id: identifier of the request
+    :type request_id: :obj:`int`
+    :param chat_id: Identifier of the shared chat. This number may have more than 32 significant bits and some programming
+        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
+        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the chat
+        and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
+    :type chat_id: :obj:`int`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShared`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, request_id: int, chat_id: int) -> None:
+        self.request_id: int = request_id
+        self.chat_id: int = chat_id
 
 
 AllowedUpdateName = Literal[

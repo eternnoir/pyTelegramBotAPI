@@ -17,6 +17,8 @@ library wrapping the <a href="https://core.telegram.org/bots/api">Telegram Bot A
 <h2 align="center">See upstream project <a href='https://pytba.readthedocs.io/en/latest/index.html'>docs</a> and 
 <a href='https://github.com/eternnoir/pyTelegramBotAPI/blob/master/README.md'>README</a></h2>
 
+Manually merged changes up to version `4.10.0`
+
 
 ## Usage
 

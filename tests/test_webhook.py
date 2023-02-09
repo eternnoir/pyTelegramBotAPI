@@ -1,8 +1,6 @@
 import asyncio
-import datetime
 import gc
 import signal
-from typing import Generator
 from uuid import uuid4
 
 import aiohttp

@@ -6,7 +6,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from types import MethodType
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, Callable, Literal, Optional, TypeVar, Union
 
 from telebot import AsyncTeleBot, api, constants, filters, types
 
@@ -273,6 +273,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.MessageID:
         return types.MessageID(self._get_new_message_id(chat_id))
 
@@ -319,7 +320,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         png_sticker: Union[Any, str] = None,
         tgs_sticker: Union[Any, str] = None,
         webm_sticker: Union[Any, str] = None,
-        contains_masks: Optional[bool] = None,
+        sticker_type: Optional[Literal["regular", "mask", "custom_emoji"]] = None,
         mask_position: Optional[types.MaskPosition] = None,
     ) -> bool:
         return True
@@ -486,6 +487,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         disable_notification: Optional[bool] = None,
         protect_content: Optional[bool] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.forward_from_chat = dummy_chat(from_chat_id)
@@ -542,7 +544,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
             title=f"Mocked sticker set {name}",
             is_animated=False,
             is_video=False,
-            contains_masks=False,
+            sticker_type="regular",
             stickers=[
                 types.Sticker(
                     file_id=str(hash(emoji)),
@@ -553,6 +555,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
                     is_video=False,
                     emoji=emoji,
                     set_name=name,
+                    type="regular",
                 )
                 for emoji in ["❤️", "✨", "🏳️‍🌈"]
             ],
@@ -604,6 +607,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         is_anonymous: Optional[bool] = None,
         can_manage_chat: Optional[bool] = None,
         can_manage_video_chats: Optional[bool] = None,
+        can_manage_topics: Optional[bool] = None,
     ) -> bool:
         return True
 
@@ -621,6 +625,8 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         can_change_info: Optional[bool] = None,
         can_invite_users: Optional[bool] = None,
         can_pin_messages: Optional[bool] = None,
+        permissions: Optional[types.ChatPermissions] = None,
+        use_independent_chat_permissions: Optional[bool] = None,
     ) -> bool:
         return True
 
@@ -669,6 +675,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.animation = types.Animation(
@@ -700,6 +707,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         caption_entities: Optional[list[types.MessageEntity]] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.audio = types.Audio(
@@ -714,7 +722,13 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         return msg
 
     @mocked
-    async def send_chat_action(self, chat_id: Union[int, str], action: str, timeout: Optional[int] = None) -> bool:
+    async def send_chat_action(
+        self,
+        chat_id: Union[int, str],
+        action: str,
+        timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
+    ) -> bool:
         return True
 
     @mocked
@@ -731,6 +745,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.contact = types.Contact(
@@ -755,6 +770,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.dice = types.Dice(value=1, emoji=emoji)
@@ -781,6 +797,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         disable_content_type_detection: Optional[bool] = None,
         data: Optional[Union[Any, str]] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.document = types.Document(
@@ -808,6 +825,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         proximity_alert_radius: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.location = types.Location(
@@ -836,6 +854,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.from_user = self._get_me()
@@ -863,6 +882,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         reply_to_message_id: Optional[int] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> list[types.Message]:
         msgs: list[types.Message] = []
         for media_item in media:
@@ -911,6 +931,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         ip_address: Optional[str] = None,
         drop_pending_updates: Optional[bool] = None,
         timeout: Optional[float] = None,
+        secret_token: Optional[str] = None,
     ):
         return True
 

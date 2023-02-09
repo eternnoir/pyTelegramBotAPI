@@ -6,7 +6,17 @@ import re
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 from inspect import signature
-from typing import Any, Callable, Coroutine, List, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    List,
+    Literal,
+    Optional,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from telebot import api, callback_data, filters, types, util
 from telebot.types import constants
@@ -723,6 +733,7 @@ class AsyncTeleBot:
         ip_address: Optional[str] = None,
         drop_pending_updates: Optional[bool] = None,
         timeout: Optional[float] = None,
+        secret_token: Optional[str] = None,
     ):
         """
         Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an
@@ -759,6 +770,7 @@ class AsyncTeleBot:
             ip_address,
             drop_pending_updates,
             timeout,
+            secret_token,
         )
 
     async def delete_webhook(self, drop_pending_updates: Optional[bool] = None, timeout: Optional[float] = None):
@@ -927,6 +939,7 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send text messages.
@@ -966,6 +979,7 @@ class AsyncTeleBot:
                 entities,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -977,6 +991,7 @@ class AsyncTeleBot:
         disable_notification: Optional[bool] = None,
         protect_content: Optional[bool] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to forward messages of any kind.
@@ -1000,6 +1015,7 @@ class AsyncTeleBot:
                 disable_notification,
                 timeout,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1017,6 +1033,7 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
@@ -1054,6 +1071,7 @@ class AsyncTeleBot:
                 reply_markup,
                 timeout,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1080,6 +1098,7 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send dices.
@@ -1107,6 +1126,7 @@ class AsyncTeleBot:
                 timeout,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1123,6 +1143,8 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
+        has_spoiler: Optional[bool] = None,
     ) -> types.Message:
         """
         Use this method to send photos.
@@ -1158,6 +1180,8 @@ class AsyncTeleBot:
                 caption_entities,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
+                has_spoiler,
             )
         )
 
@@ -1178,6 +1202,7 @@ class AsyncTeleBot:
         caption_entities: Optional[List[types.MessageEntity]] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
@@ -1222,6 +1247,7 @@ class AsyncTeleBot:
                 caption_entities,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1239,6 +1265,7 @@ class AsyncTeleBot:
         caption_entities: Optional[List[types.MessageEntity]] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file
@@ -1277,6 +1304,7 @@ class AsyncTeleBot:
                 caption_entities,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1297,6 +1325,7 @@ class AsyncTeleBot:
         disable_content_type_detection: Optional[bool] = None,
         data: Optional[Union[Any, str]] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send general files.
@@ -1343,6 +1372,7 @@ class AsyncTeleBot:
                 disable_content_type_detection=disable_content_type_detection,
                 visible_file_name=visible_file_name,
                 protect_content=protect_content,
+                message_thread_id=message_thread_id,
             )
         )
 
@@ -1356,6 +1386,7 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send .webp stickers.
@@ -1386,6 +1417,7 @@ class AsyncTeleBot:
                 timeout=timeout,
                 allow_sending_without_reply=allow_sending_without_reply,
                 protect_content=protect_content,
+                message_thread_id=message_thread_id,
             )
         )
 
@@ -1407,6 +1439,7 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
@@ -1452,6 +1485,7 @@ class AsyncTeleBot:
                 caption_entities,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1472,6 +1506,7 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
@@ -1516,6 +1551,7 @@ class AsyncTeleBot:
                 width,
                 height,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1532,6 +1568,7 @@ class AsyncTeleBot:
         thumb: Optional[Union[Any, str]] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square mp4 videos of up to 1 minute long. Use this method to send
@@ -1567,6 +1604,7 @@ class AsyncTeleBot:
                 thumb,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1586,6 +1624,7 @@ class AsyncTeleBot:
         reply_to_message_id: Optional[int] = None,
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> List[types.Message]:
         """
         send a group of photos or videos as an album. On success, an array of the sent Messages is returned.
@@ -1610,6 +1649,7 @@ class AsyncTeleBot:
             timeout,
             allow_sending_without_reply,
             protect_content,
+            message_thread_id,
         )
         return [types.Message.de_json(msg) for msg in result]
 
@@ -1628,6 +1668,7 @@ class AsyncTeleBot:
         proximity_alert_radius: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
 
         """
@@ -1666,6 +1707,7 @@ class AsyncTeleBot:
                 proximity_alert_radius,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1764,6 +1806,7 @@ class AsyncTeleBot:
         google_place_id: Optional[str] = None,
         google_place_type: Optional[str] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send information about a venue.
@@ -1806,6 +1849,7 @@ class AsyncTeleBot:
                 google_place_id,
                 google_place_type,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -1822,6 +1866,7 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Use this method to send phone contacts.
@@ -1854,10 +1899,17 @@ class AsyncTeleBot:
                 timeout,
                 allow_sending_without_reply,
                 protect_content,
+                message_thread_id,
             )
         )
 
-    async def send_chat_action(self, chat_id: Union[int, str], action: str, timeout: Optional[int] = None) -> bool:
+    async def send_chat_action(
+        self,
+        chat_id: Union[int, str],
+        action: str,
+        timeout: Optional[int] = None,
+        message_thread_id: Optional[int] = None,
+    ) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear
@@ -1872,7 +1924,7 @@ class AsyncTeleBot:
         :param timeout:
         :return: API reply. :type: boolean
         """
-        return await api.send_chat_action(self.token, chat_id, action, timeout)
+        return await api.send_chat_action(self.token, chat_id, action, timeout, message_thread_id)
 
     async def ban_chat_member(
         self,
@@ -1936,6 +1988,8 @@ class AsyncTeleBot:
         can_change_info: Optional[bool] = None,
         can_invite_users: Optional[bool] = None,
         can_pin_messages: Optional[bool] = None,
+        permissions: Optional[types.ChatPermissions] = None,
+        use_independent_chat_permissions: Optional[bool] = None,
     ) -> bool:
         """
         Use this method to restrict a user in a supergroup.
@@ -1961,19 +2015,20 @@ class AsyncTeleBot:
         :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
         :return: True on success
         """
+        if permissions is None:
+            permissions = types.ChatPermissions(
+                can_send_messages=can_send_messages,
+                can_send_media_messages=can_send_media_messages,
+                can_send_polls=can_send_polls,
+                can_send_other_messages=can_send_other_messages,
+                can_add_web_page_previews=can_add_web_page_previews,
+                can_change_info=can_change_info,
+                can_invite_users=can_invite_users,
+                can_pin_messages=can_pin_messages,
+            )
+            logger.warning("Individual parameters are deprecated and will be removed, use 'permissions' instead.")
         return await api.restrict_chat_member(
-            self.token,
-            chat_id,
-            user_id,
-            until_date,
-            can_send_messages,
-            can_send_media_messages,
-            can_send_polls,
-            can_send_other_messages,
-            can_add_web_page_previews,
-            can_change_info,
-            can_invite_users,
-            can_pin_messages,
+            self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions
         )
 
     async def promote_chat_member(
@@ -1991,6 +2046,7 @@ class AsyncTeleBot:
         is_anonymous: Optional[bool] = None,
         can_manage_chat: Optional[bool] = None,
         can_manage_video_chats: Optional[bool] = None,
+        can_manage_topics: Optional[bool] = None,
     ) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
@@ -2038,6 +2094,7 @@ class AsyncTeleBot:
             is_anonymous,
             can_manage_chat,
             can_manage_video_chats,
+            can_manage_topics,
         )
 
     async def set_chat_administrator_custom_title(
@@ -2091,7 +2148,12 @@ class AsyncTeleBot:
         """
         return await api.unban_chat_sender_chat(self.token, chat_id, sender_chat_id)
 
-    async def set_chat_permissions(self, chat_id: Union[int, str], permissions: types.ChatPermissions) -> bool:
+    async def set_chat_permissions(
+        self,
+        chat_id: Union[int, str],
+        permissions: types.ChatPermissions,
+        use_independent_chat_permissions: Optional[bool] = None,
+    ) -> bool:
         """
         Use this method to set async default chat permissions for all members.
         The bot must be an administrator in the group or a supergroup for this to work
@@ -2104,7 +2166,7 @@ class AsyncTeleBot:
         :param permissions: New async default chat permissions
         :return: True on success
         """
-        return await api.set_chat_permissions(self.token, chat_id, permissions)
+        return await api.set_chat_permissions(self.token, chat_id, permissions, use_independent_chat_permissions)
 
     async def create_chat_invite_link(
         self,
@@ -2167,8 +2229,8 @@ class AsyncTeleBot:
             await api.edit_chat_invite_link(
                 self.token,
                 chat_id,
-                name,
                 invite_link,
+                name,
                 expire_date,
                 member_limit,
                 creates_join_request,
@@ -2570,6 +2632,7 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         allow_sending_without_reply: Optional[bool] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Used to send the game.
@@ -2596,6 +2659,7 @@ class AsyncTeleBot:
             timeout,
             allow_sending_without_reply,
             protect_content,
+            message_thread_id,
         )
         return types.Message.de_json(result)
 
@@ -2688,6 +2752,7 @@ class AsyncTeleBot:
         max_tip_amount: Optional[int] = None,
         suggested_tip_amounts: Optional[List[int]] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Sends invoice.
@@ -2763,8 +2828,113 @@ class AsyncTeleBot:
             max_tip_amount,
             suggested_tip_amounts,
             protect_content,
+            message_thread_id,
         )
         return types.Message.de_json(result)
+
+    async def create_invoice_link(
+        self,
+        title: str,
+        description: str,
+        payload: str,
+        provider_token: str,
+        currency: str,
+        prices: List[types.LabeledPrice],
+        max_tip_amount: Optional[int] = None,
+        suggested_tip_amounts: Optional[List[int]] = None,
+        provider_data: Optional[str] = None,
+        photo_url: Optional[str] = None,
+        photo_size: Optional[int] = None,
+        photo_width: Optional[int] = None,
+        photo_height: Optional[int] = None,
+        need_name: Optional[bool] = None,
+        need_phone_number: Optional[bool] = None,
+        need_email: Optional[bool] = None,
+        need_shipping_address: Optional[bool] = None,
+        send_phone_number_to_provider: Optional[bool] = None,
+        send_email_to_provider: Optional[bool] = None,
+        is_flexible: Optional[bool] = None,
+    ) -> str:
+
+        """
+        Use this method to create a link for an invoice.
+        Returns the created invoice link as String on success.
+        Telegram documentation:
+        https://core.telegram.org/bots/api#createinvoicelink
+        :param title: Product name, 1-32 characters
+        :type title: :obj:`str`
+        :param description: Product description, 1-255 characters
+        :type description: :obj:`str`
+        :param payload: Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user,
+            use for your internal processes.
+        :type payload: :obj:`str`
+        :param provider_token: Payments provider token, obtained via @Botfather
+        :type provider_token: :obj:`str`
+        :param currency: Three-letter ISO 4217 currency code,
+            see https://core.telegram.org/bots/payments#supported-currencies
+        :type currency: :obj:`str`
+        :param prices: Price breakdown, a list of components
+            (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+        :type prices: :obj:`list` of :obj:`types.LabeledPrice`
+        :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
+        :type max_tip_amount: :obj:`int`
+        :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest
+            units of the currency.  At most 4 suggested tip amounts can be specified. The suggested tip
+            amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+        :type suggested_tip_amounts: :obj:`list` of :obj:`int`
+        :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider.
+            A detailed description of required fields should be provided by the payment provider.
+        :type provider_data: :obj:`str`
+        :param photo_url: URL of the product photo for the invoice. Can be a photo of the goods
+            or a photo of the invoice. People like it better when they see a photo of what they are paying for.
+        :type photo_url: :obj:`str`
+        :param photo_size: Photo size in bytes
+        :type photo_size: :obj:`int`
+        :param photo_width: Photo width
+        :type photo_width: :obj:`int`
+        :param photo_height: Photo height
+        :type photo_height: :obj:`int`
+        :param need_name: Pass True, if you require the user's full name to complete the order
+        :type need_name: :obj:`bool`
+        :param need_phone_number: Pass True, if you require the user's phone number to complete the order
+        :type need_phone_number: :obj:`bool`
+        :param need_email: Pass True, if you require the user's email to complete the order
+        :type need_email: :obj:`bool`
+        :param need_shipping_address: Pass True, if you require the user's shipping address to complete the order
+        :type need_shipping_address: :obj:`bool`
+        :param send_phone_number_to_provider: Pass True, if user's phone number should be sent to provider
+        :type send_phone_number_to_provider: :obj:`bool`
+        :param send_email_to_provider: Pass True, if user's email address should be sent to provider
+        :type send_email_to_provider: :obj:`bool`
+        :param is_flexible: Pass True, if the final price depends on the shipping method
+        :type is_flexible: :obj:`bool`
+        :return: Created invoice link as String on success.
+        :rtype: :obj:`str`
+        """
+        result = await api.create_invoice_link(
+            self.token,
+            title,
+            description,
+            payload,
+            provider_token,
+            currency,
+            prices,
+            max_tip_amount,
+            suggested_tip_amounts,
+            provider_data,
+            photo_url,
+            photo_size,
+            photo_width,
+            photo_height,
+            need_name,
+            need_phone_number,
+            need_email,
+            need_shipping_address,
+            send_phone_number_to_provider,
+            send_email_to_provider,
+            is_flexible,
+        )
+        return result
 
     # noinspection PyShadowingBuiltins
     async def send_poll(
@@ -2788,6 +2958,7 @@ class AsyncTeleBot:
         timeout: Optional[int] = None,
         explanation_entities: Optional[List[types.MessageEntity]] = None,
         protect_content: Optional[bool] = None,
+        message_thread_id: Optional[int] = None,
     ) -> types.Message:
         """
         Send polls.
@@ -2843,6 +3014,7 @@ class AsyncTeleBot:
                 timeout,
                 explanation_entities,
                 protect_content,
+                message_thread_id,
             )
         )
 
@@ -3065,6 +3237,18 @@ class AsyncTeleBot:
         result = await api.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
 
+    async def get_custom_emoji_stickers(self, custom_emoji_ids: List[str]) -> List[types.Sticker]:
+        """
+        Use this method to get information about custom emoji stickers by their identifiers.
+        Returns an Array of Sticker objects.
+        :param custom_emoji_ids: List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified.
+        :type custom_emoji_ids: :obj:`list` of :obj:`str`
+        :return: Returns an Array of Sticker objects.
+        :rtype: :obj:`list` of :class:`telebot.types.Sticker`
+        """
+        result = await api.get_custom_emoji_stickers(self.token, custom_emoji_ids)
+        return [types.Sticker.de_json(sticker) for sticker in result]
+
     async def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]) -> types.File:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
@@ -3089,7 +3273,7 @@ class AsyncTeleBot:
         png_sticker: Union[Any, str] = None,
         tgs_sticker: Union[Any, str] = None,
         webm_sticker: Union[Any, str] = None,
-        contains_masks: Optional[bool] = None,
+        sticker_type: Optional[Literal["regular", "mask", "custom_emoji"]] = None,
         mask_position: Optional[types.MaskPosition] = None,
     ) -> bool:
         """
@@ -3118,9 +3302,9 @@ class AsyncTeleBot:
             emojis,
             png_sticker,
             tgs_sticker,
-            contains_masks,
             mask_position,
             webm_sticker,
+            sticker_type,
         )
 
     async def add_sticker_to_set(
@@ -3182,6 +3366,187 @@ class AsyncTeleBot:
         :return:
         """
         return await api.delete_sticker_from_set(self.token, sticker)
+
+    async def create_forum_topic(
+        self, chat_id: int, name: str, icon_color: Optional[int] = None, icon_custom_emoji_id: Optional[str] = None
+    ) -> types.ForumTopic:
+        """
+        Use this method to create a topic in a forum supergroup chat. The bot must be an administrator
+        in the chat for this to work and must have the can_manage_topics administrator rights.
+        Returns information about the created topic as a ForumTopic object.
+        Telegram documentation: https://core.telegram.org/bots/api#createforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param name: Name of the topic, 1-128 characters
+        :type name: :obj:`str`
+        :param icon_color: Color of the topic icon in RGB format. Currently, must be one of 0x6FB9F0, 0xFFD67E, 0xCB86DB, 0x8EEE98, 0xFF93B2, or 0xFB6F5F
+        :type icon_color: :obj:`int`
+        :param icon_custom_emoji_id: Custom emoji for the topic icon. Must be an emoji of type “tgs” and must be exactly 1 character long
+        :type icon_custom_emoji_id: :obj:`str`
+        :return: On success, information about the created topic is returned as a ForumTopic object.
+        :rtype: :class:`telebot.types.ForumTopic`
+        """
+        return types.ForumTopic.de_json(
+            await api.create_forum_topic(self.token, chat_id, name, icon_color, icon_custom_emoji_id)
+        )
+
+    async def edit_forum_topic(
+        self,
+        chat_id: Union[int, str],
+        message_thread_id: int,
+        name: Optional[str] = None,
+        icon_custom_emoji_id: Optional[str] = None,
+    ) -> bool:
+        """
+        Use this method to edit name and icon of a topic in a forum supergroup chat. The bot must be an
+        administrator in the chat for this to work and must have can_manage_topics administrator rights,
+        unless it is the creator of the topic. Returns True on success.
+        Telegram Documentation: https://core.telegram.org/bots/api#editforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param message_thread_id: Identifier of the topic to edit
+        :type message_thread_id: :obj:`int`
+        :param name: Optional, New name of the topic, 1-128 characters. If not specififed or empty,
+            the current name of the topic will be kept
+        :type name: :obj:`str`
+        :param icon_custom_emoji_id: Optional, New unique identifier of the custom emoji shown as the topic icon.
+            Use getForumTopicIconStickers to get all allowed custom emoji identifiers. Pass an empty string to remove the
+            icon. If not specified, the current icon will be kept
+        :type icon_custom_emoji_id: :obj:`str`
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await api.edit_forum_topic(self.token, chat_id, message_thread_id, name, icon_custom_emoji_id)
+
+    async def close_forum_topic(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to close an open topic in a forum supergroup chat. The bot must be an administrator
+        in the chat for this to work and must have the can_manage_topics administrator rights, unless it is
+        the creator of the topic. Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#closeforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param message_thread_id: Identifier of the topic to close
+        :type message_thread_id: :obj:`int`
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await api.close_forum_topic(self.token, chat_id, message_thread_id)
+
+    async def reopen_forum_topic(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to reopen a closed topic in a forum supergroup chat. The bot must be an administrator in the chat
+        for this to work and must have the can_manage_topics administrator rights, unless it is the creator of the topic.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#reopenforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param message_thread_id: Identifier of the topic to reopen
+        :type message_thread_id: :obj:`int`
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await api.reopen_forum_topic(self.token, chat_id, message_thread_id)
+
+    async def delete_forum_topic(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to delete a topic in a forum supergroup chat. The bot must be an administrator in the chat for this
+        to work and must have the can_manage_topics administrator rights, unless it is the creator of the topic. Returns True
+        on success.
+        Telegram documentation: https://core.telegram.org/bots/api#deleteforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param message_thread_id: Identifier of the topic to delete
+        :type message_thread_id: :obj:`int`
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await api.delete_forum_topic(self.token, chat_id, message_thread_id)
+
+    async def unpin_all_forum_topic_messages(self, chat_id: Union[str, int], message_thread_id: int) -> bool:
+        """
+        Use this method to clear the list of pinned messages in a forum topic. The bot must be an administrator in the
+        chat for this to work and must have the can_pin_messages administrator right in the supergroup.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#unpinallforumtopicmessages
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param message_thread_id: Identifier of the topic
+        :type message_thread_id: :obj:`int`
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await api.unpin_all_forum_topic_messages(self.token, chat_id, message_thread_id)
+
+    async def edit_general_forum_topic(self, chat_id: Union[int, str], name: str) -> bool:
+        """
+        Use this method to edit the name of the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editgeneralforumtopic
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        :param name: New topic name, 1-128 characters
+        :type name: :obj:`str`
+        """
+
+        return await api.edit_general_forum_topic(self.token, chat_id, name)
+
+    async def close_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to close the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#closegeneralforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return await api.close_general_forum_topic(self.token, chat_id)
+
+    async def reopen_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to reopen the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#reopengeneralforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return await api.reopen_general_forum_topic(self.token, chat_id)
+
+    async def hide_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to hide the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#hidegeneralforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return await api.hide_general_forum_topic(self.token, chat_id)
+
+    async def unhide_general_forum_topic(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to unhide the 'General' topic in a forum supergroup chat.
+        The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#unhidegeneralforumtopic
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        """
+        return await api.unhide_general_forum_topic(self.token, chat_id)
+
+    async def get_forum_topic_icon_stickers(self) -> List[types.Sticker]:
+        """
+        Use this method to get custom emoji stickers, which can be used as a forum topic icon by any user.
+        Requires no parameters. Returns an Array of Sticker objects.
+        Telegram documentation: https://core.telegram.org/bots/api#getforumtopiciconstickers
+        :return: On success, a list of StickerSet objects is returned.
+        :rtype: List[:class:`telebot.types.StickerSet`]
+        """
+        return await api.get_forum_topic_icon_stickers(self.token)
 
 
 def sort_by_priority(handlers: list[service_types.Handler]):
