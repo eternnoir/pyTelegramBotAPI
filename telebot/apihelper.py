@@ -974,7 +974,7 @@ def restrict_chat_member(
     payload = {'chat_id': chat_id, 'user_id': user_id, 'permissions': permissions.to_json()}
 
     if use_independent_chat_permissions is not None:
-        permissions['use_independent_chat_permissions'] = use_independent_chat_permissions
+        payload['use_independent_chat_permissions'] = use_independent_chat_permissions
     if until_date is not None:
         if isinstance(until_date, datetime):
             payload['until_date'] = until_date.timestamp()
