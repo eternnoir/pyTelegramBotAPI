@@ -184,7 +184,7 @@ async def download_file(token, file_path):
     session = await session_manager.get_session()
     async with session.get(url, proxy=proxy) as response:
         if response.status != 200:
-            raise ApiHTTPException('Download file', result)
+            raise ApiHTTPException('Download file', response)
         result = await response.read()
     
     return result
@@ -247,7 +247,7 @@ async def get_updates(token, offset=None, limit=None,
         params['allowed_updates'] = json.dumps(allowed_updates)
     return await _process_request(token, method_name, params=params, request_timeout=request_timeout)
 
-async def _check_result(method_name, result):
+async def _check_result(method_name, result: aiohttp.ClientResponse):
     """
     Checks whether `result` is a valid API response.
     A result is considered invalid if:
@@ -263,7 +263,7 @@ async def _check_result(method_name, result):
     try:
         result_json = await result.json(encoding="utf-8")
     except:
-        if result.status_code != 200:
+        if result.status != 200:
             raise ApiHTTPException(method_name, result)
         else:
             raise ApiInvalidJSONException(method_name, result)
@@ -1898,10 +1898,10 @@ class ApiHTTPException(ApiException):
     This class represents an Exception thrown when a call to the 
     Telegram API server returns HTTP code that is not 200.
     """
-    def __init__(self, function_name, result):
+    def __init__(self, function_name, result: aiohttp.ClientResponse):
         super(ApiHTTPException, self).__init__(
             "The server returned HTTP {0} {1}. Response body:\n[{2}]" \
-            .format(result.status_code, result.reason, result),
+            .format(result.status, result.reason, result.request_info),
             function_name,
             result)
     
