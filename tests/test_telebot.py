@@ -1,11 +1,8 @@
 import asyncio
 import os
-import time
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 
-import aiohttp
 import pytest
 from dotenv import load_dotenv
 

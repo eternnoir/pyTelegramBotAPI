@@ -1,4 +1,3 @@
-import asyncio
 import urllib.parse
 from dataclasses import dataclass, field
 from hashlib import sha256
@@ -8,6 +7,7 @@ from aiohttp import hdrs
 from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import AsyncTeleBot
+from telebot.util import create_error_logging_task
 
 
 @dataclass
@@ -34,10 +34,11 @@ class BotRunner:
 
     async def run_polling(self):
         """For local run / testing only"""
-        await asyncio.gather(
-            self.bot.infinity_polling(interval=1),
-            *self.background_jobs,
-        )
+        background_job_tasks = [
+            create_error_logging_task(job, name=f"{self.bot_prefix}-{idx + 1}")
+            for idx, job in enumerate(self.background_jobs)
+        ]
+        await self.bot.infinity_polling(interval=1)
 
     @property
     def bot_prefix_urlsafe(self) -> str:

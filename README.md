@@ -65,7 +65,6 @@ to the latest `1.2.x` version:
 poetry self update 1.2.0b1
 ```
 
-
 ### Installing and configuring locally
 
 ```bash
@@ -84,12 +83,4 @@ mypy telebot
 
 black .
 isort .
-```
-
-### Building
-
-```bash
-poetry plugin add poetry-dynamic-versioning
-poetry build
-poetry publish -u <pypi-username> -p <pypi-pwd>
 ```

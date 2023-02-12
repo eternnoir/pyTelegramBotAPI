@@ -10,6 +10,7 @@ from aiohttp.typedefs import Handler as AiohttpHandler
 from telebot import api, types
 from telebot.graceful_shutdown import GracefulShutdownCondition
 from telebot.runner import BotRunner
+from telebot.util import create_error_logging_task
 
 logger = logging.getLogger(__name__)
 
@@ -100,10 +101,9 @@ class WebhookApp:
             )
             logger.info(f"Aux endpoint created for {runner.bot_prefix}: {endpoint.route}")
 
-        loop = asyncio.get_running_loop()
         for idx, coro in enumerate(runner.background_jobs):
             idx += 1  # 1-based numbering
-            task = loop.create_task(coro, name=f"{runner.bot_prefix}-{idx}")
+            task = create_error_logging_task(coro, name=f"{runner.bot_prefix}-{idx}")
             self.background_tasks.add(task)
 
             def background_job_done(task: asyncio.Task):

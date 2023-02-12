@@ -325,3 +325,15 @@ def validate_web_app_data(token: str, raw_init_data: str):
     secret_key = hmac.new(key=b"WebAppData", msg=token.encode(), digestmod=sha256)
 
     return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
+
+
+def create_error_logging_task(coro: Coroutine[None, None, None], name: str) -> asyncio.Task[None]:
+    """Drop-in replacement for asyncio.create_task that logs an exception immediately after it is occured and exits."""
+
+    async def wrapper() -> None:
+        try:
+            await coro
+        except Exception as e:
+            logger.exception(f"Unhandled exception in task {name!r}")
+
+    return asyncio.create_task(wrapper(), name=name)

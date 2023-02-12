@@ -87,7 +87,7 @@ class ChatFilter(AdvancedCustomFilter[types.TiedToChat]):
         if isinstance(filter_value, list):
             return update_content.chat.id in filter_value
         else:
-            return False
+            return update_content.chat.id == filter_value
 
 
 class IsForwardedFilter(SimpleCustomFilter[types.Message]):

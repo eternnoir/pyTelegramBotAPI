@@ -88,7 +88,7 @@ class JsonDeserializable(object):
 
     def __str__(self):
         d = {x: y.__dict__ if hasattr(y, "__dict__") else y for x, y in self.__dict__.items()}
-        return str(d)
+        return f"{self.__class__.__name__}({d})"
 
 
 @dataclass
@@ -3454,7 +3454,7 @@ class Sticker(JsonDeserializable):
         self.mask_position: MaskPosition = mask_position
         self.file_size: int = file_size
         self.premium_animation: File = premium_animation
-        self.custom_emoji_id: int = custom_emoji_id
+        self.custom_emoji_id: str = custom_emoji_id
 
 
 class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
@@ -4141,7 +4141,7 @@ class ForumTopicCreated(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str] = None) -> None:
@@ -4196,7 +4196,7 @@ class ForumTopicEdited(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(self, name: Optional[str] = None, icon_custom_emoji_id: Optional[str] = None) -> None:
@@ -4254,7 +4254,7 @@ class ForumTopic(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(
@@ -4301,7 +4301,7 @@ class UserShared(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(self, request_id: int, user_id: int) -> None:
@@ -4329,7 +4329,7 @@ class ChatShared(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        obj = cls.check_json(json_string)
+        obj = cls.ensure_json_dict(json_string)
         return cls(**obj)
 
     def __init__(self, request_id: int, chat_id: int) -> None:

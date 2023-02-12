@@ -131,8 +131,10 @@ class AsyncTeleBot:
         timeout: int = 30,
         skip_pending: bool = False,
         request_timeout: int = 60,
+        max_error_retry_count: Optional[int] = 10,
     ):
         interval = max(interval, 0.3)
+        error_retry_count = 0
         try:
             self.logger.info("Running polling")
             if skip_pending:
@@ -147,11 +149,17 @@ class AsyncTeleBot:
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         asyncio.create_task(self.process_new_updates(updates))
+                    error_retry_count = 0
                 except TimeoutError:
                     self.logger.debug("Long polling timed out, sending new request")
                 except Exception:
                     self.logger.exception("Unexpected exception while processing updates")
-                    self.logger.info("Resuming polling")
+                    if max_error_retry_count is None or error_retry_count < max_error_retry_count:
+                        self.logger.info("Resuming polling")
+                        error_retry_count += 1
+                    else:
+                        self.logger.info("Max retry count exceeded, exiting")
+                        return
                 finally:
                     await asyncio.sleep(interval)
 
@@ -3546,7 +3554,9 @@ class AsyncTeleBot:
         :return: On success, a list of StickerSet objects is returned.
         :rtype: List[:class:`telebot.types.StickerSet`]
         """
-        return await api.get_forum_topic_icon_stickers(self.token)
+        return [
+            types.Sticker.de_json(sticker_raw) for sticker_raw in await api.get_forum_topic_icon_stickers(self.token)
+        ]
 
 
 def sort_by_priority(handlers: list[service_types.Handler]):
