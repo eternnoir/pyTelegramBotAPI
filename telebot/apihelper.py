@@ -1612,8 +1612,6 @@ def create_new_sticker_set(
         payload[stype] = sticker
     if mask_position:
         payload['mask_position'] = mask_position.to_json()
-    if webm_sticker:
-        payload['webm_sticker'] = webm_sticker
     if sticker_type:
         payload['sticker_type'] = sticker_type
     return _make_request(token, method_url, params=payload, files=files, method='post')
