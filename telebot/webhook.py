@@ -64,6 +64,8 @@ class WebhookApp:
         finally:
             if update is not None and update.metrics is not None:
                 await self._metrics_handler(update.metrics)
+                if bot_runner.metrics_handler is not None:
+                    await bot_runner.metrics_handler(update.metrics)
             return web.Response()
 
     @web.middleware

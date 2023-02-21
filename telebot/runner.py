@@ -1,12 +1,13 @@
 import urllib.parse
 from dataclasses import dataclass, field
 from hashlib import sha256
-from typing import Coroutine
+from typing import Awaitable, Callable, Coroutine, Optional
 
 from aiohttp import hdrs
 from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import AsyncTeleBot
+from telebot.metrics import TelegramUpdateMetrics
 from telebot.util import create_error_logging_task
 
 
@@ -27,6 +28,7 @@ class BotRunner:
     bot: AsyncTeleBot
     background_jobs: list[Coroutine[None, None, None]] = field(default_factory=list)
     aux_endpoints: list[AuxBotEndpoint] = field(default_factory=list)
+    metrics_handler: Optional[Callable[[TelegramUpdateMetrics], Awaitable[None]]] = None
 
     def __post_init__(self):
         if self.bot.log_marker is None:
@@ -38,7 +40,12 @@ class BotRunner:
             create_error_logging_task(job, name=f"{self.bot_prefix}-{idx + 1}")
             for idx, job in enumerate(self.background_jobs)
         ]
-        await self.bot.infinity_polling(interval=1)
+        try:
+            await self.bot.infinity_polling(interval=1)
+        finally:
+            for t in background_job_tasks:
+                if t.cancel():
+                    await t
 
     @property
     def bot_prefix_urlsafe(self) -> str:
