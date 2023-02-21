@@ -3,6 +3,7 @@ import functools
 import json
 import logging
 import re
+import time
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 from inspect import signature
@@ -19,6 +20,11 @@ from typing import (
 )
 
 from telebot import api, callback_data, filters, types, util
+from telebot.metrics import (
+    TelegramUpdateMetrics,
+    save_handler_test_duration,
+    save_processing_duration,
+)
 from telebot.types import constants
 from telebot.types import service as service_types
 
@@ -175,8 +181,11 @@ class AsyncTeleBot:
             return
 
         try:
-            update_dumps = [json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates]
-            self.logger.debug(f"{upd_count} update(s) received:\n" + "\n\n".join(update_dumps) + "\n")
+            if self.logger.level == logging.DEBUG:
+                update_dumps = [
+                    json.dumps(u._json_dict, ensure_ascii=False, sort_keys=False, indent=2) for u in updates
+                ]
+                self.logger.debug(f"{upd_count} update(s) received:\n" + "\n\n".join(update_dumps) + "\n")
         except Exception:
             self.logger.exception(f"{upd_count} update(s) received, but error occured trying to dump them")
 
@@ -186,37 +195,129 @@ class AsyncTeleBot:
                 asyncio.create_task(listener(update))
 
             if update.message:
-                coroutines.append(self._process_update(self.message_handlers, update.message))
+                coroutines.append(
+                    self._process_update(
+                        self.message_handlers,
+                        update.message,
+                        update.metrics,
+                    )
+                )
             if update.edited_message:
-                coroutines.append(self._process_update(self.edited_message_handlers, update.edited_message))
+                coroutines.append(
+                    self._process_update(
+                        self.edited_message_handlers,
+                        update.edited_message,
+                        update.metrics,
+                    )
+                )
             if update.channel_post:
-                coroutines.append(self._process_update(self.channel_post_handlers, update.channel_post))
+                coroutines.append(
+                    self._process_update(
+                        self.channel_post_handlers,
+                        update.channel_post,
+                        update.metrics,
+                    )
+                )
             if update.edited_channel_post:
-                coroutines.append(self._process_update(self.edited_channel_post_handlers, update.edited_channel_post))
+                coroutines.append(
+                    self._process_update(
+                        self.edited_channel_post_handlers,
+                        update.edited_channel_post,
+                        update.metrics,
+                    )
+                )
             if update.inline_query:
-                coroutines.append(self._process_update(self.inline_query_handlers, update.inline_query))
+                coroutines.append(
+                    self._process_update(
+                        self.inline_query_handlers,
+                        update.inline_query,
+                        update.metrics,
+                    )
+                )
             if update.chosen_inline_result:
-                coroutines.append(self._process_update(self.chosen_inline_handlers, update.chosen_inline_result))
+                coroutines.append(
+                    self._process_update(
+                        self.chosen_inline_handlers,
+                        update.chosen_inline_result,
+                        update.metrics,
+                    )
+                )
             if update.callback_query:
-                coroutines.append(self._process_update(self.callback_query_handlers, update.callback_query))
+                coroutines.append(
+                    self._process_update(
+                        self.callback_query_handlers,
+                        update.callback_query,
+                        update.metrics,
+                    )
+                )
             if update.shipping_query:
-                coroutines.append(self._process_update(self.shipping_query_handlers, update.shipping_query))
+                coroutines.append(
+                    self._process_update(
+                        self.shipping_query_handlers,
+                        update.shipping_query,
+                        update.metrics,
+                    )
+                )
             if update.pre_checkout_query:
-                coroutines.append(self._process_update(self.pre_checkout_query_handlers, update.pre_checkout_query))
+                coroutines.append(
+                    self._process_update(
+                        self.pre_checkout_query_handlers,
+                        update.pre_checkout_query,
+                        update.metrics,
+                    )
+                )
             if update.poll:
-                coroutines.append(self._process_update(self.poll_handlers, update.poll))
+                coroutines.append(
+                    self._process_update(
+                        self.poll_handlers,
+                        update.poll,
+                        update.metrics,
+                    )
+                )
             if update.poll_answer:
-                coroutines.append(self._process_update(self.poll_answer_handlers, update.poll_answer))
+                coroutines.append(
+                    self._process_update(
+                        self.poll_answer_handlers,
+                        update.poll_answer,
+                        update.metrics,
+                    )
+                )
             if update.my_chat_member:
-                coroutines.append(self._process_update(self.my_chat_member_handlers, update.my_chat_member))
+                coroutines.append(
+                    self._process_update(
+                        self.my_chat_member_handlers,
+                        update.my_chat_member,
+                        update.metrics,
+                    )
+                )
             if update.chat_member:
-                coroutines.append(self._process_update(self.chat_member_handlers, update.chat_member))
+                coroutines.append(
+                    self._process_update(
+                        self.chat_member_handlers,
+                        update.chat_member,
+                        update.metrics,
+                    )
+                )
             if update.chat_join_request:
-                coroutines.append(self._process_update(self.chat_join_request_handlers, update.chat_join_request))
+                coroutines.append(
+                    self._process_update(
+                        self.chat_join_request_handlers,
+                        update.chat_join_request,
+                        update.metrics,
+                    )
+                )
 
         await asyncio.gather(*coroutines, return_exceptions=True)
 
-    async def _process_update(self, handlers: list[service_types.Handler], update_content: service_types.UpdateContent):
+    async def _process_update(
+        self,
+        handlers: list[service_types.Handler],
+        update_content: service_types.UpdateContent,
+        update_metrics: Optional[TelegramUpdateMetrics] = None,
+    ):
+        update_metrics_ = update_metrics or TelegramUpdateMetrics(
+            bot_prefix="not-used", received_at=time.time(), update_id=-1
+        )
         try:
             update_content_log = f"{update_content.__class__.__name__} {update_content}"
         except Exception:
@@ -226,20 +327,25 @@ class AsyncTeleBot:
             handler_name = handler.get("name", "<anonymous>")
 
             try:
-                is_match = await self._test_handler(handler, update_content)
+                with save_handler_test_duration(update_metrics_):
+                    is_match = await self._test_handler(handler, update_content)
             except Exception:
                 self.logger.exception(f"Error testing handler {handler_name!r} for {update_content_log}")
                 is_match = False
 
             if is_match:
+                update_metrics_["matched_handler_name"] = handler_name
                 self.logger.debug(f"Using handler {handler_name!r} to process {update_content_log}")
                 try:
-                    return await invoke_handler(handler["function"], update_content, self)
-                except Exception:
+                    with save_processing_duration(update_metrics_):
+                        return await invoke_handler(handler["function"], update_content, self)
+                except Exception as e:
                     self.logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
+                    update_metrics_["exception_type"] = e.__class__.__name__
                     return
         else:
             self.logger.debug(f"No matching handler found for {update_content_log}, ignoring")
+            update_metrics_["matched_handler_name"] = None
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
         for filter_key, filter_value in handler["filters"].items():

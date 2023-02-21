@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import ujson as json  # type: ignore
 
 from telebot import util
+from telebot.metrics import TelegramUpdateMetrics
 
 DISABLE_KEYLEN_ERROR = False
 
@@ -110,6 +111,8 @@ class Update(JsonDeserializable):
     chat_join_request: Optional["ChatJoinRequest"]
 
     _json_dict: dict
+
+    metrics: Optional[TelegramUpdateMetrics] = None
 
     @classmethod
     def de_json(cls, json_: Optional[Union[dict, str]]) -> Optional["Update"]:

@@ -1,14 +1,16 @@
 import asyncio
 import logging
 import signal
+import time
 from types import FrameType
-from typing import Any, Callable, Coroutine, Optional
+from typing import Any, Awaitable, Callable, Coroutine, Optional
 
 from aiohttp import web
 from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import api, types
 from telebot.graceful_shutdown import GracefulShutdownCondition
+from telebot.metrics import TelegramUpdateMetrics
 from telebot.runner import BotRunner
 from telebot.util import create_error_logging_task
 
@@ -18,8 +20,16 @@ logger = logging.getLogger(__name__)
 WEBHOOK_ROUTE = "/webhook/{subroute}/"
 
 
+async def noop_metrics_handler(m: TelegramUpdateMetrics) -> None:
+    logger.debug(f"Metrics: {m}")
+
+
 class WebhookApp:
-    def __init__(self, base_url: str):
+    def __init__(
+        self,
+        base_url: str,
+        metrics_handler: Callable[[TelegramUpdateMetrics], Awaitable[None]] = noop_metrics_handler,
+    ):
         self.base_url = base_url
         self.bot_runner_by_subroute: dict[str, BotRunner] = dict()
         self.background_tasks: set[asyncio.Task] = set()
@@ -29,6 +39,7 @@ class WebhookApp:
         self._current_request_count = 0
         self._is_shutting_down = False
         self._is_cleaning_up = False
+        self._metrics_handler = metrics_handler
 
     async def _bot_webhook_handler(self, request: web.Request):
         subroute = request.match_info.get("subroute")
@@ -41,11 +52,18 @@ class WebhookApp:
         try:
             update = types.Update.de_json(await request.json())
             if update is not None:
+                update.metrics = TelegramUpdateMetrics(
+                    bot_prefix=bot_runner.bot_prefix,
+                    received_at=time.time(),
+                    update_id=update.update_id,
+                )
                 await bot_runner.bot.process_new_updates([update])
         except Exception:
             update_id = update.update_id if update is not None else "<not defined>"
             logger.exception(f"Unexpected error processing update #{update_id}:\n{update}")
         finally:
+            if update is not None and update.metrics is not None:
+                await self._metrics_handler(update.metrics)
             return web.Response()
 
     @web.middleware
