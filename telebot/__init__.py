@@ -349,7 +349,7 @@ class AsyncTeleBot:
                     return
         else:
             self.logger.debug(f"No matching handler found for {update_content_log}, ignoring")
-            update_metrics_["matched_handler_name"] = None
+            update_metrics_["handler_name"] = None
 
     async def _test_handler(self, handler: service_types.Handler, content: service_types.UpdateContent) -> bool:
         for filter_key, filter_value in handler["filters"].items():
