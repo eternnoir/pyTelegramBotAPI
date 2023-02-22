@@ -191,7 +191,7 @@ class TeleBot:
                 coloredlogs.install(logger=logger, level=logger.level)
             except ImportError:
                 raise ImportError(
-                    'Install colorredlogs module to use colorful_logs option.'
+                    'Install coloredlogs module to use colorful_logs option.'
                 )
 
         # threading-related
