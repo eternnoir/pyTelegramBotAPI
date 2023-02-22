@@ -340,7 +340,7 @@ class AsyncTeleBot:
                 try:
                     with save_processing_duration(update_metrics_):
                         maybe_handler_result = await invoke_handler(handler["function"], update_content, self)
-                    if maybe_handler_result is not None and maybe_handler_result.metrics:
+                    if isinstance(maybe_handler_result, service_types.HandlerResult) and maybe_handler_result.metrics:
                         update_metrics_["handler_metrics"] = maybe_handler_result.metrics
                     return
                 except Exception as e:
