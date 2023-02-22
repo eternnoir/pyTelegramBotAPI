@@ -2,14 +2,15 @@ import logging
 import os
 from abc import ABC
 from dataclasses import dataclass
+from hashlib import md5
 from io import BytesIO, IOBase
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union, get_args
 
 import ujson as json  # type: ignore
 
 from telebot import util
-from telebot.metrics import TelegramUpdateMetrics
+from telebot.metrics import MessageInfo, TelegramUpdateMetrics, UserInfo
 
 DISABLE_KEYLEN_ERROR = False
 
@@ -115,15 +116,23 @@ class Update(JsonDeserializable):
     metrics: Optional[TelegramUpdateMetrics] = None
 
     @classmethod
-    def de_json(cls, json_: Optional[Union[dict, str]]) -> Optional["Update"]:
+    def de_json(
+        cls, json_: Optional[Union[dict, str]], metrics: Optional[TelegramUpdateMetrics] = None
+    ) -> Optional["Update"]:
         if json_ is None:
             return None
         obj = cls.ensure_json_dict(json_, copy_dict=False)
         update_id = obj["update_id"]
-        message = Message.de_json(obj.get("message"))
-        edited_message = Message.de_json(obj.get("edited_message"))
-        channel_post = Message.de_json(obj.get("channel_post"))
-        edited_channel_post = Message.de_json(obj.get("edited_channel_post"))
+        if metrics:
+            metrics["update_id"] = update_id
+            for update_type_name in get_args(AllowedUpdateName):
+                if update_type_name != "update_id" and update_type_name in obj:
+                    metrics["update_type"] = update_type_name
+                    break
+        message = Message.de_json(obj.get("message"), metrics=metrics)
+        edited_message = Message.de_json(obj.get("edited_message"), metrics=metrics)
+        channel_post = Message.de_json(obj.get("channel_post"), metrics=metrics)
+        edited_channel_post = Message.de_json(obj.get("edited_channel_post"), metrics=metrics)
         inline_query = InlineQuery.de_json(obj.get("inline_query"))
         chosen_inline_result = ChosenInlineResult.de_json(obj.get("chosen_inline_result"))
         callback_query = CallbackQuery.de_json(obj.get("callback_query"))
@@ -151,6 +160,7 @@ class Update(JsonDeserializable):
             chat_member,
             chat_join_request,
             _json_dict=obj,
+            metrics=metrics,
         )
 
 
@@ -265,11 +275,17 @@ class WebhookInfo(JsonDeserializable):
 
 class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     @classmethod
-    def de_json(cls, json_string):
+    def de_json(cls, json_string, metrics: Optional[TelegramUpdateMetrics] = None):
         if json_string is None:
             return None
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
-        return cls(**obj)
+        user_obj = cls(**obj)
+        if metrics is not None:
+            metrics["user_info"] = UserInfo(
+                user_id_hash=md5(user_obj.id.to_bytes(length=64, byteorder="big")).hexdigest(),
+                language_code=user_obj.language_code,
+            )
+        return user_obj
 
     def __init__(
         self,
@@ -445,16 +461,17 @@ class WebAppData(JsonDeserializable):
 
 class Message(JsonDeserializable):
     @classmethod
-    def de_json(cls, json_string) -> "Message":
+    def de_json(cls, json_string, metrics: Optional[TelegramUpdateMetrics] = None) -> "Message":
         if json_string is None:
-            # TODO: validation and type-safety here
             return None  # type: ignore
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
         message_id = obj["message_id"]
-        from_user = User.de_json(obj.get("from"))
+        from_user = User.de_json(obj.get("from"), metrics)
         date = obj["date"]
         chat = Chat.de_json(obj["chat"])
         content_type = None
+        is_forwarded = False
+        is_reply = False
         opts = {}
         if "sender_chat" in obj:
             opts["sender_chat"] = Chat.de_json(obj["sender_chat"])
@@ -462,6 +479,7 @@ class Message(JsonDeserializable):
             opts["forward_from"] = User.de_json(obj["forward_from"])
         if "forward_from_chat" in obj:
             opts["forward_from_chat"] = Chat.de_json(obj["forward_from_chat"])
+            is_forwarded = True
         if "forward_from_message_id" in obj:
             opts["forward_from_message_id"] = obj.get("forward_from_message_id")
         if "forward_signature" in obj:
@@ -478,6 +496,7 @@ class Message(JsonDeserializable):
             opts["message_thread_id"] = obj.get("message_thread_id")
         if "reply_to_message" in obj:
             opts["reply_to_message"] = Message.de_json(obj["reply_to_message"])
+            is_reply = True
         if "via_bot" in obj:
             opts["via_bot"] = User.de_json(obj["via_bot"])
         if "edit_date" in obj:
@@ -653,6 +672,12 @@ class Message(JsonDeserializable):
         if "chat_shared" in obj:
             opts["chat_shared"] = ChatShared.de_json(obj["chat_shared"])
             content_type = "chat_shared"
+        if metrics is not None:
+            metrics["message_info"] = MessageInfo(
+                is_forwarded=is_forwarded,
+                is_reply=is_reply,
+                content_type=content_type or "<unset>",
+            )
         return cls(message_id, from_user, date, chat, content_type or "<unset>", opts, json_string)
 
     @classmethod

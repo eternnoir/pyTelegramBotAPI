@@ -21,6 +21,7 @@ from typing import (
 
 from telebot import api, callback_data, filters, types, util
 from telebot.metrics import (
+    ExceptionInfo,
     TelegramUpdateMetrics,
     save_handler_test_duration,
     save_processing_duration,
@@ -341,7 +342,7 @@ class AsyncTeleBot:
                         return await invoke_handler(handler["function"], update_content, self)
                 except Exception as e:
                     self.logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
-                    update_metrics_["exception_type"] = e.__class__.__name__
+                    update_metrics_["exception_info"] = ExceptionInfo(type_name=e.__class__.__name__, body=str(e))
                     return
         else:
             self.logger.debug(f"No matching handler found for {update_content_log}, ignoring")

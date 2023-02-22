@@ -78,11 +78,12 @@ async def _request(
             raise
         except Exception as e:
             last_exception = e
-            logger.exception(
-                "Unexpected error making request (%s), will retry (attempt %s/%s)",
-                request_description,
+            logger.info(
+                "Retrying (%s / %s) unexpected error making request (%s)",
                 attempt + 1,
                 MAX_RETRIES,
+                request_description,
+                exc_info=True,
             )
     else:
         if last_exception is not None:

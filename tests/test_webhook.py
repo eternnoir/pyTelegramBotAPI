@@ -123,7 +123,13 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohtt
         "tests.test_webhook.bot.<locals>.receive_cmd",
     ]
     assert [len(m["handler_test_durations"]) for m in metrics] == [3, 1, 2, 3, 1]
-    assert [m.get("exception_type") for m in metrics] == [None, None, "RuntimeError", None, None]
+    assert [m.get("exception_info") for m in metrics] == [
+        None,
+        None,
+        {"type_name": "RuntimeError", "body": "AAA!!!"},
+        None,
+        None,
+    ]
     assert all("processing_duration" in m for m in metrics)
 
 

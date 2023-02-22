@@ -12,7 +12,7 @@ from telebot import api, types
 from telebot.graceful_shutdown import GracefulShutdownCondition
 from telebot.metrics import TelegramUpdateMetrics
 from telebot.runner import BotRunner
-from telebot.util import create_error_logging_task
+from telebot.util import create_error_logging_task, log_error
 
 logger = logging.getLogger(__name__)
 
@@ -50,22 +50,25 @@ class WebhookApp:
             return web.Response(status=404)
         update = None
         try:
-            update = types.Update.de_json(await request.json())
-            if update is not None:
-                update.metrics = TelegramUpdateMetrics(
+            update = types.Update.de_json(
+                await request.json(),
+                metrics=TelegramUpdateMetrics(
                     bot_prefix=bot_runner.bot_prefix,
                     received_at=time.time(),
-                    update_id=update.update_id,
-                )
+                ),
+            )
+            if update is not None:
                 await bot_runner.bot.process_new_updates([update])
         except Exception:
             update_id = update.update_id if update is not None else "<not defined>"
             logger.exception(f"Unexpected error processing update #{update_id}:\n{update}")
         finally:
             if update is not None and update.metrics is not None:
-                await self._metrics_handler(update.metrics)
+                with log_error("Handling metrics with app-wide handler", logger):
+                    await self._metrics_handler(update.metrics)
                 if bot_runner.metrics_handler is not None:
-                    await bot_runner.metrics_handler(update.metrics)
+                    with log_error("Handling metrics with runner-specific handler", bot_runner.bot.logger):
+                        await bot_runner.metrics_handler(update.metrics)
             return web.Response()
 
     @web.middleware

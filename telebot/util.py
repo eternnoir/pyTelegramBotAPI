@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import functools
 import hmac
 import json
@@ -8,7 +9,18 @@ import re
 import string
 import threading
 from hashlib import sha256
-from typing import Any, Callable, Coroutine, List, Optional, Type, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    Generator,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 from urllib.parse import parse_qsl
 
 from telebot.types import constants
@@ -337,3 +349,11 @@ def create_error_logging_task(coro: Coroutine[None, None, None], name: str) -> a
             logger.exception(f"Unhandled exception in task {name!r}")
 
     return asyncio.create_task(wrapper(), name=name)
+
+
+@contextlib.contextmanager
+def log_error(marker: str, logger_: logging.Logger = logger) -> Generator[None, None, None]:
+    try:
+        yield
+    except Exception:
+        logger_.exception(f"{marker} - unexpected exception")
