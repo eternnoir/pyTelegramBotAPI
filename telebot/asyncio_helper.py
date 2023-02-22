@@ -173,14 +173,14 @@ async def get_file_url(token, file_id):
     if FILE_URL is None:
         return "https://api.telegram.org/file/bot{0}/{1}".format(token, (await get_file(token, file_id))['file_path'])
     else:
-        # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, (await get_file(token, file_id))['file_path'])
 
 
 async def download_file(token, file_path):
     if FILE_URL is None:
         url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
-    else: url =  FILE_URL.format(token, file_path)
+    else:
+        url =  FILE_URL.format(token, file_path)
     session = await session_manager.get_session()
     async with session.get(url, proxy=proxy) as response:
         if response.status != 200:
