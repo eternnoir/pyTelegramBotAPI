@@ -1,4 +1,14 @@
-from typing import Coroutine, Optional, Protocol, TypedDict, TypeVar, Union, overload
+from dataclasses import dataclass
+from typing import (
+    Any,
+    Coroutine,
+    Optional,
+    Protocol,
+    TypedDict,
+    TypeVar,
+    Union,
+    overload,
+)
 
 from typing_extensions import NotRequired
 
@@ -45,13 +55,18 @@ FilterValue = Union[
 NoneCoro = Coroutine[None, None, None]
 
 
+@dataclass
+class HandlerResult:
+    metrics: Optional[dict[str, Any]] = None
+
+
 class HandlerFunction(Protocol[_UCT]):
     @overload
-    async def __call__(self, update_content: _UCT) -> None:
+    async def __call__(self, update_content: _UCT) -> Optional[HandlerResult]:
         ...
 
     @overload
-    async def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> None:  # type: ignore
+    async def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> Optional[HandlerResult]:  # type: ignore
         ...
 
 

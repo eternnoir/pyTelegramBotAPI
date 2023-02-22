@@ -115,7 +115,7 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohtt
     assert len(metrics) == 5
     assert all(m["bot_prefix"] == "testing-bot" for m in metrics)
     assert [m["update_id"] for m in metrics] == [10001110101, 10001110102, 10001110103, 10001110104, 10001110105]
-    assert [m["matched_handler_name"] for m in metrics] == [
+    assert [m["handler_name"] for m in metrics] == [
         "tests.test_webhook.bot.<locals>.receive_message",
         "tests.test_webhook.bot.<locals>.receive_cmd",
         "tests.test_webhook.bot.<locals>.raise_error",

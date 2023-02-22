@@ -335,11 +335,14 @@ class AsyncTeleBot:
                 is_match = False
 
             if is_match:
-                update_metrics_["matched_handler_name"] = handler_name
+                update_metrics_["handler_name"] = handler_name
                 self.logger.debug(f"Using handler {handler_name!r} to process {update_content_log}")
                 try:
                     with save_processing_duration(update_metrics_):
-                        return await invoke_handler(handler["function"], update_content, self)
+                        maybe_handler_result = await invoke_handler(handler["function"], update_content, self)
+                    if maybe_handler_result is not None and maybe_handler_result.metrics:
+                        update_metrics_["handler_metrics"] = maybe_handler_result.metrics
+                    return
                 except Exception as e:
                     self.logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
                     update_metrics_["exception_info"] = ExceptionInfo(type_name=e.__class__.__name__, body=str(e))
@@ -637,7 +640,7 @@ class AsyncTeleBot:
                 @functools.wraps(decorated)
                 async def handler_func(cq: types.CallbackQuery, *args):
                     try:
-                        await invoke_handler(decorated, cq, self)
+                        return await invoke_handler(decorated, cq, self)
                     finally:
                         try:
                             await self.answer_callback_query(cq.id)
@@ -3674,15 +3677,13 @@ async def invoke_handler(
     handler_func: service_types.HandlerFunction,
     update_content: service_types.UpdateContent,
     bot: "AsyncTeleBot",
-) -> None:
+) -> Optional[service_types.HandlerResult]:
     handler_signature = signature(handler_func)
     arg_count = len(list(handler_signature.parameters.keys()))
     if arg_count == 1:
-        await handler_func(update_content)
-        return
+        return await handler_func(update_content)
     elif arg_count == 2:
-        await handler_func(update_content, bot)
-        return
+        return await handler_func(update_content, bot)
     else:
         raise TypeError(
             "Handler function must have one (update content) or two (update content and bot) parameters, "

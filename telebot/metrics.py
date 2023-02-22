@@ -1,6 +1,6 @@
 import contextlib
 import time
-from typing import Generator, Optional, TypedDict
+from typing import Any, Generator, Optional, TypedDict
 
 from typing_extensions import Required
 
@@ -13,7 +13,7 @@ class UserInfo(TypedDict):
 class MessageInfo(TypedDict):
     is_forwarded: bool
     is_reply: bool
-    content_type: str
+    content_type: str  # see Message class for a complete list
 
 
 class ExceptionInfo(TypedDict):
@@ -32,7 +32,10 @@ class TelegramUpdateMetrics(TypedDict, total=False):
 
     # qualified function name or explicitly specified one (e.g. @bot.message_handler(..., name="hello"))
     # None = no handler matched, update ignored
-    matched_handler_name: Optional[str]
+    handler_name: Optional[str]
+
+    # if an update handler returns HandlerResult with non-empty metrics, they are copied here
+    handler_metrics: dict[str, Any]
 
     # list of durations for each handler tested
     handler_test_durations: list[float]
@@ -43,8 +46,7 @@ class TelegramUpdateMetrics(TypedDict, total=False):
 
     # info about user who initiated the update (message author, button clicker, etc)
     user_info: UserInfo
-
-    # info about message received by the bot
+    # info about message within the update
     message_info: MessageInfo
 
 
