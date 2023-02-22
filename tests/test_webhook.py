@@ -11,6 +11,7 @@ from telebot.graceful_shutdown import GracefulShutdownCondition, PreventShutdown
 from telebot.metrics import TelegramUpdateMetrics
 from telebot.runner import BotRunner
 from telebot.test_util import MockedAsyncTeleBot
+from telebot.types import service as service_types
 from telebot.webhook import WebhookApp
 from tests.utils import find_free_port
 
@@ -34,6 +35,10 @@ def bot() -> MockedAsyncTeleBot:
     @bot.message_handler(commands=["error"])
     async def raise_error(m: types.Message):
         raise RuntimeError("AAA!!!")
+
+    @bot.message_handler(commands=["handler_metrics"])
+    async def save_data_to_handler_metrics(m: types.Message) -> service_types.HandlerResult:
+        return service_types.HandlerResult(metrics={"hello": "world", "data": 1})
 
     @bot.message_handler()
     def receive_message(m: types.Message):  # bot converts all funcs to coroutine funcs on its own
@@ -75,7 +80,7 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohtt
     assert len(bot.method_calls["set_webhook"]) == 1
     assert bot.method_calls["set_webhook"][0].kwargs == {"url": "http://127.0.0.1" + route}
 
-    for i, text in enumerate(["текст сообщения", "/start", "/error", "еще текст", "/help"]):
+    for i, text in enumerate(["текст сообщения", "/start", "/error", "еще текст", "/handler_metrics", "/help"]):
         resp = await client.post(
             route,
             json={
@@ -112,25 +117,49 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohtt
 
     assert COUNTED_MILLISECONDS > 1, "Background job didn't count milliseconds!"
 
-    assert len(metrics) == 5
+    assert len(metrics) == 6
     assert all(m["bot_prefix"] == "testing-bot" for m in metrics)
-    assert [m["update_id"] for m in metrics] == [10001110101, 10001110102, 10001110103, 10001110104, 10001110105]
+    assert [m["update_id"] for m in metrics] == [
+        10001110101,
+        10001110102,
+        10001110103,
+        10001110104,
+        10001110105,
+        10001110106,
+    ]
+    assert [m["update_type"] for m in metrics] == ["message"] * 6
+    assert [m["user_info"] for m in metrics] == [
+        {
+            "language_code": "en",
+            "user_id_hash": "0f9684a825a9bb213bed2d01286cff30",
+        }
+    ] * 6
+    assert [m["message_info"] for m in metrics] == [
+        {
+            "content_type": "text",
+            "is_forwarded": False,
+            "is_reply": False,
+        }
+    ] * 6
     assert [m["handler_name"] for m in metrics] == [
         "tests.test_webhook.bot.<locals>.receive_message",
         "tests.test_webhook.bot.<locals>.receive_cmd",
         "tests.test_webhook.bot.<locals>.raise_error",
         "tests.test_webhook.bot.<locals>.receive_message",
+        "tests.test_webhook.bot.<locals>.save_data_to_handler_metrics",
         "tests.test_webhook.bot.<locals>.receive_cmd",
     ]
-    assert [len(m["handler_test_durations"]) for m in metrics] == [3, 1, 2, 3, 1]
+    assert [len(m["handler_test_durations"]) for m in metrics] == [4, 1, 2, 4, 3, 1]
     assert [m.get("exception_info") for m in metrics] == [
         None,
         None,
         {"type_name": "RuntimeError", "body": "AAA!!!"},
         None,
         None,
+        None,
     ]
     assert all("processing_duration" in m for m in metrics)
+    assert [m.get("handler_metrics") for m in metrics] == [None, None, None, None, {"data": 1, "hello": "world"}, None]
 
 
 @pytest.mark.parametrize(
