@@ -3175,7 +3175,7 @@ class AsyncTeleBot:
         return await api.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
     async def answer_pre_checkout_query(
-        self, pre_checkout_query_id: int, ok: bool, error_message: Optional[str] = None
+        self, pre_checkout_query_id: str, ok: bool, error_message: Optional[str] = None
     ) -> bool:
         """
         Response to a request for pre-inspection.
