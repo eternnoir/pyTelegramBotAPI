@@ -273,6 +273,39 @@ def extract_arguments(text: str) -> str or None:
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
 
+def extract_entity(text: str, e: types.MessageEntity) -> str:
+    """
+    Returns the content of the entity.
+    
+    :param text: The text of the message the entity belongs to
+    :type text: :obj:`str`
+    
+    :param e: The entity to extract
+    :type e: :obj:`MessageEntity`
+    
+    :return: The content of the entity
+    :rtype: :obj:`str`
+    """
+    offset = 0
+    start = 0
+    encoded_text = text.encode()
+    end = len(encoded_text)
+    i = 0
+    
+    for byte in encoded_text:
+        if (byte & 0xc0) != 0x80:
+            if offset == e.offset:
+                start = i
+            elif offset - e.offset == e.length:
+                end = i
+                break
+            if byte >= 0xf0:
+                offset += 2
+            else:
+                offset += 1
+        i += 1
+    
+    return encoded_text[start:end].decode()
 
 def split_string(text: str, chars_per_string: int) -> List[str]:
     """

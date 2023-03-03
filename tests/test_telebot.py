@@ -470,6 +470,53 @@ class TestTeleBot:
         for i in range(0,200):
             util.antiflood(tb.send_message, CHAT_ID, text)
         assert i == 199
+    
+    def test_extract_entity(self):
+        entities_map = {"https://core.telegram.org/api/entities": "https://core.telegram.org/api/entities",
+                       "https://github.com/eternnoir/pyTelegramBotAPI": "https://github.com/eternnoir/pyTelegramBotAPI",
+                       "*粗 bold  text体*": "粗 bold  text体",
+                       "_斜体 italic text_": "斜体 italic text",
+                       "[谷歌](http://www.google.com/)": "谷歌",
+                       '`std::cout<<"test"<<std::endl;`': 'std::cout<<"test"<<std::endl;',
+                       '''```rust
+let number = loop {
+    println!("Pick a pattern from 0-2:");
+    stdin.read_line(&mut option).unwrap();
+    match option.lines().next().unwrap().parse::<usize>() {
+        Ok(number @ 0..=2) => break number,
+        _ => {
+            println!("invalid input!");
+            option = String::new();
+            continue;
+        }
+    };
+};```''': '''let number = loop {
+    println!("Pick a pattern from 0-2:");
+    stdin.read_line(&mut option).unwrap();
+    match option.lines().next().unwrap().parse::<usize>() {
+        Ok(number @ 0..=2) => break number,
+        _ => {
+            println!("invalid input!");
+            option = String::new();
+            continue;
+        }
+    };
+};''',
+                       "@username": "@username",
+                       "#hashtag索引标签": "#hashtag索引标签",
+                       "do-not-reply@telegram.org": "do-not-reply@telegram.org",
+                       "+12125550123": "+12125550123"}
+        entites = list(entities_map.keys())
+        contents = list(entities_map.values())
+        contents.sort()
+        text = '\n'.join(entites)
+
+        bot = telebot.TeleBot(TOKEN)
+        message = bot.send_message(CHAT_ID, text, parse_mode="Markdown")
+        extracted_contents = [util.extract_entity(
+            message.text, e) for e in message.entities]
+        extracted_contents.sort()
+        assert contents == extracted_contents
 
     @staticmethod
     def create_text_message(text):
