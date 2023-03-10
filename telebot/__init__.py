@@ -3400,6 +3400,24 @@ class TeleBot:
         """
         result = apihelper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
+    
+    def set_my_description(self, description: Optional[str]=None, language_code: Optional[str]=None):
+        """
+        Use this method to change the bot's description, which is shown in
+        the chat with the bot if the chat is empty.
+        Returns True on success.
+
+        :param description: New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language.
+        :type description: :obj:`str`
+
+        :param language_code: A two-letter ISO 639-1 language code. If empty, the description will be applied to all users for
+            whose language there is no dedicated description.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return apihelper.set_my_description(self.token, description, language_code)
 
     def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
                 menu_button: types.MenuButton=None) -> bool:

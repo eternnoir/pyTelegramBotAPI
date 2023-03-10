@@ -4238,6 +4238,24 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.delete_chat_photo(self.token, chat_id)
     
+    async def set_my_description(self, description: Optional[str]=None, language_code: Optional[str]=None):
+        """
+        Use this method to change the bot's description, which is shown in
+        the chat with the bot if the chat is empty.
+        Returns True on success.
+
+        :param description: New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language.
+        :type description: :obj:`str`
+
+        :param language_code: A two-letter ISO 639-1 language code. If empty, the description will be applied to all users for
+            whose language there is no dedicated description.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return await asyncio_helper.set_my_description(self.token, description, language_code)
+    
     async def get_my_commands(self, scope: Optional[types.BotCommandScope], 
             language_code: Optional[str]) -> List[types.BotCommand]:
         """

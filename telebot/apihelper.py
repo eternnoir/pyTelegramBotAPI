@@ -1152,6 +1152,15 @@ def set_chat_title(token, chat_id, title):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def set_my_description(token, description=None, language_code=None):
+    method_url = r'setMyDescription'
+    payload = {}
+    if description:
+        payload['description'] = description
+    if language_code:
+        payload['language_code'] = language_code
+    return _make_request(token, method_url, params=payload, method='post')
+
 def get_my_commands(token, scope=None, language_code=None):
     method_url = r'getMyCommands'
     payload = {}

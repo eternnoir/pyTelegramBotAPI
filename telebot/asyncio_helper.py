@@ -1138,6 +1138,14 @@ async def set_chat_title(token, chat_id, title):
     payload = {'chat_id': chat_id, 'title': title}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def set_my_description(token, description=None, language_code=None):
+    method_url = r'setMyDescription'
+    payload = {}
+    if description:
+        payload['description'] = description
+    if language_code:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload, method='post')
 
 async def get_my_commands(token, scope=None, language_code=None):
     method_url = r'getMyCommands'
