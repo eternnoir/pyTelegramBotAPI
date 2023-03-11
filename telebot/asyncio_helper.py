@@ -888,7 +888,7 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
 async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
               allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None, protect_content=None,
-              message_thread_id=None):
+              message_thread_id=None, emoji=None):
     method_url = await get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -929,6 +929,8 @@ async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, r
         payload['disable_content_type_detection'] = disable_content_type_detection
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if emoji:
+        payload['emoji'] = emoji
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 

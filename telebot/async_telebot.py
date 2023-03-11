@@ -2958,7 +2958,8 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             data: Union[Any, str]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            emoji: Optional[str]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2998,6 +2999,9 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param emoji: Emoji associated with the sticker; only for just uploaded stickers
+        :type emoji: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3016,7 +3020,7 @@ class AsyncTeleBot:
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
                 allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content,
-                message_thread_id=message_thread_id))
+                message_thread_id=message_thread_id, emoji=emoji))
 
     async def send_video(
             self, chat_id: Union[int, str], video: Union[Any, str], 
