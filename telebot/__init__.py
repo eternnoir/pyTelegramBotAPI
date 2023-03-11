@@ -4597,6 +4597,19 @@ class TeleBot:
         """
 
         return apihelper.set_sticker_set_title(self.token, name, title)
+    
+    def delete_sticker_set(self, name:str):
+        """
+        Use this method to delete a sticker set. Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return apihelper.delete_sticker_set(self.token, name)
 
     def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]=None, sticker: Optional[types.InputFile]=None, sticker_format: Optional[str]=None) -> types.File:
         """

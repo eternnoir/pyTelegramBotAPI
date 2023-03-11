@@ -1641,6 +1641,11 @@ def set_sticker_set_title(token, name, title):
     payload = {'name': name, 'title': title}
     return _make_request(token, method_url, params=payload, method='post')
 
+def delete_sticker_set(token, name):
+    method_url = 'deleteStickerSet'
+    payload = {'name': name}
+    return _make_request(token, method_url, params=payload, method='post')
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_format=None, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'

@@ -1615,6 +1615,11 @@ async def upload_sticker_file(token, user_id, sticker, sticker_format):
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
+async def delete_sticker_set(token, name):
+    method_url = 'deleteStickerSet'
+    payload = {'name': name}
+    return await _process_request(token, method_url, params=payload, method='post')
+
 async def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
     method_url = 'setCustomEmojiStickerSetThumbnail'
     payload = {'name': name}
