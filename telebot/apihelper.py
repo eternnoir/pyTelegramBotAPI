@@ -1628,6 +1628,13 @@ def upload_sticker_file(token, user_id, sticker, sticker_format):
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
+def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
+    method_url = 'setCustomEmojiStickerSetThumbnail'
+    payload = {'name': name}
+    if custom_emoji_id:
+        payload['custom_emoji_id'] = custom_emoji_id
+    return _make_request(token, method_url, params=payload, method='post')
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_format=None, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'

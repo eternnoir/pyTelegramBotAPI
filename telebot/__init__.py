@@ -4563,6 +4563,23 @@ class TeleBot:
         """
         result = apihelper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
         return [types.Sticker.de_json(sticker) for sticker in result]
+    
+
+    def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None):
+        """
+        Use this method to set the thumbnail of a custom emoji sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param custom_emoji_id: Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail.
+        :type custom_emoji_id: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
 
     def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]=None, sticker: Optional[types.InputFile]=None, sticker_format: Optional[str]=None) -> types.File:
         """

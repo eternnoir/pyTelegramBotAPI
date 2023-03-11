@@ -5458,6 +5458,22 @@ class AsyncTeleBot:
         
         result = await asyncio_helper.upload_sticker_file(self.token, user_id, sticker, sticker_format)
         return types.File.de_json(result)
+    
+    async def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None):
+        """
+        Use this method to set the thumbnail of a custom emoji sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param custom_emoji_id: Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail.
+        :type custom_emoji_id: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
 
     async def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 
