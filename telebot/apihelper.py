@@ -1161,6 +1161,13 @@ def set_my_description(token, description=None, language_code=None):
         payload['language_code'] = language_code
     return _make_request(token, method_url, params=payload, method='post')
 
+def get_my_description(token, language_code=None):
+    method_url = r'getMyDescription'
+    payload = {}
+    if language_code:
+        payload['language_code'] = language_code
+    return _make_request(token, method_url, params=payload)
+
 def get_my_commands(token, scope=None, language_code=None):
     method_url = r'getMyCommands'
     payload = {}

@@ -4255,6 +4255,19 @@ class AsyncTeleBot:
         """
 
         return await asyncio_helper.set_my_description(self.token, description, language_code)
+
+    async def get_my_description(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot description for the given user language.
+        Returns BotDescription on success.
+
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotDescription`
+        """
+        result = await asyncio_helper.get_my_description(self.token, language_code)
+        return types.BotDescription.de_json(result)
     
     async def get_my_commands(self, scope: Optional[types.BotCommandScope], 
             language_code: Optional[str]) -> List[types.BotCommand]:

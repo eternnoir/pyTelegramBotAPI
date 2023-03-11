@@ -3418,6 +3418,19 @@ class TeleBot:
         """
 
         return apihelper.set_my_description(self.token, description, language_code)
+    
+    def get_my_description(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot description for the given user language.
+        Returns BotDescription on success.
+
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotDescription`
+        """
+            
+        return types.BotDescription.de_json(apihelper.get_my_description(self.token, language_code))
 
     def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
                 menu_button: types.MenuButton=None) -> bool:

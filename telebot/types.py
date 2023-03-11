@@ -7296,3 +7296,25 @@ class ChatShared(JsonDeserializable):
         self.request_id: int = request_id
         self.chat_id: int = chat_id
 
+
+class BotDescription(JsonDeserializable):
+    """
+    This object represents a bot description.
+
+    Telegram documentation: https://core.telegram.org/bots/api#botdescription
+
+    :param description: Bot description
+    :type description: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.BotDescription`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, description: str) -> None:
+        self.description: str = description
