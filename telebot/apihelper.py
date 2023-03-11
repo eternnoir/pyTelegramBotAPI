@@ -356,7 +356,7 @@ def get_chat_member_count(token, chat_id):
 
 
 def set_sticker_set_thumb(token, name, user_id, thumb):
-    method_url = r'setStickerSetThumb'
+    method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id}
     files = {}
     if thumb:

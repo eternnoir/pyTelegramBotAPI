@@ -5401,7 +5401,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    async def set_sticker_set_thumb(
+    async def set_sticker_set_thumbnail(
             self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
@@ -5422,6 +5422,8 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+    
+    set_sticker_set_thumb = set_sticker_set_thumbnail
 
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """

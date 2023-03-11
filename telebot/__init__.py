@@ -4537,7 +4537,7 @@ class TeleBot:
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    def set_sticker_set_thumb(
+    def set_sticker_set_thumbnail(
             self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
@@ -4558,6 +4558,8 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+    
+    set_sticker_set_thumb = set_sticker_set_thumbnail
 
     def get_sticker_set(self, name: str) -> types.StickerSet:
         """
