@@ -4287,6 +4287,19 @@ class AsyncTeleBot:
 
         return await asyncio_helper.set_my_short_description(self.token, short_description, language_code)
     
+    async def get_my_short_description(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot short description for the given user language.
+        Returns BotShortDescription on success.
+
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotShortDescription`
+        """
+        result = await asyncio_helper.get_my_short_description(self.token, language_code)
+        return types.BotShortDescription.de_json(result)
+    
     async def get_my_commands(self, scope: Optional[types.BotCommandScope], 
             language_code: Optional[str]) -> List[types.BotCommand]:
         """

@@ -7318,3 +7318,26 @@ class BotDescription(JsonDeserializable):
 
     def __init__(self, description: str) -> None:
         self.description: str = description
+
+
+class BotShortDescription(JsonDeserializable):
+    """
+    This object represents a bot short description.
+
+    Telegram documentation: https://core.telegram.org/bots/api#botshortdescription
+
+    :param short_description: Bot short description
+    :type short_description: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.BotShortDescription`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, short_description: str) -> None:
+        self.short_description: str = short_description

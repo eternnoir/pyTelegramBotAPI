@@ -1163,6 +1163,13 @@ async def set_my_short_description(token, short_description=None, language_code=
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def get_my_short_description(token, language_code=None):
+    method_url = r'getMyShortDescription'
+    payload = {}
+    if language_code:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload)
+
 async def get_my_commands(token, scope=None, language_code=None):
     method_url = r'getMyCommands'
     payload = {}
