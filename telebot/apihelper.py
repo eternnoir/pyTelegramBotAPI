@@ -1635,6 +1635,12 @@ def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
         payload['custom_emoji_id'] = custom_emoji_id
     return _make_request(token, method_url, params=payload, method='post')
 
+
+def set_sticker_set_title(token, name, title):
+    method_url = 'setStickerSetTitle'
+    payload = {'name': name, 'title': title}
+    return _make_request(token, method_url, params=payload, method='post')
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_format=None, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'

@@ -5474,6 +5474,24 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
+    
+    async def set_sticker_set_title(self, name: str, title: str):
+        """
+        Use this method to set the title of a created sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param title: New sticker set title
+        :type title: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return await asyncio_helper.set_sticker_set_title(self.token, name, title)
+
 
     async def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 

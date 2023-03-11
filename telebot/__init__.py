@@ -4580,6 +4580,23 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
+    
+    def set_sticker_set_title(self, name: str, title: str):
+        """
+        Use this method to set the title of a created sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param title: New sticker set title
+        :type title: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return apihelper.set_sticker_set_title(self.token, name, title)
 
     def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]=None, sticker: Optional[types.InputFile]=None, sticker_format: Optional[str]=None) -> types.File:
         """
