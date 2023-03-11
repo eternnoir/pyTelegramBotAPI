@@ -2700,11 +2700,12 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2750,11 +2751,11 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumb: :obj:`str`
+        :type thumbnail: :obj:`str`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -2776,10 +2777,14 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_audio(
                 self.token, chat_id, audio, caption, duration, performer, title, reply_to_message_id,
-                reply_markup, parse_mode, disable_notification, timeout, thumb,
+                reply_markup, parse_mode, disable_notification, timeout, thumbnail,
                 caption_entities, allow_sending_without_reply, protect_content, message_thread_id))
 
     async def send_voice(
@@ -2864,14 +2869,15 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             visible_file_name: Optional[str]=None,
             disable_content_type_detection: Optional[bool]=None,
             data: Optional[Union[Any, str]]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -2904,8 +2910,8 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param thumb: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :param thumbnail: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -2940,11 +2946,15 @@ class AsyncTeleBot:
             # function typo miss compatibility
             document = data
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('thumb is deprecated, use thumbnail instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, document, 'document',
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
-                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumb,
+                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumbnail,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content,
                 message_thread_id = message_thread_id))
@@ -3027,7 +3037,7 @@ class AsyncTeleBot:
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None, 
+            thumbnail: Optional[Union[Any, str]]=None, 
             caption: Optional[str]=None, 
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
@@ -3040,7 +3050,8 @@ class AsyncTeleBot:
             timeout: Optional[int]=None,
             data: Optional[Union[Any, str]]=None,
             message_thread_id: Optional[int]=None,
-            has_spoiler: Optional[bool]=None) -> types.Message:
+            has_spoiler: Optional[bool]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -3061,8 +3072,8 @@ class AsyncTeleBot:
         :param height: Video height
         :type height: :obj:`int`
 
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
@@ -3118,10 +3129,14 @@ class AsyncTeleBot:
             logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
             video = data
 
+        if thumb and not(thumbnail):
+            logger.warning("send_sticker: thumb parameter is deprecated. Use thumbnail instead.")
+            thumbnail = thumb
+
         return types.Message.de_json(
             await asyncio_helper.send_video(
                 self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
-                parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
+                parse_mode, supports_streaming, disable_notification, timeout, thumbnail, width, height,
                 caption_entities, allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
 
     async def send_animation(
@@ -3129,7 +3144,7 @@ class AsyncTeleBot:
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             caption: Optional[str]=None, 
             parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
@@ -3140,7 +3155,8 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            has_spoiler: Optional[bool]=None) -> types.Message:
+            has_spoiler: Optional[bool]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -3163,11 +3179,11 @@ class AsyncTeleBot:
         :param height: Animation height
         :type height: :obj:`int`
         
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption: Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
@@ -3212,10 +3228,14 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('thumb is deprecated, use thumbnail instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_animation(
                 self.token, chat_id, animation, duration, caption, reply_to_message_id,
-                reply_markup, parse_mode, disable_notification, timeout, thumb,
+                reply_markup, parse_mode, disable_notification, timeout, thumbnail,
                 caption_entities, allow_sending_without_reply, width, height, protect_content, message_thread_id, has_spoiler))
 
     async def send_video_note(
@@ -3226,10 +3246,11 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -3263,11 +3284,11 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
@@ -3285,10 +3306,14 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('thumb is deprecated, use thumbnail instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
-                disable_notification, timeout, thumb, allow_sending_without_reply, protect_content, message_thread_id))
+                disable_notification, timeout, thumbnail, allow_sending_without_reply, protect_content, message_thread_id))
 
     async def send_media_group(
             self, chat_id: Union[int, str], 

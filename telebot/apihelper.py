@@ -697,11 +697,11 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if width:
         payload['width'] = width
     if height:
@@ -748,11 +748,11 @@ def send_animation(
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -832,11 +832,11 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if protect_content is not None:
@@ -877,11 +877,11 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -922,11 +922,11 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:

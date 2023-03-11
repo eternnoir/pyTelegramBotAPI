@@ -1552,8 +1552,8 @@ class Audio(JsonDeserializable):
         double-precision float type are safe for storing this value.
     :type file_size: :obj:`int`
 
-    :param thumb: Optional. Thumbnail of the album cover to which the music file belongs
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Thumbnail of the album cover to which the music file belongs
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.Audio`
@@ -1562,14 +1562,14 @@ class Audio(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         else: 
-            obj['thumb'] = None
+            obj['thumbnail'] = None
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, duration, performer=None, title=None, file_name=None, mime_type=None, 
-                 file_size=None, thumb=None, **kwargs):
+                 file_size=None, thumbnail=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.duration: int = duration
@@ -1578,7 +1578,8 @@ class Audio(JsonDeserializable):
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
-        self.thumb: PhotoSize = thumb 
+        self.thumbnail: PhotoSize = thumbnail 
+        self.thumb = thumbnail
 
 
 class Voice(JsonDeserializable):
@@ -1635,8 +1636,8 @@ class Document(JsonDeserializable):
         bots. Can't be used to download or reuse the file.
     :type file_unique_id: :obj:`str`
 
-    :param thumb: Optional. Document thumbnail as defined by sender
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Document thumbnail as defined by sender
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :param file_name: Optional. Original filename as defined by sender
     :type file_name: :obj:`str`
@@ -1656,19 +1657,20 @@ class Document(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         else: 
-            obj['thumb'] = None
+            obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+    def __init__(self, file_id, file_unique_id, thumbnail=None, file_name=None, mime_type=None, file_size=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
-        self.thumb: PhotoSize = thumb
+        self.thumbnail: PhotoSize = thumbnail
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
+        self.thumb = thumbnail
 
 
 class Video(JsonDeserializable):
@@ -1693,8 +1695,8 @@ class Video(JsonDeserializable):
     :param duration: Duration of the video in seconds as defined by sender
     :type duration: :obj:`int`
 
-    :param thumb: Optional. Video thumbnail
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Video thumbnail
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :param file_name: Optional. Original filename as defined by sender
     :type file_name: :obj:`str`
@@ -1714,20 +1716,21 @@ class Video(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, width, height, duration, thumb=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+    def __init__(self, file_id, file_unique_id, width, height, duration, thumbnail=None, file_name=None, mime_type=None, file_size=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
         self.height: int = height
         self.duration: int = duration
-        self.thumb: PhotoSize = thumb
+        self.thumbnail: PhotoSize = thumbnail
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
+        self.thumb = thumbnail
 
 
 class VideoNote(JsonDeserializable):
@@ -1749,8 +1752,8 @@ class VideoNote(JsonDeserializable):
     :param duration: Duration of the video in seconds as defined by sender
     :type duration: :obj:`int`
 
-    :param thumb: Optional. Video thumbnail
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Video thumbnail
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :param file_size: Optional. File size in bytes
     :type file_size: :obj:`int`
@@ -1762,17 +1765,18 @@ class VideoNote(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, length, duration, thumb=None, file_size=None, **kwargs):
+    def __init__(self, file_id, file_unique_id, length, duration, thumbnail=None, file_size=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.length: int = length
         self.duration: int = duration
-        self.thumb: PhotoSize = thumb
+        self.thumbnail: PhotoSize = thumbnail
         self.file_size: int = file_size
+        self.thumb = thumbnail
 
 
 class Contact(JsonDeserializable):
@@ -5389,8 +5393,8 @@ class Animation(JsonDeserializable):
     :param duration: Duration of the video in seconds as defined by sender
     :type duration: :obj:`int`
 
-    :param thumb: Optional. Animation thumbnail as defined by sender
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Animation thumbnail as defined by sender
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :param file_name: Optional. Original animation filename as defined by sender
     :type file_name: :obj:`str`
@@ -5410,20 +5414,21 @@ class Animation(JsonDeserializable):
     def de_json(cls, json_string):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj["thumb"] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj["thumbnail"] = PhotoSize.de_json(obj['thumbnail'])
         else:
-            obj['thumb'] = None
+            obj['thumbnail'] = None
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, width=None, height=None, duration=None, 
-                 thumb=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+                 thumbnail=None, file_name=None, mime_type=None, file_size=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
         self.height: int = height
         self.duration: int = duration
-        self.thumb: PhotoSize = thumb
+        self.thumbnail: PhotoSize = thumbnail
+        self.thumb: PhotoSize = thumbnail
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
@@ -5819,8 +5824,8 @@ class StickerSet(JsonDeserializable):
     :param stickers: List of all set stickers
     :type stickers: :obj:`list` of :class:`telebot.types.Sticker`
 
-    :param thumb: Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.StickerSet`
@@ -5833,20 +5838,21 @@ class StickerSet(JsonDeserializable):
         for s in obj['stickers']:
             stickers.append(Sticker.de_json(s))
         obj['stickers'] = stickers
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         else:
-            obj['thumb'] = None
+            obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumb=None, **kwargs):
+    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumbnail=None, **kwargs):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
         self.is_animated: bool = is_animated
         self.is_video: bool = is_video
         self.stickers: List[Sticker] = stickers
-        self.thumb: PhotoSize = thumb
+        self.thumbnail: PhotoSize = thumbnail
+        self.thumb = thumbnail
 
     @property
     def contains_masks(self):
@@ -5886,8 +5892,8 @@ class Sticker(JsonDeserializable):
     :param is_video: True, if the sticker is a video sticker
     :type is_video: :obj:`bool`
 
-    :param thumb: Optional. Sticker thumbnail in the .WEBP or .JPG format
-    :type thumb: :class:`telebot.types.PhotoSize`
+    :param thumbnail: Optional. Sticker thumbnail in the .WEBP or .JPG format
+    :type thumbnail: :class:`telebot.types.PhotoSize`
 
     :param emoji: Optional. Emoji associated with the sticker
     :type emoji: :obj:`str`
@@ -5920,10 +5926,10 @@ class Sticker(JsonDeserializable):
     def de_json(cls, json_string):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
-        if 'thumb' in obj and 'file_id' in obj['thumb']:
-            obj['thumb'] = PhotoSize.de_json(obj['thumb'])
+        if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
+            obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         else:
-            obj['thumb'] = None
+            obj['thumbnail'] = None
         if 'mask_position' in obj:
             obj['mask_position'] = MaskPosition.de_json(obj['mask_position'])
         if 'premium_animation' in obj:
@@ -5931,7 +5937,7 @@ class Sticker(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, file_id, file_unique_id, type, width, height, is_animated, 
-                is_video, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, 
+                is_video, thumbnail=None, emoji=None, set_name=None, mask_position=None, file_size=None, 
                 premium_animation=None, custom_emoji_id=None, needs_repainting=None ,**kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
@@ -5940,7 +5946,7 @@ class Sticker(JsonDeserializable):
         self.height: int = height
         self.is_animated: bool = is_animated
         self.is_video: bool = is_video
-        self.thumb: PhotoSize = thumb
+        self.thumbnail: PhotoSize = thumbnail
         self.emoji: str = emoji
         self.set_name: str = set_name
         self.mask_position: MaskPosition = mask_position
@@ -5948,6 +5954,7 @@ class Sticker(JsonDeserializable):
         self.premium_animation: File = premium_animation
         self.custom_emoji_id: int = custom_emoji_id
         self.needs_repainting: bool = needs_repainting
+        self.thumb = self.thumbnail
         
 
 
@@ -6099,12 +6106,12 @@ class InputMediaVideo(InputMedia):
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type media: :obj:`str`
 
-    :param thumb: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
+    :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
         server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should 
         not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be 
         only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using 
         multipart/form-data under <file_attach_name>. More information on Sending Files »
-    :type thumb: InputFile or :obj:`str`
+    :type thumbnail: InputFile or :obj:`str`
 
     :param caption: Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
     :type caption: :obj:`str`
@@ -6135,21 +6142,22 @@ class InputMediaVideo(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaVideo`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+    def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  width=None, height=None, duration=None, supports_streaming=None, has_spoiler=None):
         super(InputMediaVideo, self).__init__(
             type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumb = thumb
+        self.thumbnail = thumbnail
         self.width = width
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
         self.has_spoiler: Optional[bool] = has_spoiler
+        self.thumb = thumbnail
 
     def to_dict(self):
         ret = super(InputMediaVideo, self).to_dict()
-        if self.thumb:
-            ret['thumb'] = self.thumb
+        if self.thumbnail:
+            ret['thumbnail'] = self.thumbnail
         if self.width:
             ret['width'] = self.width
         if self.height:
@@ -6207,20 +6215,21 @@ class InputMediaAnimation(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAnimation`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+    def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  width=None, height=None, duration=None, has_spoiler=None):
         super(InputMediaAnimation, self).__init__(
             type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumb = thumb
+        self.thumbnail = thumbnail
         self.width = width
         self.height = height
         self.duration = duration
         self.has_spoiler: Optional[bool] = has_spoiler
+        self.thumb = thumbnail
 
     def to_dict(self):
         ret = super(InputMediaAnimation, self).to_dict()
-        if self.thumb:
-            ret['thumb'] = self.thumb
+        if self.thumbnail:
+            ret['thumbnail'] = self.thumbnail
         if self.width:
             ret['width'] = self.width
         if self.height:
@@ -6243,12 +6252,12 @@ class InputMediaAudio(InputMedia):
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type media: :obj:`str`
 
-    :param thumb: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
+    :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
         server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should 
         not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be 
         only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using 
         multipart/form-data under <file_attach_name>. More information on Sending Files »
-    :type thumb: InputFile or :obj:`str`
+    :type thumbnail: InputFile or :obj:`str`
 
     :param caption: Optional. Caption of the audio to be sent, 0-1024 characters after entities parsing
     :type caption: :obj:`str`
@@ -6273,19 +6282,20 @@ class InputMediaAudio(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAudio`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+    def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  duration=None, performer=None, title=None):
         super(InputMediaAudio, self).__init__(
             type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumb = thumb
+        self.thumbnail = thumbnail
         self.duration = duration
         self.performer = performer
         self.title = title
+        self.thumb = thumbnail
 
     def to_dict(self):
         ret = super(InputMediaAudio, self).to_dict()
-        if self.thumb:
-            ret['thumb'] = self.thumb
+        if self.thumbnail:
+            ret['thumbnail'] = self.thumbnail
         if self.duration:
             ret['duration'] = self.duration
         if self.performer:
@@ -6306,12 +6316,12 @@ class InputMediaDocument(InputMedia):
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type media: :obj:`str`
 
-    :param thumb: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
+    :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
         server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should 
         not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be 
         only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using 
         multipart/form-data under <file_attach_name>. More information on Sending Files »
-    :type thumb: InputFile or :obj:`str`
+    :type thumbnail: InputFile or :obj:`str`
 
     :param caption: Optional. Caption of the document to be sent, 0-1024 characters after entities parsing
     :type caption: :obj:`str`
@@ -6331,17 +6341,18 @@ class InputMediaDocument(InputMedia):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaDocument`
     """
-    def __init__(self, media, thumb=None, caption=None, parse_mode=None, caption_entities=None,
+    def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  disable_content_type_detection=None):
         super(InputMediaDocument, self).__init__(
             type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumb = thumb
+        self.thumbnail = thumbnail
         self.disable_content_type_detection = disable_content_type_detection
+        self.thumb = thumbnail
 
     def to_dict(self):
         ret = super(InputMediaDocument, self).to_dict()
-        if self.thumb:
-            ret['thumb'] = self.thumb
+        if self.thumbnail:
+            ret['thumbnail'] = self.thumbnail
         if self.disable_content_type_detection is not None:
             ret['disable_content_type_detection'] = self.disable_content_type_detection
         return ret
