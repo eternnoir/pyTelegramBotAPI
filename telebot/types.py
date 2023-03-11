@@ -7347,3 +7347,65 @@ class BotShortDescription(JsonDeserializable):
 
     def __init__(self, short_description: str) -> None:
         self.short_description: str = short_description
+
+
+class InputSticker(Dictionaryable, JsonSerializable):
+    """
+    This object describes a sticker to be added to a sticker set.
+
+    :param sticker: The added sticker. Pass a file_id as a String to send a file that already exists on the Telegram servers,
+        pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+        Animated and video stickers can't be uploaded via HTTP URL. 
+    :type sticker: :obj:`str` or :obj:`telebot.types.InputFile`
+
+    :param emoji_list: One or more(up to 20) emoji(s) corresponding to the sticker
+    :type emoji_list: :obj:`list` of :obj:`str`
+
+    :param mask_position: Optional. Position where the mask should be placed on faces. For “mask” stickers only.
+    :type mask_position: :class:`telebot.types.MaskPosition`
+    
+    :param keywords: Optional. List of 0-20 search keywords for the sticker with total length of up to 64 characters.
+        For “regular” and “custom_emoji” stickers only.
+    :type keywords: :obj:`list` of :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputSticker`
+    """
+
+    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str], mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
+        self.sticker: Union[str, InputFile] = sticker
+        self.emoji_list: List[str] = emoji_list
+        self.mask_position: Optional[MaskPosition] = mask_position
+        self.keywords: Optional[List[str]] = keywords
+
+        if service_utils.is_string(self.sticker):
+            self._sticker_name = ''
+            self._sticker_dic = self.sticker
+        else:
+            self._sticker_name = service_utils.generate_random_token()
+            self._sticker_dic = 'attach://{0}'.format(self._sticker_name)
+
+    def to_dict(self) -> dict:
+        json_dict = {
+            'sticker': self._sticker_dic,
+            'emojis': self.emoji_list
+        }
+
+        if self.mask_position is not None:
+            json_dict['mask_position'] = self.mask_position.to_dict()
+        if self.keywords is not None:
+            json_dict['keywords'] = self.keywords
+
+        return json_dict
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
+    def convert_input_sticker(self):
+        if service_utils.is_string(self.sticker):
+            return self.to_json(), None
+
+        return self.to_json(), {self._sticker_name: self.sticker}
+        
+        
+        

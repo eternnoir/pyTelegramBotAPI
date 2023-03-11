@@ -4653,18 +4653,23 @@ class TeleBot:
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
             mask_position, webm_sticker, sticker_type, needs_repainting)
 
+
     def add_sticker_to_set(
-            self, user_id: int, name: str, emojis: str,
+            self, user_id: int, name: str, emojis: List[str]=None,
             png_sticker: Optional[Union[Any, str]]=None, 
             tgs_sticker: Optional[Union[Any, str]]=None,  
             webm_sticker: Optional[Union[Any, str]]=None,
-            mask_position: Optional[types.MaskPosition]=None) -> bool:
+            mask_position: Optional[types.MaskPosition]=None,
+            sticker: Optional[List[types.InputSticker]]=None) -> bool:
         """
         Use this method to add a new sticker to a set created by the bot. 
         It's required to pass `png_sticker` or `tgs_sticker`.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
+
+        .. note::
+            **_sticker parameters are deprecated, use stickers instead
 
         :param user_id: User identifier of created sticker set owner
         :type user_id: :obj:`int`
@@ -4689,11 +4694,19 @@ class TeleBot:
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
 
+        :param sticker: A JSON-serialized list of 1-50 initial stickers to be added to the sticker set
+        :type sticker: :class:`telebot.types.InputSticker`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        # Replaced the parameters png_sticker, tgs_sticker, webm_sticker, emojis and mask_position
+        if sticker is None:
+            sticker = png_sticker or tgs_sticker or webm_sticker
+            sticker = types.InputSticker(sticker, emojis, mask_position)
+
         return apihelper.add_sticker_to_set(
-            self.token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker)
+            self.token, user_id, name, sticker)
 
     def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """

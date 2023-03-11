@@ -1654,23 +1654,11 @@ def create_new_sticker_set(
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
-def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
+def add_sticker_to_set(token, user_id, name, sticker):
     method_url = 'addStickerToSet'
-    payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
-    if png_sticker:
-        stype = 'png_sticker'
-    elif webm_sticker:
-        stype = 'webm_sticker'
-    else:
-        stype = 'tgs_sticker'
-    sticker = png_sticker or tgs_sticker or webm_sticker
-    files = None
-    if not util.is_string(sticker):
-        files = {stype: sticker}
-    else:
-        payload[stype] = sticker
-    if mask_position:
-        payload['mask_position'] = mask_position.to_json()
+    json_dict, files = sticker.convert_input_sticker()
+    payload = {'user_id': user_id, 'name': name, 'sticker': json_dict}
+
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
