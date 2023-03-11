@@ -5459,7 +5459,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.upload_sticker_file(self.token, user_id, sticker, sticker_format)
         return types.File.de_json(result)
     
-    async def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None):
+    async def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None) -> bool:
         """
         Use this method to set the thumbnail of a custom emoji sticker set.
         Returns True on success.
@@ -5475,7 +5475,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
     
-    async def set_sticker_set_title(self, name: str, title: str):
+    async def set_sticker_set_title(self, name: str, title: str) -> bool:
         """
         Use this method to set the title of a created sticker set.
         Returns True on success.
@@ -5492,7 +5492,7 @@ class AsyncTeleBot:
 
         return await asyncio_helper.set_sticker_set_title(self.token, name, title)
 
-    async def delete_sticker_set(self, name:str):
+    async def delete_sticker_set(self, name:str) -> bool:
         """
         Use this method to delete a sticker set. Returns True on success.
 
@@ -5504,6 +5504,24 @@ class AsyncTeleBot:
         """
 
         return await asyncio_helper.delete_sticker_set(self.token, name)
+    
+
+    async def set_sticker_emoji_list(self, name: str, emoji_list: List[str]) -> bool:
+        """
+        Use this method to set the emoji list of a sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param emoji_list: List of emojis
+        :type emoji_list: :obj:`list` of :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return await asyncio_helper.set_sticker_emoji_list(self.token, name, emoji_list)
 
 
     async def create_new_sticker_set(

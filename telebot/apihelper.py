@@ -1619,7 +1619,7 @@ def get_sticker_set(token, name):
 
 def get_custom_emoji_stickers(token, custom_emoji_ids):
     method_url = r'getCustomEmojiStickers'
-    return _make_request(token, method_url, params={'custom_emoji_ids': custom_emoji_ids})
+    return _make_request(token, method_url, params={'custom_emoji_ids': json.dumps(custom_emoji_ids)})
     
 def upload_sticker_file(token, user_id, sticker, sticker_format):
     method_url = 'uploadStickerFile'
@@ -1644,6 +1644,11 @@ def set_sticker_set_title(token, name, title):
 def delete_sticker_set(token, name):
     method_url = 'deleteStickerSet'
     payload = {'name': name}
+    return _make_request(token, method_url, params=payload, method='post')
+
+def set_sticker_emoji_list(token, sticker, emoji_list):
+    method_url = 'setStickerEmojiList'
+    payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}
     return _make_request(token, method_url, params=payload, method='post')
 
 def create_new_sticker_set(

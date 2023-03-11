@@ -4565,7 +4565,7 @@ class TeleBot:
         return [types.Sticker.de_json(sticker) for sticker in result]
     
 
-    def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None):
+    def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None) -> bool:
         """
         Use this method to set the thumbnail of a custom emoji sticker set.
         Returns True on success.
@@ -4581,7 +4581,7 @@ class TeleBot:
         """
         return apihelper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
     
-    def set_sticker_set_title(self, name: str, title: str):
+    def set_sticker_set_title(self, name: str, title: str) -> bool:
         """
         Use this method to set the title of a created sticker set.
         Returns True on success.
@@ -4598,7 +4598,7 @@ class TeleBot:
 
         return apihelper.set_sticker_set_title(self.token, name, title)
     
-    def delete_sticker_set(self, name:str):
+    def delete_sticker_set(self, name:str) -> bool:
         """
         Use this method to delete a sticker set. Returns True on success.
 
@@ -4610,6 +4610,24 @@ class TeleBot:
         """
 
         return apihelper.delete_sticker_set(self.token, name)
+    
+    def set_sticker_emoji_list(self, sticker: str, emoji_list: List[str]) -> bool:
+        """
+        Use this method to set the emoji list of a custom emoji sticker set.
+        Returns True on success.
+
+        :param sticker: Sticker identifier
+        :type sticker: :obj:`str`
+
+        :param emoji_list: List of emoji
+        :type emoji_list: :obj:`list` of :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return apihelper.set_sticker_emoji_list(self.token, sticker, emoji_list)
+
 
     def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]=None, sticker: Optional[types.InputFile]=None, sticker_format: Optional[str]=None) -> types.File:
         """
