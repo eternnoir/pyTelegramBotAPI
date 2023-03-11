@@ -3994,27 +3994,32 @@ class InlineQueryResultArticle(InlineQueryResultBase):
     :param description: Optional. Short description of the result
     :type description: :obj:`str`
 
-    :param thumb_url: Optional. Url of the thumbnail for the result
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: Optional. Url of the thumbnail for the result
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_width: Optional. Thumbnail width
-    :type thumb_width: :obj:`int`
+    :param thumbnail_width: Optional. Thumbnail width
+    :type thumbnail_width: :obj:`int`
 
-    :param thumb_height: Optional. Thumbnail height
-    :type thumb_height: :obj:`int`
+    :param thumbnail_height: Optional. Thumbnail height
+    :type thumbnail_height: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultArticle`
     """
     def __init__(self, id, title, input_message_content, reply_markup=None,
-                 url=None, hide_url=None, description=None, thumb_url=None, thumb_width=None, thumb_height=None):
+                 url=None, hide_url=None, description=None, thumbnail_url=None, thumbnail_width=None, thumbnail_height=None):
         super().__init__('article', id, title = title, input_message_content = input_message_content, reply_markup = reply_markup)
         self.url = url
         self.hide_url = hide_url
         self.description = description
-        self.thumb_url = thumb_url
-        self.thumb_width = thumb_width
-        self.thumb_height = thumb_height
+        self.thumbnail_url = thumbnail_url
+        self.thumbnail_width = thumbnail_width
+        self.thumbnail_height = thumbnail_height
+
+        # deprecateds
+        self.thumb_url = thumbnail_url
+        self.thumb_width = thumbnail_width
+        self.thumb_height = thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4024,12 +4029,12 @@ class InlineQueryResultArticle(InlineQueryResultBase):
             json_dict['hide_url'] = self.hide_url
         if self.description:
             json_dict['description'] = self.description
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
+        if self.thumbnail_url:
+            json_dict['thumbnail_url'] = self.thumbnail_url
         if self.thumb_width:
-            json_dict['thumb_width'] = self.thumb_width
+            json_dict['thumbnail_width'] = self.thumbnail_width
         if self.thumb_height:
-            json_dict['thumb_height'] = self.thumb_height
+            json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
 
@@ -4048,8 +4053,8 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
     :param photo_url: A valid URL of the photo. Photo must be in JPEG format. Photo size must not exceed 5MB
     :type photo_url: :obj:`str`
 
-    :param thumb_url: URL of the thumbnail for the photo
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: URL of the thumbnail for the photo
+    :type thumbnail_url: :obj:`str`
 
     :param photo_width: Optional. Width of the photo
     :type photo_width: :obj:`int`
@@ -4083,21 +4088,24 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultPhoto`
     """
-    def __init__(self, id, photo_url, thumb_url, photo_width=None, photo_height=None, title=None,
+    def __init__(self, id, photo_url, thumbnail_url, photo_width=None, photo_height=None, title=None,
                  description=None, caption=None, caption_entities=None, parse_mode=None, reply_markup=None, input_message_content=None):
         super().__init__('photo', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
         self.photo_url = photo_url
-        self.thumb_url = thumb_url
+        self.thumbnail_url = thumbnail_url
         self.photo_width = photo_width
         self.photo_height = photo_height
         self.description = description
 
+        # deprecateds
+        self.thumb_url = thumbnail_url
+
     def to_dict(self):
         json_dict = super().to_dict()
         json_dict['photo_url'] = self.photo_url
-        json_dict['thumb_url'] = self.thumb_url
+        json_dict['thumbnail_url'] = self.thumbnail_url
         if self.photo_width:
             json_dict['photo_width'] = self.photo_width
         if self.photo_height:
@@ -4131,12 +4139,12 @@ class InlineQueryResultGif(InlineQueryResultBase):
     :param gif_duration: Optional. Duration of the GIF in seconds
     :type gif_duration: :obj:`int`
 
-    :param thumb_url: URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_mime_type: Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or 
+    :param thumbnail_mime_type: Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or 
         “video/mp4”. Defaults to “image/jpeg”
-    :type thumb_mime_type: :obj:`str`
+    :type thumbnail_mime_type: :obj:`str`
 
     :param title: Optional. Title for the result
     :type title: :obj:`str`
@@ -4160,19 +4168,23 @@ class InlineQueryResultGif(InlineQueryResultBase):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultGif`
     """
-    def __init__(self, id, gif_url, thumb_url, gif_width=None, gif_height=None,
+    def __init__(self, id, gif_url, thumbnail_url, gif_width=None, gif_height=None,
                  title=None, caption=None, caption_entities=None,
                  reply_markup=None, input_message_content=None, gif_duration=None, parse_mode=None,
-                 thumb_mime_type=None):
+                 thumbnail_mime_type=None):
         super().__init__('gif', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
         self.gif_url = gif_url
         self.gif_width = gif_width
         self.gif_height = gif_height
-        self.thumb_url = thumb_url
+        self.thumbnail_url = thumbnail_url
         self.gif_duration = gif_duration
-        self.thumb_mime_type = thumb_mime_type
+        self.thumbnail_mime_type = thumbnail_mime_type
+
+        # deprecateds
+        self.thumb_url = thumbnail_url
+        self.thumb_mime_type = thumbnail_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4181,11 +4193,11 @@ class InlineQueryResultGif(InlineQueryResultBase):
             json_dict['gif_width'] = self.gif_width
         if self.gif_height:
             json_dict['gif_height'] = self.gif_height
-        json_dict['thumb_url'] = self.thumb_url
+        json_dict['thumbnail_url'] = self.thumbnail_url
         if self.gif_duration:
             json_dict['gif_duration'] = self.gif_duration
-        if self.thumb_mime_type:
-            json_dict['thumb_mime_type'] = self.thumb_mime_type
+        if self.thumbnail_mime_type:
+            json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
         return json_dict
 
 
@@ -4213,12 +4225,12 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     :param mpeg4_duration: Optional. Video duration in seconds
     :type mpeg4_duration: :obj:`int`
 
-    :param thumb_url: URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: URL of the static (JPEG or GIF) or animated (MPEG4) thumbnail for the result
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_mime_type: Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or 
+    :param thumbnail_mime_type: Optional. MIME type of the thumbnail, must be one of “image/jpeg”, “image/gif”, or 
         “video/mp4”. Defaults to “image/jpeg”
-    :type thumb_mime_type: :obj:`str`
+    :type thumbnail_mime_type: :obj:`str`
 
     :param title: Optional. Title for the result
     :type title: :obj:`str`
@@ -4242,19 +4254,23 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultMpeg4Gif`
     """
-    def __init__(self, id, mpeg4_url, thumb_url, mpeg4_width=None, mpeg4_height=None,
+    def __init__(self, id, mpeg4_url, thumbnail_url, mpeg4_width=None, mpeg4_height=None,
                  title=None, caption=None, caption_entities=None,
                  parse_mode=None, reply_markup=None, input_message_content=None, mpeg4_duration=None,
-                 thumb_mime_type=None):
+                 thumbnail_mime_type=None):
         super().__init__('mpeg4_gif', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
         self.mpeg4_url = mpeg4_url
         self.mpeg4_width = mpeg4_width
         self.mpeg4_height = mpeg4_height
-        self.thumb_url = thumb_url
+        self.thumbnail_url = thumbnail_url
         self.mpeg4_duration = mpeg4_duration
-        self.thumb_mime_type = thumb_mime_type
+        self.thumbnail_mime_type = thumbnail_mime_type
+
+        # deprecateds
+        self.thumb_url = thumbnail_url
+        self.thumb_mime_type = thumbnail_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4263,11 +4279,11 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
             json_dict['mpeg4_width'] = self.mpeg4_width
         if self.mpeg4_height:
             json_dict['mpeg4_height'] = self.mpeg4_height
-        json_dict['thumb_url'] = self.thumb_url
+        json_dict['thumbnail_url'] = self.thumbnail_url
         if self.mpeg4_duration:
             json_dict['mpeg4_duration '] = self.mpeg4_duration
-        if self.thumb_mime_type:
-            json_dict['thumb_mime_type'] = self.thumb_mime_type
+        if self.thumbnail_mime_type:
+            json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
         return json_dict
 
 
@@ -4289,8 +4305,8 @@ class InlineQueryResultVideo(InlineQueryResultBase):
     :param mime_type: MIME type of the content of the video URL, “text/html” or “video/mp4”
     :type mime_type: :obj:`str`
 
-    :param thumb_url: URL of the thumbnail (JPEG only) for the video
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: URL of the thumbnail (JPEG only) for the video
+    :type thumbnail_url: :obj:`str`
 
     :param title: Title for the result
     :type title: :obj:`str`
@@ -4328,7 +4344,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultVideo`
     """
-    def __init__(self, id, video_url, mime_type, thumb_url,
+    def __init__(self, id, video_url, mime_type, thumbnail_url,
                  title, caption=None, caption_entities=None, parse_mode=None,
                  video_width=None, video_height=None, video_duration=None,
                  description=None, reply_markup=None, input_message_content=None):
@@ -4337,17 +4353,20 @@ class InlineQueryResultVideo(InlineQueryResultBase):
                          parse_mode = parse_mode, caption_entities = caption_entities)
         self.video_url = video_url
         self.mime_type = mime_type
-        self.thumb_url = thumb_url
+        self.thumbnail_url = thumbnail_url
         self.video_width = video_width
         self.video_height = video_height
         self.video_duration = video_duration
         self.description = description
 
+        # deprecated
+        self.thumb_url = thumbnail_url
+
     def to_dict(self):
         json_dict = super().to_dict()
         json_dict['video_url'] = self.video_url
         json_dict['mime_type'] = self.mime_type
-        json_dict['thumb_url'] = self.thumb_url
+        json_dict['thumbnail_url'] = self.thumbnail_url
         if self.video_height:
             json_dict['video_height'] = self.video_height
         if self.video_duration:
@@ -4519,30 +4538,36 @@ class InlineQueryResultDocument(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the file
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
-    :param thumb_url: Optional. URL of the thumbnail (JPEG only) for the file
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: Optional. URL of the thumbnail (JPEG only) for the file
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_width: Optional. Thumbnail width
-    :type thumb_width: :obj:`int`
+    :param thumbnail_width: Optional. Thumbnail width
+    :type thumbnail_width: :obj:`int`
 
-    :param thumb_height: Optional. Thumbnail height
-    :type thumb_height: :obj:`int`
+    :param thumbnail_height: Optional. Thumbnail height
+    :type thumbnail_height: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultDocument`
     """
     def __init__(self, id, title, document_url, mime_type, caption=None, caption_entities=None,
                  parse_mode=None, description=None, reply_markup=None, input_message_content=None,
-                 thumb_url=None, thumb_width=None, thumb_height=None):
+                 thumbnail_url=None, thumbnail_width=None, thumbnail_height=None):
         super().__init__('document', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
         self.document_url = document_url
         self.mime_type = mime_type
         self.description = description
-        self.thumb_url = thumb_url
-        self.thumb_width = thumb_width
-        self.thumb_height = thumb_height
+        self.thumbnail_url = thumbnail_url
+        self.thumbnail_width = thumbnail_width
+        self.thumbnail_height = thumbnail_height
+
+        # deprecated
+        self.thumb_url = thumbnail_url
+        self.thumb_width = thumbnail_width
+        self.thumb_height = thumbnail_height
+
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4550,12 +4575,12 @@ class InlineQueryResultDocument(InlineQueryResultBase):
         json_dict['mime_type'] = self.mime_type
         if self.description:
             json_dict['description'] = self.description
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
-        if self.thumb_width:
-            json_dict['thumb_width'] = self.thumb_width
-        if self.thumb_height:
-            json_dict['thumb_height'] = self.thumb_height
+        if self.thumbnail_url:
+            json_dict['thumbnail_url'] = self.thumbnail_url
+        if self.thumbnail_width:
+            json_dict['thumbnail_width'] = self.thumbnail_width
+        if self.thumbnail_height:
+            json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
 
@@ -4601,20 +4626,20 @@ class InlineQueryResultLocation(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the location
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
-    :param thumb_url: Optional. Url of the thumbnail for the result
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: Optional. Url of the thumbnail for the result
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_width: Optional. Thumbnail width
-    :type thumb_width: :obj:`int`
+    :param thumbnail_width: Optional. Thumbnail width
+    :type thumbnail_width: :obj:`int`
 
-    :param thumb_height: Optional. Thumbnail height
-    :type thumb_height: :obj:`int`
+    :param thumbnail_height: Optional. Thumbnail height
+    :type thumbnail_height: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultLocation`
     """
     def __init__(self, id, title, latitude, longitude, horizontal_accuracy, live_period=None, reply_markup=None,
-                 input_message_content=None, thumb_url=None, thumb_width=None, thumb_height=None, heading=None, proximity_alert_radius = None):
+                 input_message_content=None, thumbnail_url=None, thumbnail_width=None, thumbnail_height=None, heading=None, proximity_alert_radius = None):
         super().__init__('location', id, title = title,
                          input_message_content = input_message_content, reply_markup = reply_markup)
         self.latitude = latitude
@@ -4623,9 +4648,14 @@ class InlineQueryResultLocation(InlineQueryResultBase):
         self.live_period = live_period
         self.heading: int = heading
         self.proximity_alert_radius: int = proximity_alert_radius
-        self.thumb_url = thumb_url
-        self.thumb_width = thumb_width
-        self.thumb_height = thumb_height
+        self.thumbnail_url = thumbnail_url
+        self.thumbnail_width = thumbnail_width
+        self.thumbnail_height = thumbnail_height
+
+        # deprecated
+        self.thumb_url = thumbnail_url
+        self.thumb_width = thumbnail_width
+        self.thumb_height = thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4639,12 +4669,12 @@ class InlineQueryResultLocation(InlineQueryResultBase):
             json_dict['heading'] = self.heading
         if self.proximity_alert_radius:
             json_dict['proximity_alert_radius'] = self.proximity_alert_radius
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
-        if self.thumb_width:
-            json_dict['thumb_width'] = self.thumb_width
-        if self.thumb_height:
-            json_dict['thumb_height'] = self.thumb_height
+        if self.thumbnail_url:
+            json_dict['thumbnail_url'] = self.thumbnail_url
+        if self.thumbnail_width:
+            json_dict['thumbnail_width'] = self.thumbnail_width
+        if self.thumbnail_height:
+            json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
 
@@ -4691,21 +4721,21 @@ class InlineQueryResultVenue(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the venue
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
-    :param thumb_url: Optional. Url of the thumbnail for the result
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: Optional. Url of the thumbnail for the result
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_width: Optional. Thumbnail width
-    :type thumb_width: :obj:`int`
+    :param thumbnail_width: Optional. Thumbnail width
+    :type thumbnail_width: :obj:`int`
 
-    :param thumb_height: Optional. Thumbnail height
-    :type thumb_height: :obj:`int`
+    :param thumbnail_height: Optional. Thumbnail height
+    :type thumbnail_height: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultVenue`
     """
     def __init__(self, id, title, latitude, longitude, address, foursquare_id=None, foursquare_type=None,
-                 reply_markup=None, input_message_content=None, thumb_url=None, 
-                 thumb_width=None, thumb_height=None, google_place_id=None, google_place_type=None):
+                 reply_markup=None, input_message_content=None, thumbnail_url=None, 
+                 thumbnail_width=None, thumbnail_height=None, google_place_id=None, google_place_type=None):
         super().__init__('venue', id, title = title,
                          input_message_content = input_message_content, reply_markup = reply_markup)
         self.latitude = latitude
@@ -4715,9 +4745,15 @@ class InlineQueryResultVenue(InlineQueryResultBase):
         self.foursquare_type = foursquare_type
         self.google_place_id = google_place_id
         self.google_place_type = google_place_type
-        self.thumb_url = thumb_url
-        self.thumb_width = thumb_width
-        self.thumb_height = thumb_height
+        self.thumbnail_url = thumbnail_url
+        self.thumbnail_width = thumbnail_width
+        self.thumbnail_height = thumbnail_height
+
+        # deprecated
+        self.thumb_url = thumbnail_url
+        self.thumb_width = thumbnail_width
+        self.thumb_height = thumbnail_height
+        
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4732,12 +4768,12 @@ class InlineQueryResultVenue(InlineQueryResultBase):
             json_dict['google_place_id'] = self.google_place_id
         if self.google_place_type:
             json_dict['google_place_type'] = self.google_place_type
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
-        if self.thumb_width:
-            json_dict['thumb_width'] = self.thumb_width
-        if self.thumb_height:
-            json_dict['thumb_height'] = self.thumb_height
+        if self.thumbnail_url:
+            json_dict['thumbnail_url'] = self.thumbnail_url
+        if self.thumbnail_width:
+            json_dict['thumbnail_width'] = self.thumbnail_width
+        if self.thumbnail_height:
+            json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
 
@@ -4771,30 +4807,37 @@ class InlineQueryResultContact(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the contact
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
-    :param thumb_url: Optional. Url of the thumbnail for the result
-    :type thumb_url: :obj:`str`
+    :param thumbnail_url: Optional. Url of the thumbnail for the result
+    :type thumbnail_url: :obj:`str`
 
-    :param thumb_width: Optional. Thumbnail width
-    :type thumb_width: :obj:`int`
+    :param thumbnail_width: Optional. Thumbnail width
+    :type thumbnail_width: :obj:`int`
 
-    :param thumb_height: Optional. Thumbnail height
-    :type thumb_height: :obj:`int`
+    :param thumbnail_height: Optional. Thumbnail height
+    :type thumbnail_height: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultContact`
     """
     def __init__(self, id, phone_number, first_name, last_name=None, vcard=None,
                  reply_markup=None, input_message_content=None,
-                 thumb_url=None, thumb_width=None, thumb_height=None):
+                 thumbnail_url=None, thumbnail_width=None, thumbnail_height=None):
         super().__init__('contact', id,
                          input_message_content = input_message_content, reply_markup = reply_markup)
         self.phone_number = phone_number
         self.first_name = first_name
         self.last_name = last_name
         self.vcard = vcard
-        self.thumb_url = thumb_url
-        self.thumb_width = thumb_width
-        self.thumb_height = thumb_height
+        self.thumbnail_url = thumbnail_url
+        self.thumbnail_width = thumbnail_width
+        self.thumbnail_height = thumbnail_height
+
+        # deprecated
+        self.thumb_url = thumbnail_url
+        self.thumb_width = thumbnail_width
+        self.thumb_height = thumbnail_height
+
+        
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4804,12 +4847,12 @@ class InlineQueryResultContact(InlineQueryResultBase):
             json_dict['last_name'] = self.last_name
         if self.vcard:
             json_dict['vcard'] = self.vcard
-        if self.thumb_url:
-            json_dict['thumb_url'] = self.thumb_url
-        if self.thumb_width:
-            json_dict['thumb_width'] = self.thumb_width
-        if self.thumb_height:
-            json_dict['thumb_height'] = self.thumb_height
+        if self.thumbnail_url:
+            json_dict['thumbnail_url'] = self.thumbnail_url
+        if self.thumbnail_width:
+            json_dict['thumbnail_width'] = self.thumbnail_width
+        if self.thumbnail_height:
+            json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
 
