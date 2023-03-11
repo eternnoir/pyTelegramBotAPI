@@ -1608,6 +1608,14 @@ async def get_custom_emoji_stickers(token, custom_emoji_ids):
     method_url = r'getCustomEmojiStickers'
     return await _process_request(token, method_url, params={'custom_emoji_ids': json.dumps(custom_emoji_ids)})
 
+async def set_sticker_keywords(token, sticker, keywords=None):
+    method_url = 'setStickerKeywords'
+    payload = {'sticker': sticker}
+    if keywords:
+        payload['keywords'] = json.dumps(keywords)
+        
+    return await _process_request(token, method_url, params=payload, method='post')
+
 async def upload_sticker_file(token, user_id, sticker, sticker_format):
     method_url = 'uploadStickerFile'
     payload = {'user_id': user_id, 'sticker_format': sticker_format}
