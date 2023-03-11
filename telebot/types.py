@@ -5904,6 +5904,11 @@ class Sticker(JsonDeserializable):
     :param custom_emoji_id: Optional. For custom emoji stickers, unique identifier of the custom emoji
     :type custom_emoji_id: :obj:`str`
 
+    :param needs_repainting: Optional. True, if the sticker must be repainted to a text color in messages,
+        the color of the Telegram Premium badge in emoji status, white color on chat photos, or another
+        appropriate color in other places
+    :type needs_repainting: :obj:`bool`
+
     :param file_size: Optional. File size in bytes
     :type file_size: :obj:`int`
 
@@ -5927,7 +5932,7 @@ class Sticker(JsonDeserializable):
 
     def __init__(self, file_id, file_unique_id, type, width, height, is_animated, 
                 is_video, thumb=None, emoji=None, set_name=None, mask_position=None, file_size=None, 
-                premium_animation=None, custom_emoji_id=None, **kwargs):
+                premium_animation=None, custom_emoji_id=None, needs_repainting=None ,**kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.type: str = type
@@ -5942,6 +5947,7 @@ class Sticker(JsonDeserializable):
         self.file_size: int = file_size
         self.premium_animation: File = premium_animation
         self.custom_emoji_id: int = custom_emoji_id
+        self.needs_repainting: bool = needs_repainting
         
 
 
