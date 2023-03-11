@@ -4564,7 +4564,7 @@ class TeleBot:
         result = apihelper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
         return [types.Sticker.de_json(sticker) for sticker in result]
 
-    def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]) -> types.File:
+    def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]=None, sticker: Optional[types.InputFile]=None, sticker_format: Optional[str]=None) -> types.File:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
@@ -4574,14 +4574,26 @@ class TeleBot:
         :param user_id: User identifier of sticker set owner
         :type user_id: :obj:`int`
 
-        :param png_sticker: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
+        :param png_sticker: DEPRECATED: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
             and either width or height must be exactly 512px.
         :type png_sticker: :obj:`filelike object`
+
+        :param sticker: A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format.
+            See https://core.telegram.org/stickers for technical requirements. More information on Sending Files »
+        :type sticker: :class:`telebot.types.InputFile`
+
+        :param sticker_format: One of "static", "animated", "video". 
+        :type sticker_format: :obj:`str`
 
         :return: On success, the sent file is returned.
         :rtype: :class:`telebot.types.File`
         """
-        result = apihelper.upload_sticker_file(self.token, user_id, png_sticker)
+        if png_sticker:
+            logger.warning("png_sticker is deprecated, use sticker instead", DeprecationWarning)
+            sticker = png_sticker
+            sticker_format = "static"
+        
+        result = apihelper.upload_sticker_file(self.token, user_id, sticker, sticker_format)
         return types.File.de_json(result)
 
     def create_new_sticker_set(

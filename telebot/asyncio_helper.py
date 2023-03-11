@@ -1608,10 +1608,10 @@ async def get_custom_emoji_stickers(token, custom_emoji_ids):
     method_url = r'getCustomEmojiStickers'
     return await _process_request(token, method_url, params={'custom_emoji_ids': custom_emoji_ids})
 
-async def upload_sticker_file(token, user_id, png_sticker):
+async def upload_sticker_file(token, user_id, sticker, sticker_format):
     method_url = 'uploadStickerFile'
-    payload = {'user_id': user_id}
-    files = {'png_sticker': png_sticker}
+    payload = {'user_id': user_id, 'sticker_format': sticker_format}
+    files = {'sticker': sticker}
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
