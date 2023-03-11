@@ -4592,7 +4592,8 @@ class TeleBot:
             webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
             sticker_type: Optional[str]=None,
-            mask_position: Optional[types.MaskPosition]=None) -> bool:
+            mask_position: Optional[types.MaskPosition]=None,
+            needs_repainting: Optional[bool]=None) -> bool:
         """
         Use this method to create new sticker set owned by a user. 
         The bot will be able to edit the created sticker set.
@@ -4635,6 +4636,11 @@ class TeleBot:
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
 
+        :param needs_repainting: Pass True if stickers in the sticker set must be repainted to the color of text when used in messages,
+            the accent color if used as emoji status, white on chat photos, or another appropriate color based on context;
+            for custom emoji sticker sets only
+        :type needs_repainting: :obj:`bool`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
@@ -4645,7 +4651,7 @@ class TeleBot:
 
         return apihelper.create_new_sticker_set(
             self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
-            mask_position, webm_sticker, sticker_type)
+            mask_position, webm_sticker, sticker_type, needs_repainting)
 
     def add_sticker_to_set(
             self, user_id: int, name: str, emojis: str,
