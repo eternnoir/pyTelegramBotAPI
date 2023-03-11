@@ -4586,20 +4586,25 @@ class TeleBot:
 
     def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 
-            emojis: str, 
+            emojis: Optional[List[str]]=None, 
             png_sticker: Union[Any, str]=None, 
             tgs_sticker: Union[Any, str]=None, 
             webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
             sticker_type: Optional[str]=None,
             mask_position: Optional[types.MaskPosition]=None,
-            needs_repainting: Optional[bool]=None) -> bool:
+            needs_repainting: Optional[bool]=None,
+            stickers: List[types.InputSticker]=None,
+            sticker_format: Optional[str]=None) -> bool:
         """
         Use this method to create new sticker set owned by a user. 
         The bot will be able to edit the created sticker set.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#createnewstickerset
+
+        .. note::
+            Fields *_sticker are deprecated, pass a list of stickers to stickers parameter instead.
 
         :param user_id: User identifier of created sticker set owner
         :type user_id: :obj:`int`
@@ -4641,17 +4646,37 @@ class TeleBot:
             for custom emoji sticker sets only
         :type needs_repainting: :obj:`bool`
 
+        :param stickers: List of stickers to be added to the set
+        :type stickers: :obj:`list` of :class:`telebot.types.InputSticker`
+
+        :param sticker_format: Format of stickers in the set, must be one of “static”, “animated”, “video”
+        :type sticker_format: :obj:`str`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        if tgs_sticker:
+            sticker_format = 'animated'
+        elif webm_sticker:
+            sticker_format = 'video'
+        elif png_sticker:
+            sticker_format = 'static'
+        
         if contains_masks is not None:
             logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
             if sticker_type is None:
                sticker_type = 'mask' if contains_masks else 'regular'
 
+        if stickers is None:
+            stickers = png_sticker or tgs_sticker or webm_sticker
+            if stickers is None:
+                raise ValueError('You must pass at least one sticker')
+            stickers = [types.InputSticker(sticker=stickers, emoji_list=emojis, mask_position=mask_position)]
+            
+
+               
         return apihelper.create_new_sticker_set(
-            self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
-            mask_position, webm_sticker, sticker_type, needs_repainting)
+            self.token, user_id, name, title, stickers, sticker_format, sticker_type, needs_repainting)
 
 
     def add_sticker_to_set(

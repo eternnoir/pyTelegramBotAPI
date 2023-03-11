@@ -1616,28 +1616,31 @@ async def upload_sticker_file(token, user_id, png_sticker):
 
 
 async def create_new_sticker_set(
-        token, user_id, name, title, emojis, png_sticker, tgs_sticker,
-        mask_position=None, webm_sticker=None, sticker_type=None, needs_repainting=None):
+        token, user_id, name, title, stickers, sticker_format=None, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
-    payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
-    if png_sticker:
-        stype = 'png_sticker'
-    elif webm_sticker:
-        stype = 'webm_sticker'
-    else:
-        stype = 'tgs_sticker'
-    sticker = png_sticker or tgs_sticker or webm_sticker
-    files = None
-    if not util.is_string(sticker):
-        files = {stype: sticker}
-    else:
-        payload[stype] = sticker
-    if mask_position:
-        payload['mask_position'] = mask_position.to_json()
+    payload = {'user_id': user_id, 'name': name, 'title': title}
     if sticker_type:
         payload['sticker_type'] = sticker_type
-    if needs_repainting is not None:
+    if needs_repainting:
         payload['needs_repainting'] = needs_repainting
+    if sticker_format:
+        payload['sticker_format'] = sticker_format
+
+    files = {}
+    lst = []
+
+    for sticker in stickers:
+        json_dict, file = sticker.convert_input_sticker()
+        json_dict = sticker.to_dict()
+
+        if file:
+            list_keys = list(file.keys())
+            files[list_keys[0]] = file[list_keys[0]]
+        lst.append(json_dict)
+    
+    payload['stickers'] = json.dumps(lst)
+
+    
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 

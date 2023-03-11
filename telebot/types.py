@@ -7388,7 +7388,7 @@ class InputSticker(Dictionaryable, JsonSerializable):
     def to_dict(self) -> dict:
         json_dict = {
             'sticker': self._sticker_dic,
-            'emojis': self.emoji_list
+            'emoji_list': self.emoji_list
         }
 
         if self.mask_position is not None:
