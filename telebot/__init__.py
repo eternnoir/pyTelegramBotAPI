@@ -4629,8 +4629,7 @@ class TeleBot:
             use sticker_type instead.
         :type contains_masks: :obj:`bool`
 
-        :param sticker_type: Optional, Type of stickers in the set, pass “regular” or “mask”. Custom emoji sticker sets can't be created
-            via the Bot API at the moment. By default, a regular sticker set is created.
+        :param sticker_type: Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.
         :type sticker_type: :obj:`str`
 
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
