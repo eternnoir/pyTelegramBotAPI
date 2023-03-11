@@ -3431,6 +3431,24 @@ class TeleBot:
         """
             
         return types.BotDescription.de_json(apihelper.get_my_description(self.token, language_code))
+    
+    def set_my_short_description(self, short_description:Optional[str]=None, language_code:Optional[str]=None):
+        """
+        Use this method to change the bot's short description, which is shown on the bot's profile page and
+        is sent together with the link when users share the bot. 
+        Returns True on success.
+
+        :param short_description: New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.
+        :type short_description: :obj:`str`
+
+        :param language_code: A two-letter ISO 639-1 language code.
+            If empty, the short description will be applied to all users for whose language there is no dedicated short description.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return apihelper.set_my_short_description(self.token, short_description, language_code)
 
     def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
                 menu_button: types.MenuButton=None) -> bool:
