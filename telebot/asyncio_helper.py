@@ -1613,7 +1613,14 @@ async def set_sticker_keywords(token, sticker, keywords=None):
     payload = {'sticker': sticker}
     if keywords:
         payload['keywords'] = json.dumps(keywords)
-        
+
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def set_sticker_mask_position(token, sticker, mask_position=None):
+    method_url = 'setStickerMaskPosition'
+    payload = {'sticker': sticker}
+    if mask_position:
+        payload['mask_position'] = mask_position.to_json()
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def upload_sticker_file(token, user_id, sticker, sticker_format):

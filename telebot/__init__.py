@@ -4581,6 +4581,23 @@ class TeleBot:
         """
         return apihelper.set_sticker_keywords(self.token, sticker, keywords)
     
+    def set_sticker_mask_position(self, sticker: str, mask_position: types.MaskPosition=None) -> bool:
+        """
+        Use this method to change the mask position of a mask sticker.
+        The sticker must belong to a sticker set that was created by the bot.
+        Returns True on success.
+
+        :param sticker: File identifier of the sticker.
+        :type sticker: :obj:`str`
+
+        :param mask_position: A JSON-serialized object for position where the mask should be placed on faces.
+        :type mask_position: :class:`telebot.types.MaskPosition`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.set_sticker_mask_position(self.token, sticker, mask_position)
+    
 
     def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None) -> bool:
         """

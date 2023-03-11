@@ -5429,6 +5429,23 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_sticker_keywords(self.token, sticker, keywords)
+    
+    async def set_sticker_mask_position(self, sticker: str, mask_position: types.MaskPosition=None) -> bool:
+        """
+        Use this method to change the mask position of a mask sticker.
+        The sticker must belong to a sticker set that was created by the bot.
+        Returns True on success.
+
+        :param sticker: File identifier of the sticker.
+        :type sticker: :obj:`str`
+
+        :param mask_position: A JSON-serialized object for position where the mask should be placed on faces.
+        :type mask_position: :class:`telebot.types.MaskPosition`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_sticker_mask_position(self.token, sticker, mask_position)
 
     async def get_custom_emoji_stickers(self, custom_emoji_ids: List[str]) -> List[types.Sticker]:
         """
