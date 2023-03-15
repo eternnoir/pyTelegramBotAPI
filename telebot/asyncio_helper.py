@@ -1145,7 +1145,7 @@ async def set_my_description(token, description=None, language_code=None):
     payload = {}
     if description:
         payload['description'] = description
-    if language_code:
+    if language_code is not None:
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload, method='post')
 
