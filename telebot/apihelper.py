@@ -1157,7 +1157,7 @@ def set_chat_title(token, chat_id, title):
 def set_my_description(token, description=None, language_code=None):
     method_url = r'setMyDescription'
     payload = {}
-    if description:
+    if description is not None:
         payload['description'] = description
     if language_code:
         payload['language_code'] = language_code
