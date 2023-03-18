@@ -588,7 +588,7 @@ def webhook_google_functions(bot, request):
         return 'Bot ON'
 
 
-def antiflood(function: Callable, *args, **kwargs):
+def antiflood(function: Callable, *args, number_retries=5, **kwargs):
     """
     Use this function inside loops in order to avoid getting TooManyRequests error.
     Example:
@@ -602,6 +602,9 @@ def antiflood(function: Callable, *args, **kwargs):
     :param function: The function to call
     :type function: :obj:`Callable`
 
+    :param number_retries: Number of retries to send
+    :type function: :obj:int
+
     :param args: The arguments to pass to the function
     :type args: :obj:`tuple`
 
@@ -613,14 +616,16 @@ def antiflood(function: Callable, *args, **kwargs):
     from telebot.apihelper import ApiTelegramException
     from time import sleep
 
-    try:
-        return function(*args, **kwargs)
-    except ApiTelegramException as ex:
-        if ex.error_code == 429:
-            sleep(ex.result_json['parameters']['retry_after'])
+    for _ in range(number_retries - 1):
+        try:
             return function(*args, **kwargs)
-        else:
-            raise
+        except ApiTelegramException as ex:
+            if ex.error_code == 429:
+                sleep(ex.result_json['parameters']['retry_after'])
+            else:
+                raise
+    else:
+        return function(*args, **kwargs)
 
 
 def parse_web_app_data(token: str, raw_init_data: str):
