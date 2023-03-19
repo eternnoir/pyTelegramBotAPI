@@ -342,7 +342,7 @@ async def get_chat_member_count(token, chat_id):
 
 
 async def set_sticker_set_thumb(token, name, user_id, thumb):
-    method_url = r'setStickerSetThumb'
+    method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id}
     files = {}
     if thumb:
@@ -689,11 +689,11 @@ async def send_video(token, chat_id, data, duration=None, caption=None, reply_to
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if width:
         payload['width'] = width
     if height:
@@ -740,11 +740,11 @@ async def send_animation(
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -824,11 +824,11 @@ async def send_video_note(token, chat_id, data, duration=None, length=None, repl
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if protect_content is not None:
@@ -869,11 +869,11 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -888,7 +888,7 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
 async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
               allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None, protect_content=None,
-              message_thread_id=None):
+              message_thread_id=None, emoji=None):
     method_url = await get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -914,11 +914,11 @@ async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, r
     if thumb:
         if not util.is_string(thumb):
             if files:
-                files['thumb'] = thumb
+                files['thumbnail'] = thumb
             else:
-                files = {'thumb': thumb}
+                files = {'thumbnail': thumb}
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumb
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -929,6 +929,8 @@ async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, r
         payload['disable_content_type_detection'] = disable_content_type_detection
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if emoji:
+        payload['emoji'] = emoji
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1138,6 +1140,37 @@ async def set_chat_title(token, chat_id, title):
     payload = {'chat_id': chat_id, 'title': title}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def set_my_description(token, description=None, language_code=None):
+    method_url = r'setMyDescription'
+    payload = {}
+    if description:
+        payload['description'] = description
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_my_description(token, language_code=None):
+    method_url = r'getMyDescription'
+    payload = {}
+    if language_code:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload)
+
+async def set_my_short_description(token, short_description=None, language_code=None):
+    method_url = r'setMyShortDescription'
+    payload = {}
+    if short_description:
+        payload['short_description'] = short_description
+    if language_code:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_my_short_description(token, language_code=None):
+    method_url = r'getMyShortDescription'
+    payload = {}
+    if language_code:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload)
 
 async def get_my_commands(token, scope=None, language_code=None):
     method_url = r'getMyCommands'
@@ -1573,60 +1606,87 @@ async def get_sticker_set(token, name):
 
 async def get_custom_emoji_stickers(token, custom_emoji_ids):
     method_url = r'getCustomEmojiStickers'
-    return await _process_request(token, method_url, params={'custom_emoji_ids': custom_emoji_ids})
+    return await _process_request(token, method_url, params={'custom_emoji_ids': json.dumps(custom_emoji_ids)})
 
-async def upload_sticker_file(token, user_id, png_sticker):
+async def set_sticker_keywords(token, sticker, keywords=None):
+    method_url = 'setStickerKeywords'
+    payload = {'sticker': sticker}
+    if keywords:
+        payload['keywords'] = json.dumps(keywords)
+
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def set_sticker_mask_position(token, sticker, mask_position=None):
+    method_url = 'setStickerMaskPosition'
+    payload = {'sticker': sticker}
+    if mask_position:
+        payload['mask_position'] = mask_position.to_json()
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def upload_sticker_file(token, user_id, sticker, sticker_format):
     method_url = 'uploadStickerFile'
-    payload = {'user_id': user_id}
-    files = {'png_sticker': png_sticker}
+    payload = {'user_id': user_id, 'sticker_format': sticker_format}
+    files = {'sticker': sticker}
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
+async def set_sticker_emoji_list(token, sticker, emoji_list):
+    method_url = 'setStickerEmojiList'
+    payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def delete_sticker_set(token, name):
+    method_url = 'deleteStickerSet'
+    payload = {'name': name}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
+    method_url = 'setCustomEmojiStickerSetThumbnail'
+    payload = {'name': name}
+    if custom_emoji_id:
+        payload['custom_emoji_id'] = custom_emoji_id
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def set_sticker_set_title(token, name, title):
+    method_url = 'setStickerSetTitle'
+    payload = {'name': name, 'title': title}
+    return await _process_request(token, method_url, params=payload, method='post')
 
 async def create_new_sticker_set(
-        token, user_id, name, title, emojis, png_sticker, tgs_sticker,
-        mask_position=None, webm_sticker=None, sticker_type=None):
+        token, user_id, name, title, stickers, sticker_format=None, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
-    payload = {'user_id': user_id, 'name': name, 'title': title, 'emojis': emojis}
-    if png_sticker:
-        stype = 'png_sticker'
-    elif webm_sticker:
-        stype = 'webm_sticker'
-    else:
-        stype = 'tgs_sticker'
-    sticker = png_sticker or tgs_sticker or webm_sticker
-    files = None
-    if not util.is_string(sticker):
-        files = {stype: sticker}
-    else:
-        payload[stype] = sticker
-    if mask_position:
-        payload['mask_position'] = mask_position.to_json()
+    payload = {'user_id': user_id, 'name': name, 'title': title}
     if sticker_type:
         payload['sticker_type'] = sticker_type
+    if needs_repainting:
+        payload['needs_repainting'] = needs_repainting
+    if sticker_format:
+        payload['sticker_format'] = sticker_format
+
+    files = {}
+    lst = []
+
+    for sticker in stickers:
+        json_dict, file = sticker.convert_input_sticker()
+        json_dict = sticker.to_dict()
+
+        if file:
+            list_keys = list(file.keys())
+            files[list_keys[0]] = file[list_keys[0]]
+        lst.append(json_dict)
+    
+    payload['stickers'] = json.dumps(lst)
+
+    
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
-async def add_sticker_to_set(token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker):
+async def add_sticker_to_set(token, user_id, name, sticker):
     method_url = 'addStickerToSet'
-    payload = {'user_id': user_id, 'name': name, 'emojis': emojis}
-    if png_sticker:
-        stype = 'png_sticker'
-    elif webm_sticker:
-        stype = 'webm_sticker'
-    else:
-        stype = 'tgs_sticker'
-    files = None
-    sticker = png_sticker or tgs_sticker or webm_sticker
+    json_dict, files = sticker.convert_input_sticker()
+    payload = {'user_id': user_id, 'name': name, 'sticker': json_dict}
+    
 
-    if not util.is_string(sticker):
-        files = {stype: sticker}
-    else:
-        payload[stype] = sticker
-    if mask_position:
-        payload['mask_position'] = mask_position.to_json()
-
-    if webm_sticker:
-        payload['webm_sticker'] = webm_sticker
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 

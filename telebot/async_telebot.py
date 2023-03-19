@@ -2700,11 +2700,12 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2750,11 +2751,11 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumb: :obj:`str`
+        :type thumbnail: :obj:`str`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -2776,10 +2777,14 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_audio(
                 self.token, chat_id, audio, caption, duration, performer, title, reply_to_message_id,
-                reply_markup, parse_mode, disable_notification, timeout, thumb,
+                reply_markup, parse_mode, disable_notification, timeout, thumbnail,
                 caption_entities, allow_sending_without_reply, protect_content, message_thread_id))
 
     async def send_voice(
@@ -2864,14 +2869,15 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             visible_file_name: Optional[str]=None,
             disable_content_type_detection: Optional[bool]=None,
             data: Optional[Union[Any, str]]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -2904,8 +2910,8 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param thumb: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :param thumbnail: InputFile or String : Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -2940,11 +2946,15 @@ class AsyncTeleBot:
             # function typo miss compatibility
             document = data
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('thumb is deprecated, use thumbnail instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, document, 'document',
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
-                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumb,
+                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumbnail,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content,
                 message_thread_id = message_thread_id))
@@ -2958,7 +2968,8 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             data: Union[Any, str]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            emoji: Optional[str]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2998,6 +3009,9 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param emoji: Emoji associated with the sticker; only for just uploaded stickers
+        :type emoji: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3016,14 +3030,14 @@ class AsyncTeleBot:
                 reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
                 allow_sending_without_reply=allow_sending_without_reply, protect_content=protect_content,
-                message_thread_id=message_thread_id))
+                message_thread_id=message_thread_id, emoji=emoji))
 
     async def send_video(
             self, chat_id: Union[int, str], video: Union[Any, str], 
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None, 
+            thumbnail: Optional[Union[Any, str]]=None, 
             caption: Optional[str]=None, 
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
@@ -3036,7 +3050,8 @@ class AsyncTeleBot:
             timeout: Optional[int]=None,
             data: Optional[Union[Any, str]]=None,
             message_thread_id: Optional[int]=None,
-            has_spoiler: Optional[bool]=None) -> types.Message:
+            has_spoiler: Optional[bool]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -3057,8 +3072,8 @@ class AsyncTeleBot:
         :param height: Video height
         :type height: :obj:`int`
 
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
@@ -3114,10 +3129,14 @@ class AsyncTeleBot:
             logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
             video = data
 
+        if thumb and not(thumbnail):
+            logger.warning("send_sticker: thumb parameter is deprecated. Use thumbnail instead.")
+            thumbnail = thumb
+
         return types.Message.de_json(
             await asyncio_helper.send_video(
                 self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
-                parse_mode, supports_streaming, disable_notification, timeout, thumb, width, height,
+                parse_mode, supports_streaming, disable_notification, timeout, thumbnail, width, height,
                 caption_entities, allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
 
     async def send_animation(
@@ -3125,7 +3144,7 @@ class AsyncTeleBot:
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             caption: Optional[str]=None, 
             parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
@@ -3136,7 +3155,8 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            has_spoiler: Optional[bool]=None) -> types.Message:
+            has_spoiler: Optional[bool]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -3159,11 +3179,11 @@ class AsyncTeleBot:
         :param height: Animation height
         :type height: :obj:`int`
         
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption: Animation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
@@ -3208,10 +3228,14 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('thumb is deprecated, use thumbnail instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_animation(
                 self.token, chat_id, animation, duration, caption, reply_to_message_id,
-                reply_markup, parse_mode, disable_notification, timeout, thumb,
+                reply_markup, parse_mode, disable_notification, timeout, thumbnail,
                 caption_entities, allow_sending_without_reply, width, height, protect_content, message_thread_id, has_spoiler))
 
     async def send_video_note(
@@ -3222,10 +3246,11 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
             timeout: Optional[int]=None, 
-            thumb: Optional[Union[Any, str]]=None,
+            thumbnail: Optional[Union[Any, str]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            thumb: Optional[Union[Any, str]]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -3259,11 +3284,11 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param thumb: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
-        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
@@ -3281,10 +3306,14 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if thumb is not None and thumbnail is None:
+            thumbnail = thumb
+            logger.warning('thumb is deprecated, use thumbnail instead')
+
         return types.Message.de_json(
             await asyncio_helper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
-                disable_notification, timeout, thumb, allow_sending_without_reply, protect_content, message_thread_id))
+                disable_notification, timeout, thumbnail, allow_sending_without_reply, protect_content, message_thread_id))
 
     async def send_media_group(
             self, chat_id: Union[int, str], 
@@ -4237,6 +4266,68 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.delete_chat_photo(self.token, chat_id)
+    
+    async def set_my_description(self, description: Optional[str]=None, language_code: Optional[str]=None):
+        """
+        Use this method to change the bot's description, which is shown in
+        the chat with the bot if the chat is empty.
+        Returns True on success.
+
+        :param description: New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language.
+        :type description: :obj:`str`
+
+        :param language_code: A two-letter ISO 639-1 language code. If empty, the description will be applied to all users for
+            whose language there is no dedicated description.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return await asyncio_helper.set_my_description(self.token, description, language_code)
+
+    async def get_my_description(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot description for the given user language.
+        Returns BotDescription on success.
+
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotDescription`
+        """
+        result = await asyncio_helper.get_my_description(self.token, language_code)
+        return types.BotDescription.de_json(result)
+    
+    async def set_my_short_description(self, short_description:Optional[str]=None, language_code:Optional[str]=None):
+        """
+        Use this method to change the bot's short description, which is shown on the bot's profile page and
+        is sent together with the link when users share the bot. 
+        Returns True on success.
+
+        :param short_description: New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.
+        :type short_description: :obj:`str`
+
+        :param language_code: A two-letter ISO 639-1 language code.
+            If empty, the short description will be applied to all users for whose language there is no dedicated short description.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return await asyncio_helper.set_my_short_description(self.token, short_description, language_code)
+    
+    async def get_my_short_description(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot short description for the given user language.
+        Returns BotShortDescription on success.
+
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotShortDescription`
+        """
+        result = await asyncio_helper.get_my_short_description(self.token, language_code)
+        return types.BotShortDescription.de_json(result)
     
     async def get_my_commands(self, scope: Optional[types.BotCommandScope], 
             language_code: Optional[str]) -> List[types.BotCommand]:
@@ -5310,7 +5401,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    async def set_sticker_set_thumb(
+    async def set_sticker_set_thumbnail(
             self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
@@ -5331,6 +5422,8 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+    
+    set_sticker_set_thumb = set_sticker_set_thumbnail
 
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
@@ -5346,6 +5439,40 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
+    
+    async def set_sticker_keywords(self, sticker: str, keywords: List[str]=None) -> bool:
+        """
+        Use this method to change search keywords assigned to a regular or custom emoji sticker.
+        The sticker must belong to a sticker set created by the bot.
+        Returns True on success.
+
+        :param sticker: File identifier of the sticker.
+        :type sticker: :obj:`str`
+
+        :param keywords: A JSON-serialized list of 0-20 search keywords for the sticker with total length of up to 64 characters
+        :type keywords: :obj:`list` of :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_sticker_keywords(self.token, sticker, keywords)
+    
+    async def set_sticker_mask_position(self, sticker: str, mask_position: types.MaskPosition=None) -> bool:
+        """
+        Use this method to change the mask position of a mask sticker.
+        The sticker must belong to a sticker set that was created by the bot.
+        Returns True on success.
+
+        :param sticker: File identifier of the sticker.
+        :type sticker: :obj:`str`
+
+        :param mask_position: A JSON-serialized object for position where the mask should be placed on faces.
+        :type mask_position: :class:`telebot.types.MaskPosition`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_sticker_mask_position(self.token, sticker, mask_position)
 
     async def get_custom_emoji_stickers(self, custom_emoji_ids: List[str]) -> List[types.Sticker]:
         """
@@ -5361,7 +5488,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
         return [types.Sticker.de_json(sticker) for sticker in result]
 
-    async def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]) -> types.File:
+    async def upload_sticker_file(self, user_id: int, png_sticker: Union[Any, str]=None, sticker: Optional[types.InputFile]=None, sticker_format: Optional[str]=None) -> types.File:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
@@ -5371,31 +5498,114 @@ class AsyncTeleBot:
         :param user_id: User identifier of sticker set owner
         :type user_id: :obj:`int`
 
-        :param png_sticker: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
+        :param png_sticker: DEPRECATED: PNG image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px,
             and either width or height must be exactly 512px.
         :type png_sticker: :obj:`filelike object`
+
+        :param sticker: A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format.
+            See https://core.telegram.org/stickers for technical requirements. More information on Sending Files »
+        :type sticker: :class:`telebot.types.InputFile`
+
+        :param sticker_format: One of "static", "animated", "video". 
+        :type sticker_format: :obj:`str`
 
         :return: On success, the sent file is returned.
         :rtype: :class:`telebot.types.File`
         """
-        result = await asyncio_helper.upload_sticker_file(self.token, user_id, png_sticker)
+        if png_sticker:
+            logger.warning("png_sticker is deprecated, use sticker instead", DeprecationWarning)
+            sticker = png_sticker
+            sticker_format = "static"
+        
+        result = await asyncio_helper.upload_sticker_file(self.token, user_id, sticker, sticker_format)
         return types.File.de_json(result)
+    
+    async def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None) -> bool:
+        """
+        Use this method to set the thumbnail of a custom emoji sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param custom_emoji_id: Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail.
+        :type custom_emoji_id: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
+    
+    async def set_sticker_set_title(self, name: str, title: str) -> bool:
+        """
+        Use this method to set the title of a created sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param title: New sticker set title
+        :type title: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return await asyncio_helper.set_sticker_set_title(self.token, name, title)
+
+    async def delete_sticker_set(self, name:str) -> bool:
+        """
+        Use this method to delete a sticker set. Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return await asyncio_helper.delete_sticker_set(self.token, name)
+    
+
+    async def set_sticker_emoji_list(self, name: str, emoji_list: List[str]) -> bool:
+        """
+        Use this method to set the emoji list of a sticker set.
+        Returns True on success.
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param emoji_list: List of emojis
+        :type emoji_list: :obj:`list` of :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return await asyncio_helper.set_sticker_emoji_list(self.token, name, emoji_list)
+
 
     async def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 
-            emojis: str, 
+            emojis: Optional[str]=None, 
             png_sticker: Union[Any, str]=None, 
             tgs_sticker: Union[Any, str]=None, 
             webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
             sticker_type: Optional[str]=None,
-            mask_position: Optional[types.MaskPosition]=None) -> bool:
+            mask_position: Optional[types.MaskPosition]=None,
+            needs_repainting: Optional[bool]=None,
+            stickers: List[types.InputSticker]=None,
+            sticker_format: Optional[str]=None) -> bool:
         """
         Use this method to create new sticker set owned by a user. 
         The bot will be able to edit the created sticker set.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#createnewstickerset
+
+        .. note::
+            Fields *_sticker are deprecated, pass a list of stickers to stickers parameter instead.
 
         :param user_id: User identifier of created sticker set owner
         :type user_id: :obj:`int`
@@ -5426,35 +5636,62 @@ class AsyncTeleBot:
             use sticker_type instead.
         :type contains_masks: :obj:`bool`
 
-        :param sticker_type: Optional, Type of stickers in the set, pass “regular” or “mask”. Custom emoji sticker sets can't be created
-            via the Bot API at the moment. By default, a regular sticker set is created.
+        :param sticker_type: Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.
         :type sticker_type: :obj:`str`
 
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
 
+        :param needs_repainting: Pass True if stickers in the sticker set must be repainted to the color of text when used in messages,
+            the accent color if used as emoji status, white on chat photos, or another appropriate color based on context;
+            for custom emoji sticker sets only
+        :type needs_repainting: :obj:`bool`
+
+        :param stickers: List of stickers to be added to the set
+        :type stickers: :obj:`list` of :class:`telebot.types.InputSticker`
+
+        :param sticker_format: Format of stickers in the set, must be one of “static”, “animated”, “video”
+        :type sticker_format: :obj:`str`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        if tgs_sticker:
+            sticker_format = 'animated'
+        elif webm_sticker:
+            sticker_format = 'video'
+        elif png_sticker:
+            sticker_format = 'static'
+        
         if contains_masks is not None:
             logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
             if sticker_type is None:
                sticker_type = 'mask' if contains_masks else 'regular'
+
+        if stickers is None:
+            stickers = png_sticker or tgs_sticker or webm_sticker
+            if stickers is None:
+                raise ValueError('You must pass at least one sticker')
+            stickers = [types.InputSticker(sticker=stickers, emoji_list=emojis, mask_position=mask_position)]
+            
+
                
         return await asyncio_helper.create_new_sticker_set(
-            self.token, user_id, name, title, emojis, png_sticker, tgs_sticker, 
-            mask_position, webm_sticker, sticker_type)
+            self.token, user_id, name, title, stickers, sticker_format, sticker_type, needs_repainting)
 
 
     async def add_sticker_to_set(
-            self, user_id: int, name: str, emojis: str,
+            self, user_id: int, name: str, emojis: List[str]=None,
             png_sticker: Optional[Union[Any, str]]=None, 
             tgs_sticker: Optional[Union[Any, str]]=None,  
             webm_sticker: Optional[Union[Any, str]]=None,
-            mask_position: Optional[types.MaskPosition]=None) -> bool:
+            mask_position: Optional[types.MaskPosition]=None,
+            sticker: Optional[List[types.InputSticker]]=None) -> bool:
         """
-        Use this method to add a new sticker to a set created by the bot. 
-        It's required to pass `png_sticker` or `tgs_sticker`.
+        Use this method to add a new sticker to a set created by the bot.
+        The format of the added sticker must match the format of the other stickers in the set.
+        Emoji sticker sets can have up to 200 stickers. Animated and video sticker sets can have up to 50 stickers.
+        Static sticker sets can have up to 120 stickers.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
@@ -5482,11 +5719,21 @@ class AsyncTeleBot:
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
 
+        :param sticker: A JSON-serialized list of 1-50 initial stickers to be added to the sticker set
+        :type sticker: :class:`telebot.types.InputSticker`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        # Replaced the parameters png_sticker, tgs_sticker, webm_sticker, emojis and mask_position
+        if sticker is None:
+            sticker = png_sticker or tgs_sticker or webm_sticker
+            if sticker is None:
+                raise ValueError('You must pass at least one sticker')
+            sticker = types.InputSticker(sticker, emojis, mask_position)
+
         return await asyncio_helper.add_sticker_to_set(
-            self.token, user_id, name, emojis, png_sticker, tgs_sticker, mask_position, webm_sticker)
+            self.token, user_id, name, sticker)
 
 
     async def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
