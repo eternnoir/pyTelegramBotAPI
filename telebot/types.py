@@ -7436,7 +7436,10 @@ class InputSticker(Dictionaryable, JsonSerializable):
             self._sticker_name = ''
             self._sticker_dic = self.sticker
         else:
+            # work like in inputmedia: convert_input_media
             self._sticker_name = service_utils.generate_random_token()
+            # uses attach://_sticker_name for sticker param. then,
+            # actual file is sent using files param of the request
             self._sticker_dic = 'attach://{0}'.format(self._sticker_name)
 
     def to_dict(self) -> dict:
