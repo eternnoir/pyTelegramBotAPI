@@ -1143,7 +1143,7 @@ async def set_chat_title(token, chat_id, title):
 async def set_my_description(token, description=None, language_code=None):
     method_url = r'setMyDescription'
     payload = {}
-    if description:
+    if description is not None:
         payload['description'] = description
     if language_code is not None:
         payload['language_code'] = language_code
@@ -1159,9 +1159,9 @@ async def get_my_description(token, language_code=None):
 async def set_my_short_description(token, short_description=None, language_code=None):
     method_url = r'setMyShortDescription'
     payload = {}
-    if short_description:
+    if short_description is not None:
         payload['short_description'] = short_description
-    if language_code:
+    if language_code is not None:
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload, method='post')
 
@@ -1642,7 +1642,7 @@ async def delete_sticker_set(token, name):
 async def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
     method_url = 'setCustomEmojiStickerSetThumbnail'
     payload = {'name': name}
-    if custom_emoji_id:
+    if custom_emoji_id is not None:
         payload['custom_emoji_id'] = custom_emoji_id
     return await _process_request(token, method_url, params=payload, method='post')
 
@@ -1653,15 +1653,13 @@ async def set_sticker_set_title(token, name, title):
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def create_new_sticker_set(
-        token, user_id, name, title, stickers, sticker_format=None, sticker_type=None, needs_repainting=None):
+        token, user_id, name, title, stickers, sticker_format, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
-    payload = {'user_id': user_id, 'name': name, 'title': title}
+    payload = {'user_id': user_id, 'name': name, 'title': title, 'sticker_format': sticker_format}
     if sticker_type:
         payload['sticker_type'] = sticker_type
     if needs_repainting:
         payload['needs_repainting'] = needs_repainting
-    if sticker_format:
-        payload['sticker_format'] = sticker_format
 
     files = {}
     lst = []
