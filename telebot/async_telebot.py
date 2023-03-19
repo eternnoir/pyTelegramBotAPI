@@ -5423,7 +5423,29 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
     
-    set_sticker_set_thumb = set_sticker_set_thumbnail
+    async def set_sticker_set_thumb(
+            self, name: str, user_id: int, thumb: Union[Any, str]=None):
+        """
+        Use this method to set the thumbnail of a sticker set. 
+        Animated thumbnails can be set for animated sticker sets only. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
+
+        :param name: Sticker set name
+        :type name: :obj:`str`
+
+        :param user_id: User identifier
+        :type user_id: :obj:`int`
+
+        :param thumb:
+        :type thumb: :obj:`filelike object`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        # deprecated
+        logger.warning('set_sticker_set_thumb is deprecated, use set_sticker_set_thumbnail instead')
+        return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
 
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
@@ -5681,7 +5703,7 @@ class AsyncTeleBot:
 
 
     async def add_sticker_to_set(
-            self, user_id: int, name: str, emojis: List[str]=None,
+            self, user_id: int, name: str, emojis: Union[List[str], str]=None,
             png_sticker: Optional[Union[Any, str]]=None, 
             tgs_sticker: Optional[Union[Any, str]]=None,  
             webm_sticker: Optional[Union[Any, str]]=None,
@@ -5693,6 +5715,9 @@ class AsyncTeleBot:
         Emoji sticker sets can have up to 200 stickers. Animated and video sticker sets can have up to 50 stickers.
         Static sticker sets can have up to 120 stickers.
         Returns True on success.
+
+        .. note::
+            **_sticker, mask_position, emojis parameters are deprecated, use stickers instead
 
         Telegram documentation: https://core.telegram.org/bots/api#addstickertoset
 
@@ -5720,17 +5745,25 @@ class AsyncTeleBot:
         :type mask_position: :class:`telebot.types.MaskPosition`
 
         :param sticker: A JSON-serialized list of 1-50 initial stickers to be added to the sticker set
-        :type sticker: :class:`telebot.types.InputSticker`
+        :type sticker: :obj:`list` of :class:`telebot.types.InputSticker`
 
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        # split emojis if string
+        if isinstance(emojis, str):
+            emojis = list(emojis)
         # Replaced the parameters png_sticker, tgs_sticker, webm_sticker, emojis and mask_position
         if sticker is None:
-            sticker = png_sticker or tgs_sticker or webm_sticker
-            if sticker is None:
-                raise ValueError('You must pass at least one sticker')
-            sticker = types.InputSticker(sticker, emojis, mask_position)
+            old_sticker = png_sticker or tgs_sticker or webm_sticker
+            if old_sticker is not None:
+                logger.warning(
+                'Parameters "png_sticker", "tgs_sticker", "webm_sticker", "emojis" and "mask_position" are deprecated, '
+                'use "sticker" instead'
+                )
+            if not old_sticker:
+                raise ValueError('You must pass at least one sticker.')
+            sticker = types.InputSticker(old_sticker, emojis, mask_position)
 
         return await asyncio_helper.add_sticker_to_set(
             self.token, user_id, name, sticker)
