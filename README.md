@@ -889,5 +889,6 @@ Here are some examples of template:
 * [TeleServ](https://github.com/ablakely/TeleServ) by [ablakely](https://github.com/ablakely) This is a Telegram to IRC bridge which links as an IRC server and makes Telegram users appear as native IRC users.
 * [Simple Store Bot](https://github.com/AntonGlyzin/myshopbot) by [Anton Glyzin](https://github.com/AntonGlyzin) This is a simple telegram-store with an admin panel. Designed according to a template.
 * [Media Rating Bot](https://t.me/mediaratingbot) ([source](https://github.com/CommanderCRM/MediaRatingBot))by [CommanderCRM](https://github.com/CommanderCRM). This bot aggregates media (movies, TV series, etc.) ratings from IMDb, Rotten Tomatoes, Metacritic, TheMovieDB, FilmAffinity and also provides number of votes of said media on IMDb. 
+* [Spot Seek Bot](https://t.me/SpotSeekBot) ([source](https://github.com/arashnm80/spot-seek-bot)) by [Arashnm80](https://github.com/arashnm80). This is a free & open source telegram bot for downloading tracks, albums or playlists from spotify.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
