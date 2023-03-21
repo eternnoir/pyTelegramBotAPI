@@ -2,6 +2,7 @@ import asyncio
 import functools
 import json
 import logging
+import math
 import re
 import time
 from asyncio.exceptions import TimeoutError
@@ -28,9 +29,9 @@ from telebot.metrics import (
 )
 from telebot.types import constants
 from telebot.types import service as service_types
+from telebot.util import MAX_MESSAGE_LENGTH, smart_split
 
 logger = logging.getLogger("telebot")
-
 
 _UpdateContentT = TypeVar("_UpdateContentT", bound=service_types.UpdateContent)
 
@@ -1058,7 +1059,7 @@ class AsyncTeleBot:
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         message_thread_id: Optional[int] = None,
-    ) -> types.Message:
+    ) -> list[types.Message]:
         """
         Use this method to send text messages.
 
@@ -1083,23 +1084,36 @@ class AsyncTeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        return types.Message.de_json(
-            await api.send_message(
-                self.token,
-                chat_id,
-                text,
-                disable_web_page_preview,
-                reply_to_message_id,
-                reply_markup,
-                parse_mode,
-                disable_notification,
-                timeout,
-                entities,
-                allow_sending_without_reply,
-                protect_content,
-                message_thread_id,
+        if len(text) > MAX_MESSAGE_LENGTH:
+            # proper_split_size = int(len(text) / (math.ceil(len(text) / MAX_MESSAGE_LENGTH)))
+            splitted_texts = smart_split(text, MAX_MESSAGE_LENGTH)
+        else:
+            splitted_texts = [text]
+
+        sent_messages = []
+
+        for splitted_text in splitted_texts:
+            sent_messages.append(
+                types.Message.de_json(
+                    await api.send_message(
+                        self.token,
+                        chat_id,
+                        splitted_text,
+                        disable_web_page_preview,
+                        reply_to_message_id,
+                        reply_markup,
+                        parse_mode,
+                        disable_notification,
+                        timeout,
+                        entities,
+                        allow_sending_without_reply,
+                        protect_content,
+                        message_thread_id,
+                    )
+                )
             )
-        )
+
+        return sent_messages
 
     async def forward_message(
         self,
@@ -3241,7 +3255,7 @@ class AsyncTeleBot:
         allow_sending_without_reply: Optional[bool] = None,
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
-    ) -> types.Message:
+    ) -> list[types.Message]:
         """
         Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
 
