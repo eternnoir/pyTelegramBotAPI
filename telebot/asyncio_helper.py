@@ -343,15 +343,15 @@ async def get_chat_member_count(token, chat_id):
     return await _process_request(token, method_url, params=payload)
 
 
-async def set_sticker_set_thumb(token, name, user_id, thumb):
+async def set_sticker_set_thumbnail(token, name, user_id, thumbnail):
     method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id}
     files = {}
-    if thumb:
-        if not isinstance(thumb, str):
-            files['thumb'] = thumb
+    if thumbnail:
+        if not isinstance(thumbnail, str):
+            files['thumbnail'] = thumbnail
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumbnail
     return await _process_request(token, method_url, params=payload, files=files or None)
 
 
