@@ -294,7 +294,7 @@ class AsyncTeleBot:
         :return:
         """
         if none_stop is not None:
-            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
+            logger.warning('The parameter "none_stop" is deprecated. Use "non_stop" instead.')
             non_stop = none_stop
 
         if skip_pending:
@@ -2944,11 +2944,12 @@ class AsyncTeleBot:
 
         if data and not(document):
             # function typo miss compatibility
+            logger.warning('The parameter "data" is deprecated. Use "document" instead.')
             document = data
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('"thumb" param is deprecated, use "thumbnail" param instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             await asyncio_helper.send_data(
@@ -3021,7 +3022,7 @@ class AsyncTeleBot:
 
         if data and not(sticker):
             # function typo miss compatibility
-            logger.warning("send_sticker: data parameter is deprecated. Use sticker instead.")
+            logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
 
         return types.Message.de_json(
@@ -3128,11 +3129,11 @@ class AsyncTeleBot:
 
         if data and not(video):
             # function typo miss compatibility
-            logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
+            logger.warning('The parameter "data" is deprecated. Use "video" instead.')
             video = data
 
         if thumb and not(thumbnail):
-            logger.warning("send_sticker: thumb parameter is deprecated. Use thumbnail instead.")
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
             thumbnail = thumb
 
         return types.Message.de_json(
@@ -3234,7 +3235,7 @@ class AsyncTeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('"thumb" param is deprecated, use "thumbnail" param instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             await asyncio_helper.send_animation(
@@ -3314,7 +3315,7 @@ class AsyncTeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('"thumb" param is deprecated, use "thumbnail" param instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             await asyncio_helper.send_video_note(
@@ -3887,9 +3888,7 @@ class AsyncTeleBot:
                 can_invite_users=can_invite_users,
                 can_pin_messages=can_pin_messages
             )
-            logger.warning(
-                "Individual parameters are deprecated and will be removed, use 'permissions' instead."
-            )
+            logger.warning('The parameters "can_..." are deprecated, use "permissions" instead.')
         return await asyncio_helper.restrict_chat_member(
             self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)
 
@@ -3973,7 +3972,7 @@ class AsyncTeleBot:
         """
 
         if can_manage_voice_chats is not None:
-            logger.warning("promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead.")
+            logger.warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
             if can_manage_video_chats is None:
                 can_manage_video_chats = can_manage_voice_chats
 
@@ -5539,7 +5538,7 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.File`
         """
         if png_sticker:
-            logger.warning("png_sticker is deprecated, use sticker instead", DeprecationWarning)
+            logger.warning('The parameter "png_sticker" is deprecated. Use "sticker" instead.')
             sticker = png_sticker
             sticker_format = "static"
         
@@ -5761,10 +5760,7 @@ class AsyncTeleBot:
         if sticker is None:
             old_sticker = png_sticker or tgs_sticker or webm_sticker
             if old_sticker is not None:
-                logger.warning(
-                'Parameters "png_sticker", "tgs_sticker", "webm_sticker", "emojis" and "mask_position" are deprecated, '
-                'use "sticker" instead'
-                )
+                logger.warning('The parameters "..._sticker", "emojis" and "mask_position" are deprecated, use "sticker" instead')
             if not old_sticker:
                 raise ValueError('You must pass at least one sticker.')
             sticker = types.InputSticker(old_sticker, emojis, mask_position)

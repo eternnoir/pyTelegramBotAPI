@@ -1582,7 +1582,7 @@ class Audio(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
 
@@ -1677,7 +1677,7 @@ class Document(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
 
@@ -1741,7 +1741,7 @@ class Video(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
 
@@ -1791,7 +1791,7 @@ class VideoNote(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
 
@@ -5493,7 +5493,7 @@ class Animation(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
 
@@ -5918,7 +5918,7 @@ class StickerSet(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
     @property
@@ -6024,7 +6024,7 @@ class Sticker(JsonDeserializable):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
 
@@ -6225,7 +6225,7 @@ class InputMediaVideo(InputMedia):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
     def to_dict(self):
@@ -6301,7 +6301,7 @@ class InputMediaAnimation(InputMedia):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
     def to_dict(self):
@@ -6371,7 +6371,7 @@ class InputMediaAudio(InputMedia):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
     def to_dict(self):
@@ -6432,7 +6432,7 @@ class InputMediaDocument(InputMedia):
 
     @property
     def thumb(self):
-        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
         return self.thumbnail
 
     def to_dict(self):
