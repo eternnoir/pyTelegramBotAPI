@@ -209,8 +209,8 @@ class AsyncTeleBot:
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :type allowed_updates: :obj:`list`, optional
 
-        :param long_polling_timeout: Timeout in seconds for long polling.
-        :type long_polling_timeout: :obj:`int`, optional
+        :param request_timeout: Timeout in seconds for request.
+        :type request_timeout: :obj:`int`, optional
 
         :return: An Array of Update objects is returned.
         :rtype: :obj:`list` of :class:`telebot.types.Update`
@@ -511,7 +511,6 @@ class AsyncTeleBot:
                     if not process_update: continue
                     for i in signature(handler['function']).parameters:
                         params.append(i)
-                    result = None
                     if len(params) == 1:
                         result = await handler['function'](message)
                     elif "data" in params:
@@ -2072,6 +2071,8 @@ class AsyncTeleBot:
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
         :param secret_token: Secret token to be used to verify the webhook request.
+        :param secret_token_length: Length of a secret token, defaults to 20
+        :param debug: Debug mode, defaults to False
         :return:
         """
 
@@ -2079,12 +2080,9 @@ class AsyncTeleBot:
         if not secret_token:
             secret_token = ''.join(random.choices(string.ascii_uppercase + string.digits, k=secret_token_length))
 
-
         if not url_path:
             url_path = self.token + '/'
         if url_path[-1] != '/': url_path += '/'
-        
-
 
         protocol = "https" if certificate else "http"
         if not webhook_url:
@@ -2093,8 +2091,6 @@ class AsyncTeleBot:
         if certificate and certificate_key:
             ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_ctx.load_cert_chain(certificate, certificate_key)
-        else:
-            ssl_ctx = None
 
         # open certificate if it exists
         cert_file = open(certificate, 'rb') if certificate else None
@@ -2769,6 +2765,8 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2933,6 +2931,8 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
+
+        :param thumb: Deprecated. Use thumbnail instead
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -3116,6 +3116,8 @@ class AsyncTeleBot:
         :param has_spoiler: Pass True, if the video should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3220,6 +3222,8 @@ class AsyncTeleBot:
         :param has_spoiler: Pass True, if the animation should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3298,6 +3302,8 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the video note will be sent
         :type message_thread_id: :obj:`int`
+
+        :param thumb: Deprecated. Use thumbnail instead
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -5609,7 +5615,7 @@ class AsyncTeleBot:
 
     async def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 
-            emojis: Optional[str]=None, 
+            emojis: Optional[List[str]]=None,
             png_sticker: Union[Any, str]=None, 
             tgs_sticker: Union[Any, str]=None, 
             webm_sticker: Union[Any, str]=None,

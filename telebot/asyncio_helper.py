@@ -173,6 +173,7 @@ async def get_file_url(token, file_id):
     if FILE_URL is None:
         return "https://api.telegram.org/file/bot{0}/{1}".format(token, (await get_file(token, file_id))['file_path'])
     else:
+        # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, (await get_file(token, file_id))['file_path'])
 
 
@@ -180,6 +181,7 @@ async def download_file(token, file_path):
     if FILE_URL is None:
         url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
     else:
+        # noinspection PyUnresolvedReferences
         url =  FILE_URL.format(token, file_path)
     session = await session_manager.get_session()
     async with session.get(url, proxy=proxy) as response:
@@ -1433,8 +1435,8 @@ async def send_invoice(
         need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None,
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_to_message_id=None, reply_markup=None, provider_data=None,
-        timeout=None, allow_sending_without_reply=None, max_tip_amount=None, suggested_tip_amounts=None, protect_content=None,
-        message_thread_id=None):
+        timeout=None, allow_sending_without_reply=None, max_tip_amount=None, suggested_tip_amounts=None,
+        protect_content=None, message_thread_id=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1466,7 +1468,8 @@ async def send_invoice(
     :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
     :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
         At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
-    :param protect_content:
+    :param protect_content: Protects the contents of the sent message from forwarding and saving
+    :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
     :return:
     """
     method_url = r'sendInvoice'

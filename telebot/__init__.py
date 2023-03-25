@@ -451,7 +451,7 @@ class TeleBot:
                     drop_pending_updates: Optional[bool] = None,
                     timeout: Optional[int]=None,
                     secret_token: Optional[str]=None,
-                    secret_token_length: Optional[int]=20,):
+                    secret_token_length: Optional[int]=20):
         """
         This class sets webhooks and listens to a given url and port.
 
@@ -1906,6 +1906,8 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2071,6 +2073,8 @@ class TeleBot:
 
         :param message_thread_id: The thread to which the message will be sent
         :type message_thread_id: :obj:`int`
+
+        :param thumb: Deprecated. Use thumbnail instead
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -2256,6 +2260,8 @@ class TeleBot:
         :param has_spoiler: Pass True, if the video should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2359,6 +2365,8 @@ class TeleBot:
         :param has_spoiler: Pass True, if the animation should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2437,6 +2445,8 @@ class TeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the video note will be sent
         :type message_thread_id: :obj:`int`
+
+        :param thumb: Deprecated. Use thumbnail instead
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -6740,7 +6750,6 @@ class TeleBot:
                     if not process_handler: continue
                     for i in inspect.signature(handler['function']).parameters:
                         params.append(i)
-                    result = None
                     if len(params) == 1:
                         result = handler['function'](message)
                     elif "data" in params:
