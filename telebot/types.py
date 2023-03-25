@@ -1578,8 +1578,12 @@ class Audio(JsonDeserializable):
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
-        self.thumbnail: PhotoSize = thumbnail 
-        self.thumb = thumbnail
+        self.thumbnail: PhotoSize = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
 
 class Voice(JsonDeserializable):
@@ -1670,7 +1674,11 @@ class Document(JsonDeserializable):
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
 
 class Video(JsonDeserializable):
@@ -1730,7 +1738,11 @@ class Video(JsonDeserializable):
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
 
 class VideoNote(JsonDeserializable):
@@ -1776,7 +1788,11 @@ class VideoNote(JsonDeserializable):
         self.duration: int = duration
         self.thumbnail: PhotoSize = thumbnail
         self.file_size: int = file_size
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
 
 class Contact(JsonDeserializable):
@@ -5471,10 +5487,14 @@ class Animation(JsonDeserializable):
         self.height: int = height
         self.duration: int = duration
         self.thumbnail: PhotoSize = thumbnail
-        self.thumb: PhotoSize = thumbnail
         self.file_name: str = file_name
         self.mime_type: str = mime_type
         self.file_size: int = file_size
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
 
 class GameHighScore(JsonDeserializable):
@@ -5895,7 +5915,11 @@ class StickerSet(JsonDeserializable):
         self.is_video: bool = is_video
         self.stickers: List[Sticker] = stickers
         self.thumbnail: PhotoSize = thumbnail
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
     @property
     def contains_masks(self):
@@ -5997,8 +6021,11 @@ class Sticker(JsonDeserializable):
         self.premium_animation: File = premium_animation
         self.custom_emoji_id: int = custom_emoji_id
         self.needs_repainting: bool = needs_repainting
-        self.thumb = self.thumbnail
-        
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
 
 class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
@@ -6195,7 +6222,11 @@ class InputMediaVideo(InputMedia):
         self.duration = duration
         self.supports_streaming = supports_streaming
         self.has_spoiler: Optional[bool] = has_spoiler
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
     def to_dict(self):
         ret = super(InputMediaVideo, self).to_dict()
@@ -6225,12 +6256,12 @@ class InputMediaAnimation(InputMedia):
         multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type media: :obj:`str`
 
-    :param thumb: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported 
+    :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported
         server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should 
         not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be 
         only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using 
         multipart/form-data under <file_attach_name>. More information on Sending Files »
-    :type thumb: InputFile or :obj:`str`
+    :type thumbnail: InputFile or :obj:`str`
 
     :param caption: Optional. Caption of the animation to be sent, 0-1024 characters after entities parsing
     :type caption: :obj:`str`
@@ -6267,7 +6298,11 @@ class InputMediaAnimation(InputMedia):
         self.height = height
         self.duration = duration
         self.has_spoiler: Optional[bool] = has_spoiler
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
     def to_dict(self):
         ret = super(InputMediaAnimation, self).to_dict()
@@ -6333,7 +6368,11 @@ class InputMediaAudio(InputMedia):
         self.duration = duration
         self.performer = performer
         self.title = title
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
     def to_dict(self):
         ret = super(InputMediaAudio, self).to_dict()
@@ -6390,7 +6429,11 @@ class InputMediaDocument(InputMedia):
             type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
         self.disable_content_type_detection = disable_content_type_detection
-        self.thumb = thumbnail
+
+    @property
+    def thumb(self):
+        logger.warning('The property "thumb" is deprecated, use "thumbnail" instead')
+        return self.thumbnail
 
     def to_dict(self):
         ret = super(InputMediaDocument, self).to_dict()
