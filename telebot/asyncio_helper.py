@@ -662,9 +662,9 @@ async def send_chat_action(token, chat_id, action, timeout=None, message_thread_
 
 
 async def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, 
-               thumb=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None,
-               protect_content=None, message_thread_id=None, has_spoiler=None):
+                     parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
+                     thumbnail=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None,
+                     protect_content=None, message_thread_id=None, has_spoiler=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -688,14 +688,14 @@ async def send_video(token, chat_id, data, duration=None, caption=None, reply_to
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if width:
         payload['width'] = width
     if height:
@@ -715,7 +715,7 @@ async def send_video(token, chat_id, data, duration=None, caption=None, reply_to
 
 async def send_animation(
         token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-        parse_mode=None, disable_notification=None, timeout=None, thumb=None, caption_entities=None,
+        parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
         allow_sending_without_reply=None, width=None, height=None, protect_content=None, message_thread_id=None,
         has_spoiler=None):
     method_url = r'sendAnimation'
@@ -739,14 +739,14 @@ async def send_animation(
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -800,8 +800,8 @@ async def send_voice(token, chat_id, voice, caption=None, duration=None, reply_t
 
 
 async def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                    disable_notification=None, timeout=None, thumb=None, allow_sending_without_reply=None, protect_content=None,
-                    message_thread_id=None):
+                          disable_notification=None, timeout=None, thumbnail=None, allow_sending_without_reply=None, protect_content=None,
+                          message_thread_id=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -823,14 +823,14 @@ async def send_video_note(token, chat_id, data, duration=None, length=None, repl
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if protect_content is not None:
@@ -841,8 +841,8 @@ async def send_video_note(token, chat_id, data, duration=None, length=None, repl
 
 
 async def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumb=None,
-               caption_entities=None, allow_sending_without_reply=None, protect_content=None, message_thread_id=None):
+                     reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
+                     caption_entities=None, allow_sending_without_reply=None, protect_content=None, message_thread_id=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -868,14 +868,14 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -888,9 +888,9 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
 
 
 async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
-              disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
-              allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None, protect_content=None,
-              message_thread_id=None, emoji=None):
+                    disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
+                    allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None, protect_content=None,
+                    message_thread_id=None, emoji=None):
     method_url = await get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -913,14 +913,14 @@ async def send_data(token, chat_id, data, data_type, reply_to_message_id=None, r
         payload['timeout'] = timeout
     if caption:
         payload['caption'] = caption
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:

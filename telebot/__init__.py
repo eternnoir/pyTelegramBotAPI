@@ -1918,7 +1918,7 @@ class TeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('"thumb" param is deprecated, use "thumbnail" param instead')
 
         return types.Message.de_json(
             apihelper.send_audio(
@@ -2090,13 +2090,13 @@ class TeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('"thumb" param is deprecated, use "thumbnail" param instead')
 
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, document, 'document',
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
-                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumbnail,
+                disable_notification = disable_notification, timeout = timeout, caption = caption, thumbnail= thumbnail,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name,
                 protect_content = protect_content, message_thread_id = message_thread_id))
@@ -2276,7 +2276,7 @@ class TeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('"thumb" param is deprecated, use "thumbnail" param instead')
 
         return types.Message.de_json(
             apihelper.send_video(
