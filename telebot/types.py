@@ -4032,10 +4032,20 @@ class InlineQueryResultArticle(InlineQueryResultBase):
         self.thumbnail_width = thumbnail_width
         self.thumbnail_height = thumbnail_height
 
-        # deprecateds
-        self.thumb_url = thumbnail_url
-        self.thumb_width = thumbnail_width
-        self.thumb_height = thumbnail_height
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
+
+    @property
+    def thumb_width(self):
+        logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        return self.thumbnail_width
+
+    @property
+    def thumb_height(self):
+        logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        return self.thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4047,9 +4057,9 @@ class InlineQueryResultArticle(InlineQueryResultBase):
             json_dict['description'] = self.description
         if self.thumbnail_url:
             json_dict['thumbnail_url'] = self.thumbnail_url
-        if self.thumb_width:
+        if self.thumbnail_width:
             json_dict['thumbnail_width'] = self.thumbnail_width
-        if self.thumb_height:
+        if self.thumbnail_height:
             json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
@@ -4115,8 +4125,10 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
         self.photo_height = photo_height
         self.description = description
 
-        # deprecateds
-        self.thumb_url = thumbnail_url
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4198,9 +4210,15 @@ class InlineQueryResultGif(InlineQueryResultBase):
         self.gif_duration = gif_duration
         self.thumbnail_mime_type = thumbnail_mime_type
 
-        # deprecateds
-        self.thumb_url = thumbnail_url
-        self.thumb_mime_type = thumbnail_mime_type
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
+
+    @property
+    def thumb_mime_type(self):
+        logger.warning('The parameter "thumb_mime_type" is deprecated, use "thumbnail_mime_type" instead')
+        return self.thumbnail_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4284,9 +4302,15 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         self.mpeg4_duration = mpeg4_duration
         self.thumbnail_mime_type = thumbnail_mime_type
 
-        # deprecateds
-        self.thumb_url = thumbnail_url
-        self.thumb_mime_type = thumbnail_mime_type
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
+
+    @property
+    def thumb_mime_type(self):
+        logger.warning('The parameter "thumb_mime_type" is deprecated, use "thumbnail_mime_type" instead')
+        return self.thumbnail_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4375,8 +4399,10 @@ class InlineQueryResultVideo(InlineQueryResultBase):
         self.video_duration = video_duration
         self.description = description
 
-        # deprecated
-        self.thumb_url = thumbnail_url
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4579,11 +4605,20 @@ class InlineQueryResultDocument(InlineQueryResultBase):
         self.thumbnail_width = thumbnail_width
         self.thumbnail_height = thumbnail_height
 
-        # deprecated
-        self.thumb_url = thumbnail_url
-        self.thumb_width = thumbnail_width
-        self.thumb_height = thumbnail_height
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
 
+    @property
+    def thumb_width(self):
+        logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        return self.thumbnail_width
+
+    @property
+    def thumb_height(self):
+        logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        return self.thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4668,10 +4703,20 @@ class InlineQueryResultLocation(InlineQueryResultBase):
         self.thumbnail_width = thumbnail_width
         self.thumbnail_height = thumbnail_height
 
-        # deprecated
-        self.thumb_url = thumbnail_url
-        self.thumb_width = thumbnail_width
-        self.thumb_height = thumbnail_height
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
+
+    @property
+    def thumb_width(self):
+        logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        return self.thumbnail_width
+
+    @property
+    def thumb_height(self):
+        logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        return self.thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4765,11 +4810,20 @@ class InlineQueryResultVenue(InlineQueryResultBase):
         self.thumbnail_width = thumbnail_width
         self.thumbnail_height = thumbnail_height
 
-        # deprecated
-        self.thumb_url = thumbnail_url
-        self.thumb_width = thumbnail_width
-        self.thumb_height = thumbnail_height
-        
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
+
+    @property
+    def thumb_width(self):
+        logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        return self.thumbnail_width
+
+    @property
+    def thumb_height(self):
+        logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        return self.thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -4848,12 +4902,20 @@ class InlineQueryResultContact(InlineQueryResultBase):
         self.thumbnail_width = thumbnail_width
         self.thumbnail_height = thumbnail_height
 
-        # deprecated
-        self.thumb_url = thumbnail_url
-        self.thumb_width = thumbnail_width
-        self.thumb_height = thumbnail_height
+    @property
+    def thumb_url(self):
+        logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        return self.thumbnail_url
 
-        
+    @property
+    def thumb_width(self):
+        logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        return self.thumbnail_width
+
+    @property
+    def thumb_height(self):
+        logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        return self.thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
