@@ -2766,7 +2766,7 @@ class AsyncTeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-
+:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2933,7 +2933,7 @@ class AsyncTeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-
+:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3118,7 +3118,7 @@ class AsyncTeleBot:
         :type has_spoiler: :obj:`bool`
 
         :param thumb: Deprecated. Use thumbnail instead
-
+:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3224,7 +3224,7 @@ class AsyncTeleBot:
         :type has_spoiler: :obj:`bool`
 
         :param thumb: Deprecated. Use thumbnail instead
-
+:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3305,7 +3305,7 @@ class AsyncTeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-
+:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
