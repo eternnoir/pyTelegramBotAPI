@@ -2058,8 +2058,7 @@ class AsyncTeleBot:
         """
         This class sets webhooks and listens to a given url and port.
 
-        :param listen: IP address to listen to. Defaults to
-            0.0.0.0
+        :param listen: IP address to listen to. Defaults to 0.0.0.0
         :param port: A port which will be used to listen to webhooks.
         :param url_path: Path to the webhook. Defaults to /token
         :param certificate: Path to the certificate file.
@@ -2751,7 +2750,7 @@ class AsyncTeleBot:
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumbnail: :obj:`str`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -2766,7 +2765,8 @@ class AsyncTeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2933,7 +2933,8 @@ class AsyncTeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3118,7 +3119,8 @@ class AsyncTeleBot:
         :type has_spoiler: :obj:`bool`
 
         :param thumb: Deprecated. Use thumbnail instead
-:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3224,7 +3226,8 @@ class AsyncTeleBot:
         :type has_spoiler: :obj:`bool`
 
         :param thumb: Deprecated. Use thumbnail instead
-:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3305,7 +3308,8 @@ class AsyncTeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-:type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
