@@ -355,15 +355,15 @@ def get_chat_member_count(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
-def set_sticker_set_thumb(token, name, user_id, thumb):
+def set_sticker_set_thumbnail(token, name, user_id, thumbnail):
     method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id}
     files = {}
-    if thumb:
-        if not isinstance(thumb, str):
-            files['thumb'] = thumb
+    if thumbnail:
+        if not isinstance(thumbnail, str):
+            files['thumbnail'] = thumbnail
         else:
-            payload['thumb'] = thumb
+            payload['thumbnail'] = thumbnail
     return _make_request(token, method_url, params=payload, files=files or None)
 
 
@@ -668,8 +668,8 @@ def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=Non
 
 
 def send_video(token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None, 
-               thumb=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None, protect_content=None,
+               parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
+               thumbnail=None, width=None, height=None, caption_entities=None, allow_sending_without_reply=None, protect_content=None,
                message_thread_id=None, has_spoiler=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
@@ -694,14 +694,14 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if width:
         payload['width'] = width
     if height:
@@ -721,7 +721,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_to_messa
 
 def send_animation(
         token, chat_id, data, duration=None, caption=None, reply_to_message_id=None, reply_markup=None,
-        parse_mode=None, disable_notification=None, timeout=None, thumb=None, caption_entities=None,
+        parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
         allow_sending_without_reply=None, protect_content=None, width=None, height=None, message_thread_id=None,
         has_spoiler=None):
     method_url = r'sendAnimation'
@@ -745,14 +745,14 @@ def send_animation(
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -806,7 +806,7 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_to_mess
 
 
 def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_message_id=None, reply_markup=None,
-                    disable_notification=None, timeout=None, thumb=None, allow_sending_without_reply=None, protect_content=None,
+                    disable_notification=None, timeout=None, thumbnail=None, allow_sending_without_reply=None, protect_content=None,
                     message_thread_id=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
@@ -829,14 +829,14 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if allow_sending_without_reply is not None:
         payload['allow_sending_without_reply'] = allow_sending_without_reply
     if protect_content is not None:
@@ -847,7 +847,7 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_to_m
 
 
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, reply_to_message_id=None,
-               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumb=None,
+               reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
                caption_entities=None, allow_sending_without_reply=None, protect_content=None, message_thread_id=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
@@ -874,14 +874,14 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
         payload['disable_notification'] = disable_notification
     if timeout:
         payload['timeout'] = timeout
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -894,7 +894,7 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
 
 
 def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_markup=None, parse_mode=None,
-              disable_notification=None, timeout=None, caption=None, thumb=None, caption_entities=None,
+              disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
               allow_sending_without_reply=None, disable_content_type_detection=None, visible_file_name=None,
               protect_content = None, message_thread_id=None, emoji=None):
     method_url = get_method_by_type(data_type)
@@ -919,14 +919,14 @@ def send_data(token, chat_id, data, data_type, reply_to_message_id=None, reply_m
         payload['timeout'] = timeout
     if caption:
         payload['caption'] = caption
-    if thumb:
-        if not util.is_string(thumb):
+    if thumbnail:
+        if not util.is_string(thumbnail):
             if files:
-                files['thumbnail'] = thumb
+                files['thumbnail'] = thumbnail
             else:
-                files = {'thumbnail': thumb}
+                files = {'thumbnail': thumbnail}
         else:
-            payload['thumbnail'] = thumb
+            payload['thumbnail'] = thumbnail
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if allow_sending_without_reply is not None:
@@ -1479,7 +1479,8 @@ def send_invoice(
     :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
     :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
         At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
-    :param protect_content:
+    :param protect_content: Protects the contents of the sent message from forwarding and saving
+    :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
     :return:
     """
     method_url = r'sendInvoice'

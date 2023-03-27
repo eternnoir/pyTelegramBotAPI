@@ -451,7 +451,7 @@ class TeleBot:
                     drop_pending_updates: Optional[bool] = None,
                     timeout: Optional[int]=None,
                     secret_token: Optional[str]=None,
-                    secret_token_length: Optional[int]=20,):
+                    secret_token_length: Optional[int]=20):
         """
         This class sets webhooks and listens to a given url and port.
 
@@ -1028,7 +1028,7 @@ class TeleBot:
         :return:
         """
         if none_stop is not None:
-            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
+            logger.warning('The parameter "none_stop" is deprecated. Use "non_stop" instead.')
             non_stop = none_stop
 
         if skip_pending:
@@ -1892,7 +1892,7 @@ class TeleBot:
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumbnail: :obj:`str`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -1906,6 +1906,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1916,7 +1919,7 @@ class TeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             apihelper.send_audio(
@@ -2072,6 +2075,9 @@ class TeleBot:
         :param message_thread_id: The thread to which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2082,17 +2088,18 @@ class TeleBot:
 
         if data and not(document):
             # function typo miss compatibility
+            logger.warning('The parameter "data" is deprecated. Use "document" instead.')
             document = data
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, document, 'document',
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
-                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumbnail,
+                disable_notification = disable_notification, timeout = timeout, caption = caption, thumbnail= thumbnail,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name,
                 protect_content = protect_content, message_thread_id = message_thread_id))
@@ -2162,6 +2169,7 @@ class TeleBot:
 
         if data and not(sticker):
             # function typo miss compatibility
+            logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
 
         return types.Message.de_json(
@@ -2256,6 +2264,9 @@ class TeleBot:
         :param has_spoiler: Pass True, if the video should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2266,11 +2277,12 @@ class TeleBot:
 
         if data and not(video):
             # function typo miss compatibility
+            logger.warning('The parameter "data" is deprecated. Use "video" instead.')
             video = data
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             apihelper.send_video(
@@ -2359,6 +2371,9 @@ class TeleBot:
         :param has_spoiler: Pass True, if the animation should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2438,6 +2453,8 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the video note will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+    :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3023,9 +3040,7 @@ class TeleBot:
                 can_invite_users=can_invite_users,
                 can_pin_messages=can_pin_messages
             )
-            logger.warning(
-                "Individual parameters are deprecated and will be removed, use 'permissions' instead."
-            )
+            logger.warning('The parameters "can_..." are deprecated, use "permissions" instead.')
         return apihelper.restrict_chat_member(
             self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)
 
@@ -3108,7 +3123,7 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         if can_manage_voice_chats is not None:
-            logger.warning("promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead.")
+            logger.warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
             if can_manage_video_chats is None:
                 can_manage_video_chats = can_manage_voice_chats
 
@@ -4537,8 +4552,7 @@ class TeleBot:
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    def set_sticker_set_thumbnail(
-            self, name: str, user_id: int, thumb: Union[Any, str]=None):
+    def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
@@ -4551,16 +4565,17 @@ class TeleBot:
         :param user_id: User identifier
         :type user_id: :obj:`int`
 
-        :param thumb:
-        :type thumb: :obj:`filelike object`
+        :param thumbnail: A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files ». Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.
+        :type thumbnail: :obj:`filelike object`
 
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
-        return apihelper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+
+        return apihelper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail)
     
-    def set_sticker_set_thumb(
-            self, name: str, user_id: int, thumb: Union[Any, str]=None):
+    @util.deprecated(deprecation_text="Use set_sticker_set_thumbnail instead")
+    def set_sticker_set_thumb(self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
@@ -4580,8 +4595,7 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         # deprecated
-        logger.warning('set_sticker_set_thumb is deprecated. Use set_sticker_set_thumbnail instead.')
-        return apihelper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+        return self.set_sticker_set_thumbnail(name, user_id, thumb)
 
     def get_sticker_set(self, name: str) -> types.StickerSet:
         """
@@ -4736,7 +4750,7 @@ class TeleBot:
         :rtype: :class:`telebot.types.File`
         """
         if png_sticker:
-            logger.warning("png_sticker is deprecated, use sticker instead", DeprecationWarning)
+            logger.warning('The parameter "png_sticker" is deprecated. Use "sticker" instead.')
             sticker = png_sticker
             sticker_format = "static"
         
@@ -4894,10 +4908,7 @@ class TeleBot:
         if sticker is None:
             old_sticker = png_sticker or tgs_sticker or webm_sticker
             if old_sticker is not None:
-                logger.warning(
-                    'The parameters "png_sticker", "tgs_sticker", "webm_sticker", "emojis" and "mask_position" are deprecated, '
-                    'use "sticker" instead'
-                )
+                logger.warning('The parameters "..._sticker", "emojis" and "mask_position" are deprecated, use "sticker" instead')
             if not old_sticker:
                 raise ValueError('You must pass at least one sticker.')
             sticker = types.InputSticker(old_sticker, emojis, mask_position)
@@ -6740,7 +6751,6 @@ class TeleBot:
                     if not process_handler: continue
                     for i in inspect.signature(handler['function']).parameters:
                         params.append(i)
-                    result = None
                     if len(params) == 1:
                         result = handler['function'](message)
                     elif "data" in params:

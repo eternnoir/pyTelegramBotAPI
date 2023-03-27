@@ -209,8 +209,8 @@ class AsyncTeleBot:
         :param allowed_updates: Array of string. List the types of updates you want your bot to receive.
         :type allowed_updates: :obj:`list`, optional
 
-        :param long_polling_timeout: Timeout in seconds for long polling.
-        :type long_polling_timeout: :obj:`int`, optional
+        :param request_timeout: Timeout in seconds for request.
+        :type request_timeout: :obj:`int`, optional
 
         :return: An Array of Update objects is returned.
         :rtype: :obj:`list` of :class:`telebot.types.Update`
@@ -294,7 +294,7 @@ class AsyncTeleBot:
         :return:
         """
         if none_stop is not None:
-            logger.warning("polling: none_stop parameter is deprecated. Use non_stop instead.")
+            logger.warning('The parameter "none_stop" is deprecated. Use "non_stop" instead.')
             non_stop = none_stop
 
         if skip_pending:
@@ -511,7 +511,6 @@ class AsyncTeleBot:
                     if not process_update: continue
                     for i in signature(handler['function']).parameters:
                         params.append(i)
-                    result = None
                     if len(params) == 1:
                         result = await handler['function'](message)
                     elif "data" in params:
@@ -2059,8 +2058,7 @@ class AsyncTeleBot:
         """
         This class sets webhooks and listens to a given url and port.
 
-        :param listen: IP address to listen to. Defaults to
-            0.0.0.0
+        :param listen: IP address to listen to. Defaults to 0.0.0.0
         :param port: A port which will be used to listen to webhooks.
         :param url_path: Path to the webhook. Defaults to /token
         :param certificate: Path to the certificate file.
@@ -2072,6 +2070,8 @@ class AsyncTeleBot:
         :param drop_pending_updates: Pass True to drop all pending updates
         :param timeout: Integer. Request connection timeout
         :param secret_token: Secret token to be used to verify the webhook request.
+        :param secret_token_length: Length of a secret token, defaults to 20
+        :param debug: Debug mode, defaults to False
         :return:
         """
 
@@ -2079,12 +2079,9 @@ class AsyncTeleBot:
         if not secret_token:
             secret_token = ''.join(random.choices(string.ascii_uppercase + string.digits, k=secret_token_length))
 
-
         if not url_path:
             url_path = self.token + '/'
         if url_path[-1] != '/': url_path += '/'
-        
-
 
         protocol = "https" if certificate else "http"
         if not webhook_url:
@@ -2093,8 +2090,6 @@ class AsyncTeleBot:
         if certificate and certificate_key:
             ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_ctx.load_cert_chain(certificate, certificate_key)
-        else:
-            ssl_ctx = None
 
         # open certificate if it exists
         cert_file = open(certificate, 'rb') if certificate else None
@@ -2755,7 +2750,7 @@ class AsyncTeleBot:
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
             so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>
-        :type thumbnail: :obj:`str`
+        :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
         :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
@@ -2768,6 +2763,9 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
+
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -2934,6 +2932,9 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2944,17 +2945,18 @@ class AsyncTeleBot:
 
         if data and not(document):
             # function typo miss compatibility
+            logger.warning('The parameter "data" is deprecated. Use "document" instead.')
             document = data
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, document, 'document',
                 reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
-                disable_notification = disable_notification, timeout = timeout, caption = caption, thumb = thumbnail,
+                disable_notification = disable_notification, timeout = timeout, caption = caption, thumbnail= thumbnail,
                 caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content,
                 message_thread_id = message_thread_id))
@@ -3021,7 +3023,7 @@ class AsyncTeleBot:
 
         if data and not(sticker):
             # function typo miss compatibility
-            logger.warning("send_sticker: data parameter is deprecated. Use sticker instead.")
+            logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
 
         return types.Message.de_json(
@@ -3116,6 +3118,9 @@ class AsyncTeleBot:
         :param has_spoiler: Pass True, if the video should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3126,11 +3131,11 @@ class AsyncTeleBot:
 
         if data and not(video):
             # function typo miss compatibility
-            logger.warning("send_sticker: data parameter is deprecated. Use video instead.")
+            logger.warning('The parameter "data" is deprecated. Use "video" instead.')
             video = data
 
         if thumb and not(thumbnail):
-            logger.warning("send_sticker: thumb parameter is deprecated. Use thumbnail instead.")
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
             thumbnail = thumb
 
         return types.Message.de_json(
@@ -3220,6 +3225,9 @@ class AsyncTeleBot:
         :param has_spoiler: Pass True, if the animation should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3230,7 +3238,7 @@ class AsyncTeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             await asyncio_helper.send_animation(
@@ -3299,6 +3307,9 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the video note will be sent
         :type message_thread_id: :obj:`int`
 
+        :param thumb: Deprecated. Use thumbnail instead
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3308,7 +3319,7 @@ class AsyncTeleBot:
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
-            logger.warning('thumb is deprecated, use thumbnail instead')
+            logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             await asyncio_helper.send_video_note(
@@ -3881,9 +3892,7 @@ class AsyncTeleBot:
                 can_invite_users=can_invite_users,
                 can_pin_messages=can_pin_messages
             )
-            logger.warning(
-                "Individual parameters are deprecated and will be removed, use 'permissions' instead."
-            )
+            logger.warning('The parameters "can_..." are deprecated, use "permissions" instead.')
         return await asyncio_helper.restrict_chat_member(
             self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)
 
@@ -3967,7 +3976,7 @@ class AsyncTeleBot:
         """
 
         if can_manage_voice_chats is not None:
-            logger.warning("promote_chat_member: can_manage_voice_chats parameter is deprecated. Use can_manage_video_chats instead.")
+            logger.warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
             if can_manage_video_chats is None:
                 can_manage_video_chats = can_manage_voice_chats
 
@@ -5401,8 +5410,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-    async def set_sticker_set_thumbnail(
-            self, name: str, user_id: int, thumb: Union[Any, str]=None):
+    async def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
@@ -5415,16 +5423,16 @@ class AsyncTeleBot:
         :param user_id: User identifier
         :type user_id: :obj:`int`
 
-        :param thumb:
-        :type thumb: :obj:`filelike object`
+        :param thumbnail: A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files ». Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.
+        :type thumbnail: :obj:`filelike object`
 
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+        return await asyncio_helper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail)
     
-    async def set_sticker_set_thumb(
-            self, name: str, user_id: int, thumb: Union[Any, str]=None):
+    @util.deprecated(deprecation_text="Use set_sticker_set_thumbnail instead")
+    async def set_sticker_set_thumb(self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
@@ -5444,8 +5452,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         # deprecated
-        logger.warning('set_sticker_set_thumb is deprecated, use set_sticker_set_thumbnail instead')
-        return await asyncio_helper.set_sticker_set_thumb(self.token, name, user_id, thumb)
+        return await self.set_sticker_set_thumbnail(name, user_id, thumb)
 
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
@@ -5535,7 +5542,7 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.File`
         """
         if png_sticker:
-            logger.warning("png_sticker is deprecated, use sticker instead", DeprecationWarning)
+            logger.warning('The parameter "png_sticker" is deprecated. Use "sticker" instead.')
             sticker = png_sticker
             sticker_format = "static"
         
@@ -5609,7 +5616,7 @@ class AsyncTeleBot:
 
     async def create_new_sticker_set(
             self, user_id: int, name: str, title: str, 
-            emojis: Optional[str]=None, 
+            emojis: Optional[List[str]]=None,
             png_sticker: Union[Any, str]=None, 
             tgs_sticker: Union[Any, str]=None, 
             webm_sticker: Union[Any, str]=None,
@@ -5757,10 +5764,7 @@ class AsyncTeleBot:
         if sticker is None:
             old_sticker = png_sticker or tgs_sticker or webm_sticker
             if old_sticker is not None:
-                logger.warning(
-                'Parameters "png_sticker", "tgs_sticker", "webm_sticker", "emojis" and "mask_position" are deprecated, '
-                'use "sticker" instead'
-                )
+                logger.warning('The parameters "..._sticker", "emojis" and "mask_position" are deprecated, use "sticker" instead')
             if not old_sticker:
                 raise ValueError('You must pass at least one sticker.')
             sticker = types.InputSticker(old_sticker, emojis, mask_position)
