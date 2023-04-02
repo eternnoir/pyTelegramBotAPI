@@ -174,7 +174,7 @@ class StateRedisStorage(StateStorageBase):
         user_id = str(user_id)
         if response:
             if user_id in response:
-                response[user_id]['data'] = dict(data, **response[user_id]['data'])
+                response[user_id]['data'] = data
                 self.set_record(chat_id, response)
                 return True
     
