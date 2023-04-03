@@ -829,7 +829,6 @@ Here are some examples of template:
 	
 	
 ## Bots using this library
-* [DownloadMusicBOT](https://github.com/fcoagz/DownloadMusicBOT) by *Francisco Griman* - It is a simple bot that downloads audio from YouTube videos on Telegram.
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
 * [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF* - Let me Google that for you.
@@ -891,5 +890,6 @@ Here are some examples of template:
 * [Media Rating Bot](https://t.me/mediaratingbot) ([source](https://github.com/CommanderCRM/MediaRatingBot))by [CommanderCRM](https://github.com/CommanderCRM). This bot aggregates media (movies, TV series, etc.) ratings from IMDb, Rotten Tomatoes, Metacritic, TheMovieDB, FilmAffinity and also provides number of votes of said media on IMDb. 
 * [Spot Seek Bot](https://t.me/SpotSeekBot) ([source](https://github.com/arashnm80/spot-seek-bot)) by [Arashnm80](https://github.com/arashnm80). This is a free & open source telegram bot for downloading tracks, albums or playlists from spotify.
 * [CalendarIT Bot](https://t.me/calendarit_bot) ([source](https://github.com/codebyzen/CalendarIT_Telegram_Bot))by [CodeByZen](https://github.com/codebyzen). A simple, but extensible Python Telegram bot, can post acquainted with what is happening today, tomorrow or what happened 20 years ago to channel. 
+* [DownloadMusicBOT](https://github.com/fcoagz/DownloadMusicBOT) by *Francisco Griman* - It is a simple bot that downloads audio from YouTube videos on Telegram.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
