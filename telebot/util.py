@@ -420,11 +420,13 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int = 2) -> types
     .. code-block:: python3
         :caption: Using quick_markup:
 
-        quick_markup({
+        from telebot.util import quick_markup
+
+        markup = quick_markup({
             'Twitter': {'url': 'https://twitter.com'},
             'Facebook': {'url': 'https://facebook.com'},
             'Back': {'callback_data': 'whatever'}
-        }, row_width=2): 
+        }, row_width=2)
         # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
         # and a back button below
 
@@ -443,7 +445,7 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int = 2) -> types
     :param values: a dict containing all buttons to create in this format: {text: kwargs} {str:}
     :type values: :obj:`dict`
 
-    :param row_width: int row width
+    :param row_width: number of :class:`telebot.types.InlineKeyboardButton` objects on each row
     :type row_width: :obj:`int`
 
     :return: InlineKeyboardMarkup

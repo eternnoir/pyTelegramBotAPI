@@ -2448,23 +2448,29 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     This object represents an inline keyboard that appears right next to the message it belongs to.
 
     .. note::
-        It is recommended to use :meth:`telebot.service_utils..quick_markup` instead.
+        It is recommended to use :meth:`telebot.util.quick_markup` instead.
 
     .. code-block:: python3
         :caption: Example of a custom keyboard with buttons.
 
-        from telebot.service_utils..import quick_markup
+        from telebot.util import quick_markup
 
-        markup = quick_markup(
-            {'text': 'Press me', 'callback_data': 'press'},
-            {'text': 'Press me too', 'callback_data': 'press_too'}
-        )
+        markup = quick_markup({
+            'Twitter': {'url': 'https://twitter.com'},
+            'Facebook': {'url': 'https://facebook.com'},
+            'Back': {'callback_data': 'whatever'}
+        }, row_width=2)
+        # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
+        # and a back button below
 
     Telegram Documentation: https://core.telegram.org/bots/api#inlinekeyboardmarkup
 
-    :param inline_keyboard: :obj:`list` of button rows, each represented by an :obj:`list` of 
+    :param keyboard: :obj:`list` of button rows, each represented by an :obj:`list` of 
         :class:`telebot.types.InlineKeyboardButton` objects
-    :type inline_keyboard: :obj:`list` of :obj:`list` of :class:`telebot.types.InlineKeyboardButton`
+    :type keyboard: :obj:`list` of :obj:`list` of :class:`telebot.types.InlineKeyboardButton`
+
+    :param row_width: number of :class:`telebot.types.InlineKeyboardButton` objects on each row
+    :type row_width: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineKeyboardMarkup`
