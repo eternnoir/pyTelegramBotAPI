@@ -191,7 +191,12 @@ class StatesGroup:
                 value.name = ':'.join((cls.__name__, name))
                 value.group = cls
 
-    
+    @property
+    def state_list(self):
+        return [value for name, value in self.__dict__.items()
+                if not name.startswith('__') and not callable(value) and isinstance(value, State)]
+
+
 class BaseMiddleware:
     """
     Base class for middleware.
