@@ -74,12 +74,18 @@ class StatesGroup:
             my_state = State() # returns my_state:State string.
     """
     def __init_subclass__(cls) -> None:
-
+        state_list = []
         for name, value in cls.__dict__.items():
             if not name.startswith('__') and not callable(value) and isinstance(value, State):
                 # change value of that variable
                 value.name = ':'.join((cls.__name__, name))
                 value.group = cls
+                state_list.append(value)
+        cls._state_list = state_list
+
+    @property
+    def state_list(self):
+        return self._state_list
 
 
 class SkipHandler:
