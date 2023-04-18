@@ -339,6 +339,11 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
             "added_to_attachment_menu": self.added_to_attachment_menu,
         }
 
+    def __hash__(self) -> int:
+        # HACK: we use the fact that user id is unique
+        #       more systematic solution is required
+        return self.id
+
 
 class GroupChat(JsonDeserializable):
     @classmethod
