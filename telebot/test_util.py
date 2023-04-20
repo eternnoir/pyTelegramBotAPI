@@ -28,7 +28,7 @@ UNMOCKABLE_METHOD_NAMES = {
     "logger",
     "close",
     "log_out",
-    "reply_to",  # conveniense method, calls, send_message
+    "reply_to",  # conveniense method, calls send_message internally
     "close_session",
     "get_updates",
     "infinity_polling",
@@ -70,9 +70,14 @@ class NoDefaultValueException(Exception):
     pass
 
 
-def mocked(method: AsyncTeleBotMethodT, method_name: Optional[str] = None) -> AsyncTeleBotMethodT:
+def mocked(
+    method: AsyncTeleBotMethodT,
+    method_name: Optional[str] = None,
+    do_not_register: bool = False,
+) -> AsyncTeleBotMethodT:
     method_name_ = method_name or method.__name__
-    MOCKED_METHOD_NAMES.add(method_name_)
+    if not do_not_register:
+        MOCKED_METHOD_NAMES.add(method_name_)
 
     async def decorated(self: "MockedAsyncTeleBot", *args, **kwargs):
         method_param_names = [
@@ -147,7 +152,16 @@ class MockedAsyncTeleBot(AsyncTeleBot):
             setattr(
                 self,
                 method_name,
-                MethodType(mocked(self._no_default_value_mocked_method, method_name=method_name), self),
+                MethodType(
+                    mocked(
+                        self._no_default_value_mocked_method,
+                        method_name=method_name,
+                        # HACK: if the method being mocked here is registered (is in global MOCKED_METHOD_NAMES)
+                        #       subsequent instantiation of MockedAsyncTeleBot will have these methods NOT mocked
+                        do_not_register=True,
+                    ),
+                    self,
+                ),
             )
 
     async def _no_default_value_mocked_method(self, *args, **kwargs):
@@ -220,7 +234,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
 
     @mocked
     async def answer_pre_checkout_query(
-        self, pre_checkout_query_id: int, ok: bool, error_message: Optional[str] = None
+        self, pre_checkout_query_id: str, ok: bool, error_message: Optional[str] = None
     ) -> bool:
         return True
 
