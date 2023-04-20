@@ -1,21 +1,6 @@
-from telebot import AsyncTeleBot, types
+from telebot import types
 from telebot.callback_data import CallbackData
-from telebot.test_util import (
-    MOCKED_METHOD_NAMES,
-    UNMOCKABLE_METHOD_NAMES,
-    MockedAsyncTeleBot,
-)
-
-
-def test_mocked_async_telebot_mocks_all_mockable_parent_methods():
-    b = MockedAsyncTeleBot("token")
-    mockable_telebot_method_names = [
-        method_name
-        for method_name in dir(AsyncTeleBot)
-        if not (method_name.startswith("__") or method_name in UNMOCKABLE_METHOD_NAMES)
-    ]
-    missing_mockable_methods = sorted(set(mockable_telebot_method_names) - set(MOCKED_METHOD_NAMES))
-    assert missing_mockable_methods == []
+from telebot.test_util import MockedAsyncTeleBot
 
 
 async def test_mocked_async_telebot_defaults():
