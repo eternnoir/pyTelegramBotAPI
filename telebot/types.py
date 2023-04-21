@@ -2592,6 +2592,10 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         something from multiple options.
     :type switch_inline_query_current_chat: :obj:`str`
 
+    :param switch_inline_query_chosen_chat: Optional. If set, pressing the button will prompt the user to select one of their chats of the
+        specified type, open that chat and insert the bot's username and the specified inline query in the input field
+    :type switch_inline_query_chosen_chat: :class:`telebot.types.SwitchInlineQueryChosenChat`
+
     :param callback_game: Optional. Description of the game that will be launched when the user presses the 
         button. NOTE: This type of button must always be the first button in the first row.
     :type callback_game: :class:`telebot.types.CallbackGame`
@@ -2611,17 +2615,20 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             obj['login_url'] = LoginUrl.de_json(obj.get('login_url'))
         if 'web_app' in obj:
             obj['web_app'] = WebAppInfo.de_json(obj.get('web_app'))
+        if 'switch_inline_query_chosen_chat' in obj:
+            obj['switch_inline_query_chosen_chat'] = SwitchInlineQueryChosenChat.de_json(obj.get('switch_inline_query_chosen_chat'))
         
         return cls(**obj)
 
     def __init__(self, text, url=None, callback_data=None, web_app=None, switch_inline_query=None,
-                 switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None, **kwargs):
+                 switch_inline_query_current_chat=None, switch_inline_query_chosen_chat=None, callback_game=None, pay=None, login_url=None, **kwargs):
         self.text: str = text
         self.url: str = url
         self.callback_data: str = callback_data
         self.web_app: WebAppInfo = web_app
         self.switch_inline_query: str = switch_inline_query
         self.switch_inline_query_current_chat: str = switch_inline_query_current_chat
+        self.switch_inline_query_chosen_chat: SwitchInlineQueryChosenChat = switch_inline_query_chosen_chat
         self.callback_game = callback_game # Not Implemented
         self.pay: bool = pay
         self.login_url: LoginUrl = login_url
@@ -2647,6 +2654,8 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             json_dict['pay'] = self.pay
         if self.login_url is not None:
             json_dict['login_url'] = self.login_url.to_dict()
+        if self.switch_inline_query_chosen_chat is not None:
+            json_dict['switch_inline_query_chosen_chat'] = self.switch_inline_query_chosen_chat.to_dict()
         return json_dict
 
 
@@ -7584,3 +7593,63 @@ class InputSticker(Dictionaryable, JsonSerializable):
         
         
         
+class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    Represents an inline button that switches the current user to inline mode in a chosen chat,
+    with an optional default inline query.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inlinekeyboardbutton
+
+    :param query: Optional. The default inline query to be inserted in the input field.
+                  If left empty, only the bot's username will be inserted
+    :type query: :obj:`str`
+
+    :param allow_user_chats: Optional. True, if private chats with users can be chosen
+    :type allow_user_chats: :obj:`bool`
+
+    :param allow_bot_chats: Optional. True, if private chats with bots can be chosen
+    :type allow_bot_chats: :obj:`bool`
+
+    :param allow_group_chats: Optional. True, if group and supergroup chats can be chosen
+    :type allow_group_chats: :obj:`bool`
+
+    :param allow_channel_chats: Optional. True, if channel chats can be chosen
+    :type allow_channel_chats: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`SwitchInlineQueryChosenChat`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, query=None, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None,
+                 allow_channel_chats=None):
+        self.query: str = query
+        self.allow_user_chats: bool = allow_user_chats
+        self.allow_bot_chats: bool = allow_bot_chats
+        self.allow_group_chats: bool = allow_group_chats
+        self.allow_channel_chats: bool = allow_channel_chats
+
+    def to_dict(self):
+        json_dict = {}
+
+        if self.query is not None:
+            json_dict['query'] = self.query
+        if self.allow_user_chats is not None:
+            json_dict['allow_user_chats'] = self.allow_user_chats
+        if self.allow_bot_chats is not None:
+            json_dict['allow_bot_chats'] = self.allow_bot_chats
+        if self.allow_group_chats is not None:
+            json_dict['allow_group_chats'] = self.allow_group_chats
+        if self.allow_channel_chats is not None:
+            json_dict['allow_channel_chats'] = self.allow_channel_chats
+
+        return json_dict
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
