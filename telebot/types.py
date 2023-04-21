@@ -7396,13 +7396,20 @@ class WriteAccessAllowed(JsonDeserializable):
     Currently holds no information.
 
     Telegram documentation: https://core.telegram.org/bots/api#writeaccessallowed
+
+    :param web_app_name: Optional. Name of the Web App which was launched from a link
+    :type web_app_name: :obj:`str`
     """
     @classmethod
     def de_json(cls, json_string):
-        return cls()
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+        
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, web_app_name: str) -> None:
+        self.web_app_name: str = web_app_name
+        
 
 
 class UserShared(JsonDeserializable):
