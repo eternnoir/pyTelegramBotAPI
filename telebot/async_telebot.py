@@ -4379,6 +4379,22 @@ class AsyncTeleBot:
 
         return await asyncio_helper.set_my_name(self.token, name, language_code)
 
+    async def get_my_name(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot name for the given user language.
+        Returns BotName on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmyname
+
+        :param language_code: Optional. A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotName`
+        """
+
+        result = await asyncio_helper.get_my_name(self.token, language_code)
+        return types.BotName.de_json(result)
+
     async def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
                 menu_button: types.MenuButton=None) -> bool:
         """

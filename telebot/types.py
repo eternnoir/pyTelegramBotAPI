@@ -7658,3 +7658,27 @@ class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerial
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
+
+class BotName(JsonDeserializable):
+    """
+    This object represents a bot name.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#botname
+
+    :param name: The bot name
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`BotName`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: str):
+        self.name: str = name

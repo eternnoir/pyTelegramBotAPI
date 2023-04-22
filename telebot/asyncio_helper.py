@@ -1193,6 +1193,13 @@ async def set_my_name(token, name=None, language_code=None):
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def get_my_name(token, language_code=None):
+    method_url = r'getMyName'
+    payload = {}
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload)
+
 async def set_chat_menu_button(token, chat_id=None, menu_button=None):
     method_url = r'setChatMenuButton'
     payload = {}
