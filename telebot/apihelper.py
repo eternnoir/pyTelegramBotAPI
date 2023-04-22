@@ -1196,6 +1196,15 @@ def get_my_commands(token, scope=None, language_code=None):
         payload['language_code'] = language_code
     return _make_request(token, method_url, params=payload)
 
+def set_my_name(token, name=None, language_code=None):
+    method_url = r'setMyName'
+    payload = {}
+    if name is not None:
+        payload['name'] = name
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return _make_request(token, method_url, params=payload, method='post')
+
 def set_chat_menu_button(token, chat_id=None, menu_button=None):
     method_url = r'setChatMenuButton'
     payload = {}

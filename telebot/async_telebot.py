@@ -4361,6 +4361,24 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
+    async def set_my_name(self, name: Optional[str]=None, language_code: Optional[str]=None):
+        """
+        Use this method to change the bot's name. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmyname
+
+        :param name: Optional. New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.
+        :type name: :obj:`str`
+
+        :param language_code: Optional. A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose
+            language there is no dedicated name.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return await asyncio_helper.set_my_name(self.token, name, language_code)
+
     async def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
                 menu_button: types.MenuButton=None) -> bool:
         """
