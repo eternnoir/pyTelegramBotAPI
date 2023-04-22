@@ -4521,7 +4521,8 @@ class TeleBot:
             is_personal: Optional[bool]=None, 
             next_offset: Optional[str]=None,
             switch_pm_text: Optional[str]=None, 
-            switch_pm_parameter: Optional[str]=None) -> bool:
+            switch_pm_parameter: Optional[str]=None,
+            button: Optional[types.InlineQueryResultsButton]=None) -> bool:
         """
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
@@ -4557,11 +4558,18 @@ class TeleBot:
         :param switch_pm_text: Parameter for the start message sent to the bot when user presses the switch button
         :type switch_pm_text: :obj:`str`
 
+        :param button: A JSON-serialized object describing a button to be shown above inline query results
+        :type button: :obj:`types.InlineQueryResultsButton`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        if not button and (switch_pm_text or switch_pm_parameter):
+            logger.warning("switch_pm_text and switch_pm_parameter are deprecated for answer_inline_query. Use button instead.")
+            button = types.InlineQueryResultsButton(text=switch_pm_text, start_parameter=switch_pm_parameter)
+        
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
-                                             switch_pm_text, switch_pm_parameter)
+                                             button)
 
     def answer_callback_query(
             self, callback_query_id: int, 

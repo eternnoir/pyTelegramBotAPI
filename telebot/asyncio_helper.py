@@ -1604,7 +1604,7 @@ async def answer_callback_query(token, callback_query_id, text=None, show_alert=
 
 
 async def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
-                        switch_pm_text=None, switch_pm_parameter=None):
+                        button=None):
     method_url = 'answerInlineQuery'
     payload = {'inline_query_id': inline_query_id, 'results': await _convert_list_json_serializable(results)}
     if cache_time is not None:
@@ -1613,10 +1613,10 @@ async def answer_inline_query(token, inline_query_id, results, cache_time=None, 
         payload['is_personal'] = is_personal
     if next_offset is not None:
         payload['next_offset'] = next_offset
-    if switch_pm_text:
-        payload['switch_pm_text'] = switch_pm_text
-    if switch_pm_parameter:
-        payload['switch_pm_parameter'] = switch_pm_parameter
+    if button is not None:
+        payload["button"] = button.to_json()
+    
+
     return await _process_request(token, method_url, params=payload, method='post')
 
 

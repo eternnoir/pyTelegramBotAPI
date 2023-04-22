@@ -7682,3 +7682,52 @@ class BotName(JsonDeserializable):
 
     def __init__(self, name: str):
         self.name: str = name
+
+
+class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
+    """
+    This object represents a button to be shown above inline query results.
+    You must use exactly one of the optional fields.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inlinequeryresultsbutton
+
+    :param text: Label text on the button
+    :type text: :obj:`str`
+
+    :param web_app: Optional. Description of the Web App that will be launched when the user presses the button.
+        The Web App will be able to switch back to the inline mode using the method web_app_switch_inline_query inside the Web App.
+    :type web_app: :class:`telebot.types.WebAppInfo`
+    
+    :param start_parameter: Optional. Deep-linking parameter for the /start message sent to the bot when a user presses the button.
+        1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.
+        Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search
+        results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing
+        any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs
+        the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat
+        where they wanted to use the bot's inline capabilities.
+    :type start_parameter: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InlineQueryResultsButton`
+    """
+
+    def __init__(self, text: str, web_app: Optional[WebAppInfo]=None, start_parameter: Optional[str]=None) -> None:
+        self.text: str = text
+        self.web_app: Optional[WebAppInfo] = web_app
+        self.start_parameter: Optional[str] = start_parameter
+
+
+    def to_dict(self) -> dict:
+        json_dict = {
+            'text': self.text
+        }
+
+        if self.web_app is not None:
+            json_dict['web_app'] = self.web_app.to_dict()
+        if self.start_parameter is not None:
+            json_dict['start_parameter'] = self.start_parameter
+
+        return json_dict
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
