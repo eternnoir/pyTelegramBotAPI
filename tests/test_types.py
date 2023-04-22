@@ -275,10 +275,10 @@ def test_message_entity():
     # TODO: Add support for nesting entities
 
 
-    #sample_string_1 = r'{"update_id":934522126,"message":{"message_id":1374510,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682177590,"text":"b b b","entities":[{"offset":0,"length":2,"type":"bold"},{"offset":0,"length":1,"type":"italic"},{"offset":2,"length":2,"type":"bold"},{"offset":2,"length":1,"type":"italic"},{"offset":4,"length":1,"type":"bold"},{"offset":4,"length":1,"type":"italic"}]}}'
-    #update = types.Update.de_json(sample_string_1)
-    #message: types.Message = update.message
-    #assert message.html_text == "<b><i>b</i> </b><b><i>b</i> </b><b><i>b</i></b>"
+    sample_string_1 = r'{"update_id":934522126,"message":{"message_id":1374510,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682177590,"text":"b b b","entities":[{"offset":0,"length":2,"type":"bold"},{"offset":0,"length":1,"type":"italic"},{"offset":2,"length":2,"type":"bold"},{"offset":2,"length":1,"type":"italic"},{"offset":4,"length":1,"type":"bold"},{"offset":4,"length":1,"type":"italic"}]}}'
+    update = types.Update.de_json(sample_string_1)
+    message: types.Message = update.message
+    assert message.html_text == "<i><b>b </b></i><i><b>b </b></i><i><b>b</b></i>"
 
     sample_string_2 = r'{"update_id":934522166,"message":{"message_id":1374526,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179716,"text":"b b b","entities":[{"offset":0,"length":1,"type":"bold"},{"offset":2,"length":1,"type":"bold"},{"offset":4,"length":1,"type":"italic"}]}}'
     message_2 = types.Update.de_json(sample_string_2).message
@@ -286,12 +286,15 @@ def test_message_entity():
 
     
 
-    #sample_string_3 = r'{"update_id":934522172,"message":{"message_id":1374530,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179968,"text":"This is a bold text with a nested italic and bold text.","entities":[{"offset":10,"length":4,"type":"bold"},{"offset":27,"length":7,"type":"italic"},{"offset":34,"length":15,"type":"bold"},{"offset":34,"length":15,"type":"italic"}]}}'
-    #message_3 = types.Update.de_json(sample_string_3).message
-    #assert message_3.html_text == "This is a <b>bold</b> text with a <i>nested </i><b><i>italic and bold</i></b> text."
+    sample_string_3 = r'{"update_id":934522172,"message":{"message_id":1374530,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179968,"text":"This is a bold text with a nested italic and bold text.","entities":[{"offset":10,"length":4,"type":"bold"},{"offset":27,"length":7,"type":"italic"},{"offset":34,"length":15,"type":"bold"},{"offset":34,"length":15,"type":"italic"}]}}'
+    message_3 = types.Update.de_json(sample_string_3).message
+    assert message_3.html_text == "This is a <b>bold</b> text with a <i>nested </i><i><b>italic and bold</b></i> text."
 
 
-    assert True
+    sample_string_4 = r'{"update_id":934522437,"message":{"message_id":1374619,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682189507,"forward_from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"forward_date":1682189124,"text":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa😋😋","entities":[{"offset":0,"length":76,"type":"bold"},{"offset":0,"length":76,"type":"italic"},{"offset":0,"length":76,"type":"underline"},{"offset":0,"length":76,"type":"strikethrough"},{"offset":76,"length":2,"type":"custom_emoji","custom_emoji_id":"5456188142006575553"},{"offset":78,"length":2,"type":"custom_emoji","custom_emoji_id":"5456188142006575553"}]}}'
+    message_4 = types.Update.de_json(sample_string_4).message
+    assert message_4.html_text == '<s><u><i><b>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</b></i></u></s><tg-emoji emoji-id="5456188142006575553">😋</tg-emoji><tg-emoji emoji-id="5456188142006575553">😋</tg-emoji>'
+
     
 
 

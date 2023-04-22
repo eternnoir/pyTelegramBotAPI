@@ -1313,6 +1313,7 @@ class Message(JsonDeserializable):
             "strikethrough": "<s>{text}</s>",
             "underline":     "<u>{text}</u>",
             "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
+            "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>"
         }
          
         if hasattr(self, "custom_subs"):
@@ -1321,7 +1322,7 @@ class Message(JsonDeserializable):
         utf16_text = text.encode("utf-16-le")
         html_text = ""
 
-        def func(upd_text, subst_type=None, url=None, user=None):
+        def func(upd_text, subst_type=None, url=None, user=None, custom_emoji_id=None):
             upd_text = upd_text.decode("utf-16-le")
             if subst_type == "text_mention":
                 subst_type = "text_link"
@@ -1332,30 +1333,41 @@ class Message(JsonDeserializable):
             if not subst_type or not _subs.get(subst_type):
                 return upd_text
             subs = _subs.get(subst_type)
+            if subst_type == "custom_emoji":
+                return subs.format(text=upd_text, custom_emoji_id=custom_emoji_id)
             return subs.format(text=upd_text, url=url)
 
         offset = 0
+        start_index = 0
+        end_index = 0
         for entity in entities:
             if entity.offset > offset:
+                # when the offset is not 0: for example, a __b__ 
+                # we need to add the text before the entity to the html_text
                 html_text += func(utf16_text[offset * 2 : entity.offset * 2])
                 offset = entity.offset
-                html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
+
+                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user, entity.custom_emoji_id)
+                start_index = len(html_text)
+                html_text += new_string
                 offset += entity.length
+                end_index = len(html_text)
             elif entity.offset == offset:
-                html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
+                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user, entity.custom_emoji_id)
+                start_index = len(html_text)
+                html_text += new_string
+                end_index = len(html_text)
                 offset += entity.length
             else:
                 # Here we are processing nested entities.
                 # We shouldn't update offset, because they are the same as entity before.
                 # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
                 # And we don't change it).
-                entity_string = utf16_text[entity.offset * 2 : (entity.offset + entity.length) * 2]
-                formatted_string = func(entity_string, entity.type, entity.url, entity.user)
-                entity_string_decoded = entity_string.decode("utf-16-le")
-                last_occurence = html_text.rfind(entity_string_decoded)
-                string_length = len(entity_string_decoded)
-                #html_text = html_text.replace(html_text[last_occurence:last_occurence+string_length], formatted_string)
-                html_text = html_text[:last_occurence] + formatted_string + html_text[last_occurence+string_length:]
+                entity_string = html_text[start_index : end_index].encode("utf-16-le")
+                formatted_string = func(entity_string, entity.type, entity.url, entity.user, entity.custom_emoji_id).replace("&amp;", "&").replace("&lt;", "<").replace("&gt;",">")
+                html_text = html_text[:start_index] + formatted_string + html_text[end_index:]
+                end_index = len(html_text)
+
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
 
