@@ -3443,12 +3443,48 @@ class TeleBot:
         """
         result = apihelper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
+
+    def set_my_name(self, name: Optional[str]=None, language_code: Optional[str]=None):
+        """
+        Use this method to change the bot's name. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmyname
+
+        :param name: Optional. New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.
+        :type name: :obj:`str`
+
+        :param language_code: Optional. A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose
+            language there is no dedicated name.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return apihelper.set_my_name(self.token, name, language_code)
+    
+    def get_my_name(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot name for the given user language.
+        Returns BotName on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmyname
+
+        :param language_code: Optional. A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotName`
+        """
+
+        result = apihelper.get_my_name(self.token, language_code)
+        return types.BotName.de_json(result)
     
     def set_my_description(self, description: Optional[str]=None, language_code: Optional[str]=None):
         """
         Use this method to change the bot's description, which is shown in
         the chat with the bot if the chat is empty.
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmydescription
 
         :param description: New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language.
         :type description: :obj:`str`
@@ -3467,6 +3503,8 @@ class TeleBot:
         Use this method to get the current bot description for the given user language.
         Returns BotDescription on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#getmydescription
+
         :param language_code: A two-letter ISO 639-1 language code or an empty string
         :type language_code: :obj:`str`
 
@@ -3480,6 +3518,8 @@ class TeleBot:
         Use this method to change the bot's short description, which is shown on the bot's profile page and
         is sent together with the link when users share the bot. 
         Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmyshortdescription
 
         :param short_description: New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.
         :type short_description: :obj:`str`
@@ -3497,6 +3537,8 @@ class TeleBot:
         """
         Use this method to get the current bot short description for the given user language.
         Returns BotShortDescription on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmyshortdescription
 
         :param language_code: A two-letter ISO 639-1 language code or an empty string
         :type language_code: :obj:`str`
@@ -4479,7 +4521,8 @@ class TeleBot:
             is_personal: Optional[bool]=None, 
             next_offset: Optional[str]=None,
             switch_pm_text: Optional[str]=None, 
-            switch_pm_parameter: Optional[str]=None) -> bool:
+            switch_pm_parameter: Optional[str]=None,
+            button: Optional[types.InlineQueryResultsButton]=None) -> bool:
         """
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
@@ -4515,11 +4558,18 @@ class TeleBot:
         :param switch_pm_text: Parameter for the start message sent to the bot when user presses the switch button
         :type switch_pm_text: :obj:`str`
 
+        :param button: A JSON-serialized object describing a button to be shown above inline query results
+        :type button: :obj:`types.InlineQueryResultsButton`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+        if not button and (switch_pm_text or switch_pm_parameter):
+            logger.warning("switch_pm_text and switch_pm_parameter are deprecated for answer_inline_query. Use button instead.")
+            button = types.InlineQueryResultsButton(text=switch_pm_text, start_parameter=switch_pm_parameter)
+        
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
-                                             switch_pm_text, switch_pm_parameter)
+                                             button)
 
     def answer_callback_query(
             self, callback_query_id: int, 

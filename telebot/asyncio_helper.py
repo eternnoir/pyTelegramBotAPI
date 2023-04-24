@@ -1183,6 +1183,23 @@ async def get_my_commands(token, scope=None, language_code=None):
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload)
 
+
+async def set_my_name(token, name=None, language_code=None):
+    method_url = r'setMyName'
+    payload = {}
+    if name is not None:
+        payload['name'] = name
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_my_name(token, language_code=None):
+    method_url = r'getMyName'
+    payload = {}
+    if language_code is not None:
+        payload['language_code'] = language_code
+    return await _process_request(token, method_url, params=payload)
+
 async def set_chat_menu_button(token, chat_id=None, menu_button=None):
     method_url = r'setChatMenuButton'
     payload = {}
@@ -1587,7 +1604,7 @@ async def answer_callback_query(token, callback_query_id, text=None, show_alert=
 
 
 async def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
-                        switch_pm_text=None, switch_pm_parameter=None):
+                        button=None):
     method_url = 'answerInlineQuery'
     payload = {'inline_query_id': inline_query_id, 'results': await _convert_list_json_serializable(results)}
     if cache_time is not None:
@@ -1596,10 +1613,10 @@ async def answer_inline_query(token, inline_query_id, results, cache_time=None, 
         payload['is_personal'] = is_personal
     if next_offset is not None:
         payload['next_offset'] = next_offset
-    if switch_pm_text:
-        payload['switch_pm_text'] = switch_pm_text
-    if switch_pm_parameter:
-        payload['switch_pm_parameter'] = switch_pm_parameter
+    if button is not None:
+        payload["button"] = button.to_json()
+    
+
     return await _process_request(token, method_url, params=payload, method='post')
 
 

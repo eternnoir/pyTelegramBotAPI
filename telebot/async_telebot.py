@@ -4361,6 +4361,40 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
+    async def set_my_name(self, name: Optional[str]=None, language_code: Optional[str]=None):
+        """
+        Use this method to change the bot's name. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmyname
+
+        :param name: Optional. New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.
+        :type name: :obj:`str`
+
+        :param language_code: Optional. A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose
+            language there is no dedicated name.
+        :type language_code: :obj:`str`
+
+        :return: True on success.
+        """
+
+        return await asyncio_helper.set_my_name(self.token, name, language_code)
+
+    async def get_my_name(self, language_code: Optional[str]=None):
+        """
+        Use this method to get the current bot name for the given user language.
+        Returns BotName on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmyname
+
+        :param language_code: Optional. A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+
+        :return: :class:`telebot.types.BotName`
+        """
+
+        result = await asyncio_helper.get_my_name(self.token, language_code)
+        return types.BotName.de_json(result)
+
     async def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
                 menu_button: types.MenuButton=None) -> bool:
         """
@@ -5337,7 +5371,8 @@ class AsyncTeleBot:
             is_personal: Optional[bool]=None, 
             next_offset: Optional[str]=None,
             switch_pm_text: Optional[str]=None, 
-            switch_pm_parameter: Optional[str]=None) -> bool:
+            switch_pm_parameter: Optional[str]=None,
+            button: Optional[types.InlineQueryResultsButton]=None) -> bool:
         """
         Use this method to send answers to an inline query. On success, True is returned.
         No more than 50 results per query are allowed.
@@ -5373,11 +5408,18 @@ class AsyncTeleBot:
         :param switch_pm_text: Parameter for the start message sent to the bot when user presses the switch button
         :type switch_pm_text: :obj:`str`
 
+        :param button: A JSON-serialized object describing a button to be shown above inline query results
+        :type button: :obj:`types.InlineQueryResultsButton`
+
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
+
+        if not button and (switch_pm_text or switch_pm_parameter):
+            logger.warning("switch_pm_text and switch_pm_parameter are deprecated for answer_inline_query. Use button instead.")
+            button = types.InlineQueryResultsButton(text=switch_pm_text, start_parameter=switch_pm_parameter)
         return await asyncio_helper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
-                                             switch_pm_text, switch_pm_parameter)
+                                             button)
 
     async def answer_callback_query(
             self, callback_query_id: int, 

@@ -237,6 +237,9 @@ class ChatMemberUpdated(JsonDeserializable):
         link events only.
     :type invite_link: :class:`telebot.types.ChatInviteLink`
 
+    :param via_chat_folder_invite_link: Optional. True, if the user joined the chat via a chat folder invite link
+    :type via_chat_folder_invite_link: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberUpdated`
     """
@@ -251,13 +254,15 @@ class ChatMemberUpdated(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
     
-    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None, **kwargs):
+    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None, via_chat_folder_invite_link=None,
+                 **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
         self.date: int = date
         self.old_chat_member: ChatMember = old_chat_member
         self.new_chat_member: ChatMember = new_chat_member
         self.invite_link: Optional[ChatInviteLink] = invite_link
+        self.via_chat_folder_invite_link: Optional[bool] = via_chat_folder_invite_link
     
     @property
     def difference(self) -> Dict[str, List]:
@@ -1308,6 +1313,7 @@ class Message(JsonDeserializable):
             "strikethrough": "<s>{text}</s>",
             "underline":     "<u>{text}</u>",
             "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
+            "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>"
         }
          
         if hasattr(self, "custom_subs"):
@@ -1316,7 +1322,7 @@ class Message(JsonDeserializable):
         utf16_text = text.encode("utf-16-le")
         html_text = ""
 
-        def func(upd_text, subst_type=None, url=None, user=None):
+        def func(upd_text, subst_type=None, url=None, user=None, custom_emoji_id=None):
             upd_text = upd_text.decode("utf-16-le")
             if subst_type == "text_mention":
                 subst_type = "text_link"
@@ -1327,30 +1333,41 @@ class Message(JsonDeserializable):
             if not subst_type or not _subs.get(subst_type):
                 return upd_text
             subs = _subs.get(subst_type)
+            if subst_type == "custom_emoji":
+                return subs.format(text=upd_text, custom_emoji_id=custom_emoji_id)
             return subs.format(text=upd_text, url=url)
 
         offset = 0
+        start_index = 0
+        end_index = 0
         for entity in entities:
             if entity.offset > offset:
+                # when the offset is not 0: for example, a __b__ 
+                # we need to add the text before the entity to the html_text
                 html_text += func(utf16_text[offset * 2 : entity.offset * 2])
                 offset = entity.offset
-                html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
+
+                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user, entity.custom_emoji_id)
+                start_index = len(html_text)
+                html_text += new_string
                 offset += entity.length
+                end_index = len(html_text)
             elif entity.offset == offset:
-                html_text += func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user)
+                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user, entity.custom_emoji_id)
+                start_index = len(html_text)
+                html_text += new_string
+                end_index = len(html_text)
                 offset += entity.length
             else:
                 # Here we are processing nested entities.
                 # We shouldn't update offset, because they are the same as entity before.
                 # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
                 # And we don't change it).
-                entity_string = utf16_text[entity.offset * 2 : (entity.offset + entity.length) * 2]
-                formatted_string = func(entity_string, entity.type, entity.url, entity.user)
-                entity_string_decoded = entity_string.decode("utf-16-le")
-                last_occurence = html_text.rfind(entity_string_decoded)
-                string_length = len(entity_string_decoded)
-                #html_text = html_text.replace(html_text[last_occurence:last_occurence+string_length], formatted_string)
-                html_text = html_text[:last_occurence] + formatted_string + html_text[last_occurence+string_length:]
+                entity_string = html_text[start_index : end_index].encode("utf-16-le")
+                formatted_string = func(entity_string, entity.type, entity.url, entity.user, entity.custom_emoji_id).replace("&amp;", "&").replace("&lt;", "<").replace("&gt;",">")
+                html_text = html_text[:start_index] + formatted_string + html_text[end_index:]
+                end_index = len(html_text)
+
         if offset * 2 < len(utf16_text):
             html_text += func(utf16_text[offset * 2:])
 
@@ -2592,6 +2609,10 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         something from multiple options.
     :type switch_inline_query_current_chat: :obj:`str`
 
+    :param switch_inline_query_chosen_chat: Optional. If set, pressing the button will prompt the user to select one of their chats of the
+        specified type, open that chat and insert the bot's username and the specified inline query in the input field
+    :type switch_inline_query_chosen_chat: :class:`telebot.types.SwitchInlineQueryChosenChat`
+
     :param callback_game: Optional. Description of the game that will be launched when the user presses the 
         button. NOTE: This type of button must always be the first button in the first row.
     :type callback_game: :class:`telebot.types.CallbackGame`
@@ -2611,17 +2632,20 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             obj['login_url'] = LoginUrl.de_json(obj.get('login_url'))
         if 'web_app' in obj:
             obj['web_app'] = WebAppInfo.de_json(obj.get('web_app'))
+        if 'switch_inline_query_chosen_chat' in obj:
+            obj['switch_inline_query_chosen_chat'] = SwitchInlineQueryChosenChat.de_json(obj.get('switch_inline_query_chosen_chat'))
         
         return cls(**obj)
 
     def __init__(self, text, url=None, callback_data=None, web_app=None, switch_inline_query=None,
-                 switch_inline_query_current_chat=None, callback_game=None, pay=None, login_url=None, **kwargs):
+                 switch_inline_query_current_chat=None, switch_inline_query_chosen_chat=None, callback_game=None, pay=None, login_url=None, **kwargs):
         self.text: str = text
         self.url: str = url
         self.callback_data: str = callback_data
         self.web_app: WebAppInfo = web_app
         self.switch_inline_query: str = switch_inline_query
         self.switch_inline_query_current_chat: str = switch_inline_query_current_chat
+        self.switch_inline_query_chosen_chat: SwitchInlineQueryChosenChat = switch_inline_query_chosen_chat
         self.callback_game = callback_game # Not Implemented
         self.pay: bool = pay
         self.login_url: LoginUrl = login_url
@@ -2647,6 +2671,8 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             json_dict['pay'] = self.pay
         if self.login_url is not None:
             json_dict['login_url'] = self.login_url.to_dict()
+        if self.switch_inline_query_chosen_chat is not None:
+            json_dict['switch_inline_query_chosen_chat'] = self.switch_inline_query_chosen_chat.to_dict()
         return json_dict
 
 
@@ -7396,13 +7422,20 @@ class WriteAccessAllowed(JsonDeserializable):
     Currently holds no information.
 
     Telegram documentation: https://core.telegram.org/bots/api#writeaccessallowed
+
+    :param web_app_name: Optional. Name of the Web App which was launched from a link
+    :type web_app_name: :obj:`str`
     """
     @classmethod
     def de_json(cls, json_string):
-        return cls()
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+        
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, web_app_name: str) -> None:
+        self.web_app_name: str = web_app_name
+        
 
 
 class UserShared(JsonDeserializable):
@@ -7577,3 +7610,136 @@ class InputSticker(Dictionaryable, JsonSerializable):
         
         
         
+class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    Represents an inline button that switches the current user to inline mode in a chosen chat,
+    with an optional default inline query.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inlinekeyboardbutton
+
+    :param query: Optional. The default inline query to be inserted in the input field.
+                  If left empty, only the bot's username will be inserted
+    :type query: :obj:`str`
+
+    :param allow_user_chats: Optional. True, if private chats with users can be chosen
+    :type allow_user_chats: :obj:`bool`
+
+    :param allow_bot_chats: Optional. True, if private chats with bots can be chosen
+    :type allow_bot_chats: :obj:`bool`
+
+    :param allow_group_chats: Optional. True, if group and supergroup chats can be chosen
+    :type allow_group_chats: :obj:`bool`
+
+    :param allow_channel_chats: Optional. True, if channel chats can be chosen
+    :type allow_channel_chats: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`SwitchInlineQueryChosenChat`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, query=None, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None,
+                 allow_channel_chats=None):
+        self.query: str = query
+        self.allow_user_chats: bool = allow_user_chats
+        self.allow_bot_chats: bool = allow_bot_chats
+        self.allow_group_chats: bool = allow_group_chats
+        self.allow_channel_chats: bool = allow_channel_chats
+
+    def to_dict(self):
+        json_dict = {}
+
+        if self.query is not None:
+            json_dict['query'] = self.query
+        if self.allow_user_chats is not None:
+            json_dict['allow_user_chats'] = self.allow_user_chats
+        if self.allow_bot_chats is not None:
+            json_dict['allow_bot_chats'] = self.allow_bot_chats
+        if self.allow_group_chats is not None:
+            json_dict['allow_group_chats'] = self.allow_group_chats
+        if self.allow_channel_chats is not None:
+            json_dict['allow_channel_chats'] = self.allow_channel_chats
+
+        return json_dict
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class BotName(JsonDeserializable):
+    """
+    This object represents a bot name.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#botname
+
+    :param name: The bot name
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`BotName`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: str):
+        self.name: str = name
+
+
+class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
+    """
+    This object represents a button to be shown above inline query results.
+    You must use exactly one of the optional fields.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inlinequeryresultsbutton
+
+    :param text: Label text on the button
+    :type text: :obj:`str`
+
+    :param web_app: Optional. Description of the Web App that will be launched when the user presses the button.
+        The Web App will be able to switch back to the inline mode using the method web_app_switch_inline_query inside the Web App.
+    :type web_app: :class:`telebot.types.WebAppInfo`
+    
+    :param start_parameter: Optional. Deep-linking parameter for the /start message sent to the bot when a user presses the button.
+        1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.
+        Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search
+        results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing
+        any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs
+        the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat
+        where they wanted to use the bot's inline capabilities.
+    :type start_parameter: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InlineQueryResultsButton`
+    """
+
+    def __init__(self, text: str, web_app: Optional[WebAppInfo]=None, start_parameter: Optional[str]=None) -> None:
+        self.text: str = text
+        self.web_app: Optional[WebAppInfo] = web_app
+        self.start_parameter: Optional[str] = start_parameter
+
+
+    def to_dict(self) -> dict:
+        json_dict = {
+            'text': self.text
+        }
+
+        if self.web_app is not None:
+            json_dict['web_app'] = self.web_app.to_dict()
+        if self.start_parameter is not None:
+            json_dict['start_parameter'] = self.start_parameter
+
+        return json_dict
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
