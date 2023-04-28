@@ -16,7 +16,7 @@ import telebot.types
 from telebot.asyncio_storage import StateMemoryStorage, StatePickleStorage, StateStorageBase
 from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipHandler, State, ContinueHandling
 
-from inspect import signature
+from inspect import signature, iscoroutinefunction
 
 from telebot import util, types, asyncio_helper
 import asyncio
@@ -836,6 +836,8 @@ class AsyncTeleBot:
         elif message_filter == 'chat_types':
             return message.chat.type in filter_value
         elif message_filter == 'func':
+            if iscoroutinefunction(filter_value):
+                return await filter_value(message)
             return filter_value(message)
         elif self.custom_filters and message_filter in self.custom_filters:
             return await self._check_filter(message_filter,filter_value,message)
