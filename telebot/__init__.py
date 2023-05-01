@@ -3631,6 +3631,8 @@ class TeleBot:
         """
         Use this method to change the list of the bot's commands.
 
+        Note: Commands have to be in all lowercase. Otherwise, Telegram API throws an error.
+
         Telegram documentation: https://core.telegram.org/bots/api#setmycommands
 
         :param commands: List of BotCommand. At most 100 commands can be specified.
