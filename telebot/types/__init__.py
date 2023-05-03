@@ -776,6 +776,7 @@ class Message(JsonDeserializable):
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
+        self.splitted_messages: Optional[list[Message]] = None
 
     def __html_text(self, text, entities):
         """
