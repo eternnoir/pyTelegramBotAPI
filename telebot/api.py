@@ -1,7 +1,7 @@
 import logging
 import os
 import re
-import uuid
+from dataclasses import dataclass
 from datetime import datetime
 from io import BytesIO
 from typing import Any, Dict, Optional, Union, cast
@@ -246,15 +246,9 @@ async def _check_response(response: aiohttp.ClientResponse):
         result_json = await response.json(encoding="utf-8")
     except Exception as e:
         raise ApiInvalidJSONException(response, e)
-    if not isinstance(result_json, dict) or "ok" not in result_json:
-        raise ApiHTTPException(f"JSON response is malformed: {result_json}", response)
-    if result_json["ok"] is True:
-        return result_json
-    else:
-        if "description" not in result_json:
-            raise ApiHTTPException(f"JSON response misses 'description' field: {result_json}", response)
-        else:
-            raise ApiHTTPException(result_json["description"], response)
+    if not isinstance(result_json, dict) or result_json.get("ok") is not True:
+        raise ApiHTTPException(result_json, response)
+    return result_json
 
 
 def _add_message_thread_id(params: Dict[str, Any], message_thread_id: Optional[int]) -> None:
@@ -2242,18 +2236,53 @@ class ApiException(Exception):
         self.response = response
 
 
+@dataclass
+class ErrorResponseParameters:
+    """https://core.telegram.org/bots/api#responseparameters"""
+
+    migrate_to_chat_id: int
+    retry_after: int
+
+    @classmethod
+    def parse(cls, raw: Any) -> Optional["ErrorResponseParameters"]:
+        if not isinstance(raw, dict):
+            return None
+        migrate_to_chat_id = raw.get("migrate_to_chat_id")
+        if not isinstance(migrate_to_chat_id, int):
+            logger.error(f"Invalid error response parameters: {raw}")
+            return None
+
+        retry_after = raw.get("retry_after")
+        if not isinstance(retry_after, int):
+            logger.error(f"Invalid error response parameters: {raw}")
+            return None
+
+        return ErrorResponseParameters(migrate_to_chat_id=migrate_to_chat_id, retry_after=retry_after)
+
+
 class ApiHTTPException(ApiException):
     """
     This class represents an Exception thrown when a call to the
     Telegram API server returns HTTP code that is not 200.
     """
 
-    def __init__(self, error_description: str, response: aiohttp.ClientResponse):
+    def __init__(self, response_json: Any, response: aiohttp.ClientResponse):
+        self.error_parameters = ErrorResponseParameters.parse(response_json.get("parameters"))
+
+        if isinstance(response_json, dict) and "description" in response_json:
+            self.error_description: Optional[str] = str(response_json["description"])
+        else:
+            self.error_description = None
+
+        error_title = (
+            self.error_description
+            if self.error_description is not None
+            else f"JSON response misses 'description' field: {response_json}"
+        )
         super().__init__(
-            f"{error_description} ({response.url} responded with {response.status} {response.reason})",
+            f"{error_title} ({response.url} responded with {response.status} {response.reason})",
             response,
         )
-        self.error_description = error_description
 
 
 class ApiInvalidJSONException(ApiException):
