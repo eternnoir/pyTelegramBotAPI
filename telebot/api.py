@@ -2240,20 +2240,20 @@ class ApiException(Exception):
 class ErrorResponseParameters:
     """https://core.telegram.org/bots/api#responseparameters"""
 
-    migrate_to_chat_id: int
-    retry_after: int
+    migrate_to_chat_id: Optional[int]
+    retry_after: Optional[int]
 
     @classmethod
     def parse(cls, raw: Any) -> Optional["ErrorResponseParameters"]:
         if not isinstance(raw, dict):
             return None
         migrate_to_chat_id = raw.get("migrate_to_chat_id")
-        if not isinstance(migrate_to_chat_id, int):
+        if not (migrate_to_chat_id is None or isinstance(migrate_to_chat_id, int)):
             logger.error(f"Invalid error response parameters: {raw}")
             return None
 
         retry_after = raw.get("retry_after")
-        if not isinstance(retry_after, int):
+        if not (retry_after is None or isinstance(retry_after, int)):
             logger.error(f"Invalid error response parameters: {raw}")
             return None
 
