@@ -1049,7 +1049,6 @@ class AsyncTeleBot:
         chat_id: Union[int, str],
         text: str,
         parse_mode: Optional[str] = None,
-        entities: Optional[List[types.MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         protect_content: Optional[bool] = None,
@@ -1077,7 +1076,6 @@ class AsyncTeleBot:
         :param parse_mode:
         :param disable_notification: Boolean, Optional. Sends the message silently.
         :param timeout:
-        :param entities:
         :param allow_sending_without_reply:
         :param protect_content:
         :param message_thread_id:
@@ -1107,7 +1105,6 @@ class AsyncTeleBot:
                             parse_mode,
                             disable_notification,
                             timeout,
-                            entities,
                             allow_sending_without_reply,
                             protect_content,
                             message_thread_id,
@@ -1129,7 +1126,6 @@ class AsyncTeleBot:
                     parse_mode,
                     disable_notification,
                     timeout,
-                    entities,
                     allow_sending_without_reply,
                     protect_content,
                     message_thread_id,
@@ -3269,7 +3265,6 @@ class AsyncTeleBot:
         message: types.Message,
         text: str,
         parse_mode: Optional[str] = None,
-        entities: Optional[List[types.MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         protect_content: Optional[bool] = None,
@@ -3290,7 +3285,6 @@ class AsyncTeleBot:
             text,
             reply_to_message_id=message.message_id,
             parse_mode=parse_mode,
-            entities=entities,
             disable_web_page_preview=disable_web_page_preview,
             disable_notification=disable_notification,
             protect_content=protect_content,
