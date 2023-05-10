@@ -1086,12 +1086,8 @@ class AsyncTeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        if auto_split_message:
-            if len(text) > MAX_MESSAGE_LENGTH:
-                splitted_texts = smart_split(text, MAX_MESSAGE_LENGTH)
-            else:
-                splitted_texts = [text]
-
+        if auto_split_message and len(text) > MAX_MESSAGE_LENGTH:
+            splitted_texts = smart_split(text, MAX_MESSAGE_LENGTH)
             sent_messages = []
 
             for i in range(len(splitted_texts)):
@@ -1119,9 +1115,7 @@ class AsyncTeleBot:
                     )
                 )
 
-            if len(sent_messages) > 1:
-                sent_messages[0].splitted_messages = sent_messages
-
+            sent_messages[0].splitted_messages = sent_messages
             return sent_messages[0]
         else:
             return types.Message.de_json(

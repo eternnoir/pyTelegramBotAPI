@@ -869,6 +869,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         reply_markup: Optional[types.ReplyMarkup] = None,
         timeout: Optional[int] = None,
         message_thread_id: Optional[int] = None,
+        auto_split_message: bool = True,
     ) -> types.Message:
         msg = self._get_dummy_message(chat_id)
         msg.from_user = self._get_me()
