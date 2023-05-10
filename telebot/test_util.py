@@ -860,7 +860,6 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         chat_id: Union[int, str],
         text: str,
         parse_mode: Optional[str] = None,
-        entities: Optional[list[types.MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         protect_content: Optional[bool] = None,
@@ -874,7 +873,6 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         msg = self._get_dummy_message(chat_id)
         msg.from_user = self._get_me()
         msg.text = text
-        msg.entities = entities
         self._enrich_message_fields(
             msg, protect_content=protect_content, reply_to_message_id=reply_to_message_id, reply_markup=reply_markup
         )
