@@ -24,7 +24,6 @@ async def test_mocked_async_telebot_defaults():
             "text": "again",
             "reply_to_message_id": 2,
             "parse_mode": None,
-            "entities": None,
             "disable_web_page_preview": None,
             "disable_notification": None,
             "protect_content": None,
