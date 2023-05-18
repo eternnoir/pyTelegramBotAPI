@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'pyTelegramBotAPI Documentation'
-copyright = '2022, coder2020official'
+copyright = '2022-2023, coder2020official'
 author = 'coder2020official'
 
 # The full version, including alpha/beta/rc tags
-release = '4.11.0'
+release = '4.12.0'
 
 
 # -- General configuration ---------------------------------------------------
