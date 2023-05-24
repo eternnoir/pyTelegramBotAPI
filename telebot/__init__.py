@@ -393,6 +393,8 @@ class AsyncTeleBot:
             return constants.ChatType(update_content_as_message().chat.type) in util.validated_list_chat_type(
                 filter_value, name="chat types filter"
             )
+        elif filter_key == "message_thread_id":
+            return update_content_as_message().message_thread_id == filter_value
         elif filter_key == "func":
             if not callable(filter_value):
                 raise TypeError("func filter must be callable")
@@ -446,6 +448,7 @@ class AsyncTeleBot:
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[constants.ChatType]] = None,
+        message_thread_id: Optional[int] = None,
         priority: Optional[int] = None,
         name: Optional[str] = None,
         **kwargs,
@@ -505,6 +508,7 @@ class AsyncTeleBot:
                         "content_types": content_types,
                         "chat_types": chat_types,
                         "func": func,
+                        "message_thread_id": message_thread_id,
                         **kwargs,
                     },
                     name=name or util.qualified_name(decorated),

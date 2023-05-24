@@ -41,6 +41,7 @@ class FilterFunc(Protocol[_UCT]):
 
 FilterValue = Union[
     str,  # simple filters like text="hello"
+    int,  # numeric id filtering
     list[str],  # most common filters like chat_types=["private", "group"]
     list[ContentType],
     list[ChatType],
