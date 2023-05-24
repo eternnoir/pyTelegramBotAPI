@@ -19,7 +19,7 @@ jobs:
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v8
         with:
-          poetry-version: "1.2.1"
+          poetry-version: 1.2.0b1
       - name: Check Poetry version
         run: poetry --version
       - name: Install dynamic versioning plugin
