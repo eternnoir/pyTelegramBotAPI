@@ -6598,7 +6598,7 @@ class TeleBot:
         Registers chat member handler.
 
         :param callback: function to be called
-        :type callback: :obj:`function``
+        :type callback: :obj:`function`
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
