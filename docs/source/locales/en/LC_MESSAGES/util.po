@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"POT-Creation-Date: 2023-07-08 23:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../util.rst:3
+#: ../../source/util.rst:3
 msgid "Utils"
 msgstr ""
 
-#: ../../util.rst:5
+#: ../../source/util.rst:5
 msgid "Utils in pyTelegramBotAPI"
 msgstr ""
 
-#: ../../util.rst:5
+#: ../../source/util.rst:5
 msgid "ptba, pytba, pyTelegramBotAPI, utils, guide"
 msgstr ""
 
-#: ../../util.rst:11
+#: ../../source/util.rst:11
 msgid "util file"
 msgstr ""
 
@@ -40,9 +40,10 @@ msgid ""
 "error. Example:"
 msgstr ""
 
-#: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
-#: telebot.util.extract_command telebot.util.is_bytes telebot.util.is_command
-#: telebot.util.is_dict telebot.util.is_pil_image
+#: of telebot.service_utils.is_bytes telebot.service_utils.is_dict
+#: telebot.service_utils.is_pil_image telebot.util.antiflood
+#: telebot.util.escape telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_command
 #: telebot.util.parse_web_app_data telebot.util.quick_markup
 #: telebot.util.smart_split telebot.util.split_string telebot.util.user_link
 #: telebot.util.validate_web_app_data telebot.util.webhook_google_functions
@@ -54,28 +55,33 @@ msgid "The function to call"
 msgstr ""
 
 #: of telebot.util.antiflood:13
-msgid "The arguments to pass to the function"
+msgid "Number of retries to send"
 msgstr ""
 
 #: of telebot.util.antiflood:16
-msgid "The keyword arguments to pass to the function"
-msgstr ""
-
-#: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
-#: telebot.util.extract_command telebot.util.generate_random_token
-#: telebot.util.is_bytes telebot.util.is_command telebot.util.is_dict
-#: telebot.util.is_pil_image telebot.util.parse_web_app_data
-#: telebot.util.quick_markup telebot.util.smart_split telebot.util.split_string
-#: telebot.util.user_link telebot.util.validate_web_app_data
-#: telebot.util.webhook_google_functions
-msgid "Returns"
+msgid "The arguments to pass to the function"
 msgstr ""
 
 #: of telebot.util.antiflood:19
+msgid "The keyword arguments to pass to the function"
+msgstr ""
+
+#: of telebot.service_utils.generate_random_token
+#: telebot.service_utils.is_bytes telebot.service_utils.is_dict
+#: telebot.service_utils.is_pil_image telebot.util.antiflood
+#: telebot.util.escape telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_command
+#: telebot.util.parse_web_app_data telebot.util.quick_markup
+#: telebot.util.smart_split telebot.util.split_string telebot.util.user_link
+#: telebot.util.validate_web_app_data telebot.util.webhook_google_functions
+msgid "Returns"
+msgstr ""
+
+#: of telebot.util.antiflood:22
 msgid "None"
 msgstr ""
 
-#: of telebot.util.chunks:1
+#: of telebot.service_utils.chunks:1
 msgid "Yield successive n-sized chunks from lst."
 msgstr ""
 
@@ -117,9 +123,10 @@ msgstr ""
 msgid "the arguments if `text` is a command (according to is_command), else None."
 msgstr ""
 
-#: of telebot.util.extract_arguments telebot.util.extract_command
-#: telebot.util.generate_random_token telebot.util.is_bytes
-#: telebot.util.is_command telebot.util.is_dict telebot.util.is_pil_image
+#: of telebot.service_utils.generate_random_token
+#: telebot.service_utils.is_bytes telebot.service_utils.is_dict
+#: telebot.service_utils.is_pil_image telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_command
 #: telebot.util.quick_markup telebot.util.smart_split telebot.util.split_string
 #: telebot.util.user_link
 msgid "Return type"
@@ -143,35 +150,35 @@ msgstr ""
 msgid "the command if `text` is a command (according to is_command), else None."
 msgstr ""
 
-#: of telebot.util.generate_random_token:1
+#: of telebot.service_utils.generate_random_token:1
 msgid ""
 "Generates a random token consisting of letters and digits, 16 characters "
 "long."
 msgstr ""
 
-#: of telebot.util.generate_random_token:3
+#: of telebot.service_utils.generate_random_token:3
 msgid "a random token"
 msgstr ""
 
-#: of telebot.util.generate_random_token:4 telebot.util.user_link:22
+#: of telebot.service_utils.generate_random_token:4 telebot.util.user_link:22
 msgid ":obj:`str`"
 msgstr ""
 
-#: of telebot.util.is_bytes:1
+#: of telebot.service_utils.is_bytes:1
 msgid "Returns True if the given object is a bytes object."
 msgstr ""
 
-#: of telebot.util.is_bytes:3 telebot.util.is_dict:3
-#: telebot.util.is_pil_image:3
+#: of telebot.service_utils.is_bytes:3 telebot.service_utils.is_dict:3
+#: telebot.service_utils.is_pil_image:3
 msgid "object to be checked"
 msgstr ""
 
-#: of telebot.util.is_bytes:6
+#: of telebot.service_utils.is_bytes:6
 msgid "True if the given object is a bytes object."
 msgstr ""
 
-#: of telebot.util.is_bytes:7 telebot.util.is_command:7 telebot.util.is_dict:7
-#: telebot.util.is_pil_image:7
+#: of telebot.service_utils.is_bytes:7 telebot.service_utils.is_dict:7
+#: telebot.service_utils.is_pil_image:7 telebot.util.is_command:7
 msgid ":obj:`bool`"
 msgstr ""
 
@@ -189,23 +196,23 @@ msgstr ""
 msgid "True if `text` is a command, else False."
 msgstr ""
 
-#: of telebot.util.is_dict:1
+#: of telebot.service_utils.is_dict:1
 msgid "Returns True if the given object is a dictionary."
 msgstr ""
 
-#: of telebot.util.is_dict:6
+#: of telebot.service_utils.is_dict:6
 msgid "True if the given object is a dictionary."
 msgstr ""
 
-#: of telebot.util.is_pil_image:1
+#: of telebot.service_utils.is_pil_image:1
 msgid "Returns True if the given object is a PIL.Image.Image object."
 msgstr ""
 
-#: of telebot.util.is_pil_image:6
+#: of telebot.service_utils.is_pil_image:6
 msgid "True if the given object is a PIL.Image.Image object."
 msgstr ""
 
-#: of telebot.util.is_string:1
+#: of telebot.service_utils.is_string:1
 msgid "Returns True if the given object is a string."
 msgstr ""
 
@@ -240,21 +247,21 @@ msgstr ""
 msgid "Using quick_markup:"
 msgstr ""
 
-#: of telebot.util.quick_markup:29
+#: of telebot.util.quick_markup:31
 msgid ""
 "a dict containing all buttons to create in this format: {text: kwargs} "
 "{str:}"
 msgstr ""
 
-#: of telebot.util.quick_markup:32
-msgid "int row width"
+#: of telebot.util.quick_markup:34
+msgid "number of :class:`telebot.types.InlineKeyboardButton` objects on each row"
 msgstr ""
 
-#: of telebot.util.quick_markup:35
+#: of telebot.util.quick_markup:37
 msgid "InlineKeyboardMarkup"
 msgstr ""
 
-#: of telebot.util.quick_markup:36
+#: of telebot.util.quick_markup:38
 msgid ":obj:`types.InlineKeyboardMarkup`"
 msgstr ""
 
@@ -342,4 +349,7 @@ msgstr ""
 #: of telebot.util.webhook_google_functions:9
 msgid "The response object"
 msgstr ""
+
+#~ msgid "int row width"
+#~ msgstr ""
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 14:44+0400\n"
+"POT-Creation-Date: 2023-07-08 23:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
 
-#: ../../util.rst:3
+#: ../../source/util.rst:3
 msgid "Utils"
 msgstr "Утилиты"
 
-#: ../../util.rst:5
+#: ../../source/util.rst:5
 msgid "Utils in pyTelegramBotAPI"
 msgstr "Утилиты в pyTelegramBotAPI"
 
-#: ../../util.rst:5
+#: ../../source/util.rst:5
 msgid "ptba, pytba, pyTelegramBotAPI, utils, guide"
 msgstr "ptba, pytba, pyTelegramBotAPI, утилиты, гайд"
 
-#: ../../util.rst:11
+#: ../../source/util.rst:11
 msgid "util file"
 msgstr "Файл util"
 
@@ -38,11 +38,14 @@ msgstr "Файл util"
 msgid ""
 "Use this function inside loops in order to avoid getting TooManyRequests "
 "error. Example:"
-msgstr "Используйте эту функцию в циклах, чтобы избежать ошибки TooManyRequests. Пример:"
+msgstr ""
+"Используйте эту функцию в циклах, чтобы избежать ошибки TooManyRequests. "
+"Пример:"
 
-#: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
-#: telebot.util.extract_command telebot.util.is_bytes telebot.util.is_command
-#: telebot.util.is_dict telebot.util.is_pil_image
+#: of telebot.service_utils.is_bytes telebot.service_utils.is_dict
+#: telebot.service_utils.is_pil_image telebot.util.antiflood
+#: telebot.util.escape telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_command
 #: telebot.util.parse_web_app_data telebot.util.quick_markup
 #: telebot.util.smart_split telebot.util.split_string telebot.util.user_link
 #: telebot.util.validate_web_app_data telebot.util.webhook_google_functions
@@ -54,28 +57,33 @@ msgid "The function to call"
 msgstr "Вызываемая функция"
 
 #: of telebot.util.antiflood:13
+msgid "Number of retries to send"
+msgstr ""
+
+#: of telebot.util.antiflood:16
 msgid "The arguments to pass to the function"
 msgstr "Аргументы, для передачи в функцию"
 
-#: of telebot.util.antiflood:16
+#: of telebot.util.antiflood:19
 msgid "The keyword arguments to pass to the function"
 msgstr "Именованные аргументы для передачи в функцию"
 
-#: of telebot.util.antiflood telebot.util.escape telebot.util.extract_arguments
-#: telebot.util.extract_command telebot.util.generate_random_token
-#: telebot.util.is_bytes telebot.util.is_command telebot.util.is_dict
-#: telebot.util.is_pil_image telebot.util.parse_web_app_data
-#: telebot.util.quick_markup telebot.util.smart_split telebot.util.split_string
-#: telebot.util.user_link telebot.util.validate_web_app_data
-#: telebot.util.webhook_google_functions
+#: of telebot.service_utils.generate_random_token
+#: telebot.service_utils.is_bytes telebot.service_utils.is_dict
+#: telebot.service_utils.is_pil_image telebot.util.antiflood
+#: telebot.util.escape telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_command
+#: telebot.util.parse_web_app_data telebot.util.quick_markup
+#: telebot.util.smart_split telebot.util.split_string telebot.util.user_link
+#: telebot.util.validate_web_app_data telebot.util.webhook_google_functions
 msgid "Returns"
 msgstr ""
 
-#: of telebot.util.antiflood:19
+#: of telebot.util.antiflood:22
 msgid "None"
 msgstr ""
 
-#: of telebot.util.chunks:1
+#: of telebot.service_utils.chunks:1
 msgid "Yield successive n-sized chunks from lst."
 msgstr "Генерирует последовательные части списка, состоящие из n элементов."
 
@@ -91,8 +99,9 @@ msgstr "Содержит все виды сервисных сообщений, 
 msgid ""
 "Replaces the following chars in `text` ('&' with '&amp;', '<' with '&lt;'"
 " and '>' with '&gt;')."
-msgstr "Заменяет следующие символы в `text` ('&' на '&amp;', '<' на '&lt;'"
-" и '>' на '&gt;')."
+msgstr ""
+"Заменяет следующие символы в `text` ('&' на '&amp;', '<' на '&lt;' и '>' "
+"на '&gt;')."
 
 #: of telebot.util.escape:3
 msgid "the text to escape"
@@ -116,11 +125,14 @@ msgstr "Строка для извлечения аргументов коман
 
 #: of telebot.util.extract_arguments:13
 msgid "the arguments if `text` is a command (according to is_command), else None."
-msgstr "Аргументы, если `text` является командой (согласно is_command), в остальных случаях None."
+msgstr ""
+"Аргументы, если `text` является командой (согласно is_command), в "
+"остальных случаях None."
 
-#: of telebot.util.extract_arguments telebot.util.extract_command
-#: telebot.util.generate_random_token telebot.util.is_bytes
-#: telebot.util.is_command telebot.util.is_dict telebot.util.is_pil_image
+#: of telebot.service_utils.generate_random_token
+#: telebot.service_utils.is_bytes telebot.service_utils.is_dict
+#: telebot.service_utils.is_pil_image telebot.util.extract_arguments
+#: telebot.util.extract_command telebot.util.is_command
 #: telebot.util.quick_markup telebot.util.smart_split telebot.util.split_string
 #: telebot.util.user_link
 msgid "Return type"
@@ -135,8 +147,9 @@ msgid ""
 "Extracts the command from `text` (minus the '/') if `text` is a command "
 "(see is_command). If `text` is not a command, this function returns None."
 msgstr ""
-"Извлекает команду из `text` (исключает '/') если `text` является командой "
-"(см. is_command). Если `text` не является командой, эта функция возвращает None."
+"Извлекает команду из `text` (исключает '/') если `text` является командой"
+" (см. is_command). Если `text` не является командой, эта функция "
+"возвращает None."
 
 #: of telebot.util.extract_command:12
 msgid "String to extract the command from"
@@ -144,37 +157,41 @@ msgstr "Строка, из которой нужно извлечь команд
 
 #: of telebot.util.extract_command:15
 msgid "the command if `text` is a command (according to is_command), else None."
-msgstr "Команда, если `text` является командой (согласно is_command), в остальных случаях None."
+msgstr ""
+"Команда, если `text` является командой (согласно is_command), в остальных"
+" случаях None."
 
-#: of telebot.util.generate_random_token:1
+#: of telebot.service_utils.generate_random_token:1
 msgid ""
 "Generates a random token consisting of letters and digits, 16 characters "
 "long."
-msgstr "Генерирует рандомный токен, состоящий из латинских букв и цифр длиной 16 символов."
+msgstr ""
+"Генерирует рандомный токен, состоящий из латинских букв и цифр длиной 16 "
+"символов."
 
-#: of telebot.util.generate_random_token:3
+#: of telebot.service_utils.generate_random_token:3
 msgid "a random token"
 msgstr "Сгенерированный токен"
 
-#: of telebot.util.generate_random_token:4 telebot.util.user_link:22
+#: of telebot.service_utils.generate_random_token:4 telebot.util.user_link:22
 msgid ":obj:`str`"
 msgstr ""
 
-#: of telebot.util.is_bytes:1
+#: of telebot.service_utils.is_bytes:1
 msgid "Returns True if the given object is a bytes object."
 msgstr "Возвращает True если полученный объект является bytes."
 
-#: of telebot.util.is_bytes:3 telebot.util.is_dict:3
-#: telebot.util.is_pil_image:3
+#: of telebot.service_utils.is_bytes:3 telebot.service_utils.is_dict:3
+#: telebot.service_utils.is_pil_image:3
 msgid "object to be checked"
 msgstr "Объект для проверки"
 
-#: of telebot.util.is_bytes:6
+#: of telebot.service_utils.is_bytes:6
 msgid "True if the given object is a bytes object."
 msgstr "True, если полученный объект является bytes."
 
-#: of telebot.util.is_bytes:7 telebot.util.is_command:7 telebot.util.is_dict:7
-#: telebot.util.is_pil_image:7
+#: of telebot.service_utils.is_bytes:7 telebot.service_utils.is_dict:7
+#: telebot.service_utils.is_pil_image:7 telebot.util.is_command:7
 msgid ":obj:`bool`"
 msgstr ""
 
@@ -183,8 +200,8 @@ msgid ""
 "Checks if `text` is a command. Telegram chat commands start with the '/' "
 "character."
 msgstr ""
-"Проверяет, является ли `text` командой. Команды в Telegram начинаются "
-"с символа '/'."
+"Проверяет, является ли `text` командой. Команды в Telegram начинаются с "
+"символа '/'."
 
 #: of telebot.util.is_command:3
 msgid "Text to check."
@@ -194,23 +211,23 @@ msgstr "Текст для проверки."
 msgid "True if `text` is a command, else False."
 msgstr "True, если `text` является командой, иначе False."
 
-#: of telebot.util.is_dict:1
+#: of telebot.service_utils.is_dict:1
 msgid "Returns True if the given object is a dictionary."
 msgstr "Возвращает True, если полученный объект является словарём (dict)."
 
-#: of telebot.util.is_dict:6
+#: of telebot.service_utils.is_dict:6
 msgid "True if the given object is a dictionary."
 msgstr "True, если полученный объект является словарём (dict)."
 
-#: of telebot.util.is_pil_image:1
+#: of telebot.service_utils.is_pil_image:1
 msgid "Returns True if the given object is a PIL.Image.Image object."
 msgstr "Возвращает True, если полученный объект является PIL.Image.Image."
 
-#: of telebot.util.is_pil_image:6
+#: of telebot.service_utils.is_pil_image:6
 msgid "True if the given object is a PIL.Image.Image object."
 msgstr "True, если полученный объект является PIL.Image.Image."
 
-#: of telebot.util.is_string:1
+#: of telebot.service_utils.is_string:1
 msgid "Returns True if the given object is a string."
 msgstr "Возвращает True, если полученный объект является строкой (str)."
 
@@ -236,9 +253,9 @@ msgid ""
 "is useful to avoid always typing 'btn1 = InlineKeyboardButton(...)' 'btn2"
 " = InlineKeyboardButton(...)'"
 msgstr ""
-"Возвращает reply markup из словаря следующего формата: {'text': kwargs}. Удобно "
-"использовать вместо постоянного использования 'btn1 = InlineKeyboardButton(...)' 'btn2"
-" = InlineKeyboardButton(...)'"
+"Возвращает reply markup из словаря следующего формата: {'text': kwargs}. "
+"Удобно использовать вместо постоянного использования 'btn1 = "
+"InlineKeyboardButton(...)' 'btn2 = InlineKeyboardButton(...)'"
 
 #: of telebot.util.quick_markup:4 telebot.util.user_link:5
 msgid "Example:"
@@ -248,7 +265,7 @@ msgstr "Пример:"
 msgid "Using quick_markup:"
 msgstr "Используя quick_markup:"
 
-#: of telebot.util.quick_markup:29
+#: of telebot.util.quick_markup:31
 msgid ""
 "a dict containing all buttons to create in this format: {text: kwargs} "
 "{str:}"
@@ -256,15 +273,15 @@ msgstr ""
 "Словарь, содержащий все кнопки для создания reply markup в следующем "
 "формате: {text: kwargs} {str:}"
 
-#: of telebot.util.quick_markup:32
-msgid "int row width"
-msgstr "Количество кнопок в одной строке, int"
+#: of telebot.util.quick_markup:34
+msgid "number of :class:`telebot.types.InlineKeyboardButton` objects on each row"
+msgstr ""
 
-#: of telebot.util.quick_markup:35
+#: of telebot.util.quick_markup:37
 msgid "InlineKeyboardMarkup"
 msgstr ""
 
-#: of telebot.util.quick_markup:36
+#: of telebot.util.quick_markup:38
 msgid ":obj:`types.InlineKeyboardMarkup`"
 msgstr ""
 
@@ -276,10 +293,11 @@ msgid ""
 " `chars_per_string` = 4096. Splits by '\\n', '. ' or ' ' in exactly this "
 "priority."
 msgstr ""
-"Разбивает строку на несколько, каждая из которых будет не длиннее `characters_per_string`. "
-"Удобно использовать для разбиения одного гигантского сообщения на несколько. "
-"Если `chars_per_string` > 4096: `chars_per_string` = 4096. Разбивает строку по '\\n', '. ' или ' ' "
-"именно в таком порядке."
+"Разбивает строку на несколько, каждая из которых будет не длиннее "
+"`characters_per_string`. Удобно использовать для разбиения одного "
+"гигантского сообщения на несколько. Если `chars_per_string` > 4096: "
+"`chars_per_string` = 4096. Разбивает строку по '\\n', '. ' или ' ' именно"
+" в таком порядке."
 
 #: of telebot.util.smart_split:6 telebot.util.split_string:4
 msgid "The text to split"
@@ -287,7 +305,9 @@ msgstr "Текст для разбиения"
 
 #: of telebot.util.smart_split:9
 msgid "The number of maximum characters per part the text is split to."
-msgstr "Максимальное количество символов в части текста, на которые он будет разбит."
+msgstr ""
+"Максимальное количество символов в части текста, на которые он будет "
+"разбит."
 
 #: of telebot.util.smart_split:12 telebot.util.split_string:10
 msgid "The splitted text as a list of strings."
@@ -303,8 +323,9 @@ msgid ""
 "`chars_per_string` characters per string. This is very useful for "
 "splitting one giant message into multiples."
 msgstr ""
-"Разбивает одну строку на несколько, каждая из которых будет не длиннее `characters_per_string`. "
-"Удобно использовать для разбиения одного гигантского сообщения на несколько."
+"Разбивает одну строку на несколько, каждая из которых будет не длиннее "
+"`characters_per_string`. Удобно использовать для разбиения одного "
+"гигантского сообщения на несколько."
 
 #: of telebot.util.split_string:7
 msgid "The number of characters per line the text is split into."
@@ -312,15 +333,17 @@ msgstr "Количество символов в одной строке, на �
 
 #: ../../docstring of telebot.util.update_types:1
 msgid "All update types, should be used for allowed_updates parameter in polling."
-msgstr "Все виды апдейтов, рекомендуется использовать в качестве параметра allowed_updates функции polling."
+msgstr ""
+"Все виды апдейтов, рекомендуется использовать в качестве параметра "
+"allowed_updates функции polling."
 
 #: of telebot.util.user_link:1
 msgid ""
 "Returns an HTML user link. This is useful for reports. Attention: Don't "
 "forget to set parse_mode to 'HTML'!"
 msgstr ""
-"Возвращает HTML ссылку на пользователя. Удобно использовать для отчетов. Важно: Не "
-"забудьте установить значение 'HTML' в parse_mode!"
+"Возвращает HTML ссылку на пользователя. Удобно использовать для отчетов. "
+"Важно: Не забудьте установить значение 'HTML' в parse_mode!"
 
 #: of telebot.util.user_link:11
 msgid ""
@@ -328,9 +351,10 @@ msgid ""
 "links, and etc.) This method is kept for backward compatibility, and it "
 "is recommended to use formatting.* for more options."
 msgstr ""
-"Вы можете использовать formatting.* во всех остальных вариантах форматирования(bold, italic, "
-"links, и прочее). Этот метод сохранён для обратной совместимости, рекомендуется "
-"использовать formatting.* для большего количества вариантов."
+"Вы можете использовать formatting.* во всех остальных вариантах "
+"форматирования(bold, italic, links, и прочее). Этот метод сохранён для "
+"обратной совместимости, рекомендуется использовать formatting.* для "
+"большего количества вариантов."
 
 #: of telebot.util.user_link:15
 msgid "the user (not the user_id)"
@@ -363,4 +387,7 @@ msgstr "HTTP-запрос"
 #: of telebot.util.webhook_google_functions:9
 msgid "The response object"
 msgstr "Объект, полученный в качестве ответа"
+
+#~ msgid "int row width"
+#~ msgstr "Количество кнопок в одной строке, int"
 
