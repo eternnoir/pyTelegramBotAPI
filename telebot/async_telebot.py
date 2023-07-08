@@ -536,6 +536,7 @@ class AsyncTeleBot:
                     if not isinstance(result, ContinueHandling):
                         break
             except Exception as e:
+                handler_error = e
                 if self.exception_handler:
                     self.exception_handler.handle(e)
                 else:
