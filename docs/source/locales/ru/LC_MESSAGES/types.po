@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-02 19:24+0400\n"
+"POT-Creation-Date: 2023-07-08 23:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,9 +23,11 @@ msgid "Types of API"
 msgstr ""
 
 #: of telebot.types.Animation:1 telebot.types.Audio:1
-#: telebot.types.CallbackQuery:1 telebot.types.Chat:1
-#: telebot.types.ChatJoinRequest:1 telebot.types.ChatMember:1
-#: telebot.types.ChatMemberUpdated:1 telebot.types.ChatPhoto:1
+#: telebot.types.BotDescription:1 telebot.types.BotName:1
+#: telebot.types.BotShortDescription:1 telebot.types.CallbackQuery:1
+#: telebot.types.Chat:1 telebot.types.ChatJoinRequest:1
+#: telebot.types.ChatMember:1 telebot.types.ChatMemberUpdated:1
+#: telebot.types.ChatPhoto:1 telebot.types.ChatShared:1
 #: telebot.types.ChosenInlineResult:1 telebot.types.Contact:1
 #: telebot.types.Document:1 telebot.types.File:1 telebot.types.ForumTopic:1
 #: telebot.types.ForumTopicClosed:1 telebot.types.ForumTopicCreated:1
@@ -41,8 +43,8 @@ msgstr ""
 #: telebot.types.ShippingQuery:1 telebot.types.Sticker:1
 #: telebot.types.StickerSet:1 telebot.types.SuccessfulPayment:1
 #: telebot.types.Update:1 telebot.types.UserProfilePhotos:1
-#: telebot.types.Venue:1 telebot.types.Video:1 telebot.types.VideoChatEnded:1
-#: telebot.types.VideoChatParticipantsInvited:1
+#: telebot.types.UserShared:1 telebot.types.Venue:1 telebot.types.Video:1
+#: telebot.types.VideoChatEnded:1 telebot.types.VideoChatParticipantsInvited:1
 #: telebot.types.VideoChatScheduled:1 telebot.types.VideoChatStarted:1
 #: telebot.types.VideoNote:1 telebot.types.Voice:1 telebot.types.WebhookInfo:1
 #: telebot.types.WriteAccessAllowed:1
@@ -66,14 +68,16 @@ msgstr ""
 #: telebot.types.BotCommandScopeChat
 #: telebot.types.BotCommandScopeChatAdministrators
 #: telebot.types.BotCommandScopeChatMember telebot.types.BotCommandScopeDefault
-#: telebot.types.CallbackQuery telebot.types.Chat
-#: telebot.types.ChatAdministratorRights telebot.types.ChatInviteLink
-#: telebot.types.ChatJoinRequest telebot.types.ChatLocation
-#: telebot.types.ChatMemberAdministrator telebot.types.ChatMemberBanned
-#: telebot.types.ChatMemberLeft telebot.types.ChatMemberMember
-#: telebot.types.ChatMemberOwner telebot.types.ChatMemberRestricted
-#: telebot.types.ChatMemberUpdated telebot.types.ChatPermissions
-#: telebot.types.ChatPhoto telebot.types.ChosenInlineResult
+#: telebot.types.BotDescription telebot.types.BotName
+#: telebot.types.BotShortDescription telebot.types.CallbackQuery
+#: telebot.types.Chat telebot.types.ChatAdministratorRights
+#: telebot.types.ChatInviteLink telebot.types.ChatJoinRequest
+#: telebot.types.ChatLocation telebot.types.ChatMemberAdministrator
+#: telebot.types.ChatMemberBanned telebot.types.ChatMemberLeft
+#: telebot.types.ChatMemberMember telebot.types.ChatMemberOwner
+#: telebot.types.ChatMemberRestricted telebot.types.ChatMemberUpdated
+#: telebot.types.ChatPermissions telebot.types.ChatPhoto
+#: telebot.types.ChatShared telebot.types.ChosenInlineResult
 #: telebot.types.Contact telebot.types.Dice telebot.types.Document
 #: telebot.types.File telebot.types.ForceReply telebot.types.ForumTopic
 #: telebot.types.ForumTopicCreated telebot.types.ForumTopicEdited
@@ -95,15 +99,17 @@ msgstr ""
 #: telebot.types.InlineQueryResultGif telebot.types.InlineQueryResultLocation
 #: telebot.types.InlineQueryResultMpeg4Gif telebot.types.InlineQueryResultPhoto
 #: telebot.types.InlineQueryResultVenue telebot.types.InlineQueryResultVideo
-#: telebot.types.InlineQueryResultVoice
+#: telebot.types.InlineQueryResultVoice telebot.types.InlineQueryResultsButton
 #: telebot.types.InputContactMessageContent telebot.types.InputFile
 #: telebot.types.InputInvoiceMessageContent
 #: telebot.types.InputLocationMessageContent telebot.types.InputMediaAnimation
 #: telebot.types.InputMediaAudio telebot.types.InputMediaDocument
 #: telebot.types.InputMediaPhoto telebot.types.InputMediaVideo
-#: telebot.types.InputTextMessageContent telebot.types.InputVenueMessageContent
-#: telebot.types.Invoice telebot.types.KeyboardButton
-#: telebot.types.KeyboardButtonPollType telebot.types.LabeledPrice
+#: telebot.types.InputSticker telebot.types.InputTextMessageContent
+#: telebot.types.InputVenueMessageContent telebot.types.Invoice
+#: telebot.types.KeyboardButton telebot.types.KeyboardButtonPollType
+#: telebot.types.KeyboardButtonRequestChat
+#: telebot.types.KeyboardButtonRequestUser telebot.types.LabeledPrice
 #: telebot.types.Location telebot.types.LoginUrl telebot.types.MaskPosition
 #: telebot.types.MenuButtonCommands telebot.types.MenuButtonDefault
 #: telebot.types.MenuButtonWebApp telebot.types.Message
@@ -117,11 +123,13 @@ msgstr ""
 #: telebot.types.ShippingAddress telebot.types.ShippingOption
 #: telebot.types.ShippingOption.add_price telebot.types.ShippingQuery
 #: telebot.types.Sticker telebot.types.StickerSet
-#: telebot.types.SuccessfulPayment telebot.types.Update telebot.types.User
-#: telebot.types.UserProfilePhotos telebot.types.Venue telebot.types.Video
+#: telebot.types.SuccessfulPayment telebot.types.SwitchInlineQueryChosenChat
+#: telebot.types.Update telebot.types.User telebot.types.UserProfilePhotos
+#: telebot.types.UserShared telebot.types.Venue telebot.types.Video
 #: telebot.types.VideoChatEnded telebot.types.VideoChatParticipantsInvited
 #: telebot.types.VideoChatScheduled telebot.types.VideoNote telebot.types.Voice
 #: telebot.types.WebAppData telebot.types.WebAppInfo telebot.types.WebhookInfo
+#: telebot.types.WriteAccessAllowed
 msgid "Parameters"
 msgstr ""
 
@@ -183,14 +191,16 @@ msgstr ""
 #: telebot.types.BotCommandScopeChat
 #: telebot.types.BotCommandScopeChatAdministrators
 #: telebot.types.BotCommandScopeChatMember telebot.types.BotCommandScopeDefault
-#: telebot.types.CallbackQuery telebot.types.Chat
-#: telebot.types.ChatAdministratorRights telebot.types.ChatInviteLink
-#: telebot.types.ChatJoinRequest telebot.types.ChatLocation
-#: telebot.types.ChatMemberAdministrator telebot.types.ChatMemberBanned
-#: telebot.types.ChatMemberLeft telebot.types.ChatMemberMember
-#: telebot.types.ChatMemberOwner telebot.types.ChatMemberRestricted
-#: telebot.types.ChatMemberUpdated telebot.types.ChatMemberUpdated.difference
-#: telebot.types.ChatPermissions telebot.types.ChatPhoto
+#: telebot.types.BotDescription telebot.types.BotName
+#: telebot.types.BotShortDescription telebot.types.CallbackQuery
+#: telebot.types.Chat telebot.types.ChatAdministratorRights
+#: telebot.types.ChatInviteLink telebot.types.ChatJoinRequest
+#: telebot.types.ChatLocation telebot.types.ChatMemberAdministrator
+#: telebot.types.ChatMemberBanned telebot.types.ChatMemberLeft
+#: telebot.types.ChatMemberMember telebot.types.ChatMemberOwner
+#: telebot.types.ChatMemberRestricted telebot.types.ChatMemberUpdated
+#: telebot.types.ChatMemberUpdated.difference telebot.types.ChatPermissions
+#: telebot.types.ChatPhoto telebot.types.ChatShared
 #: telebot.types.ChosenInlineResult telebot.types.Contact telebot.types.Dice
 #: telebot.types.Document telebot.types.File telebot.types.ForceReply
 #: telebot.types.ForumTopic telebot.types.ForumTopicCreated telebot.types.Game
@@ -211,15 +221,17 @@ msgstr ""
 #: telebot.types.InlineQueryResultGif telebot.types.InlineQueryResultLocation
 #: telebot.types.InlineQueryResultMpeg4Gif telebot.types.InlineQueryResultPhoto
 #: telebot.types.InlineQueryResultVenue telebot.types.InlineQueryResultVideo
-#: telebot.types.InlineQueryResultVoice
+#: telebot.types.InlineQueryResultVoice telebot.types.InlineQueryResultsButton
 #: telebot.types.InputContactMessageContent
 #: telebot.types.InputInvoiceMessageContent
 #: telebot.types.InputLocationMessageContent telebot.types.InputMediaAnimation
 #: telebot.types.InputMediaAudio telebot.types.InputMediaDocument
 #: telebot.types.InputMediaPhoto telebot.types.InputMediaVideo
-#: telebot.types.InputTextMessageContent telebot.types.InputVenueMessageContent
-#: telebot.types.Invoice telebot.types.KeyboardButton
-#: telebot.types.KeyboardButtonPollType telebot.types.LabeledPrice
+#: telebot.types.InputSticker telebot.types.InputTextMessageContent
+#: telebot.types.InputVenueMessageContent telebot.types.Invoice
+#: telebot.types.KeyboardButton telebot.types.KeyboardButtonPollType
+#: telebot.types.KeyboardButtonRequestChat
+#: telebot.types.KeyboardButtonRequestUser telebot.types.LabeledPrice
 #: telebot.types.Location telebot.types.LoginUrl telebot.types.MaskPosition
 #: telebot.types.MenuButtonCommands telebot.types.MenuButtonDefault
 #: telebot.types.MenuButtonWebApp telebot.types.Message
@@ -232,8 +244,9 @@ msgstr ""
 #: telebot.types.SentWebAppMessage telebot.types.ShippingAddress
 #: telebot.types.ShippingOption telebot.types.ShippingOption.add_price
 #: telebot.types.ShippingQuery telebot.types.Sticker telebot.types.StickerSet
-#: telebot.types.SuccessfulPayment telebot.types.Update telebot.types.User
-#: telebot.types.UserProfilePhotos telebot.types.Venue telebot.types.Video
+#: telebot.types.SuccessfulPayment telebot.types.SwitchInlineQueryChosenChat
+#: telebot.types.Update telebot.types.User telebot.types.UserProfilePhotos
+#: telebot.types.UserShared telebot.types.Venue telebot.types.Video
 #: telebot.types.VideoChatEnded telebot.types.VideoChatParticipantsInvited
 #: telebot.types.VideoChatScheduled telebot.types.VideoNote telebot.types.Voice
 #: telebot.types.WebAppData telebot.types.WebAppInfo telebot.types.WebhookInfo
@@ -248,20 +261,22 @@ msgstr ""
 #: telebot.types.BotCommandScopeChat:12
 #: telebot.types.BotCommandScopeChatAdministrators:12
 #: telebot.types.BotCommandScopeChatMember:15
-#: telebot.types.BotCommandScopeDefault:8 telebot.types.CallbackQuery:30
-#: telebot.types.Chat:109 telebot.types.ChatAdministratorRights:46
-#: telebot.types.ChatInviteLink:34 telebot.types.ChatJoinRequest:20
-#: telebot.types.ChatLocation:11 telebot.types.ChatMemberAdministrator:59
-#: telebot.types.ChatMemberBanned:15 telebot.types.ChatMemberLeft:11
-#: telebot.types.ChatMemberMember:11 telebot.types.ChatMemberOwner:17
-#: telebot.types.ChatMemberRestricted:47 telebot.types.ChatMemberUpdated:24
-#: telebot.types.ChatPermissions:38 telebot.types.ChatPhoto:21
+#: telebot.types.BotCommandScopeDefault:8 telebot.types.BotDescription:8
+#: telebot.types.BotName:8 telebot.types.BotShortDescription:8
+#: telebot.types.CallbackQuery:30 telebot.types.Chat:109
+#: telebot.types.ChatAdministratorRights:46 telebot.types.ChatInviteLink:34
+#: telebot.types.ChatJoinRequest:27 telebot.types.ChatLocation:11
+#: telebot.types.ChatMemberAdministrator:59 telebot.types.ChatMemberBanned:15
+#: telebot.types.ChatMemberLeft:11 telebot.types.ChatMemberMember:11
+#: telebot.types.ChatMemberOwner:17 telebot.types.ChatMemberRestricted:61
+#: telebot.types.ChatMemberUpdated:27 telebot.types.ChatPermissions:56
+#: telebot.types.ChatPhoto:21 telebot.types.ChatShared:15
 #: telebot.types.ChosenInlineResult:21 telebot.types.Contact:22
 #: telebot.types.Dice:11 telebot.types.Document:26 telebot.types.File:21
 #: telebot.types.ForceReply:18 telebot.types.ForumTopic:17
 #: telebot.types.ForumTopicCreated:14 telebot.types.Game:25
-#: telebot.types.GameHighScore:14 telebot.types.InlineKeyboardButton:45
-#: telebot.types.InlineKeyboardMarkup:22 telebot.types.InlineQuery:26
+#: telebot.types.GameHighScore:14 telebot.types.InlineKeyboardButton:49
+#: telebot.types.InlineKeyboardMarkup:28 telebot.types.InlineQuery:26
 #: telebot.types.InlineQueryResultArticle:38
 #: telebot.types.InlineQueryResultAudio:40
 #: telebot.types.InlineQueryResultCachedAudio:31
@@ -281,31 +296,35 @@ msgstr ""
 #: telebot.types.InlineQueryResultVenue:51
 #: telebot.types.InlineQueryResultVideo:53
 #: telebot.types.InlineQueryResultVoice:37
+#: telebot.types.InlineQueryResultsButton:22
 #: telebot.types.InputContactMessageContent:17
 #: telebot.types.InputInvoiceMessageContent:75
 #: telebot.types.InputLocationMessageContent:26
 #: telebot.types.InputMediaAnimation:40 telebot.types.InputMediaAudio:37
 #: telebot.types.InputMediaDocument:32 telebot.types.InputMediaPhoto:24
-#: telebot.types.InputMediaVideo:43 telebot.types.InputTextMessageContent:19
+#: telebot.types.InputMediaVideo:43 telebot.types.InputSticker:18
+#: telebot.types.InputTextMessageContent:19
 #: telebot.types.InputVenueMessageContent:30 telebot.types.Invoice:22
-#: telebot.types.KeyboardButton:25 telebot.types.KeyboardButtonPollType:9
-#: telebot.types.LabeledPrice:13 telebot.types.Location:25
-#: telebot.types.LoginUrl:24 telebot.types.MaskPosition:20
-#: telebot.types.MenuButtonCommands:8 telebot.types.MenuButtonDefault:8
-#: telebot.types.MenuButtonWebApp:15 telebot.types.Message:246
-#: telebot.types.MessageAutoDeleteTimerChanged:8 telebot.types.MessageEntity:32
-#: telebot.types.MessageID:8 telebot.types.OrderInfo:17
-#: telebot.types.PhotoSize:21 telebot.types.Poll:47 telebot.types.PollAnswer:15
-#: telebot.types.PollOption:11 telebot.types.PreCheckoutQuery:28
-#: telebot.types.ProximityAlertTriggered:14
+#: telebot.types.KeyboardButton:33 telebot.types.KeyboardButtonPollType:9
+#: telebot.types.KeyboardButtonRequestChat:35
+#: telebot.types.KeyboardButtonRequestUser:18 telebot.types.LabeledPrice:13
+#: telebot.types.Location:25 telebot.types.LoginUrl:24
+#: telebot.types.MaskPosition:20 telebot.types.MenuButtonCommands:8
+#: telebot.types.MenuButtonDefault:8 telebot.types.MenuButtonWebApp:15
+#: telebot.types.Message:252 telebot.types.MessageAutoDeleteTimerChanged:8
+#: telebot.types.MessageEntity:32 telebot.types.MessageID:8
+#: telebot.types.OrderInfo:17 telebot.types.PhotoSize:21 telebot.types.Poll:47
+#: telebot.types.PollAnswer:15 telebot.types.PollOption:11
+#: telebot.types.PreCheckoutQuery:28 telebot.types.ProximityAlertTriggered:14
 #: telebot.types.ReplyKeyboardMarkup:49 telebot.types.ReplyKeyboardRemove:18
 #: telebot.types.SentWebAppMessage:9 telebot.types.ShippingAddress:23
 #: telebot.types.ShippingOption:14 telebot.types.ShippingQuery:17
-#: telebot.types.Sticker:49 telebot.types.StickerSet:30
-#: telebot.types.SuccessfulPayment:28 telebot.types.Update:61
+#: telebot.types.Sticker:54 telebot.types.StickerSet:30
+#: telebot.types.SuccessfulPayment:28
+#: telebot.types.SwitchInlineQueryChosenChat:22 telebot.types.Update:61
 #: telebot.types.User:41 telebot.types.UserProfilePhotos:11
-#: telebot.types.Venue:27 telebot.types.Video:35 telebot.types.VideoChatEnded:8
-#: telebot.types.VideoChatParticipantsInvited:8
+#: telebot.types.UserShared:15 telebot.types.Venue:27 telebot.types.Video:35
+#: telebot.types.VideoChatEnded:8 telebot.types.VideoChatParticipantsInvited:8
 #: telebot.types.VideoChatScheduled:9 telebot.types.VideoNote:24
 #: telebot.types.Voice:23 telebot.types.WebAppData:12
 #: telebot.types.WebAppInfo:8 telebot.types.WebhookInfo:37
@@ -320,14 +339,16 @@ msgstr ""
 #: telebot.types.BotCommandScopeChat
 #: telebot.types.BotCommandScopeChatAdministrators
 #: telebot.types.BotCommandScopeChatMember telebot.types.BotCommandScopeDefault
-#: telebot.types.CallbackQuery telebot.types.Chat
-#: telebot.types.ChatAdministratorRights telebot.types.ChatInviteLink
-#: telebot.types.ChatJoinRequest telebot.types.ChatLocation
-#: telebot.types.ChatMemberAdministrator telebot.types.ChatMemberBanned
-#: telebot.types.ChatMemberLeft telebot.types.ChatMemberMember
-#: telebot.types.ChatMemberOwner telebot.types.ChatMemberRestricted
-#: telebot.types.ChatMemberUpdated telebot.types.ChatMemberUpdated.difference
-#: telebot.types.ChatPermissions telebot.types.ChatPhoto
+#: telebot.types.BotDescription telebot.types.BotName
+#: telebot.types.BotShortDescription telebot.types.CallbackQuery
+#: telebot.types.Chat telebot.types.ChatAdministratorRights
+#: telebot.types.ChatInviteLink telebot.types.ChatJoinRequest
+#: telebot.types.ChatLocation telebot.types.ChatMemberAdministrator
+#: telebot.types.ChatMemberBanned telebot.types.ChatMemberLeft
+#: telebot.types.ChatMemberMember telebot.types.ChatMemberOwner
+#: telebot.types.ChatMemberRestricted telebot.types.ChatMemberUpdated
+#: telebot.types.ChatMemberUpdated.difference telebot.types.ChatPermissions
+#: telebot.types.ChatPhoto telebot.types.ChatShared
 #: telebot.types.ChosenInlineResult telebot.types.Contact telebot.types.Dice
 #: telebot.types.Document telebot.types.File telebot.types.ForceReply
 #: telebot.types.ForumTopic telebot.types.ForumTopicCreated telebot.types.Game
@@ -348,15 +369,17 @@ msgstr ""
 #: telebot.types.InlineQueryResultGif telebot.types.InlineQueryResultLocation
 #: telebot.types.InlineQueryResultMpeg4Gif telebot.types.InlineQueryResultPhoto
 #: telebot.types.InlineQueryResultVenue telebot.types.InlineQueryResultVideo
-#: telebot.types.InlineQueryResultVoice
+#: telebot.types.InlineQueryResultVoice telebot.types.InlineQueryResultsButton
 #: telebot.types.InputContactMessageContent
 #: telebot.types.InputInvoiceMessageContent
 #: telebot.types.InputLocationMessageContent telebot.types.InputMediaAnimation
 #: telebot.types.InputMediaAudio telebot.types.InputMediaDocument
 #: telebot.types.InputMediaPhoto telebot.types.InputMediaVideo
-#: telebot.types.InputTextMessageContent telebot.types.InputVenueMessageContent
-#: telebot.types.Invoice telebot.types.KeyboardButton
-#: telebot.types.KeyboardButtonPollType telebot.types.LabeledPrice
+#: telebot.types.InputSticker telebot.types.InputTextMessageContent
+#: telebot.types.InputVenueMessageContent telebot.types.Invoice
+#: telebot.types.KeyboardButton telebot.types.KeyboardButtonPollType
+#: telebot.types.KeyboardButtonRequestChat
+#: telebot.types.KeyboardButtonRequestUser telebot.types.LabeledPrice
 #: telebot.types.Location telebot.types.LoginUrl telebot.types.MaskPosition
 #: telebot.types.MenuButtonCommands telebot.types.MenuButtonDefault
 #: telebot.types.MenuButtonWebApp telebot.types.Message
@@ -369,8 +392,9 @@ msgstr ""
 #: telebot.types.SentWebAppMessage telebot.types.ShippingAddress
 #: telebot.types.ShippingOption telebot.types.ShippingQuery
 #: telebot.types.Sticker telebot.types.StickerSet
-#: telebot.types.SuccessfulPayment telebot.types.Update telebot.types.User
-#: telebot.types.UserProfilePhotos telebot.types.Venue telebot.types.Video
+#: telebot.types.SuccessfulPayment telebot.types.SwitchInlineQueryChosenChat
+#: telebot.types.Update telebot.types.User telebot.types.UserProfilePhotos
+#: telebot.types.UserShared telebot.types.Venue telebot.types.Video
 #: telebot.types.VideoChatEnded telebot.types.VideoChatParticipantsInvited
 #: telebot.types.VideoChatScheduled telebot.types.VideoNote telebot.types.Voice
 #: telebot.types.WebAppData telebot.types.WebAppInfo telebot.types.WebhookInfo
@@ -701,6 +725,56 @@ msgstr ""
 
 #: of telebot.types.BotCommandScopeDefault:9
 msgid ":class:`telebot.types.BotCommandScopeDefault`"
+msgstr ""
+
+#: of telebot.types.BotDescription:1
+msgid "This object represents a bot description."
+msgstr ""
+
+#: of telebot.types.BotDescription:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#botdescription"
+msgstr ""
+
+#: of telebot.types.BotDescription:5
+msgid "Bot description"
+msgstr ""
+
+#: of telebot.types.BotDescription:9
+msgid ":class:`telebot.types.BotDescription`"
+msgstr ""
+
+#: of telebot.types.BotName:1
+msgid "This object represents a bot name."
+msgstr ""
+
+#: of telebot.types.BotName:3
+msgid "Telegram Documentation: https://core.telegram.org/bots/api#botname"
+msgstr ""
+
+#: of telebot.types.BotName:5
+msgid "The bot name"
+msgstr ""
+
+#: of telebot.types.BotName:9
+msgid ":class:`BotName`"
+msgstr ""
+
+#: of telebot.types.BotShortDescription:1
+msgid "This object represents a bot short description."
+msgstr ""
+
+#: of telebot.types.BotShortDescription:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#botshortdescription"
+msgstr ""
+
+#: of telebot.types.BotShortDescription:5
+msgid "Bot short description"
+msgstr ""
+
+#: of telebot.types.BotShortDescription:9
+msgid ":class:`telebot.types.BotShortDescription`"
 msgstr ""
 
 #: of telebot.types.CallbackQuery:1
@@ -1120,20 +1194,31 @@ msgid "User that sent the join request"
 msgstr ""
 
 #: of telebot.types.ChatJoinRequest:11
+msgid ""
+"Optional. Identifier of a private chat with the user who sent the join "
+"request. This number may have more than 32 significant bits and some "
+"programming languages may have difficulty/silent defects in interpreting "
+"it. But it has at most 52 significant bits, so a 64-bit integer or "
+"double-precision float type are safe for storing this identifier. The bot"
+" can use this identifier for 24 hours to send messages until the join "
+"request is processed, assuming no other administrator contacted the user."
+msgstr ""
+
+#: of telebot.types.ChatJoinRequest:18
 msgid "Date the request was sent in Unix time"
 msgstr ""
 
-#: of telebot.types.ChatJoinRequest:14
+#: of telebot.types.ChatJoinRequest:21
 msgid "Optional. Bio of the user."
 msgstr ""
 
-#: of telebot.types.ChatJoinRequest:17
+#: of telebot.types.ChatJoinRequest:24
 msgid ""
 "Optional. Chat invite link that was used by the user to send the join "
 "request"
 msgstr ""
 
-#: of telebot.types.ChatJoinRequest:21
+#: of telebot.types.ChatJoinRequest:28
 msgid ":class:`telebot.types.ChatJoinRequest`"
 msgstr ""
 
@@ -1177,7 +1262,7 @@ msgstr ""
 msgid ":class:`telebot.types.ChatMemberMember`"
 msgstr ""
 
-#: of telebot.types.ChatMember:7 telebot.types.ChatMemberRestricted:48
+#: of telebot.types.ChatMember:7 telebot.types.ChatMemberRestricted:62
 msgid ":class:`telebot.types.ChatMemberRestricted`"
 msgstr ""
 
@@ -1328,26 +1413,44 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.ChatMemberRestricted:29
-msgid ""
-"True, if the user is allowed to send audios, documents, photos, videos, "
-"video notes and voice notes"
+msgid "True, if the user is allowed to send audios"
 msgstr ""
 
-#: of telebot.types.ChatMemberRestricted:33
+#: of telebot.types.ChatMemberRestricted:32
+msgid "True, if the user is allowed to send documents"
+msgstr ""
+
+#: of telebot.types.ChatMemberRestricted:35
+msgid "True, if the user is allowed to send photos"
+msgstr ""
+
+#: of telebot.types.ChatMemberRestricted:38
+msgid "True, if the user is allowed to send videos"
+msgstr ""
+
+#: of telebot.types.ChatMemberRestricted:41
+msgid "True, if the user is allowed to send video notes"
+msgstr ""
+
+#: of telebot.types.ChatMemberRestricted:44
+msgid "True, if the user is allowed to send voice notes"
+msgstr ""
+
+#: of telebot.types.ChatMemberRestricted:47
 msgid "True, if the user is allowed to send polls"
 msgstr ""
 
-#: of telebot.types.ChatMemberRestricted:36
+#: of telebot.types.ChatMemberRestricted:50
 msgid ""
 "True, if the user is allowed to send animations, games, stickers and use "
 "inline bots"
 msgstr ""
 
-#: of telebot.types.ChatMemberRestricted:40
+#: of telebot.types.ChatMemberRestricted:54
 msgid "True, if the user is allowed to add web page previews to their messages"
 msgstr ""
 
-#: of telebot.types.ChatMemberRestricted:43
+#: of telebot.types.ChatMemberRestricted:57
 msgid ""
 "Date when restrictions will be lifted for this user; unix time. If 0, "
 "then the user is restricted forever"
@@ -1389,7 +1492,11 @@ msgid ""
 "for joining by invite link events only."
 msgstr ""
 
-#: of telebot.types.ChatMemberUpdated:25
+#: of telebot.types.ChatMemberUpdated:24
+msgid "Optional. True, if the user joined the chat via a chat folder invite link"
+msgstr ""
+
+#: of telebot.types.ChatMemberUpdated:28
 msgid ":class:`telebot.types.ChatMemberUpdated`"
 msgstr ""
 
@@ -1421,52 +1528,76 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.ChatPermissions:9
-msgid ""
-"Optional. True, if the user is allowed to send audios, documents, photos,"
-" videos, video notes and voice notes, implies can_send_messages"
+msgid "Optional. True, if the user is allowed to send audios"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:13
+#: of telebot.types.ChatPermissions:12
+msgid "Optional. True, if the user is allowed to send documents"
+msgstr ""
+
+#: of telebot.types.ChatPermissions:15
+msgid "Optional. True, if the user is allowed to send photos"
+msgstr ""
+
+#: of telebot.types.ChatPermissions:18
+msgid "Optional. True, if the user is allowed to send videos"
+msgstr ""
+
+#: of telebot.types.ChatPermissions:21
+msgid "Optional. True, if the user is allowed to send video notes"
+msgstr ""
+
+#: of telebot.types.ChatPermissions:24
+msgid "Optional. True, if the user is allowed to send voice notes"
+msgstr ""
+
+#: of telebot.types.ChatPermissions:27
 msgid ""
 "Optional. True, if the user is allowed to send polls, implies "
 "can_send_messages"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:16
+#: of telebot.types.ChatPermissions:30
 msgid ""
 "Optional. True, if the user is allowed to send animations, games, "
-"stickers and use inline bots, implies can_send_media_messages"
+"stickers and use inline bots"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:20
+#: of telebot.types.ChatPermissions:34
 msgid ""
 "Optional. True, if the user is allowed to add web page previews to their "
-"messages, implies can_send_media_messages"
+"messages"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:24
+#: of telebot.types.ChatPermissions:38
 msgid ""
 "Optional. True, if the user is allowed to change the chat title, photo "
 "and other settings. Ignored in public supergroups"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:28
+#: of telebot.types.ChatPermissions:42
 msgid "Optional. True, if the user is allowed to invite new users to the chat"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:31
+#: of telebot.types.ChatPermissions:45
 msgid ""
 "Optional. True, if the user is allowed to pin messages. Ignored in public"
 " supergroups"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:34
+#: of telebot.types.ChatPermissions:48
 msgid ""
 "Optional. True, if the user is allowed to create forum topics. If omitted"
 " defaults to the value of can_pin_messages"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:39
+#: of telebot.types.ChatPermissions:52
+msgid ""
+"deprecated. True, if the user is allowed to send audios, documents, "
+"photos, videos, video notes and voice notes"
+msgstr ""
+
+#: of telebot.types.ChatPermissions:57
 msgid ":class:`telebot.types.ChatPermissions`"
 msgstr ""
 
@@ -1506,6 +1637,36 @@ msgstr ""
 
 #: of telebot.types.ChatPhoto:22
 msgid ":class:`telebot.types.ChatPhoto`"
+msgstr ""
+
+#: of telebot.types.ChatShared:1
+msgid ""
+"This object contains information about the chat whose identifier was "
+"shared with the bot using a `telebot.types.KeyboardButtonRequestChat` "
+"button."
+msgstr ""
+
+#: of telebot.types.ChatShared:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#Chatshared"
+msgstr ""
+
+#: of telebot.types.ChatShared:6 telebot.types.UserShared:6
+msgid "identifier of the request"
+msgstr ""
+
+#: of telebot.types.ChatShared:9
+msgid ""
+"Identifier of the shared chat. This number may have more than 32 "
+"significant bits and some programming languages may have "
+"difficulty/silent defects in interpreting it. But it has at most 52 "
+"significant bits, so a 64-bit integer or double-precision float type are "
+"safe for storing this identifier. The bot may not have access to the chat"
+" and could be unable to use this identifier, unless the chat is already "
+"known to the bot by some other means."
+msgstr ""
+
+#: of telebot.types.ChatShared:16
+msgid ":class:`telebot.types.ChatShared`"
 msgstr ""
 
 #: of telebot.types.ChosenInlineResult:1
@@ -1915,12 +2076,14 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.InlineKeyboardButton:3
+#: telebot.types.SwitchInlineQueryChosenChat:4
 msgid ""
 "Telegram Documentation: "
 "https://core.telegram.org/bots/api#inlinekeyboardbutton"
 msgstr ""
 
 #: of telebot.types.InlineKeyboardButton:5
+#: telebot.types.InlineQueryResultsButton:6
 msgid "Label text on the button"
 msgstr ""
 
@@ -1974,19 +2137,26 @@ msgstr ""
 
 #: of telebot.types.InlineKeyboardButton:37
 msgid ""
+"Optional. If set, pressing the button will prompt the user to select one "
+"of their chats of the specified type, open that chat and insert the bot's"
+" username and the specified inline query in the input field"
+msgstr ""
+
+#: of telebot.types.InlineKeyboardButton:41
+msgid ""
 "Optional. Description of the game that will be launched when the user "
 "presses the button. NOTE: This type of button must always be the first "
 "button in the first row."
 msgstr ""
 
-#: of telebot.types.InlineKeyboardButton:41
+#: of telebot.types.InlineKeyboardButton:45
 msgid ""
 "Optional. Specify True, to send a Pay button. NOTE: This type of button "
 "must always be the first button in the first row and can only be used in "
 "invoice messages."
 msgstr ""
 
-#: of telebot.types.InlineKeyboardButton:46
+#: of telebot.types.InlineKeyboardButton:50
 msgid ":class:`telebot.types.InlineKeyboardButton`"
 msgstr ""
 
@@ -2004,19 +2174,23 @@ msgstr ""
 msgid "Example of a custom keyboard with buttons."
 msgstr ""
 
-#: of telebot.types.InlineKeyboardMarkup:16
+#: of telebot.types.InlineKeyboardMarkup:19
 msgid ""
 "Telegram Documentation: "
 "https://core.telegram.org/bots/api#inlinekeyboardmarkup"
 msgstr ""
 
-#: of telebot.types.InlineKeyboardMarkup:18
+#: of telebot.types.InlineKeyboardMarkup:21
 msgid ""
 ":obj:`list` of button rows, each represented by an :obj:`list` of "
 ":class:`telebot.types.InlineKeyboardButton` objects"
 msgstr ""
 
-#: of telebot.types.InlineKeyboardMarkup:23
+#: of telebot.types.InlineKeyboardMarkup:25
+msgid "number of :class:`telebot.types.InlineKeyboardButton` objects on each row"
+msgstr ""
+
+#: of telebot.types.InlineKeyboardMarkup:29
 #: telebot.types.InlineKeyboardMarkup.add:17
 #: telebot.types.InlineKeyboardMarkup.row:12
 msgid ":class:`telebot.types.InlineKeyboardMarkup`"
@@ -3165,12 +3339,58 @@ msgstr ""
 msgid ":class:`telebot.types.InlineQueryResultVoice`"
 msgstr ""
 
+#: of telebot.types.InlineQueryResultsButton:1 telebot.types.LabeledPrice:1
+msgid ""
+"Bases: :py:class:`telebot.types.JsonSerializable`, "
+":py:class:`telebot.types.Dictionaryable`"
+msgstr ""
+
+#: of telebot.types.InlineQueryResultsButton:1
+msgid ""
+"This object represents a button to be shown above inline query results. "
+"You must use exactly one of the optional fields."
+msgstr ""
+
+#: of telebot.types.InlineQueryResultsButton:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#inlinequeryresultsbutton"
+msgstr ""
+
+#: of telebot.types.InlineQueryResultsButton:9
+msgid ""
+"Optional. Description of the Web App that will be launched when the user "
+"presses the button. The Web App will be able to switch back to the inline"
+" mode using the method web_app_switch_inline_query inside the Web App."
+msgstr ""
+
+#: of telebot.types.InlineQueryResultsButton:13
+msgid ""
+"Optional. Deep-linking parameter for the /start message sent to the bot "
+"when a user presses the button. 1-64 characters, only A-Z, a-z, 0-9, _ "
+"and - are allowed. Example: An inline bot that sends YouTube videos can "
+"ask the user to connect the bot to their YouTube account to adapt search "
+"results accordingly. To do this, it displays a 'Connect your YouTube "
+"account' button above the results, or even before showing any. The user "
+"presses the button, switches to a private chat with the bot and, in doing"
+" so, passes a start parameter that instructs the bot to return an OAuth "
+"link. Once done, the bot can offer a switch_inline button so that the "
+"user can easily return to the chat where they wanted to use the bot's "
+"inline capabilities."
+msgstr ""
+
+#: of telebot.types.InlineQueryResultsButton:23
+msgid ":class:`InlineQueryResultsButton`"
+msgstr ""
+
 #: of telebot.types.InputContactMessageContent:1
 #: telebot.types.InputInvoiceMessageContent:1
 #: telebot.types.InputLocationMessageContent:1
 #: telebot.types.InputTextMessageContent:1
 #: telebot.types.InputVenueMessageContent:1
 #: telebot.types.KeyboardButtonPollType:1
+#: telebot.types.KeyboardButtonRequestChat:1
+#: telebot.types.KeyboardButtonRequestUser:1
 msgid "Bases: :py:class:`telebot.types.Dictionaryable`"
 msgstr ""
 
@@ -3367,7 +3587,8 @@ msgstr ""
 msgid ":class:`telebot.types.InputLocationMessageContent`"
 msgstr ""
 
-#: of telebot.types.InputMedia:1 telebot.types.KeyboardButton:1
+#: of telebot.types.InputMedia:1 telebot.types.InputSticker:1
+#: telebot.types.KeyboardButton:1
 msgid ""
 "Bases: :py:class:`telebot.types.Dictionaryable`, "
 ":py:class:`telebot.types.JsonSerializable`"
@@ -3560,6 +3781,39 @@ msgstr ""
 msgid ":class:`telebot.types.InputMediaVideo`"
 msgstr ""
 
+#: of telebot.types.InputSticker:1
+msgid "This object describes a sticker to be added to a sticker set."
+msgstr ""
+
+#: of telebot.types.InputSticker:3
+msgid ""
+"The added sticker. Pass a file_id as a String to send a file that already"
+" exists on the Telegram servers, pass an HTTP URL as a String for "
+"Telegram to get a file from the Internet, or upload a new one using "
+"multipart/form-data. Animated and video stickers can't be uploaded via "
+"HTTP URL."
+msgstr ""
+
+#: of telebot.types.InputSticker:8
+msgid "One or more(up to 20) emoji(s) corresponding to the sticker"
+msgstr ""
+
+#: of telebot.types.InputSticker:11
+msgid ""
+"Optional. Position where the mask should be placed on faces. For “mask” "
+"stickers only."
+msgstr ""
+
+#: of telebot.types.InputSticker:14
+msgid ""
+"Optional. List of 0-20 search keywords for the sticker with total length "
+"of up to 64 characters. For “regular” and “custom_emoji” stickers only."
+msgstr ""
+
+#: of telebot.types.InputSticker:19
+msgid ":class:`telebot.types.InputSticker`"
+msgstr ""
+
 #: of telebot.types.InputTextMessageContent:1
 msgid ""
 "Represents the content of a text message to be sent as the result of an "
@@ -3726,7 +3980,21 @@ msgid ""
 "service message. Available in private chats only."
 msgstr ""
 
-#: of telebot.types.KeyboardButton:26
+#: of telebot.types.KeyboardButton:25
+msgid ""
+"Optional. If specified, pressing the button will open a list of suitable "
+"users. Tapping on any user will send their identifier to the bot in a "
+"“user_shared” service message. Available in private chats only."
+msgstr ""
+
+#: of telebot.types.KeyboardButton:29
+msgid ""
+"Optional. If specified, pressing the button will open a list of suitable "
+"chats. Tapping on a chat will send its identifier to the bot in a "
+"“chat_shared” service message. Available in private chats only."
+msgstr ""
+
+#: of telebot.types.KeyboardButton:34
 msgid ":class:`telebot.types.KeyboardButton`"
 msgstr ""
 
@@ -3754,10 +4022,111 @@ msgstr ""
 msgid ":class:`telebot.types.KeyboardButtonPollType`"
 msgstr ""
 
-#: of telebot.types.LabeledPrice:1
+#: of telebot.types.KeyboardButtonRequestChat:1
 msgid ""
-"Bases: :py:class:`telebot.types.JsonSerializable`, "
-":py:class:`telebot.types.Dictionaryable`"
+"This object defines the criteria used to request a suitable chat. The "
+"identifier of the selected chat will be shared with the bot when the "
+"corresponding button is pressed."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#keyboardbuttonrequestchat"
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:6
+msgid ""
+"Signed 32-bit identifier of the request, which will be received back in "
+"the ChatShared object. Must be unique within the message"
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:10
+msgid ""
+"Pass True to request a channel chat, pass False to request a group or a "
+"supergroup chat."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:13
+msgid ""
+"Optional. Pass True to request a forum supergroup, pass False to request "
+"a non-forum chat. If not specified, no additional restrictions are "
+"applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:17
+msgid ""
+"Optional. Pass True to request a supergroup or a channel with a username,"
+" pass False to request a chat without a username. If not specified, no "
+"additional restrictions are applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:21
+msgid ""
+"Optional. Pass True to request a chat owned by the user. Otherwise, no "
+"additional restrictions are applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:24
+msgid ""
+"Optional. A JSON-serialized object listing the required administrator "
+"rights of the user in the chat. The rights must be a superset of "
+"bot_administrator_rights. If not specified, no additional restrictions "
+"are applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:28
+msgid ""
+"Optional. A JSON-serialized object listing the required administrator "
+"rights of the bot in the chat. The rights must be a subset of "
+"user_administrator_rights. If not specified, no additional restrictions "
+"are applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:32
+msgid ""
+"Optional. Pass True to request a chat where the bot is a member. "
+"Otherwise, no additional restrictions are applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestChat:36
+msgid ":class:`telebot.types.KeyboardButtonRequestChat`"
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:1
+msgid ""
+"This object defines the criteria used to request a suitable user. The "
+"identifier of the selected user will be shared with the bot when the "
+"corresponding button is pressed."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#keyboardbuttonrequestuser"
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:6
+msgid ""
+"Signed 32-bit identifier of the request, which will be received back in "
+"the UserShared object. Must be unique within the message"
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:10
+msgid ""
+"Optional. Pass True to request a bot, pass False to request a regular "
+"user. If not specified, no additional restrictions are applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:14
+msgid ""
+"Optional. Pass True to request a premium user, pass False to request a "
+"non-premium user. If not specified, no additional restrictions are "
+"applied."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:19
+msgid ":class:`telebot.types.KeyboardButtonRequestUser`"
 msgstr ""
 
 #: of telebot.types.LabeledPrice:1
@@ -4306,78 +4675,86 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.Message:194
+msgid "Optional. Service message: a user was shared with the bot"
+msgstr ""
+
+#: of telebot.types.Message:197
+msgid "Optional. Service message: a chat was shared with the bot"
+msgstr ""
+
+#: of telebot.types.Message:200
 msgid ""
 "Optional. The domain name of the website on which the user has logged in."
 " More about Telegram Login »"
 msgstr ""
 
-#: of telebot.types.Message:198
+#: of telebot.types.Message:204
 msgid ""
 "Optional. Service message: the user allowed the bot added to the "
 "attachment menu to write messages"
 msgstr ""
 
-#: of telebot.types.Message:202
+#: of telebot.types.Message:208
 msgid "Optional. Telegram Passport data"
 msgstr ""
 
-#: of telebot.types.Message:205
+#: of telebot.types.Message:211
 msgid ""
 "Optional. Service message. A user in the chat triggered another user's "
 "proximity alert while sharing Live Location."
 msgstr ""
 
-#: of telebot.types.Message:209
+#: of telebot.types.Message:215
 msgid "Optional. Service message: forum topic created"
 msgstr ""
 
-#: of telebot.types.Message:212
+#: of telebot.types.Message:218
 msgid "Optional. Service message: forum topic edited"
 msgstr ""
 
-#: of telebot.types.Message:215
+#: of telebot.types.Message:221
 msgid "Optional. Service message: forum topic closed"
 msgstr ""
 
-#: of telebot.types.Message:218
+#: of telebot.types.Message:224
 msgid "Optional. Service message: forum topic reopened"
 msgstr ""
 
-#: of telebot.types.Message:221
+#: of telebot.types.Message:227
 msgid "Optional. Service message: the 'General' forum topic hidden"
 msgstr ""
 
-#: of telebot.types.Message:224
+#: of telebot.types.Message:230
 msgid "Optional. Service message: the 'General' forum topic unhidden"
 msgstr ""
 
-#: of telebot.types.Message:227
+#: of telebot.types.Message:233
 msgid "Optional. Service message: video chat scheduled"
 msgstr ""
 
-#: of telebot.types.Message:230
+#: of telebot.types.Message:236
 msgid "Optional. Service message: video chat started"
 msgstr ""
 
-#: of telebot.types.Message:233
+#: of telebot.types.Message:239
 msgid "Optional. Service message: video chat ended"
 msgstr ""
 
-#: of telebot.types.Message:236
+#: of telebot.types.Message:242
 msgid "Optional. Service message: new participants invited to a video chat"
 msgstr ""
 
-#: of telebot.types.Message:239
+#: of telebot.types.Message:245
 msgid "Optional. Service message: data sent by a Web App"
 msgstr ""
 
-#: of telebot.types.Message:242
+#: of telebot.types.Message:248
 msgid ""
 "Optional. Inline keyboard attached to the message. login_url buttons are "
 "represented as ordinary url buttons."
 msgstr ""
 
-#: of telebot.types.Message:247
+#: of telebot.types.Message:253
 msgid ":class:`telebot.types.Message`"
 msgstr ""
 
@@ -4540,7 +4917,7 @@ msgstr ""
 msgid "Photo height"
 msgstr ""
 
-#: of telebot.types.PhotoSize:18 telebot.types.Sticker:46
+#: of telebot.types.PhotoSize:18 telebot.types.Sticker:51
 #: telebot.types.VideoNote:21
 msgid "Optional. File size in bytes"
 msgstr ""
@@ -5058,7 +5435,14 @@ msgstr ""
 msgid "Optional. For custom emoji stickers, unique identifier of the custom emoji"
 msgstr ""
 
-#: of telebot.types.Sticker:50
+#: of telebot.types.Sticker:46
+msgid ""
+"Optional. True, if the sticker must be repainted to a text color in "
+"messages, the color of the Telegram Premium badge in emoji status, white "
+"color on chat photos, or another appropriate color in other places"
+msgstr ""
+
+#: of telebot.types.Sticker:55
 msgid ":class:`telebot.types.Sticker`"
 msgstr ""
 
@@ -5134,6 +5518,45 @@ msgstr ""
 
 #: of telebot.types.SuccessfulPayment:29
 msgid ":class:`telebot.types.SuccessfulPayment`"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:1 telebot.types.User:1
+msgid ""
+"Bases: :py:class:`telebot.types.JsonDeserializable`, "
+":py:class:`telebot.types.Dictionaryable`, "
+":py:class:`telebot.types.JsonSerializable`"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:1
+msgid ""
+"Represents an inline button that switches the current user to inline mode"
+" in a chosen chat, with an optional default inline query."
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:6
+msgid ""
+"Optional. The default inline query to be inserted in the input field. If "
+"left empty, only the bot's username will be inserted"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:10
+msgid "Optional. True, if private chats with users can be chosen"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:13
+msgid "Optional. True, if private chats with bots can be chosen"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:16
+msgid "Optional. True, if group and supergroup chats can be chosen"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:19
+msgid "Optional. True, if channel chats can be chosen"
+msgstr ""
+
+#: of telebot.types.SwitchInlineQueryChosenChat:23
+msgid ":class:`SwitchInlineQueryChosenChat`"
 msgstr ""
 
 #: of telebot.types.Update:1
@@ -5241,13 +5664,6 @@ msgid ":class:`telebot.types.Update`"
 msgstr ""
 
 #: of telebot.types.User:1
-msgid ""
-"Bases: :py:class:`telebot.types.JsonDeserializable`, "
-":py:class:`telebot.types.Dictionaryable`, "
-":py:class:`telebot.types.JsonSerializable`"
-msgstr ""
-
-#: of telebot.types.User:1
 msgid "This object represents a Telegram user or bot."
 msgstr ""
 
@@ -5346,6 +5762,32 @@ msgstr ""
 
 #: of telebot.types.UserProfilePhotos:12
 msgid ":class:`telebot.types.UserProfilePhotos`"
+msgstr ""
+
+#: of telebot.types.UserShared:1
+msgid ""
+"This object contains information about the user whose identifier was "
+"shared with the bot using a `telebot.types.KeyboardButtonRequestUser` "
+"button."
+msgstr ""
+
+#: of telebot.types.UserShared:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#usershared"
+msgstr ""
+
+#: of telebot.types.UserShared:9
+msgid ""
+"Identifier of the shared user. This number may have more than 32 "
+"significant bits and some programming languages may have "
+"difficulty/silent defects in interpreting it. But it has at most 52 "
+"significant bits, so a 64-bit integer or double-precision float type are "
+"safe for storing this identifier. The bot may not have access to the user"
+" and could be unable to use this identifier, unless the user is already "
+"known to the bot by some other means."
+msgstr ""
+
+#: of telebot.types.UserShared:16
+msgid ":class:`telebot.types.UserShared`"
 msgstr ""
 
 #: of telebot.types.Venue:1
@@ -5633,6 +6075,37 @@ msgid ""
 "https://core.telegram.org/bots/api#writeaccessallowed"
 msgstr ""
 
+#: of telebot.types.WriteAccessAllowed:6
+msgid "Optional. Name of the Web App which was launched from a link"
+msgstr ""
+
 #~ msgid "Type of the result, must be animation"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "True, if the user is allowed to"
+#~ " send audios, documents, photos, videos,"
+#~ " video notes and voice notes"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. True, if the user is "
+#~ "allowed to send audios, documents, "
+#~ "photos, videos, video notes and voice"
+#~ " notes, implies can_send_messages"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. True, if the user is "
+#~ "allowed to send animations, games, "
+#~ "stickers and use inline bots, implies"
+#~ " can_send_media_messages"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. True, if the user is "
+#~ "allowed to add web page previews "
+#~ "to their messages, implies "
+#~ "can_send_media_messages"
 #~ msgstr ""
 

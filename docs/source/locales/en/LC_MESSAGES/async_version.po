@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-02 19:24+0400\n"
+"POT-Creation-Date: 2023-07-08 23:07+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,6 +105,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands
 #: telebot.async_telebot.AsyncTeleBot.delete_state
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook
 #: telebot.async_telebot.AsyncTeleBot.download_file
 #: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
@@ -131,6 +132,9 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.get_game_high_scores
 #: telebot.async_telebot.AsyncTeleBot.get_my_commands
 #: telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.get_my_description
+#: telebot.async_telebot.AsyncTeleBot.get_my_name
+#: telebot.async_telebot.AsyncTeleBot.get_my_short_description
 #: telebot.async_telebot.AsyncTeleBot.get_state
 #: telebot.async_telebot.AsyncTeleBot.get_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.get_updates
@@ -196,12 +200,20 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_chat_photo
 #: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail
 #: telebot.async_telebot.AsyncTeleBot.set_game_score
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.set_my_description
+#: telebot.async_telebot.AsyncTeleBot.set_my_name
+#: telebot.async_telebot.AsyncTeleBot.set_my_short_description
 #: telebot.async_telebot.AsyncTeleBot.set_state
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_keywords
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_title
 #: telebot.async_telebot.AsyncTeleBot.set_update_listener
 #: telebot.async_telebot.AsyncTeleBot.set_webhook
 #: telebot.async_telebot.AsyncTeleBot.setup_middleware
@@ -304,6 +316,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands
 #: telebot.async_telebot.AsyncTeleBot.delete_state
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook
 #: telebot.async_telebot.AsyncTeleBot.download_file
 #: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
@@ -329,6 +342,9 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.get_game_high_scores
 #: telebot.async_telebot.AsyncTeleBot.get_my_commands
 #: telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.get_my_description
+#: telebot.async_telebot.AsyncTeleBot.get_my_name
+#: telebot.async_telebot.AsyncTeleBot.get_my_short_description
 #: telebot.async_telebot.AsyncTeleBot.get_state
 #: telebot.async_telebot.AsyncTeleBot.get_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.get_updates
@@ -392,12 +408,20 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_chat_photo
 #: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail
 #: telebot.async_telebot.AsyncTeleBot.set_game_score
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.set_my_description
+#: telebot.async_telebot.AsyncTeleBot.set_my_name
+#: telebot.async_telebot.AsyncTeleBot.set_my_short_description
 #: telebot.async_telebot.AsyncTeleBot.set_state
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_keywords
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_title
 #: telebot.async_telebot.AsyncTeleBot.set_update_listener
 #: telebot.async_telebot.AsyncTeleBot.set_webhook
 #: telebot.async_telebot.AsyncTeleBot.setup_middleware
@@ -477,32 +501,45 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:1
 msgid ""
-"Use this method to add a new sticker to a set created by the bot. It's "
-"required to pass `png_sticker` or `tgs_sticker`. Returns True on success."
+"Use this method to add a new sticker to a set created by the bot. The "
+"format of the added sticker must match the format of the other stickers "
+"in the set. Emoji sticker sets can have up to 200 stickers. Animated and "
+"video sticker sets can have up to 50 stickers. Static sticker sets can "
+"have up to 120 stickers. Returns True on success."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:5
-msgid "Telegram documentation: https://core.telegram.org/bots/api#addstickertoset"
-msgstr ""
-
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:7
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:7
-msgid "User identifier of created sticker set owner"
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:8
+msgid ""
+"**_sticker, mask_position, emojis parameters are deprecated, use stickers"
+" instead"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:10
+msgid "Telegram documentation: https://core.telegram.org/bots/api#addstickertoset"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:12
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:10
+msgid "User identifier of created sticker set owner"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:15
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_set:3
 #: telebot.async_telebot.AsyncTeleBot.get_sticker_set:5
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:6
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail:4
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list:4
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:6
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_title:4
 msgid "Sticker set name"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:13
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:18
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:18
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:21
 msgid "One or more emoji corresponding to the sticker"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:16
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:21
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:21
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:24
 msgid ""
 "PNG image with the sticker, must be up to 512 kilobytes in size, "
 "dimensions must not exceed 512px, and either width or height must be "
@@ -512,36 +549,43 @@ msgid ""
 "/form-data."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:21
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:26
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:26
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:29
 msgid "TGS animation with the sticker, uploaded using multipart/form-data."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:24
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:29
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:29
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:32
 msgid "WebM animation with the sticker, uploaded using multipart/form-data."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:27
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:40
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:32
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:42
 msgid ""
 "A JSON-serialized object for position where the mask should be placed on "
 "faces"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:30
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:35
+msgid ""
+"A JSON-serialized list of 1-50 initial stickers to be added to the "
+"sticker set"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:38
 #: telebot.async_telebot.AsyncTeleBot.answer_callback_query:22
-#: telebot.async_telebot.AsyncTeleBot.answer_inline_query:35
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query:38
 #: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:21
 #: telebot.async_telebot.AsyncTeleBot.answer_shipping_query:18
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic:13
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:43
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:56
 #: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:13
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:6
 #: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:22
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:13
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_keywords:11
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:11
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:15
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:15
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:13
 msgid "On success, True is returned."
 msgstr ""
@@ -568,6 +612,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.delete_message
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook
 #: telebot.async_telebot.AsyncTeleBot.download_file
 #: telebot.async_telebot.AsyncTeleBot.edit_chat_invite_link
@@ -627,11 +672,16 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_chat_photo
 #: telebot.async_telebot.AsyncTeleBot.set_chat_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail
 #: telebot.async_telebot.AsyncTeleBot.set_game_score
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_keywords
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_title
 #: telebot.async_telebot.AsyncTeleBot.set_webhook
 #: telebot.async_telebot.AsyncTeleBot.stop_message_live_location
 #: telebot.async_telebot.AsyncTeleBot.stop_poll
@@ -644,9 +694,9 @@ msgstr ""
 msgid "Return type"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:31
+#: of telebot.async_telebot.AsyncTeleBot.add_sticker_to_set:39
 #: telebot.async_telebot.AsyncTeleBot.answer_callback_query:23
-#: telebot.async_telebot.AsyncTeleBot.answer_inline_query:36
+#: telebot.async_telebot.AsyncTeleBot.answer_inline_query:39
 #: telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:22
 #: telebot.async_telebot.AsyncTeleBot.answer_shipping_query:19
 #: telebot.async_telebot.AsyncTeleBot.approve_chat_join_request:15
@@ -654,7 +704,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat:17
 #: telebot.async_telebot.AsyncTeleBot.close:9
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic:14
-#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:44
+#: telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:57
 #: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:15
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_photo:13
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:11
@@ -662,6 +712,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.delete_message:23
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands:17
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:7
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_set:7
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook:13
 #: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:23
 #: telebot.async_telebot.AsyncTeleBot.leave_chat:8
@@ -669,18 +720,23 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message:19
 #: telebot.async_telebot.AsyncTeleBot.promote_chat_member:61
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:14
-#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:48
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:61
 #: telebot.async_telebot.AsyncTeleBot.send_chat_action:26
 #: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:18
 #: telebot.async_telebot.AsyncTeleBot.set_chat_description:14
 #: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:15
-#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:15
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:21
 #: telebot.async_telebot.AsyncTeleBot.set_chat_photo:16
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title:17
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail:11
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands:18
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:18
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list:11
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_keywords:12
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position:12
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:12
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:16
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:16
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_title:11
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_member:20
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:15
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:12
@@ -793,6 +849,12 @@ msgstr ""
 msgid ""
 "Parameter for the start message sent to the bot when user presses the "
 "switch button"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.answer_inline_query:35
+msgid ""
+"A JSON-serialized object describing a button to be shown above inline "
+"query results"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.answer_pre_checkout_query:1
@@ -920,7 +982,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.get_chat_member:8
 #: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:6
 #: telebot.async_telebot.AsyncTeleBot.promote_chat_member:11
-#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:11
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:14
 #: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:10
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_member:13
 msgid "Unique identifier of the target user"
@@ -941,6 +1003,9 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title:16
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands:17
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:17
+#: telebot.async_telebot.AsyncTeleBot.set_my_description:12
+#: telebot.async_telebot.AsyncTeleBot.set_my_name:12
+#: telebot.async_telebot.AsyncTeleBot.set_my_short_description:12
 #: telebot.async_telebot.AsyncTeleBot.set_webhook:46
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:14
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:11
@@ -961,7 +1026,7 @@ msgid "Telegram documentation: https://core.telegram.org/bots/api#banchatmember"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:8
-#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:7
+#: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:10
 msgid ""
 "Unique identifier for the target group or username of the target "
 "supergroup or channel (in the format @channelusername)"
@@ -985,8 +1050,13 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:24
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:10
 #: telebot.async_telebot.AsyncTeleBot.delete_message:22
+#: telebot.async_telebot.AsyncTeleBot.delete_sticker_set:6
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook:12
 #: telebot.async_telebot.AsyncTeleBot.send_chat_action:25
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail:10
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list:10
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position:11
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_title:10
 msgid "Returns True on success."
 msgstr ""
 
@@ -1394,21 +1464,21 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:45
 #: telebot.async_telebot.AsyncTeleBot.forward_message:26
 #: telebot.async_telebot.AsyncTeleBot.reply_to:11
-#: telebot.async_telebot.AsyncTeleBot.send_animation:63
-#: telebot.async_telebot.AsyncTeleBot.send_audio:63
+#: telebot.async_telebot.AsyncTeleBot.send_animation:66
+#: telebot.async_telebot.AsyncTeleBot.send_audio:66
 #: telebot.async_telebot.AsyncTeleBot.send_contact:44
 #: telebot.async_telebot.AsyncTeleBot.send_dice:35
-#: telebot.async_telebot.AsyncTeleBot.send_document:56
+#: telebot.async_telebot.AsyncTeleBot.send_document:59
 #: telebot.async_telebot.AsyncTeleBot.send_game:32
 #: telebot.async_telebot.AsyncTeleBot.send_invoice:101
 #: telebot.async_telebot.AsyncTeleBot.send_location:49
 #: telebot.async_telebot.AsyncTeleBot.send_message:46
 #: telebot.async_telebot.AsyncTeleBot.send_photo:48
 #: telebot.async_telebot.AsyncTeleBot.send_poll:70
-#: telebot.async_telebot.AsyncTeleBot.send_sticker:39
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:42
 #: telebot.async_telebot.AsyncTeleBot.send_venue:57
-#: telebot.async_telebot.AsyncTeleBot.send_video:64
-#: telebot.async_telebot.AsyncTeleBot.send_video_note:48
+#: telebot.async_telebot.AsyncTeleBot.send_video:67
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:51
 #: telebot.async_telebot.AsyncTeleBot.send_voice:49
 msgid "On success, the sent Message is returned."
 msgstr ""
@@ -1416,18 +1486,18 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:46
 #: telebot.async_telebot.AsyncTeleBot.forward_message:27
 #: telebot.async_telebot.AsyncTeleBot.reply_to:12
-#: telebot.async_telebot.AsyncTeleBot.send_animation:64
-#: telebot.async_telebot.AsyncTeleBot.send_audio:64
+#: telebot.async_telebot.AsyncTeleBot.send_animation:67
+#: telebot.async_telebot.AsyncTeleBot.send_audio:67
 #: telebot.async_telebot.AsyncTeleBot.send_contact:45
 #: telebot.async_telebot.AsyncTeleBot.send_dice:36
-#: telebot.async_telebot.AsyncTeleBot.send_document:57
+#: telebot.async_telebot.AsyncTeleBot.send_document:60
 #: telebot.async_telebot.AsyncTeleBot.send_location:50
 #: telebot.async_telebot.AsyncTeleBot.send_message:47
 #: telebot.async_telebot.AsyncTeleBot.send_photo:49
-#: telebot.async_telebot.AsyncTeleBot.send_sticker:40
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:43
 #: telebot.async_telebot.AsyncTeleBot.send_venue:58
-#: telebot.async_telebot.AsyncTeleBot.send_video:65
-#: telebot.async_telebot.AsyncTeleBot.send_video_note:49
+#: telebot.async_telebot.AsyncTeleBot.send_video:68
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:52
 msgid ":class:`telebot.types.Message`"
 msgstr ""
 
@@ -1680,7 +1750,13 @@ msgid ""
 "https://core.telegram.org/bots/api#createnewstickerset"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:10
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:8
+msgid ""
+"Fields *_sticker are deprecated, pass a list of stickers to stickers "
+"parameter instead."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:13
 msgid ""
 "Short name of sticker set, to be used in t.me/addstickers/ URLs (e.g., "
 "animals). Can contain only English letters, digits and underscores. Must "
@@ -1689,21 +1765,38 @@ msgid ""
 "characters."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:15
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:18
 msgid "Sticker set title, 1-64 characters"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:32
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:35
 msgid ""
 "Pass True, if a set of mask stickers should be created. Deprecated since "
 "Bot API 6.2, use sticker_type instead."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:36
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:39
 msgid ""
-"Optional, Type of stickers in the set, pass “regular” or “mask”. Custom "
-"emoji sticker sets can't be created via the Bot API at the moment. By "
-"default, a regular sticker set is created."
+"Type of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. "
+"By default, a regular sticker set is created."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:45
+msgid ""
+"Pass True if stickers in the sticker set must be repainted to the color "
+"of text when used in messages, the accent color if used as emoji status, "
+"white on chat photos, or another appropriate color based on context; for "
+"custom emoji sticker sets only"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:50
+msgid "List of stickers to be added to the set"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.create_new_sticker_set:53
+msgid ""
+"Format of stickers in the set, must be one of “static”, “animated”, "
+"“video”"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:1
@@ -1844,6 +1937,10 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set:5
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:5
 msgid "File identifier of the sticker"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_sticker_set:1
+msgid "Use this method to delete a sticker set. Returns True on success."
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.delete_webhook:1
@@ -2396,7 +2493,7 @@ msgid "File identifier"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.get_file:12
-#: telebot.async_telebot.AsyncTeleBot.upload_sticker_file:14
+#: telebot.async_telebot.AsyncTeleBot.upload_sticker_file:21
 msgid ":class:`telebot.types.File`"
 msgstr ""
 
@@ -2457,7 +2554,7 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.get_game_high_scores:10
 #: telebot.async_telebot.AsyncTeleBot.retrieve_data:3
 #: telebot.async_telebot.AsyncTeleBot.set_game_score:5
-#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:9
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:9
 msgid "User identifier"
 msgstr ""
 
@@ -2516,6 +2613,49 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.get_my_default_administrator_rights:10
 msgid ":class:`telebot.types.ChatAdministratorRights`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_description:1
+msgid ""
+"Use this method to get the current bot description for the given user "
+"language. Returns BotDescription on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_description:4
+#: telebot.async_telebot.AsyncTeleBot.get_my_short_description:4
+msgid "A two-letter ISO 639-1 language code or an empty string"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_description:7
+msgid ":class:`telebot.types.BotDescription`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_name:1
+msgid ""
+"Use this method to get the current bot name for the given user language. "
+"Returns BotName on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_name:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#getmyname"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_name:6
+msgid "Optional. A two-letter ISO 639-1 language code or an empty string"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_name:9
+msgid ":class:`telebot.types.BotName`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_short_description:1
+msgid ""
+"Use this method to get the current bot short description for the given "
+"user language. Returns BotShortDescription on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.get_my_short_description:7
+msgid ":class:`telebot.types.BotShortDescription`"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.get_state:1
@@ -2589,7 +2729,7 @@ msgid "Array of string. List the types of updates you want your bot to receive."
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.get_updates:21
-msgid "Timeout in seconds for long polling."
+msgid "Timeout in seconds for request."
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.get_updates:24
@@ -3178,61 +3318,85 @@ msgid ""
 "https://core.telegram.org/bots/api#restrictchatmember"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:14
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:8
+msgid ""
+"Individual parameters are deprecated and will be removed, use "
+"'permissions' instead"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:17
 msgid ""
 "Date when restrictions will be lifted for the user, unix time. If user is"
 " restricted for more than 366 days or less than 30 seconds from the "
 "current time, they are considered to be restricted forever"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:19
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:22
 msgid ""
 "Pass True, if the user can send text messages, contacts, locations and "
 "venues"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:22
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:25
 msgid ""
 "Pass True, if the user can send audios, documents, photos, videos, video "
 "notes and voice notes, implies can_send_messages"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:26
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:29
 msgid "Pass True, if the user is allowed to send polls, implies can_send_messages"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:29
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:32
 msgid ""
 "Pass True, if the user can send animations, games, stickers and use "
 "inline bots, implies can_send_media_messages"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:32
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:35
 msgid ""
 "Pass True, if the user may add web page previews to their messages, "
 "implies can_send_media_messages"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:36
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:39
 msgid ""
 "Pass True, if the user is allowed to change the chat title, photo and "
 "other settings. Ignored in public supergroups"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:40
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:43
 msgid ""
 "Pass True, if the user is allowed to invite new users to the chat, "
 "implies can_invite_users"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:44
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:47
 msgid ""
 "Pass True, if the user is allowed to pin messages. Ignored in public "
 "supergroups"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:47
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:50
 #: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:14
+msgid ""
+"Pass True if chat permissions are set independently. Otherwise, the "
+"can_send_other_messages and can_add_web_page_previews permissions will "
+"imply the can_send_messages, can_send_audios, can_send_documents, "
+"can_send_photos, can_send_videos, can_send_video_notes, and "
+"can_send_voice_notes permissions; the can_send_polls permission will "
+"imply the can_send_messages permission."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:56
+msgid ""
+"Pass ChatPermissions object to set all permissions at once. Use this "
+"parameter instead of passing all boolean parameters to avoid backward "
+"compatibility problems in future."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.restrict_chat_member:60
+#: telebot.async_telebot.AsyncTeleBot.set_chat_permissions:20
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_member:19
 msgid "True on success"
 msgstr ""
@@ -3275,27 +3439,27 @@ msgstr ""
 msgid "IP address to listen to. Defaults to 0.0.0.0"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:5
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:4
 msgid "A port which will be used to listen to webhooks."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:6
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:5
 msgid "Path to the webhook. Defaults to /token"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:7
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:6
 msgid "Path to the certificate file."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:8
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:7
 msgid "Path to the certificate key file."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:9
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:8
 msgid "Webhook URL."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:10
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:9
 msgid ""
 "Maximum allowed number of simultaneous HTTPS connections to the webhook "
 "for update delivery, 1-100. Defaults to 40. Use lower values to limit the"
@@ -3303,7 +3467,7 @@ msgid ""
 "throughput."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:11
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:10
 msgid ""
 "A JSON-serialized list of the update types you want your bot to receive. "
 "For example, specify [“message”, “edited_channel_post”, “callback_query”]"
@@ -3313,22 +3477,30 @@ msgid ""
 " be used."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:12
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:11
 msgid ""
 "The fixed IP address which will be used to send webhook requests instead "
 "of the IP address resolved through DNS"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:13
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:12
 msgid "Pass True to drop all pending updates"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:14
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:13
 msgid "Integer. Request connection timeout"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:15
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:14
 msgid "Secret token to be used to verify the webhook request."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:15
+msgid "Length of a secret token, defaults to 20"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.run_webhooks:16
+msgid "Debug mode, defaults to False"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:1
@@ -3400,6 +3572,14 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_animation:60
 msgid "Pass True, if the animation should be sent as a spoiler"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.send_animation:63
+#: telebot.async_telebot.AsyncTeleBot.send_audio:63
+#: telebot.async_telebot.AsyncTeleBot.send_document:56
+#: telebot.async_telebot.AsyncTeleBot.send_video:64
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:48
+msgid "Deprecated. Use thumbnail instead"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_audio:1
@@ -3953,6 +4133,10 @@ msgstr ""
 msgid "to disable the notification"
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.send_sticker:39
+msgid "Emoji associated with the sticker; only for just uploaded stickers"
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.send_venue:1
 msgid ""
 "Use this method to send information about a venue. On success, the sent "
@@ -4243,6 +4427,20 @@ msgstr ""
 msgid "New chat title, 1-255 characters"
 msgstr ""
 
+#: of
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail:1
+msgid ""
+"Use this method to set the thumbnail of a custom emoji sticker set. "
+"Returns True on success."
+msgstr ""
+
+#: of
+#: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail:7
+msgid ""
+"Custom emoji identifier of a sticker from the sticker set; pass an empty "
+"string to drop the thumbnail and use the first sticker as the thumbnail."
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.set_game_score:1
 msgid "Sets the value of points in the game to a specific user."
 msgstr ""
@@ -4312,6 +4510,65 @@ msgid ""
 "groups and supergroups will be changed."
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.set_my_description:1
+msgid ""
+"Use this method to change the bot's description, which is shown in the "
+"chat with the bot if the chat is empty. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_description:5
+msgid ""
+"New bot description; 0-512 characters. Pass an empty string to remove the"
+" dedicated description for the given language."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_description:8
+msgid ""
+"A two-letter ISO 639-1 language code. If empty, the description will be "
+"applied to all users for whose language there is no dedicated "
+"description."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_name:1
+msgid "Use this method to change the bot's name. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_name:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#setmyname"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_name:5
+msgid ""
+"Optional. New bot name; 0-64 characters. Pass an empty string to remove "
+"the dedicated name for the given language."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_name:8
+msgid ""
+"Optional. A two-letter ISO 639-1 language code. If empty, the name will "
+"be shown to all users for whose language there is no dedicated name."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_short_description:1
+msgid ""
+"Use this method to change the bot's short description, which is shown on "
+"the bot's profile page and is sent together with the link when users "
+"share the bot. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_short_description:5
+msgid ""
+"New short description for the bot; 0-120 characters. Pass an empty string"
+" to remove the dedicated short description for the given language."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_my_short_description:8
+msgid ""
+"A two-letter ISO 639-1 language code. If empty, the short description "
+"will be applied to all users for whose language there is no dedicated "
+"short description."
+msgstr ""
+
 #: of telebot.async_telebot.AsyncTeleBot.set_state:1
 msgid "Sets a new state of a user."
 msgstr ""
@@ -4326,6 +4583,47 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.set_state:12
 msgid "new state. can be string, integer, or :class:`telebot.types.State`"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list:1
+msgid ""
+"Use this method to set the emoji list of a sticker set. Returns True on "
+"success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list:7
+msgid "List of emojis"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_keywords:1
+msgid ""
+"Use this method to change search keywords assigned to a regular or custom"
+" emoji sticker. The sticker must belong to a sticker set created by the "
+"bot. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_keywords:5
+#: telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position:5
+msgid "File identifier of the sticker."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_keywords:8
+msgid ""
+"A JSON-serialized list of 0-20 search keywords for the sticker with total"
+" length of up to 64 characters"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position:1
+msgid ""
+"Use this method to change the mask position of a mask sticker. The "
+"sticker must belong to a sticker set that was created by the bot. Returns"
+" True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_mask_position:8
+msgid ""
+"A JSON-serialized object for position where the mask should be placed on "
+"faces."
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:1
@@ -4344,17 +4642,45 @@ msgstr ""
 msgid "New sticker position in the set, zero-based"
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:1
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:1
 msgid ""
 "Use this method to set the thumbnail of a sticker set. Animated "
 "thumbnails can be set for animated sticker sets only. Returns True on "
 "success."
 msgstr ""
 
-#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumb:4
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:4
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#setstickersetthumb"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:12
+msgid ""
+"A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in "
+"size and have a width and height of exactly 100px, or a .TGS animation "
+"with a thumbnail up to 32 kilobytes in size (see "
+"https://core.telegram.org/stickers#animated-sticker-requirements for "
+"animated sticker technical requirements), or a WEBM video with the "
+"thumbnail up to 32 kilobytes in size; see "
+"https://core.telegram.org/stickers#video-sticker-requirements for video "
+"sticker technical requirements. Pass a file_id as a String to send a file"
+" that already exists on the Telegram servers, pass an HTTP URL as a "
+"String for Telegram to get a file from the Internet, or upload a new one "
+"using multipart/form-data. More information on Sending Files ». Animated "
+"and video sticker set thumbnails can't be uploaded via HTTP URL. If "
+"omitted, then the thumbnail is dropped and the first sticker is used as "
+"the thumbnail."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_title:1
+msgid ""
+"Use this method to set the title of a created sticker set. Returns True "
+"on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_sticker_set_title:7
+msgid "New sticker set title"
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.set_update_listener:1
@@ -4662,12 +4988,23 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:9
 msgid ""
-"PNG image with the sticker, must be up to 512 kilobytes in size, "
-"dimensions must not exceed 512px, and either width or height must be "
-"exactly 512px."
+"DEPRECATED: PNG image with the sticker, must be up to 512 kilobytes in "
+"size, dimensions must not exceed 512px, and either width or height must "
+"be exactly 512px."
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:13
+msgid ""
+"A file with the sticker in .WEBP, .PNG, .TGS, or .WEBM format. See "
+"https://core.telegram.org/stickers for technical requirements. More "
+"information on Sending Files »"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:17
+msgid "One of \"static\", \"animated\", \"video\"."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.upload_sticker_file:20
 msgid "On success, the sent file is returned."
 msgstr ""
 
@@ -4911,5 +5248,33 @@ msgstr ""
 #~ "icon. Must be an emoji of type "
 #~ "“tgs” and must be exactly 1 "
 #~ "character long"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Use this method to add a new "
+#~ "sticker to a set created by the"
+#~ " bot. It's required to pass "
+#~ "`png_sticker` or `tgs_sticker`. Returns True"
+#~ " on success."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional, Type of stickers in the "
+#~ "set, pass “regular” or “mask”. Custom"
+#~ " emoji sticker sets can't be created"
+#~ " via the Bot API at the moment."
+#~ " By default, a regular sticker set"
+#~ " is created."
+#~ msgstr ""
+
+#~ msgid "Timeout in seconds for long polling."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "PNG image with the sticker, must "
+#~ "be up to 512 kilobytes in size,"
+#~ " dimensions must not exceed 512px, "
+#~ "and either width or height must be"
+#~ " exactly 512px."
 #~ msgstr ""
 
