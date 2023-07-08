@@ -7250,7 +7250,7 @@ class InputFile:
             _file = open(file, 'rb')
             return _file, os.path.basename(_file.name)
         elif isinstance(file, IOBase):
-            return file, os.path.basename(file.name)
+            return file, service_utils.generate_random_token()
         elif isinstance(file, Path):
             _file = open(file, 'rb')
             return _file, os.path.basename(_file.name)
