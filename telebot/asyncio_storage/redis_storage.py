@@ -3,11 +3,15 @@ import json
 
 
 redis_installed = True
+aioredis_version = None
 try:
     import aioredis
+    aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
 except ImportError:
     try:
+        import redis
         from redis import asyncio as aioredis
+        aioredis_version = tuple(map(int, redis.__version__.split(".")[0]))
     except ImportError:
         redis_installed = False
 
@@ -24,7 +28,6 @@ class StateRedisStorage(StateStorageBase):
             raise ImportError('AioRedis is not installed. Install it via "pip install aioredis"')
 
 
-        aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
         if aioredis_version < (2,):
             raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
         self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
