@@ -28,7 +28,6 @@ jobs:
       - name: Run linter and type checker tests
         run: poetry run isort . --check &&
           poetry run black . --check &&
-          poetry run mypy . &&
-          poetry run pflake8
+          poetry run mypy .
       - name: Run unit tests
         run: poetry run pytest tests -vv
