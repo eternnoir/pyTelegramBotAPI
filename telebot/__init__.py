@@ -1089,23 +1089,18 @@ class AsyncTeleBot:
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         if auto_split_message and len(text) > MAX_MESSAGE_LENGTH:
-            splitted_texts = smart_split(text, MAX_MESSAGE_LENGTH)
             sent_messages: List[types.Message] = []
-
-            for i in range(len(splitted_texts)):
-                _reply_markup = None
-                if i == len(splitted_texts) - 1:
-                    _reply_markup = reply_markup
-
+            splitted_texts = smart_split(text, MAX_MESSAGE_LENGTH)
+            for i, text_part in enumerate(splitted_texts):
                 sent_messages.append(
                     types.Message.de_json(
                         await api.send_message(
                             token=self.token,
                             chat_id=chat_id,
-                            text=splitted_texts[i],
+                            text=text_part,
                             disable_web_page_preview=disable_web_page_preview,
                             reply_to_message_id=reply_to_message_id,
-                            reply_markup=_reply_markup,
+                            reply_markup=reply_markup if i == len(splitted_texts) - 1 else None,
                             parse_mode=parse_mode,
                             disable_notification=disable_notification,
                             timeout=timeout,
@@ -1126,7 +1121,7 @@ class AsyncTeleBot:
                     text=text,
                     disable_web_page_preview=disable_web_page_preview,
                     reply_to_message_id=reply_to_message_id,
-                    reply_markup=_reply_markup,
+                    reply_markup=reply_markup,
                     parse_mode=parse_mode,
                     disable_notification=disable_notification,
                     timeout=timeout,
