@@ -7,6 +7,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.10' ]
     name: Building new package version and publishing to PyPI
     steps:
       - name: Checkout latest version
@@ -14,16 +17,14 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
           architecture: x64
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: abatilo/actions-poetry@v2.0.0
         with:
-          poetry-version: 1.2.2
-      - name: Check Poetry version
-        run: poetry --version
+          poetry-version: 1.5.1
       - name: Install dynamic versioning plugin
-        run: poetry self add poetry-dynamic-versioning==0.22.0
+        run: poetry self add "poetry-dynamic-versioning[plugin]"
       - name: Build package
         run: poetry build
       - name: Publish package

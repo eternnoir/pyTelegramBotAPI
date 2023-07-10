@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Dict, Optional, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 import aiohttp
 import ujson as json  # type: ignore
@@ -257,18 +257,18 @@ def _add_message_thread_id(params: Dict[str, Any], message_thread_id: Optional[i
 
 
 async def send_message(
-    token,
-    chat_id,
-    text,
-    disable_web_page_preview=None,
-    reply_to_message_id=None,
-    reply_markup=None,
-    parse_mode=None,
-    disable_notification=None,
-    timeout=None,
-    entities=None,
-    allow_sending_without_reply=None,
-    protect_content=None,
+    token: str,
+    chat_id: Union[int, str],
+    text: str,
+    disable_web_page_preview: Optional[bool] = None,
+    reply_to_message_id: Optional[int] = None,
+    reply_markup: Optional[types.ReplyMarkup] = None,
+    parse_mode: Optional[str] = None,
+    disable_notification: Optional[bool] = None,
+    timeout: Optional[float] = None,
+    entities: Optional[List[types.MessageEntity]] = None,
+    allow_sending_without_reply: Optional[bool] = None,
+    protect_content: Optional[bool] = None,
     message_thread_id: Optional[int] = None,
 ):
     """
@@ -288,7 +288,7 @@ async def send_message(
     :return:
     """
     method_name = "sendMessage"
-    params = {"chat_id": str(chat_id), "text": text}
+    params: Dict[str, Any] = {"chat_id": str(chat_id), "text": text}
     if disable_web_page_preview is not None:
         params["disable_web_page_preview"] = disable_web_page_preview
     if reply_to_message_id:

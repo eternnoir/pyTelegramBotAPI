@@ -1066,9 +1066,9 @@ class AsyncTeleBot:
         """
         Use this method to send text messages.
 
-        Warning: Do not send more than about 4000 characters each message, otherwise you'll risk an HTTP 414 error.
-        If you must send more than 4000 characters,
-        use the `split_string` or `smart_split` function in util.py.
+        For messages longer than 4000 characters, splitting is done automatically. In this case the first message
+        is returned, while all other messages can be found in its splitted_messages attribute. To disable this behaviour,
+        pass auto_split_message=False.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
 
@@ -1090,7 +1090,7 @@ class AsyncTeleBot:
 
         if auto_split_message and len(text) > MAX_MESSAGE_LENGTH:
             splitted_texts = smart_split(text, MAX_MESSAGE_LENGTH)
-            sent_messages = []
+            sent_messages: List[types.Message] = []
 
             for i in range(len(splitted_texts)):
                 _reply_markup = None
@@ -1100,18 +1100,18 @@ class AsyncTeleBot:
                 sent_messages.append(
                     types.Message.de_json(
                         await api.send_message(
-                            self.token,
-                            chat_id,
-                            splitted_texts[i],
-                            disable_web_page_preview,
-                            reply_to_message_id,
-                            _reply_markup,
-                            parse_mode,
-                            disable_notification,
-                            timeout,
-                            allow_sending_without_reply,
-                            protect_content,
-                            message_thread_id,
+                            token=self.token,
+                            chat_id=chat_id,
+                            text=splitted_texts[i],
+                            disable_web_page_preview=disable_web_page_preview,
+                            reply_to_message_id=reply_to_message_id,
+                            reply_markup=_reply_markup,
+                            parse_mode=parse_mode,
+                            disable_notification=disable_notification,
+                            timeout=timeout,
+                            allow_sending_without_reply=allow_sending_without_reply,
+                            protect_content=protect_content,
+                            message_thread_id=message_thread_id,
                         )
                     )
                 )
@@ -1121,18 +1121,18 @@ class AsyncTeleBot:
         else:
             return types.Message.de_json(
                 await api.send_message(
-                    self.token,
-                    chat_id,
-                    text,
-                    disable_web_page_preview,
-                    reply_to_message_id,
-                    reply_markup,
-                    parse_mode,
-                    disable_notification,
-                    timeout,
-                    allow_sending_without_reply,
-                    protect_content,
-                    message_thread_id,
+                    token=self.token,
+                    chat_id=chat_id,
+                    text=text,
+                    disable_web_page_preview=disable_web_page_preview,
+                    reply_to_message_id=reply_to_message_id,
+                    reply_markup=_reply_markup,
+                    parse_mode=parse_mode,
+                    disable_notification=disable_notification,
+                    timeout=timeout,
+                    allow_sending_without_reply=allow_sending_without_reply,
+                    protect_content=protect_content,
+                    message_thread_id=message_thread_id,
                 )
             )
 
