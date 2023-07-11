@@ -5,9 +5,11 @@ import json
 redis_installed = True
 try:
     import aioredis
+    is_actual_aioredis = True
 except ImportError:
     try:
         from redis import asyncio as aioredis
+        is_actual_aioredis = False
     except ImportError:
         redis_installed = False
 
@@ -25,7 +27,7 @@ class StateRedisStorage(StateStorageBase):
 
 
         aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
-        if aioredis_version < (2,):
+        if is_actual_aioredis and aioredis_version < (2,):
             raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
         self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
 
