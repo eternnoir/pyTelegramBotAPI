@@ -892,6 +892,6 @@ Here are some examples of template:
 * [CalendarIT Bot](https://t.me/calendarit_bot) ([source](https://github.com/codebyzen/CalendarIT_Telegram_Bot))by [CodeByZen](https://github.com/codebyzen). A simple, but extensible Python Telegram bot, can post acquainted with what is happening today, tomorrow or what happened 20 years ago to channel. 
 * [DownloadMusicBOT](https://github.com/fcoagz/DownloadMusicBOT) by *Francisco Griman* - It is a simple bot that downloads audio from YouTube videos on Telegram.
 * [AwesomeChatGPTBot](https://github.com/Kourva/AwesomeChatGPTBot) - Simple ChatGTP-3.5 bot. It is FREE and can remember chat history for a while With pre-defined roles!
-* [TempMailBot](https://github.com/Kourva/TempMailBot) by *Kourva* - TempMailBot is a Telegram bot that makes you temporary emails with access to mailbox!
+* [TempMailBot](https://github.com/Kourva/TempMailBot) by [*Kourva*](https://github.com/Kourva/) - TempMailBot is a Telegram bot that makes you temporary emails with access to mailbox!
   
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
