@@ -251,9 +251,9 @@ class WebhookInfo(JsonDeserializable):
 
     def __init__(
         self,
-        url,
-        has_custom_certificate,
-        pending_update_count,
+        url: str,
+        has_custom_certificate: bool,
+        pending_update_count: int,
         ip_address=None,
         last_error_date=None,
         last_error_message=None,

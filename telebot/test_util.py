@@ -590,7 +590,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
     @mocked
     async def get_webhook_info(self, timeout=None) -> types.WebhookInfo:
         return types.WebhookInfo(
-            url=f"https://webhook-url-for-{self.token}",
+            url="",  # i.e. no webhook
             has_custom_certificate=False,
             pending_update_count=0,
         )

@@ -108,10 +108,14 @@ class WebhookApp:
 
     async def add_bot_runner(self, runner: BotRunner) -> bool:
         subroute = runner.webhook_subroute()
+        webhook_url = self.base_url + WEBHOOK_ROUTE.format(subroute=subroute)
         try:
-            await runner.bot.delete_webhook()
-            await runner.bot.set_webhook(url=self.base_url + WEBHOOK_ROUTE.format(subroute=subroute))
-            logger.info(f"Webhook set for {runner.bot_prefix}: /webhook/{subroute}")
+            existing_webhook_info = await runner.bot.get_webhook_info()
+            if existing_webhook_info.url == webhook_url:
+                logger.info(f"Existing webhook found for {runner.bot_prefix}")
+            else:
+                await runner.bot.set_webhook(url=webhook_url)
+                logger.info(f"Webhook set for {runner.bot_prefix}: /webhook/{subroute}")
         except Exception as e:
             logger.exception(f"Error setting up webhook for the bot {runner.bot_prefix}, dropping it: {e}")
             return False

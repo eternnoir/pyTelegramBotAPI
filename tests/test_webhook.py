@@ -11,6 +11,7 @@ from telebot.graceful_shutdown import GracefulShutdownCondition, PreventShutdown
 from telebot.metrics import TelegramUpdateMetrics
 from telebot.runner import BotRunner
 from telebot.test_util import MockedAsyncTeleBot
+from telebot.types import WebhookInfo
 from telebot.types import service as service_types
 from telebot.webhook import WebhookApp
 from tests.utils import find_free_port
@@ -22,6 +23,14 @@ MOCK_TOKEN = uuid4().hex
 COUNTED_MILLISECONDS = 0
 RECEIVED_COMMANDS: list[types.Message] = []
 RECEIVED_MESSAGES: list[types.Message] = []
+
+
+def reset_global_test_state() -> None:
+    """HACK HACK HACK"""
+    global COUNTED_MILLISECONDS
+    COUNTED_MILLISECONDS = 0
+    RECEIVED_COMMANDS.clear()
+    RECEIVED_MESSAGES.clear()
 
 
 @pytest.fixture
@@ -62,23 +71,32 @@ def bot_runner(bot: AsyncTeleBot) -> BotRunner:
     )
 
 
-async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohttp_client):
+@pytest.mark.parametrize("webhook_already_exists", [True, False])
+async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohttp_client, webhook_already_exists: bool):
+    reset_global_test_state()
     subroute = bot_runner.webhook_subroute()
     route = "/webhook/" + subroute + "/"
+    base_url = "http://127.0.0.1"
     metrics: list[TelegramUpdateMetrics] = []
+
+    if webhook_already_exists:
+        bot.add_return_values(
+            "get_webhook_info", WebhookInfo(url=base_url + route, has_custom_certificate=False, pending_update_count=0)
+        )
 
     async def metrics_handler(m: TelegramUpdateMetrics) -> None:
         metrics.append(m)
 
-    webhook_app = WebhookApp("http://127.0.0.1", metrics_handler=metrics_handler)
+    webhook_app = WebhookApp(base_url, metrics_handler=metrics_handler)
     await webhook_app.add_bot_runner(bot_runner)
     client: aiohttp.ClientSession = await aiohttp_client(webhook_app.aiohttp_app)
 
     assert MOCK_TOKEN not in subroute
 
-    assert len(bot.method_calls["delete_webhook"]) == 1
-    assert len(bot.method_calls["set_webhook"]) == 1
-    assert bot.method_calls["set_webhook"][0].kwargs == {"url": "http://127.0.0.1" + route}
+    assert len(bot.method_calls["get_webhook_info"]) == 1
+    if not webhook_already_exists:
+        assert len(bot.method_calls["set_webhook"]) == 1
+        assert bot.method_calls["set_webhook"][0].kwargs == {"url": base_url + route}
 
     for i, text in enumerate(["текст сообщения", "/start", "/error", "еще текст", "/handler_metrics", "/help"]):
         resp = await client.post(
@@ -236,7 +254,7 @@ async def test_webhook_app_graceful_shutdown():
     await server_listening
 
     # validating setup sequence in bot
-    assert len(bot.method_calls["delete_webhook"]) == 1
+    # assert len(bot.method_calls["delete_webhook"]) == 1
     assert len(bot.method_calls["set_webhook"]) == 1
     assert bot.method_calls["set_webhook"][0].kwargs == {"url": base_url + route}
 
