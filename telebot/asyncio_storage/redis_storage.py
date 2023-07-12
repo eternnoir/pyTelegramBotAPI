@@ -1,10 +1,11 @@
 from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
 import json
 
-
 redis_installed = True
+is_actual_aioredis = False
 try:
     import aioredis
+    is_actual_aioredis = True
 except ImportError:
     try:
         from redis import asyncio as aioredis
@@ -23,10 +24,10 @@ class StateRedisStorage(StateStorageBase):
         if not redis_installed:
             raise ImportError('AioRedis is not installed. Install it via "pip install aioredis"')
 
-
-        aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
-        if aioredis_version < (2,):
-            raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
+        if is_actual_aioredis:
+            aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
+            if aioredis_version < (2,):
+                raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
         self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
 
         self.prefix = prefix
