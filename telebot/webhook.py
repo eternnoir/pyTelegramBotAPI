@@ -1,4 +1,5 @@
 import asyncio
+import collections
 import logging
 import signal
 import time
@@ -32,7 +33,7 @@ class WebhookApp:
     ):
         self.base_url = base_url
         self.bot_runner_by_subroute: dict[str, BotRunner] = dict()
-        self.background_tasks: set[asyncio.Task] = set()
+        self.background_task_by_bot_subroute: dict[str, set[asyncio.Task]] = collections.defaultdict(set)
         self.aiohttp_app = web.Application()
         self.aiohttp_app.router.add_post(WEBHOOK_ROUTE, self._bot_webhook_handler)
         self.aiohttp_app.middlewares.append(self._graceful_shutdown_middleware)
@@ -108,6 +109,9 @@ class WebhookApp:
 
     async def add_bot_runner(self, runner: BotRunner) -> bool:
         subroute = runner.webhook_subroute()
+        if subroute in self.bot_runner_by_subroute:
+            logger.info("Attempt to set bot runner for already existing subroute")
+            return False
         webhook_url = self.base_url + WEBHOOK_ROUTE.format(subroute=subroute)
         try:
             existing_webhook_info = await runner.bot.get_webhook_info()
@@ -131,12 +135,9 @@ class WebhookApp:
         for idx, coro in enumerate(runner.background_jobs):
             idx += 1  # 1-based numbering
             task = create_error_logging_task(coro, name=f"{runner.bot_prefix}-{idx}")
-            self.background_tasks.add(task)
+            self.background_task_by_bot_subroute[subroute].add(task)
 
             def background_job_done(task: asyncio.Task):
-                if not self._is_cleaning_up:
-                    # during cleanup we iterate over background tasks set, so we can't change its size!
-                    self.background_tasks.discard(task)
                 if task.cancelled():
                     logger.info(f"Backgound job cancelled: {task}")
                 else:
@@ -149,19 +150,31 @@ class WebhookApp:
         return True
 
     async def remove_bot_runner(self, runner: BotRunner) -> bool:
-        """Warning: background jobs and aux endpoints added with the runner are not removed/cancelled"""
         subroute = runner.webhook_subroute()
         if subroute not in self.bot_runner_by_subroute:
             return False
         try:
             await runner.bot.delete_webhook()
             logger.info(f"Webhook removed for {runner.bot_prefix}; was /webhook/{subroute}")
-        except Exception as e:
-            logger.exception(f"Error deleting webhook for the bot {runner.bot_prefix}, keeping it")
+        except Exception:
+            logger.exception(f"Error deleting webhook for the bot {runner.bot_prefix}")
             return False
-
+        await self._cancel_background_tasks(subroute)
+        self.background_task_by_bot_subroute.pop(subroute, None)
         self.bot_runner_by_subroute.pop(subroute)
         return True
+
+    async def _cancel_background_tasks(self, subroute: str) -> None:
+        tasks = self.background_task_by_bot_subroute.get(subroute)
+        if tasks is None:
+            return
+        for task in tasks:
+            logger.debug(f"Cancelling background task {task} for {subroute}")
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
     async def run(
         self,
@@ -186,13 +199,9 @@ class WebhookApp:
         finally:
             self._is_cleaning_up = True
             logger.debug("Cleanup started")
+            for subroute in self.background_task_by_bot_subroute:
+                await self._cancel_background_tasks(subroute)
+
             await api.session_manager.close_session()
-            for t in self.background_tasks:
-                logger.debug(f"Cancelling background task {t}")
-                t.cancel()
-                try:
-                    await t
-                except asyncio.CancelledError:
-                    pass
-            logger.debug("Cleanup completed")
             await aiohttp_runner.cleanup()
+            logger.debug("Cleanup completed")

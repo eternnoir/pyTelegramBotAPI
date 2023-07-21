@@ -317,3 +317,30 @@ async def test_graceful_shutdown_conditions():
     actual_conditions = GracefulShutdownCondition.instances
     gc.collect()
     assert len(actual_conditions) == 0
+
+
+async def test_webhook_app_background_tasks(bot_runner: BotRunner):
+    reset_global_test_state()
+    webhook_app = WebhookApp(base_url="localhost")
+    await webhook_app.add_bot_runner(bot_runner)
+
+    counted_milliseconds_when_bot_runner_removed = 0
+
+    async def remove_bot_runner_after_delay() -> None:
+        await asyncio.sleep(0.5)
+        await webhook_app.remove_bot_runner(bot_runner)
+        nonlocal counted_milliseconds_when_bot_runner_removed
+        counted_milliseconds_when_bot_runner_removed = COUNTED_MILLISECONDS
+
+    try:
+        await asyncio.wait_for(
+            asyncio.gather(
+                webhook_app.run(port=12345),
+                remove_bot_runner_after_delay(),
+            ),
+            timeout=1,
+        )
+    except asyncio.TimeoutError:
+        pass
+
+    assert COUNTED_MILLISECONDS == counted_milliseconds_when_bot_runner_removed
