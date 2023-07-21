@@ -39,7 +39,6 @@ class WebhookApp:
         self.aiohttp_app.middlewares.append(self._graceful_shutdown_middleware)
         self._current_request_count = 0
         self._is_shutting_down = False
-        self._is_cleaning_up = False
         self._metrics_handler = metrics_handler
 
     async def _bot_webhook_handler(self, request: web.Request):
@@ -197,7 +196,6 @@ class WebhookApp:
                 while True:
                     await asyncio.sleep(3600)
         finally:
-            self._is_cleaning_up = True
             logger.debug("Cleanup started")
             for subroute in self.background_task_by_bot_subroute:
                 await self._cancel_background_tasks(subroute)
