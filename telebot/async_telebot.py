@@ -415,8 +415,16 @@ class AsyncTeleBot:
                 except asyncio.CancelledError:
                     return
                 except asyncio_helper.RequestTimeout as e:
-                    logger.error(str(e))
-                    if non_stop:
+                    handled = False
+                    if self.exception_handler:
+                        self.exception_handler.handle(e)
+                        handled = True
+
+                    if not handled:
+                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
+                        logger.debug(traceback.format_exc())
+                        
+                    if non_stop or handled:
                         await asyncio.sleep(2)
                         continue
                     else:
