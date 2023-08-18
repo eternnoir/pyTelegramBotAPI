@@ -821,6 +821,9 @@ class Message(JsonDeserializable):
     :param sticker: Optional. Message is a sticker, information about the sticker
     :type sticker: :class:`telebot.types.Sticker`
 
+    :param story: Optional. Message is a forwarded story
+    :type story: :class:`telebot.types.Story`
+
     :param video: Optional. Message is a video, information about the video
     :type video: :class:`telebot.types.Video`
 
@@ -1177,6 +1180,9 @@ class Message(JsonDeserializable):
         if 'chat_shared' in obj:
             opts['chat_shared'] = ChatShared.de_json(obj['chat_shared'])
             content_type = 'chat_shared'
+        if 'story' in obj:
+            opts['story'] = Story.de_json(obj['story'])
+            content_type = 'story'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1274,9 +1280,18 @@ class Message(JsonDeserializable):
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
         self.user_shared: Optional[UserShared] = None
         self.chat_shared: Optional[ChatShared] = None
+        self.story: Optional[Story] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
+
+    @property
+    def is_forwarded_story(self):
+        """
+        Returns True if the message is a forwarded story.
+        """
+        # TODO: In future updates this propery might require changes.
+        return True if self.story is not None else False
 
     def __html_text(self, text, entities):
         """
@@ -7743,3 +7758,18 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
     
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
+
+
+class Story(JsonDeserializable):
+    """
+    This object represents a message about a forwarded story in the chat.
+    Currently holds no information.
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        return cls()
+
+    def __init__(self) -> None:
+        pass
+
