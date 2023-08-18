@@ -6695,6 +6695,9 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param poll_id: Unique poll identifier
     :type poll_id: :obj:`str`
 
+    :param voter_chat: Optional. The chat that changed the answer to the poll, if the voter is anonymous
+    :type voter_chat: :class:`telebot.types.Chat`
+
     :param user: The user, who changed the answer to the poll
     :type user: :class:`telebot.types.User`
 
@@ -6710,12 +6713,16 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
+        if 'voter_chat' in obj:
+            obj['voter_chat'] = Chat.de_json(obj['voter_chat'])
         return cls(**obj)
 
-    def __init__(self, poll_id, user, option_ids, **kwargs):
+    def __init__(self, poll_id, user, option_ids, voter_chat=None, **kwargs):
         self.poll_id: str = poll_id
         self.user: User = user
         self.option_ids: List[int] = option_ids
+        self.voter_chat: Optional[Chat] = voter_chat
+
 
     def to_json(self):
         return json.dumps(self.to_dict())
