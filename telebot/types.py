@@ -543,6 +543,10 @@ class Chat(JsonDeserializable):
         Returned only in getChat.
     :type emoji_status_custom_emoji_id: :obj:`str`
 
+    :param emoji_status_expiration_date: Optional. Expiration date of the emoji status of the other party in a private chat,
+        if any. Returned only in getChat.
+    :type emoji_status_expiration_date: :obj:`int`
+
     :param bio: Optional. Bio of the other party in a private chat. Returned only in getChat.
     :type bio: :obj:`str`
 
@@ -638,7 +642,7 @@ class Chat(JsonDeserializable):
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
-                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, **kwargs):
+                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -667,6 +671,7 @@ class Chat(JsonDeserializable):
         self.emoji_status_custom_emoji_id: str = emoji_status_custom_emoji_id
         self.has_hidden_members: bool = has_hidden_members
         self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
+        self.emoji_status_expiration_date: int = emoji_status_expiration_date
 
 
 class MessageID(JsonDeserializable):
