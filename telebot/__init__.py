@@ -4571,6 +4571,24 @@ class TeleBot:
         return apihelper.answer_inline_query(self.token, inline_query_id, results, cache_time, is_personal, next_offset,
                                              button)
 
+    def unpin_all_general_forum_topic_messages(self, chat_id: Union[int, str]) -> bool:
+        """
+        Use this method to clear the list of pinned messages in a General forum topic. 
+        The bot must be an administrator in the chat for this to work and must have the
+        can_pin_messages administrator right in the supergroup.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#unpinAllGeneralForumTopicMessages
+
+        :param chat_id: Unique identifier for the target chat or username of chat
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+
+        return apihelper.unpin_all_general_forum_topic_messages(self.token, chat_id)
+
     def answer_callback_query(
             self, callback_query_id: int, 
             text: Optional[str]=None, show_alert: Optional[bool]=None, 
