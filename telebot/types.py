@@ -1290,13 +1290,6 @@ class Message(JsonDeserializable):
             setattr(self, key, options[key])
         self.json = json_string
 
-    @property
-    def is_forwarded_story(self):
-        """
-        Returns True if the message is a forwarded story.
-        """
-        # TODO: In future updates this propery might require changes.
-        return True if self.story is not None else False
 
     def __html_text(self, text, entities):
         """
@@ -6703,7 +6696,7 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param voter_chat: Optional. The chat that changed the answer to the poll, if the voter is anonymous
     :type voter_chat: :class:`telebot.types.Chat`
 
-    :param user: The user, who changed the answer to the poll
+    :param user: Optional. The user, who changed the answer to the poll
     :type user: :class:`telebot.types.User`
 
     :param option_ids: 0-based identifiers of answer options, chosen by the user. May be empty if the user retracted 
@@ -6717,14 +6710,15 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     def de_json(cls, json_string):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
-        obj['user'] = User.de_json(obj['user'])
+        if 'user' in obj:
+            obj['user'] = User.de_json(obj['user'])
         if 'voter_chat' in obj:
             obj['voter_chat'] = Chat.de_json(obj['voter_chat'])
         return cls(**obj)
 
-    def __init__(self, poll_id, user, option_ids, voter_chat=None, **kwargs):
+    def __init__(self, poll_id, option_ids, user=None, voter_chat=None, **kwargs):
         self.poll_id: str = poll_id
-        self.user: User = user
+        self.user: Optional[User] = user
         self.option_ids: List[int] = option_ids
         self.voter_chat: Optional[Chat] = voter_chat
 
@@ -6733,9 +6727,17 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        return {'poll_id': self.poll_id,
-                'user': self.user.to_dict(),
-                'option_ids': self.option_ids}
+        # Left for backward compatibility, but with no support for voter_chat
+        json_dict = {
+            "poll_id": self.poll_id,
+            "option_ids": self.option_ids
+        }
+        if self.user:
+            json_dict["user"] = self.user.to_dict()
+        if self.voter_chat:
+            json_dict["voter_chat"] = self.voter_chat
+        return json_dict
+    
 
 
 class ChatLocation(JsonSerializable, JsonDeserializable, Dictionaryable):
@@ -7780,7 +7782,10 @@ class Story(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        return cls()
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
 
     def __init__(self) -> None:
         pass
