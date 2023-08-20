@@ -1585,6 +1585,11 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
     return _make_request(token, method_url, params=payload)
 
 
+def unpin_all_general_forum_topic_messages(token, chat_id):
+    method_url = 'unpinAllGeneralForumTopicMessages'
+    payload = {'chat_id': chat_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
 # InlineQuery
 
 def answer_callback_query(token, callback_query_id, text=None, show_alert=None, url=None, cache_time=None):

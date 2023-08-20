@@ -543,6 +543,10 @@ class Chat(JsonDeserializable):
         Returned only in getChat.
     :type emoji_status_custom_emoji_id: :obj:`str`
 
+    :param emoji_status_expiration_date: Optional. Expiration date of the emoji status of the other party in a private chat,
+        if any. Returned only in getChat.
+    :type emoji_status_expiration_date: :obj:`int`
+
     :param bio: Optional. Bio of the other party in a private chat. Returned only in getChat.
     :type bio: :obj:`str`
 
@@ -638,7 +642,7 @@ class Chat(JsonDeserializable):
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
-                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, **kwargs):
+                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -667,6 +671,7 @@ class Chat(JsonDeserializable):
         self.emoji_status_custom_emoji_id: str = emoji_status_custom_emoji_id
         self.has_hidden_members: bool = has_hidden_members
         self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
+        self.emoji_status_expiration_date: int = emoji_status_expiration_date
 
 
 class MessageID(JsonDeserializable):
@@ -820,6 +825,9 @@ class Message(JsonDeserializable):
 
     :param sticker: Optional. Message is a sticker, information about the sticker
     :type sticker: :class:`telebot.types.Sticker`
+
+    :param story: Optional. Message is a forwarded story
+    :type story: :class:`telebot.types.Story`
 
     :param video: Optional. Message is a video, information about the video
     :type video: :class:`telebot.types.Video`
@@ -1177,6 +1185,9 @@ class Message(JsonDeserializable):
         if 'chat_shared' in obj:
             opts['chat_shared'] = ChatShared.de_json(obj['chat_shared'])
             content_type = 'chat_shared'
+        if 'story' in obj:
+            opts['story'] = Story.de_json(obj['story'])
+            content_type = 'story'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1274,9 +1285,11 @@ class Message(JsonDeserializable):
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
         self.user_shared: Optional[UserShared] = None
         self.chat_shared: Optional[ChatShared] = None
+        self.story: Optional[Story] = None
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
+
 
     def __html_text(self, text, entities):
         """
@@ -6680,7 +6693,10 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param poll_id: Unique poll identifier
     :type poll_id: :obj:`str`
 
-    :param user: The user, who changed the answer to the poll
+    :param voter_chat: Optional. The chat that changed the answer to the poll, if the voter is anonymous
+    :type voter_chat: :class:`telebot.types.Chat`
+
+    :param user: Optional. The user, who changed the answer to the poll
     :type user: :class:`telebot.types.User`
 
     :param option_ids: 0-based identifiers of answer options, chosen by the user. May be empty if the user retracted 
@@ -6694,21 +6710,34 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     def de_json(cls, json_string):
         if (json_string is None): return None
         obj = cls.check_json(json_string)
-        obj['user'] = User.de_json(obj['user'])
+        if 'user' in obj:
+            obj['user'] = User.de_json(obj['user'])
+        if 'voter_chat' in obj:
+            obj['voter_chat'] = Chat.de_json(obj['voter_chat'])
         return cls(**obj)
 
-    def __init__(self, poll_id, user, option_ids, **kwargs):
+    def __init__(self, poll_id, option_ids, user=None, voter_chat=None, **kwargs):
         self.poll_id: str = poll_id
-        self.user: User = user
+        self.user: Optional[User] = user
         self.option_ids: List[int] = option_ids
+        self.voter_chat: Optional[Chat] = voter_chat
+
 
     def to_json(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        return {'poll_id': self.poll_id,
-                'user': self.user.to_dict(),
-                'option_ids': self.option_ids}
+        # Left for backward compatibility, but with no support for voter_chat
+        json_dict = {
+            "poll_id": self.poll_id,
+            "option_ids": self.option_ids
+        }
+        if self.user:
+            json_dict["user"] = self.user.to_dict()
+        if self.voter_chat:
+            json_dict["voter_chat"] = self.voter_chat
+        return json_dict
+    
 
 
 class ChatLocation(JsonSerializable, JsonDeserializable, Dictionaryable):
@@ -7743,3 +7772,21 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
     
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
+
+
+class Story(JsonDeserializable):
+    """
+    This object represents a message about a forwarded story in the chat.
+    Currently holds no information.
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self) -> None:
+        pass
+
