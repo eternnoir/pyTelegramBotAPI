@@ -15,9 +15,12 @@ class StateRedisStorage(StateStorageBase):
     To use it, just pass this class to:
     TeleBot(storage=StateRedisStorage())
     """
-    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_'):
+    def __init__(self, host='localhost', port=6379, db=0, password=None, url=None, prefix='telebot_'):
         super().__init__()
-        self.redis = ConnectionPool(host=host, port=port, db=db, password=password)
+        if url:
+            self.redis = ConnectionPool.from_url(url)
+        else:
+            self.redis = ConnectionPool(host=host, port=port, db=db, password=password)
         #self.con = Redis(connection_pool=self.redis) -> use this when necessary
         #
         # {chat_id: {user_id: {'state': None, 'data': {}}, ...}, ...}
