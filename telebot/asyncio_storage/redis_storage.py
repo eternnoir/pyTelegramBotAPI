@@ -20,7 +20,7 @@ class StateRedisStorage(StateStorageBase):
     To use it, just pass this class to:
     TeleBot(storage=StateRedisStorage())
     """
-    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_'):
+    def __init__(self, host='localhost', port=6379, db=0, password=None, url=None, prefix='telebot_'):
         if not redis_installed:
             raise ImportError('AioRedis is not installed. Install it via "pip install aioredis"')
 
@@ -28,13 +28,17 @@ class StateRedisStorage(StateStorageBase):
             aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
             if aioredis_version < (2,):
                 raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
-        self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
+
+        if url:
+            self.redis = aioredis.from_url(url)
+        else:
+            self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
 
         self.prefix = prefix
         #self.con = Redis(connection_pool=self.redis) -> use this when necessary
         #
         # {chat_id: {user_id: {'state': None, 'data': {}}, ...}, ...}
-    
+
     async def get_record(self, key):
         """
         Function to get record from database.
@@ -51,7 +55,7 @@ class StateRedisStorage(StateStorageBase):
         It has nothing to do with states.
         Made for backward compatibility
         """
-    
+
         await self.redis.set(self.prefix+str(key), json.dumps(value))
         return True
 
@@ -82,7 +86,7 @@ class StateRedisStorage(StateStorageBase):
         await self.set_record(chat_id, response)
 
         return True
-    
+
     async def delete_state(self, chat_id, user_id):
         """
         Delete state for a particular user in a chat.
@@ -165,7 +169,7 @@ class StateRedisStorage(StateStorageBase):
         You can use with() with this function.
         """
         return StateContext(self, chat_id, user_id)
-    
+
     async def save(self, chat_id, user_id, data):
         response = await self.get_record(chat_id)
         user_id = str(user_id)
