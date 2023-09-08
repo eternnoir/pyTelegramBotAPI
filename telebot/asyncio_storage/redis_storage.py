@@ -20,7 +20,7 @@ class StateRedisStorage(StateStorageBase):
     To use it, just pass this class to:
     TeleBot(storage=StateRedisStorage())
     """
-    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_'):
+    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_', redis_url=None):
         if not redis_installed:
             raise ImportError('AioRedis is not installed. Install it via "pip install aioredis"')
 
@@ -28,7 +28,10 @@ class StateRedisStorage(StateStorageBase):
             aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
             if aioredis_version < (2,):
                 raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
-        self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
+        if redis_url:
+            self.redis = aioredis.Redis.from_url(redis_url)
+        else:
+            self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
 
         self.prefix = prefix
         #self.con = Redis(connection_pool=self.redis) -> use this when necessary
