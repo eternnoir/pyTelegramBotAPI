@@ -139,6 +139,7 @@ class AsyncTeleBot:
         skip_pending: bool = False,
         request_timeout: int = 60,
         max_error_retry_count: Optional[int] = 10,
+        auto_close_session: bool = True,
     ):
         interval = max(interval, 0.3)
         error_retry_count = 0
@@ -171,8 +172,10 @@ class AsyncTeleBot:
                     await asyncio.sleep(interval)
 
         finally:
-            await self.close_session()
-            self.logger.info("Stopping polling")
+            if auto_close_session:
+                self.logger.info("Closing HTTP session")
+                await self.close_session()
+            self.logger.info("Stopped polling")
 
     # update handling
 
