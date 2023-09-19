@@ -948,6 +948,15 @@ class MockedAsyncTeleBot(AsyncTeleBot):
     ):
         return True
 
+    @mocked
+    async def set_my_commands(
+        self,
+        commands: list[types.BotCommand],
+        scope: Optional[types.BotCommandScope] = None,
+        language_code: Optional[str] = None,
+    ) -> bool:
+        return True
+
 
 def date2int(d: Union[None, int, datetime]) -> Optional[int]:
     if d is None:
