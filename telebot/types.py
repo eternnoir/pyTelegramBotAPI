@@ -2888,6 +2888,7 @@ class ChatMember(JsonDeserializable):
                  can_send_other_messages=None, can_add_web_page_previews=None,  
                  can_manage_chat=None, can_manage_video_chats=None, 
                  until_date=None, can_manage_topics=None, 
+                 can_post_stories=None, can_edit_stories=None, can_delete_stories=None,
                  **kwargs):
         self.user: User = user
         self.status: str = status
@@ -2919,6 +2920,9 @@ class ChatMember(JsonDeserializable):
         self.can_send_videos: bool = can_send_videos
         self.can_send_video_notes: bool = can_send_video_notes
         self.can_send_voice_notes: bool = can_send_voice_notes
+        self.can_post_stories: bool = can_post_stories
+        self.can_edit_stories: bool = can_edit_stories
+        self.can_delete_stories: bool = can_delete_stories
         
 
 
@@ -3005,6 +3009,15 @@ class ChatMemberAdministrator(ChatMember):
 
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
+
+    :param can_post_stories: Optional. True, if the administrator can post channel stories
+    :type can_post_stories: :obj:`bool`
+
+    :param can_edit_stories: Optional. True, if the administrator can edit stories
+    :type can_edit_stories: :obj:`bool`
+
+    :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
+    :type can_delete_stories: :obj:`bool`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberAdministrator`
@@ -7179,6 +7192,15 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
     :type can_manage_topics: :obj:`bool`
 
+    :param can_post_stories: Optional. True, if the administrator can post channel stories
+    :type can_post_stories: :obj:`bool`
+
+    :param can_edit_stories: Optional. True, if the administrator can edit stories
+    :type can_edit_stories: :obj:`bool`
+
+    :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
+    :type can_delete_stories: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatAdministratorRights`
     """
@@ -7193,7 +7215,10 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_delete_messages: bool, can_manage_video_chats: bool, can_restrict_members: bool,
         can_promote_members: bool, can_change_info: bool, can_invite_users: bool,
         can_post_messages: bool=None, can_edit_messages: bool=None,
-        can_pin_messages: bool=None, can_manage_topics: bool=None) -> None:
+        can_pin_messages: bool=None, can_manage_topics: bool=None,
+        can_post_stories: bool=None, can_edit_stories: bool=None,
+        can_delete_stories: bool=None
+        ) -> None:
         
         self.is_anonymous: bool = is_anonymous
         self.can_manage_chat: bool = can_manage_chat
@@ -7207,6 +7232,9 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         self.can_edit_messages: bool = can_edit_messages
         self.can_pin_messages: bool = can_pin_messages
         self.can_manage_topics: bool = can_manage_topics
+        self.can_post_stories: bool = can_post_stories
+        self.can_edit_stories: bool = can_edit_stories
+        self.can_delete_stories: bool = can_delete_stories
 
     def to_dict(self):
         json_dict = {
@@ -7227,6 +7255,13 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
             json_dict['can_pin_messages'] = self.can_pin_messages
         if self.can_manage_topics is not None:
             json_dict['can_manage_topics'] = self.can_manage_topics
+        if self.can_post_stories is not None:
+            json_dict['can_post_stories'] = self.can_post_stories
+        if self.can_edit_stories is not None:
+            json_dict['can_edit_stories'] = self.can_edit_stories
+        if self.can_delete_stories is not None:
+            json_dict['can_delete_stories'] = self.can_delete_stories
+            
         return json_dict
     
     def to_json(self):
