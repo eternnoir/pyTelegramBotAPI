@@ -7261,7 +7261,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
             json_dict['can_edit_stories'] = self.can_edit_stories
         if self.can_delete_stories is not None:
             json_dict['can_delete_stories'] = self.can_delete_stories
-            
+
         return json_dict
     
     def to_json(self):
@@ -7482,13 +7482,21 @@ class ForumTopic(JsonDeserializable):
 
 class WriteAccessAllowed(JsonDeserializable):
     """
-    This object represents a service message about a user allowed to post messages in the chat.
-    Currently holds no information.
+    This object represents a service message about a user allowing a bot to write
+    messages after adding it to the attachment menu, launching a Web App from a link,
+    or accepting an explicit request from a Web App sent by the method requestWriteAccess.
 
     Telegram documentation: https://core.telegram.org/bots/api#writeaccessallowed
 
+    :param from_request: Optional. True, if the access was granted after the user accepted an
+        explicit request from a Web App sent by the method requestWriteAccess
+    :type from_request: :obj:`bool`
+
     :param web_app_name: Optional. Name of the Web App which was launched from a link
     :type web_app_name: :obj:`str`
+
+    :param from_attachment_menu: Optional. True, if the access was granted when the bot was added to the attachment or side menu
+    :type from_attachment_menu: :obj:`bool`
     """
     @classmethod
     def de_json(cls, json_string):
@@ -7497,8 +7505,10 @@ class WriteAccessAllowed(JsonDeserializable):
         return cls(**obj)
         
 
-    def __init__(self, web_app_name: str) -> None:
+    def __init__(self, from_request: Optional[bool]=None, web_app_name: Optional[str]=None, from_attachment_menu: Optional[bool]=None) -> None:
         self.web_app_name: str = web_app_name
+        self.from_request: bool = from_request
+        self.from_attachment_menu: bool = from_attachment_menu
         
 
 
