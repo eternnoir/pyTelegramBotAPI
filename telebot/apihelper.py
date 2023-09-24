@@ -991,7 +991,8 @@ def promote_chat_member(
         can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
         can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
         is_anonymous=None, can_manage_chat=None, can_manage_video_chats=None,
-        can_manage_topics=None):
+        can_manage_topics=None, can_post_stories=None, can_edit_stories=None,
+        can_delete_stories=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -1018,6 +1019,12 @@ def promote_chat_member(
         payload['can_manage_video_chats'] = can_manage_video_chats
     if can_manage_topics is not None:
         payload['can_manage_topics'] = can_manage_topics
+    if can_post_stories is not None:
+        payload['can_post_stories'] = can_post_stories
+    if can_edit_stories is not None:
+        payload['can_edit_stories'] = can_edit_stories
+    if can_delete_stories is not None:
+        payload['can_delete_stories'] = can_delete_stories
     return _make_request(token, method_url, params=payload, method='post')
 
 
