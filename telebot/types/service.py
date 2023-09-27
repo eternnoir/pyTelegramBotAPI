@@ -59,6 +59,7 @@ NoneCoro = Coroutine[None, None, None]
 @dataclass
 class HandlerResult:
     metrics: Optional[dict[str, Any]] = None
+    continue_to_other_handlers: bool = False
 
 
 class HandlerFunction(Protocol[_UCT]):

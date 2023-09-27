@@ -343,9 +343,13 @@ class AsyncTeleBot:
                 try:
                     with save_processing_duration(update_metrics_):
                         maybe_handler_result = await invoke_handler(handler["function"], update_content, self)
-                    if isinstance(maybe_handler_result, service_types.HandlerResult) and maybe_handler_result.metrics:
-                        update_metrics_["handler_metrics"] = maybe_handler_result.metrics
-                    return
+                    handler_result = maybe_handler_result or service_types.HandlerResult()
+                    if handler_result.metrics is not None:
+                        update_metrics_["handler_metrics"] = handler_result.metrics
+                    if handler_result.continue_to_other_handlers:
+                        continue
+                    else:
+                        return
                 except Exception as e:
                     self.logger.exception(f"Error processing update with handler '{handler_name}': {update_content}")
                     update_metrics_["exception_info"] = ExceptionInfo(type_name=e.__class__.__name__, body=str(e))
@@ -447,7 +451,7 @@ class AsyncTeleBot:
     def message_handler(
         self,
         commands: Optional[list[str]] = None,
-        regexp: str = None,
+        regexp: Optional[str] = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[constants.ChatType]] = None,
@@ -526,7 +530,7 @@ class AsyncTeleBot:
     def edited_message_handler(
         self,
         commands: Optional[list[str]] = None,
-        regexp: str = None,
+        regexp: Optional[str] = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[constants.ChatType]] = None,
@@ -562,7 +566,7 @@ class AsyncTeleBot:
     def channel_post_handler(
         self,
         commands: Optional[list[str]] = None,
-        regexp: str = None,
+        regexp: Optional[str] = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[str]] = None,
         chat_types: Optional[list[constants.ChatType]] = None,
@@ -598,7 +602,7 @@ class AsyncTeleBot:
     def edited_channel_post_handler(
         self,
         commands: Optional[list[str]] = None,
-        regexp: str = None,
+        regexp: Optional[str] = None,
         func: Optional[service_types.FilterFunc[types.Message]] = None,
         content_types: Optional[list[constants.ContentType]] = None,
         chat_types: Optional[list[constants.ChatType]] = None,
@@ -1821,7 +1825,6 @@ class AsyncTeleBot:
         protect_content: Optional[bool] = None,
         message_thread_id: Optional[int] = None,
     ) -> types.Message:
-
         """
         Use this method to send point on the map.
 
@@ -2493,7 +2496,9 @@ class AsyncTeleBot:
         result = await api.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
-    async def set_chat_menu_button(self, chat_id: Union[int, str] = None, menu_button: types.MenuButton = None) -> bool:
+    async def set_chat_menu_button(
+        self, chat_id: Optional[Union[int, str]] = None, menu_button: Optional[types.MenuButton] = None
+    ) -> bool:
         """
         Use this method to change the bot's menu button in a private chat,
         or the default menu button.
@@ -2508,7 +2513,7 @@ class AsyncTeleBot:
         """
         return await api.set_chat_menu_button(self.token, chat_id, menu_button)
 
-    async def get_chat_menu_button(self, chat_id: Union[int, str] = None) -> types.MenuButton:
+    async def get_chat_menu_button(self, chat_id: Union[int, str, None] = None) -> types.MenuButton:
         """
         Use this method to get the current value of the bot's menu button
         in a private chat, or the default menu button.
@@ -2524,7 +2529,7 @@ class AsyncTeleBot:
         return types.MenuButton.de_json(await api.get_chat_menu_button(self.token, chat_id))
 
     async def set_my_default_administrator_rights(
-        self, rights: types.ChatAdministratorRights = None, for_channels: bool = None
+        self, rights: Optional[types.ChatAdministratorRights] = None, for_channels: Optional[bool] = None
     ) -> bool:
         """
         Use this method to change the default administrator rights requested by the bot
@@ -2541,7 +2546,9 @@ class AsyncTeleBot:
 
         return await api.set_my_default_administrator_rights(self.token, rights, for_channels)
 
-    async def get_my_default_administrator_rights(self, for_channels: bool = None) -> types.ChatAdministratorRights:
+    async def get_my_default_administrator_rights(
+        self, for_channels: Optional[bool] = None
+    ) -> types.ChatAdministratorRights:
         """
         Use this method to get the current default administrator rights of the bot.
         Returns ChatAdministratorRights on success.
@@ -3006,7 +3013,6 @@ class AsyncTeleBot:
         send_email_to_provider: Optional[bool] = None,
         is_flexible: Optional[bool] = None,
     ) -> str:
-
         """
         Use this method to create a link for an invoice.
         Returns the created invoice link as String on success.
