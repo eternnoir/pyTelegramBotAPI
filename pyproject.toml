@@ -18,7 +18,7 @@ style="semver"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aiohttp = "^3.8.1"
+aiohttp = "^3.8.5"
 ujson = "^5.3.0"
 typing-extensions = "^4.2.0"
 
