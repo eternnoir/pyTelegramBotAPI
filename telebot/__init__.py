@@ -1517,7 +1517,7 @@ class TeleBot:
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
         :type disable_notification: :obj:`bool`
 
-        :param protect_content: If True, the message content will be hidden for all users except for the target user
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
         :type protect_content: :obj:`bool`
 
         :param reply_to_message_id: If the message is a reply, ID of the original message
@@ -1733,7 +1733,7 @@ class TeleBot:
         :param allow_sending_without_reply: Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
 
-        :param protect_content: Protects the contents of the sent message from forwarding
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
         :type protect_content: :obj:`bool`
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
@@ -3942,7 +3942,7 @@ class TeleBot:
         :param allow_sending_without_reply: Pass True, if the message should be sent even if one of the specified replied-to messages is not found.
         :type allow_sending_without_reply: :obj:`bool`
 
-        :param protect_content: Pass True, if content of the message needs to be protected from being viewed by the bot.
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
         :type protect_content: :obj:`bool`
 
         :param message_thread_id: The identifier of a message thread, in which the game message will be sent.
