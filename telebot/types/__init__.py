@@ -88,6 +88,10 @@ class JsonDeserializable(object):
         else:
             raise ValueError("json_type should be a json dict or string.")
 
+    @classmethod
+    def check_json(cls, json, copy_dict=True) -> dict:
+        return cls.ensure_json_dict(json, copy_dict)
+
     def __str__(self):
         d = {x: y.__dict__ if hasattr(y, "__dict__") else y for x, y in self.__dict__.items()}
         return f"{self.__class__.__name__}({d})"
@@ -4065,7 +4069,6 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_pin_messages: Optional[bool] = None,
         can_manage_topics: Optional[bool] = None,
     ) -> None:
-
         self.is_anonymous = is_anonymous
         self.can_manage_chat = can_manage_chat
         self.can_delete_messages = can_delete_messages
