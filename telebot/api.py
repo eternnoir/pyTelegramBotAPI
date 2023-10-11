@@ -166,7 +166,7 @@ async def download_file(token: str, file_path: str):
 
 async def set_webhook(
     token: str,
-    url: str = None,
+    url: str,
     certificate: Optional[FileObject] = None,
     max_connections: Optional[int] = None,
     allowed_updates: Optional[list[str]] = None,
@@ -1332,6 +1332,60 @@ async def set_chat_title(token, chat_id, title):
     method_url = "setChatTitle"
     payload = {"chat_id": chat_id, "title": title}
     return await _request(token, method_url, params=payload, method="post")
+
+
+async def set_my_description(token, description=None, language_code=None):
+    method_url = r"setMyDescription"
+    payload = {}
+    if description is not None:
+        payload["description"] = description
+    if language_code is not None:
+        payload["language_code"] = language_code
+    return await _request(token, method_url, params=payload, method="post")
+
+
+async def get_my_description(token, language_code=None):
+    method_url = r"getMyDescription"
+    payload = {}
+    if language_code:
+        payload["language_code"] = language_code
+    return await _request(token, method_url, params=payload)
+
+
+async def set_my_short_description(token, short_description=None, language_code=None):
+    method_url = r"setMyShortDescription"
+    payload = {}
+    if short_description is not None:
+        payload["short_description"] = short_description
+    if language_code is not None:
+        payload["language_code"] = language_code
+    return await _request(token, method_url, params=payload, method="post")
+
+
+async def get_my_short_description(token, language_code=None):
+    method_url = r"getMyShortDescription"
+    payload = {}
+    if language_code:
+        payload["language_code"] = language_code
+    return await _request(token, method_url, params=payload)
+
+
+async def set_my_name(token, name=None, language_code=None):
+    method_url = r"setMyName"
+    payload = {}
+    if name is not None:
+        payload["name"] = name
+    if language_code is not None:
+        payload["language_code"] = language_code
+    return await _request(token, method_url, params=payload, method="post")
+
+
+async def get_my_name(token, language_code=None):
+    method_url = r"getMyName"
+    payload = {}
+    if language_code is not None:
+        payload["language_code"] = language_code
+    return await _request(token, method_url, params=payload)
 
 
 async def get_my_commands(token, scope=None, language_code=None):

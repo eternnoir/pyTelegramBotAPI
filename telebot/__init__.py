@@ -2496,6 +2496,91 @@ class AsyncTeleBot:
         result = await api.get_my_commands(self.token, scope, language_code)
         return [types.BotCommand.de_json(cmd) for cmd in result]
 
+    async def set_my_name(self, name: Optional[str] = None, language_code: Optional[str] = None):
+        """
+        Use this method to change the bot's name. Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#setmyname
+        :param name: Optional. New bot name; 0-64 characters. Pass an empty string to remove the dedicated name for the given language.
+        :type name: :obj:`str`
+        :param language_code: Optional. A two-letter ISO 639-1 language code. If empty, the name will be shown to all users for whose
+            language there is no dedicated name.
+        :type language_code: :obj:`str`
+        :return: True on success.
+        """
+
+        return await api.set_my_name(self.token, name, language_code)
+
+    async def get_my_name(self, language_code: Optional[str] = None):
+        """
+        Use this method to get the current bot name for the given user language.
+        Returns BotName on success.
+        Telegram documentation: https://core.telegram.org/bots/api#getmyname
+        :param language_code: Optional. A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+        :return: :class:`telebot.types.BotName`
+        """
+
+        result = await api.get_my_name(self.token, language_code)
+        return types.BotName.de_json(result)
+
+    async def set_my_description(self, description: Optional[str] = None, language_code: Optional[str] = None):
+        """
+        Use this method to change the bot's description, which is shown in
+        the chat with the bot if the chat is empty.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#setmydescription
+        :param description: New bot description; 0-512 characters. Pass an empty string to remove the dedicated description for the given language.
+        :type description: :obj:`str`
+        :param language_code: A two-letter ISO 639-1 language code. If empty, the description will be applied to all users for
+            whose language there is no dedicated description.
+        :type language_code: :obj:`str`
+        :return: True on success.
+        """
+
+        return await api.set_my_description(self.token, description, language_code)
+
+    async def get_my_description(self, language_code: Optional[str] = None):
+        """
+        Use this method to get the current bot description for the given user language.
+        Returns BotDescription on success.
+        Telegram documentation: https://core.telegram.org/bots/api#getmydescription
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+        :return: :class:`telebot.types.BotDescription`
+        """
+
+        return types.BotDescription.de_json(await api.get_my_description(self.token, language_code))
+
+    async def set_my_short_description(
+        self, short_description: Optional[str] = None, language_code: Optional[str] = None
+    ):
+        """
+        Use this method to change the bot's short description, which is shown on the bot's profile page and
+        is sent together with the link when users share the bot.
+        Returns True on success.
+        Telegram documentation: https://core.telegram.org/bots/api#setmyshortdescription
+        :param short_description: New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.
+        :type short_description: :obj:`str`
+        :param language_code: A two-letter ISO 639-1 language code.
+            If empty, the short description will be applied to all users for whose language there is no dedicated short description.
+        :type language_code: :obj:`str`
+        :return: True on success.
+        """
+
+        return await api.set_my_short_description(self.token, short_description, language_code)
+
+    async def get_my_short_description(self, language_code: Optional[str] = None):
+        """
+        Use this method to get the current bot short description for the given user language.
+        Returns BotShortDescription on success.
+        Telegram documentation: https://core.telegram.org/bots/api#getmyshortdescription
+        :param language_code: A two-letter ISO 639-1 language code or an empty string
+        :type language_code: :obj:`str`
+        :return: :class:`telebot.types.BotShortDescription`
+        """
+
+        return types.BotShortDescription.de_json(await api.get_my_short_description(self.token, language_code))
+
     async def set_chat_menu_button(
         self, chat_id: Optional[Union[int, str]] = None, menu_button: Optional[types.MenuButton] = None
     ) -> bool:

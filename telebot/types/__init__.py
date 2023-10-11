@@ -4388,3 +4388,242 @@ AllowedUpdateName = Literal[
     "chat_member",
     "chat_join_request",
 ]
+
+
+class BotDescription(JsonDeserializable):
+    """
+    This object represents a bot description.
+    Telegram documentation: https://core.telegram.org/bots/api#botdescription
+    :param description: Bot description
+    :type description: :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.BotDescription`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, description: str) -> None:
+        self.description: str = description
+
+
+class BotShortDescription(JsonDeserializable):
+    """
+    This object represents a bot short description.
+    Telegram documentation: https://core.telegram.org/bots/api#botshortdescription
+    :param short_description: Bot short description
+    :type short_description: :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.BotShortDescription`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, short_description: str) -> None:
+        self.short_description: str = short_description
+
+
+class InputSticker(Dictionaryable, JsonSerializable):
+    """
+    This object describes a sticker to be added to a sticker set.
+    :param sticker: The added sticker. Pass a file_id as a String to send a file that already exists on the Telegram servers,
+        pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data.
+        Animated and video stickers can't be uploaded via HTTP URL.
+    :type sticker: :obj:`str` or :obj:`telebot.types.InputFile`
+    :param emoji_list: One or more(up to 20) emoji(s) corresponding to the sticker
+    :type emoji_list: :obj:`list` of :obj:`str`
+    :param mask_position: Optional. Position where the mask should be placed on faces. For “mask” stickers only.
+    :type mask_position: :class:`telebot.types.MaskPosition`
+
+    :param keywords: Optional. List of 0-20 search keywords for the sticker with total length of up to 64 characters.
+        For “regular” and “custom_emoji” stickers only.
+    :type keywords: :obj:`list` of :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputSticker`
+    """
+
+    def __init__(
+        self,
+        sticker: Union[str, InputFile],
+        emoji_list: List[str],
+        mask_position: Optional[MaskPosition] = None,
+        keywords: Optional[List[str]] = None,
+    ) -> None:
+        self.sticker: Union[str, InputFile] = sticker
+        self.emoji_list: List[str] = emoji_list
+        self.mask_position: Optional[MaskPosition] = mask_position
+        self.keywords: Optional[List[str]] = keywords
+
+        if util.is_string(self.sticker):
+            self._sticker_name = ""
+            self._sticker_dic = self.sticker
+        else:
+            # work like in inputmedia: convert_input_media
+            self._sticker_name = util.generate_random_token()
+            # uses attach://_sticker_name for sticker param. then,
+            # actual file is sent using files param of the request
+            self._sticker_dic = "attach://{0}".format(self._sticker_name)
+
+    def to_dict(self) -> dict:
+        json_dict = {"sticker": self._sticker_dic, "emoji_list": self.emoji_list}
+
+        if self.mask_position is not None:
+            json_dict["mask_position"] = self.mask_position.to_dict()
+        if self.keywords is not None:
+            json_dict["keywords"] = self.keywords
+
+        return json_dict
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+    def convert_input_sticker(self):
+        if util.is_string(self.sticker):
+            return self.to_json(), None
+
+        return self.to_json(), {self._sticker_name: self.sticker}
+
+
+class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    Represents an inline button that switches the current user to inline mode in a chosen chat,
+    with an optional default inline query.
+    Telegram Documentation: https://core.telegram.org/bots/api#inlinekeyboardbutton
+    :param query: Optional. The default inline query to be inserted in the input field.
+                  If left empty, only the bot's username will be inserted
+    :type query: :obj:`str`
+    :param allow_user_chats: Optional. True, if private chats with users can be chosen
+    :type allow_user_chats: :obj:`bool`
+    :param allow_bot_chats: Optional. True, if private chats with bots can be chosen
+    :type allow_bot_chats: :obj:`bool`
+    :param allow_group_chats: Optional. True, if group and supergroup chats can be chosen
+    :type allow_group_chats: :obj:`bool`
+    :param allow_channel_chats: Optional. True, if channel chats can be chosen
+    :type allow_channel_chats: :obj:`bool`
+    :return: Instance of the class
+    :rtype: :class:`SwitchInlineQueryChosenChat`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(
+        self, query=None, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None
+    ):
+        self.query: str = query
+        self.allow_user_chats: bool = allow_user_chats
+        self.allow_bot_chats: bool = allow_bot_chats
+        self.allow_group_chats: bool = allow_group_chats
+        self.allow_channel_chats: bool = allow_channel_chats
+
+    def to_dict(self):
+        json_dict = {}
+
+        if self.query is not None:
+            json_dict["query"] = self.query
+        if self.allow_user_chats is not None:
+            json_dict["allow_user_chats"] = self.allow_user_chats
+        if self.allow_bot_chats is not None:
+            json_dict["allow_bot_chats"] = self.allow_bot_chats
+        if self.allow_group_chats is not None:
+            json_dict["allow_group_chats"] = self.allow_group_chats
+        if self.allow_channel_chats is not None:
+            json_dict["allow_channel_chats"] = self.allow_channel_chats
+
+        return json_dict
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class BotName(JsonDeserializable):
+    """
+    This object represents a bot name.
+    Telegram Documentation: https://core.telegram.org/bots/api#botname
+    :param name: The bot name
+    :type name: :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`BotName`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, name: str):
+        self.name: str = name
+
+
+class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
+    """
+    This object represents a button to be shown above inline query results.
+    You must use exactly one of the optional fields.
+    Telegram documentation: https://core.telegram.org/bots/api#inlinequeryresultsbutton
+    :param text: Label text on the button
+    :type text: :obj:`str`
+    :param web_app: Optional. Description of the Web App that will be launched when the user presses the button.
+        The Web App will be able to switch back to the inline mode using the method web_app_switch_inline_query inside the Web App.
+    :type web_app: :class:`telebot.types.WebAppInfo`
+
+    :param start_parameter: Optional. Deep-linking parameter for the /start message sent to the bot when a user presses the button.
+        1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.
+        Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search
+        results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing
+        any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs
+        the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat
+        where they wanted to use the bot's inline capabilities.
+    :type start_parameter: :obj:`str`
+    :return: Instance of the class
+    :rtype: :class:`InlineQueryResultsButton`
+    """
+
+    def __init__(self, text: str, web_app: Optional[WebAppInfo] = None, start_parameter: Optional[str] = None) -> None:
+        self.text: str = text
+        self.web_app: Optional[WebAppInfo] = web_app
+        self.start_parameter: Optional[str] = start_parameter
+
+    def to_dict(self) -> dict:
+        json_dict = {"text": self.text}
+
+        if self.web_app is not None:
+            json_dict["web_app"] = self.web_app.to_dict()
+        if self.start_parameter is not None:
+            json_dict["start_parameter"] = self.start_parameter
+
+        return json_dict
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+
+class Story(JsonDeserializable):
+    """
+    This object represents a message about a forwarded story in the chat.
+    Currently holds no information.
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self) -> None:
+        pass
