@@ -374,7 +374,7 @@ class Middleware(BaseMiddleware):
         if exception: # check for exception
             print(exception)
 ```
-Class-based middleware should have to functions: post and pre process.
+Class-based middleware should have two functions: post and pre process.
 So, as you can see, class-based middlewares work before and after handler execution.
 For more, check out in [examples](https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/middleware/class_based)	
 	
