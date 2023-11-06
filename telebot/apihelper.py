@@ -94,7 +94,9 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         for key, value in files_copy.items():
             if isinstance(value, types.InputFile):
                 files[key] = value.file
-                
+            elif isinstance(value, tuple) and (len(value) == 2) and isinstance(value[1], types.InputFile):
+                files[key] = (value[0], value[1].file)
+
     
     if files and format_header_param:
         fields.format_header_param = _no_encode(format_header_param)
