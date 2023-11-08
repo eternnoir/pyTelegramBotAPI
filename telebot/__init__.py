@@ -1046,6 +1046,12 @@ class TeleBot:
             self.__non_threaded_polling(non_stop=non_stop, interval=interval, timeout=timeout, long_polling_timeout=long_polling_timeout,
                                         logger_level=logger_level, allowed_updates=allowed_updates)
 
+    def _handle_exception(self, exception: Exception) -> bool:
+        if self.exception_handler is None:
+            return False
+
+        handled = self.exception_handler.handle(exception)
+        return handled
 
     def __threaded_polling(self, non_stop = False, interval = 0, timeout = None, long_polling_timeout = None,
                            logger_level=logging.ERROR, allowed_updates=None):
@@ -1074,10 +1080,7 @@ class TeleBot:
                 self.worker_pool.raise_exceptions()
                 error_interval = 0.25
             except apihelper.ApiException as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
+                handled = self._handle_exception(e)
                 if not handled:
                     if logger_level and logger_level >= logging.ERROR:
                         logger.error("Threaded polling exception: %s", str(e))
@@ -1107,10 +1110,7 @@ class TeleBot:
                 self.__stop_polling.set()
                 break
             except Exception as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
+                handled = self._handle_exception(e)
                 if not handled:
                     polling_thread.stop()
                     polling_thread.clear_exceptions()   #*
@@ -1144,11 +1144,7 @@ class TeleBot:
                 self.__retrieve_updates(timeout, long_polling_timeout, allowed_updates=allowed_updates)
                 error_interval = 0.25
             except apihelper.ApiException as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
-
+                handled = self._handle_exception(e)
                 if not handled:
                     if logger_level and logger_level >= logging.ERROR:
                         logger.error("Polling exception: %s", str(e))
@@ -1171,10 +1167,7 @@ class TeleBot:
                 self.__stop_polling.set()
                 break
             except Exception as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
+                handled = self._handle_exception(e)
                 if not handled:
                     raise e
                 else:
@@ -1190,10 +1183,7 @@ class TeleBot:
             try:
                 task(*args, **kwargs)
             except Exception as e:
-                if self.exception_handler is not None:
-                    handled = self.exception_handler.handle(e)
-                else:
-                    handled = False
+                handled = self._handle_exception(e)
                 if not handled:
                     raise e
 
@@ -6858,9 +6848,8 @@ class TeleBot:
                         break
             except Exception as e:
                 handler_error = e
-                if self.exception_handler:
-                    self.exception_handler.handle(e)
-                else:
+                handled = self._handle_exception(e)
+                if not handled:
                     logger.error(str(e))
                     logger.debug("Exception traceback:\n%s", traceback.format_exc())
 
