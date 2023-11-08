@@ -893,5 +893,6 @@ Here are some examples of template:
 * [DownloadMusicBOT](https://github.com/fcoagz/DownloadMusicBOT) by *Francisco Griman* - It is a simple bot that downloads audio from YouTube videos on Telegram.
 * [AwesomeChatGPTBot](https://github.com/Kourva/AwesomeChatGPTBot) - Simple ChatGTP-3.5 bot. It is FREE and can remember chat history for a while With pre-defined roles!
 * [QR-Code For You Bot](https://t.me/qrcode_for_you_bot) ([source](https://github.com/arashnm80/qrcode-for-you-bot)) by [Arashnm80](https://github.com/arashnm80). Telegram qrcode generator bot created with pyhton and telebot.
+* [Best Instagram Downloader Bot](https://t.me/Best_Instagram_Downloader_Bot) ([source](https://github.com/arashnm80/best-instagram-downloader)) by [Arashnm80](https://github.com/arashnm80). Free and open source telegram bot to download posts and reels from Instagram.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
