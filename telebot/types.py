@@ -2583,16 +2583,11 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         json_dict['inline_keyboard'] = [[button.to_dict() for button in row] for row in self.keyboard]
         return json_dict
 
-    def __add__(self, other: InlineKeyboardMarkup) -> InlineKeyboardMarkup:
+    def add_markup(self, other: InlineKeyboardMarkup) -> InlineKeyboardMarkup:
         """
-        Using: final_InlineKeyboardMarkup = InlineKeyboardMarkup_obj(rsize=5) + InlineKeyboardMarkup_obj(rsize=3)
-
-        This improvement using to better manage buttons using quick_markup.
-        So using this you could make first initial quick markup. And the add anothers to it not using self.add(InlineKeyBoardButton).
-        
-        Adding one markup to another with different row_sizes:
+        Adding one markup to another with different row_sizes for better formatting of markup buttons.\n
+        For formatting to be correct, you must extend the object with a smaller row_size object.\n
         If first mark row_width smaller than in the second then second elements will stand as in first mark.
-
         :param other: InlineKeyboardMarkup
         :return: InlineKeyboardMarkup
         """
