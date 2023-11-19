@@ -175,14 +175,16 @@ class TeleBot:
         self.token = token
         self.skip_pending = skip_pending # backward compatibility
         self.last_update_id = last_update_id
-        
-        # propertys
+
+        # properties
         self.suppress_middleware_excepions = suppress_middleware_excepions
         self.parse_mode = parse_mode
         self.disable_web_page_preview = disable_web_page_preview
         self.disable_notification = disable_notification
         self.protect_content = protect_content
         self.allow_sending_without_reply = allow_sending_without_reply
+        self.webhook_listener = None
+        self._user = None
 
         # logs-related
         if colorful_logs:
@@ -269,7 +271,7 @@ class TeleBot:
         :return: Bot's info.
         :rtype: :class:`telebot.types.User`
         """
-        if not hasattr(self, "_user"):
+        if not self._user:
             self._user = self.get_me()
         return self._user
 
@@ -1055,7 +1057,7 @@ class TeleBot:
 
     def __threaded_polling(self, non_stop = False, interval = 0, timeout = None, long_polling_timeout = None,
                            logger_level=logging.ERROR, allowed_updates=None):
-        if not(logger_level) or (logger_level < logging.INFO):
+        if (not logger_level) or (logger_level < logging.INFO):
             warning = "\n  Warning: this message appearance will be changed. Set logger_level=logging.INFO to continue seeing it."
         else:
             warning = ""
@@ -1130,7 +1132,7 @@ class TeleBot:
 
     def __non_threaded_polling(self, non_stop=False, interval=0, timeout=None, long_polling_timeout=None,
                                logger_level=logging.ERROR, allowed_updates=None):
-        if not(logger_level) or (logger_level < logging.INFO):
+        if (not logger_level) or (logger_level < logging.INFO):
             warning = "\n  Warning: this message appearance will be changed. Set logger_level=logging.INFO to continue seeing it."
         else:
             warning = ""
@@ -2076,7 +2078,7 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
-        if data and not(document):
+        if data and (not document):
             # function typo miss compatibility
             logger.warning('The parameter "data" is deprecated. Use "document" instead.')
             document = data
@@ -2157,7 +2159,7 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
-        if data and not(sticker):
+        if data and (not sticker):
             # function typo miss compatibility
             logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
@@ -2265,7 +2267,7 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
-        if data and not(video):
+        if data and (not video):
             # function typo miss compatibility
             logger.warning('The parameter "data" is deprecated. Use "video" instead.')
             video = data
@@ -6872,7 +6874,7 @@ class TeleBot:
         :param update_type: handler/update type (Update fields)
         :return:
         """
-        if not(handlers) and not(self.use_class_middlewares):
+        if (not handlers) and (not self.use_class_middlewares):
             return
 
         if self.use_class_middlewares:
