@@ -1294,7 +1294,7 @@ class Message(JsonDeserializable):
     def __html_text(self, text, entities):
         """
         Author: @sviat9440
-        Updaters: @badiboy
+        Updaters: @badiboy, @EgorKhabarov
         Message: "*Test* parse _formatting_, [url](https://example.com), [text_mention](tg://user?id=123456) and mention @username"
 
         .. code-block:: python3
@@ -1314,7 +1314,7 @@ class Message(JsonDeserializable):
         """
 
         if not entities:
-            return text
+            return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
         _subs = {
             "bold": "<b>{text}</b>",
