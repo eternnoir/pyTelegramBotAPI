@@ -10,6 +10,7 @@ def start_message(message):
         message.chat.id,
         # function which connects all strings
         formatting.format_text(
+            formatting.mcite(message.from_user.first_name), # Add quote
             formatting.mbold(message.from_user.first_name),
             formatting.mitalic(message.from_user.first_name),
             formatting.munderline(message.from_user.first_name),
