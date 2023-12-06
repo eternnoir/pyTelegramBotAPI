@@ -4,13 +4,16 @@
 [![Documentation Status](https://readthedocs.org/projects/pytba/badge/?version=latest)](https://pytba.readthedocs.io/en/latest/?badge=latest)
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
 [![PyPi status](https://img.shields.io/pypi/status/pytelegrambotapi.svg?style=flat-square)](https://pypi.python.org/pypi/pytelegrambotapi)
+[<img src= "https://besthqwallpapers.com/Uploads/10-4-2021/162207/thumb2-flag-of-brazil-honeycomb-art-brazil-hexagons-flag-brazil-3d-hexagons-art.jpg" width = "15%" align= "left">](https://t.me/ZaquilesPy)
+[<img src= "https://github.com/HACKS-EXE/HACKS-EXE/blob/main/Capa%20canal%20Zaquiles%20PY%20gif%2002.gif" height = "auto" width = "auto" align= "right">](https://t.me/ZaquilesPy)
+# 📢 Grupo BR Oficial do [Telegram](https://t.me/ZaquilesPy)
 
 # <p align="center">pyTelegramBotAPI
 
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api-changelog#september-22-2023">6.9</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api-changelog#september-22-2023">7.0</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>
