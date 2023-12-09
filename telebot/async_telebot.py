@@ -2521,8 +2521,8 @@ class AsyncTeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
         
-        :return: On success, the sent Message is returned.
-        :rtype: :class:`telebot.types.Message`
+        :return: On success, the MessageId of the sent message is returned.
+        :rtype: :class:`telebot.types.MessageID`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
