@@ -175,10 +175,10 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_video_dis_noti(self):
-        file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_video(CHAT_ID, file_data, disable_notification=True)
-        assert ret_msg.message_id
+        with open('./test_data/test_video.mp4', 'rb') as file_data:
+            tb = telebot.TeleBot(TOKEN)
+            ret_msg = tb.send_video(CHAT_ID, file_data, disable_notification=True)
+            assert ret_msg.message_id
 
     def test_send_video_more_params(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
