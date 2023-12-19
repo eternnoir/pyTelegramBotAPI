@@ -29,8 +29,8 @@ session = None
 API_URL = None
 FILE_URL = None
 
-CONNECT_TIMEOUT = 15
-READ_TIMEOUT = 30
+CONNECT_TIMEOUT = None
+READ_TIMEOUT = None
 
 LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
 
