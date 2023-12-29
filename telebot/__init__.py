@@ -218,6 +218,7 @@ class TeleBot:
         self.channel_post_handlers = []
         self.edited_channel_post_handlers = []
         self.message_reaction_handlers = []
+        self.message_reaction_count_handlers = []
         self.inline_handlers = []
         self.chosen_inline_handlers = []
         self.callback_query_handlers = []
@@ -672,6 +673,7 @@ class TeleBot:
         new_channel_posts = None
         new_edited_channel_posts = None
         new_message_reactions = None
+        message_reaction_counts = None
         new_inline_queries = None
         new_chosen_inline_results = None
         new_callback_queries = None
@@ -742,6 +744,9 @@ class TeleBot:
             if update.message_reaction:
                 if new_message_reactions is None: new_message_reactions = []
                 new_message_reactions.append(update.message_reaction)
+            if update.message_reaction_count:
+                if message_reaction_counts is None: message_reaction_counts = []
+                message_reaction_counts.append(update.message_reaction_count)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -773,6 +778,8 @@ class TeleBot:
             self.process_new_chat_join_request(new_chat_join_request)
         if new_message_reactions:
             self.process_new_message_reaction(new_message_reactions)
+        if message_reaction_counts:
+            self.process_new_message_reaction_count(message_reaction_counts)
 
     def process_new_messages(self, new_messages):
         """
@@ -806,6 +813,12 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.message_reaction_handlers, message_reactions, 'message_reaction')
+    
+    def process_new_message_reaction_count(self, message_reaction_counts):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.message_reaction_count_handlers, message_reaction_counts, 'message_reaction_count')
 
     def process_new_inline_query(self, new_inline_queries):
         """
@@ -6239,6 +6252,56 @@ class TeleBot:
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_message_reaction_handler(handler_dict)
 
+    def message_reaction_count_handler(self, func, **kwargs):
+        """
+        Handles new incoming message reaction count.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return:
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_message_reaction_count_handler(handler_dict)
+            return handler
+
+        return decorator
+    
+    def add_message_reaction_count_handler(self, handler_dict):
+        """
+        Adds message reaction count handler
+        Note that you should use register_message_reaction_count_handler to add message_reaction_count_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.message_reaction_count_handlers.append(handler_dict)
+
+    def register_message_reaction_count_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers message reaction count handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+        
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_message_reaction_count_handler(handler_dict)
 
     def inline_handler(self, func, **kwargs):
         """

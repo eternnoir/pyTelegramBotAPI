@@ -131,6 +131,10 @@ class Update(JsonDeserializable):
         and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots.
     :type message_reaction: :class:`telebot.types.MessageReactionUpdated`
 
+    :param message_reaction_count: Optional. Reactions to a message with anonymous reactions were changed. The bot must be an administrator in the chat and must explicitly specify
+        "message_reaction_count" in the list of allowed_updates to receive these updates.
+    :type message_reaction_count: :class:`telebot.types.MessageReactionCountUpdated`
+
     :param inline_query: Optional. New incoming inline query
     :type inline_query: :class:`telebot.types.InlineQuery`
 
@@ -193,13 +197,14 @@ class Update(JsonDeserializable):
         chat_member = ChatMemberUpdated.de_json(obj.get('chat_member'))
         chat_join_request = ChatJoinRequest.de_json(obj.get('chat_join_request'))
         message_reaction = MessageReactionUpdated.de_json(obj.get('message_reaction'))
+        message_reaction_count = MessageReactionCountUpdated.de_json(obj.get('message_reaction_count'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member, chat_join_request, message_reaction)
+                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member, chat_join_request, message_reaction):
+                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -216,6 +221,7 @@ class Update(JsonDeserializable):
         self.chat_member = chat_member
         self.chat_join_request = chat_join_request
         self.message_reaction = message_reaction
+        self.message_reaction_count = message_reaction_count
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -7977,3 +7983,69 @@ class MessageReactionUpdated(JsonDeserializable):
         self.date: int = date
         self.old_reaction: List[ReactionType] = old_reaction
         self.new_reaction: List[ReactionType] = new_reaction
+
+
+
+class MessageReactionCountUpdated(JsonDeserializable):
+    """
+    This object represents a service message about a change in the list of the current user's reactions to a message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#messagereactioncountupdated
+
+    :param chat: The chat containing the message
+    :type chat: :class:`telebot.types.Chat`
+
+    :param message_id: Unique message identifier inside the chat
+    :type message_id: :obj:`int`
+
+    :param date: Date of the change in Unix time
+    :type date: :obj:`int`
+
+    :param reactions: List of reactions that are present on the message
+    :type reactions: :obj:`list` of :class:`ReactionCount`
+
+    :return: Instance of the class
+    :rtype: :class:`MessageReactionCountUpdated`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, chat: Chat, message_id: int, date: int, reactions: List[ReactionCount]) -> None:
+        self.chat: Chat = chat
+        self.message_id: int = message_id
+        self.date: int = date
+        self.reactions: List[ReactionCount] = reactions
+        
+
+class ReactionCount(JsonDeserializable):
+    """
+    This object represents a reaction added to a message along with the number of times it was added.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactioncount
+
+    :param type: Type of the reaction
+    :type type: :class:`ReactionType`
+
+    :param total_count: Number of times the reaction was added
+    :type total_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionCount`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, type: ReactionType, total_count: int) -> None:
+        self.type: ReactionType = type
+        self.total_count: int = total_count
+
