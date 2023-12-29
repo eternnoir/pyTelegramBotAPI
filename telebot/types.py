@@ -8057,3 +8057,514 @@ class ReactionCount(JsonDeserializable):
         self.type: ReactionType = type
         self.total_count: int = total_count
 
+
+
+class ExternalReplyInfo(JsonDeserializable):
+    """
+    This object contains information about a message that is being replied to,
+    which may come from another chat or forum topic.
+
+    Telegram documentation: https://core.telegram.org/bots/api#externalreplyinfo
+
+    :param origin: Origin of the message replied to by the given message
+    :type origin: :class:`MessageOrigin`
+
+    :param chat: Optional. Chat the original message belongs to. Available only if the chat is a supergroup or a channel.
+    :type chat: :class:`Chat`
+
+    :param message_id: Optional. Unique message identifier inside the original chat. Available only if the original chat is a supergroup or a channel.
+    :type message_id: :obj:`int`
+
+    :param link_preview_options: Optional. Options used for link preview generation for the original message, if it is a text message
+    :type link_preview_options: :class:`LinkPreviewOptions`
+
+    :param animation: Optional. Message is an animation, information about the animation
+    :type animation: :class:`Animation`
+
+    :param audio: Optional. Message is an audio file, information about the file
+    :type audio: :class:`Audio`
+
+    :param document: Optional. Message is a general file, information about the file
+    :type document: :class:`Document`
+
+    :param photo: Optional. Message is a photo, available sizes of the photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param sticker: Optional. Message is a sticker, information about the sticker
+    :type sticker: :class:`Sticker`
+
+    :param story: Optional. Message is a forwarded story
+    :type story: :class:`Story`
+
+    :param video: Optional. Message is a video, information about the video
+    :type video: :class:`Video`
+
+    :param video_note: Optional. Message is a video note, information about the video message
+    :type video_note: :class:`VideoNote`
+
+    :param voice: Optional. Message is a voice message, information about the file
+    :type voice: :class:`Voice`
+
+    :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
+    :type has_media_spoiler: :obj:`bool`
+
+    :param contact: Optional. Message is a shared contact, information about the contact
+    :type contact: :class:`Contact`
+
+    :param dice: Optional. Message is a dice with random value
+    :type dice: :class:`Dice`
+
+    :param game: Optional. Message is a game, information about the game. More about games »
+    :type game: :class:`Game`
+
+    :param giveaway: Optional. Message is a scheduled giveaway, information about the giveaway
+    :type giveaway: :class:`Giveaway`
+
+    :param giveaway_winners: Optional. A giveaway with public winners was completed
+    :type giveaway_winners: :class:`GiveawayWinners`
+
+    :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
+    :type invoice: :class:`Invoice`
+
+    :param location: Optional. Message is a shared location, information about the location
+    :type location: :class:`Location`
+
+    :param poll: Optional. Message is a native poll, information about the poll
+    :type poll: :class:`Poll`
+
+    :param venue: Optional. Message is a venue, information about the venue
+    :type venue: :class:`Venue`
+
+    :return: Instance of the class
+    :rtype: :class:`ExternalReplyInfo`
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        origin = obj.get('origin')
+        if origin is not None:
+            origin = MessageOrigin.de_json(origin)
+        
+        chat = obj.get('chat')
+        if chat is not None:
+            chat = Chat.de_json(chat)
+
+        message_id = obj.get('message_id')
+        if message_id is not None:
+            message_id = int(message_id)
+
+        link_preview_options = obj.get('link_preview_options')
+        if link_preview_options is not None:
+            link_preview_options = LinkPreviewOptions.de_json(link_preview_options)
+
+        animation = obj.get('animation')
+        if animation is not None:
+            animation = Animation.de_json(animation)
+
+        audio = obj.get('audio')
+        if audio is not None:
+            audio = Audio.de_json(audio)
+
+        document = obj.get('document')
+        if document is not None:
+            document = Document.de_json(document)
+
+        photo = obj.get('photo')
+        if photo is not None:
+            photo = [PhotoSize.de_json(photo[i]) for i in range(len(photo))]
+
+        sticker = obj.get('sticker')
+        if sticker is not None:
+            sticker = Sticker.de_json(sticker)
+
+        story = obj.get('story')
+        if story is not None:
+            story = Story.de_json(story)
+
+        video = obj.get('video')
+        if video is not None:
+            video = Video.de_json(video)
+
+        video_note = obj.get('video_note')
+        if video_note is not None:
+            video_note = VideoNote.de_json(video_note)
+
+        voice = obj.get('voice')
+        if voice is not None:
+            voice = Voice.de_json(voice)
+
+        has_media_spoiler = obj.get('has_media_spoiler')
+        if has_media_spoiler is not None:
+            has_media_spoiler = bool(has_media_spoiler)
+
+        contact = obj.get('contact')
+        if contact is not None:
+            contact = Contact.de_json(contact)
+
+        dice = obj.get('dice')
+        if dice is not None:
+            dice = Dice.de_json(dice)
+
+        game = obj.get('game')
+        if game is not None:
+            game = Game.de_json(game)
+
+        giveaway = obj.get('giveaway')
+        if giveaway is not None:
+            giveaway = Giveaway.de_json(giveaway)
+
+        giveaway_winners = obj.get('giveaway_winners')
+        if giveaway_winners is not None:
+            giveaway_winners = GiveawayWinners.de_json(giveaway_winners)
+
+        invoice = obj.get('invoice')
+        if invoice is not None:
+            invoice = Invoice.de_json(invoice)
+
+        location = obj.get('location')
+        if location is not None:
+            location = Location.de_json(location)
+
+        poll = obj.get('poll')
+        if poll is not None:
+            poll = Poll.de_json(poll)
+
+        venue = obj.get('venue')
+        if venue is not None:
+            venue = Venue.de_json(venue)
+
+        return cls(origin=origin, chat=chat, message_id=message_id, link_preview_options=link_preview_options,
+                     animation=animation, audio=audio, document=document, photo=photo, sticker=sticker, story=story,
+                        video=video, video_note=video_note, voice=voice, has_media_spoiler=has_media_spoiler,
+                            contact=contact, dice=dice, game=game, giveaway=giveaway, giveaway_winners=giveaway_winners,
+                                invoice=invoice, location=location, poll=poll, venue=venue)
+    
+    def __init__(self, origin: MessageOrigin, chat: Optional[Chat]=None, message_id: Optional[int]=None,
+                    link_preview_options: Optional[LinkPreviewOptions]=None, animation: Optional[Animation]=None,
+                        audio: Optional[Audio]=None, document: Optional[Document]=None, photo: Optional[List[PhotoSize]]=None,
+                            sticker: Optional[Sticker]=None, story: Optional[Story]=None, video: Optional[Video]=None,
+                                video_note: Optional[VideoNote]=None, voice: Optional[Voice]=None,
+                                    has_media_spoiler: Optional[bool]=None, contact: Optional[Contact]=None,
+                                        dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
+                                            giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
+                                                location: Optional[Location]=None, poll: Optional[Poll]=None,
+                                                    venue: Optional[Venue]=None) -> None:
+        self.origin: MessageOrigin = origin
+
+        self.chat: Optional[Chat] = chat
+        self.message_id: Optional[int] = message_id
+        self.link_preview_options: Optional[LinkPreviewOptions] = link_preview_options
+        self.animation: Optional[Animation] = animation
+        self.audio: Optional[Audio] = audio
+        self.document: Optional[Document] = document
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.sticker: Optional[Sticker] = sticker
+        self.story: Optional[Story] = story
+        self.video: Optional[Video] = video
+        self.video_note: Optional[VideoNote] = video_note
+        self.voice: Optional[Voice] = voice
+        self.has_media_spoiler: Optional[bool] = has_media_spoiler
+        self.contact: Optional[Contact] = contact
+        self.dice: Optional[Dice] = dice
+        self.game: Optional[Game] = game
+        self.giveaway: Optional[Giveaway] = giveaway
+        self.giveaway_winners: Optional[GiveawayWinners] = giveaway_winners
+        self.invoice: Optional[Invoice] = invoice
+        self.location: Optional[Location] = location
+        self.poll: Optional[Poll] = poll
+        self.venue: Optional[Venue] = venue
+
+class MessageOrigin(JsonDeserializable):
+    """
+    This object describes the origin of a message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#messageorigin
+
+    :param type: Type of the message origin
+    :type type: :obj:`str`
+
+    :param date: Date the message was sent originally in Unix time
+    :type date: :obj:`int`
+
+    :param sender_user: User that sent the message originally (for MessageOriginUser)
+    :type sender_user: :class:`User`
+
+    :param sender_user_name: Name of the user that sent the message originally (for MessageOriginHiddenUser)
+    :type sender_user_name: :obj:`str`
+
+    :param sender_chat: Chat that sent the message originally (for MessageOriginChat)
+    :type sender_chat: :class:`Chat`
+
+    :param author_signature: Optional. Author signature for certain cases
+    :type author_signature: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`MessageOrigin`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        message_type = obj.get('type')
+        if message_type == 'user':
+            sender_user = User.de_json(obj.get('sender_user'))
+            return MessageOriginUser(date=obj.get('date'), sender_user=sender_user)
+        elif message_type == 'hidden_user':
+            return MessageOriginHiddenUser(date=obj.get('date'), sender_user_name=obj.get('sender_user_name'))
+        elif message_type == 'chat':
+            sender_chat = Chat.de_json(obj.get('sender_chat'))
+            return MessageOriginChat(date=obj.get('date'), sender_chat=sender_chat, author_signature=obj.get('author_signature'))
+        elif message_type == 'channel':
+            chat = Chat.de_json(obj.get('chat'))
+            return MessageOriginChannel(date=obj.get('date'), chat=chat, message_id=obj.get('message_id'), author_signature=obj.get('author_signature'))
+
+    def __init__(self, type: str, date: int) -> None:
+        self.type: str = type
+        self.date: int = date
+
+
+class MessageOriginUser(MessageOrigin):
+    """
+    The message was originally sent by a known user.
+
+    :param sender_user: User that sent the message originally
+    :type sender_user: :class:`User`
+    """
+
+    def __init__(self, date: int, sender_user: Optional[User] = None) -> None:
+        super().__init__('user', date)
+        self.sender_user: Optional[User] = sender_user
+
+
+class MessageOriginHiddenUser(MessageOrigin):
+    """
+    The message was originally sent by an unknown user.
+
+    :param sender_user_name: Name of the user that sent the message originally
+    :type sender_user_name: :obj:`str`
+    """
+
+    def __init__(self, date: int, sender_user_name: Optional[str] = None) -> None:
+        super().__init__('hidden_user', date)
+        self.sender_user_name: Optional[str] = sender_user_name
+
+
+class MessageOriginChat(MessageOrigin):
+    """
+    The message was originally sent on behalf of a chat to a group chat.
+
+    :param sender_chat: Chat that sent the message originally
+    :type sender_chat: :class:`Chat`
+
+    :param author_signature: Optional. For messages originally sent by an anonymous chat administrator, original message author signature
+    :type author_signature: :obj:`str`
+    """
+
+    def __init__(self, date: int, sender_chat: Optional[Chat] = None, author_signature: Optional[str] = None) -> None:
+        super().__init__('chat', date)
+        self.sender_chat: Optional[Chat] = sender_chat
+        self.author_signature: Optional[str] = author_signature
+
+
+class MessageOriginChannel(MessageOrigin):
+    """
+    The message was originally sent to a channel chat.
+
+    :param chat: Channel chat to which the message was originally sent
+    :type chat: :class:`Chat`
+
+    :param message_id: Unique message identifier inside the chat
+    :type message_id: :obj:`int`
+
+    :param author_signature: Optional. Signature of the original post author
+    :type author_signature: :obj:`str`
+    """
+
+    def __init__(self, date: int, chat: Optional[Chat] = None, message_id: Optional[int] = None, author_signature: Optional[str] = None) -> None:
+        super().__init__('channel', date)
+        self.chat: Optional[Chat] = chat
+        self.message_id: Optional[int] = message_id
+        self.author_signature: Optional[str] = author_signature
+
+
+class LinkPreviewOptions(JsonDeserializable):
+    """
+    Describes the options used for link preview generation.
+
+    Telegram documentation: https://core.telegram.org/bots/api#linkpreviewoptions
+
+    :param is_disabled: Optional. True, if the link preview is disabled
+    :type is_disabled: :obj:`bool`
+
+    :param url: Optional. URL to use for the link preview. If empty, then the first URL found in the message text will be used
+    :type url: :obj:`str`
+
+    :param prefer_small_media: Optional. True, if the media in the link preview is supposed to be shrunk; ignored if the URL isn't explicitly specified or media size change isn't supported for the preview
+    :type prefer_small_media: :obj:`bool`
+
+    :param prefer_large_media: Optional. True, if the media in the link preview is supposed to be enlarged; ignored if the URL isn't explicitly specified or media size change isn't supported for the preview
+    :type prefer_large_media: :obj:`bool`
+
+    :param show_above_text: Optional. True, if the link preview must be shown above the message text; otherwise, the link preview will be shown below the message text
+    :type show_above_text: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`LinkPreviewOptions`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        return cls(is_disabled=obj.get('is_disabled'), url=obj.get('url'), prefer_small_media=obj.get('prefer_small_media'),
+                        prefer_large_media=obj.get('prefer_large_media'), show_above_text=obj.get('show_above_text'))
+    
+
+    def __init__(self, is_disabled: Optional[bool] = None, url: Optional[str] = None,
+                 prefer_small_media: Optional[bool] = None, prefer_large_media: Optional[bool] = None,
+                 show_above_text: Optional[bool] = None) -> None:
+        self.is_disabled: Optional[bool] = is_disabled
+        self.url: Optional[str] = url
+        self.prefer_small_media: Optional[bool] = prefer_small_media
+        self.prefer_large_media: Optional[bool] = prefer_large_media
+        self.show_above_text: Optional[bool] = show_above_text
+
+
+class Giveaway(JsonDeserializable):
+    """
+    This object represents a message about a scheduled giveaway.
+
+    Telegram documentation: https://core.telegram.org/bots/api#giveaway
+
+    :param chats: The list of chats which the user must join to participate in the giveaway
+    :type chats: :obj:`list` of :class:`Chat`
+
+    :param winners_selection_date: Point in time (Unix timestamp) when winners of the giveaway will be selected
+    :type winners_selection_date: :obj:`int`
+
+    :param winner_count: The number of users which are supposed to be selected as winners of the giveaway
+    :type winner_count: :obj:`int`
+
+    :param only_new_members: Optional. True, if only users who join the chats after the giveaway started should be eligible to win
+    :type only_new_members: :obj:`bool`
+
+    :param has_public_winners: Optional. True, if the list of giveaway winners will be visible to everyone
+    :type has_public_winners: :obj:`bool`
+
+    :param prize_description: Optional. Description of additional giveaway prize
+    :type prize_description: :obj:`str`
+
+    :param country_codes: Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which eligible users for the giveaway must come. If empty, then all users can participate in the giveaway.
+    :type country_codes: :obj:`list` of :obj:`str`
+
+    :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
+    :type premium_subscription_month_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Giveaway`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        chats = [Chat.de_json(chat) for chat in obj.get('chats', [])]
+
+        return cls(**obj, chats=chats)
+
+    def __init__(self, chats: List[Chat], winners_selection_date: int, winner_count: int,
+                 only_new_members: Optional[bool] = None, has_public_winners: Optional[bool] = None,
+                 prize_description: Optional[str] = None, country_codes: Optional[List[str]] = None,
+                 premium_subscription_month_count: Optional[int] = None) -> None:
+        self.chats: List[Chat] = chats
+        self.winners_selection_date: int = winners_selection_date
+        self.winner_count: int = winner_count
+        self.only_new_members: Optional[bool] = only_new_members
+        self.has_public_winners: Optional[bool] = has_public_winners
+        self.prize_description: Optional[str] = prize_description
+        self.country_codes: Optional[List[str]] = country_codes or []
+        self.premium_subscription_month_count: Optional[int] = premium_subscription_month_count
+
+class GiveawayWinners(JsonDeserializable):
+    """
+    This object represents a message about the completion of a giveaway with public winners.
+
+    Telegram documentation: https://core.telegram.org/bots/api#giveawaywinners
+
+    :param chat: The chat that created the giveaway
+    :type chat: :class:`Chat`
+
+    :param giveaway_message_id: Identifier of the messsage with the giveaway in the chat
+    :type giveaway_message_id: :obj:`int`
+
+    :param winners_selection_date: Point in time (Unix timestamp) when winners of the giveaway were selected
+    :type winners_selection_date: :obj:`int`
+
+    :param winner_count: Total number of winners in the giveaway
+    :type winner_count: :obj:`int`
+
+    :param winners: List of up to 100 winners of the giveaway
+    :type winners: :obj:`list` of :class:`User`
+
+    :param additional_chat_count: Optional. The number of other chats the user had to join in order to be eligible for the giveaway
+    :type additional_chat_count: :obj:`int`
+
+    :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
+    :type premium_subscription_month_count: :obj:`int`
+
+    :param unclaimed_prize_count: Optional. Number of undistributed prizes
+    :type unclaimed_prize_count: :obj:`int`
+
+    :param only_new_members: Optional. True, if only users who had joined the chats after the giveaway started were eligible to win
+    :type only_new_members: :obj:`bool`
+
+    :param was_refunded: Optional. True, if the giveaway was canceled because the payment for it was refunded
+    :type was_refunded: :obj:`bool`
+
+    :param prize_description: Optional. Description of additional giveaway prize
+    :type prize_description: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`GiveawayWinners`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        obj['chat'] = Chat.de_json(obj.get('chat'))
+        obj['winners'] = [User.de_json(user) for user in obj.get('winners', [])]
+
+        return cls(**obj)
+    
+    def __init__(self, chat: Chat, giveaway_message_id: int, winners_selection_date: int, winner_count: int,
+                 winners: List[User], additional_chat_count: Optional[int] = None,
+                 premium_subscription_month_count: Optional[int] = None, unclaimed_prize_count: Optional[int] = None,
+                 only_new_members: Optional[bool] = None, was_refunded: Optional[bool] = None,
+                 prize_description: Optional[str] = None) -> None:
+        self.chat: Chat = chat
+        self.giveaway_message_id: int = giveaway_message_id
+        self.winners_selection_date: int = winners_selection_date
+        self.winner_count: int = winner_count
+        self.winners: List[User] = winners
+        self.additional_chat_count: Optional[int] = additional_chat_count
+        self.premium_subscription_month_count: Optional[int] = premium_subscription_month_count
+        self.unclaimed_prize_count: Optional[int] = unclaimed_prize_count
+        self.only_new_members: Optional[bool] = only_new_members
+        self.was_refunded: Optional[bool] = was_refunded
+        self.prize_description: Optional[str] = prize_description
+        
+
+        
