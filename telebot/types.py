@@ -807,6 +807,12 @@ class Message(JsonDeserializable):
         will not contain further reply_to_message fields even if it itself is a reply.
     :type reply_to_message: :class:`telebot.types.Message`
 
+    :param external_reply: Optional. Information about the message that is being replied to, which may come from another chat or forum topic
+    :type external_reply: :class:`telebot.types.ExternalReplyInfo`
+
+    :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
+    :type quote: :class:`telebot.types.TextQuote`
+
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
@@ -1208,6 +1214,13 @@ class Message(JsonDeserializable):
         if 'story' in obj:
             opts['story'] = Story.de_json(obj['story'])
             content_type = 'story'
+        if 'external_reply' in obj:
+            opts['external_reply'] = ExternalReplyInfo.de_json(obj['external_reply'])
+            content_type = 'text' # @Badiboy not sure about content_types in here, please check
+        if 'quote' in obj:
+            opts['quote'] = TextQuote.de_json(obj['quote'])
+            content_type = 'text' # Here too, check the content types   
+
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1306,6 +1319,9 @@ class Message(JsonDeserializable):
         self.user_shared: Optional[UserShared] = None
         self.chat_shared: Optional[ChatShared] = None
         self.story: Optional[Story] = None
+        self.external_reply: Optional[ExternalReplyInfo] = None
+        self.quote: Optional[TextQuote] = None
+        
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -8568,3 +8584,41 @@ class GiveawayWinners(JsonDeserializable):
         
 
         
+class TextQuote(JsonDeserializable):
+    """
+    This object contains information about the quoted part of a message that is replied to by the given message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#textquote
+
+    :param text: Text of the quoted part of a message that is replied to by the given message
+    :type text: :obj:`str`
+
+    :param entities: Optional. Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are kept in quotes.
+    :type entities: :obj:`list` of :class:`MessageEntity`
+
+    :param position: Approximate quote position in the original message in UTF-16 code units as specified by the sender
+    :type position: :obj:`int`
+
+    :param is_manual: Optional. True, if the quote was chosen manually by the message sender. Otherwise, the quote was added automatically by the server.
+    :type is_manual: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`TextQuote`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        obj['entities'] = [MessageEntity.de_json(entity) for entity in obj.get('entities', [])]
+
+        return cls(**obj)
+
+    def __init__(self, text: str, entities: Optional[List[MessageEntity]] = None,
+                 position: Optional[int] = None, is_manual: Optional[bool] = None) -> None:
+        self.text: str = text
+        self.entities: Optional[List[MessageEntity]] = entities
+        self.position: Optional[int] = position
+        self.is_manual: Optional[bool] = is_manual
