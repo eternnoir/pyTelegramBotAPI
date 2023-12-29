@@ -3628,11 +3628,16 @@ class InputTextMessageContent(Dictionaryable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputTextMessageContent`
     """
-    def __init__(self, message_text, parse_mode=None, entities=None, disable_web_page_preview=None):
+    def __init__(self, message_text, parse_mode=None, entities=None, disable_web_page_preview=None, link_preview_options=None):
         self.message_text: str = message_text
         self.parse_mode: str = parse_mode
         self.entities: List[MessageEntity] = entities
-        self.disable_web_page_preview: bool = disable_web_page_preview
+        link_preview_options: LinkPreviewOptions = link_preview_options
+        if disable_web_page_preview is not None and link_preview_options is None:
+            # deprecated
+            self.link_preview_options: LinkPreviewOptions = LinkPreviewOptions(disable_web_page_preview)
+            
+
 
     def to_dict(self):
         json_dict = {'message_text': self.message_text}
@@ -3640,8 +3645,8 @@ class InputTextMessageContent(Dictionaryable):
             json_dict['parse_mode'] = self.parse_mode
         if self.entities:
             json_dict['entities'] = MessageEntity.to_list_of_dicts(self.entities)
-        if self.disable_web_page_preview is not None:
-            json_dict['disable_web_page_preview'] = self.disable_web_page_preview
+        if self.link_preview_options:
+            json_dict['link_preview_options'] = self.link_preview_options.to_dict()
         return json_dict
 
 
