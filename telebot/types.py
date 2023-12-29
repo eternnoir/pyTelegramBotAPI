@@ -551,6 +551,10 @@ class Chat(JsonDeserializable):
         Returned only in getChat.
     :type active_usernames: :obj:`list` of :obj:`str`
 
+    :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels.
+        Returned only in getChat.
+    :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
+
     :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of emoji status of the other party in a private chat.
         Returned only in getChat.
     :type emoji_status_custom_emoji_id: :obj:`str`
@@ -644,6 +648,8 @@ class Chat(JsonDeserializable):
             obj['permissions'] = ChatPermissions.de_json(obj['permissions'])
         if 'location' in obj:
             obj['location'] = ChatLocation.de_json(obj['location'])
+        if 'available_reactions' in obj:
+            obj['available_reactions'] = [ReactionType(reaction) for reaction in obj['available_reactions']]
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -654,7 +660,8 @@ class Chat(JsonDeserializable):
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
-                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, **kwargs):
+                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
+                 available_reactions=None,**kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -684,6 +691,7 @@ class Chat(JsonDeserializable):
         self.has_hidden_members: bool = has_hidden_members
         self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
         self.emoji_status_expiration_date: int = emoji_status_expiration_date
+        self.available_reactions: List[ReactionType] = available_reactions
 
 
 class MessageID(JsonDeserializable):
