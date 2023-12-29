@@ -195,7 +195,7 @@ class Update(JsonDeserializable):
         message_reaction = MessageReactionUpdated.de_json(obj.get('message_reaction'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member, chat_join_request)
+                   my_chat_member, chat_member, chat_join_request, message_reaction)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
