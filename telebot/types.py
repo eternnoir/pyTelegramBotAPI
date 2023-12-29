@@ -7835,3 +7835,90 @@ class Story(JsonDeserializable):
     def __init__(self) -> None:
         pass
 
+# base class
+class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    This object represents a reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontype
+
+    :param type: Type of the reaction
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionType`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, type: str) -> None:
+        self.type: str = type
+
+    def to_dict(self) -> dict:
+        json_dict = {
+            'type': self.type
+        }
+
+        return json_dict
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
+
+class ReactionTypeEmoji(ReactionType):
+    """
+    This object represents an emoji reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypeemoji
+
+    :param type: Type of the reaction, must be emoji
+    :type type: :obj:`str`
+
+    :param emoji: Reaction emoji. List is available on the API doc.
+    :type emoji: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionTypeEmoji`
+    """
+
+    def __init__(self, emoji: str) -> None:
+        super().__init__('emoji')
+        self.emoji: str = emoji
+
+    def to_dict(self) -> dict:
+        json_dict = super().to_dict()
+        json_dict['emoji'] = self.emoji
+
+        return json_dict
+    
+
+class ReactionTypeCustomEmoji(ReactionType):
+    """
+    This object represents a custom emoji reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypecustomemoji
+
+    :param type: Type of the reaction, must be custom_emoji
+    :type type: :obj:`str`
+
+    :param custom_emoji: Identifier of the custom emoji
+    :type custom_emoji: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionTypeCustomEmoji`
+    """
+
+    def __init__(self, custom_emoji: str) -> None:
+        super().__init__('custom_emoji')
+        self.custom_emoji: str = custom_emoji
+
+    def to_dict(self) -> dict:
+        json_dict = super().to_dict()
+        json_dict['custom_emoji'] = self.custom_emoji
+
+        return json_dict
