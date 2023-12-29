@@ -2297,6 +2297,30 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_webhook_info(self.token, timeout)
         return types.WebhookInfo.de_json(result)
 
+    async def set_message_reaction(self, chat_id: Union[int, str], message_id: int, reaction: Optional[List[types.ReactionType]]=None, is_big: Optional[bool]=None) -> bool:
+        """
+        Use this method to set a reaction to a message in a chat. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmessagereaction
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of the message to set reaction to
+        :type message_id: :obj:`int`
+
+        :param reaction: New list of reaction types to set on the message. Currently, as non-premium users, bots can set up to one reaction per message.
+            A custom emoji reaction can be used if it is either already present on the message or explicitly allowed by chat administrators.
+        :type reaction: :obj:`list` of :class:`telebot.types.ReactionType`
+
+        :param is_big: Pass True to set the reaction with a big animation
+        :type is_big: :obj:`bool`
+
+        :return: :obj:`bool`
+        """
+        result = await asyncio_helper.set_message_reaction(self.token, chat_id, message_id, reaction, is_big)
+        return result
+
     async def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None, 
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """

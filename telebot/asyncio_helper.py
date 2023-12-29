@@ -318,6 +318,15 @@ async def get_user_profile_photos(token, user_id, offset=None, limit=None):
         payload['limit'] = limit
     return await _process_request(token, method_url, params=payload)
 
+async def set_message_reaction(token, chat_id, message_id, reaction=None, is_big=None):
+    method_url = r'setMessageReaction'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if reaction:
+        payload['reaction'] = reaction
+    if is_big is not None:
+        payload['is_big'] = is_big
+    return await _process_request(token, method_url, params=payload)
+
 
 async def get_chat(token, chat_id):
     method_url = r'getChat'
