@@ -954,8 +954,8 @@ class Message(JsonDeserializable):
         the payment. More about payments »
     :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
-    :param user_shared: Optional. Service message: a user was shared with the bot
-    :type user_shared: :class:`telebot.types.UserShared`
+    :param users_shared: Optional. Service message: a user was shared with the bot
+    :type users_shared: :class:`telebot.types.UserShared`
 
     :param chat_shared: Optional. Service message: a chat was shared with the bot
     :type chat_shared: :class:`telebot.types.ChatShared`
@@ -1209,9 +1209,9 @@ class Message(JsonDeserializable):
         if 'write_access_allowed' in obj:
             opts['write_access_allowed'] = WriteAccessAllowed.de_json(obj['write_access_allowed'])
             content_type = 'write_access_allowed'
-        if 'user_shared' in obj:
-            opts['user_shared'] = UserShared.de_json(obj['user_shared'])
-            content_type = 'user_shared'
+        if 'users_shared' in obj:
+            opts['users_shared'] = UserShared.de_json(obj['users_shared'])
+            content_type = 'users_shared' # COMPATIBILITY BROKEN!
         if 'chat_shared' in obj:
             opts['chat_shared'] = ChatShared.de_json(obj['chat_shared'])
             content_type = 'chat_shared'
@@ -1324,7 +1324,8 @@ class Message(JsonDeserializable):
         self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
         self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
-        self.user_shared: Optional[UserShared] = None
+        self.users_shared: Optional[UserShared] = None
+        self.user_shared: Optional[UserShared] = self.users_shared
         self.chat_shared: Optional[ChatShared] = None
         self.story: Optional[Story] = None
         self.external_reply: Optional[ExternalReplyInfo] = None
@@ -8742,3 +8743,35 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
     
+class UsersShared(JsonDeserializable):
+    """
+    This object contains information about the users whose identifiers were shared with the bot
+    using a KeyboardButtonRequestUsers button.
+
+    Telegram documentation: https://core.telegram.org/bots/api#usersshared
+
+    :param request_id: Identifier of the request
+    :type request_id: :obj:`int`
+
+    :param user_ids: Identifiers of the shared users. These numbers may have more than 32 significant bits
+                     and some programming languages may have difficulty/silent defects in interpreting them.
+                     But they have at most 52 significant bits, so 64-bit integers or double-precision float
+                     types are safe for storing these identifiers. The bot may not have access to the users and
+                     could be unable to use these identifiers unless the users are already known to the bot by
+                     some other means.
+    :type user_ids: :obj:`list` of :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UsersShared`
+    """
+
+    def __init__(self, request_id, user_ids):
+        self.request_id = request_id
+        self.user_ids = user_ids
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
