@@ -719,7 +719,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
 def send_animation(
         token, chat_id, data, duration=None, caption=None,  reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
-        protect_content=None, width=None, height=None, message_thread_id=None, reply_parameters=None
+        protect_content=None, width=None, height=None, message_thread_id=None, reply_parameters=None,
         has_spoiler=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
