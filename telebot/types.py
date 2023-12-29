@@ -836,6 +836,10 @@ class Message(JsonDeserializable):
         appear in the text
     :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param link_preview_options: Optional. Options used for link preview generation for the message,
+        if it is a text message and link preview options were changed
+    :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
+
     :param animation: Optional. Message is an animation, information about the animation. For backward 
         compatibility, when this field is set, the document field will also be set
     :type animation: :class:`telebot.types.Animation`
@@ -1221,6 +1225,10 @@ class Message(JsonDeserializable):
             opts['quote'] = TextQuote.de_json(obj['quote'])
             content_type = 'text' # Here too, check the content types   
 
+        if 'link_preview_options' in obj:
+            opts['link_preview_options'] = LinkPreviewOptions.de_json(obj['link_preview_options'])
+
+
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1321,6 +1329,7 @@ class Message(JsonDeserializable):
         self.story: Optional[Story] = None
         self.external_reply: Optional[ExternalReplyInfo] = None
         self.quote: Optional[TextQuote] = None
+        self.LinkPreviewOptions: Optional[LinkPreviewOptions] = None
         
         for key in options:
             setattr(self, key, options[key])
