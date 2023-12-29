@@ -466,7 +466,7 @@ def send_photo(
         caption=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, protect_content=None,
-        message_thread_id=None, has_spoiler=None,, reply_parameters=None):
+        message_thread_id=None, has_spoiler=None, reply_parameters=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
