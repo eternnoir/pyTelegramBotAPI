@@ -739,7 +739,7 @@ class TeleBot:
             if update.chat_join_request:
                 if new_chat_join_request is None: new_chat_join_request = []
                 new_chat_join_request.append(update.chat_join_request)
-            if update.message_reactions:
+            if update.message_reaction:
                 if new_message_reactions is None: new_message_reactions = []
                 new_message_reactions.append(update.message_reaction)
 
