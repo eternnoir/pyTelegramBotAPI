@@ -2337,13 +2337,12 @@ class KeyboardButtonPollType(Dictionaryable):
         return {'type': self.type}
     
  
-
-class KeyboardButtonRequestUser(Dictionaryable):
+class KeyboardButtonRequestUsers(Dictionaryable):
     """
     This object defines the criteria used to request a suitable user.
     The identifier of the selected user will be shared with the bot when the corresponding button is pressed.
 
-    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestuser
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestusers
 
     :param request_id: Signed 32-bit identifier of the request, which will be received back in the UserShared object.
         Must be unique within the message
@@ -2357,15 +2356,19 @@ class KeyboardButtonRequestUser(Dictionaryable):
         If not specified, no additional restrictions are applied.
     :type user_is_premium: :obj:`bool`
 
+    :param max_quantity: Optional. The maximum number of users to be selected; 1-10. Defaults to 1.
+    :type max_quantity: :obj:`int`
+
     :return: Instance of the class
-    :rtype: :class:`telebot.types.KeyboardButtonRequestUser`
+    :rtype: :class:`telebot.types.KeyboardButtonRequestUsers`
 
     """
 
-    def __init__(self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None) -> None:
+    def __init__(self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None, max_quantity: Optional[int]=None) -> None:
         self.request_id: int = request_id
         self.user_is_bot: Optional[bool] = user_is_bot
         self.user_is_premium: Optional[bool] = user_is_premium
+        self.max_quantity: Optional[int] = max_quantity
 
     def to_dict(self) -> dict:
         data = {'request_id': self.request_id}
@@ -2373,8 +2376,11 @@ class KeyboardButtonRequestUser(Dictionaryable):
             data['user_is_bot'] = self.user_is_bot
         if self.user_is_premium is not None:
             data['user_is_premium'] = self.user_is_premium
+        if self.max_quantity is not None:
+            data['max_quantity'] = self.max_quantity
         return data
 
+KeyboardButtonRequestUser = KeyboardButtonRequestUsers
 
 class KeyboardButtonRequestChat(Dictionaryable):
     """
@@ -2476,7 +2482,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
 
     :param request_user: Optional. If specified, pressing the button will open a list of suitable users. Tapping on any user
         will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
-    :type request_user: :class:`telebot.types.KeyboardButtonRequestUser`
+    :type request_user: :class:`telebot.types.KeyboardButtonRequestUsers`
 
     :param request_chat: Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will
         send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
@@ -2487,15 +2493,18 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
     """
     def __init__(self, text: str, request_contact: Optional[bool]=None, 
             request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
-            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
-            request_chat: Optional[KeyboardButtonRequestChat]=None):
+            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUsers]=None,
+            request_chat: Optional[KeyboardButtonRequestChat]=None, request_users: Optional[KeyboardButtonRequestUsers]=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
         self.request_poll: KeyboardButtonPollType = request_poll
         self.web_app: WebAppInfo = web_app
-        self.request_user: KeyboardButtonRequestUser = request_user
+        self.request_user: KeyboardButtonRequestUsers = request_user
         self.request_chat: KeyboardButtonRequestChat = request_chat
+        self.request_users: KeyboardButtonRequestUsers = request_users
+        if request_user is not None:
+            self.request_users = request_user
 
 
     def to_json(self):
@@ -7565,7 +7574,7 @@ class WriteAccessAllowed(JsonDeserializable):
 class UserShared(JsonDeserializable):
     """
     This object contains information about the user whose identifier was shared with the bot using a
-    `telebot.types.KeyboardButtonRequestUser` button.
+    `telebot.types.KeyboardButtonRequestUsers` button.
 
     Telegram documentation: https://core.telegram.org/bots/api#usershared
 
