@@ -1776,6 +1776,97 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.delete_message(self.token, chat_id, message_id, timeout)
+    
+    def delete_messages(self, chat_id: Union[int, str], message_ids: List[int]):
+        """
+        Use this method to delete multiple messages in a chat. 
+        The number of messages to be deleted must not exceed 100. 
+        If the chat is a private chat, the user must be an administrator of the chat for this to work and must have the appropriate admin rights. 
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessages
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_ids: Identifiers of the messages to be deleted
+        :type message_ids: :obj:`list` of :obj:`int`
+
+        :return: Returns True on success.
+
+        """
+        return apihelper.delete_messages(self.token, chat_id, message_ids)
+    
+    def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
+                         message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None) -> List[types.MessageID]:
+        """
+        Use this method to forward messages of any kind.
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        :type from_chat_id: :obj:`int` or :obj:`str`
+
+        :param message_ids: Message identifiers in the chat specified in from_chat_id
+        :type message_ids: :obj:`list`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+        :type disable_notification: :obj:`bool`
+
+        :param message_thread_id: Identifier of a message thread, in which the messages will be sent
+        :type message_thread_id: :obj:`int`
+
+        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.MessageID`
+        """
+
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        return types.MessageID.de_json(
+            apihelper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, protect_content, message_thread_id))
+    
+    def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
+                        disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
+                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
+            """
+            Use this method to copy messages of any kind.
+
+            :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+            :type chat_id: :obj:`int` or :obj:`str`
+
+            :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+            :type from_chat_id: :obj:`int` or :obj:`str`
+
+            :param message_ids: Message identifiers in the chat specified in from_chat_id
+            :type message_ids: :obj:`list` of :obj:`int`
+
+            :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+            :type disable_notification: :obj:`bool`
+
+            :param message_thread_id: Identifier of a message thread, in which the messages will be sent
+            :type message_thread_id: :obj:`int`
+
+            :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+            :type protect_content: :obj:`bool`
+
+            :param remove_caption: Pass True to copy the messages without their captions
+            :type remove_caption: :obj:`bool`
+
+            :return: On success, an array of MessageId of the sent messages is returned.
+            :rtype: :obj:`list` of :class:`telebot.types.MessageID`
+            """
+            disable_notification = self.disable_notification if disable_notification is None else disable_notification
+            protect_content = self.protect_content if protect_content is None else protect_content
+
+            return [types.MessageID.de_json(message_id) for message_id in
+                    apihelper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification,
+                                            protect_content, message_thread_id, remove_caption)]
+    
 
     def send_dice(
             self, chat_id: Union[int, str],

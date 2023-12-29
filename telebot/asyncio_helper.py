@@ -1871,6 +1871,53 @@ async def unhide_general_forum_topic(token, chat_id):
     payload = {'chat_id': chat_id}
     return await _process_request(token, method_url, params=payload)
 
+async def delete_messages(token, chat_id, message_ids):
+    method_url = 'deleteMessages'
+    payload = {
+        'chat_id': chat_id,
+        'message_ids': message_ids
+    }
+    return await _process_request(token, method_url, params=payload)
+
+async def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
+                            message_thread_id=None, protect_content=None):
+    method_url = 'forwardMessages'
+    payload = {
+        'chat_id': chat_id,
+        'from_chat_id': from_chat_id,
+        'message_ids': message_ids,
+    }
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    
+    result = await _process_request(token, method_url, params=payload)
+    return result
+
+async def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
+                        message_thread_id=None, protect_content=None, remove_caption=None):
+    method_url = 'copyMessages'
+    payload = {
+        'chat_id': chat_id,
+        'from_chat_id': from_chat_id,
+        'message_ids': message_ids,
+    }
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if remove_caption is not None:
+        payload['remove_caption'] = remove_caption
+    
+    result = await _process_request(token, method_url, params=payload)
+    return result
+
+
 async def _convert_list_json_serializable(results):
     ret = ''
     for r in results:
@@ -1999,3 +2046,5 @@ class RequestTimeout(Exception):
     This class represents a request timeout.
     """
     pass
+
+
