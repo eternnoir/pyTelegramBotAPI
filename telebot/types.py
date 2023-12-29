@@ -127,6 +127,10 @@ class Update(JsonDeserializable):
     :param edited_channel_post: Optional. New version of a channel post that is known to the bot and was edited
     :type edited_channel_post: :class:`telebot.types.Message`
 
+    :param message_reaction: Optional. A reaction to a message was changed by a user. The bot must be an administrator in the chat
+        and must explicitly specify "message_reaction" in the list of allowed_updates to receive these updates. The update isn't received for reactions set by bots.
+    :type message_reaction: :class:`telebot.types.MessageReactionUpdated`
+
     :param inline_query: Optional. New incoming inline query
     :type inline_query: :class:`telebot.types.InlineQuery`
 
@@ -188,13 +192,14 @@ class Update(JsonDeserializable):
         my_chat_member = ChatMemberUpdated.de_json(obj.get('my_chat_member'))
         chat_member = ChatMemberUpdated.de_json(obj.get('chat_member'))
         chat_join_request = ChatJoinRequest.de_json(obj.get('chat_join_request'))
+        message_reaction = MessageReactionUpdated.de_json(obj.get('message_reaction'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member, chat_join_request):
+                 my_chat_member, chat_member, chat_join_request, message_reaction):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -210,6 +215,7 @@ class Update(JsonDeserializable):
         self.my_chat_member = my_chat_member
         self.chat_member = chat_member
         self.chat_join_request = chat_join_request
+        self.message_reaction = message_reaction
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -7922,3 +7928,52 @@ class ReactionTypeCustomEmoji(ReactionType):
         json_dict['custom_emoji'] = self.custom_emoji
 
         return json_dict
+    
+
+class MessageReactionUpdated(JsonDeserializable):
+    """
+    This object represents a service message about a change in the list of the current user's reactions to a message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#messagereactionupdated
+
+    :param chat: The chat containing the message the user reacted to
+    :type chat: :class:`telebot.types.Chat`
+
+    :param message_id: Unique identifier of the message inside the chat
+    :type message_id: :obj:`int`
+
+    :param user: Optional. The user that changed the reaction, if the user isn't anonymous
+    :type user: :class:`telebot.types.User`
+
+    :param actor_chat: Optional. The chat on behalf of which the reaction was changed, if the user is anonymous
+    :type actor_chat: :class:`telebot.types.Chat`
+
+    :param date: Date of the change in Unix time
+    :type date: :obj:`int`
+
+    :param old_reaction: Previous list of reaction types that were set by the user
+    :type old_reaction: :obj:`list` of :class:`ReactionType`
+
+    :param new_reaction: New list of reaction types that have been set by the user
+    :type new_reaction: :obj:`list` of :class:`ReactionType`
+
+    :return: Instance of the class
+    :rtype: :class:`MessageReactionUpdated`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, chat: Chat, message_id: int, date: int, old_reaction: List[ReactionType], new_reaction: List[ReactionType],
+                 user: Optional[User]=None, actor_chat: Optional[Chat]=None) -> None:
+        self.chat: Chat = chat
+        self.message_id: int = message_id
+        self.user: Optional[User] = user
+        self.actor_chat: Optional[Chat] = actor_chat
+        self.date: int = date
+        self.old_reaction: List[ReactionType] = old_reaction
+        self.new_reaction: List[ReactionType] = new_reaction
