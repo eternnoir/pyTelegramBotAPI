@@ -2515,7 +2515,8 @@ class AsyncTeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            link_preview_options: Optional[types.LinkPreviewOptions]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -2565,6 +2566,9 @@ class AsyncTeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param link_preview_options: Options for previewing links.
+        :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2583,12 +2587,20 @@ class AsyncTeleBot:
                 allow_sending_without_reply=allow_sending_without_reply,
                 message_id=reply_to_message_id
             )
+        if disable_web_page_preview:
+            # show a deprecation warning
+            logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
+
+            # create a LinkPreviewOptions object
+            link_preview_options = types.LinkPreviewOptions(
+                disable_web_page_preview=disable_web_page_preview
+            )
 
         return types.Message.de_json(
             await asyncio_helper.send_message(
-                self.token, chat_id, text, disable_web_page_preview,
+                self.token, chat_id, text,
                 reply_markup, parse_mode, disable_notification, timeout,
-                entities, protect_content, message_thread_id, reply_parameters))
+                entities, protect_content, message_thread_id, reply_parameters, link_preview_options))
 
     async def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
@@ -5025,7 +5037,8 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            link_preview_options: Optional[types.LinkPreviewOptions]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -5055,14 +5068,26 @@ class AsyncTeleBot:
         :param reply_markup: A JSON-serialized object for an inline keyboard.
         :type reply_markup: :obj:`InlineKeyboardMarkup`
 
+        :param link_preview_options: A JSON-serialized object for options used to automatically generate Telegram link previews for messages.
+        :type link_preview_options: :obj:`LinkPreviewOptions`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
 
+        if disable_web_page_preview:
+            # show a deprecation warning
+            logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
+
+            # create a LinkPreviewOptions object
+            link_preview_options = types.LinkPreviewOptions(
+                disable_web_page_preview=disable_web_page_preview
+            )
+
         result = await asyncio_helper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                             entities, disable_web_page_preview, reply_markup)
+                                             entities, reply_markup, link_preview_options)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)

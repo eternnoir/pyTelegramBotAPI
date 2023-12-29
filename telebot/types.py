@@ -8409,7 +8409,7 @@ class MessageOriginChannel(MessageOrigin):
         self.author_signature: Optional[str] = author_signature
 
 
-class LinkPreviewOptions(JsonDeserializable):
+class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
     """
     Describes the options used for link preview generation.
 
@@ -8452,6 +8452,24 @@ class LinkPreviewOptions(JsonDeserializable):
         self.prefer_small_media: Optional[bool] = prefer_small_media
         self.prefer_large_media: Optional[bool] = prefer_large_media
         self.show_above_text: Optional[bool] = show_above_text
+
+    def to_dict(self) -> dict:
+        json_dict = {}
+
+        if self.is_disabled is not None:
+            json_dict['is_disabled'] = self.is_disabled
+        if self.url is not None:
+            json_dict['url'] = self.url
+        if self.prefer_small_media is not None:
+            json_dict['prefer_small_media'] = self.prefer_small_media
+        if self.prefer_large_media is not None:
+            json_dict['prefer_large_media'] = self.prefer_large_media
+        if self.show_above_text is not None:
+            json_dict['show_above_text'] = self.show_above_text
+
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
 
 
 class Giveaway(JsonDeserializable):
@@ -8700,5 +8718,4 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
-    
     
