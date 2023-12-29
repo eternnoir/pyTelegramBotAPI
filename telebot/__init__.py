@@ -1604,7 +1604,7 @@ class TeleBot:
             apihelper.send_message(
                 self.token, chat_id, text, disable_web_page_preview,
                 reply_markup, parse_mode, disable_notification, timeout,
-                entities, protect_content=protect_content, message_thread_id=message_thread_id))
+                entities, protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters))
 
     def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
@@ -1847,7 +1847,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            has_spoiler: Optional[bool]=None) -> types.Message:
+            has_spoiler: Optional[bool]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -1895,6 +1896,9 @@ class TeleBot:
 
         :param has_spoiler: Pass True, if the photo should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
+
+        :param reply_parameters: Additional parameters for replies to messages
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -1936,7 +1940,7 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
-            reply_parameters: Optional[bool]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
