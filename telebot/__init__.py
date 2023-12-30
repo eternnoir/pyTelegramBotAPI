@@ -229,6 +229,8 @@ class TeleBot:
         self.my_chat_member_handlers = []
         self.chat_member_handlers = []
         self.chat_join_request_handlers = []
+        self.chat_boost_handlers = []
+        self.removed_chat_boost_handlers = []
         self.custom_filters = {}
         self.state_handlers = []
 
@@ -684,6 +686,8 @@ class TeleBot:
         new_my_chat_members = None
         new_chat_members = None
         new_chat_join_request = None
+        removed_chat_boosts = None
+        chat_boosts = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -747,6 +751,12 @@ class TeleBot:
             if update.message_reaction_count:
                 if message_reaction_counts is None: message_reaction_counts = []
                 message_reaction_counts.append(update.message_reaction_count)
+            if update.chat_boost:
+                if chat_boosts is None: chat_boosts = []
+                chat_boosts.append(update.chat_boost)
+            if update.removed_chat_boost:
+                if removed_chat_boosts is None: removed_chat_boosts = []
+                removed_chat_boosts.append(update.removed_chat_boost)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -780,6 +790,10 @@ class TeleBot:
             self.process_new_message_reaction(new_message_reactions)
         if message_reaction_counts:
             self.process_new_message_reaction_count(message_reaction_counts)
+        if chat_boosts:
+            self.process_new_chat_boost(chat_boosts)
+        if removed_chat_boosts:
+            self.process_new_removed_chat_boost(removed_chat_boosts)
 
     def process_new_messages(self, new_messages):
         """
@@ -879,6 +893,19 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
+
+    def process_new_chat_boost(self, chat_boosts):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.chat_boost_handlers, chat_boosts, 'chat_boost')
+
+    def process_new_removed_chat_boost(self, removed_chat_boosts):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.removed_chat_boost_handlers, removed_chat_boosts, 'removed_chat_boost')
+        
 
     def process_middlewares(self, update):
         """
@@ -7208,6 +7235,105 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_chat_join_request_handler(handler_dict)
+
+    def chat_boost_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming chat boost state. 
+        it passes :class:`telebot.types.ChatBoostUpdated` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_chat_boost_handler(handler_dict)
+            return handler
+
+        return decorator
+    
+    def add_chat_boost_handler(self, handler_dict):
+        """
+        Adds a chat_boost handler.
+        Note that you should use register_chat_boost_handler to add chat_boost_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.chat_boost_handlers.append(handler_dict)
+
+    def register_chat_boost_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
+        """
+        Registers chat boost handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+        
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_chat_boost_handler(handler_dict)
+
+    def removed_chat_boost_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming chat boost state. 
+        it passes :class:`telebot.types.ChatBoostRemoved` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_removed_chat_boost_handler(handler_dict)
+            return handler
+
+        return decorator
+    
+    def add_removed_chat_boost_handler(self, handler_dict):
+        """
+        Adds a removed_chat_boost handler.
+        Note that you should use register_removed_chat_boost_handler to add removed_chat_boost_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.removed_chat_boost_handlers.append(handler_dict)
+
+    def register_removed_chat_boost_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
+        """
+        Registers removed chat boost handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+        
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_removed_chat_boost_handler(handler_dict)
+    
 
     def _test_message_handler(self, message_handler, message):
         """

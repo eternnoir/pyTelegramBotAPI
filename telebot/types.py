@@ -173,6 +173,12 @@ class Update(JsonDeserializable):
         can_invite_users administrator right in the chat to receive these updates.
     :type chat_join_request: :class:`telebot.types.ChatJoinRequest`
 
+    :param chat_boost: Optional. A chat boost was added or changed. The bot must be an administrator in the chat to receive these updates.
+    :type chat_boost: :class:`telebot.types.ChatBoost`
+
+    :param removed_chat_boost: Optional. A chat boost was removed. The bot must be an administrator in the chat to receive these updates.
+    :type removed_chat_boost: :class:`telebot.types.RemovedChatBoost`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -198,13 +204,15 @@ class Update(JsonDeserializable):
         chat_join_request = ChatJoinRequest.de_json(obj.get('chat_join_request'))
         message_reaction = MessageReactionUpdated.de_json(obj.get('message_reaction'))
         message_reaction_count = MessageReactionCountUpdated.de_json(obj.get('message_reaction_count'))
+        removed_chat_boost = ChatBoostRemoved.de_json(obj.get('removed_chat_boost'))
+        chat_boost = ChatBoost.de_json(obj.get('chat_boost'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count)
+                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count):
+                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -222,6 +230,8 @@ class Update(JsonDeserializable):
         self.chat_join_request = chat_join_request
         self.message_reaction = message_reaction
         self.message_reaction_count = message_reaction_count
+        self.removed_chat_boost = removed_chat_boost
+        self.chat_boost = chat_boost
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -8775,3 +8785,246 @@ class UsersShared(JsonDeserializable):
             return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+    
+
+class ChatBoostUpdated(JsonDeserializable):
+    """
+    This object represents a boost added to a chat or changed.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostupdated
+
+    :param chat: Chat which was boosted
+    :type chat: :class:`Chat`
+
+    :param boost: Infomation about the chat boost
+    :type boost: :class:`ChatBoost`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostUpdated`
+    """
+
+    def __init__(self, chat, boost):
+        self.chat = chat
+        self.boost = boost
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        
+        obj['chat'] = Chat.de_json(obj.get('chat'))
+        obj['boost'] = ChatBoost.de_json(obj.get('boost'))
+
+        return cls(**obj)
+    
+# ChatBoostRemoved
+# This object represents a boost removed from a chat.
+
+# Field	Type	Description
+# chat	Chat	Chat which was boosted
+# boost_id	String	Unique identifier of the boost
+# remove_date	Integer	Point in time (Unix timestamp) when the boost was removed
+# source	ChatBoostSource	Source of the removed boost
+    
+class ChatBoostRemoved(JsonDeserializable):
+    """
+    This object represents a boost removed from a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostremoved
+
+    :param chat: Chat which was boosted
+    :type chat: :class:`Chat`
+
+    :param boost_id: Unique identifier of the boost
+    :type boost_id: :obj:`str`
+
+    :param remove_date: Point in time (Unix timestamp) when the boost was removed
+    :type remove_date: :obj:`int`
+
+    :param source: Source of the removed boost
+    :type source: :class:`ChatBoostSource`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostRemoved`
+    """
+
+    def __init__(self, chat, boost_id, remove_date, source):
+        self.chat = chat
+        self.boost_id = boost_id
+        self.remove_date = remove_date
+        self.source = source
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        obj['chat'] = Chat.de_json(obj.get('chat'))
+        obj['source'] = ChatBoostSource.de_json(obj.get('source'))
+        
+        return cls(**obj)
+    
+class ChatBoostSource(JsonDeserializable):
+    """
+    This object describes the source of a chat boost.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostsource
+
+    :param source: Source of the boost
+    :type source: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostSource`
+    """
+
+    def __init__(self, source):
+        self.source = source
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        return cls(**cls.check_json(json_string))
+    
+
+class ChatBoostSourcePremium(ChatBoostSource):
+    """
+    The boost was obtained by subscribing to Telegram Premium or by gifting a Telegram Premium subscription to another user.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostsourcepremium
+
+    :param source: Source of the boost, always “premium”
+    :type source: :obj:`str`
+
+    :param user: User that boosted the chat
+    :type user: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostSourcePremium`
+    """
+
+    def __init__(self, user):
+        super().__init__('premium')
+        self.user = user
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        user = User.de_json(json.dumps(obj['user']))
+        return cls(user)
+    
+class ChatBoostSourceGiftCode(ChatBoostSource):
+    """
+    The boost was obtained by the creation of Telegram Premium gift codes to boost a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostsourcegiftcode
+
+    :param source: Source of the boost, always “gift_code”
+    :type source: :obj:`str`
+
+    :param user: User for which the gift code was created
+    :type user: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostSourceGiftCode`
+    """
+
+    def __init__(self, user):
+        super().__init__('gift_code')
+        self.user = user
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        user = User.de_json(json.dumps(obj['user']))
+        return cls(user)
+    
+class ChatBoostSourceGiveaway(ChatBoostSource):
+    """
+    The boost was obtained by the creation of a Telegram Premium giveaway.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostsourcegiveaway
+
+    :param source: Source of the boost, always “giveaway”
+    :type source: :obj:`str`
+
+    :param giveaway_message_id: Identifier of a message in the chat with the giveaway; the message could have been deleted already. May be 0 if the message isn't sent yet.
+    :type giveaway_message_id: :obj:`int`
+
+    :param user: User that won the prize in the giveaway if any
+    :type user: :class:`User`
+
+    :param is_unclaimed: True, if the giveaway was completed, but there was no user to win the prize
+    :type is_unclaimed: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostSourceGiveaway`
+    """
+
+    def __init__(self, giveaway_message_id, user=None, is_unclaimed=None):
+        super().__init__('giveaway')
+        self.giveaway_message_id = giveaway_message_id
+        self.user = user
+        self.is_unclaimed = is_unclaimed
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        user = User.de_json(json.dumps(obj['user'])) if 'user' in obj else None
+        return cls(obj['giveaway_message_id'], user, obj.get('is_unclaimed'))
+
+#ChatBoost
+# This object contains information about a chat boost.
+
+# Field	Type	Description
+# boost_id	String	Unique identifier of the boost
+# add_date	Integer	Point in time (Unix timestamp) when the chat was boosted
+# expiration_date	Integer	Point in time (Unix timestamp) when the boost will automatically expire, unless the booster's Telegram Premium subscription is prolonged
+# source	ChatBoostSource	Source of the added boost
+    
+class ChatBoost(JsonDeserializable):
+    """
+    This object contains information about a chat boost.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboost
+
+    :param boost_id: Unique identifier of the boost
+    :type boost_id: :obj:`str`
+
+    :param add_date: Point in time (Unix timestamp) when the chat was boosted
+    :type add_date: :obj:`int`
+
+    :param expiration_date: Point in time (Unix timestamp) when the boost will automatically expire, unless the booster's Telegram Premium subscription is prolonged
+    :type expiration_date: :obj:`int`
+
+    :param source: Source of the added boost
+    :type source: :class:`ChatBoostSource`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoost`
+    """
+
+    def __init__(self, boost_id, add_date, expiration_date, source):
+        self.boost_id = boost_id
+        self.add_date = add_date
+        self.expiration_date = expiration_date
+        self.source: ChatBoostSource = source
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        obj['source'] = ChatBoostSource.de_json(json.dumps(obj['source']))
+
+        return cls(**obj)
+
