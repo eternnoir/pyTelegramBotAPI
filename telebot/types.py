@@ -1003,6 +1003,18 @@ class Message(JsonDeserializable):
     :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
     :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
 
+    :param giveaway_created: Optional. Service message: a giveaway has been created
+    :type giveaway_created: :class:`telebot.types.GiveawayCreated`
+
+    :param giveaway: Optional. The message is a scheduled giveaway message
+    :type giveaway: :class:`telebot.types.Giveaway`
+
+    :param giveaway_winners: Optional. Service message: giveaway winners(public winners)
+    :type giveaway_winners: :class:`telebot.types.GiveawayWinners`
+
+    :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
+    :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
+
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
 
@@ -1238,6 +1250,20 @@ class Message(JsonDeserializable):
         if 'link_preview_options' in obj:
             opts['link_preview_options'] = LinkPreviewOptions.de_json(obj['link_preview_options'])
 
+        if 'giveaway_created' in obj:
+            opts['giveaway_created'] = GiveawayCreated.de_json(obj['giveaway_created'])
+            content_type = 'giveaway_created'
+        if 'giveaway' in obj:
+            opts['giveaway'] = Giveaway.de_json(obj['giveaway'])
+            content_type = 'giveaway'
+        if 'giveaway_winners' in obj:
+            opts['giveaway_winners'] = GiveawayWinners.de_json(obj['giveaway_winners'])
+            content_type = 'giveaway_winners'
+        if 'giveaway_completed' in obj:
+            opts['giveaway_completed'] = GiveawayCompleted.de_json(obj['giveaway_completed'])
+            content_type = 'giveaway_completed'
+
+
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1341,6 +1367,11 @@ class Message(JsonDeserializable):
         self.external_reply: Optional[ExternalReplyInfo] = None
         self.quote: Optional[TextQuote] = None
         self.LinkPreviewOptions: Optional[LinkPreviewOptions] = None
+        self.giveaway_created: Optional[GiveawayCreated] = None
+        self.giveaway: Optional[Giveaway] = None
+        self.giveaway_winners: Optional[GiveawayWinners] = None
+        self.giveaway_completed: Optional[GiveawayCompleted] = None
+
         
         for key in options:
             setattr(self, key, options[key])
@@ -8634,7 +8665,45 @@ class GiveawayWinners(JsonDeserializable):
         self.was_refunded: Optional[bool] = was_refunded
         self.prize_description: Optional[str] = prize_description
         
+class GiveawayCompleted(JsonDeserializable):
+    """
+    This object represents a service message about the completion of a giveaway without public winners.
 
+    Telegram documentation: https://core.telegram.org/bots/api#giveawaycompleted
+
+    :param winner_count: Number of winners in the giveaway
+    :type winner_count: :obj:`int`
+
+    :param unclaimed_prize_count: Optional. Number of undistributed prizes
+    :type unclaimed_prize_count: :obj:`int`
+
+    :param giveaway_message: Optional. Message with the giveaway that was completed, if it wasn't deleted
+    :type giveaway_message: :class:`Message`
+
+    :return: Instance of the class
+    :rtype: :class:`GiveawayCompleted`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+
+        obj['giveaway_message'] = Message.de_json(obj.get('giveaway_message'))
+
+        return cls(**obj)
+    
+    def __init__(self, winner_count: int, unclaimed_prize_count: Optional[int] = None,
+                    giveaway_message: Optional[Message] = None) -> None:
+        self.winner_count: int = winner_count
+        self.unclaimed_prize_count: Optional[int] = unclaimed_prize_count
+        self.giveaway_message: Optional[Message] = giveaway_message
+
+class GiveawayCreated(JsonDeserializable):
+    """
+    This object represents a service message about the creation of a scheduled giveaway. Currently holds no information.
+    """
         
 class TextQuote(JsonDeserializable):
     """
