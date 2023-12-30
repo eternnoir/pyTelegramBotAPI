@@ -7986,7 +7986,13 @@ class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        return cls(**obj)
+        # remove type 
+        if obj['type'] == 'emoji':
+            del obj['type']
+            return ReactionTypeEmoji(**obj)
+        elif obj['type'] == 'custom_emoji':
+            del obj['type']
+            return ReactionTypeCustomEmoji(**obj)
 
     def __init__(self, type: str) -> None:
         self.type: str = type
@@ -8028,6 +8034,8 @@ class ReactionTypeEmoji(ReactionType):
 
         return json_dict
     
+    
+    
 
 class ReactionTypeCustomEmoji(ReactionType):
     """
@@ -8054,6 +8062,8 @@ class ReactionTypeCustomEmoji(ReactionType):
         json_dict['custom_emoji'] = self.custom_emoji
 
         return json_dict
+    
+    
     
 
 class MessageReactionUpdated(JsonDeserializable):
@@ -8092,6 +8102,16 @@ class MessageReactionUpdated(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+
+        if 'user' in obj:
+            obj['user'] = User.de_json(obj['user'])
+        if 'actor_chat' in obj:
+            obj['actor_chat'] = Chat.de_json(obj['actor_chat'])
+        obj['old_reaction'] = [ReactionType.de_json(reaction) for reaction in obj['old_reaction']]
+        obj['new_reaction'] = [ReactionType.de_json(reaction) for reaction in obj['new_reaction']]
+        if 'chat' in obj:
+            obj['chat'] = Chat.de_json(obj['chat'])
+
         return cls(**obj)
 
     def __init__(self, chat: Chat, message_id: int, date: int, old_reaction: List[ReactionType], new_reaction: List[ReactionType],

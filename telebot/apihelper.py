@@ -335,7 +335,7 @@ def set_message_reaction(token, chat_id, message_id, reaction=None, is_big=None)
     method_url = r'setMessageReaction'
     payload = {'chat_id': chat_id, 'message_id': message_id}
     if reaction:
-        payload['reaction'] = reaction
+        payload['reaction'] = json.dumps([r.to_dict() for r in reaction])
     if is_big is not None:
         payload['is_big'] = is_big
     return _make_request(token, method_url, params=payload)
