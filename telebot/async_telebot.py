@@ -1397,7 +1397,7 @@ class AsyncTeleBot:
                                                 **kwargs)
         self.add_edited_channel_post_handler(handler_dict)
 
-    def messsage_reaction_handler(self, func, **kwargs):
+    def message_reaction_handler(self, func=None, **kwargs):
         """
         Handles new incoming message reaction.
         As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
@@ -1429,7 +1429,7 @@ class AsyncTeleBot:
         """
         self.message_reaction_handlers.append(handler_dict)
 
-    def register_message_reaction_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_message_reaction_handler(self, callback: Callable[[Any], Awaitable], func: Callable=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers message reaction handler.
 
@@ -1449,7 +1449,7 @@ class AsyncTeleBot:
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_message_reaction_handler(handler_dict)
 
-    def message_reaction_count_handler(self, func, **kwargs):
+    def message_reaction_count_handler(self, func=None, **kwargs):
         """
         Handles new incoming message reaction count.
         As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
@@ -1481,7 +1481,7 @@ class AsyncTeleBot:
         """
         self.message_reaction_count_handlers.append(handler_dict)
 
-    def register_message_reaction_count_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+    def register_message_reaction_count_handler(self, callback: Callable[[Any], Awaitable], func: Callable=None, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers message reaction count handler.
 
