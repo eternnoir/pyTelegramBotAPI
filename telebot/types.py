@@ -9154,3 +9154,38 @@ class UserChatBoosts(JsonDeserializable):
 
         return cls(**obj)
     
+
+class InaccessibleMessage(JsonDeserializable):
+    """
+    This object describes a message that was deleted or is otherwise inaccessible to the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inaccessiblemessage
+
+    :param chat: Chat the message belonged to
+    :type chat: :class:`Chat`
+
+    :param message_id: Unique message identifier inside the chat
+    :type message_id: :obj:`int`
+
+    :param date: Always 0. The field can be used to differentiate regular and inaccessible messages.
+    :type date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`InaccessibleMessage`
+    """
+
+    def __init__(self, chat, message_id, date):
+        self.chat = chat
+        self.message_id = message_id
+        self.date = date
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        
+        obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj.get('chat'))
+
+        return cls(**obj)
+    
