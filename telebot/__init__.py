@@ -217,6 +217,8 @@ class TeleBot:
         self.edited_message_handlers = []
         self.channel_post_handlers = []
         self.edited_channel_post_handlers = []
+        self.message_reaction_handlers = []
+        self.message_reaction_count_handlers = []
         self.inline_handlers = []
         self.chosen_inline_handlers = []
         self.callback_query_handlers = []
@@ -670,6 +672,8 @@ class TeleBot:
         new_edited_messages = None
         new_channel_posts = None
         new_edited_channel_posts = None
+        new_message_reactions = None
+        message_reaction_counts = None
         new_inline_queries = None
         new_chosen_inline_results = None
         new_callback_queries = None
@@ -737,6 +741,12 @@ class TeleBot:
             if update.chat_join_request:
                 if new_chat_join_request is None: new_chat_join_request = []
                 new_chat_join_request.append(update.chat_join_request)
+            if update.message_reaction:
+                if new_message_reactions is None: new_message_reactions = []
+                new_message_reactions.append(update.message_reaction)
+            if update.message_reaction_count:
+                if message_reaction_counts is None: message_reaction_counts = []
+                message_reaction_counts.append(update.message_reaction_count)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -766,6 +776,10 @@ class TeleBot:
             self.process_new_chat_member(new_chat_members)
         if new_chat_join_request:
             self.process_new_chat_join_request(new_chat_join_request)
+        if new_message_reactions:
+            self.process_new_message_reaction(new_message_reactions)
+        if message_reaction_counts:
+            self.process_new_message_reaction_count(message_reaction_counts)
 
     def process_new_messages(self, new_messages):
         """
@@ -793,6 +807,18 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post, 'edited_channel_post')
+
+    def process_new_message_reaction(self, message_reactions):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.message_reaction_handlers, message_reactions, 'message_reaction')
+    
+    def process_new_message_reaction_count(self, message_reaction_counts):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.message_reaction_count_handlers, message_reaction_counts, 'message_reaction_count')
 
     def process_new_inline_query(self, new_inline_queries):
         """
@@ -1303,6 +1329,29 @@ class TeleBot:
         :return: :obj:`bool`
         """
         return apihelper.close(self.token)
+    
+    def set_message_reaction(self, chat_id: Union[int, str], message_id: int, reaction: Optional[List[types.ReactionType]]=None, is_big: Optional[bool]=None) -> bool:
+        """
+        Use this method to set a reaction to a message in a chat. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmessagereaction
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of the message to set reaction to
+        :type message_id: :obj:`int`
+
+        :param reaction: New list of reaction types to set on the message. Currently, as non-premium users, bots can set up to one reaction per message.
+            A custom emoji reaction can be used if it is either already present on the message or explicitly allowed by chat administrators.
+        :type reaction: :obj:`list` of :class:`telebot.types.ReactionType`
+
+        :param is_big: Pass True to set the reaction with a big animation
+        :type is_big: :obj:`bool`
+
+        :return: :obj:`bool`
+        """
+        return apihelper.set_message_reaction(self.token, chat_id, message_id, reaction, is_big)
 
 
     def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None, 
@@ -1481,7 +1530,9 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            link_preview_options : Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -1528,6 +1579,12 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param link_preview_options: Link preview options.
+        :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1537,11 +1594,30 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
+        if disable_web_page_preview:
+            # show a deprecation warning
+            logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
+
+            # create a LinkPreviewOptions object
+            link_preview_options = types.LinkPreviewOptions(
+                disable_web_page_preview=disable_web_page_preview
+            )
+
         return types.Message.de_json(
             apihelper.send_message(
-                self.token, chat_id, text, disable_web_page_preview, reply_to_message_id,
+                self.token, chat_id, text,
                 reply_markup, parse_mode, disable_notification, timeout,
-                entities, allow_sending_without_reply, protect_content=protect_content, message_thread_id=message_thread_id))
+                entities, protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, link_preview_options=link_preview_options))
 
     def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
@@ -1599,7 +1675,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.MessageID:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
 
@@ -1644,6 +1721,9 @@ class TeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
+
+        :param reply_parameters: Additional parameters for replies to messages
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
         
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
@@ -1653,10 +1733,20 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.MessageID.de_json(
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
-                                   disable_notification, reply_to_message_id, allow_sending_without_reply, reply_markup,
-                                   timeout, protect_content, message_thread_id))
+                                   disable_notification, reply_markup,
+                                   timeout, protect_content, message_thread_id, reply_parameters))
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
             timeout: Optional[int]=None) -> bool:
@@ -1686,6 +1776,97 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.delete_message(self.token, chat_id, message_id, timeout)
+    
+    def delete_messages(self, chat_id: Union[int, str], message_ids: List[int]):
+        """
+        Use this method to delete multiple messages in a chat. 
+        The number of messages to be deleted must not exceed 100. 
+        If the chat is a private chat, the user must be an administrator of the chat for this to work and must have the appropriate admin rights. 
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessages
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_ids: Identifiers of the messages to be deleted
+        :type message_ids: :obj:`list` of :obj:`int`
+
+        :return: Returns True on success.
+
+        """
+        return apihelper.delete_messages(self.token, chat_id, message_ids)
+    
+    def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
+                         message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None) -> List[types.MessageID]:
+        """
+        Use this method to forward messages of any kind.
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        :type from_chat_id: :obj:`int` or :obj:`str`
+
+        :param message_ids: Message identifiers in the chat specified in from_chat_id
+        :type message_ids: :obj:`list`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+        :type disable_notification: :obj:`bool`
+
+        :param message_thread_id: Identifier of a message thread, in which the messages will be sent
+        :type message_thread_id: :obj:`int`
+
+        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.MessageID`
+        """
+
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        return types.MessageID.de_json(
+            apihelper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, protect_content, message_thread_id))
+    
+    def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
+                        disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
+                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
+            """
+            Use this method to copy messages of any kind.
+
+            :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+            :type chat_id: :obj:`int` or :obj:`str`
+
+            :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+            :type from_chat_id: :obj:`int` or :obj:`str`
+
+            :param message_ids: Message identifiers in the chat specified in from_chat_id
+            :type message_ids: :obj:`list` of :obj:`int`
+
+            :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+            :type disable_notification: :obj:`bool`
+
+            :param message_thread_id: Identifier of a message thread, in which the messages will be sent
+            :type message_thread_id: :obj:`int`
+
+            :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+            :type protect_content: :obj:`bool`
+
+            :param remove_caption: Pass True to copy the messages without their captions
+            :type remove_caption: :obj:`bool`
+
+            :return: On success, an array of MessageId of the sent messages is returned.
+            :rtype: :obj:`list` of :class:`telebot.types.MessageID`
+            """
+            disable_notification = self.disable_notification if disable_notification is None else disable_notification
+            protect_content = self.protect_content if protect_content is None else protect_content
+
+            return [types.MessageID.de_json(message_id) for message_id in
+                    apihelper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification,
+                                            protect_content, message_thread_id, remove_caption)]
+    
 
     def send_dice(
             self, chat_id: Union[int, str],
@@ -1695,7 +1876,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -1731,6 +1913,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Additional parameters for replies to messages
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1738,10 +1923,20 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_dice(
-                self.token, chat_id, emoji, disable_notification, reply_to_message_id,
-                reply_markup, timeout, allow_sending_without_reply, protect_content, message_thread_id)
+                self.token, chat_id, emoji, disable_notification,
+                reply_markup, timeout, protect_content, message_thread_id, reply_parameters)
         )
 
 
@@ -1756,7 +1951,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            has_spoiler: Optional[bool]=None) -> types.Message:
+            has_spoiler: Optional[bool]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -1804,6 +2000,9 @@ class TeleBot:
 
         :param has_spoiler: Pass True, if the photo should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
+
+        :param reply_parameters: Additional parameters for replies to messages
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -1813,11 +2012,21 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_photo(
-                self.token, chat_id, photo, caption, reply_to_message_id, reply_markup,
+                self.token, chat_id, photo, caption, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
+                protect_content, message_thread_id, has_spoiler, reply_parameters))
 
     # TODO: Rewrite this method like in API.
     def send_audio(
@@ -1834,7 +2043,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None,) -> types.Message:
+            thumb: Optional[Union[Any, str]]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -1901,6 +2111,9 @@ class TeleBot:
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1909,15 +2122,25 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
             logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
         return types.Message.de_json(
             apihelper.send_audio(
-                self.token, chat_id, audio, caption, duration, performer, title, reply_to_message_id,
+                self.token, chat_id, audio, caption, duration, performer, title,
                 reply_markup, parse_mode, disable_notification, timeout, thumbnail,
-                caption_entities, allow_sending_without_reply, protect_content, message_thread_id))
+                caption_entities, protect_content, message_thread_id, reply_parameters))
 
     # TODO: Rewrite this method like in API.
     def send_voice(
@@ -1931,7 +2154,8 @@ class TeleBot:
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
         For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as Audio or Document).
@@ -1981,6 +2205,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -1988,11 +2215,21 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_voice(
-                self.token, chat_id, voice, caption, duration, reply_to_message_id, reply_markup,
+                self.token, chat_id, voice, caption, duration, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                allow_sending_without_reply, protect_content, message_thread_id))
+                protect_content, message_thread_id, reply_parameters))
 
     # TODO: Rewrite this method like in API.
     def send_document(
@@ -2010,7 +2247,8 @@ class TeleBot:
             disable_content_type_detection: Optional[bool]=None,
             data: Optional[Union[Any, str]]=None,
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None,) -> types.Message:
+            thumb: Optional[Union[Any, str]]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -2070,6 +2308,9 @@ class TeleBot:
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2077,6 +2318,16 @@ class TeleBot:
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
+
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
 
         if data and (not document):
             # function typo miss compatibility
@@ -2090,11 +2341,10 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, document, 'document',
-                reply_to_message_id = reply_to_message_id, reply_markup = reply_markup, parse_mode = parse_mode,
+                reply_parameters=reply_parameters, reply_markup = reply_markup, parse_mode = parse_mode,
                 disable_notification = disable_notification, timeout = timeout, caption = caption, thumbnail= thumbnail,
-                caption_entities = caption_entities, allow_sending_without_reply = allow_sending_without_reply,
-                disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name,
-                protect_content = protect_content, message_thread_id = message_thread_id))
+                caption_entities = caption_entities, disable_content_type_detection = disable_content_type_detection,
+                visible_file_name = visible_file_name, protect_content = protect_content, message_thread_id = message_thread_id))
 
 
     # TODO: Rewrite this method like in API.
@@ -2109,7 +2359,8 @@ class TeleBot:
             protect_content:Optional[bool]=None,
             data: Union[Any, str]=None,
             message_thread_id: Optional[int]=None,
-            emoji: Optional[str]=None) -> types.Message:
+            emoji: Optional[str]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2152,6 +2403,9 @@ class TeleBot:
         :param emoji: Emoji associated with the sticker; only for just uploaded stickers
         :type emoji: :obj:`str`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2164,13 +2418,22 @@ class TeleBot:
             logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_data(
-                self.token, chat_id, sticker, 'sticker',
-                reply_to_message_id=reply_to_message_id, reply_markup=reply_markup,
+                self.token, chat_id, sticker, 'sticker', reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
-                allow_sending_without_reply=allow_sending_without_reply,
-                protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji))
+                protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji,
+                reply_parameters=reply_parameters))
 
     def send_video(
             self, chat_id: Union[int, str], video: Union[Any, str], 
@@ -2191,7 +2454,8 @@ class TeleBot:
             data: Optional[Union[Any, str]]=None,
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
-            thumb: Optional[Union[Any, str]]=None,) -> types.Message:
+            thumb: Optional[Union[Any, str]]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -2259,6 +2523,9 @@ class TeleBot:
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
 
+        :param reply_parameters: Reply parameters
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2276,11 +2543,21 @@ class TeleBot:
             thumbnail = thumb
             logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_video(
-                self.token, chat_id, video, duration, caption, reply_to_message_id, reply_markup,
+                self.token, chat_id, video, duration, caption, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumbnail, width, height,
-                caption_entities, allow_sending_without_reply, protect_content, message_thread_id, has_spoiler))
+                caption_entities, protect_content, message_thread_id, has_spoiler, reply_parameters))
 
     def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
@@ -2299,7 +2576,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
-            thumb: Optional[Union[Any, str]]=None,) -> types.Message:
+            thumb: Optional[Union[Any, str]]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -2366,6 +2644,9 @@ class TeleBot:
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2374,14 +2655,24 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         if thumbnail is None and thumb is not None:
             thumbnail = thumb
             logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
         return types.Message.de_json(
             apihelper.send_animation(
-                self.token, chat_id, animation, duration, caption, reply_to_message_id,
+                self.token, chat_id, animation, duration, caption,
                 reply_markup, parse_mode, disable_notification, timeout, thumbnail,
-                caption_entities, allow_sending_without_reply, protect_content, width, height, message_thread_id, has_spoiler))
+                caption_entities, protect_content, width, height, message_thread_id, has_spoiler, reply_parameters))
 
     # TODO: Rewrite this method like in API.
     def send_video_note(
@@ -2396,7 +2687,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            thumb: Optional[Union[Any, str]]=None) -> types.Message:
+            thumb: Optional[Union[Any, str]]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -2446,7 +2738,11 @@ class TeleBot:
         :type message_thread_id: :obj:`int`
 
         :param thumb: Deprecated. Use thumbnail instead
-    :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+        :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2458,10 +2754,20 @@ class TeleBot:
             thumbnail = thumb
             logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_video_note(
-                self.token, chat_id, data, duration, length, reply_to_message_id, reply_markup,
-                disable_notification, timeout, thumbnail, allow_sending_without_reply, protect_content, message_thread_id))
+                self.token, chat_id, data, duration, length, reply_markup,
+                disable_notification, timeout, thumbnail, protect_content, message_thread_id, reply_parameters))
 
 
     def send_media_group(
@@ -2474,7 +2780,8 @@ class TeleBot:
             reply_to_message_id: Optional[int]=None, 
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> List[types.Message]:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -2505,6 +2812,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the media group will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -2512,9 +2822,19 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         result = apihelper.send_media_group(
-            self.token, chat_id, media, disable_notification, reply_to_message_id, timeout, 
-            allow_sending_without_reply, protect_content, message_thread_id)
+            self.token, chat_id, media, disable_notification, timeout, 
+            protect_content, message_thread_id, reply_parameters)
         return [types.Message.de_json(msg) for msg in result]
 
     # TODO: Rewrite this method like in API.
@@ -2531,7 +2851,8 @@ class TeleBot:
             proximity_alert_radius: Optional[int]=None, 
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -2581,6 +2902,9 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2588,12 +2912,22 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_location(
                 self.token, chat_id, latitude, longitude, live_period, 
-                reply_to_message_id, reply_markup, disable_notification, timeout, 
+                reply_markup, disable_notification, timeout, 
                 horizontal_accuracy, heading, proximity_alert_radius, 
-                allow_sending_without_reply, protect_content, message_thread_id))
+                protect_content, message_thread_id, reply_parameters))
 
     def edit_message_live_location(
             self, latitude: float, longitude: float, 
@@ -2702,7 +3036,8 @@ class TeleBot:
             google_place_id: Optional[str]=None,
             google_place_type: Optional[str]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
         
@@ -2760,6 +3095,9 @@ class TeleBot:
         :param message_thread_id: The thread identifier of a message from which the reply will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2767,11 +3105,21 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
-                disable_notification, reply_to_message_id, reply_markup, timeout,
-                allow_sending_without_reply, google_place_id, google_place_type, protect_content, message_thread_id))
+                disable_notification, reply_markup, timeout,
+                google_place_id, google_place_type, protect_content, message_thread_id, reply_parameters))
 
 
     # TODO: Rewrite this method like in API.
@@ -2784,7 +3132,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None) -> types.Message:
+            protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -2829,6 +3178,9 @@ class TeleBot:
         :param message_thread_id: The thread identifier of a message from which the reply will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters.
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2836,11 +3188,21 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         return types.Message.de_json(
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
-                disable_notification, reply_to_message_id, reply_markup, timeout,
-                allow_sending_without_reply, protect_content, message_thread_id))
+                disable_notification, reply_markup, timeout,
+                protect_content, message_thread_id, reply_parameters))
 
     def send_chat_action(
             self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None) -> bool:
@@ -3792,7 +4154,8 @@ class TeleBot:
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            link_preview_options : Optional[types.LinkPreviewOptions]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -3822,14 +4185,27 @@ class TeleBot:
         :param reply_markup: A JSON-serialized object for an inline keyboard.
         :type reply_markup: :obj:`InlineKeyboardMarkup`
 
+        :param link_preview_options: A JSON-serialized object for options used to automatically generate previews for links.
+        :type link_preview_options: :obj:`LinkPreviewOptions`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
 
+        if disable_web_page_preview:
+            # show a deprecation warning
+            logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
+
+            # create a LinkPreviewOptions object
+            link_preview_options = types.LinkPreviewOptions(
+                disable_web_page_preview=disable_web_page_preview
+            )
+            
+
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                             entities, disable_web_page_preview, reply_markup)
+                                             entities, reply_markup, link_preview_options)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -3907,7 +4283,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Used to send the game.
 
@@ -3940,6 +4317,9 @@ class TeleBot:
         :param message_thread_id: The identifier of a message thread, in which the game message will be sent.
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Reply parameters
+        :type reply_parameters: :obj:`ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -3947,10 +4327,20 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         result = apihelper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
-            reply_to_message_id, reply_markup, timeout, 
-            allow_sending_without_reply, protect_content, message_thread_id)
+            reply_markup, timeout, 
+            protect_content, message_thread_id, reply_parameters)
         return types.Message.de_json(result)
 
     def set_game_score(
@@ -4048,7 +4438,8 @@ class TeleBot:
             max_tip_amount: Optional[int] = None,
             suggested_tip_amounts: Optional[List[int]]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Sends invoice.
 
@@ -4150,6 +4541,9 @@ class TeleBot:
         :param message_thread_id: The identifier of a message thread, in which the invoice message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: Required if the message is a reply. Additional interface options.
+        :type reply_parameters: :obj:`types.ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -4157,13 +4551,23 @@ class TeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         allow_sending_without_reply = self.allow_sending_without_reply if (allow_sending_without_reply is None) else allow_sending_without_reply
 
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
+
         result = apihelper.send_invoice(
             self.token, chat_id, title, description, invoice_payload, provider_token,
             currency, prices, start_parameter, photo_url, photo_size, photo_width,
             photo_height, need_name, need_phone_number, need_email, need_shipping_address,
             send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
-            reply_to_message_id, reply_markup, provider_data, timeout, allow_sending_without_reply,
-            max_tip_amount, suggested_tip_amounts, protect_content, message_thread_id)
+            reply_markup, provider_data, timeout,
+            max_tip_amount, suggested_tip_amounts, protect_content, message_thread_id, reply_parameters)
         return types.Message.de_json(result)
 
     def create_invoice_link(self,
@@ -4288,7 +4692,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -4359,6 +4764,9 @@ class TeleBot:
         :param message_thread_id: The identifier of a message thread, in which the poll will be sent
         :type message_thread_id: :obj:`int`
 
+        :param reply_parameters: reply parameters.
+        :type reply_parameters: :obj:`ReplyParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -4368,6 +4776,16 @@ class TeleBot:
 
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
+        
+        if allow_sending_without_reply or reply_to_message_id:
+            # show a deprecation warning
+            logger.warning("The parameters 'allow_sending_without_reply' and 'reply_to_message_id' are deprecated. Use 'reply_parameters' instead.")
+
+            # create a ReplyParameters object
+            reply_parameters = types.ReplyParameters(
+                allow_sending_without_reply=allow_sending_without_reply,
+                message_id=reply_to_message_id
+            )
 
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
@@ -4377,8 +4795,8 @@ class TeleBot:
                 question, options,
                 is_anonymous, type, allows_multiple_answers, correct_option_id,
                 explanation, explanation_parse_mode, open_period, close_date, is_closed,
-                disable_notification, reply_to_message_id, allow_sending_without_reply,
-                reply_markup, timeout, explanation_entities, protect_content, message_thread_id))
+                disable_notification,reply_markup, timeout, explanation_entities, protect_content, message_thread_id,
+                reply_parameters))
 
     def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 
@@ -6173,6 +6591,109 @@ class TeleBot:
                                                 pass_bot=pass_bot,
                                                 **kwargs)
         self.add_edited_channel_post_handler(handler_dict)
+
+
+    def message_reaction_handler(self, func, **kwargs):
+        """
+        Handles new incoming message reaction.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return:
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_message_reaction_handler(handler_dict)
+            return handler
+
+        return decorator
+    
+    def add_message_reaction_handler(self, handler_dict):
+        """
+        Adds message reaction handler
+        Note that you should use register_message_reaction_handler to add message_reaction_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.message_reaction_handlers.append(handler_dict)
+
+    def register_message_reaction_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers message reaction handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+        
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_message_reaction_handler(handler_dict)
+
+    def message_reaction_count_handler(self, func, **kwargs):
+        """
+        Handles new incoming message reaction count.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return:
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_message_reaction_count_handler(handler_dict)
+            return handler
+
+        return decorator
+    
+    def add_message_reaction_count_handler(self, handler_dict):
+        """
+        Adds message reaction count handler
+        Note that you should use register_message_reaction_count_handler to add message_reaction_count_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.message_reaction_count_handlers.append(handler_dict)
+
+    def register_message_reaction_count_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers message reaction count handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+        
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_message_reaction_count_handler(handler_dict)
 
     def inline_handler(self, func, **kwargs):
         """

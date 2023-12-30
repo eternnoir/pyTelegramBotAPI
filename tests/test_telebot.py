@@ -542,9 +542,11 @@ let number = loop {
         my_chat_member = None
         chat_member = None
         chat_join_request = None
+        message_reaction = None
+        message_reaction_count = None
         return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
                             chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                            my_chat_member, chat_member, chat_join_request)
+                            my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count)
 
     def test_is_string_unicode(self):
         s1 = u'string'
