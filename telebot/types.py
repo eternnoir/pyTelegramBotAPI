@@ -8153,6 +8153,10 @@ class MessageReactionCountUpdated(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+
+        obj['reactions'] = [ReactionCount.de_json(reaction) for reaction in obj['reactions']]
+        obj['chat'] = Chat.de_json(obj['chat'])
+
         return cls(**obj)
 
     def __init__(self, chat: Chat, message_id: int, date: int, reactions: List[ReactionCount]) -> None:
@@ -8183,6 +8187,9 @@ class ReactionCount(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+
+        obj['type'] = ReactionType.de_json(obj['type'])
+        
         return cls(**obj)
     
     def __init__(self, type: ReactionType, total_count: int) -> None:
