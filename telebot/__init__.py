@@ -905,7 +905,7 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.removed_chat_boost_handlers, removed_chat_boosts, 'removed_chat_boost')
-        
+
 
     def process_middlewares(self, update):
         """
@@ -5069,6 +5069,25 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
+    
+    def get_user_chat_boosts(self, chat_id: Union[int, str], user_id: int) -> types.UserChatBoosts:
+        """
+        Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuserchatboosts
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :return: On success, a UserChatBoosts object is returned.
+        :rtype: :class:`telebot.types.UserChatBoosts`
+        """
+
+        result = apihelper.get_user_chat_boosts(self.token, chat_id, user_id)
+        return types.UserChatBoosts.de_json(result)
 
     def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None):
         """

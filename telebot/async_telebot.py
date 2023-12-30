@@ -6135,6 +6135,33 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
+    
+# getUserChatBoosts
+# Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
+
+# Parameter	Type	Required	Description
+# chat_id	Integer or String	Yes	Unique identifier for the chat or username of the channel (in the format @channelusername)
+# user_id	Integer	Yes	Unique identifier of the target user
+    
+    async def get_user_chat_boosts(self, chat_id: Union[int, str], user_id: int) -> types.UserChatBoosts:
+        """
+        Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuserchatboosts
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :return: On success, a UserChatBoosts object is returned.
+        :rtype: :class:`telebot.types.UserChatBoosts`
+        """
+
+        result = await asyncio_helper.get_user_chat_boosts(self.token, chat_id, user_id)
+        return types.UserChatBoosts.de_json(result)
+    
 
     async def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None):
         """

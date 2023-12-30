@@ -9028,3 +9028,29 @@ class ChatBoost(JsonDeserializable):
 
         return cls(**obj)
 
+class UserChatBoosts(JsonDeserializable):
+    """
+    This object represents a list of boosts added to a chat by a user.
+
+    Telegram documentation: https://core.telegram.org/bots/api#userchatboosts
+
+    :param boosts: The list of boosts added to the chat by the user
+    :type boosts: :obj:`list` of :class:`ChatBoost`
+
+    :return: Instance of the class
+    :rtype: :class:`UserChatBoosts`
+    """
+
+    def __init__(self, boosts):
+        self.boosts: ChatBoost = boosts
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        
+        obj = cls.check_json(json_string)
+        obj['boosts'] = [ChatBoost.de_json(boost) for boost in obj.get('boosts', [])]
+
+        return cls(**obj)
+    

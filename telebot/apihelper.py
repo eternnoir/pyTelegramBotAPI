@@ -1616,6 +1616,11 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def get_user_chat_boosts(token, chat_id, user_id):
+    method_url = 'getUserChatBoosts'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    return _make_request(token, method_url, params=payload)
+
 def answer_inline_query(token, inline_query_id, results, cache_time=None, is_personal=None, next_offset=None,
                         button=None):
     method_url = 'answerInlineQuery'
