@@ -565,6 +565,22 @@ class Chat(JsonDeserializable):
         Returned only in getChat.
     :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
 
+    :param accent_color_id: Optional. Optional. Identifier of the accent color for the chat name and backgrounds of the chat photo,
+        reply header, and link preview. See accent colors for more details. Returned only in getChat. Always returned in getChat.
+    :type accent_color_id: :obj:`int`
+
+    :param background_custom_emoji_id: Optional. Custom emoji identifier of emoji chosen by the chat for the reply header
+        and link preview background. Returned only in getChat.
+    :type background_custom_emoji_id: :obj:`str`
+
+    :param profile_accent_color_id: Optional. Identifier of the accent color for the chat's profile background.
+        See profile accent colors for more details. Returned only in getChat.
+    :type profile_accent_color_id: :obj:`int`
+
+    :param profile_background_custom_emoji_id: Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background.
+        Returned only in getChat.
+    :type profile_background_custom_emoji_id: :obj:`str`
+
     :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of emoji status of the other party in a private chat.
         Returned only in getChat.
     :type emoji_status_custom_emoji_id: :obj:`str`
@@ -626,6 +642,10 @@ class Chat(JsonDeserializable):
         chats. Returned only in getChat.
     :type has_protected_content: :obj:`bool`
 
+    :param has_visible_history: Optional. True, if new chat members will have access to old messages;
+        available only to chat administrators. Returned only in getChat.
+    :type has_visible_history: :obj:`bool`
+
     :param sticker_set_name: Optional. For supergroups, name of group sticker set. Returned only in getChat.
     :type sticker_set_name: :obj:`str`
 
@@ -671,7 +691,8 @@ class Chat(JsonDeserializable):
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
-                 available_reactions=None,**kwargs):
+                 available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
+                 profile_background_custom_emoji_id=None, has_visible_history=None,**kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -702,6 +723,12 @@ class Chat(JsonDeserializable):
         self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
         self.emoji_status_expiration_date: int = emoji_status_expiration_date
         self.available_reactions: List[ReactionType] = available_reactions
+        self.accent_color_id: int = accent_color_id
+        self.background_custom_emoji_id: str = background_custom_emoji_id
+        self.profile_accent_color_id: int = profile_accent_color_id
+        self.profile_background_custom_emoji_id: str = profile_background_custom_emoji_id
+        self.has_visible_history: bool = has_visible_history
+
 
 
 class MessageID(JsonDeserializable):
