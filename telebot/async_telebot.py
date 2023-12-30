@@ -581,7 +581,7 @@ class AsyncTeleBot:
         new_channel_posts = None
         new_edited_channel_posts = None
         new_message_reactions = None
-        mew_message_reaction_count_handlers = None
+        new_message_reaction_count_handlers = None
         new_inline_queries = None
         new_chosen_inline_results = None
         new_callback_queries = None
