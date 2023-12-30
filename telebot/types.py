@@ -833,6 +833,9 @@ class Message(JsonDeserializable):
     :param forward_date: Optional. For forwarded messages, date the original message was sent in Unix time
     :type forward_date: :obj:`int`
 
+    :forward_origin: Optional. For forwarded messages, information about the original message; 
+    :type forward_origin: :class:`telebot.types.MessageOrigin`
+
     :param is_topic_message: Optional. True, if the message is sent to a forum topic
     :type is_topic_message: :obj:`bool`
 
@@ -1289,8 +1292,8 @@ class Message(JsonDeserializable):
         if 'giveaway_completed' in obj:
             opts['giveaway_completed'] = GiveawayCompleted.de_json(obj['giveaway_completed'])
             content_type = 'giveaway_completed'
-
-
+        if 'message_origin' in obj:
+            opts['message_origin'] = MessageOrigin.de_json(obj['message_origin'])
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1398,6 +1401,7 @@ class Message(JsonDeserializable):
         self.giveaway: Optional[Giveaway] = None
         self.giveaway_winners: Optional[GiveawayWinners] = None
         self.giveaway_completed: Optional[GiveawayCompleted] = None
+        self.forward_origin: Optional[MessageOrigin] = None
 
         
         for key in options:
