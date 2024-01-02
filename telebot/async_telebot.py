@@ -1400,7 +1400,7 @@ class AsyncTeleBot:
     def message_reaction_handler(self, func=None, **kwargs):
         """
         Handles new incoming message reaction.
-        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+        As a parameter to the decorator function, it passes :class:`telebot.types.MessageReactionUpdated` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
@@ -1452,7 +1452,7 @@ class AsyncTeleBot:
     def message_reaction_count_handler(self, func=None, **kwargs):
         """
         Handles new incoming message reaction count.
-        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+        As a parameter to the decorator function, it passes :class:`telebot.types.MessageReactionCountUpdated` object.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
