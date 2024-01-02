@@ -1550,7 +1550,7 @@ class TeleBot:
             self, chat_id: Union[int, str], text: str, 
             parse_mode: Optional[str]=None, 
             entities: Optional[List[types.MessageEntity]]=None,
-            disable_web_page_preview: Optional[bool]=None, 
+            disable_web_page_preview: Optional[bool]=None,    # deprecated, for backward compatibility
             disable_notification: Optional[bool]=None, 
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
@@ -1581,7 +1581,7 @@ class TeleBot:
         :param entities: List of special entities that appear in message text, which can be specified instead of parse_mode
         :type entities: Array of :class:`telebot.types.MessageEntity`
 
-        :param disable_web_page_preview: Disables link previews for links in this message
+        :param disable_web_page_preview: deprecated. Disables link previews for links in this message
         :type disable_web_page_preview: :obj:`bool`
 
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
@@ -1616,7 +1616,6 @@ class TeleBot:
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
-        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
 
@@ -1641,14 +1640,21 @@ class TeleBot:
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
-        if disable_web_page_preview:
+        if disable_web_page_preview is not None:
             # show a deprecation warning
             logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
 
-            # create a LinkPreviewOptions object
-            link_preview_options = types.LinkPreviewOptions(
-                disable_web_page_preview=disable_web_page_preview
-            )
+            if link_preview_options:
+                # show a conflict warning
+                logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
+            else:
+                # create a LinkPreviewOptions object
+                link_preview_options = types.LinkPreviewOptions(
+                    disable_web_page_preview=disable_web_page_preview
+                )
+
+        if link_preview_options and (link_preview_options.disable_web_page_preview is None):
+            link_preview_options.disable_web_page_preview = self.disable_web_page_preview
 
         return types.Message.de_json(
             apihelper.send_message(
@@ -4327,7 +4333,7 @@ class TeleBot:
             inline_message_id: Optional[str]=None, 
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
-            disable_web_page_preview: Optional[bool]=None,
+            disable_web_page_preview: Optional[bool]=None,        # deprecated, for backward compatibility
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             link_preview_options : Optional[types.LinkPreviewOptions]=None) -> Union[types.Message, bool]:
         """
@@ -4353,7 +4359,7 @@ class TeleBot:
         :param entities: List of special entities that appear in the message text, which can be specified instead of parse_mode
         :type entities: List of :obj:`telebot.types.MessageEntity`
 
-        :param disable_web_page_preview: Disables link previews for links in this message
+        :param disable_web_page_preview: deprecated. Disables link previews for links in this message
         :type disable_web_page_preview: :obj:`bool`
 
         :param reply_markup: A JSON-serialized object for an inline keyboard.
@@ -4366,17 +4372,22 @@ class TeleBot:
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
-        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
-
-        if disable_web_page_preview:
+                
+        if disable_web_page_preview is not None:
             # show a deprecation warning
             logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
 
-            # create a LinkPreviewOptions object
-            link_preview_options = types.LinkPreviewOptions(
-                disable_web_page_preview=disable_web_page_preview
-            )
-            
+            if link_preview_options:
+                # show a conflict warning
+                logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
+            else:
+                # create a LinkPreviewOptions object
+                link_preview_options = types.LinkPreviewOptions(
+                    disable_web_page_preview=disable_web_page_preview
+                )
+
+        if link_preview_options and (link_preview_options.disable_web_page_preview is None):
+            link_preview_options.disable_web_page_preview = self.disable_web_page_preview
 
         result = apihelper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              entities, reply_markup, link_preview_options)
