@@ -675,7 +675,7 @@ class TeleBot:
         new_channel_posts = None
         new_edited_channel_posts = None
         new_message_reactions = None
-        message_reaction_counts = None
+        new_message_reaction_counts = None
         new_inline_queries = None
         new_chosen_inline_results = None
         new_callback_queries = None
@@ -686,8 +686,8 @@ class TeleBot:
         new_my_chat_members = None
         new_chat_members = None
         new_chat_join_request = None
-        removed_chat_boosts = None
-        chat_boosts = None
+        new_chat_boosts = None
+        new_removed_chat_boosts = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -749,14 +749,14 @@ class TeleBot:
                 if new_message_reactions is None: new_message_reactions = []
                 new_message_reactions.append(update.message_reaction)
             if update.message_reaction_count:
-                if message_reaction_counts is None: message_reaction_counts = []
-                message_reaction_counts.append(update.message_reaction_count)
+                if new_message_reaction_counts is None: new_message_reaction_counts = []
+                new_message_reaction_counts.append(update.message_reaction_count)
             if update.chat_boost:
-                if chat_boosts is None: chat_boosts = []
-                chat_boosts.append(update.chat_boost)
+                if new_chat_boosts is None: new_chat_boosts = []
+                new_chat_boosts.append(update.chat_boost)
             if update.removed_chat_boost:
-                if removed_chat_boosts is None: removed_chat_boosts = []
-                removed_chat_boosts.append(update.removed_chat_boost)
+                if new_removed_chat_boosts is None: new_removed_chat_boosts = []
+                new_removed_chat_boosts.append(update.removed_chat_boost)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -788,12 +788,12 @@ class TeleBot:
             self.process_new_chat_join_request(new_chat_join_request)
         if new_message_reactions:
             self.process_new_message_reaction(new_message_reactions)
-        if message_reaction_counts:
-            self.process_new_message_reaction_count(message_reaction_counts)
-        if chat_boosts:
-            self.process_new_chat_boost(chat_boosts)
-        if removed_chat_boosts:
-            self.process_new_removed_chat_boost(removed_chat_boosts)
+        if new_message_reaction_counts:
+            self.process_new_message_reaction_count(new_message_reaction_counts)
+        if new_chat_boosts:
+            self.process_new_chat_boost(new_chat_boosts)
+        if new_removed_chat_boosts:
+            self.process_new_removed_chat_boost(new_removed_chat_boosts)
 
     def process_new_messages(self, new_messages):
         """
@@ -804,35 +804,35 @@ class TeleBot:
         self.__notify_update(new_messages)
         self._notify_command_handlers(self.message_handlers, new_messages, 'message')
 
-    def process_new_edited_messages(self, edited_message):
+    def process_new_edited_messages(self, new_edited_message):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.edited_message_handlers, edited_message, 'edited_message')
+        self._notify_command_handlers(self.edited_message_handlers, new_edited_message, 'edited_message')
 
-    def process_new_channel_posts(self, channel_post):
+    def process_new_channel_posts(self, new_channel_post):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.channel_post_handlers, channel_post, 'channel_post')
+        self._notify_command_handlers(self.channel_post_handlers, new_channel_post, 'channel_post')
 
-    def process_new_edited_channel_posts(self, edited_channel_post):
+    def process_new_edited_channel_posts(self, new_edited_channel_post):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.edited_channel_post_handlers, edited_channel_post, 'edited_channel_post')
+        self._notify_command_handlers(self.edited_channel_post_handlers, new_edited_channel_post, 'edited_channel_post')
 
-    def process_new_message_reaction(self, message_reactions):
+    def process_new_message_reaction(self, new_message_reactions):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.message_reaction_handlers, message_reactions, 'message_reaction')
+        self._notify_command_handlers(self.message_reaction_handlers, new_message_reactions, 'message_reaction')
     
-    def process_new_message_reaction_count(self, message_reaction_counts):
+    def process_new_message_reaction_count(self, new_message_reaction_counts):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.message_reaction_count_handlers, message_reaction_counts, 'message_reaction_count')
+        self._notify_command_handlers(self.message_reaction_count_handlers, new_message_reaction_counts, 'message_reaction_count')
 
     def process_new_inline_query(self, new_inline_queries):
         """
@@ -858,53 +858,53 @@ class TeleBot:
         """
         self._notify_command_handlers(self.shipping_query_handlers, new_shipping_queries, 'shipping_query')
 
-    def process_new_pre_checkout_query(self, pre_checkout_queries):
+    def process_new_pre_checkout_query(self, new_pre_checkout_queries):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.pre_checkout_query_handlers, pre_checkout_queries, 'pre_checkout_query')
+        self._notify_command_handlers(self.pre_checkout_query_handlers, new_pre_checkout_queries, 'pre_checkout_query')
 
-    def process_new_poll(self, polls):
+    def process_new_poll(self, new_polls):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.poll_handlers, polls, 'poll')
+        self._notify_command_handlers(self.poll_handlers, new_polls, 'poll')
 
-    def process_new_poll_answer(self, poll_answers):
+    def process_new_poll_answer(self, new_poll_answers):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.poll_answer_handlers, poll_answers, 'poll_answer')
+        self._notify_command_handlers(self.poll_answer_handlers, new_poll_answers, 'poll_answer')
     
-    def process_new_my_chat_member(self, my_chat_members):
+    def process_new_my_chat_member(self, new_my_chat_members):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.my_chat_member_handlers, my_chat_members, 'my_chat_member')
+        self._notify_command_handlers(self.my_chat_member_handlers, new_my_chat_members, 'my_chat_member')
 
-    def process_new_chat_member(self, chat_members):
+    def process_new_chat_member(self, new_chat_members):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.chat_member_handlers, chat_members, 'chat_member')
+        self._notify_command_handlers(self.chat_member_handlers, new_chat_members, 'chat_member')
 
-    def process_new_chat_join_request(self, chat_join_request):
+    def process_new_chat_join_request(self, new_chat_join_request):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.chat_join_request_handlers, chat_join_request, 'chat_join_request')
+        self._notify_command_handlers(self.chat_join_request_handlers, new_chat_join_request, 'chat_join_request')
 
-    def process_new_chat_boost(self, chat_boosts):
+    def process_new_chat_boost(self, new_chat_boosts):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.chat_boost_handlers, chat_boosts, 'chat_boost')
+        self._notify_command_handlers(self.chat_boost_handlers, new_chat_boosts, 'chat_boost')
 
-    def process_new_removed_chat_boost(self, removed_chat_boosts):
+    def process_new_removed_chat_boost(self, new_removed_chat_boosts):
         """
         :meta private:
         """
-        self._notify_command_handlers(self.removed_chat_boost_handlers, removed_chat_boosts, 'removed_chat_boost')
+        self._notify_command_handlers(self.removed_chat_boost_handlers, new_removed_chat_boosts, 'removed_chat_boost')
 
 
     def process_middlewares(self, update):
