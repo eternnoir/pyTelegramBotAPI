@@ -2932,8 +2932,7 @@ class AsyncTeleBot:
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
         result = await asyncio_helper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, protect_content, message_thread_id)
-        return types.MessageID.de_json(
-            result)
+        return [types.MessageID.de_json(message_id) for message_id in result]
     
     async def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
@@ -2969,8 +2968,7 @@ class AsyncTeleBot:
             protect_content = self.protect_content if protect_content is None else protect_content
             result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification,
                                             protect_content, message_thread_id, remove_caption)
-            return [types.MessageID.de_json(message_id) for message_id in
-                    result]
+            return [types.MessageID.de_json(message_id) for message_id in result]
 
     async def send_dice(
             self, chat_id: Union[int, str],
