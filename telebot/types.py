@@ -1360,7 +1360,6 @@ class Message(JsonDeserializable):
         self.venue: Optional[Venue] = None
         self.animation: Optional[Animation] = None
         self.dice: Optional[Dice] = None
-        self.new_chat_member: Optional[User] = None  # Deprecated since Bot API 3.0. Not processed anymore
         self.new_chat_members: Optional[List[User]] = None
         self.left_chat_member: Optional[User] = None
         self.new_chat_title: Optional[str] = None
@@ -1399,7 +1398,6 @@ class Message(JsonDeserializable):
         self.giveaway_completed: Optional[GiveawayCompleted] = None
         self.forward_origin: Optional[MessageOrigin] = None
 
-        
         for key in options:
             setattr(self, key, options[key])
         self.json = json_string
@@ -1513,6 +1511,11 @@ class Message(JsonDeserializable):
         Returns html-rendered caption.
         """
         return self.__html_text(self.caption, self.caption_entities)
+
+    @property
+    def new_chat_member(self):
+        logger.warning('The parameter "new_chat_member" is deprecated, use "new_chat_members" instead')
+        return None
 
 
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
@@ -8266,108 +8269,61 @@ class ExternalReplyInfo(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        origin = MessageOrigin.de_json(obj['origin'])
+        obj['origin'] = MessageOrigin.de_json(obj['origin'])
         if 'chat' in obj:
-            chat = Chat.de_json(obj['chat'])
+            obj['chat'] = Chat.de_json(obj['chat'])
         if 'link_preview_options' in obj:
-            link_preview_options = LinkPreviewOptions.de_json(obj['link_preview_options'])
+            obj['link_preview_options'] = LinkPreviewOptions.de_json(obj['link_preview_options'])
+        if 'animation' in obj:
+            obj['animation'] = Animation.de_json(obj['animation'])
+        if 'audio' in obj:
+            obj['audio'] = Audio.de_json(obj['audio'])
+        if 'document' in obj:
+            obj['document'] = Document.de_json(obj['document'])
+        if 'photo' in obj:
+            obj['photo'] = Message.parse_photo(obj['photo'])
+        if 'sticker' in obj:
+            obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'story' in obj:
+            obj['story'] = Story.de_json(obj['story'])
+        if 'video' in obj:
+            obj['video'] = Video.de_json(obj['video'])
+        if 'video_note' in obj:
+            obj['video_note'] = VideoNote.de_json(obj['video_note'])
+        if 'voice' in obj:
+            obj['voice'] = Voice.de_json(obj['voice'])
+        if 'contact' in obj:
+            obj['contact'] = Contact.de_json(obj['contact'])
+        if 'dice' in obj:
+            obj['dice'] = Dice.de_json(obj['dice'])
+        if 'game' in obj:
+            obj['game'] = Game.de_json(obj['game'])
+        if 'giveaway' in obj:
+            obj['giveaway'] = Giveaway.de_json(obj['giveaway'])
+        if 'giveaway_winners' in obj:
+            obj['giveaway_winners'] = GiveawayWinners.de_json(obj['giveaway_winners'])
+        if 'invoice' in obj:
+            obj['invoice'] = Invoice.de_json(obj['invoice'])
+        if 'location' in obj:
+            obj['location'] = Location.de_json(obj['location'])
+        if 'poll' in obj:
+            obj['poll'] = Poll.de_json(obj['poll'])
+        if 'venue' in obj:
+            obj['venue'] = Venue.de_json(obj['venue'])
+        return cls(**obj)
 
-        #todo: update data processing to common way
-        
-        animation = obj.get('animation')
-        if animation is not None:
-            animation = Animation.de_json(animation)
-
-        audio = obj.get('audio')
-        if audio is not None:
-            audio = Audio.de_json(audio)
-
-        document = obj.get('document')
-        if document is not None:
-            document = Document.de_json(document)
-
-        photo = obj.get('photo')
-        if photo is not None:
-            photo = [PhotoSize.de_json(photo[i]) for i in range(len(photo))]
-
-        sticker = obj.get('sticker')
-        if sticker is not None:
-            sticker = Sticker.de_json(sticker)
-
-        story = obj.get('story')
-        if story is not None:
-            story = Story.de_json(story)
-
-        video = obj.get('video')
-        if video is not None:
-            video = Video.de_json(video)
-
-        video_note = obj.get('video_note')
-        if video_note is not None:
-            video_note = VideoNote.de_json(video_note)
-
-        voice = obj.get('voice')
-        if voice is not None:
-            voice = Voice.de_json(voice)
-
-        has_media_spoiler = obj.get('has_media_spoiler')
-        if has_media_spoiler is not None:
-            has_media_spoiler = bool(has_media_spoiler)
-
-        contact = obj.get('contact')
-        if contact is not None:
-            contact = Contact.de_json(contact)
-
-        dice = obj.get('dice')
-        if dice is not None:
-            dice = Dice.de_json(dice)
-
-        game = obj.get('game')
-        if game is not None:
-            game = Game.de_json(game)
-
-        giveaway = obj.get('giveaway')
-        if giveaway is not None:
-            giveaway = Giveaway.de_json(giveaway)
-
-        giveaway_winners = obj.get('giveaway_winners')
-        if giveaway_winners is not None:
-            giveaway_winners = GiveawayWinners.de_json(giveaway_winners)
-
-        invoice = obj.get('invoice')
-        if invoice is not None:
-            invoice = Invoice.de_json(invoice)
-
-        location = obj.get('location')
-        if location is not None:
-            location = Location.de_json(location)
-
-        poll = obj.get('poll')
-        if poll is not None:
-            poll = Poll.de_json(poll)
-
-        venue = obj.get('venue')
-        if venue is not None:
-            venue = Venue.de_json(venue)
-
-        return cls(origin=origin, chat=chat, message_id=message_id, link_preview_options=link_preview_options,
-                     animation=animation, audio=audio, document=document, photo=photo, sticker=sticker, story=story,
-                        video=video, video_note=video_note, voice=voice, has_media_spoiler=has_media_spoiler,
-                            contact=contact, dice=dice, game=game, giveaway=giveaway, giveaway_winners=giveaway_winners,
-                                invoice=invoice, location=location, poll=poll, venue=venue)
-    
-    def __init__(self, origin: MessageOrigin, chat: Optional[Chat]=None, message_id: Optional[int]=None,
-                    link_preview_options: Optional[LinkPreviewOptions]=None, animation: Optional[Animation]=None,
-                        audio: Optional[Audio]=None, document: Optional[Document]=None, photo: Optional[List[PhotoSize]]=None,
-                            sticker: Optional[Sticker]=None, story: Optional[Story]=None, video: Optional[Video]=None,
-                                video_note: Optional[VideoNote]=None, voice: Optional[Voice]=None,
-                                    has_media_spoiler: Optional[bool]=None, contact: Optional[Contact]=None,
-                                        dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
-                                            giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
-                                                location: Optional[Location]=None, poll: Optional[Poll]=None,
-                                                    venue: Optional[Venue]=None) -> None:
+    def __init__(
+            self, origin: MessageOrigin, chat: Optional[Chat]=None, message_id: Optional[int]=None,
+            link_preview_options: Optional[LinkPreviewOptions]=None, animation: Optional[Animation]=None,
+            audio: Optional[Audio]=None, document: Optional[Document]=None, photo: Optional[List[PhotoSize]]=None,
+            sticker: Optional[Sticker]=None, story: Optional[Story]=None, video: Optional[Video]=None,
+            video_note: Optional[VideoNote]=None, voice: Optional[Voice]=None,
+            has_media_spoiler: Optional[bool]=None, contact: Optional[Contact]=None,
+            dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
+            giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
+            location: Optional[Location]=None, poll: Optional[Poll]=None,
+            venue: Optional[Venue]=None) -> None:
         self.origin: MessageOrigin = origin
-
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
         self.link_preview_options: Optional[LinkPreviewOptions] = link_preview_options
@@ -8425,8 +8381,7 @@ class MessageOrigin(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-
-        message_type = obj.get('type')
+        message_type = obj['type']
         if message_type == 'user':
             sender_user = User.de_json(obj['sender_user'])
             return MessageOriginUser(date=obj['date'], sender_user=sender_user)
@@ -8538,10 +8493,7 @@ class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        #todo: adopt to common way
-        return cls(is_disabled=obj.get('is_disabled'), url=obj.get('url'), prefer_small_media=obj.get('prefer_small_media'),
-                        prefer_large_media=obj.get('prefer_large_media'), show_above_text=obj.get('show_above_text'))
-    
+        return cls(**obj)
 
     def __init__(self, is_disabled: Optional[bool] = None, url: Optional[str] = None,
                  prefer_small_media: Optional[bool] = None, prefer_large_media: Optional[bool] = None,
@@ -8565,7 +8517,7 @@ class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['prefer_large_media'] = self.prefer_large_media
         if self.show_above_text is not None:
             json_dict['show_above_text'] = self.show_above_text
-
+        return json_dict
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
@@ -8610,7 +8562,7 @@ class Giveaway(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        self.chats = [Chat.de_json(chat) for chat in obj['chats']]
+        obj['chats'] = [Chat.de_json(chat) for chat in obj['chats']]
         return cls(**obj)
 
     def __init__(self, chats: List[Chat], winners_selection_date: int, winner_count: int,
@@ -8765,11 +8717,13 @@ class TextQuote(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        obj['entities'] = [MessageEntity.de_json(entity) for entity in obj.get('entities', [])]
+        if 'entities' in obj:
+            obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
         return cls(**obj)
 
-    def __init__(self, text: str, entities: Optional[List[MessageEntity]] = None,
-                 position: Optional[int] = None, is_manual: Optional[bool] = None) -> None:
+    def __init__(self, text: str, position: int,
+                 entities: Optional[List[MessageEntity]] = None,
+                 is_manual: Optional[bool] = None) -> None:
         self.text: str = text
         self.entities: Optional[List[MessageEntity]] = entities
         self.position: Optional[int] = position
@@ -8812,7 +8766,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj.get('quote_entities', [])]
+        if 'quote_entities' in obj:
+            obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
         return cls(**obj)    
 
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
@@ -8968,7 +8923,8 @@ class ChatBoostSource(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None:
             return None
-        return cls(**cls.check_json(json_string))
+        obj = cls.check_json(json_string)
+        return cls(**obj)
 
     def __init__(self, source):
         self.source = source
