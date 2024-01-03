@@ -1349,7 +1349,7 @@ class Message(JsonDeserializable):
         self.channel_chat_created: Optional[bool] = None
         self.migrate_to_chat_id: Optional[int] = None
         self.migrate_from_chat_id: Optional[int] = None
-        self.pinned_message: Union[Message, InaccessibleMessage] = message
+        self.pinned_message: Optional[Union[Message, InaccessibleMessage]] = None
         self.invoice: Optional[Invoice] = None
         self.successful_payment: Optional[SuccessfulPayment] = None
         self.connected_website: Optional[str] = None
