@@ -260,8 +260,7 @@ def send_message(
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -426,8 +425,7 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     if timeout:
         payload['timeout'] = timeout
     if protect_content is not None:
@@ -456,8 +454,7 @@ def send_dice(
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload)
 
 
@@ -495,8 +492,7 @@ def send_photo(
     if has_spoiler is not None:
         payload['has_spoiler'] = has_spoiler
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -516,8 +512,7 @@ def send_media_group(
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(
         token, method_url, params=payload,
         method='post' if files else 'get',
@@ -552,8 +547,7 @@ def send_location(
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload)
 
 
@@ -626,8 +620,7 @@ def send_venue(
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload)
 
 
@@ -652,8 +645,7 @@ def send_contact(
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
 
     return _make_request(token, method_url, params=payload)
 
@@ -714,8 +706,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
     if has_spoiler is not None:
         payload['has_spoiler'] = has_spoiler
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -764,8 +755,7 @@ def send_animation(
     if has_spoiler is not None:
         payload['has_spoiler'] = has_spoiler
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -798,8 +788,7 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -838,8 +827,7 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_mark
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -884,8 +872,7 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -932,8 +919,7 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
     if emoji:
         payload['emoji'] = emoji
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1397,8 +1383,7 @@ def send_game(
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload)
 
 
@@ -1545,8 +1530,7 @@ def send_invoice(
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload)
 
 
@@ -1832,8 +1816,7 @@ def send_poll(
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
-        # to json
-        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+        payload['reply_parameters'] = reply_parameters.to_json()
     return _make_request(token, method_url, params=payload)
 
 def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
