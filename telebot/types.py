@@ -811,29 +811,26 @@ class Message(JsonDeserializable):
     :param chat: Conversation the message belongs to
     :type chat: :class:`telebot.types.Chat`
 
-    :param forward_from: Optional. For forwarded messages, sender of the original message
+    :param forward_from: deprecated.
     :type forward_from: :class:`telebot.types.User`
 
-    :param forward_from_chat: Optional. For messages forwarded from channels or from anonymous administrators, 
-        information about the original sender chat
+    :param forward_from_chat: deprecated.
     :type forward_from_chat: :class:`telebot.types.Chat`
 
-    :param forward_from_message_id: Optional. For messages forwarded from channels, identifier of the original 
+    :param forward_from_message_id: deprecated.
         message in the channel
     :type forward_from_message_id: :obj:`int`
 
-    :param forward_signature: Optional. For forwarded messages that were originally sent in channels or by an 
-        anonymous chat administrator, signature of the message sender if present
+    :param forward_signature: deprecated.
     :type forward_signature: :obj:`str`
 
-    :param forward_sender_name: Optional. Sender's name for messages forwarded from users who disallow adding a link 
-        to their account in forwarded messages
+    :param forward_sender_name: deprecated.
     :type forward_sender_name: :obj:`str`
 
-    :param forward_date: Optional. For forwarded messages, date the original message was sent in Unix time
+    :param forward_date: deprecated.
     :type forward_date: :obj:`int`
 
-    :forward_origin: Optional. For forwarded messages, information about the original message; 
+    :forward_origin: Optional. For forwarded messages, information about the original message;
     :type forward_origin: :class:`telebot.types.MessageOrigin`
 
     :param is_topic_message: Optional. True, if the message is sent to a forum topic
@@ -1079,18 +1076,6 @@ class Message(JsonDeserializable):
         opts = {}
         if 'sender_chat' in obj:
             opts['sender_chat'] = Chat.de_json(obj['sender_chat'])
-        if 'forward_from' in obj:
-            opts['forward_from'] = User.de_json(obj['forward_from'])
-        if 'forward_from_chat' in obj:
-            opts['forward_from_chat'] = Chat.de_json(obj['forward_from_chat'])
-        if 'forward_from_message_id' in obj:
-            opts['forward_from_message_id'] = obj.get('forward_from_message_id')
-        if 'forward_signature' in obj:
-            opts['forward_signature'] = obj.get('forward_signature')
-        if 'forward_sender_name' in obj:
-            opts['forward_sender_name'] = obj.get('forward_sender_name')
-        if 'forward_date' in obj:
-            opts['forward_date'] = obj.get('forward_date')
         if 'is_automatic_forward' in obj:
             opts['is_automatic_forward'] = obj.get('is_automatic_forward')
         if 'is_topic_message' in obj:
@@ -1123,8 +1108,7 @@ class Message(JsonDeserializable):
             opts['document'] = Document.de_json(obj['document'])
             content_type = 'document'
         if 'animation' in obj:
-            # Document content type accompanies "animation",
-            # so "animation" should be checked below "document" to override it
+            # Document content type accompanies "animation", so "animation" should be checked after "document" to override it
             opts['animation'] = Animation.de_json(obj['animation'])
             content_type = 'animation'
         if 'game' in obj:
@@ -1216,19 +1200,15 @@ class Message(JsonDeserializable):
             content_type = 'proximity_alert_triggered'
         if 'video_chat_scheduled' in obj:
             opts['video_chat_scheduled'] = VideoChatScheduled.de_json(obj['video_chat_scheduled'])
-            opts['voice_chat_scheduled'] = opts['video_chat_scheduled']  # deprecated, for backward compatibility
             content_type = 'video_chat_scheduled'
         if 'video_chat_started' in obj:
             opts['video_chat_started'] = VideoChatStarted.de_json(obj['video_chat_started'])
-            opts['voice_chat_started'] = opts['video_chat_started']  # deprecated, for backward compatibility
             content_type = 'video_chat_started'
         if 'video_chat_ended' in obj:
             opts['video_chat_ended'] = VideoChatEnded.de_json(obj['video_chat_ended'])
-            opts['voice_chat_ended'] = opts['video_chat_ended']  # deprecated, for backward compatibility
             content_type = 'video_chat_ended'
         if 'video_chat_participants_invited' in obj:
             opts['video_chat_participants_invited'] = VideoChatParticipantsInvited.de_json(obj['video_chat_participants_invited'])
-            opts['voice_chat_participants_invited'] = opts['video_chat_participants_invited']  # deprecated, for backward compatibility
             content_type = 'video_chat_participants_invited'
         if 'web_app_data' in obj:
             opts['web_app_data'] = WebAppData.de_json(obj['web_app_data'])
@@ -1288,8 +1268,8 @@ class Message(JsonDeserializable):
         if 'giveaway_completed' in obj:
             opts['giveaway_completed'] = GiveawayCompleted.de_json(obj['giveaway_completed'])
             content_type = 'giveaway_completed'
-        if 'message_origin' in obj:
-            opts['message_origin'] = MessageOrigin.de_json(obj['message_origin'])
+        if 'forward_origin' in obj:
+            opts['forward_origin'] = MessageOrigin.de_json(obj['forward_origin'])
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1331,12 +1311,6 @@ class Message(JsonDeserializable):
         self.date: int = date
         self.chat: Chat = chat
         self.sender_chat: Optional[Chat] = None
-        self.forward_from: Optional[User] = None
-        self.forward_from_chat: Optional[Chat] = None
-        self.forward_from_message_id: Optional[int] = None
-        self.forward_signature: Optional[str] = None
-        self.forward_sender_name: Optional[str] = None
-        self.forward_date: Optional[int] = None
         self.is_automatic_forward: Optional[bool] = None
         self.reply_to_message: Optional[Message] = None
         self.via_bot: Optional[User] = None
@@ -1513,9 +1487,76 @@ class Message(JsonDeserializable):
         return self.__html_text(self.caption, self.caption_entities)
 
     @property
+    def voice_chat_scheduled(self):
+        logger.warning('The parameter "voice_chat_scheduled" is deprecated, use "video_chat_scheduled" instead')
+        return self.video_chat_scheduled
+
+    @property
+    def voice_chat_started(self):
+        logger.warning('The parameter "voice_chat_started" is deprecated, use "video_chat_started" instead')
+        return self.video_chat_started
+
+    @property
+    def voice_chat_ended(self):
+        logger.warning('The parameter "voice_chat_ended" is deprecated, use "video_chat_ended" instead')
+        return self.video_chat_ended
+
+    @property
+    def voice_chat_participants_invited(self):
+        logger.warning('The parameter "voice_chat_participants_invited" is deprecated, use "video_chat_participants_invited" instead')
+        return self.video_chat_participants_invited
+
+    @property
     def new_chat_member(self):
         logger.warning('The parameter "new_chat_member" is deprecated, use "new_chat_members" instead')
         return None
+
+    @property
+    def forward_from(self):
+        logger.warning('The parameter "forward_from" is deprecated, use "forward_origin" instead')
+        if self.forward_origin and isinstance(self.forward_origin, MessageOriginUser):
+            return self.forward_origin.sender_user
+        return None
+
+    @property
+    def forward_from_chat(self):
+        logger.warning('The parameter "forward_from_chat" is deprecated, use "forward_origin" instead')
+        if self.forward_origin and isinstance(self.forward_origin, MessageOriginChat):
+            return self.forward_origin.sender_chat
+        elif self.forward_origin and isinstance(self.forward_origin, MessageOriginChannel):
+            return self.forward_origin.chat
+        return None
+
+    @property
+    def forward_from_message_id(self):
+        logger.warning('The parameter "forward_from_message_id" is deprecated, use "forward_origin" instead')
+        if self.forward_origin and isinstance(self.forward_origin, MessageOriginChannel):
+            return self.forward_origin.message_id
+        return None
+
+    @property
+    def forward_signature(self):
+        logger.warning('The parameter "forward_signature" is deprecated, use "forward_origin" instead')
+        if self.forward_origin and isinstance(self.forward_origin, MessageOriginChat):
+            return self.forward_origin.author_signature
+        elif self.forward_origin and isinstance(self.forward_origin, MessageOriginChannel):
+            return self.forward_origin.author_signature
+        return None
+
+    @property
+    def forward_sender_name(self):
+        logger.warning('The parameter "forward_sender_name" is deprecated, use "forward_origin" instead')
+        if self.forward_origin and isinstance(self.forward_origin, MessageOriginHiddenUser):
+            return self.forward_origin.sender_user_name
+        return None
+
+    @property
+    def forward_date(self):
+        logger.warning('The parameter "forward_date" is deprecated, use "forward_origin" instead')
+        if self.forward_origin:
+            return self.forward_origin.date
+        return None
+
 
 
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
@@ -3031,13 +3072,11 @@ class ChatMember(JsonDeserializable):
         self.can_pin_messages: bool = can_pin_messages
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
-        #self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
         self.can_manage_chat: bool = can_manage_chat
         self.can_manage_video_chats: bool = can_manage_video_chats
-        self.can_manage_voice_chats: bool = self.can_manage_video_chats   # deprecated, for backward compatibility
         self.until_date: int = until_date
         self.can_manage_topics: bool = can_manage_topics
         self.can_send_audios: bool = can_send_audios
@@ -3049,7 +3088,12 @@ class ChatMember(JsonDeserializable):
         self.can_post_stories: bool = can_post_stories
         self.can_edit_stories: bool = can_edit_stories
         self.can_delete_stories: bool = can_delete_stories
-        
+
+    @property
+    def can_manage_voice_chats(self):
+        logger.warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
+        return self.can_manage_video_chats
+
 
 
 class ChatMemberOwner(ChatMember):
@@ -3330,8 +3374,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         value of can_pin_messages
     :type can_manage_topics: :obj:`bool`    
 
-    :param can_send_media_messages: deprecated. True, if the user is allowed to send audios, documents, photos, videos,
-        video notes and voice notes
+    :param can_send_media_messages: deprecated.
     :type can_send_media_messages: :obj:`bool`
 
     :return: Instance of the class
@@ -3351,7 +3394,6 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
                     can_invite_users=None, can_pin_messages=None, 
                     can_manage_topics=None, **kwargs):
         self.can_send_messages: bool = can_send_messages
-        #self.can_send_media_messages: bool = can_send_media_messages
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
@@ -3367,7 +3409,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_send_voice_notes: bool = can_send_voice_notes
 
         if can_send_media_messages is not None:
-            logger.warning("can_send_media_messages is deprecated. Use individual parameters like can_send_audios, can_send_documents, etc.")
+            logger.warning('The parameter "can_send_media_messages" is deprecated. Use individual parameters like "can_send_audios", "can_send_documents" etc.')
             self.can_send_audios = can_send_media_messages
             self.can_send_documents = can_send_media_messages
             self.can_send_photos = can_send_media_messages
@@ -3712,8 +3754,11 @@ class InputTextMessageContent(Dictionaryable):
         parse_mode
     :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param disable_web_page_preview: Optional, deprecated. Disables link previews for links in the sent message
+    :param disable_web_page_preview: deprecated
     :type disable_web_page_preview: :obj:`bool`
+
+    :param link_preview_options: Optional. Link preview generation options for the message
+    :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputTextMessageContent`
@@ -3724,10 +3769,10 @@ class InputTextMessageContent(Dictionaryable):
         self.entities: List[MessageEntity] = entities
         link_preview_options: LinkPreviewOptions = link_preview_options
         if disable_web_page_preview is not None:
-            logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
+            logger.warning('The parameter "disable_web_page_preview" is deprecated. Use "link_preview_options" instead.')
             
             if link_preview_options:
-                logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
+                logger.warning('Both "link_preview_options" and "disable_web_page_preview" parameters are set: conflicting, "disable_web_page_preview" is deprecated')
             else:
                 self.link_preview_options: LinkPreviewOptions = LinkPreviewOptions(disable_web_page_preview)
 
@@ -5645,7 +5690,7 @@ class Game(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['photo'] = Game.parse_photo(obj['photo'])
         if 'text_entities' in obj:
@@ -5724,7 +5769,7 @@ class Animation(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
             obj["thumbnail"] = PhotoSize.de_json(obj['thumbnail'])
@@ -5770,7 +5815,7 @@ class GameHighScore(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
@@ -5841,7 +5886,7 @@ class Invoice(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
@@ -5882,7 +5927,7 @@ class ShippingAddress(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
@@ -5918,7 +5963,7 @@ class OrderInfo(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['shipping_address'] = ShippingAddress.de_json(obj.get('shipping_address'))
         return cls(**obj)
@@ -6008,7 +6053,7 @@ class SuccessfulPayment(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['order_info'] = OrderInfo.de_json(obj.get('order_info'))
         return cls(**obj)
@@ -6047,7 +6092,7 @@ class ShippingQuery(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['from_user'] = User.de_json(obj.pop('from'))
         obj['shipping_address'] = ShippingAddress.de_json(obj['shipping_address'])
@@ -6094,7 +6139,7 @@ class PreCheckoutQuery(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['from_user'] = User.de_json(obj.pop('from'))
         obj['order_info'] = OrderInfo.de_json(obj.get('order_info'))
@@ -6133,8 +6178,7 @@ class StickerSet(JsonDeserializable):
     :param is_video: True, if the sticker set contains video stickers
     :type is_video: :obj:`bool`
 
-    :param contains_masks: True, if the sticker set contains masks. Deprecated since Bot API 6.2,
-        use sticker_type instead.
+    :param contains_masks: deprecated
     :type contains_masks: :obj:`bool`
 
     :param stickers: List of all set stickers
@@ -6148,7 +6192,7 @@ class StickerSet(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         stickers = []
         for s in obj['stickers']:
@@ -6179,7 +6223,7 @@ class StickerSet(JsonDeserializable):
         """
         Deprecated since Bot API 6.2, use sticker_type instead.
         """
-        logger.warning("contains_masks is deprecated, use sticker_type instead")
+        logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type instead"')
         return self.sticker_type == 'mask'
 
 
@@ -6244,7 +6288,7 @@ class Sticker(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
             obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
@@ -6308,7 +6352,7 @@ class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
@@ -6714,7 +6758,7 @@ class PollOption(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
@@ -6780,7 +6824,7 @@ class Poll(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['poll_id'] = obj.pop('id')
         options = []
@@ -6806,7 +6850,6 @@ class Poll(JsonDeserializable):
         self.is_anonymous: bool = is_anonymous
         self.type: str = type
         if poll_type is not None:
-            # Wrong param name backward compatibility
             logger.warning("Poll: poll_type parameter is deprecated. Use type instead.")
             if type is None:
                 self.type: str = poll_type
@@ -6854,7 +6897,7 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if (json_string is None): return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'user' in obj:
             obj['user'] = User.de_json(obj['user'])
