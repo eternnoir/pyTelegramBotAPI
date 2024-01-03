@@ -3797,7 +3797,9 @@ class InputTextMessageContent(Dictionaryable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputTextMessageContent`
     """
-    def __init__(self, message_text, parse_mode=None, entities=None, disable_web_page_preview=None, link_preview_options=None):
+    def __init__(
+            self, message_text, parse_mode=None, entities=None, disable_web_page_preview=None,
+            link_preview_options=None):
         self.message_text: str = message_text
         self.parse_mode: str = parse_mode
         self.entities: List[MessageEntity] = entities
