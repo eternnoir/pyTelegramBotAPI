@@ -982,7 +982,7 @@ class Message(JsonDeserializable):
 
         :param pinned_message: Optional. Specified message was pinned. Note that the Message object in this field will not
             contain further reply_to_message fields even if it is itself a reply.
-        :type pinned_message: :class:`telebot.types.Message`
+        :type message: :class:`telebot.types.Message` or :class:`telebot.types.InaccessibleMessage`
 
         :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
         :type invoice: :class:`telebot.types.Invoice`
@@ -1177,7 +1177,12 @@ class Message(JsonDeserializable):
             opts['migrate_from_chat_id'] = obj['migrate_from_chat_id']
             content_type = 'migrate_from_chat_id'
         if 'pinned_message' in obj:
-            opts['pinned_message'] = Message.de_json(obj['pinned_message'])
+            pinned_message = obj['pinned_message']
+            if pinned_message['date'] == 0:
+                # date.	Always 0. The field can be used to differentiate regular and inaccessible messages.
+                opts['pinned_message'] = InaccessibleMessage.de_json(pinned_message)
+            else:
+                opts['pinned_message'] = Message.de_json(pinned_message)
             content_type = 'pinned_message'
         if 'invoice' in obj:
             opts['invoice'] = Invoice.de_json(obj['invoice'])
@@ -1344,7 +1349,7 @@ class Message(JsonDeserializable):
         self.channel_chat_created: Optional[bool] = None
         self.migrate_to_chat_id: Optional[int] = None
         self.migrate_from_chat_id: Optional[int] = None
-        self.pinned_message: Optional[Message] = None
+        self.pinned_message: Union[Message, InaccessibleMessage] = message
         self.invoice: Optional[Invoice] = None
         self.successful_payment: Optional[SuccessfulPayment] = None
         self.connected_website: Optional[str] = None
@@ -2944,9 +2949,8 @@ class CallbackQuery(JsonDeserializable):
     :param from_user: Sender
     :type from_user: :class:`telebot.types.User`
 
-    :param message: Optional. Message with the callback button that originated the query. Note that message content and 
-        message date will not be available if the message is too old
-    :type message: :class:`telebot.types.Message`
+    :param message: Optional. Message sent by the bot with the callback button that originated the query
+    :type message: :class:`telebot.types.Message` or :class:`telebot.types.InaccessibleMessage`
 
     :param inline_message_id: Optional. Identifier of the message sent via the bot in inline mode, that originated the 
         query.
@@ -2975,14 +2979,21 @@ class CallbackQuery(JsonDeserializable):
             obj['data'] = None
         obj['from_user'] = User.de_json(obj.pop('from'))
         if 'message' in obj:
-            obj['message'] = Message.de_json(obj.get('message'))
+            message = obj['message']
+            if message['date'] == 0:
+                # date.	Always 0. The field can be used to differentiate regular and inaccessible messages.
+                obj['message'] = InaccessibleMessage.de_json(message)
+            else:
+                obj['message'] = Message.de_json(message)
         obj['json_string'] = json_string
         return cls(**obj)
 
-    def __init__(self, id, from_user, data, chat_instance, json_string, message=None, inline_message_id=None, game_short_name=None, **kwargs):
+    def __init__(
+            self, id, from_user, data, chat_instance, json_string, message=None, inline_message_id=None,
+            game_short_name=None, **kwargs):
         self.id: int = id
         self.from_user: User = from_user
-        self.message: Message = message
+        self.message: Union[Message, InaccessibleMessage] = message
         self.inline_message_id: str = inline_message_id
         self.chat_instance: str = chat_instance
         self.data: str = data
