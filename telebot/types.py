@@ -19,7 +19,6 @@ DISABLE_KEYLEN_ERROR = False
 
 logger = logging.getLogger('TeleBot')
 
-
 class JsonSerializable(object):
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
@@ -692,7 +691,7 @@ class Chat(JsonDeserializable):
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-                 profile_background_custom_emoji_id=None, has_visible_history=None,**kwargs):
+                 profile_background_custom_emoji_id=None, has_visible_history=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -770,300 +769,301 @@ class WebAppData(JsonDeserializable, Dictionaryable):
     :rtype: :class:`telebot.types.WebAppData`
     """
 
-    def __init__(self, data, button_text):
-        self.data = data
-        self.button_text = button_text
-    def to_dict(self):
-        return {'data': self.data, 'button_text': self.button_text}
-        
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
 
+    def __init__(self, data, button_text, **kwargs):
+        self.data = data
+        self.button_text = button_text
+    def to_dict(self):
+        return {'data': self.data, 'button_text': self.button_text}
 
+
+# noinspection PyUnresolvedReferences
 class Message(JsonDeserializable):
     """
-    This object represents a message.
+        This object represents a message.
 
-    Telegram Documentation: https://core.telegram.org/bots/api#message
+        Telegram Documentation: https://core.telegram.org/bots/api#message
 
-    :param message_id: Unique message identifier inside this chat
-    :type message_id: :obj:`int`
+        :param message_id: Unique message identifier inside this chat
+        :type message_id: :obj:`int`
 
-    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
-    :type message_thread_id: :obj:`int`
+        :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
+        :type message_thread_id: :obj:`int`
 
-    :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the 
-        field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
-    :type from_user: :class:`telebot.types.User`
+        :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the
+            field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
+        :type from_user: :class:`telebot.types.User`
 
-    :param sender_chat: Optional. Sender of the message, sent on behalf of a chat. For example, the channel itself for 
-        channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for 
-        messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a 
-        fake sender user in non-channel chats, if the message was sent on behalf of a chat.
-    :type sender_chat: :class:`telebot.types.Chat`
+        :param sender_chat: Optional. Sender of the message, sent on behalf of a chat. For example, the channel itself for
+            channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for
+            messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a
+            fake sender user in non-channel chats, if the message was sent on behalf of a chat.
+        :type sender_chat: :class:`telebot.types.Chat`
 
-    :param date: Date the message was sent in Unix time
-    :type date: :obj:`int`
+        :param date: Date the message was sent in Unix time
+        :type date: :obj:`int`
 
-    :param chat: Conversation the message belongs to
-    :type chat: :class:`telebot.types.Chat`
+        :param chat: Conversation the message belongs to
+        :type chat: :class:`telebot.types.Chat`
 
-    :param forward_from: deprecated.
-    :type forward_from: :class:`telebot.types.User`
+        :param forward_from: deprecated.
+        :type forward_from: :class:`telebot.types.User`
 
-    :param forward_from_chat: deprecated.
-    :type forward_from_chat: :class:`telebot.types.Chat`
+        :param forward_from_chat: deprecated.
+        :type forward_from_chat: :class:`telebot.types.Chat`
 
-    :param forward_from_message_id: deprecated.
-        message in the channel
-    :type forward_from_message_id: :obj:`int`
+        :param forward_from_message_id: deprecated.
+            message in the channel
+        :type forward_from_message_id: :obj:`int`
 
-    :param forward_signature: deprecated.
-    :type forward_signature: :obj:`str`
+        :param forward_signature: deprecated.
+        :type forward_signature: :obj:`str`
 
-    :param forward_sender_name: deprecated.
-    :type forward_sender_name: :obj:`str`
+        :param forward_sender_name: deprecated.
+        :type forward_sender_name: :obj:`str`
 
-    :param forward_date: deprecated.
-    :type forward_date: :obj:`int`
+        :param forward_date: deprecated.
+        :type forward_date: :obj:`int`
 
-    :forward_origin: Optional. For forwarded messages, information about the original message;
-    :type forward_origin: :class:`telebot.types.MessageOrigin`
+        :forward_origin: Optional. For forwarded messages, information about the original message;
+        :type forward_origin: :class:`telebot.types.MessageOrigin`
 
-    :param is_topic_message: Optional. True, if the message is sent to a forum topic
-    :type is_topic_message: :obj:`bool`
+        :param is_topic_message: Optional. True, if the message is sent to a forum topic
+        :type is_topic_message: :obj:`bool`
 
-    :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically 
-        forwarded to the connected discussion group
-    :type is_automatic_forward: :obj:`bool`
+        :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically
+            forwarded to the connected discussion group
+        :type is_automatic_forward: :obj:`bool`
 
-    :param reply_to_message: Optional. For replies, the original message. Note that the Message object in this field 
-        will not contain further reply_to_message fields even if it itself is a reply.
-    :type reply_to_message: :class:`telebot.types.Message`
+        :param reply_to_message: Optional. For replies, the original message. Note that the Message object in this field
+            will not contain further reply_to_message fields even if it itself is a reply.
+        :type reply_to_message: :class:`telebot.types.Message`
 
-    :param external_reply: Optional. Information about the message that is being replied to, which may come from another chat or forum topic
-    :type external_reply: :class:`telebot.types.ExternalReplyInfo`
+        :param external_reply: Optional. Information about the message that is being replied to, which may come from another chat or forum topic
+        :type external_reply: :class:`telebot.types.ExternalReplyInfo`
 
-    :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
-    :type quote: :class:`telebot.types.TextQuote`
+        :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
+        :type quote: :class:`telebot.types.TextQuote`
 
-    :param via_bot: Optional. Bot through which the message was sent
-    :type via_bot: :class:`telebot.types.User`
+        :param via_bot: Optional. Bot through which the message was sent
+        :type via_bot: :class:`telebot.types.User`
 
-    :param edit_date: Optional. Date the message was last edited in Unix time
-    :type edit_date: :obj:`int`
+        :param edit_date: Optional. Date the message was last edited in Unix time
+        :type edit_date: :obj:`int`
 
-    :param has_protected_content: Optional. :obj:`bool`, if the message can't be forwarded
-    :type has_protected_content: :obj:`bool`
+        :param has_protected_content: Optional. :obj:`bool`, if the message can't be forwarded
+        :type has_protected_content: :obj:`bool`
 
-    :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
-    :type media_group_id: :obj:`str`
+        :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
+        :type media_group_id: :obj:`str`
 
-    :param author_signature: Optional. Signature of the post author for messages in channels, or the custom title of an 
-        anonymous group administrator
-    :type author_signature: :obj:`str`
+        :param author_signature: Optional. Signature of the post author for messages in channels, or the custom title of an
+            anonymous group administrator
+        :type author_signature: :obj:`str`
 
-    :param text: Optional. For text messages, the actual UTF-8 text of the message
-    :type text: :obj:`str`
+        :param text: Optional. For text messages, the actual UTF-8 text of the message
+        :type text: :obj:`str`
 
-    :param entities: Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that 
-        appear in the text
-    :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+        :param entities: Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that
+            appear in the text
+        :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param link_preview_options: Optional. Options used for link preview generation for the message,
-        if it is a text message and link preview options were changed
-    :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
+        :param link_preview_options: Optional. Options used for link preview generation for the message,
+            if it is a text message and link preview options were changed
+        :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
 
-    :param animation: Optional. Message is an animation, information about the animation. For backward 
-        compatibility, when this field is set, the document field will also be set
-    :type animation: :class:`telebot.types.Animation`
+        :param animation: Optional. Message is an animation, information about the animation. For backward
+            compatibility, when this field is set, the document field will also be set
+        :type animation: :class:`telebot.types.Animation`
 
-    :param audio: Optional. Message is an audio file, information about the file
-    :type audio: :class:`telebot.types.Audio`
+        :param audio: Optional. Message is an audio file, information about the file
+        :type audio: :class:`telebot.types.Audio`
 
-    :param document: Optional. Message is a general file, information about the file
-    :type document: :class:`telebot.types.Document`
+        :param document: Optional. Message is a general file, information about the file
+        :type document: :class:`telebot.types.Document`
 
-    :param photo: Optional. Message is a photo, available sizes of the photo
-    :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
+        :param photo: Optional. Message is a photo, available sizes of the photo
+        :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
 
-    :param sticker: Optional. Message is a sticker, information about the sticker
-    :type sticker: :class:`telebot.types.Sticker`
+        :param sticker: Optional. Message is a sticker, information about the sticker
+        :type sticker: :class:`telebot.types.Sticker`
 
-    :param story: Optional. Message is a forwarded story
-    :type story: :class:`telebot.types.Story`
+        :param story: Optional. Message is a forwarded story
+        :type story: :class:`telebot.types.Story`
 
-    :param video: Optional. Message is a video, information about the video
-    :type video: :class:`telebot.types.Video`
+        :param video: Optional. Message is a video, information about the video
+        :type video: :class:`telebot.types.Video`
 
-    :param video_note: Optional. Message is a video note, information about the video message
-    :type video_note: :class:`telebot.types.VideoNote`
+        :param video_note: Optional. Message is a video note, information about the video message
+        :type video_note: :class:`telebot.types.VideoNote`
 
-    :param voice: Optional. Message is a voice message, information about the file
-    :type voice: :class:`telebot.types.Voice`
+        :param voice: Optional. Message is a voice message, information about the file
+        :type voice: :class:`telebot.types.Voice`
 
-    :param caption: Optional. Caption for the animation, audio, document, photo, video or voice
-    :type caption: :obj:`str`
+        :param caption: Optional. Caption for the animation, audio, document, photo, video or voice
+        :type caption: :obj:`str`
 
-    :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot 
-        commands, etc. that appear in the caption
-    :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+        :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot
+            commands, etc. that appear in the caption
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
-    :type has_media_spoiler: :obj:`bool`
+        :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
+        :type has_media_spoiler: :obj:`bool`
 
-    :param contact: Optional. Message is a shared contact, information about the contact
-    :type contact: :class:`telebot.types.Contact`
+        :param contact: Optional. Message is a shared contact, information about the contact
+        :type contact: :class:`telebot.types.Contact`
 
-    :param dice: Optional. Message is a dice with random value
-    :type dice: :class:`telebot.types.Dice`
+        :param dice: Optional. Message is a dice with random value
+        :type dice: :class:`telebot.types.Dice`
 
-    :param game: Optional. Message is a game, information about the game. More about games »
-    :type game: :class:`telebot.types.Game`
+        :param game: Optional. Message is a game, information about the game. More about games »
+        :type game: :class:`telebot.types.Game`
 
-    :param poll: Optional. Message is a native poll, information about the poll
-    :type poll: :class:`telebot.types.Poll`
+        :param poll: Optional. Message is a native poll, information about the poll
+        :type poll: :class:`telebot.types.Poll`
 
-    :param venue: Optional. Message is a venue, information about the venue. For backward compatibility, when this 
-        field is set, the location field will also be set
-    :type venue: :class:`telebot.types.Venue`
+        :param venue: Optional. Message is a venue, information about the venue. For backward compatibility, when this
+            field is set, the location field will also be set
+        :type venue: :class:`telebot.types.Venue`
 
-    :param location: Optional. Message is a shared location, information about the location
-    :type location: :class:`telebot.types.Location`
+        :param location: Optional. Message is a shared location, information about the location
+        :type location: :class:`telebot.types.Location`
 
-    :param new_chat_members: Optional. New members that were added to the group or supergroup and information about 
-        them (the bot itself may be one of these members)
-    :type new_chat_members: :obj:`list` of :class:`telebot.types.User`
+        :param new_chat_members: Optional. New members that were added to the group or supergroup and information about
+            them (the bot itself may be one of these members)
+        :type new_chat_members: :obj:`list` of :class:`telebot.types.User`
 
-    :param left_chat_member: Optional. A member was removed from the group, information about them (this member may be 
-        the bot itself)
-    :type left_chat_member: :class:`telebot.types.User`
+        :param left_chat_member: Optional. A member was removed from the group, information about them (this member may be
+            the bot itself)
+        :type left_chat_member: :class:`telebot.types.User`
 
-    :param new_chat_title: Optional. A chat title was changed to this value
-    :type new_chat_title: :obj:`str`
+        :param new_chat_title: Optional. A chat title was changed to this value
+        :type new_chat_title: :obj:`str`
 
-    :param new_chat_photo: Optional. A chat photo was change to this value
-    :type new_chat_photo: :obj:`list` of :class:`telebot.types.PhotoSize`
+        :param new_chat_photo: Optional. A chat photo was change to this value
+        :type new_chat_photo: :obj:`list` of :class:`telebot.types.PhotoSize`
 
-    :param delete_chat_photo: Optional. Service message: the chat photo was deleted
-    :type delete_chat_photo: :obj:`bool`
+        :param delete_chat_photo: Optional. Service message: the chat photo was deleted
+        :type delete_chat_photo: :obj:`bool`
 
-    :param group_chat_created: Optional. Service message: the group has been created
-    :type group_chat_created: :obj:`bool`
+        :param group_chat_created: Optional. Service message: the group has been created
+        :type group_chat_created: :obj:`bool`
 
-    :param supergroup_chat_created: Optional. Service message: the supergroup has been created. This field can't be 
-        received in a message coming through updates, because bot can't be a member of a supergroup when it is created. It can 
-        only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
-    :type supergroup_chat_created: :obj:`bool`
+        :param supergroup_chat_created: Optional. Service message: the supergroup has been created. This field can't be
+            received in a message coming through updates, because bot can't be a member of a supergroup when it is created. It can
+            only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
+        :type supergroup_chat_created: :obj:`bool`
 
-    :param channel_chat_created: Optional. Service message: the channel has been created. This field can't be 
-        received in a message coming through updates, because bot can't be a member of a channel when it is created. It can only 
-        be found in reply_to_message if someone replies to a very first message in a channel.
-    :type channel_chat_created: :obj:`bool`
+        :param channel_chat_created: Optional. Service message: the channel has been created. This field can't be
+            received in a message coming through updates, because bot can't be a member of a channel when it is created. It can only
+            be found in reply_to_message if someone replies to a very first message in a channel.
+        :type channel_chat_created: :obj:`bool`
 
-    :param message_auto_delete_timer_changed: Optional. Service message: auto-delete timer settings changed in 
-        the chat
-    :type message_auto_delete_timer_changed: :class:`telebot.types.MessageAutoDeleteTimerChanged`
+        :param message_auto_delete_timer_changed: Optional. Service message: auto-delete timer settings changed in
+            the chat
+        :type message_auto_delete_timer_changed: :class:`telebot.types.MessageAutoDeleteTimerChanged`
 
-    :param migrate_to_chat_id: Optional. The group has been migrated to a supergroup with the specified identifier. 
-        This number may have more than 32 significant bits and some programming languages may have difficulty/silent 
-        defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision 
-        float type are safe for storing this identifier.
-    :type migrate_to_chat_id: :obj:`int`
+        :param migrate_to_chat_id: Optional. The group has been migrated to a supergroup with the specified identifier.
+            This number may have more than 32 significant bits and some programming languages may have difficulty/silent
+            defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision
+            float type are safe for storing this identifier.
+        :type migrate_to_chat_id: :obj:`int`
 
-    :param migrate_from_chat_id: Optional. The supergroup has been migrated from a group with the specified 
-        identifier. This number may have more than 32 significant bits and some programming languages may have 
-        difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or 
-        double-precision float type are safe for storing this identifier.
-    :type migrate_from_chat_id: :obj:`int`
+        :param migrate_from_chat_id: Optional. The supergroup has been migrated from a group with the specified
+            identifier. This number may have more than 32 significant bits and some programming languages may have
+            difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or
+            double-precision float type are safe for storing this identifier.
+        :type migrate_from_chat_id: :obj:`int`
 
-    :param pinned_message: Optional. Specified message was pinned. Note that the Message object in this field will not 
-        contain further reply_to_message fields even if it is itself a reply.
-    :type pinned_message: :class:`telebot.types.Message`
+        :param pinned_message: Optional. Specified message was pinned. Note that the Message object in this field will not
+            contain further reply_to_message fields even if it is itself a reply.
+        :type pinned_message: :class:`telebot.types.Message`
 
-    :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
-    :type invoice: :class:`telebot.types.Invoice`
+        :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
+        :type invoice: :class:`telebot.types.Invoice`
 
-    :param successful_payment: Optional. Message is a service message about a successful payment, information about 
-        the payment. More about payments »
-    :type successful_payment: :class:`telebot.types.SuccessfulPayment`
+        :param successful_payment: Optional. Message is a service message about a successful payment, information about
+            the payment. More about payments »
+        :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
-    :param users_shared: Optional. Service message: a user was shared with the bot
-    :type users_shared: :class:`telebot.types.UserShared`
+        :param users_shared: Optional. Service message: a user was shared with the bot
+        :type users_shared: :class:`telebot.types.UserShared`
 
-    :param chat_shared: Optional. Service message: a chat was shared with the bot
-    :type chat_shared: :class:`telebot.types.ChatShared`
+        :param chat_shared: Optional. Service message: a chat was shared with the bot
+        :type chat_shared: :class:`telebot.types.ChatShared`
 
-    :param connected_website: Optional. The domain name of the website on which the user has logged in. More about 
-        Telegram Login »
-    :type connected_website: :obj:`str`
+        :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
+            Telegram Login »
+        :type connected_website: :obj:`str`
 
-    :param write_access_allowed: Optional. Service message: the user allowed the bot added to the attachment
-        menu to write messages
-    :type write_access_allowed: :class:`telebot.types.WriteAccessAllowed`
+        :param write_access_allowed: Optional. Service message: the user allowed the bot added to the attachment
+            menu to write messages
+        :type write_access_allowed: :class:`telebot.types.WriteAccessAllowed`
 
-    :param passport_data: Optional. Telegram Passport data
-    :type passport_data: :class:`telebot.types.PassportData`
+        :param passport_data: Optional. Telegram Passport data
+        :type passport_data: :class:`telebot.types.PassportData`
 
-    :param proximity_alert_triggered: Optional. Service message. A user in the chat triggered another user's 
-        proximity alert while sharing Live Location.
-    :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
+        :param proximity_alert_triggered: Optional. Service message. A user in the chat triggered another user's
+            proximity alert while sharing Live Location.
+        :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
 
-    :param forum_topic_created: Optional. Service message: forum topic created
-    :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
+        :param forum_topic_created: Optional. Service message: forum topic created
+        :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
 
-    :param forum_topic_edited: Optional. Service message: forum topic edited
-    :type forum_topic_edited: :class:`telebot.types.ForumTopicEdited`
+        :param forum_topic_edited: Optional. Service message: forum topic edited
+        :type forum_topic_edited: :class:`telebot.types.ForumTopicEdited`
 
-    :param forum_topic_closed: Optional. Service message: forum topic closed
-    :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
+        :param forum_topic_closed: Optional. Service message: forum topic closed
+        :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
 
-    :param forum_topic_reopened: Optional. Service message: forum topic reopened
-    :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
+        :param forum_topic_reopened: Optional. Service message: forum topic reopened
+        :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
 
-    :param general_forum_topic_hidden: Optional. Service message: the 'General' forum topic hidden
-    :type general_forum_topic_hidden: :class:`telebot.types.GeneralForumTopicHidden`
+        :param general_forum_topic_hidden: Optional. Service message: the 'General' forum topic hidden
+        :type general_forum_topic_hidden: :class:`telebot.types.GeneralForumTopicHidden`
 
-    :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
-    :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
+        :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
+        :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
 
-    :param giveaway_created: Optional. Service message: a giveaway has been created
-    :type giveaway_created: :class:`telebot.types.GiveawayCreated`
+        :param giveaway_created: Optional. Service message: a giveaway has been created
+        :type giveaway_created: :class:`telebot.types.GiveawayCreated`
 
-    :param giveaway: Optional. The message is a scheduled giveaway message
-    :type giveaway: :class:`telebot.types.Giveaway`
+        :param giveaway: Optional. The message is a scheduled giveaway message
+        :type giveaway: :class:`telebot.types.Giveaway`
 
-    :param giveaway_winners: Optional. Service message: giveaway winners(public winners)
-    :type giveaway_winners: :class:`telebot.types.GiveawayWinners`
+        :param giveaway_winners: Optional. Service message: giveaway winners(public winners)
+        :type giveaway_winners: :class:`telebot.types.GiveawayWinners`
 
-    :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
-    :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
+        :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
+        :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
 
-    :param video_chat_scheduled: Optional. Service message: video chat scheduled
-    :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
+        :param video_chat_scheduled: Optional. Service message: video chat scheduled
+        :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
 
-    :param video_chat_started: Optional. Service message: video chat started
-    :type video_chat_started: :class:`telebot.types.VideoChatStarted`
+        :param video_chat_started: Optional. Service message: video chat started
+        :type video_chat_started: :class:`telebot.types.VideoChatStarted`
 
-    :param video_chat_ended: Optional. Service message: video chat ended
-    :type video_chat_ended: :class:`telebot.types.VideoChatEnded`
+        :param video_chat_ended: Optional. Service message: video chat ended
+        :type video_chat_ended: :class:`telebot.types.VideoChatEnded`
 
-    :param video_chat_participants_invited: Optional. Service message: new participants invited to a video chat
-    :type video_chat_participants_invited: :class:`telebot.types.VideoChatParticipantsInvited`
+        :param video_chat_participants_invited: Optional. Service message: new participants invited to a video chat
+        :type video_chat_participants_invited: :class:`telebot.types.VideoChatParticipantsInvited`
 
-    :param web_app_data: Optional. Service message: data sent by a Web App
-    :type web_app_data: :class:`telebot.types.WebAppData`
+        :param web_app_data: Optional. Service message: data sent by a Web App
+        :type web_app_data: :class:`telebot.types.WebAppData`
 
-    :param reply_markup: Optional. Inline keyboard attached to the message. login_url buttons are represented as 
-        ordinary url buttons.
-    :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
+        :param reply_markup: Optional. Inline keyboard attached to the message. login_url buttons are represented as
+            ordinary url buttons.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
 
-    :return: Instance of the class
-    :rtype: :class:`telebot.types.Message`
-    """
+        :return: Instance of the class
+        :rtype: :class:`telebot.types.Message`
+        """
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -1489,21 +1489,25 @@ class Message(JsonDeserializable):
     @property
     def voice_chat_scheduled(self):
         logger.warning('The parameter "voice_chat_scheduled" is deprecated, use "video_chat_scheduled" instead')
+        # noinspection PyUnresolvedReferences
         return self.video_chat_scheduled
 
     @property
     def voice_chat_started(self):
         logger.warning('The parameter "voice_chat_started" is deprecated, use "video_chat_started" instead')
+        # noinspection PyUnresolvedReferences
         return self.video_chat_started
 
     @property
     def voice_chat_ended(self):
         logger.warning('The parameter "voice_chat_ended" is deprecated, use "video_chat_ended" instead')
+        # noinspection PyUnresolvedReferences
         return self.video_chat_ended
 
     @property
     def voice_chat_participants_invited(self):
         logger.warning('The parameter "voice_chat_participants_invited" is deprecated, use "video_chat_participants_invited" instead')
+        # noinspection PyUnresolvedReferences
         return self.video_chat_participants_invited
 
     @property
@@ -2197,6 +2201,7 @@ class File(JsonDeserializable):
         self.file_path: str = file_path
 
 
+# noinspection PyUnresolvedReferences
 class ForceReply(JsonSerializable):
     """
     Upon receiving a message with this object, Telegram clients will display a reply interface to the user (act as if the user has selected the bot's message and tapped 'Reply'). This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice privacy mode.
@@ -2232,6 +2237,7 @@ class ForceReply(JsonSerializable):
         return json.dumps(json_dict)
 
 
+# noinspection PyUnresolvedReferences
 class ReplyKeyboardRemove(JsonSerializable):
     """
     Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display the default letter-keyboard. By default, custom keyboards are displayed until a new keyboard is sent by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a button (see ReplyKeyboardMarkup).
@@ -2287,8 +2293,9 @@ class WebAppInfo(JsonDeserializable, Dictionaryable):
 
     def to_dict(self):
         return {'url': self.url}
-    
 
+
+# noinspection PyUnresolvedReferences
 class ReplyKeyboardMarkup(JsonSerializable):
     """
     This object represents a custom keyboard with reply options (see Introduction to bots for details and examples).
@@ -3095,7 +3102,7 @@ class ChatMember(JsonDeserializable):
         return self.can_manage_video_chats
 
 
-
+# noinspection PyUnresolvedReferences
 class ChatMemberOwner(ChatMember):
     """
     Represents a chat member that owns the chat and has all administrator privileges.
@@ -3120,6 +3127,7 @@ class ChatMemberOwner(ChatMember):
     pass
 
 
+# noinspection PyUnresolvedReferences
 class ChatMemberAdministrator(ChatMember):
     """
     Represents a chat member that has some additional privileges.
@@ -3195,6 +3203,7 @@ class ChatMemberAdministrator(ChatMember):
     pass
 
 
+# noinspection PyUnresolvedReferences
 class ChatMemberMember(ChatMember):
     """
     Represents a chat member that has no additional privileges or restrictions.
@@ -3213,6 +3222,7 @@ class ChatMemberMember(ChatMember):
     pass
 
 
+# noinspection PyUnresolvedReferences
 class ChatMemberRestricted(ChatMember):
     """
     Represents a chat member that is under certain restrictions in the chat. Supergroups only.
@@ -3281,6 +3291,7 @@ class ChatMemberRestricted(ChatMember):
     pass
 
 
+# noinspection PyUnresolvedReferences
 class ChatMemberLeft(ChatMember):
     """
     Represents a chat member that isn't currently a member of the chat, but may join it themselves.
@@ -3299,6 +3310,7 @@ class ChatMemberLeft(ChatMember):
     pass
 
 
+# noinspection PyUnresolvedReferences
 class ChatMemberBanned(ChatMember):
     """
     Represents a chat member that was banned in the chat and can't return to the chat or view chat messages.
@@ -3478,7 +3490,7 @@ class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, command, description):
+    def __init__(self, command, description, **kwargs):
         self.command: str = command
         self.description: str = description
 
@@ -3547,6 +3559,7 @@ class BotCommandScope(ABC, JsonSerializable):
         return json.dumps(json_dict)
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeDefault(BotCommandScope):
     """
     Represents the default scope of bot commands. Default commands are used if no commands with a narrower scope are specified for the user.
@@ -3567,6 +3580,7 @@ class BotCommandScopeDefault(BotCommandScope):
         super(BotCommandScopeDefault, self).__init__(type='default')
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeAllPrivateChats(BotCommandScope):
     """
     Represents the scope of bot commands, covering all private chats.
@@ -3586,6 +3600,7 @@ class BotCommandScopeAllPrivateChats(BotCommandScope):
         super(BotCommandScopeAllPrivateChats, self).__init__(type='all_private_chats')
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeAllGroupChats(BotCommandScope):
     """
     Represents the scope of bot commands, covering all group and supergroup chats.
@@ -3605,6 +3620,7 @@ class BotCommandScopeAllGroupChats(BotCommandScope):
         super(BotCommandScopeAllGroupChats, self).__init__(type='all_group_chats')
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeAllChatAdministrators(BotCommandScope):
     """
     Represents the scope of bot commands, covering all group and supergroup chat administrators.
@@ -3624,6 +3640,7 @@ class BotCommandScopeAllChatAdministrators(BotCommandScope):
         super(BotCommandScopeAllChatAdministrators, self).__init__(type='all_chat_administrators')
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeChat(BotCommandScope):
     """
     Represents the scope of bot commands, covering a specific chat.
@@ -3644,6 +3661,7 @@ class BotCommandScopeChat(BotCommandScope):
         super(BotCommandScopeChat, self).__init__(type='chat', chat_id=chat_id)
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeChatAdministrators(BotCommandScope):
     """
     Represents the scope of bot commands, covering all administrators of a specific group or supergroup chat.
@@ -3664,6 +3682,7 @@ class BotCommandScopeChatAdministrators(BotCommandScope):
         super(BotCommandScopeChatAdministrators, self).__init__(type='chat_administrators', chat_id=chat_id)
 
 
+# noinspection PyUnresolvedReferences
 class BotCommandScopeChatMember(BotCommandScope):
     """
     Represents the scope of bot commands, covering a specific member of a group or supergroup chat.
@@ -4206,7 +4225,7 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, inline_message_id=None):
+    def __init__(self, inline_message_id=None, **kwargs):
         self.inline_message_id = inline_message_id
 
     def to_dict(self):
@@ -4216,6 +4235,7 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultArticle(InlineQueryResultBase):
     """
     Represents a link to an article or web page.
@@ -4300,6 +4320,7 @@ class InlineQueryResultArticle(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultPhoto(InlineQueryResultBase):
     """
     Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
@@ -4379,6 +4400,7 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultGif(InlineQueryResultBase):
     """
     Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
@@ -4471,6 +4493,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
@@ -4563,6 +4586,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultVideo(InlineQueryResultBase):
     """
     Represents a link to a page containing an embedded video player or a video file. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
@@ -4654,6 +4678,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultAudio(InlineQueryResultBase):
     """
     Represents a link to an MP3 audio file. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
@@ -4718,6 +4743,7 @@ class InlineQueryResultAudio(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultVoice(InlineQueryResultBase):
     """
     Represents a link to a voice recording in an .OGG container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the the voice message.
@@ -4775,6 +4801,7 @@ class InlineQueryResultVoice(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultDocument(InlineQueryResultBase):
     """
     Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
@@ -4871,6 +4898,7 @@ class InlineQueryResultDocument(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultLocation(InlineQueryResultBase):
     """
     Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location.
@@ -4975,6 +5003,7 @@ class InlineQueryResultLocation(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultVenue(InlineQueryResultBase):
     """
     Represents a venue. By default, the venue will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the venue.
@@ -5083,6 +5112,7 @@ class InlineQueryResultVenue(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultContact(InlineQueryResultBase):
     """
     Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the contact.
@@ -5170,6 +5200,7 @@ class InlineQueryResultContact(InlineQueryResultBase):
         return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultGame(InlineQueryResultBase):
     """
     Represents a Game.
@@ -5238,6 +5269,7 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
         return json.dumps(json_dict)
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
     """
     Represents a link to a photo stored on the Telegram servers. By default, this photo will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
@@ -5296,6 +5328,7 @@ class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
         self.payload_dic['photo_file_id'] = photo_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
     """
     Represents a link to an animated GIF file stored on the Telegram servers. By default, this animated GIF file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with specified content instead of the animation.
@@ -5350,6 +5383,7 @@ class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
         self.payload_dic['gif_file_id'] = gif_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound) stored on the Telegram servers. By default, this animated MPEG-4 file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
@@ -5404,6 +5438,7 @@ class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
     """
     Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker.
@@ -5438,6 +5473,7 @@ class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
         self.payload_dic['sticker_file_id'] = sticker_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedDocument(InlineQueryResultCachedBase):
     """
     Represents a link to a file stored on the Telegram servers. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file.
@@ -5496,6 +5532,7 @@ class InlineQueryResultCachedDocument(InlineQueryResultCachedBase):
         self.payload_dic['document_file_id'] = document_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
     """
     Represents a link to a video file stored on the Telegram servers. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
@@ -5555,6 +5592,7 @@ class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
         self.payload_dic['video_file_id'] = video_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedVoice(InlineQueryResultCachedBase):
     """
     Represents a link to a voice message stored on the Telegram servers. By default, this voice message will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the voice message.
@@ -5608,6 +5646,7 @@ class InlineQueryResultCachedVoice(InlineQueryResultCachedBase):
         self.payload_dic['voice_file_id'] = voice_file_id
 
 
+# noinspection PyUnresolvedReferences
 class InlineQueryResultCachedAudio(InlineQueryResultCachedBase):
     """
     Represents a link to an MP3 audio file stored on the Telegram servers. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
@@ -5975,6 +6014,7 @@ class OrderInfo(JsonDeserializable):
         self.shipping_address: ShippingAddress = shipping_address
 
 
+# noinspection PyUnresolvedReferences
 class ShippingOption(JsonSerializable):
     """
     This object represents one shipping option.
@@ -6302,7 +6342,7 @@ class Sticker(JsonDeserializable):
 
     def __init__(self, file_id, file_unique_id, type, width, height, is_animated, 
                 is_video, thumbnail=None, emoji=None, set_name=None, mask_position=None, file_size=None, 
-                premium_animation=None, custom_emoji_id=None, needs_repainting=None ,**kwargs):
+                premium_animation=None, custom_emoji_id=None, needs_repainting=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.type: str = type
@@ -7117,6 +7157,7 @@ class VideoChatScheduled(JsonDeserializable):
     def __init__(self, start_date, **kwargs):
         self.start_date: int = start_date
 
+
 class VoiceChatScheduled(VideoChatScheduled):
     """
     Deprecated, use :class:`VideoChatScheduled` instead.
@@ -7146,6 +7187,7 @@ class VideoChatEnded(JsonDeserializable):
     
     def __init__(self, duration, **kwargs):
         self.duration: int = duration
+
 
 class VoiceChatEnded(VideoChatEnded):
     """
@@ -7179,6 +7221,7 @@ class VideoChatParticipantsInvited(JsonDeserializable):
     
     def __init__(self, users=None, **kwargs):
         self.users: List[User] = users
+
 
 class VoiceChatParticipantsInvited(VideoChatParticipantsInvited):
     """
@@ -7259,7 +7302,7 @@ class MenuButtonCommands(MenuButton):
     :rtype: :class:`telebot.types.MenuButtonCommands`
     """
 
-    def __init__(self, type):
+    def __init__(self, type, **kwargs):
         self.type = type
 
     def to_dict(self):
@@ -7267,6 +7310,7 @@ class MenuButtonCommands(MenuButton):
     
     def to_json(self):
         return json.dumps(self.to_dict())
+
 
 class MenuButtonWebApp(MenuButton):
     """
@@ -7288,7 +7332,7 @@ class MenuButtonWebApp(MenuButton):
     :rtype: :class:`telebot.types.MenuButtonWebApp`
     """
 
-    def __init__(self, type, text, web_app):
+    def __init__(self, type, text, web_app, **kwargs):
         self.type: str = type
         self.text: str = text
         self.web_app: WebAppInfo = web_app
@@ -7298,6 +7342,7 @@ class MenuButtonWebApp(MenuButton):
 
     def to_json(self):
         return json.dumps(self.to_dict())
+
     
 class MenuButtonDefault(MenuButton):
     """
@@ -7311,7 +7356,7 @@ class MenuButtonDefault(MenuButton):
     :return: Instance of the class
     :rtype: :class:`telebot.types.MenuButtonDefault`
     """
-    def __init__(self, type):
+    def __init__(self, type, **kwargs):
         self.type: str = type
 
     def to_dict(self):
@@ -7393,7 +7438,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_post_messages: bool=None, can_edit_messages: bool=None,
         can_pin_messages: bool=None, can_manage_topics: bool=None,
         can_post_stories: bool=None, can_edit_stories: bool=None,
-        can_delete_stories: bool=None
+        can_delete_stories: bool=None, **kwargs
         ) -> None:
         
         self.is_anonymous: bool = is_anonymous
@@ -7485,7 +7530,8 @@ class InputFile:
     def __init__(self, file) -> None:
         self._file, self.file_name = self._resolve_file(file)
 
-    def _resolve_file(self, file):
+    @staticmethod
+    def _resolve_file(file):
         if isinstance(file, str):
             _file = open(file, 'rb')
             return _file, os.path.basename(_file.name)
@@ -7496,7 +7542,6 @@ class InputFile:
             return _file, os.path.basename(_file.name)
         else:
             raise TypeError("File must be a string or a file-like object(pathlib.Path, io.IOBase).")
-
 
     @property
     def file(self):
@@ -7530,7 +7575,7 @@ class ForumTopicCreated(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None) -> None:
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None, **kwargs) -> None:
         self.name: str = name
         self.icon_color: int = icon_color
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
@@ -7584,7 +7629,7 @@ class ForumTopicEdited(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: Optional[str]=None, icon_custom_emoji_id: Optional[str]=None) -> None:
+    def __init__(self, name: Optional[str]=None, icon_custom_emoji_id: Optional[str]=None, **kwargs) -> None:
         self.name: Optional[str] = name
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
 
@@ -7649,7 +7694,8 @@ class ForumTopic(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None) -> None:
+    def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None,
+                 **kwargs) -> None:
         self.message_thread_id: int = message_thread_id
         self.name: str = name
         self.icon_color: int = icon_color
@@ -7681,7 +7727,8 @@ class WriteAccessAllowed(JsonDeserializable):
         return cls(**obj)
         
 
-    def __init__(self, from_request: Optional[bool]=None, web_app_name: Optional[str]=None, from_attachment_menu: Optional[bool]=None) -> None:
+    def __init__(self, from_request: Optional[bool]=None, web_app_name: Optional[str]=None, from_attachment_menu: Optional[bool]=None,
+                 **kwargs) -> None:
         self.web_app_name: str = web_app_name
         self.from_request: bool = from_request
         self.from_attachment_menu: bool = from_attachment_menu
@@ -7714,7 +7761,7 @@ class UserShared(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, request_id: int, user_id: int) -> None:
+    def __init__(self, request_id: int, user_id: int, **kwargs) -> None:
         self.request_id: int = request_id
         self.user_id: int = user_id
 
@@ -7746,7 +7793,7 @@ class ChatShared(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, request_id: int, chat_id: int) -> None:
+    def __init__(self, request_id: int, chat_id: int, **kwargs) -> None:
         self.request_id: int = request_id
         self.chat_id: int = chat_id
 
@@ -7770,7 +7817,7 @@ class BotDescription(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, description: str) -> None:
+    def __init__(self, description: str, **kwargs) -> None:
         self.description: str = description
 
 
@@ -7793,7 +7840,7 @@ class BotShortDescription(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, short_description: str) -> None:
+    def __init__(self, short_description: str, **kwargs) -> None:
         self.short_description: str = short_description
 
 
@@ -7895,7 +7942,7 @@ class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerial
         return cls(**obj)
 
     def __init__(self, query=None, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None,
-                 allow_channel_chats=None):
+                 allow_channel_chats=None, **kwargs):
         self.query: str = query
         self.allow_user_chats: bool = allow_user_chats
         self.allow_bot_chats: bool = allow_bot_chats
@@ -7942,7 +7989,7 @@ class BotName(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, **kwargs):
         self.name: str = name
 
 
@@ -8007,7 +8054,7 @@ class Story(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         pass
 
 
@@ -8049,8 +8096,9 @@ class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
     
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
-    
 
+
+# noinspection PyUnresolvedReferences
 class ReactionTypeEmoji(ReactionType):
     """
     This object represents an emoji reaction type.
@@ -8067,16 +8115,17 @@ class ReactionTypeEmoji(ReactionType):
     :rtype: :class:`ReactionTypeEmoji`
     """
 
-    def __init__(self, emoji: str) -> None:
+    def __init__(self, emoji: str, **kwargs) -> None:
         super().__init__('emoji')
         self.emoji: str = emoji
 
     def to_dict(self) -> dict:
         json_dict = super().to_dict()
         json_dict['emoji'] = self.emoji
-        return json_dict    
+        return json_dict
 
 
+# noinspection PyUnresolvedReferences
 class ReactionTypeCustomEmoji(ReactionType):
     """
     This object represents a custom emoji reaction type.
@@ -8093,7 +8142,7 @@ class ReactionTypeCustomEmoji(ReactionType):
     :rtype: :class:`ReactionTypeCustomEmoji`
     """
 
-    def __init__(self, custom_emoji: str) -> None:
+    def __init__(self, custom_emoji: str, **kwargs) -> None:
         super().__init__('custom_emoji')
         self.custom_emoji: str = custom_emoji
 
@@ -8150,7 +8199,7 @@ class MessageReactionUpdated(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, chat: Chat, message_id: int, date: int, old_reaction: List[ReactionType], new_reaction: List[ReactionType],
-                 user: Optional[User]=None, actor_chat: Optional[Chat]=None) -> None:
+                 user: Optional[User]=None, actor_chat: Optional[Chat]=None, **kwargs) -> None:
         self.chat: Chat = chat
         self.message_id: int = message_id
         self.user: Optional[User] = user
@@ -8192,7 +8241,7 @@ class MessageReactionCountUpdated(JsonDeserializable):
         obj['reactions'] = [ReactionCount.de_json(reaction) for reaction in obj['reactions']]
         return cls(**obj)
 
-    def __init__(self, chat: Chat, message_id: int, date: int, reactions: List[ReactionCount]) -> None:
+    def __init__(self, chat: Chat, message_id: int, date: int, reactions: List[ReactionCount], **kwargs) -> None:
         self.chat: Chat = chat
         self.message_id: int = message_id
         self.date: int = date
@@ -8223,7 +8272,7 @@ class ReactionCount(JsonDeserializable):
         obj['type'] = ReactionType.de_json(obj['type'])
         return cls(**obj)
     
-    def __init__(self, type: ReactionType, total_count: int) -> None:
+    def __init__(self, type: ReactionType, total_count: int, **kwargs) -> None:
         self.type: ReactionType = type
         self.total_count: int = total_count
 
@@ -8365,7 +8414,7 @@ class ExternalReplyInfo(JsonDeserializable):
             dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
-            venue: Optional[Venue]=None) -> None:
+            venue: Optional[Venue]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -8391,6 +8440,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.venue: Optional[Venue] = venue
 
 
+# noinspection PyUnresolvedReferences
 class MessageOrigin(JsonDeserializable):
     """
     This object describes the origin of a message.
@@ -8540,7 +8590,7 @@ class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     def __init__(self, is_disabled: Optional[bool] = None, url: Optional[str] = None,
                  prefer_small_media: Optional[bool] = None, prefer_large_media: Optional[bool] = None,
-                 show_above_text: Optional[bool] = None) -> None:
+                 show_above_text: Optional[bool] = None, **kwargs) -> None:
         self.is_disabled: Optional[bool] = is_disabled
         self.url: Optional[str] = url
         self.prefer_small_media: Optional[bool] = prefer_small_media
@@ -8611,7 +8661,7 @@ class Giveaway(JsonDeserializable):
     def __init__(self, chats: List[Chat], winners_selection_date: int, winner_count: int,
                  only_new_members: Optional[bool] = None, has_public_winners: Optional[bool] = None,
                  prize_description: Optional[str] = None, country_codes: Optional[List[str]] = None,
-                 premium_subscription_month_count: Optional[int] = None) -> None:
+                 premium_subscription_month_count: Optional[int] = None, **kwargs) -> None:
         self.chats: List[Chat] = chats
         self.winners_selection_date: int = winners_selection_date
         self.winner_count: int = winner_count
@@ -8678,7 +8728,7 @@ class GiveawayWinners(JsonDeserializable):
                  winners: List[User], additional_chat_count: Optional[int] = None,
                  premium_subscription_month_count: Optional[int] = None, unclaimed_prize_count: Optional[int] = None,
                  only_new_members: Optional[bool] = None, was_refunded: Optional[bool] = None,
-                 prize_description: Optional[str] = None) -> None:
+                 prize_description: Optional[str] = None, **kwargs) -> None:
         self.chat: Chat = chat
         self.giveaway_message_id: int = giveaway_message_id
         self.winners_selection_date: int = winners_selection_date
@@ -8721,7 +8771,7 @@ class GiveawayCompleted(JsonDeserializable):
         return cls(**obj)
     
     def __init__(self, winner_count: int, unclaimed_prize_count: Optional[int] = None,
-                    giveaway_message: Optional[Message] = None) -> None:
+                    giveaway_message: Optional[Message] = None, **kwargs) -> None:
         self.winner_count: int = winner_count
         self.unclaimed_prize_count: Optional[int] = unclaimed_prize_count
         self.giveaway_message: Optional[Message] = giveaway_message
@@ -8766,7 +8816,7 @@ class TextQuote(JsonDeserializable):
 
     def __init__(self, text: str, position: int,
                  entities: Optional[List[MessageEntity]] = None,
-                 is_manual: Optional[bool] = None) -> None:
+                 is_manual: Optional[bool] = None, **kwargs) -> None:
         self.text: str = text
         self.entities: Optional[List[MessageEntity]] = entities
         self.position: Optional[int] = position
@@ -8816,7 +8866,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
-                 quote_position: Optional[int] = None) -> None:
+                 quote_position: Optional[int] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -8876,7 +8926,7 @@ class UsersShared(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, request_id, user_ids):
+    def __init__(self, request_id, user_ids, **kwargs):
         self.request_id = request_id
         self.user_ids = user_ids
     
@@ -8906,7 +8956,7 @@ class ChatBoostUpdated(JsonDeserializable):
         obj['boost'] = ChatBoost.de_json(obj['boost'])
         return cls(**obj)
 
-    def __init__(self, chat, boost):
+    def __init__(self, chat, boost, **kwargs):
         self.chat = chat
         self.boost = boost
         
@@ -8942,7 +8992,7 @@ class ChatBoostRemoved(JsonDeserializable):
         obj['source'] = ChatBoostSource.de_json(obj['source'])        
         return cls(**obj)
 
-    def __init__(self, chat, boost_id, remove_date, source):
+    def __init__(self, chat, boost_id, remove_date, source, **kwargs):
         self.chat = chat
         self.boost_id = boost_id
         self.remove_date = remove_date
@@ -8969,10 +9019,11 @@ class ChatBoostSource(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, source):
+    def __init__(self, source, **kwargs):
         self.source = source
-    
 
+
+# noinspection PyUnresolvedReferences
 class ChatBoostSourcePremium(ChatBoostSource):
     """
     The boost was obtained by subscribing to Telegram Premium or by gifting a Telegram Premium subscription to another user.
@@ -9000,8 +9051,9 @@ class ChatBoostSourcePremium(ChatBoostSource):
     def __init__(self, user):
         super().__init__('premium')
         self.user = user
-        
-    
+
+
+# noinspection PyUnresolvedReferences
 class ChatBoostSourceGiftCode(ChatBoostSource):
     """
     The boost was obtained by the creation of Telegram Premium gift codes to boost a chat.
@@ -9029,8 +9081,9 @@ class ChatBoostSourceGiftCode(ChatBoostSource):
     def __init__(self, user):
         super().__init__('gift_code')
         self.user = user
-        
-    
+
+
+# noinspection PyUnresolvedReferences
 class ChatBoostSourceGiveaway(ChatBoostSource):
     """
     The boost was obtained by the creation of a Telegram Premium giveaway.
@@ -9098,7 +9151,7 @@ class ChatBoost(JsonDeserializable):
         obj['source'] = ChatBoostSource.de_json(obj['source'])
         return cls(**obj)
 
-    def __init__(self, boost_id, add_date, expiration_date, source):
+    def __init__(self, boost_id, add_date, expiration_date, source, **kwargs):
         self.boost_id = boost_id
         self.add_date = add_date
         self.expiration_date = expiration_date
@@ -9126,7 +9179,7 @@ class UserChatBoosts(JsonDeserializable):
         obj['boosts'] = [ChatBoost.de_json(boost) for boost in obj['boosts']]
         return cls(**obj)
 
-    def __init__(self, boosts):
+    def __init__(self, boosts, **kwargs):
         self.boosts: ChatBoost = boosts
     
 
@@ -9157,7 +9210,7 @@ class InaccessibleMessage(JsonDeserializable):
         obj['chat'] = Chat.de_json(obj['chat'])
         return cls(**obj)
 
-    def __init__(self, chat, message_id, date):
+    def __init__(self, chat, message_id, date, **kwargs):
         self.chat = chat
         self.message_id = message_id
         self.date = date
