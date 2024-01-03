@@ -67,9 +67,11 @@ def update_type(message):
     chat_join_request = None
     message_reaction = None
     message_reaction_count = None
+    chat_boost = None
+    chat_boost_removed = None
     return types.Update(1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
                         chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                        my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count)
+                        my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, chat_boost, chat_boost_removed)
 
 
 @pytest.fixture()
@@ -89,9 +91,11 @@ def reply_to_message_update_type(reply_to_message):
     chat_join_request = None
     message_reaction = None
     message_reaction_count = None
+    chat_boost = None
+    chat_boost_removed = None
     return types.Update(1001234038284, reply_to_message, edited_message, channel_post, edited_channel_post,
                         inline_query, chosen_inline_result, callback_query, shipping_query, pre_checkout_query, 
-                        poll, poll_answer, my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count)
+                        poll, poll_answer, my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, chat_boost, chat_boost_removed)
 
 
 def next_handler(message):
