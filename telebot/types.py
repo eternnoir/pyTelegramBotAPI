@@ -992,7 +992,7 @@ class Message(JsonDeserializable):
         :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
         :param users_shared: Optional. Service message: a user was shared with the bot
-        :type users_shared: :class:`telebot.types.UserShared`
+        :type users_shared: :class:`telebot.types.UsersShared`
 
         :param chat_shared: Optional. Service message: a chat was shared with the bot
         :type chat_shared: :class:`telebot.types.ChatShared`
@@ -1242,7 +1242,7 @@ class Message(JsonDeserializable):
             opts['write_access_allowed'] = WriteAccessAllowed.de_json(obj['write_access_allowed'])
             content_type = 'write_access_allowed'
         if 'users_shared' in obj:
-            opts['users_shared'] = UserShared.de_json(obj['users_shared'])
+            opts['users_shared'] = UsersShared.de_json(obj['users_shared'])
             content_type = 'users_shared' # COMPATIBILITY BROKEN!
         if 'chat_shared' in obj:
             opts['chat_shared'] = ChatShared.de_json(obj['chat_shared'])
@@ -1359,8 +1359,7 @@ class Message(JsonDeserializable):
         self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
         self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
         self.write_access_allowed: Optional[WriteAccessAllowed] = None
-        self.users_shared: Optional[UserShared] = None
-        self.user_shared: Optional[UserShared] = self.users_shared
+        self.users_shared: Optional[UsersShared] = None
         self.chat_shared: Optional[ChatShared] = None
         self.story: Optional[Story] = None
         self.external_reply: Optional[ExternalReplyInfo] = None
@@ -1561,6 +1560,10 @@ class Message(JsonDeserializable):
             return self.forward_origin.date
         return None
 
+    @property
+    def user_shared(self):
+        logger.warning('The parameter "user_shared" is deprecated, use "users_shared" instead')
+        return self.users_shared
 
 
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
@@ -2464,7 +2467,7 @@ class KeyboardButtonRequestUsers(Dictionaryable):
 
     Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestusers
 
-    :param request_id: Signed 32-bit identifier of the request, which will be received back in the UserShared object.
+    :param request_id: Signed 32-bit identifier of the request, which will be received back in the UsersShared object.
         Must be unique within the message
     :type request_id: :obj:`int`
 
@@ -2601,7 +2604,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
     :type web_app: :class:`telebot.types.WebAppInfo`
 
     :param request_user: Optional. If specified, pressing the button will open a list of suitable users. Tapping on any user
-        will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
+        will send their identifier to the bot in a “users_shared” service message. Available in private chats only.
     :type request_user: :class:`telebot.types.KeyboardButtonRequestUsers`
 
     :param request_chat: Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will
@@ -7732,41 +7735,8 @@ class WriteAccessAllowed(JsonDeserializable):
         self.web_app_name: str = web_app_name
         self.from_request: bool = from_request
         self.from_attachment_menu: bool = from_attachment_menu
-        
 
 
-class UserShared(JsonDeserializable):
-    """
-    This object contains information about the user whose identifier was shared with the bot using a
-    `telebot.types.KeyboardButtonRequestUsers` button.
-
-    Telegram documentation: https://core.telegram.org/bots/api#usershared
-
-    :param request_id: identifier of the request
-    :type request_id: :obj:`int`
-
-    :param user_id: Identifier of the shared user. This number may have more than 32 significant bits and some programming
-        languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit
-        integer or double-precision float type are safe for storing this identifier. The bot may not have access to the user
-        and could be unable to use this identifier, unless the user is already known to the bot by some other means.
-    :type user_id: :obj:`int`
-
-    :return: Instance of the class
-    :rtype: :class:`telebot.types.UserShared`
-    """
-
-    @classmethod
-    def de_json(cls, json_string):
-        if json_string is None: return None
-        obj = cls.check_json(json_string)
-        return cls(**obj)
-
-    def __init__(self, request_id: int, user_id: int, **kwargs) -> None:
-        self.request_id: int = request_id
-        self.user_id: int = user_id
-
-
-    
 class ChatShared(JsonDeserializable):
     """
     This object contains information about the chat whose identifier was shared with the bot using a
@@ -8918,7 +8888,6 @@ class UsersShared(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`UsersShared`
     """
-
     @classmethod
     def de_json(cls, json_string):
         if json_string is None:
@@ -8929,6 +8898,11 @@ class UsersShared(JsonDeserializable):
     def __init__(self, request_id, user_ids, **kwargs):
         self.request_id = request_id
         self.user_ids = user_ids
+
+    @property
+    def user_id(self):
+        logger.warning('The parameter "user_id" is deprecated, use "user_ids" instead')
+        return None
     
 
 class ChatBoostUpdated(JsonDeserializable):
