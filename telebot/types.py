@@ -2484,10 +2484,10 @@ class KeyboardButtonRequestUsers(Dictionaryable):
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonRequestUsers`
-
     """
-
-    def __init__(self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None, max_quantity: Optional[int]=None) -> None:
+    def __init__(
+            self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
+            max_quantity: Optional[int]=None) -> None:
         self.request_id: int = request_id
         self.user_is_bot: Optional[bool] = user_is_bot
         self.user_is_premium: Optional[bool] = user_is_premium
@@ -2503,7 +2503,15 @@ class KeyboardButtonRequestUsers(Dictionaryable):
             data['max_quantity'] = self.max_quantity
         return data
 
-KeyboardButtonRequestUser = KeyboardButtonRequestUsers
+
+class KeyboardButtonRequestUser(KeyboardButtonRequestUsers):
+    """Deprecated. Use KeyboardButtonRequestUsers instead."""
+    def __init__(
+            self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
+            max_quantity: Optional[int]=None) -> None:
+        logger.warning('The parameter "voice_chat_scheduled" is deprecated, use "video_chat_scheduled" instead')
+        super().__init__(request_id, user_is_bot=user_is_bot, user_is_premium=user_is_premium, max_quantity=max_quantity)
+
 
 class KeyboardButtonRequestChat(Dictionaryable):
     """
@@ -2603,9 +2611,12 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         will be able to send a “web_app_data” service message. Available in private chats only.
     :type web_app: :class:`telebot.types.WebAppInfo`
 
-    :param request_user: Optional. If specified, pressing the button will open a list of suitable users. Tapping on any user
-        will send their identifier to the bot in a “users_shared” service message. Available in private chats only.
-    :type request_user: :class:`telebot.types.KeyboardButtonRequestUsers`
+    :param request_user: deprecated
+    :type request_user: :class:`telebot.types.KeyboardButtonRequestUser`
+
+    :param request_users: Optional. If specified, pressing the button will open a list of suitable users.
+        Identifiers of selected users will be sent to the bot in a “users_shared” service message. Available in private chats only.
+    :type request_users: :class:`telebot.types.KeyboardButtonRequestUsers`
 
     :param request_chat: Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will
         send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
@@ -2616,18 +2627,19 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
     """
     def __init__(self, text: str, request_contact: Optional[bool]=None, 
             request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
-            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUsers]=None,
+            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
             request_chat: Optional[KeyboardButtonRequestChat]=None, request_users: Optional[KeyboardButtonRequestUsers]=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
         self.request_poll: KeyboardButtonPollType = request_poll
         self.web_app: WebAppInfo = web_app
-        self.request_user: KeyboardButtonRequestUsers = request_user
         self.request_chat: KeyboardButtonRequestChat = request_chat
         self.request_users: KeyboardButtonRequestUsers = request_users
         if request_user is not None:
-            self.request_users = request_user
+            logger.warning('The parameter "request_user" is deprecated, use "request_users" instead')
+            if self.request_users is None:
+                self.request_users = request_user
 
 
     def to_json(self):
@@ -2643,8 +2655,8 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['request_poll'] = self.request_poll.to_dict()
         if self.web_app is not None:
             json_dict['web_app'] = self.web_app.to_dict()
-        if self.request_user is not None:
-            json_dict['request_user'] = self.request_user.to_dict()
+        if self.request_users is not None:
+            json_dict['request_users'] = self.request_users.to_dict()
         if self.request_chat is not None:
             json_dict['request_chat'] = self.request_chat.to_dict()
         return json_dict
