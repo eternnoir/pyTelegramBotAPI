@@ -1272,14 +1272,10 @@ class Message(JsonDeserializable):
             content_type = 'story'
         if 'external_reply' in obj:
             opts['external_reply'] = ExternalReplyInfo.de_json(obj['external_reply'])
-            content_type = 'text' # @Badiboy not sure about content_types in here, please check
         if 'quote' in obj:
             opts['quote'] = TextQuote.de_json(obj['quote'])
-            content_type = 'text' # Here too, check the content types   
-
         if 'link_preview_options' in obj:
             opts['link_preview_options'] = LinkPreviewOptions.de_json(obj['link_preview_options'])
-
         if 'giveaway_created' in obj:
             opts['giveaway_created'] = GiveawayCreated.de_json(obj['giveaway_created'])
             content_type = 'giveaway_created'
@@ -1396,7 +1392,7 @@ class Message(JsonDeserializable):
         self.story: Optional[Story] = None
         self.external_reply: Optional[ExternalReplyInfo] = None
         self.quote: Optional[TextQuote] = None
-        self.LinkPreviewOptions: Optional[LinkPreviewOptions] = None
+        self.link_preview_options: Optional[LinkPreviewOptions] = None
         self.giveaway_created: Optional[GiveawayCreated] = None
         self.giveaway: Optional[Giveaway] = None
         self.giveaway_winners: Optional[GiveawayWinners] = None
@@ -3713,7 +3709,7 @@ class InputTextMessageContent(Dictionaryable):
         parse_mode
     :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param disable_web_page_preview: Optional. Disables link previews for links in the sent message
+    :param disable_web_page_preview: Optional, deprecated. Disables link previews for links in the sent message
     :type disable_web_page_preview: :obj:`bool`
 
     :return: Instance of the class
@@ -3724,11 +3720,13 @@ class InputTextMessageContent(Dictionaryable):
         self.parse_mode: str = parse_mode
         self.entities: List[MessageEntity] = entities
         link_preview_options: LinkPreviewOptions = link_preview_options
-        if disable_web_page_preview is not None and link_preview_options is None:
-            # deprecated
-            self.link_preview_options: LinkPreviewOptions = LinkPreviewOptions(disable_web_page_preview)
+        if disable_web_page_preview is not None:
+            logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
             
-
+            if link_preview_options:
+                logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
+            else:
+                self.link_preview_options: LinkPreviewOptions = LinkPreviewOptions(disable_web_page_preview)
 
     def to_dict(self):
         json_dict = {'message_text': self.message_text}
