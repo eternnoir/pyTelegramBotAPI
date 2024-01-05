@@ -342,7 +342,7 @@ def hide_link(url: str) -> str:
 
 def hcite(content: str, escape: Optional[bool]=True) -> str:
     """
-    Returns a Markdown-formatted block-quotation string.
+    Returns a html-formatted block-quotation string.
 
     :param content: The string to bold.
     :type content: :obj:`str`
