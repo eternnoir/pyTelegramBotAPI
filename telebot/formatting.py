@@ -94,7 +94,7 @@ def mcite(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '> {}'.format(escape_markdown(content) if escape else content)
+    return '>{}'.format(escape_markdown(content) if escape else content)
 
 
 def hbold(content: str, escape: Optional[bool]=True) -> str:
@@ -339,3 +339,18 @@ def hide_link(url: str) -> str:
     :rtype: :obj:`str`
     """
     return f'<a href="{url}">&#8288;</a>'
+
+def hcite(content: str, escape: Optional[bool]=True) -> str:
+    """
+    Returns a Markdown-formatted bold string.
+
+    :param content: The string to bold.
+    :type content: :obj:`str`
+
+    :param escape: True if you need to escape special characters. Defaults to True.
+    :type escape: :obj:`bool`
+
+    :return: The formatted string.
+    :rtype: :obj:`str`
+    """
+    return '<blockquote>{}</blockquote>'.format(escape_html(content) if escape else content)
