@@ -83,7 +83,7 @@ def mbold(content: str, escape: Optional[bool]=True) -> str:
 
 def mcite(content: str, escape: Optional[bool]=True) -> str:
     """
-    Returns a Markdown-formatted bold string.
+    Returns a Markdown-formatted block-quotation string.
 
     :param content: The string to bold.
     :type content: :obj:`str`
@@ -342,7 +342,7 @@ def hide_link(url: str) -> str:
 
 def hcite(content: str, escape: Optional[bool]=True) -> str:
     """
-    Returns a Markdown-formatted bold string.
+    Returns a Markdown-formatted block-quotation string.
 
     :param content: The string to bold.
     :type content: :obj:`str`
