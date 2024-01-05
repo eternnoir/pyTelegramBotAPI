@@ -982,7 +982,7 @@ class Message(JsonDeserializable):
 
     :param pinned_message: Optional. Specified message was pinned. Note that the Message object in this field will not
         contain further reply_to_message fields even if it is itself a reply.
-    :type message: :class:`telebot.types.Message` or :class:`telebot.types.InaccessibleMessage`
+    :type pinned_message: :class:`telebot.types.Message` or :class:`telebot.types.InaccessibleMessage`
 
     :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
     :type invoice: :class:`telebot.types.Invoice`
