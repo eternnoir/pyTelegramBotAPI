@@ -18,6 +18,8 @@ sphinx:
   # Fail on all warnings to avoid broken references
   # fail_on_warning: true
 
+formats: all
+
 # Optionally set the version of Python and requirements required to build your docs
 python:
   version: 3.11
