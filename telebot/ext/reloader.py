@@ -1,4 +1,3 @@
-
 from watchdog.events import FileSystemEventHandler
 from watchdog.events import FileSystemEvent
 import psutil
@@ -6,12 +5,14 @@ import os
 import sys
 import logging
 
-logger = logging.getLogger('TeleBot')
+logger = logging.getLogger("TeleBot")
+
 
 class EventHandler(FileSystemEventHandler):
     def on_any_event(self, event: FileSystemEvent):
-        logger.info('* Detected changes in: %s, reloading', (event.src_path))
+        logger.info("* Detected changes in: %s, reloading", (event.src_path))
         restart_file()
+
 
 def restart_file():
     try:
@@ -24,8 +25,8 @@ def restart_file():
         logger.error(e)
 
     python = sys.executable
-    
-    if os.name == 'nt':
-        os.execv(sys.executable, ['python'] + sys.argv)
+
+    if os.name == "nt":
+        os.execv(sys.executable, ["python"] + sys.argv)
     else:
         os.execl(python, python, *sys.argv)

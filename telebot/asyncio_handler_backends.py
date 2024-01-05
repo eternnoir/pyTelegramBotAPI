@@ -20,7 +20,7 @@ class BaseMiddleware:
             def __init__(self):
                 self.update_sensitive = True
                 self.update_types = ['message', 'edited_message']
-            
+
             async def pre_process_message(self, message, data):
                 # only message update here
                 pass
@@ -57,6 +57,7 @@ class State:
         class MyStates(StatesGroup):
             my_state = State() # returns my_state:State string.
     """
+
     def __init__(self) -> None:
         self.name = None
 
@@ -73,12 +74,17 @@ class StatesGroup:
         class MyStates(StatesGroup):
             my_state = State() # returns my_state:State string.
     """
+
     def __init_subclass__(cls) -> None:
         state_list = []
         for name, value in cls.__dict__.items():
-            if not name.startswith('__') and not callable(value) and isinstance(value, State):
+            if (
+                not name.startswith("__")
+                and not callable(value)
+                and isinstance(value, State)
+            ):
                 # change value of that variable
-                value.name = ':'.join((cls.__name__, name))
+                value.name = ":".join((cls.__name__, name))
                 value.group = cls
                 state_list.append(value)
         cls._state_list = state_list
@@ -91,7 +97,7 @@ class StatesGroup:
 class SkipHandler:
     """
     Class for skipping handlers.
-    Just return instance of this class 
+    Just return instance of this class
     in middleware to skip handler.
     Update will go to post_process,
     but will skip execution of handler.
@@ -104,7 +110,7 @@ class SkipHandler:
 class CancelUpdate:
     """
     Class for canceling updates.
-    Just return instance of this class 
+    Just return instance of this class
     in middleware to skip update.
     Update will skip handler and execution
     of post_process in middlewares.
@@ -117,9 +123,9 @@ class CancelUpdate:
 class ContinueHandling:
     """
     Class for continue updates in handlers.
-    Just return instance of this class 
+    Just return instance of this class
     in handlers to continue process.
-    
+
     .. code-block:: python3
         :caption: Example of using ContinueHandling
 
@@ -127,11 +133,12 @@ class ContinueHandling:
         async def start(message):
             await bot.send_message(message.chat.id, 'Hello World!')
             return ContinueHandling()
-        
+
         @bot.message_handler(commands=['start'])
         async def start2(message):
             await bot.send_message(message.chat.id, 'Hello World2!')
-   
+
     """
+
     def __init__(self) -> None:
         pass
