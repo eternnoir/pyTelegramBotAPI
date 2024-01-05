@@ -785,285 +785,285 @@ class WebAppData(JsonDeserializable, Dictionaryable):
 # noinspection PyUnresolvedReferences
 class Message(JsonDeserializable):
     """
-        This object represents a message.
+    This object represents a message.
 
-        Telegram Documentation: https://core.telegram.org/bots/api#message
+    Telegram Documentation: https://core.telegram.org/bots/api#message
 
-        :param message_id: Unique message identifier inside this chat
-        :type message_id: :obj:`int`
+    :param message_id: Unique message identifier inside this chat
+    :type message_id: :obj:`int`
 
-        :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
-        :type message_thread_id: :obj:`int`
+    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
+    :type message_thread_id: :obj:`int`
 
-        :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the
-            field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
-        :type from_user: :class:`telebot.types.User`
+    :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the
+        field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
+    :type from_user: :class:`telebot.types.User`
 
-        :param sender_chat: Optional. Sender of the message, sent on behalf of a chat. For example, the channel itself for
-            channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for
-            messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a
-            fake sender user in non-channel chats, if the message was sent on behalf of a chat.
-        :type sender_chat: :class:`telebot.types.Chat`
+    :param sender_chat: Optional. Sender of the message, sent on behalf of a chat. For example, the channel itself for
+        channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for
+        messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a
+        fake sender user in non-channel chats, if the message was sent on behalf of a chat.
+    :type sender_chat: :class:`telebot.types.Chat`
 
-        :param date: Date the message was sent in Unix time
-        :type date: :obj:`int`
+    :param date: Date the message was sent in Unix time
+    :type date: :obj:`int`
 
-        :param chat: Conversation the message belongs to
-        :type chat: :class:`telebot.types.Chat`
+    :param chat: Conversation the message belongs to
+    :type chat: :class:`telebot.types.Chat`
 
-        :param forward_from: deprecated.
-        :type forward_from: :class:`telebot.types.User`
+    :param forward_from: deprecated.
+    :type forward_from: :class:`telebot.types.User`
 
-        :param forward_from_chat: deprecated.
-        :type forward_from_chat: :class:`telebot.types.Chat`
+    :param forward_from_chat: deprecated.
+    :type forward_from_chat: :class:`telebot.types.Chat`
 
-        :param forward_from_message_id: deprecated.
-            message in the channel
-        :type forward_from_message_id: :obj:`int`
+    :param forward_from_message_id: deprecated.
+        message in the channel
+    :type forward_from_message_id: :obj:`int`
 
-        :param forward_signature: deprecated.
-        :type forward_signature: :obj:`str`
+    :param forward_signature: deprecated.
+    :type forward_signature: :obj:`str`
 
-        :param forward_sender_name: deprecated.
-        :type forward_sender_name: :obj:`str`
+    :param forward_sender_name: deprecated.
+    :type forward_sender_name: :obj:`str`
 
-        :param forward_date: deprecated.
-        :type forward_date: :obj:`int`
+    :param forward_date: deprecated.
+    :type forward_date: :obj:`int`
 
-        :forward_origin: Optional. For forwarded messages, information about the original message;
-        :type forward_origin: :class:`telebot.types.MessageOrigin`
+    :forward_origin: Optional. For forwarded messages, information about the original message;
+    :type forward_origin: :class:`telebot.types.MessageOrigin`
 
-        :param is_topic_message: Optional. True, if the message is sent to a forum topic
-        :type is_topic_message: :obj:`bool`
+    :param is_topic_message: Optional. True, if the message is sent to a forum topic
+    :type is_topic_message: :obj:`bool`
 
-        :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically
-            forwarded to the connected discussion group
-        :type is_automatic_forward: :obj:`bool`
+    :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically
+        forwarded to the connected discussion group
+    :type is_automatic_forward: :obj:`bool`
 
-        :param reply_to_message: Optional. For replies, the original message. Note that the Message object in this field
-            will not contain further reply_to_message fields even if it itself is a reply.
-        :type reply_to_message: :class:`telebot.types.Message`
+    :param reply_to_message: Optional. For replies, the original message. Note that the Message object in this field
+        will not contain further reply_to_message fields even if it itself is a reply.
+    :type reply_to_message: :class:`telebot.types.Message`
 
-        :param external_reply: Optional. Information about the message that is being replied to, which may come from another chat or forum topic
-        :type external_reply: :class:`telebot.types.ExternalReplyInfo`
+    :param external_reply: Optional. Information about the message that is being replied to, which may come from another chat or forum topic
+    :type external_reply: :class:`telebot.types.ExternalReplyInfo`
 
-        :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
-        :type quote: :class:`telebot.types.TextQuote`
+    :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
+    :type quote: :class:`telebot.types.TextQuote`
 
-        :param via_bot: Optional. Bot through which the message was sent
-        :type via_bot: :class:`telebot.types.User`
+    :param via_bot: Optional. Bot through which the message was sent
+    :type via_bot: :class:`telebot.types.User`
 
-        :param edit_date: Optional. Date the message was last edited in Unix time
-        :type edit_date: :obj:`int`
+    :param edit_date: Optional. Date the message was last edited in Unix time
+    :type edit_date: :obj:`int`
 
-        :param has_protected_content: Optional. :obj:`bool`, if the message can't be forwarded
-        :type has_protected_content: :obj:`bool`
+    :param has_protected_content: Optional. :obj:`bool`, if the message can't be forwarded
+    :type has_protected_content: :obj:`bool`
 
-        :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
-        :type media_group_id: :obj:`str`
+    :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
+    :type media_group_id: :obj:`str`
 
-        :param author_signature: Optional. Signature of the post author for messages in channels, or the custom title of an
-            anonymous group administrator
-        :type author_signature: :obj:`str`
+    :param author_signature: Optional. Signature of the post author for messages in channels, or the custom title of an
+        anonymous group administrator
+    :type author_signature: :obj:`str`
 
-        :param text: Optional. For text messages, the actual UTF-8 text of the message
-        :type text: :obj:`str`
+    :param text: Optional. For text messages, the actual UTF-8 text of the message
+    :type text: :obj:`str`
 
-        :param entities: Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that
-            appear in the text
-        :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+    :param entities: Optional. For text messages, special entities like usernames, URLs, bot commands, etc. that
+        appear in the text
+    :type entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-        :param link_preview_options: Optional. Options used for link preview generation for the message,
-            if it is a text message and link preview options were changed
-        :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
+    :param link_preview_options: Optional. Options used for link preview generation for the message,
+        if it is a text message and link preview options were changed
+    :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
 
-        :param animation: Optional. Message is an animation, information about the animation. For backward
-            compatibility, when this field is set, the document field will also be set
-        :type animation: :class:`telebot.types.Animation`
+    :param animation: Optional. Message is an animation, information about the animation. For backward
+        compatibility, when this field is set, the document field will also be set
+    :type animation: :class:`telebot.types.Animation`
 
-        :param audio: Optional. Message is an audio file, information about the file
-        :type audio: :class:`telebot.types.Audio`
+    :param audio: Optional. Message is an audio file, information about the file
+    :type audio: :class:`telebot.types.Audio`
 
-        :param document: Optional. Message is a general file, information about the file
-        :type document: :class:`telebot.types.Document`
+    :param document: Optional. Message is a general file, information about the file
+    :type document: :class:`telebot.types.Document`
 
-        :param photo: Optional. Message is a photo, available sizes of the photo
-        :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
+    :param photo: Optional. Message is a photo, available sizes of the photo
+    :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
 
-        :param sticker: Optional. Message is a sticker, information about the sticker
-        :type sticker: :class:`telebot.types.Sticker`
+    :param sticker: Optional. Message is a sticker, information about the sticker
+    :type sticker: :class:`telebot.types.Sticker`
 
-        :param story: Optional. Message is a forwarded story
-        :type story: :class:`telebot.types.Story`
+    :param story: Optional. Message is a forwarded story
+    :type story: :class:`telebot.types.Story`
 
-        :param video: Optional. Message is a video, information about the video
-        :type video: :class:`telebot.types.Video`
+    :param video: Optional. Message is a video, information about the video
+    :type video: :class:`telebot.types.Video`
 
-        :param video_note: Optional. Message is a video note, information about the video message
-        :type video_note: :class:`telebot.types.VideoNote`
+    :param video_note: Optional. Message is a video note, information about the video message
+    :type video_note: :class:`telebot.types.VideoNote`
 
-        :param voice: Optional. Message is a voice message, information about the file
-        :type voice: :class:`telebot.types.Voice`
+    :param voice: Optional. Message is a voice message, information about the file
+    :type voice: :class:`telebot.types.Voice`
 
-        :param caption: Optional. Caption for the animation, audio, document, photo, video or voice
-        :type caption: :obj:`str`
+    :param caption: Optional. Caption for the animation, audio, document, photo, video or voice
+    :type caption: :obj:`str`
 
-        :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot
-            commands, etc. that appear in the caption
-        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+    :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot
+        commands, etc. that appear in the caption
+    :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-        :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
-        :type has_media_spoiler: :obj:`bool`
+    :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
+    :type has_media_spoiler: :obj:`bool`
 
-        :param contact: Optional. Message is a shared contact, information about the contact
-        :type contact: :class:`telebot.types.Contact`
+    :param contact: Optional. Message is a shared contact, information about the contact
+    :type contact: :class:`telebot.types.Contact`
 
-        :param dice: Optional. Message is a dice with random value
-        :type dice: :class:`telebot.types.Dice`
+    :param dice: Optional. Message is a dice with random value
+    :type dice: :class:`telebot.types.Dice`
 
-        :param game: Optional. Message is a game, information about the game. More about games »
-        :type game: :class:`telebot.types.Game`
+    :param game: Optional. Message is a game, information about the game. More about games »
+    :type game: :class:`telebot.types.Game`
 
-        :param poll: Optional. Message is a native poll, information about the poll
-        :type poll: :class:`telebot.types.Poll`
+    :param poll: Optional. Message is a native poll, information about the poll
+    :type poll: :class:`telebot.types.Poll`
 
-        :param venue: Optional. Message is a venue, information about the venue. For backward compatibility, when this
-            field is set, the location field will also be set
-        :type venue: :class:`telebot.types.Venue`
+    :param venue: Optional. Message is a venue, information about the venue. For backward compatibility, when this
+        field is set, the location field will also be set
+    :type venue: :class:`telebot.types.Venue`
 
-        :param location: Optional. Message is a shared location, information about the location
-        :type location: :class:`telebot.types.Location`
+    :param location: Optional. Message is a shared location, information about the location
+    :type location: :class:`telebot.types.Location`
 
-        :param new_chat_members: Optional. New members that were added to the group or supergroup and information about
-            them (the bot itself may be one of these members)
-        :type new_chat_members: :obj:`list` of :class:`telebot.types.User`
+    :param new_chat_members: Optional. New members that were added to the group or supergroup and information about
+        them (the bot itself may be one of these members)
+    :type new_chat_members: :obj:`list` of :class:`telebot.types.User`
 
-        :param left_chat_member: Optional. A member was removed from the group, information about them (this member may be
-            the bot itself)
-        :type left_chat_member: :class:`telebot.types.User`
+    :param left_chat_member: Optional. A member was removed from the group, information about them (this member may be
+        the bot itself)
+    :type left_chat_member: :class:`telebot.types.User`
 
-        :param new_chat_title: Optional. A chat title was changed to this value
-        :type new_chat_title: :obj:`str`
+    :param new_chat_title: Optional. A chat title was changed to this value
+    :type new_chat_title: :obj:`str`
 
-        :param new_chat_photo: Optional. A chat photo was change to this value
-        :type new_chat_photo: :obj:`list` of :class:`telebot.types.PhotoSize`
+    :param new_chat_photo: Optional. A chat photo was change to this value
+    :type new_chat_photo: :obj:`list` of :class:`telebot.types.PhotoSize`
 
-        :param delete_chat_photo: Optional. Service message: the chat photo was deleted
-        :type delete_chat_photo: :obj:`bool`
+    :param delete_chat_photo: Optional. Service message: the chat photo was deleted
+    :type delete_chat_photo: :obj:`bool`
 
-        :param group_chat_created: Optional. Service message: the group has been created
-        :type group_chat_created: :obj:`bool`
+    :param group_chat_created: Optional. Service message: the group has been created
+    :type group_chat_created: :obj:`bool`
 
-        :param supergroup_chat_created: Optional. Service message: the supergroup has been created. This field can't be
-            received in a message coming through updates, because bot can't be a member of a supergroup when it is created. It can
-            only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
-        :type supergroup_chat_created: :obj:`bool`
+    :param supergroup_chat_created: Optional. Service message: the supergroup has been created. This field can't be
+        received in a message coming through updates, because bot can't be a member of a supergroup when it is created. It can
+        only be found in reply_to_message if someone replies to a very first message in a directly created supergroup.
+    :type supergroup_chat_created: :obj:`bool`
 
-        :param channel_chat_created: Optional. Service message: the channel has been created. This field can't be
-            received in a message coming through updates, because bot can't be a member of a channel when it is created. It can only
-            be found in reply_to_message if someone replies to a very first message in a channel.
-        :type channel_chat_created: :obj:`bool`
+    :param channel_chat_created: Optional. Service message: the channel has been created. This field can't be
+        received in a message coming through updates, because bot can't be a member of a channel when it is created. It can only
+        be found in reply_to_message if someone replies to a very first message in a channel.
+    :type channel_chat_created: :obj:`bool`
 
-        :param message_auto_delete_timer_changed: Optional. Service message: auto-delete timer settings changed in
-            the chat
-        :type message_auto_delete_timer_changed: :class:`telebot.types.MessageAutoDeleteTimerChanged`
+    :param message_auto_delete_timer_changed: Optional. Service message: auto-delete timer settings changed in
+        the chat
+    :type message_auto_delete_timer_changed: :class:`telebot.types.MessageAutoDeleteTimerChanged`
 
-        :param migrate_to_chat_id: Optional. The group has been migrated to a supergroup with the specified identifier.
-            This number may have more than 32 significant bits and some programming languages may have difficulty/silent
-            defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision
-            float type are safe for storing this identifier.
-        :type migrate_to_chat_id: :obj:`int`
+    :param migrate_to_chat_id: Optional. The group has been migrated to a supergroup with the specified identifier.
+        This number may have more than 32 significant bits and some programming languages may have difficulty/silent
+        defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision
+        float type are safe for storing this identifier.
+    :type migrate_to_chat_id: :obj:`int`
 
-        :param migrate_from_chat_id: Optional. The supergroup has been migrated from a group with the specified
-            identifier. This number may have more than 32 significant bits and some programming languages may have
-            difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or
-            double-precision float type are safe for storing this identifier.
-        :type migrate_from_chat_id: :obj:`int`
+    :param migrate_from_chat_id: Optional. The supergroup has been migrated from a group with the specified
+        identifier. This number may have more than 32 significant bits and some programming languages may have
+        difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or
+        double-precision float type are safe for storing this identifier.
+    :type migrate_from_chat_id: :obj:`int`
 
-        :param pinned_message: Optional. Specified message was pinned. Note that the Message object in this field will not
-            contain further reply_to_message fields even if it is itself a reply.
-        :type message: :class:`telebot.types.Message` or :class:`telebot.types.InaccessibleMessage`
+    :param pinned_message: Optional. Specified message was pinned. Note that the Message object in this field will not
+        contain further reply_to_message fields even if it is itself a reply.
+    :type message: :class:`telebot.types.Message` or :class:`telebot.types.InaccessibleMessage`
 
-        :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
-        :type invoice: :class:`telebot.types.Invoice`
+    :param invoice: Optional. Message is an invoice for a payment, information about the invoice. More about payments »
+    :type invoice: :class:`telebot.types.Invoice`
 
-        :param successful_payment: Optional. Message is a service message about a successful payment, information about
-            the payment. More about payments »
-        :type successful_payment: :class:`telebot.types.SuccessfulPayment`
+    :param successful_payment: Optional. Message is a service message about a successful payment, information about
+        the payment. More about payments »
+    :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
-        :param users_shared: Optional. Service message: a user was shared with the bot
-        :type users_shared: :class:`telebot.types.UsersShared`
+    :param users_shared: Optional. Service message: a user was shared with the bot
+    :type users_shared: :class:`telebot.types.UsersShared`
 
-        :param chat_shared: Optional. Service message: a chat was shared with the bot
-        :type chat_shared: :class:`telebot.types.ChatShared`
+    :param chat_shared: Optional. Service message: a chat was shared with the bot
+    :type chat_shared: :class:`telebot.types.ChatShared`
 
-        :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
-            Telegram Login »
-        :type connected_website: :obj:`str`
+    :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
+        Telegram Login »
+    :type connected_website: :obj:`str`
 
-        :param write_access_allowed: Optional. Service message: the user allowed the bot added to the attachment
-            menu to write messages
-        :type write_access_allowed: :class:`telebot.types.WriteAccessAllowed`
+    :param write_access_allowed: Optional. Service message: the user allowed the bot added to the attachment
+        menu to write messages
+    :type write_access_allowed: :class:`telebot.types.WriteAccessAllowed`
 
-        :param passport_data: Optional. Telegram Passport data
-        :type passport_data: :class:`telebot.types.PassportData`
+    :param passport_data: Optional. Telegram Passport data
+    :type passport_data: :class:`telebot.types.PassportData`
 
-        :param proximity_alert_triggered: Optional. Service message. A user in the chat triggered another user's
-            proximity alert while sharing Live Location.
-        :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
+    :param proximity_alert_triggered: Optional. Service message. A user in the chat triggered another user's
+        proximity alert while sharing Live Location.
+    :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
 
-        :param forum_topic_created: Optional. Service message: forum topic created
-        :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
+    :param forum_topic_created: Optional. Service message: forum topic created
+    :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
 
-        :param forum_topic_edited: Optional. Service message: forum topic edited
-        :type forum_topic_edited: :class:`telebot.types.ForumTopicEdited`
+    :param forum_topic_edited: Optional. Service message: forum topic edited
+    :type forum_topic_edited: :class:`telebot.types.ForumTopicEdited`
 
-        :param forum_topic_closed: Optional. Service message: forum topic closed
-        :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
+    :param forum_topic_closed: Optional. Service message: forum topic closed
+    :type forum_topic_closed: :class:`telebot.types.ForumTopicClosed`
 
-        :param forum_topic_reopened: Optional. Service message: forum topic reopened
-        :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
+    :param forum_topic_reopened: Optional. Service message: forum topic reopened
+    :type forum_topic_reopened: :class:`telebot.types.ForumTopicReopened`
 
-        :param general_forum_topic_hidden: Optional. Service message: the 'General' forum topic hidden
-        :type general_forum_topic_hidden: :class:`telebot.types.GeneralForumTopicHidden`
+    :param general_forum_topic_hidden: Optional. Service message: the 'General' forum topic hidden
+    :type general_forum_topic_hidden: :class:`telebot.types.GeneralForumTopicHidden`
 
-        :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
-        :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
+    :param general_forum_topic_unhidden: Optional. Service message: the 'General' forum topic unhidden
+    :type general_forum_topic_unhidden: :class:`telebot.types.GeneralForumTopicUnhidden`
 
-        :param giveaway_created: Optional. Service message: a giveaway has been created
-        :type giveaway_created: :class:`telebot.types.GiveawayCreated`
+    :param giveaway_created: Optional. Service message: a giveaway has been created
+    :type giveaway_created: :class:`telebot.types.GiveawayCreated`
 
-        :param giveaway: Optional. The message is a scheduled giveaway message
-        :type giveaway: :class:`telebot.types.Giveaway`
+    :param giveaway: Optional. The message is a scheduled giveaway message
+    :type giveaway: :class:`telebot.types.Giveaway`
 
-        :param giveaway_winners: Optional. Service message: giveaway winners(public winners)
-        :type giveaway_winners: :class:`telebot.types.GiveawayWinners`
+    :param giveaway_winners: Optional. Service message: giveaway winners(public winners)
+    :type giveaway_winners: :class:`telebot.types.GiveawayWinners`
 
-        :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
-        :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
+    :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
+    :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
 
-        :param video_chat_scheduled: Optional. Service message: video chat scheduled
-        :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
+    :param video_chat_scheduled: Optional. Service message: video chat scheduled
+    :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
 
-        :param video_chat_started: Optional. Service message: video chat started
-        :type video_chat_started: :class:`telebot.types.VideoChatStarted`
+    :param video_chat_started: Optional. Service message: video chat started
+    :type video_chat_started: :class:`telebot.types.VideoChatStarted`
 
-        :param video_chat_ended: Optional. Service message: video chat ended
-        :type video_chat_ended: :class:`telebot.types.VideoChatEnded`
+    :param video_chat_ended: Optional. Service message: video chat ended
+    :type video_chat_ended: :class:`telebot.types.VideoChatEnded`
 
-        :param video_chat_participants_invited: Optional. Service message: new participants invited to a video chat
-        :type video_chat_participants_invited: :class:`telebot.types.VideoChatParticipantsInvited`
+    :param video_chat_participants_invited: Optional. Service message: new participants invited to a video chat
+    :type video_chat_participants_invited: :class:`telebot.types.VideoChatParticipantsInvited`
 
-        :param web_app_data: Optional. Service message: data sent by a Web App
-        :type web_app_data: :class:`telebot.types.WebAppData`
+    :param web_app_data: Optional. Service message: data sent by a Web App
+    :type web_app_data: :class:`telebot.types.WebAppData`
 
-        :param reply_markup: Optional. Inline keyboard attached to the message. login_url buttons are represented as
-            ordinary url buttons.
-        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
+    :param reply_markup: Optional. Inline keyboard attached to the message. login_url buttons are represented as
+        ordinary url buttons.
+    :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
 
-        :return: Instance of the class
-        :rtype: :class:`telebot.types.Message`
-        """
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.Message`
+    """
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
