@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-08 23:07+0500\n"
+"POT-Creation-Date: 2024-01-05 22:16+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,26 +25,35 @@ msgstr ""
 #: of telebot.types.Animation:1 telebot.types.Audio:1
 #: telebot.types.BotDescription:1 telebot.types.BotName:1
 #: telebot.types.BotShortDescription:1 telebot.types.CallbackQuery:1
-#: telebot.types.Chat:1 telebot.types.ChatJoinRequest:1
+#: telebot.types.Chat:1 telebot.types.ChatBoost:1
+#: telebot.types.ChatBoostRemoved:1 telebot.types.ChatBoostSource:1
+#: telebot.types.ChatBoostUpdated:1 telebot.types.ChatJoinRequest:1
 #: telebot.types.ChatMember:1 telebot.types.ChatMemberUpdated:1
 #: telebot.types.ChatPhoto:1 telebot.types.ChatShared:1
 #: telebot.types.ChosenInlineResult:1 telebot.types.Contact:1
-#: telebot.types.Document:1 telebot.types.File:1 telebot.types.ForumTopic:1
+#: telebot.types.Document:1 telebot.types.ExternalReplyInfo:1
+#: telebot.types.File:1 telebot.types.ForumTopic:1
 #: telebot.types.ForumTopicClosed:1 telebot.types.ForumTopicCreated:1
 #: telebot.types.ForumTopicEdited:1 telebot.types.ForumTopicReopened:1
 #: telebot.types.Game:1 telebot.types.GameHighScore:1
 #: telebot.types.GeneralForumTopicHidden:1
-#: telebot.types.GeneralForumTopicUnhidden:1 telebot.types.InlineQuery:1
-#: telebot.types.Invoice:1 telebot.types.Message:1
+#: telebot.types.GeneralForumTopicUnhidden:1 telebot.types.Giveaway:1
+#: telebot.types.GiveawayCompleted:1 telebot.types.GiveawayCreated:1
+#: telebot.types.GiveawayWinners:1 telebot.types.InaccessibleMessage:1
+#: telebot.types.InlineQuery:1 telebot.types.Invoice:1 telebot.types.Message:1
 #: telebot.types.MessageAutoDeleteTimerChanged:1 telebot.types.MessageID:1
-#: telebot.types.OrderInfo:1 telebot.types.PhotoSize:1 telebot.types.Poll:1
-#: telebot.types.PollOption:1 telebot.types.PreCheckoutQuery:1
-#: telebot.types.ProximityAlertTriggered:1 telebot.types.ShippingAddress:1
+#: telebot.types.MessageOrigin:1 telebot.types.MessageReactionCountUpdated:1
+#: telebot.types.MessageReactionUpdated:1 telebot.types.OrderInfo:1
+#: telebot.types.PhotoSize:1 telebot.types.Poll:1 telebot.types.PollOption:1
+#: telebot.types.PreCheckoutQuery:1 telebot.types.ProximityAlertTriggered:1
+#: telebot.types.ReactionCount:1 telebot.types.ShippingAddress:1
 #: telebot.types.ShippingQuery:1 telebot.types.Sticker:1
-#: telebot.types.StickerSet:1 telebot.types.SuccessfulPayment:1
-#: telebot.types.Update:1 telebot.types.UserProfilePhotos:1
-#: telebot.types.UserShared:1 telebot.types.Venue:1 telebot.types.Video:1
-#: telebot.types.VideoChatEnded:1 telebot.types.VideoChatParticipantsInvited:1
+#: telebot.types.StickerSet:1 telebot.types.Story:1
+#: telebot.types.SuccessfulPayment:1 telebot.types.TextQuote:1
+#: telebot.types.Update:1 telebot.types.UserChatBoosts:1
+#: telebot.types.UserProfilePhotos:1 telebot.types.UsersShared:1
+#: telebot.types.Venue:1 telebot.types.Video:1 telebot.types.VideoChatEnded:1
+#: telebot.types.VideoChatParticipantsInvited:1
 #: telebot.types.VideoChatScheduled:1 telebot.types.VideoChatStarted:1
 #: telebot.types.VideoNote:1 telebot.types.Voice:1 telebot.types.WebhookInfo:1
 #: telebot.types.WriteAccessAllowed:1
@@ -71,19 +80,24 @@ msgstr ""
 #: telebot.types.BotDescription telebot.types.BotName
 #: telebot.types.BotShortDescription telebot.types.CallbackQuery
 #: telebot.types.Chat telebot.types.ChatAdministratorRights
-#: telebot.types.ChatInviteLink telebot.types.ChatJoinRequest
-#: telebot.types.ChatLocation telebot.types.ChatMemberAdministrator
-#: telebot.types.ChatMemberBanned telebot.types.ChatMemberLeft
-#: telebot.types.ChatMemberMember telebot.types.ChatMemberOwner
-#: telebot.types.ChatMemberRestricted telebot.types.ChatMemberUpdated
-#: telebot.types.ChatPermissions telebot.types.ChatPhoto
-#: telebot.types.ChatShared telebot.types.ChosenInlineResult
-#: telebot.types.Contact telebot.types.Dice telebot.types.Document
-#: telebot.types.File telebot.types.ForceReply telebot.types.ForumTopic
+#: telebot.types.ChatBoost telebot.types.ChatBoostRemoved
+#: telebot.types.ChatBoostSource telebot.types.ChatBoostSourceGiftCode
+#: telebot.types.ChatBoostSourceGiveaway telebot.types.ChatBoostSourcePremium
+#: telebot.types.ChatBoostUpdated telebot.types.ChatInviteLink
+#: telebot.types.ChatJoinRequest telebot.types.ChatLocation
+#: telebot.types.ChatMemberAdministrator telebot.types.ChatMemberBanned
+#: telebot.types.ChatMemberLeft telebot.types.ChatMemberMember
+#: telebot.types.ChatMemberOwner telebot.types.ChatMemberRestricted
+#: telebot.types.ChatMemberUpdated telebot.types.ChatPermissions
+#: telebot.types.ChatPhoto telebot.types.ChatShared
+#: telebot.types.ChosenInlineResult telebot.types.Contact telebot.types.Dice
+#: telebot.types.Document telebot.types.ExternalReplyInfo telebot.types.File
+#: telebot.types.ForceReply telebot.types.ForumTopic
 #: telebot.types.ForumTopicCreated telebot.types.ForumTopicEdited
-#: telebot.types.Game telebot.types.GameHighScore
-#: telebot.types.InlineKeyboardButton telebot.types.InlineKeyboardMarkup
-#: telebot.types.InlineKeyboardMarkup.add
+#: telebot.types.Game telebot.types.GameHighScore telebot.types.Giveaway
+#: telebot.types.GiveawayCompleted telebot.types.GiveawayWinners
+#: telebot.types.InaccessibleMessage telebot.types.InlineKeyboardButton
+#: telebot.types.InlineKeyboardMarkup telebot.types.InlineKeyboardMarkup.add
 #: telebot.types.InlineKeyboardMarkup.row telebot.types.InlineQuery
 #: telebot.types.InlineQueryResultArticle telebot.types.InlineQueryResultAudio
 #: telebot.types.InlineQueryResultCachedAudio
@@ -109,23 +123,32 @@ msgstr ""
 #: telebot.types.InputVenueMessageContent telebot.types.Invoice
 #: telebot.types.KeyboardButton telebot.types.KeyboardButtonPollType
 #: telebot.types.KeyboardButtonRequestChat
-#: telebot.types.KeyboardButtonRequestUser telebot.types.LabeledPrice
-#: telebot.types.Location telebot.types.LoginUrl telebot.types.MaskPosition
+#: telebot.types.KeyboardButtonRequestUsers telebot.types.LabeledPrice
+#: telebot.types.LinkPreviewOptions telebot.types.Location
+#: telebot.types.LoginUrl telebot.types.MaskPosition
 #: telebot.types.MenuButtonCommands telebot.types.MenuButtonDefault
 #: telebot.types.MenuButtonWebApp telebot.types.Message
 #: telebot.types.MessageAutoDeleteTimerChanged telebot.types.MessageEntity
-#: telebot.types.MessageID telebot.types.OrderInfo telebot.types.PhotoSize
-#: telebot.types.Poll telebot.types.Poll.add telebot.types.PollAnswer
-#: telebot.types.PollOption telebot.types.PreCheckoutQuery
-#: telebot.types.ProximityAlertTriggered telebot.types.ReplyKeyboardMarkup
-#: telebot.types.ReplyKeyboardMarkup.add telebot.types.ReplyKeyboardMarkup.row
-#: telebot.types.ReplyKeyboardRemove telebot.types.SentWebAppMessage
+#: telebot.types.MessageID telebot.types.MessageOrigin
+#: telebot.types.MessageOriginChannel telebot.types.MessageOriginChat
+#: telebot.types.MessageOriginHiddenUser telebot.types.MessageOriginUser
+#: telebot.types.MessageReactionCountUpdated
+#: telebot.types.MessageReactionUpdated telebot.types.OrderInfo
+#: telebot.types.PhotoSize telebot.types.Poll telebot.types.Poll.add
+#: telebot.types.PollAnswer telebot.types.PollOption
+#: telebot.types.PreCheckoutQuery telebot.types.ProximityAlertTriggered
+#: telebot.types.ReactionCount telebot.types.ReactionType
+#: telebot.types.ReactionTypeCustomEmoji telebot.types.ReactionTypeEmoji
+#: telebot.types.ReplyKeyboardMarkup telebot.types.ReplyKeyboardMarkup.add
+#: telebot.types.ReplyKeyboardMarkup.row telebot.types.ReplyKeyboardRemove
+#: telebot.types.ReplyParameters telebot.types.SentWebAppMessage
 #: telebot.types.ShippingAddress telebot.types.ShippingOption
 #: telebot.types.ShippingOption.add_price telebot.types.ShippingQuery
 #: telebot.types.Sticker telebot.types.StickerSet
 #: telebot.types.SuccessfulPayment telebot.types.SwitchInlineQueryChosenChat
-#: telebot.types.Update telebot.types.User telebot.types.UserProfilePhotos
-#: telebot.types.UserShared telebot.types.Venue telebot.types.Video
+#: telebot.types.TextQuote telebot.types.Update telebot.types.User
+#: telebot.types.UserChatBoosts telebot.types.UserProfilePhotos
+#: telebot.types.UsersShared telebot.types.Venue telebot.types.Video
 #: telebot.types.VideoChatEnded telebot.types.VideoChatParticipantsInvited
 #: telebot.types.VideoChatScheduled telebot.types.VideoNote telebot.types.Voice
 #: telebot.types.WebAppData telebot.types.WebAppInfo telebot.types.WebhookInfo
@@ -194,17 +217,23 @@ msgstr ""
 #: telebot.types.BotDescription telebot.types.BotName
 #: telebot.types.BotShortDescription telebot.types.CallbackQuery
 #: telebot.types.Chat telebot.types.ChatAdministratorRights
-#: telebot.types.ChatInviteLink telebot.types.ChatJoinRequest
-#: telebot.types.ChatLocation telebot.types.ChatMemberAdministrator
-#: telebot.types.ChatMemberBanned telebot.types.ChatMemberLeft
-#: telebot.types.ChatMemberMember telebot.types.ChatMemberOwner
-#: telebot.types.ChatMemberRestricted telebot.types.ChatMemberUpdated
-#: telebot.types.ChatMemberUpdated.difference telebot.types.ChatPermissions
-#: telebot.types.ChatPhoto telebot.types.ChatShared
-#: telebot.types.ChosenInlineResult telebot.types.Contact telebot.types.Dice
-#: telebot.types.Document telebot.types.File telebot.types.ForceReply
+#: telebot.types.ChatBoost telebot.types.ChatBoostRemoved
+#: telebot.types.ChatBoostSource telebot.types.ChatBoostSourceGiftCode
+#: telebot.types.ChatBoostSourceGiveaway telebot.types.ChatBoostSourcePremium
+#: telebot.types.ChatBoostUpdated telebot.types.ChatInviteLink
+#: telebot.types.ChatJoinRequest telebot.types.ChatLocation
+#: telebot.types.ChatMemberAdministrator telebot.types.ChatMemberBanned
+#: telebot.types.ChatMemberLeft telebot.types.ChatMemberMember
+#: telebot.types.ChatMemberOwner telebot.types.ChatMemberRestricted
+#: telebot.types.ChatMemberUpdated telebot.types.ChatMemberUpdated.difference
+#: telebot.types.ChatPermissions telebot.types.ChatPhoto
+#: telebot.types.ChatShared telebot.types.ChosenInlineResult
+#: telebot.types.Contact telebot.types.Dice telebot.types.Document
+#: telebot.types.ExternalReplyInfo telebot.types.File telebot.types.ForceReply
 #: telebot.types.ForumTopic telebot.types.ForumTopicCreated telebot.types.Game
-#: telebot.types.GameHighScore telebot.types.InlineKeyboardButton
+#: telebot.types.GameHighScore telebot.types.Giveaway
+#: telebot.types.GiveawayCompleted telebot.types.GiveawayWinners
+#: telebot.types.InaccessibleMessage telebot.types.InlineKeyboardButton
 #: telebot.types.InlineKeyboardMarkup telebot.types.InlineKeyboardMarkup.add
 #: telebot.types.InlineKeyboardMarkup.row telebot.types.InlineQuery
 #: telebot.types.InlineQueryResultArticle telebot.types.InlineQueryResultAudio
@@ -231,22 +260,29 @@ msgstr ""
 #: telebot.types.InputVenueMessageContent telebot.types.Invoice
 #: telebot.types.KeyboardButton telebot.types.KeyboardButtonPollType
 #: telebot.types.KeyboardButtonRequestChat
-#: telebot.types.KeyboardButtonRequestUser telebot.types.LabeledPrice
-#: telebot.types.Location telebot.types.LoginUrl telebot.types.MaskPosition
+#: telebot.types.KeyboardButtonRequestUsers telebot.types.LabeledPrice
+#: telebot.types.LinkPreviewOptions telebot.types.Location
+#: telebot.types.LoginUrl telebot.types.MaskPosition
 #: telebot.types.MenuButtonCommands telebot.types.MenuButtonDefault
 #: telebot.types.MenuButtonWebApp telebot.types.Message
 #: telebot.types.MessageAutoDeleteTimerChanged telebot.types.MessageEntity
-#: telebot.types.MessageID telebot.types.OrderInfo telebot.types.PhotoSize
-#: telebot.types.Poll telebot.types.PollAnswer telebot.types.PollOption
-#: telebot.types.PreCheckoutQuery telebot.types.ProximityAlertTriggered
-#: telebot.types.ReplyKeyboardMarkup telebot.types.ReplyKeyboardMarkup.add
-#: telebot.types.ReplyKeyboardMarkup.row telebot.types.ReplyKeyboardRemove
+#: telebot.types.MessageID telebot.types.MessageOrigin
+#: telebot.types.MessageReactionCountUpdated
+#: telebot.types.MessageReactionUpdated telebot.types.OrderInfo
+#: telebot.types.PhotoSize telebot.types.Poll telebot.types.PollAnswer
+#: telebot.types.PollOption telebot.types.PreCheckoutQuery
+#: telebot.types.ProximityAlertTriggered telebot.types.ReactionCount
+#: telebot.types.ReactionType telebot.types.ReactionTypeCustomEmoji
+#: telebot.types.ReactionTypeEmoji telebot.types.ReplyKeyboardMarkup
+#: telebot.types.ReplyKeyboardMarkup.add telebot.types.ReplyKeyboardMarkup.row
+#: telebot.types.ReplyKeyboardRemove telebot.types.ReplyParameters
 #: telebot.types.SentWebAppMessage telebot.types.ShippingAddress
 #: telebot.types.ShippingOption telebot.types.ShippingOption.add_price
 #: telebot.types.ShippingQuery telebot.types.Sticker telebot.types.StickerSet
 #: telebot.types.SuccessfulPayment telebot.types.SwitchInlineQueryChosenChat
-#: telebot.types.Update telebot.types.User telebot.types.UserProfilePhotos
-#: telebot.types.UserShared telebot.types.Venue telebot.types.Video
+#: telebot.types.TextQuote telebot.types.Update telebot.types.User
+#: telebot.types.UserChatBoosts telebot.types.UserProfilePhotos
+#: telebot.types.UsersShared telebot.types.Venue telebot.types.Video
 #: telebot.types.VideoChatEnded telebot.types.VideoChatParticipantsInvited
 #: telebot.types.VideoChatScheduled telebot.types.VideoNote telebot.types.Voice
 #: telebot.types.WebAppData telebot.types.WebAppInfo telebot.types.WebhookInfo
@@ -263,19 +299,26 @@ msgstr ""
 #: telebot.types.BotCommandScopeChatMember:15
 #: telebot.types.BotCommandScopeDefault:8 telebot.types.BotDescription:8
 #: telebot.types.BotName:8 telebot.types.BotShortDescription:8
-#: telebot.types.CallbackQuery:30 telebot.types.Chat:109
-#: telebot.types.ChatAdministratorRights:46 telebot.types.ChatInviteLink:34
-#: telebot.types.ChatJoinRequest:27 telebot.types.ChatLocation:11
-#: telebot.types.ChatMemberAdministrator:59 telebot.types.ChatMemberBanned:15
-#: telebot.types.ChatMemberLeft:11 telebot.types.ChatMemberMember:11
-#: telebot.types.ChatMemberOwner:17 telebot.types.ChatMemberRestricted:61
-#: telebot.types.ChatMemberUpdated:27 telebot.types.ChatPermissions:56
-#: telebot.types.ChatPhoto:21 telebot.types.ChatShared:15
-#: telebot.types.ChosenInlineResult:21 telebot.types.Contact:22
-#: telebot.types.Dice:11 telebot.types.Document:26 telebot.types.File:21
+#: telebot.types.CallbackQuery:29 telebot.types.Chat:137
+#: telebot.types.ChatAdministratorRights:55 telebot.types.ChatBoost:17
+#: telebot.types.ChatBoostRemoved:17 telebot.types.ChatBoostSource:8
+#: telebot.types.ChatBoostSourceGiftCode:11
+#: telebot.types.ChatBoostSourceGiveaway:17
+#: telebot.types.ChatBoostSourcePremium:11 telebot.types.ChatBoostUpdated:11
+#: telebot.types.ChatInviteLink:34 telebot.types.ChatJoinRequest:27
+#: telebot.types.ChatLocation:11 telebot.types.ChatMemberAdministrator:68
+#: telebot.types.ChatMemberBanned:15 telebot.types.ChatMemberLeft:11
+#: telebot.types.ChatMemberMember:11 telebot.types.ChatMemberOwner:17
+#: telebot.types.ChatMemberRestricted:61 telebot.types.ChatMemberUpdated:27
+#: telebot.types.ChatPermissions:55 telebot.types.ChatPhoto:21
+#: telebot.types.ChatShared:15 telebot.types.ChosenInlineResult:21
+#: telebot.types.Contact:22 telebot.types.Dice:11 telebot.types.Document:26
+#: telebot.types.ExternalReplyInfo:75 telebot.types.File:21
 #: telebot.types.ForceReply:18 telebot.types.ForumTopic:17
 #: telebot.types.ForumTopicCreated:14 telebot.types.Game:25
-#: telebot.types.GameHighScore:14 telebot.types.InlineKeyboardButton:49
+#: telebot.types.GameHighScore:14 telebot.types.Giveaway:29
+#: telebot.types.GiveawayCompleted:14 telebot.types.GiveawayWinners:38
+#: telebot.types.InaccessibleMessage:14 telebot.types.InlineKeyboardButton:49
 #: telebot.types.InlineKeyboardMarkup:28 telebot.types.InlineQuery:26
 #: telebot.types.InlineQueryResultArticle:38
 #: telebot.types.InlineQueryResultAudio:40
@@ -303,28 +346,34 @@ msgstr ""
 #: telebot.types.InputMediaAnimation:40 telebot.types.InputMediaAudio:37
 #: telebot.types.InputMediaDocument:32 telebot.types.InputMediaPhoto:24
 #: telebot.types.InputMediaVideo:43 telebot.types.InputSticker:18
-#: telebot.types.InputTextMessageContent:19
+#: telebot.types.InputTextMessageContent:22
 #: telebot.types.InputVenueMessageContent:30 telebot.types.Invoice:22
-#: telebot.types.KeyboardButton:33 telebot.types.KeyboardButtonPollType:9
+#: telebot.types.KeyboardButton:36 telebot.types.KeyboardButtonPollType:9
 #: telebot.types.KeyboardButtonRequestChat:35
-#: telebot.types.KeyboardButtonRequestUser:18 telebot.types.LabeledPrice:13
-#: telebot.types.Location:25 telebot.types.LoginUrl:24
-#: telebot.types.MaskPosition:20 telebot.types.MenuButtonCommands:8
-#: telebot.types.MenuButtonDefault:8 telebot.types.MenuButtonWebApp:15
-#: telebot.types.Message:252 telebot.types.MessageAutoDeleteTimerChanged:8
-#: telebot.types.MessageEntity:32 telebot.types.MessageID:8
-#: telebot.types.OrderInfo:17 telebot.types.PhotoSize:21 telebot.types.Poll:47
-#: telebot.types.PollAnswer:15 telebot.types.PollOption:11
-#: telebot.types.PreCheckoutQuery:28 telebot.types.ProximityAlertTriggered:14
-#: telebot.types.ReplyKeyboardMarkup:49 telebot.types.ReplyKeyboardRemove:18
+#: telebot.types.KeyboardButtonRequestUsers:21 telebot.types.LabeledPrice:13
+#: telebot.types.LinkPreviewOptions:20 telebot.types.Location:25
+#: telebot.types.LoginUrl:24 telebot.types.MaskPosition:20
+#: telebot.types.MenuButtonCommands:8 telebot.types.MenuButtonDefault:8
+#: telebot.types.MenuButtonWebApp:15 telebot.types.Message:277
+#: telebot.types.MessageAutoDeleteTimerChanged:8 telebot.types.MessageEntity:32
+#: telebot.types.MessageID:8 telebot.types.MessageOrigin:23
+#: telebot.types.MessageReactionCountUpdated:17
+#: telebot.types.MessageReactionUpdated:26 telebot.types.OrderInfo:17
+#: telebot.types.PhotoSize:21 telebot.types.Poll:47 telebot.types.PollAnswer:18
+#: telebot.types.PollOption:11 telebot.types.PreCheckoutQuery:28
+#: telebot.types.ProximityAlertTriggered:14 telebot.types.ReactionCount:11
+#: telebot.types.ReactionType:8 telebot.types.ReactionTypeCustomEmoji:11
+#: telebot.types.ReactionTypeEmoji:11 telebot.types.ReplyKeyboardMarkup:49
+#: telebot.types.ReplyKeyboardRemove:18 telebot.types.ReplyParameters:26
 #: telebot.types.SentWebAppMessage:9 telebot.types.ShippingAddress:23
 #: telebot.types.ShippingOption:14 telebot.types.ShippingQuery:17
-#: telebot.types.Sticker:54 telebot.types.StickerSet:30
+#: telebot.types.Sticker:54 telebot.types.StickerSet:29
 #: telebot.types.SuccessfulPayment:28
-#: telebot.types.SwitchInlineQueryChosenChat:22 telebot.types.Update:61
-#: telebot.types.User:41 telebot.types.UserProfilePhotos:11
-#: telebot.types.UserShared:15 telebot.types.Venue:27 telebot.types.Video:35
-#: telebot.types.VideoChatEnded:8 telebot.types.VideoChatParticipantsInvited:8
+#: telebot.types.SwitchInlineQueryChosenChat:22 telebot.types.TextQuote:17
+#: telebot.types.Update:75 telebot.types.User:41 telebot.types.UserChatBoosts:8
+#: telebot.types.UserProfilePhotos:11 telebot.types.UsersShared:17
+#: telebot.types.Venue:27 telebot.types.Video:35 telebot.types.VideoChatEnded:8
+#: telebot.types.VideoChatParticipantsInvited:8
 #: telebot.types.VideoChatScheduled:9 telebot.types.VideoNote:24
 #: telebot.types.Voice:23 telebot.types.WebAppData:12
 #: telebot.types.WebAppInfo:8 telebot.types.WebhookInfo:37
@@ -342,17 +391,23 @@ msgstr ""
 #: telebot.types.BotDescription telebot.types.BotName
 #: telebot.types.BotShortDescription telebot.types.CallbackQuery
 #: telebot.types.Chat telebot.types.ChatAdministratorRights
-#: telebot.types.ChatInviteLink telebot.types.ChatJoinRequest
-#: telebot.types.ChatLocation telebot.types.ChatMemberAdministrator
-#: telebot.types.ChatMemberBanned telebot.types.ChatMemberLeft
-#: telebot.types.ChatMemberMember telebot.types.ChatMemberOwner
-#: telebot.types.ChatMemberRestricted telebot.types.ChatMemberUpdated
-#: telebot.types.ChatMemberUpdated.difference telebot.types.ChatPermissions
-#: telebot.types.ChatPhoto telebot.types.ChatShared
-#: telebot.types.ChosenInlineResult telebot.types.Contact telebot.types.Dice
-#: telebot.types.Document telebot.types.File telebot.types.ForceReply
+#: telebot.types.ChatBoost telebot.types.ChatBoostRemoved
+#: telebot.types.ChatBoostSource telebot.types.ChatBoostSourceGiftCode
+#: telebot.types.ChatBoostSourceGiveaway telebot.types.ChatBoostSourcePremium
+#: telebot.types.ChatBoostUpdated telebot.types.ChatInviteLink
+#: telebot.types.ChatJoinRequest telebot.types.ChatLocation
+#: telebot.types.ChatMemberAdministrator telebot.types.ChatMemberBanned
+#: telebot.types.ChatMemberLeft telebot.types.ChatMemberMember
+#: telebot.types.ChatMemberOwner telebot.types.ChatMemberRestricted
+#: telebot.types.ChatMemberUpdated telebot.types.ChatMemberUpdated.difference
+#: telebot.types.ChatPermissions telebot.types.ChatPhoto
+#: telebot.types.ChatShared telebot.types.ChosenInlineResult
+#: telebot.types.Contact telebot.types.Dice telebot.types.Document
+#: telebot.types.ExternalReplyInfo telebot.types.File telebot.types.ForceReply
 #: telebot.types.ForumTopic telebot.types.ForumTopicCreated telebot.types.Game
-#: telebot.types.GameHighScore telebot.types.InlineKeyboardButton
+#: telebot.types.GameHighScore telebot.types.Giveaway
+#: telebot.types.GiveawayCompleted telebot.types.GiveawayWinners
+#: telebot.types.InaccessibleMessage telebot.types.InlineKeyboardButton
 #: telebot.types.InlineKeyboardMarkup telebot.types.InlineKeyboardMarkup.add
 #: telebot.types.InlineKeyboardMarkup.row telebot.types.InlineQuery
 #: telebot.types.InlineQueryResultArticle telebot.types.InlineQueryResultAudio
@@ -379,22 +434,29 @@ msgstr ""
 #: telebot.types.InputVenueMessageContent telebot.types.Invoice
 #: telebot.types.KeyboardButton telebot.types.KeyboardButtonPollType
 #: telebot.types.KeyboardButtonRequestChat
-#: telebot.types.KeyboardButtonRequestUser telebot.types.LabeledPrice
-#: telebot.types.Location telebot.types.LoginUrl telebot.types.MaskPosition
+#: telebot.types.KeyboardButtonRequestUsers telebot.types.LabeledPrice
+#: telebot.types.LinkPreviewOptions telebot.types.Location
+#: telebot.types.LoginUrl telebot.types.MaskPosition
 #: telebot.types.MenuButtonCommands telebot.types.MenuButtonDefault
 #: telebot.types.MenuButtonWebApp telebot.types.Message
 #: telebot.types.MessageAutoDeleteTimerChanged telebot.types.MessageEntity
-#: telebot.types.MessageID telebot.types.OrderInfo telebot.types.PhotoSize
-#: telebot.types.Poll telebot.types.PollAnswer telebot.types.PollOption
-#: telebot.types.PreCheckoutQuery telebot.types.ProximityAlertTriggered
-#: telebot.types.ReplyKeyboardMarkup telebot.types.ReplyKeyboardMarkup.add
-#: telebot.types.ReplyKeyboardMarkup.row telebot.types.ReplyKeyboardRemove
+#: telebot.types.MessageID telebot.types.MessageOrigin
+#: telebot.types.MessageReactionCountUpdated
+#: telebot.types.MessageReactionUpdated telebot.types.OrderInfo
+#: telebot.types.PhotoSize telebot.types.Poll telebot.types.PollAnswer
+#: telebot.types.PollOption telebot.types.PreCheckoutQuery
+#: telebot.types.ProximityAlertTriggered telebot.types.ReactionCount
+#: telebot.types.ReactionType telebot.types.ReactionTypeCustomEmoji
+#: telebot.types.ReactionTypeEmoji telebot.types.ReplyKeyboardMarkup
+#: telebot.types.ReplyKeyboardMarkup.add telebot.types.ReplyKeyboardMarkup.row
+#: telebot.types.ReplyKeyboardRemove telebot.types.ReplyParameters
 #: telebot.types.SentWebAppMessage telebot.types.ShippingAddress
 #: telebot.types.ShippingOption telebot.types.ShippingQuery
 #: telebot.types.Sticker telebot.types.StickerSet
 #: telebot.types.SuccessfulPayment telebot.types.SwitchInlineQueryChosenChat
-#: telebot.types.Update telebot.types.User telebot.types.UserProfilePhotos
-#: telebot.types.UserShared telebot.types.Venue telebot.types.Video
+#: telebot.types.TextQuote telebot.types.Update telebot.types.User
+#: telebot.types.UserChatBoosts telebot.types.UserProfilePhotos
+#: telebot.types.UsersShared telebot.types.Venue telebot.types.Video
 #: telebot.types.VideoChatEnded telebot.types.VideoChatParticipantsInvited
 #: telebot.types.VideoChatScheduled telebot.types.VideoNote telebot.types.Voice
 #: telebot.types.WebAppData telebot.types.WebAppInfo telebot.types.WebhookInfo
@@ -801,38 +863,37 @@ msgstr ""
 
 #: of telebot.types.CallbackQuery:11
 msgid ""
-"Optional. Message with the callback button that originated the query. "
-"Note that message content and message date will not be available if the "
-"message is too old"
+"Optional. Message sent by the bot with the callback button that "
+"originated the query"
 msgstr ""
 
-#: of telebot.types.CallbackQuery:15
+#: of telebot.types.CallbackQuery:14
 msgid ""
 "Optional. Identifier of the message sent via the bot in inline mode, that"
 " originated the query."
 msgstr ""
 
-#: of telebot.types.CallbackQuery:19
+#: of telebot.types.CallbackQuery:18
 msgid ""
 "Global identifier, uniquely corresponding to the chat to which the "
 "message with the callback button was sent. Useful for high scores in "
 "games."
 msgstr ""
 
-#: of telebot.types.CallbackQuery:23
+#: of telebot.types.CallbackQuery:22
 msgid ""
 "Optional. Data associated with the callback button. Be aware that the "
 "message originated the query can contain no callback buttons with this "
 "data."
 msgstr ""
 
-#: of telebot.types.CallbackQuery:27
+#: of telebot.types.CallbackQuery:26
 msgid ""
 "Optional. Short name of a Game to be returned, serves as the unique "
 "identifier for the game"
 msgstr ""
 
-#: of telebot.types.CallbackQuery:31
+#: of telebot.types.CallbackQuery:30
 msgid ":class:`telebot.types.CallbackQuery`"
 msgstr ""
 
@@ -891,114 +952,159 @@ msgstr ""
 
 #: of telebot.types.Chat:35
 msgid ""
+"Optional. List of available chat reactions; for private chats, "
+"supergroups and channels. Returned only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:39
+msgid ""
+"Optional. Optional. Identifier of the accent color for the chat name and "
+"backgrounds of the chat photo, reply header, and link preview. See accent"
+" colors for more details. Returned only in getChat. Always returned in "
+"getChat."
+msgstr ""
+
+#: of telebot.types.Chat:43
+msgid ""
+"Optional. Custom emoji identifier of emoji chosen by the chat for the "
+"reply header and link preview background. Returned only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:47
+msgid ""
+"Optional. Identifier of the accent color for the chat's profile "
+"background. See profile accent colors for more details. Returned only in "
+"getChat."
+msgstr ""
+
+#: of telebot.types.Chat:51
+msgid ""
+"Optional. Custom emoji identifier of the emoji chosen by the chat for its"
+" profile background. Returned only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:55
+msgid ""
 "Optional. Custom emoji identifier of emoji status of the other party in a"
 " private chat. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:39
+#: of telebot.types.Chat:59
+msgid ""
+"Optional. Expiration date of the emoji status of the other party in a "
+"private chat, if any. Returned only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:63
 msgid ""
 "Optional. Bio of the other party in a private chat. Returned only in "
 "getChat."
 msgstr ""
 
-#: of telebot.types.Chat:42
+#: of telebot.types.Chat:66
 msgid ""
 "Optional. :obj:`bool`, if privacy settings of the other party in the "
 "private chat allows to use tg://user?id=<user_id> links only in chats "
 "with the user. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:46
+#: of telebot.types.Chat:70
 msgid ""
 "Optional. True, if the privacy settings of the other party restrict "
 "sending voice and video note messages in the private chat. Returned only "
 "in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:48
+#: of telebot.types.Chat:72
 msgid ":type :obj:`bool`"
 msgstr ""
 
-#: of telebot.types.Chat:50
+#: of telebot.types.Chat:74
 msgid ""
 "Optional. :obj:`bool`, if users need to join the supergroup before they "
 "can send messages. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:54
+#: of telebot.types.Chat:78
 msgid ""
 "Optional. :obj:`bool`, if all users directly joining the supergroup need "
 "to be approved by supergroup administrators. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:58
+#: of telebot.types.Chat:82
 msgid ""
 "Optional. Description, for groups, supergroups and channel chats. "
 "Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:61
+#: of telebot.types.Chat:85
 msgid ""
 "Optional. Primary invite link, for groups, supergroups and channel chats."
 " Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:65
+#: of telebot.types.Chat:89
 msgid ""
 "Optional. The most recent pinned message (by sending date). Returned only"
 " in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:68
+#: of telebot.types.Chat:92
 msgid ""
 "Optional. Default chat member permissions, for groups and supergroups. "
 "Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:72
+#: of telebot.types.Chat:96
 msgid ""
 "Optional. For supergroups, the minimum allowed delay between consecutive "
 "messages sent by each unpriviledged user; in seconds. Returned only in "
 "getChat."
 msgstr ""
 
-#: of telebot.types.Chat:76
+#: of telebot.types.Chat:100
 msgid ""
 "Optional. The time after which all messages sent to the chat will be "
 "automatically deleted; in seconds. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:80
+#: of telebot.types.Chat:104
 msgid ""
 "Optional. :obj:`bool`, if the chat has enabled aggressive anti-spam "
 "protection. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:84
+#: of telebot.types.Chat:108
 msgid ""
 "Optional. :obj:`bool`, if the chat has enabled hidden members. Returned "
 "only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:88
+#: of telebot.types.Chat:112
 msgid ""
 "Optional. :obj:`bool`, if messages from the chat can't be forwarded to "
 "other chats. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:92
+#: of telebot.types.Chat:116
+msgid ""
+"Optional. True, if new chat members will have access to old messages; "
+"available only to chat administrators. Returned only in getChat."
+msgstr ""
+
+#: of telebot.types.Chat:120
 msgid ""
 "Optional. For supergroups, name of group sticker set. Returned only in "
 "getChat."
 msgstr ""
 
-#: of telebot.types.Chat:95
+#: of telebot.types.Chat:123
 msgid ""
 "Optional. :obj:`bool`, if the bot can change the group sticker set. "
 "Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:99
+#: of telebot.types.Chat:127
 msgid ""
 "Optional. Unique identifier for the linked chat, i.e. the discussion "
 "group identifier for a channel and vice versa; for supergroups and "
@@ -1009,13 +1115,13 @@ msgid ""
 "in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:105
+#: of telebot.types.Chat:133
 msgid ""
 "Optional. For supergroups, the location to which the supergroup is "
 "connected. Returned only in getChat."
 msgstr ""
 
-#: of telebot.types.Chat:110
+#: of telebot.types.Chat:138
 msgid ":class:`telebot.types.Chat`"
 msgstr ""
 
@@ -1117,8 +1223,201 @@ msgid ""
 "reopen forum topics; supergroups only"
 msgstr ""
 
-#: of telebot.types.ChatAdministratorRights:47
+#: of telebot.types.ChatAdministratorRights:46
+#: telebot.types.ChatMemberAdministrator:59
+msgid "Optional. True, if the administrator can post channel stories"
+msgstr ""
+
+#: of telebot.types.ChatAdministratorRights:49
+#: telebot.types.ChatMemberAdministrator:62
+msgid "Optional. True, if the administrator can edit stories"
+msgstr ""
+
+#: of telebot.types.ChatAdministratorRights:52
+#: telebot.types.ChatMemberAdministrator:65
+msgid "Optional. True, if the administrator can delete stories of other users"
+msgstr ""
+
+#: of telebot.types.ChatAdministratorRights:56
 msgid ":class:`telebot.types.ChatAdministratorRights`"
+msgstr ""
+
+#: of telebot.types.ChatBoost:1
+msgid "This object contains information about a chat boost."
+msgstr ""
+
+#: of telebot.types.ChatBoost:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#chatboost"
+msgstr ""
+
+#: of telebot.types.ChatBoost:5 telebot.types.ChatBoostRemoved:8
+msgid "Unique identifier of the boost"
+msgstr ""
+
+#: of telebot.types.ChatBoost:8
+msgid "Point in time (Unix timestamp) when the chat was boosted"
+msgstr ""
+
+#: of telebot.types.ChatBoost:11
+msgid ""
+"Point in time (Unix timestamp) when the boost will automatically expire, "
+"unless the booster's Telegram Premium subscription is prolonged"
+msgstr ""
+
+#: of telebot.types.ChatBoost:14
+msgid "Source of the added boost"
+msgstr ""
+
+#: of telebot.types.ChatBoost:18
+msgid ":class:`ChatBoost`"
+msgstr ""
+
+#: of telebot.types.ChatBoostRemoved:1
+msgid "This object represents a boost removed from a chat."
+msgstr ""
+
+#: of telebot.types.ChatBoostRemoved:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#chatboostremoved"
+msgstr ""
+
+#: of telebot.types.ChatBoostRemoved:5 telebot.types.ChatBoostUpdated:5
+msgid "Chat which was boosted"
+msgstr ""
+
+#: of telebot.types.ChatBoostRemoved:11
+msgid "Point in time (Unix timestamp) when the boost was removed"
+msgstr ""
+
+#: of telebot.types.ChatBoostRemoved:14
+msgid "Source of the removed boost"
+msgstr ""
+
+#: of telebot.types.ChatBoostRemoved:18
+msgid ":class:`ChatBoostRemoved`"
+msgstr ""
+
+#: of telebot.types.ChatBoostSource:1
+msgid "This object describes the source of a chat boost."
+msgstr ""
+
+#: of telebot.types.ChatBoostSource:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#chatboostsource"
+msgstr ""
+
+#: of telebot.types.ChatBoostSource:5
+msgid "Source of the boost"
+msgstr ""
+
+#: of telebot.types.ChatBoostSource:9
+msgid ":class:`ChatBoostSource`"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiftCode:1
+#: telebot.types.ChatBoostSourceGiveaway:1
+#: telebot.types.ChatBoostSourcePremium:1
+msgid "Bases: :py:class:`telebot.types.ChatBoostSource`"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiftCode:1
+msgid ""
+"The boost was obtained by the creation of Telegram Premium gift codes to "
+"boost a chat."
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiftCode:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#chatboostsourcegiftcode"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiftCode:5
+msgid "Source of the boost, always “gift_code”"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiftCode:8
+msgid "User for which the gift code was created"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiftCode:12
+msgid ":class:`ChatBoostSourceGiftCode`"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:1
+msgid "The boost was obtained by the creation of a Telegram Premium giveaway."
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#chatboostsourcegiveaway"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:5
+msgid "Source of the boost, always “giveaway”"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:8
+msgid ""
+"Identifier of a message in the chat with the giveaway; the message could "
+"have been deleted already. May be 0 if the message isn't sent yet."
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:11
+msgid "User that won the prize in the giveaway if any"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:14
+msgid ""
+"True, if the giveaway was completed, but there was no user to win the "
+"prize"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourceGiveaway:18
+msgid ":class:`ChatBoostSourceGiveaway`"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourcePremium:1
+msgid ""
+"The boost was obtained by subscribing to Telegram Premium or by gifting a"
+" Telegram Premium subscription to another user."
+msgstr ""
+
+#: of telebot.types.ChatBoostSourcePremium:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#chatboostsourcepremium"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourcePremium:5
+msgid "Source of the boost, always “premium”"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourcePremium:8
+msgid "User that boosted the chat"
+msgstr ""
+
+#: of telebot.types.ChatBoostSourcePremium:12
+msgid ":class:`ChatBoostSourcePremium`"
+msgstr ""
+
+#: of telebot.types.ChatBoostUpdated:1
+msgid "This object represents a boost added to a chat or changed."
+msgstr ""
+
+#: of telebot.types.ChatBoostUpdated:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#chatboostupdated"
+msgstr ""
+
+#: of telebot.types.ChatBoostUpdated:8
+msgid "Infomation about the chat boost"
+msgstr ""
+
+#: of telebot.types.ChatBoostUpdated:12
+msgid ":class:`ChatBoostUpdated`"
 msgstr ""
 
 #: of telebot.types.ChatInviteLink:1
@@ -1254,7 +1553,7 @@ msgstr ""
 msgid ":class:`telebot.types.ChatMemberOwner`"
 msgstr ""
 
-#: of telebot.types.ChatMember:5 telebot.types.ChatMemberAdministrator:60
+#: of telebot.types.ChatMember:5 telebot.types.ChatMemberAdministrator:69
 msgid ":class:`telebot.types.ChatMemberAdministrator`"
 msgstr ""
 
@@ -1591,13 +1890,13 @@ msgid ""
 " defaults to the value of can_pin_messages"
 msgstr ""
 
-#: of telebot.types.ChatPermissions:52
-msgid ""
-"deprecated. True, if the user is allowed to send audios, documents, "
-"photos, videos, video notes and voice notes"
+#: of telebot.types.ChatPermissions:52 telebot.types.Message:27
+#: telebot.types.Message:30 telebot.types.Message:37 telebot.types.Message:40
+#: telebot.types.Message:43
+msgid "deprecated."
 msgstr ""
 
-#: of telebot.types.ChatPermissions:57
+#: of telebot.types.ChatPermissions:56
 msgid ":class:`telebot.types.ChatPermissions`"
 msgstr ""
 
@@ -1650,7 +1949,7 @@ msgstr ""
 msgid "Telegram documentation: https://core.telegram.org/bots/api#Chatshared"
 msgstr ""
 
-#: of telebot.types.ChatShared:6 telebot.types.UserShared:6
+#: of telebot.types.ChatShared:6
 msgid "identifier of the request"
 msgstr ""
 
@@ -1804,6 +2103,124 @@ msgstr ""
 
 #: of telebot.types.Document:27
 msgid ":class:`telebot.types.Document`"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:1
+msgid ""
+"This object contains information about a message that is being replied "
+"to, which may come from another chat or forum topic."
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:4
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#externalreplyinfo"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:6
+msgid "Origin of the message replied to by the given message"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:9
+msgid ""
+"Optional. Chat the original message belongs to. Available only if the "
+"chat is a supergroup or a channel."
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:12
+msgid ""
+"Optional. Unique message identifier inside the original chat. Available "
+"only if the original chat is a supergroup or a channel."
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:15
+msgid ""
+"Optional. Options used for link preview generation for the original "
+"message, if it is a text message"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:18
+msgid "Optional. Message is an animation, information about the animation"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:21 telebot.types.Message:97
+msgid "Optional. Message is an audio file, information about the file"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:24 telebot.types.Message:100
+msgid "Optional. Message is a general file, information about the file"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:27 telebot.types.Message:103
+msgid "Optional. Message is a photo, available sizes of the photo"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:30 telebot.types.Message:106
+msgid "Optional. Message is a sticker, information about the sticker"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:33 telebot.types.Message:109
+msgid "Optional. Message is a forwarded story"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:36 telebot.types.Message:112
+msgid "Optional. Message is a video, information about the video"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:39 telebot.types.Message:115
+msgid "Optional. Message is a video note, information about the video message"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:42 telebot.types.Message:118
+msgid "Optional. Message is a voice message, information about the file"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:45 telebot.types.Message:128
+msgid "Optional. True, if the message media is covered by a spoiler animation"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:48 telebot.types.Message:131
+msgid "Optional. Message is a shared contact, information about the contact"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:51 telebot.types.Message:134
+msgid "Optional. Message is a dice with random value"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:54 telebot.types.Message:137
+msgid ""
+"Optional. Message is a game, information about the game. More about games"
+" »"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:57
+msgid "Optional. Message is a scheduled giveaway, information about the giveaway"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:60
+msgid "Optional. A giveaway with public winners was completed"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:63 telebot.types.Message:200
+msgid ""
+"Optional. Message is an invoice for a payment, information about the "
+"invoice. More about payments »"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:66 telebot.types.Message:147
+msgid "Optional. Message is a shared location, information about the location"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:69 telebot.types.Message:140
+msgid "Optional. Message is a native poll, information about the poll"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:72
+msgid "Optional. Message is a venue, information about the venue"
+msgstr ""
+
+#: of telebot.types.ExternalReplyInfo:76
+msgid ":class:`ExternalReplyInfo`"
 msgstr ""
 
 #: of telebot.types.File:1
@@ -2059,6 +2476,182 @@ msgstr ""
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#generalforumtopicunhidden"
+msgstr ""
+
+#: of telebot.types.Giveaway:1
+msgid "This object represents a message about a scheduled giveaway."
+msgstr ""
+
+#: of telebot.types.Giveaway:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#giveaway"
+msgstr ""
+
+#: of telebot.types.Giveaway:5
+msgid "The list of chats which the user must join to participate in the giveaway"
+msgstr ""
+
+#: of telebot.types.Giveaway:8
+msgid ""
+"Point in time (Unix timestamp) when winners of the giveaway will be "
+"selected"
+msgstr ""
+
+#: of telebot.types.Giveaway:11
+msgid ""
+"The number of users which are supposed to be selected as winners of the "
+"giveaway"
+msgstr ""
+
+#: of telebot.types.Giveaway:14
+msgid ""
+"Optional. True, if only users who join the chats after the giveaway "
+"started should be eligible to win"
+msgstr ""
+
+#: of telebot.types.Giveaway:17
+msgid ""
+"Optional. True, if the list of giveaway winners will be visible to "
+"everyone"
+msgstr ""
+
+#: of telebot.types.Giveaway:20 telebot.types.GiveawayWinners:35
+msgid "Optional. Description of additional giveaway prize"
+msgstr ""
+
+#: of telebot.types.Giveaway:23
+msgid ""
+"Optional. A list of two-letter ISO 3166-1 alpha-2 country codes "
+"indicating the countries from which eligible users for the giveaway must "
+"come. If empty, then all users can participate in the giveaway."
+msgstr ""
+
+#: of telebot.types.Giveaway:26 telebot.types.GiveawayWinners:23
+msgid ""
+"Optional. The number of months the Telegram Premium subscription won from"
+" the giveaway will be active for"
+msgstr ""
+
+#: of telebot.types.Giveaway:30
+msgid ":class:`Giveaway`"
+msgstr ""
+
+#: of telebot.types.GiveawayCompleted:1
+msgid ""
+"This object represents a service message about the completion of a "
+"giveaway without public winners."
+msgstr ""
+
+#: of telebot.types.GiveawayCompleted:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#giveawaycompleted"
+msgstr ""
+
+#: of telebot.types.GiveawayCompleted:5
+msgid "Number of winners in the giveaway"
+msgstr ""
+
+#: of telebot.types.GiveawayCompleted:8 telebot.types.GiveawayWinners:26
+msgid "Optional. Number of undistributed prizes"
+msgstr ""
+
+#: of telebot.types.GiveawayCompleted:11
+msgid ""
+"Optional. Message with the giveaway that was completed, if it wasn't "
+"deleted"
+msgstr ""
+
+#: of telebot.types.GiveawayCompleted:15
+msgid ":class:`GiveawayCompleted`"
+msgstr ""
+
+#: of telebot.types.GiveawayCreated:1
+msgid ""
+"This object represents a service message about the creation of a "
+"scheduled giveaway. Currently holds no information."
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:1
+msgid ""
+"This object represents a message about the completion of a giveaway with "
+"public winners."
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#giveawaywinners"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:5
+msgid "The chat that created the giveaway"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:8
+msgid "Identifier of the messsage with the giveaway in the chat"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:11
+msgid "Point in time (Unix timestamp) when winners of the giveaway were selected"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:14
+msgid "Total number of winners in the giveaway"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:17
+msgid "List of up to 100 winners of the giveaway"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:20
+msgid ""
+"Optional. The number of other chats the user had to join in order to be "
+"eligible for the giveaway"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:29
+msgid ""
+"Optional. True, if only users who had joined the chats after the giveaway"
+" started were eligible to win"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:32
+msgid ""
+"Optional. True, if the giveaway was canceled because the payment for it "
+"was refunded"
+msgstr ""
+
+#: of telebot.types.GiveawayWinners:39
+msgid ":class:`GiveawayWinners`"
+msgstr ""
+
+#: of telebot.types.InaccessibleMessage:1
+msgid ""
+"This object describes a message that was deleted or is otherwise "
+"inaccessible to the bot."
+msgstr ""
+
+#: of telebot.types.InaccessibleMessage:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#inaccessiblemessage"
+msgstr ""
+
+#: of telebot.types.InaccessibleMessage:5
+msgid "Chat the message belonged to"
+msgstr ""
+
+#: of telebot.types.InaccessibleMessage:8 telebot.types.MessageOriginChannel:6
+#: telebot.types.MessageReactionCountUpdated:8
+msgid "Unique message identifier inside the chat"
+msgstr ""
+
+#: of telebot.types.InaccessibleMessage:11
+msgid ""
+"Always 0. The field can be used to differentiate regular and inaccessible"
+" messages."
+msgstr ""
+
+#: of telebot.types.InaccessibleMessage:15
+msgid ":class:`InaccessibleMessage`"
 msgstr ""
 
 #: of telebot.types.InlineKeyboardButton:1 telebot.types.InlineKeyboardMarkup:1
@@ -3390,7 +3983,7 @@ msgstr ""
 #: telebot.types.InputVenueMessageContent:1
 #: telebot.types.KeyboardButtonPollType:1
 #: telebot.types.KeyboardButtonRequestChat:1
-#: telebot.types.KeyboardButtonRequestUser:1
+#: telebot.types.KeyboardButtonRequestUsers:1
 msgid "Bases: :py:class:`telebot.types.Dictionaryable`"
 msgstr ""
 
@@ -3842,11 +4435,16 @@ msgid ""
 " be specified instead of parse_mode"
 msgstr ""
 
-#: of telebot.types.InputTextMessageContent:16
-msgid "Optional. Disables link previews for links in the sent message"
+#: of telebot.types.InputTextMessageContent:16 telebot.types.KeyboardButton:25
+#: telebot.types.StickerSet:20
+msgid "deprecated"
 msgstr ""
 
-#: of telebot.types.InputTextMessageContent:20
+#: of telebot.types.InputTextMessageContent:19
+msgid "Optional. Link preview generation options for the message"
+msgstr ""
+
+#: of telebot.types.InputTextMessageContent:23
 msgid ":class:`telebot.types.InputTextMessageContent`"
 msgstr ""
 
@@ -3980,21 +4578,21 @@ msgid ""
 "service message. Available in private chats only."
 msgstr ""
 
-#: of telebot.types.KeyboardButton:25
+#: of telebot.types.KeyboardButton:28
 msgid ""
 "Optional. If specified, pressing the button will open a list of suitable "
-"users. Tapping on any user will send their identifier to the bot in a "
-"“user_shared” service message. Available in private chats only."
+"users. Identifiers of selected users will be sent to the bot in a "
+"“users_shared” service message. Available in private chats only."
 msgstr ""
 
-#: of telebot.types.KeyboardButton:29
+#: of telebot.types.KeyboardButton:32
 msgid ""
 "Optional. If specified, pressing the button will open a list of suitable "
 "chats. Tapping on a chat will send its identifier to the bot in a "
 "“chat_shared” service message. Available in private chats only."
 msgstr ""
 
-#: of telebot.types.KeyboardButton:34
+#: of telebot.types.KeyboardButton:37
 msgid ":class:`telebot.types.KeyboardButton`"
 msgstr ""
 
@@ -4094,39 +4692,51 @@ msgid ":class:`telebot.types.KeyboardButtonRequestChat`"
 msgstr ""
 
 #: of telebot.types.KeyboardButtonRequestUser:1
+msgid "Bases: :py:class:`telebot.types.KeyboardButtonRequestUsers`"
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUser:1
+msgid "Deprecated. Use KeyboardButtonRequestUsers instead."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUsers:1
 msgid ""
 "This object defines the criteria used to request a suitable user. The "
 "identifier of the selected user will be shared with the bot when the "
 "corresponding button is pressed."
 msgstr ""
 
-#: of telebot.types.KeyboardButtonRequestUser:4
+#: of telebot.types.KeyboardButtonRequestUsers:4
 msgid ""
 "Telegram documentation: "
-"https://core.telegram.org/bots/api#keyboardbuttonrequestuser"
+"https://core.telegram.org/bots/api#keyboardbuttonrequestusers"
 msgstr ""
 
-#: of telebot.types.KeyboardButtonRequestUser:6
+#: of telebot.types.KeyboardButtonRequestUsers:6
 msgid ""
 "Signed 32-bit identifier of the request, which will be received back in "
-"the UserShared object. Must be unique within the message"
+"the UsersShared object. Must be unique within the message"
 msgstr ""
 
-#: of telebot.types.KeyboardButtonRequestUser:10
+#: of telebot.types.KeyboardButtonRequestUsers:10
 msgid ""
 "Optional. Pass True to request a bot, pass False to request a regular "
 "user. If not specified, no additional restrictions are applied."
 msgstr ""
 
-#: of telebot.types.KeyboardButtonRequestUser:14
+#: of telebot.types.KeyboardButtonRequestUsers:14
 msgid ""
 "Optional. Pass True to request a premium user, pass False to request a "
 "non-premium user. If not specified, no additional restrictions are "
 "applied."
 msgstr ""
 
-#: of telebot.types.KeyboardButtonRequestUser:19
-msgid ":class:`telebot.types.KeyboardButtonRequestUser`"
+#: of telebot.types.KeyboardButtonRequestUsers:18
+msgid "Optional. The maximum number of users to be selected; 1-10. Defaults to 1."
+msgstr ""
+
+#: of telebot.types.KeyboardButtonRequestUsers:22
+msgid ":class:`telebot.types.KeyboardButtonRequestUsers`"
 msgstr ""
 
 #: of telebot.types.LabeledPrice:1
@@ -4152,6 +4762,59 @@ msgstr ""
 
 #: of telebot.types.LabeledPrice:14
 msgid ":class:`telebot.types.LabeledPrice`"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:1 telebot.types.ReactionType:1
+#: telebot.types.ReplyParameters:1 telebot.types.SwitchInlineQueryChosenChat:1
+#: telebot.types.User:1
+msgid ""
+"Bases: :py:class:`telebot.types.JsonDeserializable`, "
+":py:class:`telebot.types.Dictionaryable`, "
+":py:class:`telebot.types.JsonSerializable`"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:1
+msgid "Describes the options used for link preview generation."
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#linkpreviewoptions"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:5
+msgid "Optional. True, if the link preview is disabled"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:8
+msgid ""
+"Optional. URL to use for the link preview. If empty, then the first URL "
+"found in the message text will be used"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:11
+msgid ""
+"Optional. True, if the media in the link preview is supposed to be "
+"shrunk; ignored if the URL isn't explicitly specified or media size "
+"change isn't supported for the preview"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:14
+msgid ""
+"Optional. True, if the media in the link preview is supposed to be "
+"enlarged; ignored if the URL isn't explicitly specified or media size "
+"change isn't supported for the preview"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:17
+msgid ""
+"Optional. True, if the link preview must be shown above the message text;"
+" otherwise, the link preview will be shown below the message text"
+msgstr ""
+
+#: of telebot.types.LinkPreviewOptions:21
+msgid ":class:`LinkPreviewOptions`"
 msgstr ""
 
 #: of telebot.types.Location:1
@@ -4421,39 +5084,8 @@ msgstr ""
 msgid "Conversation the message belongs to"
 msgstr ""
 
-#: of telebot.types.Message:27
-msgid "Optional. For forwarded messages, sender of the original message"
-msgstr ""
-
-#: of telebot.types.Message:30
-msgid ""
-"Optional. For messages forwarded from channels or from anonymous "
-"administrators, information about the original sender chat"
-msgstr ""
-
-#: of telebot.types.Message:34
-msgid ""
-"Optional. For messages forwarded from channels, identifier of the "
-"original message in the channel"
-msgstr ""
-
-#: of telebot.types.Message:38
-msgid ""
-"Optional. For forwarded messages that were originally sent in channels or"
-" by an anonymous chat administrator, signature of the message sender if "
-"present"
-msgstr ""
-
-#: of telebot.types.Message:42
-msgid ""
-"Optional. Sender's name for messages forwarded from users who disallow "
-"adding a link to their account in forwarded messages"
-msgstr ""
-
-#: of telebot.types.Message:46
-msgid ""
-"Optional. For forwarded messages, date the original message was sent in "
-"Unix time"
+#: of telebot.types.Message:33
+msgid "deprecated. message in the channel"
 msgstr ""
 
 #: of telebot.types.Message:49
@@ -4474,148 +5106,112 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.Message:60
-msgid "Optional. Bot through which the message was sent"
+msgid ""
+"Optional. Information about the message that is being replied to, which "
+"may come from another chat or forum topic"
 msgstr ""
 
 #: of telebot.types.Message:63
-msgid "Optional. Date the message was last edited in Unix time"
+msgid ""
+"Optional. For replies that quote part of the original message, the quoted"
+" part of the message"
 msgstr ""
 
 #: of telebot.types.Message:66
-msgid "Optional. :obj:`bool`, if the message can't be forwarded"
+msgid "Optional. Bot through which the message was sent"
 msgstr ""
 
 #: of telebot.types.Message:69
+msgid "Optional. Date the message was last edited in Unix time"
+msgstr ""
+
+#: of telebot.types.Message:72
+msgid "Optional. :obj:`bool`, if the message can't be forwarded"
+msgstr ""
+
+#: of telebot.types.Message:75
 msgid ""
 "Optional. The unique identifier of a media message group this message "
 "belongs to"
 msgstr ""
 
-#: of telebot.types.Message:72
+#: of telebot.types.Message:78
 msgid ""
 "Optional. Signature of the post author for messages in channels, or the "
 "custom title of an anonymous group administrator"
 msgstr ""
 
-#: of telebot.types.Message:76
+#: of telebot.types.Message:82
 msgid "Optional. For text messages, the actual UTF-8 text of the message"
 msgstr ""
 
-#: of telebot.types.Message:79
+#: of telebot.types.Message:85
 msgid ""
 "Optional. For text messages, special entities like usernames, URLs, bot "
 "commands, etc. that appear in the text"
 msgstr ""
 
-#: of telebot.types.Message:83
+#: of telebot.types.Message:89
+msgid ""
+"Optional. Options used for link preview generation for the message, if it"
+" is a text message and link preview options were changed"
+msgstr ""
+
+#: of telebot.types.Message:93
 msgid ""
 "Optional. Message is an animation, information about the animation. For "
 "backward compatibility, when this field is set, the document field will "
 "also be set"
 msgstr ""
 
-#: of telebot.types.Message:87
-msgid "Optional. Message is an audio file, information about the file"
-msgstr ""
-
-#: of telebot.types.Message:90
-msgid "Optional. Message is a general file, information about the file"
-msgstr ""
-
-#: of telebot.types.Message:93
-msgid "Optional. Message is a photo, available sizes of the photo"
-msgstr ""
-
-#: of telebot.types.Message:96
-msgid "Optional. Message is a sticker, information about the sticker"
-msgstr ""
-
-#: of telebot.types.Message:99
-msgid "Optional. Message is a video, information about the video"
-msgstr ""
-
-#: of telebot.types.Message:102
-msgid "Optional. Message is a video note, information about the video message"
-msgstr ""
-
-#: of telebot.types.Message:105
-msgid "Optional. Message is a voice message, information about the file"
-msgstr ""
-
-#: of telebot.types.Message:108
+#: of telebot.types.Message:121
 msgid ""
 "Optional. Caption for the animation, audio, document, photo, video or "
 "voice"
 msgstr ""
 
-#: of telebot.types.Message:111
+#: of telebot.types.Message:124
 msgid ""
 "Optional. For messages with a caption, special entities like usernames, "
 "URLs, bot commands, etc. that appear in the caption"
 msgstr ""
 
-#: of telebot.types.Message:115
-msgid "Optional. True, if the message media is covered by a spoiler animation"
-msgstr ""
-
-#: of telebot.types.Message:118
-msgid "Optional. Message is a shared contact, information about the contact"
-msgstr ""
-
-#: of telebot.types.Message:121
-msgid "Optional. Message is a dice with random value"
-msgstr ""
-
-#: of telebot.types.Message:124
-msgid ""
-"Optional. Message is a game, information about the game. More about games"
-" »"
-msgstr ""
-
-#: of telebot.types.Message:127
-msgid "Optional. Message is a native poll, information about the poll"
-msgstr ""
-
-#: of telebot.types.Message:130
+#: of telebot.types.Message:143
 msgid ""
 "Optional. Message is a venue, information about the venue. For backward "
 "compatibility, when this field is set, the location field will also be "
 "set"
 msgstr ""
 
-#: of telebot.types.Message:134
-msgid "Optional. Message is a shared location, information about the location"
-msgstr ""
-
-#: of telebot.types.Message:137
+#: of telebot.types.Message:150
 msgid ""
 "Optional. New members that were added to the group or supergroup and "
 "information about them (the bot itself may be one of these members)"
 msgstr ""
 
-#: of telebot.types.Message:141
+#: of telebot.types.Message:154
 msgid ""
 "Optional. A member was removed from the group, information about them "
 "(this member may be the bot itself)"
 msgstr ""
 
-#: of telebot.types.Message:145
+#: of telebot.types.Message:158
 msgid "Optional. A chat title was changed to this value"
 msgstr ""
 
-#: of telebot.types.Message:148
+#: of telebot.types.Message:161
 msgid "Optional. A chat photo was change to this value"
 msgstr ""
 
-#: of telebot.types.Message:151
+#: of telebot.types.Message:164
 msgid "Optional. Service message: the chat photo was deleted"
 msgstr ""
 
-#: of telebot.types.Message:154
+#: of telebot.types.Message:167
 msgid "Optional. Service message: the group has been created"
 msgstr ""
 
-#: of telebot.types.Message:157
+#: of telebot.types.Message:170
 msgid ""
 "Optional. Service message: the supergroup has been created. This field "
 "can't be received in a message coming through updates, because bot can't "
@@ -4624,7 +5220,7 @@ msgid ""
 " created supergroup."
 msgstr ""
 
-#: of telebot.types.Message:162
+#: of telebot.types.Message:175
 msgid ""
 "Optional. Service message: the channel has been created. This field can't"
 " be received in a message coming through updates, because bot can't be a "
@@ -4632,11 +5228,11 @@ msgid ""
 "reply_to_message if someone replies to a very first message in a channel."
 msgstr ""
 
-#: of telebot.types.Message:167
+#: of telebot.types.Message:180
 msgid "Optional. Service message: auto-delete timer settings changed in the chat"
 msgstr ""
 
-#: of telebot.types.Message:171
+#: of telebot.types.Message:184
 msgid ""
 "Optional. The group has been migrated to a supergroup with the specified "
 "identifier. This number may have more than 32 significant bits and some "
@@ -4645,7 +5241,7 @@ msgid ""
 " double-precision float type are safe for storing this identifier."
 msgstr ""
 
-#: of telebot.types.Message:177
+#: of telebot.types.Message:190
 msgid ""
 "Optional. The supergroup has been migrated from a group with the "
 "specified identifier. This number may have more than 32 significant bits "
@@ -4655,106 +5251,124 @@ msgid ""
 "identifier."
 msgstr ""
 
-#: of telebot.types.Message:183
+#: of telebot.types.Message:196
 msgid ""
 "Optional. Specified message was pinned. Note that the Message object in "
 "this field will not contain further reply_to_message fields even if it is"
 " itself a reply."
 msgstr ""
 
-#: of telebot.types.Message:187
-msgid ""
-"Optional. Message is an invoice for a payment, information about the "
-"invoice. More about payments »"
-msgstr ""
-
-#: of telebot.types.Message:190
+#: of telebot.types.Message:203
 msgid ""
 "Optional. Message is a service message about a successful payment, "
 "information about the payment. More about payments »"
 msgstr ""
 
-#: of telebot.types.Message:194
+#: of telebot.types.Message:207
 msgid "Optional. Service message: a user was shared with the bot"
 msgstr ""
 
-#: of telebot.types.Message:197
+#: of telebot.types.Message:210
 msgid "Optional. Service message: a chat was shared with the bot"
 msgstr ""
 
-#: of telebot.types.Message:200
+#: of telebot.types.Message:213
 msgid ""
 "Optional. The domain name of the website on which the user has logged in."
 " More about Telegram Login »"
 msgstr ""
 
-#: of telebot.types.Message:204
+#: of telebot.types.Message:217
 msgid ""
 "Optional. Service message: the user allowed the bot added to the "
 "attachment menu to write messages"
 msgstr ""
 
-#: of telebot.types.Message:208
+#: of telebot.types.Message:221
 msgid "Optional. Telegram Passport data"
 msgstr ""
 
-#: of telebot.types.Message:211
+#: of telebot.types.Message:224
 msgid ""
 "Optional. Service message. A user in the chat triggered another user's "
 "proximity alert while sharing Live Location."
 msgstr ""
 
-#: of telebot.types.Message:215
+#: of telebot.types.Message:228
 msgid "Optional. Service message: forum topic created"
 msgstr ""
 
-#: of telebot.types.Message:218
+#: of telebot.types.Message:231
 msgid "Optional. Service message: forum topic edited"
 msgstr ""
 
-#: of telebot.types.Message:221
+#: of telebot.types.Message:234
 msgid "Optional. Service message: forum topic closed"
 msgstr ""
 
-#: of telebot.types.Message:224
+#: of telebot.types.Message:237
 msgid "Optional. Service message: forum topic reopened"
 msgstr ""
 
-#: of telebot.types.Message:227
+#: of telebot.types.Message:240
 msgid "Optional. Service message: the 'General' forum topic hidden"
 msgstr ""
 
-#: of telebot.types.Message:230
+#: of telebot.types.Message:243
 msgid "Optional. Service message: the 'General' forum topic unhidden"
 msgstr ""
 
-#: of telebot.types.Message:233
+#: of telebot.types.Message:246
+msgid "Optional. Service message: a giveaway has been created"
+msgstr ""
+
+#: of telebot.types.Message:249
+msgid "Optional. The message is a scheduled giveaway message"
+msgstr ""
+
+#: of telebot.types.Message:252
+msgid "Optional. Service message: giveaway winners(public winners)"
+msgstr ""
+
+#: of telebot.types.Message:255
+msgid "Optional. Service message: giveaway completed, without public winners"
+msgstr ""
+
+#: of telebot.types.Message:258
 msgid "Optional. Service message: video chat scheduled"
 msgstr ""
 
-#: of telebot.types.Message:236
+#: of telebot.types.Message:261
 msgid "Optional. Service message: video chat started"
 msgstr ""
 
-#: of telebot.types.Message:239
+#: of telebot.types.Message:264
 msgid "Optional. Service message: video chat ended"
 msgstr ""
 
-#: of telebot.types.Message:242
+#: of telebot.types.Message:267
 msgid "Optional. Service message: new participants invited to a video chat"
 msgstr ""
 
-#: of telebot.types.Message:245
+#: of telebot.types.Message:270
 msgid "Optional. Service message: data sent by a Web App"
 msgstr ""
 
-#: of telebot.types.Message:248
+#: of telebot.types.Message:273
 msgid ""
 "Optional. Inline keyboard attached to the message. login_url buttons are "
 "represented as ordinary url buttons."
 msgstr ""
 
-#: of telebot.types.Message:253
+#: of telebot.types.Message
+msgid "forward_origin"
+msgstr ""
+
+#: of telebot.types.Message:46
+msgid "Optional. For forwarded messages, information about the original message;"
+msgstr ""
+
+#: of telebot.types.Message:278
 msgid ":class:`telebot.types.Message`"
 msgstr ""
 
@@ -4871,6 +5485,157 @@ msgstr ""
 
 #: of telebot.types.MessageID:9
 msgid ":class:`telebot.types.MessageId`"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:1
+msgid "This object describes the origin of a message."
+msgstr ""
+
+#: of telebot.types.MessageOrigin:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#messageorigin"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:5
+msgid "Type of the message origin"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:8
+msgid "Date the message was sent originally in Unix time"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:11
+msgid "User that sent the message originally (for MessageOriginUser)"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:14
+msgid ""
+"Name of the user that sent the message originally (for "
+"MessageOriginHiddenUser)"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:17
+msgid "Chat that sent the message originally (for MessageOriginChat)"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:20
+msgid "Optional. Author signature for certain cases"
+msgstr ""
+
+#: of telebot.types.MessageOrigin:24
+msgid ":class:`MessageOrigin`"
+msgstr ""
+
+#: of telebot.types.MessageOriginChannel:1 telebot.types.MessageOriginChat:1
+#: telebot.types.MessageOriginHiddenUser:1 telebot.types.MessageOriginUser:1
+msgid "Bases: :py:class:`telebot.types.MessageOrigin`"
+msgstr ""
+
+#: of telebot.types.MessageOriginChannel:1
+msgid "The message was originally sent to a channel chat."
+msgstr ""
+
+#: of telebot.types.MessageOriginChannel:3
+msgid "Channel chat to which the message was originally sent"
+msgstr ""
+
+#: of telebot.types.MessageOriginChannel:9
+msgid "Optional. Signature of the original post author"
+msgstr ""
+
+#: of telebot.types.MessageOriginChat:1
+msgid "The message was originally sent on behalf of a chat to a group chat."
+msgstr ""
+
+#: of telebot.types.MessageOriginChat:3
+msgid "Chat that sent the message originally"
+msgstr ""
+
+#: of telebot.types.MessageOriginChat:6
+msgid ""
+"Optional. For messages originally sent by an anonymous chat "
+"administrator, original message author signature"
+msgstr ""
+
+#: of telebot.types.MessageOriginHiddenUser:1
+msgid "The message was originally sent by an unknown user."
+msgstr ""
+
+#: of telebot.types.MessageOriginHiddenUser:3
+msgid "Name of the user that sent the message originally"
+msgstr ""
+
+#: of telebot.types.MessageOriginUser:1
+msgid "The message was originally sent by a known user."
+msgstr ""
+
+#: of telebot.types.MessageOriginUser:3
+msgid "User that sent the message originally"
+msgstr ""
+
+#: of telebot.types.MessageReactionCountUpdated:1
+#: telebot.types.MessageReactionUpdated:1
+msgid ""
+"This object represents a service message about a change in the list of "
+"the current user's reactions to a message."
+msgstr ""
+
+#: of telebot.types.MessageReactionCountUpdated:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#messagereactioncountupdated"
+msgstr ""
+
+#: of telebot.types.MessageReactionCountUpdated:5
+msgid "The chat containing the message"
+msgstr ""
+
+#: of telebot.types.MessageReactionCountUpdated:11
+#: telebot.types.MessageReactionUpdated:17
+msgid "Date of the change in Unix time"
+msgstr ""
+
+#: of telebot.types.MessageReactionCountUpdated:14
+msgid "List of reactions that are present on the message"
+msgstr ""
+
+#: of telebot.types.MessageReactionCountUpdated:18
+msgid ":class:`MessageReactionCountUpdated`"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#messagereactionupdated"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:5
+msgid "The chat containing the message the user reacted to"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:8
+msgid "Unique identifier of the message inside the chat"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:11
+msgid "Optional. The user that changed the reaction, if the user isn't anonymous"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:14
+msgid ""
+"Optional. The chat on behalf of which the reaction was changed, if the "
+"user is anonymous"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:20
+msgid "Previous list of reaction types that were set by the user"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:23
+msgid "New list of reaction types that have been set by the user"
+msgstr ""
+
+#: of telebot.types.MessageReactionUpdated:27
+msgid ":class:`MessageReactionUpdated`"
 msgstr ""
 
 #: of telebot.types.OrderInfo:1
@@ -5016,16 +5781,22 @@ msgid "Telegram Documentation: https://core.telegram.org/bots/api#pollanswer"
 msgstr ""
 
 #: of telebot.types.PollAnswer:8
-msgid "The user, who changed the answer to the poll"
+msgid ""
+"Optional. The chat that changed the answer to the poll, if the voter is "
+"anonymous"
 msgstr ""
 
 #: of telebot.types.PollAnswer:11
+msgid "Optional. The user, who changed the answer to the poll"
+msgstr ""
+
+#: of telebot.types.PollAnswer:14
 msgid ""
 "0-based identifiers of answer options, chosen by the user. May be empty "
 "if the user retracted their vote."
 msgstr ""
 
-#: of telebot.types.PollAnswer:16
+#: of telebot.types.PollAnswer:19
 msgid ":class:`telebot.types.PollAnswer`"
 msgstr ""
 
@@ -5110,6 +5881,88 @@ msgstr ""
 
 #: of telebot.types.ProximityAlertTriggered:15
 msgid ":class:`telebot.types.ProximityAlertTriggered`"
+msgstr ""
+
+#: of telebot.types.ReactionCount:1
+msgid ""
+"This object represents a reaction added to a message along with the "
+"number of times it was added."
+msgstr ""
+
+#: of telebot.types.ReactionCount:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#reactioncount"
+msgstr ""
+
+#: of telebot.types.ReactionCount:5 telebot.types.ReactionType:5
+msgid "Type of the reaction"
+msgstr ""
+
+#: of telebot.types.ReactionCount:8
+msgid "Number of times the reaction was added"
+msgstr ""
+
+#: of telebot.types.ReactionCount:12
+msgid ":class:`ReactionCount`"
+msgstr ""
+
+#: of telebot.types.ReactionType:1
+msgid "This object represents a reaction type."
+msgstr ""
+
+#: of telebot.types.ReactionType:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#reactiontype"
+msgstr ""
+
+#: of telebot.types.ReactionType:9
+msgid ":class:`ReactionType`"
+msgstr ""
+
+#: of telebot.types.ReactionTypeCustomEmoji:1 telebot.types.ReactionTypeEmoji:1
+msgid "Bases: :py:class:`telebot.types.ReactionType`"
+msgstr ""
+
+#: of telebot.types.ReactionTypeCustomEmoji:1
+msgid "This object represents a custom emoji reaction type."
+msgstr ""
+
+#: of telebot.types.ReactionTypeCustomEmoji:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#reactiontypecustomemoji"
+msgstr ""
+
+#: of telebot.types.ReactionTypeCustomEmoji:5
+msgid "Type of the reaction, must be custom_emoji"
+msgstr ""
+
+#: of telebot.types.ReactionTypeCustomEmoji:8
+msgid "Identifier of the custom emoji"
+msgstr ""
+
+#: of telebot.types.ReactionTypeCustomEmoji:12
+msgid ":class:`ReactionTypeCustomEmoji`"
+msgstr ""
+
+#: of telebot.types.ReactionTypeEmoji:1
+msgid "This object represents an emoji reaction type."
+msgstr ""
+
+#: of telebot.types.ReactionTypeEmoji:3
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#reactiontypeemoji"
+msgstr ""
+
+#: of telebot.types.ReactionTypeEmoji:5
+msgid "Type of the reaction, must be emoji"
+msgstr ""
+
+#: of telebot.types.ReactionTypeEmoji:8
+msgid "Reaction emoji. List is available on the API doc."
+msgstr ""
+
+#: of telebot.types.ReactionTypeEmoji:12
+msgid ":class:`ReactionTypeEmoji`"
 msgstr ""
 
 #: of telebot.types.ReplyKeyboardMarkup:1
@@ -5263,6 +6116,65 @@ msgstr ""
 
 #: of telebot.types.ReplyKeyboardRemove:19
 msgid ":class:`telebot.types.ReplyKeyboardRemove`"
+msgstr ""
+
+#: of telebot.types.ReplyParameters:1
+msgid "Describes reply parameters for the message that is being sent."
+msgstr ""
+
+#: of telebot.types.ReplyParameters:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#replyparameters"
+msgstr ""
+
+#: of telebot.types.ReplyParameters:5
+msgid ""
+"Identifier of the message that will be replied to in the current chat, or"
+" in the chat chat_id if it is specified"
+msgstr ""
+
+#: of telebot.types.ReplyParameters:8
+msgid ""
+"Optional. If the message to be replied to is from a different chat, "
+"unique identifier for the chat or username of the channel (in the format "
+"@channelusername)"
+msgstr ""
+
+#: of telebot.types.ReplyParameters:11
+msgid ""
+"Optional. Pass True if the message should be sent even if the specified "
+"message to be replied to is not found; can be used only for replies in "
+"the same chat and forum topic."
+msgstr ""
+
+#: of telebot.types.ReplyParameters:14
+msgid ""
+"Optional. Quoted part of the message to be replied to; 0-1024 characters "
+"after entities parsing. The quote must be an exact substring of the "
+"message to be replied to, including bold, italic, underline, "
+"strikethrough, spoiler, and custom_emoji entities. The message will fail "
+"to send if the quote isn't found in the original message."
+msgstr ""
+
+#: of telebot.types.ReplyParameters:17
+msgid ""
+"Optional. Mode for parsing entities in the quote. See formatting options "
+"for more details."
+msgstr ""
+
+#: of telebot.types.ReplyParameters:20
+msgid ""
+"Optional. A JSON-serialized list of special entities that appear in the "
+"quote. It can be specified instead of quote_parse_mode."
+msgstr ""
+
+#: of telebot.types.ReplyParameters:23
+msgid ""
+"Optional. Position of the quote in the original message in UTF-16 code "
+"units"
+msgstr ""
+
+#: of telebot.types.ReplyParameters:27
+msgid ":class:`ReplyParameters`"
 msgstr ""
 
 #: of telebot.types.SentWebAppMessage:1 telebot.types.WebAppData:1
@@ -5476,26 +6388,26 @@ msgstr ""
 msgid "True, if the sticker set contains video stickers"
 msgstr ""
 
-#: of telebot.types.StickerSet:20
-msgid ""
-"True, if the sticker set contains masks. Deprecated since Bot API 6.2, "
-"use sticker_type instead."
-msgstr ""
-
-#: of telebot.types.StickerSet:24
+#: of telebot.types.StickerSet:23
 msgid "List of all set stickers"
 msgstr ""
 
-#: of telebot.types.StickerSet:27
+#: of telebot.types.StickerSet:26
 msgid "Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format"
 msgstr ""
 
-#: of telebot.types.StickerSet:31
+#: of telebot.types.StickerSet:30
 msgid ":class:`telebot.types.StickerSet`"
 msgstr ""
 
 #: of telebot.types.StickerSet.contains_masks:1
 msgid "Deprecated since Bot API 6.2, use sticker_type instead."
+msgstr ""
+
+#: of telebot.types.Story:1
+msgid ""
+"This object represents a message about a forwarded story in the chat. "
+"Currently holds no information."
 msgstr ""
 
 #: of telebot.types.SuccessfulPayment:1
@@ -5518,13 +6430,6 @@ msgstr ""
 
 #: of telebot.types.SuccessfulPayment:29
 msgid ":class:`telebot.types.SuccessfulPayment`"
-msgstr ""
-
-#: of telebot.types.SwitchInlineQueryChosenChat:1 telebot.types.User:1
-msgid ""
-"Bases: :py:class:`telebot.types.JsonDeserializable`, "
-":py:class:`telebot.types.Dictionaryable`, "
-":py:class:`telebot.types.JsonSerializable`"
 msgstr ""
 
 #: of telebot.types.SwitchInlineQueryChosenChat:1
@@ -5557,6 +6462,45 @@ msgstr ""
 
 #: of telebot.types.SwitchInlineQueryChosenChat:23
 msgid ":class:`SwitchInlineQueryChosenChat`"
+msgstr ""
+
+#: of telebot.types.TextQuote:1
+msgid ""
+"This object contains information about the quoted part of a message that "
+"is replied to by the given message."
+msgstr ""
+
+#: of telebot.types.TextQuote:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#textquote"
+msgstr ""
+
+#: of telebot.types.TextQuote:5
+msgid ""
+"Text of the quoted part of a message that is replied to by the given "
+"message"
+msgstr ""
+
+#: of telebot.types.TextQuote:8
+msgid ""
+"Optional. Special entities that appear in the quote. Currently, only "
+"bold, italic, underline, strikethrough, spoiler, and custom_emoji "
+"entities are kept in quotes."
+msgstr ""
+
+#: of telebot.types.TextQuote:11
+msgid ""
+"Approximate quote position in the original message in UTF-16 code units "
+"as specified by the sender"
+msgstr ""
+
+#: of telebot.types.TextQuote:14
+msgid ""
+"Optional. True, if the quote was chosen manually by the message sender. "
+"Otherwise, the quote was added automatically by the server."
+msgstr ""
+
+#: of telebot.types.TextQuote:18
+msgid ":class:`TextQuote`"
 msgstr ""
 
 #: of telebot.types.Update:1
@@ -5600,66 +6544,94 @@ msgid ""
 msgstr ""
 
 #: of telebot.types.Update:23
+msgid ""
+"Optional. A reaction to a message was changed by a user. The bot must be "
+"an administrator in the chat and must explicitly specify "
+"\"message_reaction\" in the list of allowed_updates to receive these "
+"updates. The update isn't received for reactions set by bots."
+msgstr ""
+
+#: of telebot.types.Update:27
+msgid ""
+"Optional. Reactions to a message with anonymous reactions were changed. "
+"The bot must be an administrator in the chat and must explicitly specify "
+"\"message_reaction_count\" in the list of allowed_updates to receive "
+"these updates."
+msgstr ""
+
+#: of telebot.types.Update:31
 msgid "Optional. New incoming inline query"
 msgstr ""
 
-#: of telebot.types.Update:26
+#: of telebot.types.Update:34
 msgid ""
 "Optional. The result of an inline query that was chosen by a user and "
 "sent to their chat partner. Please see our documentation on the feedback "
 "collecting for details on how to enable these updates for your bot."
 msgstr ""
 
-#: of telebot.types.Update:31
+#: of telebot.types.Update:39
 msgid "Optional. New incoming callback query"
 msgstr ""
 
-#: of telebot.types.Update:34
+#: of telebot.types.Update:42
 msgid ""
 "Optional. New incoming shipping query. Only for invoices with flexible "
 "price"
 msgstr ""
 
-#: of telebot.types.Update:37
+#: of telebot.types.Update:45
 msgid ""
 "Optional. New incoming pre-checkout query. Contains full information "
 "about checkout"
 msgstr ""
 
-#: of telebot.types.Update:41
+#: of telebot.types.Update:49
 msgid ""
 "Optional. New poll state. Bots receive only updates about stopped polls "
 "and polls, which are sent by the bot"
 msgstr ""
 
-#: of telebot.types.Update:45
+#: of telebot.types.Update:53
 msgid ""
 "Optional. A user changed their answer in a non-anonymous poll. Bots "
 "receive new votes only in polls that were sent by the bot itself."
 msgstr ""
 
-#: of telebot.types.Update:49
+#: of telebot.types.Update:57
 msgid ""
 "Optional. The bot's chat member status was updated in a chat. For private"
 " chats, this update is received only when the bot is blocked or unblocked"
 " by the user."
 msgstr ""
 
-#: of telebot.types.Update:53
+#: of telebot.types.Update:61
 msgid ""
 "Optional. A chat member's status was updated in a chat. The bot must be "
 "an administrator in the chat and must explicitly specify “chat_member” in"
 " the list of allowed_updates to receive these updates."
 msgstr ""
 
-#: of telebot.types.Update:57
+#: of telebot.types.Update:65
 msgid ""
 "Optional. A request to join the chat has been sent. The bot must have the"
 " can_invite_users administrator right in the chat to receive these "
 "updates."
 msgstr ""
 
-#: of telebot.types.Update:62
+#: of telebot.types.Update:69
+msgid ""
+"Optional. A chat boost was added or changed. The bot must be an "
+"administrator in the chat to receive these updates."
+msgstr ""
+
+#: of telebot.types.Update:72
+msgid ""
+"Optional. A chat boost was removed. The bot must be an administrator in "
+"the chat to receive these updates."
+msgstr ""
+
+#: of telebot.types.Update:76
 msgid ":class:`telebot.types.Update`"
 msgstr ""
 
@@ -5742,6 +6714,22 @@ msgstr ""
 msgid "return"
 msgstr ""
 
+#: of telebot.types.UserChatBoosts:1
+msgid "This object represents a list of boosts added to a chat by a user."
+msgstr ""
+
+#: of telebot.types.UserChatBoosts:3
+msgid "Telegram documentation: https://core.telegram.org/bots/api#userchatboosts"
+msgstr ""
+
+#: of telebot.types.UserChatBoosts:5
+msgid "The list of boosts added to the chat by the user"
+msgstr ""
+
+#: of telebot.types.UserChatBoosts:9
+msgid ":class:`UserChatBoosts`"
+msgstr ""
+
 #: of telebot.types.UserProfilePhotos:1
 msgid "This object represent a user's profile pictures."
 msgstr ""
@@ -5764,30 +6752,33 @@ msgstr ""
 msgid ":class:`telebot.types.UserProfilePhotos`"
 msgstr ""
 
-#: of telebot.types.UserShared:1
+#: of telebot.types.UsersShared:1
 msgid ""
-"This object contains information about the user whose identifier was "
-"shared with the bot using a `telebot.types.KeyboardButtonRequestUser` "
-"button."
+"This object contains information about the users whose identifiers were "
+"shared with the bot using a KeyboardButtonRequestUsers button."
 msgstr ""
 
-#: of telebot.types.UserShared:4
-msgid "Telegram documentation: https://core.telegram.org/bots/api#usershared"
+#: of telebot.types.UsersShared:4
+msgid "Telegram documentation: https://core.telegram.org/bots/api#usersshared"
 msgstr ""
 
-#: of telebot.types.UserShared:9
+#: of telebot.types.UsersShared:6
+msgid "Identifier of the request"
+msgstr ""
+
+#: of telebot.types.UsersShared:9
 msgid ""
-"Identifier of the shared user. This number may have more than 32 "
+"Identifiers of the shared users. These numbers may have more than 32 "
 "significant bits and some programming languages may have "
-"difficulty/silent defects in interpreting it. But it has at most 52 "
-"significant bits, so a 64-bit integer or double-precision float type are "
-"safe for storing this identifier. The bot may not have access to the user"
-" and could be unable to use this identifier, unless the user is already "
-"known to the bot by some other means."
+"difficulty/silent defects in interpreting them. But they have at most 52 "
+"significant bits, so 64-bit integers or double-precision float types are "
+"safe for storing these identifiers. The bot may not have access to the "
+"users and could be unable to use these identifiers unless the users are "
+"already known to the bot by some other means."
 msgstr ""
 
-#: of telebot.types.UserShared:16
-msgid ":class:`telebot.types.UserShared`"
+#: of telebot.types.UsersShared:18
+msgid ":class:`UsersShared`"
 msgstr ""
 
 #: of telebot.types.Venue:1
@@ -6065,18 +7056,32 @@ msgstr ""
 
 #: of telebot.types.WriteAccessAllowed:1
 msgid ""
-"This object represents a service message about a user allowed to post "
-"messages in the chat. Currently holds no information."
+"This object represents a service message about a user allowing a bot to "
+"write messages after adding it to the attachment menu, launching a Web "
+"App from a link, or accepting an explicit request from a Web App sent by "
+"the method requestWriteAccess."
 msgstr ""
 
-#: of telebot.types.WriteAccessAllowed:4
+#: of telebot.types.WriteAccessAllowed:5
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#writeaccessallowed"
 msgstr ""
 
-#: of telebot.types.WriteAccessAllowed:6
+#: of telebot.types.WriteAccessAllowed:7
+msgid ""
+"Optional. True, if the access was granted after the user accepted an "
+"explicit request from a Web App sent by the method requestWriteAccess"
+msgstr ""
+
+#: of telebot.types.WriteAccessAllowed:11
 msgid "Optional. Name of the Web App which was launched from a link"
+msgstr ""
+
+#: of telebot.types.WriteAccessAllowed:14
+msgid ""
+"Optional. True, if the access was granted when the bot was added to the "
+"attachment or side menu"
 msgstr ""
 
 #~ msgid "Type of the result, must be animation"
@@ -6107,5 +7112,129 @@ msgstr ""
 #~ "allowed to add web page previews "
 #~ "to their messages, implies "
 #~ "can_send_media_messages"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. Message with the callback "
+#~ "button that originated the query. Note"
+#~ " that message content and message "
+#~ "date will not be available if the"
+#~ " message is too old"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "deprecated. True, if the user is "
+#~ "allowed to send audios, documents, "
+#~ "photos, videos, video notes and voice"
+#~ " notes"
+#~ msgstr ""
+
+#~ msgid "Optional. Disables link previews for links in the sent message"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. If specified, pressing the "
+#~ "button will open a list of "
+#~ "suitable users. Tapping on any user "
+#~ "will send their identifier to the "
+#~ "bot in a “user_shared” service message."
+#~ " Available in private chats only."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Telegram documentation: "
+#~ "https://core.telegram.org/bots/api#keyboardbuttonrequestuser"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Signed 32-bit identifier of the request,"
+#~ " which will be received back in "
+#~ "the UserShared object. Must be unique"
+#~ " within the message"
+#~ msgstr ""
+
+#~ msgid ":class:`telebot.types.KeyboardButtonRequestUser`"
+#~ msgstr ""
+
+#~ msgid "Optional. For forwarded messages, sender of the original message"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. For messages forwarded from "
+#~ "channels or from anonymous administrators, "
+#~ "information about the original sender "
+#~ "chat"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. For messages forwarded from "
+#~ "channels, identifier of the original "
+#~ "message in the channel"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. For forwarded messages that "
+#~ "were originally sent in channels or "
+#~ "by an anonymous chat administrator, "
+#~ "signature of the message sender if "
+#~ "present"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. Sender's name for messages "
+#~ "forwarded from users who disallow adding"
+#~ " a link to their account in "
+#~ "forwarded messages"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Optional. For forwarded messages, date "
+#~ "the original message was sent in "
+#~ "Unix time"
+#~ msgstr ""
+
+#~ msgid "The user, who changed the answer to the poll"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "True, if the sticker set contains "
+#~ "masks. Deprecated since Bot API 6.2, "
+#~ "use sticker_type instead."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This object contains information about "
+#~ "the user whose identifier was shared "
+#~ "with the bot using a "
+#~ "`telebot.types.KeyboardButtonRequestUser` button."
+#~ msgstr ""
+
+#~ msgid "Telegram documentation: https://core.telegram.org/bots/api#usershared"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Identifier of the shared user. This "
+#~ "number may have more than 32 "
+#~ "significant bits and some programming "
+#~ "languages may have difficulty/silent defects"
+#~ " in interpreting it. But it has "
+#~ "at most 52 significant bits, so a"
+#~ " 64-bit integer or double-precision "
+#~ "float type are safe for storing "
+#~ "this identifier. The bot may not "
+#~ "have access to the user and could"
+#~ " be unable to use this identifier,"
+#~ " unless the user is already known "
+#~ "to the bot by some other means."
+#~ msgstr ""
+
+#~ msgid ":class:`telebot.types.UserShared`"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This object represents a service message"
+#~ " about a user allowed to post "
+#~ "messages in the chat. Currently holds"
+#~ " no information."
 #~ msgstr ""
 
