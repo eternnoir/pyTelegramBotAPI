@@ -8120,7 +8120,7 @@ class ReactionTypeEmoji(ReactionType):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyUnusedLocal
 class ReactionTypeCustomEmoji(ReactionType):
     """
     This object represents a custom emoji reaction type.
@@ -8130,20 +8130,20 @@ class ReactionTypeCustomEmoji(ReactionType):
     :param type: Type of the reaction, must be custom_emoji
     :type type: :obj:`str`
 
-    :param custom_emoji: Identifier of the custom emoji
-    :type custom_emoji: :obj:`str`
+    :param custom_emoji_id: Identifier of the custom emoji
+    :type custom_emoji_id: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`ReactionTypeCustomEmoji`
     """
 
-    def __init__(self, custom_emoji: str, **kwargs) -> None:
+    def __init__(self, custom_emoji_id: str, **kwargs) -> None:
         super().__init__('custom_emoji')
-        self.custom_emoji: str = custom_emoji
+        self.custom_emoji_id: str = custom_emoji_id
 
     def to_dict(self) -> dict:
         json_dict = super().to_dict()
-        json_dict['custom_emoji'] = self.custom_emoji
+        json_dict['custom_emoji_id'] = self.custom_emoji_id
         return json_dict
 
 
