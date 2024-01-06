@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-06 13:16+0400\n"
+"POT-Creation-Date: 2024-01-06 20:27+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -482,7 +482,11 @@ msgid ""
 "in the set. Emoji sticker sets can have up to 200 stickers. Animated and "
 "video sticker sets can have up to 50 stickers. Static sticker sets can "
 "have up to 120 stickers. Returns True on success."
-msgstr ""
+msgstr "Используйте этот метод для добавления нового стикера в набор стикеров, "
+"созданный ботом. Формат нового стикера должен совпадать с остальными стикерами "
+"в наборе. Наборы эмодзи могут иметь до 200 элементов. Анимированные и видео наборы "
+"могут иметь до 50 стикеров. Статичные наборы могут иметь до 120 стикеров. "
+"Возвращает True в случае успеха"
 
 #: of telebot.TeleBot.add_sticker_to_set:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#addstickertoset"
@@ -492,7 +496,8 @@ msgstr "Документация Telegram: https://core.telegram.org/bots/api#ad
 msgid ""
 "**_sticker, mask_position, emojis parameters are deprecated, use stickers"
 " instead"
-msgstr ""
+msgstr "Параметры **_sticker, mask_position, emojis устарели. Используйте "
+" stickers вместо них"
 
 #: of telebot.TeleBot.add_sticker_to_set:12
 #: telebot.TeleBot.create_new_sticker_set:10
@@ -554,7 +559,7 @@ msgstr "Позиция для размещения маски на лицах в
 msgid ""
 "A JSON-serialized list of 1-50 initial stickers to be added to the "
 "sticker set"
-msgstr ""
+msgstr "Список из 1-50 стикеров, добавляемых в набор, в формате JSON"
 
 #: of telebot.TeleBot.add_sticker_to_set:38
 #: telebot.TeleBot.answer_callback_query:22
@@ -3465,8 +3470,8 @@ msgid ""
 "decorator function, it passes "
 ":class:`telebot.types.MessageReactionCountUpdated` object."
 msgstr ""
-"Обрабатывает новый callback query. В качестве параметра передаёт в "
-"декорируемую функцию объект :class:`telebot.types.CallbackQuery`."
+"Обрабатывает количество реакций на новые входящие сообщения. В качестве параметра передаёт "
+"в декорируемую функцию объект :class:`telebot.types.MessageReactionCountUpdated`."
 
 #: of telebot.TeleBot.message_reaction_handler:1
 #, fuzzy
@@ -3474,8 +3479,8 @@ msgid ""
 "Handles new incoming message reaction. As a parameter to the decorator "
 "function, it passes :class:`telebot.types.MessageReactionUpdated` object."
 msgstr ""
-"Обрабатывает новый callback query. В качестве параметра передаёт в "
-"декорируемую функцию объект :class:`telebot.types.CallbackQuery`."
+"Обрабатывает новую реакцию на сообщение. В качестве параметра передаёт в "
+"декорируемую функцию объект :class:`telebot.types.MessageReactionUpdated`."
 
 #: of telebot.TeleBot.middleware_handler:1
 msgid "Function-based middleware handler decorator."
@@ -3979,12 +3984,12 @@ msgstr "Список видов чатов"
 #: of telebot.TeleBot.register_message_reaction_count_handler:1
 #, fuzzy
 msgid "Registers message reaction count handler."
-msgstr "Регистрирует хендлер сообщений."
+msgstr "Регистрирует хендлер количества реакций на сообщениях."
 
 #: of telebot.TeleBot.register_message_reaction_handler:1
 #, fuzzy
 msgid "Registers message reaction handler."
-msgstr "Регистрирует хендлер сообщений."
+msgstr "Регистрирует хендлер реакций на сообщениях."
 
 #: of telebot.TeleBot.register_middleware_handler:1
 msgid "Adds function-based middleware handler."
@@ -5597,13 +5602,11 @@ msgstr ""
 #: of telebot.TeleBot.set_message_reaction:1
 #, fuzzy
 msgid ""
-"Use this method to set a reaction to a message in a chat. The bot must be"
-" an administrator in the chat for this to work and must have the "
-"appropriate admin rights. Returns True on success."
+"Use this method to set a reaction to a message in a chat. "
+"Returns True on success."
 msgstr ""
-"Используйте этот метод, чтобы закрепить сообщение в супергруппе. Бот "
-"должен быть администратором чата и иметь соответствующие права "
-"администратора. Возвращает True в случае успеха."
+"Используйте этот метод, чтобы поставить реакцию на сообщение в чате. "
+"Возвращает True в случае успеха."
 
 #: of telebot.TeleBot.set_message_reaction:3
 #, fuzzy
@@ -5612,12 +5615,12 @@ msgid ""
 "https://core.telegram.org/bots/api#setmessagereaction"
 msgstr ""
 "Документация Telegram: "
-"https://core.telegram.org/bots/api#editmessagecaption"
+"https://core.telegram.org/bots/api#setmessagereaction"
 
 #: of telebot.TeleBot.set_message_reaction:8
 #, fuzzy
 msgid "Identifier of the message to set reaction to"
-msgstr "id сообщения, которое нужно удалить"
+msgstr "id сообщения, на которое нужно поставить реакцию"
 
 #: of telebot.TeleBot.set_message_reaction:11
 msgid ""
@@ -5625,11 +5628,14 @@ msgid ""
 "premium users, bots can set up to one reaction per message. A custom "
 "emoji reaction can be used if it is either already present on the message"
 " or explicitly allowed by chat administrators."
-msgstr ""
+msgstr "Новый список реакций, устанавливаемых на сообщение. На данный момент "
+"боты, как не премиум пользователи могут устанавливать только 1 реакцию на сообщение."
+"Пользовательские эмодзи могут использоваться, если она либо уже присутствует в "
+"сообщении, либо явно разрешена администраторами чата."
 
 #: of telebot.TeleBot.set_message_reaction:15
 msgid "Pass True to set the reaction with a big animation"
-msgstr ""
+msgstr "Задайте True чтобы задать реакцию с большой анимацией."
 
 #: of telebot.TeleBot.set_my_commands:1
 msgid "Use this method to change the list of the bot's commands."
