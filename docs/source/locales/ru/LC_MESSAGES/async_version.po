@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-05 22:16+0400\n"
+"POT-Creation-Date: 2024-01-06 13:19+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3328,16 +3328,16 @@ msgid ""
 "Requires administrator rights in the chat. Returns a UserChatBoosts "
 "object."
 msgstr ""
-"Используйте этот метод, чтобы получить текущие права администратора для "
-"бота по умолчанию. Возвращает объект ChatAdministratorRights в случае "
-"успеха."
+"Используйте этот метод, чтобы получить список бустов, полученных от "
+"пользователя. Бот должен быть администратором чата. Возвращает объект "
+"UserChatBoosts в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:3
 #, fuzzy
 msgid ""
 "Telegram documentation: "
 "https://core.telegram.org/bots/api#getuserchatboosts"
-msgstr "Документация Telegram: https://core.telegram.org/bots/api#getchat"
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getuserchatboosts"
 
 #: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:5
 #: telebot.async_telebot.AsyncTeleBot.send_chat_action:10
@@ -3351,12 +3351,12 @@ msgstr "Уникальный id чата или username канала"
 #: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:11
 #, fuzzy
 msgid "On success, a UserChatBoosts object is returned."
-msgstr "В случае успеха, возвращается объект StickerSet."
+msgstr "В случае успеха, возвращается объект UserChatBoosts."
 
 #: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:12
 #, fuzzy
 msgid ":class:`telebot.types.UserChatBoosts`"
-msgstr "Экземпляр класса :class:`telebot.types.Message`"
+msgstr "Экземпляр класса :class:`telebot.types.UserChatBoosts`"
 
 #: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:1
 msgid ""
