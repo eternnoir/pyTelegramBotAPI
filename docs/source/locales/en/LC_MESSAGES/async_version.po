@@ -4702,9 +4702,8 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:1
 msgid ""
-"Use this method to set a reaction to a message in a chat. The bot must be"
-" an administrator in the chat for this to work and must have the "
-"appropriate admin rights. Returns True on success."
+"Use this method to set a reaction to a message in a chat. "
+"Returns True on success."
 msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:3
