@@ -32,6 +32,7 @@ def start_message(message):
     bot.send_message(
         message.chat.id,
         formatting.format_text(
+            formatting.hcite(message.from_user.first_name), #blockquote
             formatting.hbold(message.from_user.first_name),
             formatting.hitalic(message.from_user.first_name),
             formatting.hunderline(message.from_user.first_name),
