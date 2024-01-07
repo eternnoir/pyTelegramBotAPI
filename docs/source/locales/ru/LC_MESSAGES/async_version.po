@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pyTelegramBotAPI Documentation \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-08 23:07+0500\n"
+"POT-Creation-Date: 2024-01-06 13:19+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,12 +89,14 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat
 #: telebot.async_telebot.AsyncTeleBot.callback_query_handler
 #: telebot.async_telebot.AsyncTeleBot.channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler
 #: telebot.async_telebot.AsyncTeleBot.chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.close_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.copy_message
+#: telebot.async_telebot.AsyncTeleBot.copy_messages
 #: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.create_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.create_invoice_link
@@ -104,6 +106,7 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.delete_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.delete_message
+#: telebot.async_telebot.AsyncTeleBot.delete_messages
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands
 #: telebot.async_telebot.AsyncTeleBot.delete_state
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
@@ -123,6 +126,7 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.enable_saving_states
 #: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.forward_message
+#: telebot.async_telebot.AsyncTeleBot.forward_messages
 #: telebot.async_telebot.AsyncTeleBot.get_chat
 #: telebot.async_telebot.AsyncTeleBot.get_chat_administrators
 #: telebot.async_telebot.AsyncTeleBot.get_chat_member
@@ -140,6 +144,7 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.get_state
 #: telebot.async_telebot.AsyncTeleBot.get_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.get_updates
+#: telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts
 #: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
 #: telebot.async_telebot.AsyncTeleBot.get_webhook_info
 #: telebot.async_telebot.AsyncTeleBot.hide_general_forum_topic
@@ -147,6 +152,8 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.inline_handler
 #: telebot.async_telebot.AsyncTeleBot.leave_chat
 #: telebot.async_telebot.AsyncTeleBot.message_handler
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_count_handler
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_handler
 #: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message
 #: telebot.async_telebot.AsyncTeleBot.poll_answer_handler
@@ -157,6 +164,7 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.promote_chat_member
 #: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler
 #: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler
@@ -164,11 +172,15 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler
+#: telebot.async_telebot.AsyncTeleBot.removed_chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.reopen_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.reply_to
@@ -204,6 +216,7 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title
 #: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail
 #: telebot.async_telebot.AsyncTeleBot.set_game_score
+#: telebot.async_telebot.AsyncTeleBot.set_message_reaction
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
 #: telebot.async_telebot.AsyncTeleBot.set_my_description
@@ -227,6 +240,7 @@ msgstr "Установите пакет coloredlogs для использова�
 #: telebot.async_telebot.AsyncTeleBot.unhide_general_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
 #: telebot.async_telebot.AsyncTeleBot.upload_sticker_file
 #: telebot.asyncio_filters.TextFilter
@@ -300,12 +314,14 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat
 #: telebot.async_telebot.AsyncTeleBot.callback_query_handler
 #: telebot.async_telebot.AsyncTeleBot.channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler
 #: telebot.async_telebot.AsyncTeleBot.chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler
 #: telebot.async_telebot.AsyncTeleBot.close
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.copy_message
+#: telebot.async_telebot.AsyncTeleBot.copy_messages
 #: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.create_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.create_invoice_link
@@ -315,6 +331,7 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.delete_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.delete_message
+#: telebot.async_telebot.AsyncTeleBot.delete_messages
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands
 #: telebot.async_telebot.AsyncTeleBot.delete_state
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_from_set
@@ -332,6 +349,7 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.edited_message_handler
 #: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.forward_message
+#: telebot.async_telebot.AsyncTeleBot.forward_messages
 #: telebot.async_telebot.AsyncTeleBot.get_chat
 #: telebot.async_telebot.AsyncTeleBot.get_chat_administrators
 #: telebot.async_telebot.AsyncTeleBot.get_chat_member
@@ -350,6 +368,7 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.get_state
 #: telebot.async_telebot.AsyncTeleBot.get_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.get_updates
+#: telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts
 #: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
 #: telebot.async_telebot.AsyncTeleBot.get_webhook_info
 #: telebot.async_telebot.AsyncTeleBot.infinity_polling
@@ -357,6 +376,8 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.leave_chat
 #: telebot.async_telebot.AsyncTeleBot.log_out
 #: telebot.async_telebot.AsyncTeleBot.message_handler
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_count_handler
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_handler
 #: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message
 #: telebot.async_telebot.AsyncTeleBot.poll_answer_handler
@@ -367,17 +388,22 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.promote_chat_member
 #: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler
 #: telebot.async_telebot.AsyncTeleBot.register_edited_channel_post_handler
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler
+#: telebot.async_telebot.AsyncTeleBot.removed_chat_boost_handler
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.reply_to
 #: telebot.async_telebot.AsyncTeleBot.reset_data
@@ -412,6 +438,7 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title
 #: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail
 #: telebot.async_telebot.AsyncTeleBot.set_game_score
+#: telebot.async_telebot.AsyncTeleBot.set_message_reaction
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights
 #: telebot.async_telebot.AsyncTeleBot.set_my_description
@@ -434,6 +461,7 @@ msgstr "Класс с методом check(message)"
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
 #: telebot.async_telebot.AsyncTeleBot.upload_sticker_file
 #: telebot.asyncio_filters.TextFilter
@@ -445,6 +473,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.add_data:10
 #: telebot.async_telebot.AsyncTeleBot.callback_query_handler:9
 #: telebot.async_telebot.AsyncTeleBot.channel_post_handler:17
+#: telebot.async_telebot.AsyncTeleBot.chat_boost_handler:8
 #: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:10
 #: telebot.async_telebot.AsyncTeleBot.chat_member_handler:11
 #: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:10
@@ -459,14 +488,19 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.process_new_updates:8
 #: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:23
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler:13
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:26
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:26
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:14
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler:14
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler:13
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:14
+#: telebot.async_telebot.AsyncTeleBot.removed_chat_boost_handler:8
 #: telebot.async_telebot.AsyncTeleBot.reset_data:9
 #: telebot.async_telebot.AsyncTeleBot.set_state:18
 #: telebot.async_telebot.AsyncTeleBot.set_update_listener:15
@@ -599,6 +633,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_position_in_set:11
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_set_thumbnail:15
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:13
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages:11
 msgid "On success, True is returned."
 msgstr "В случае успеха возвращается True."
 
@@ -613,6 +648,7 @@ msgstr "В случае успеха возвращается True."
 #: telebot.async_telebot.AsyncTeleBot.ban_chat_sender_chat
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.copy_message
+#: telebot.async_telebot.AsyncTeleBot.copy_messages
 #: telebot.async_telebot.AsyncTeleBot.create_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.create_forum_topic
 #: telebot.async_telebot.AsyncTeleBot.create_invoice_link
@@ -636,6 +672,7 @@ msgstr "В случае успеха возвращается True."
 #: telebot.async_telebot.AsyncTeleBot.edit_message_text
 #: telebot.async_telebot.AsyncTeleBot.export_chat_invite_link
 #: telebot.async_telebot.AsyncTeleBot.forward_message
+#: telebot.async_telebot.AsyncTeleBot.forward_messages
 #: telebot.async_telebot.AsyncTeleBot.get_chat
 #: telebot.async_telebot.AsyncTeleBot.get_chat_administrators
 #: telebot.async_telebot.AsyncTeleBot.get_chat_member
@@ -650,6 +687,7 @@ msgstr "В случае успеха возвращается True."
 #: telebot.async_telebot.AsyncTeleBot.get_state
 #: telebot.async_telebot.AsyncTeleBot.get_sticker_set
 #: telebot.async_telebot.AsyncTeleBot.get_updates
+#: telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts
 #: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos
 #: telebot.async_telebot.AsyncTeleBot.get_webhook_info
 #: telebot.async_telebot.AsyncTeleBot.log_out
@@ -701,6 +739,7 @@ msgstr "В случае успеха возвращается True."
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages
 #: telebot.async_telebot.AsyncTeleBot.unpin_chat_message
 #: telebot.async_telebot.AsyncTeleBot.upload_sticker_file
 msgid "Return type"
@@ -730,7 +769,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.leave_chat:8
 #: telebot.async_telebot.AsyncTeleBot.log_out:11
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message:19
-#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:61
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:70
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:14
 #: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:61
 #: telebot.async_telebot.AsyncTeleBot.send_chat_action:26
@@ -741,6 +780,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.set_chat_photo:16
 #: telebot.async_telebot.AsyncTeleBot.set_chat_title:17
 #: telebot.async_telebot.AsyncTeleBot.set_custom_emoji_sticker_set_thumbnail:11
+#: telebot.async_telebot.AsyncTeleBot.set_message_reaction:18
 #: telebot.async_telebot.AsyncTeleBot.set_my_commands:18
 #: telebot.async_telebot.AsyncTeleBot.set_my_default_administrator_rights:18
 #: telebot.async_telebot.AsyncTeleBot.set_sticker_emoji_list:11
@@ -753,6 +793,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.unban_chat_sender_chat:15
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_chat_messages:12
 #: telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:14
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages:12
 #: telebot.async_telebot.AsyncTeleBot.unpin_chat_message:15
 msgid ":obj:`bool`"
 msgstr ""
@@ -1074,6 +1115,7 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.ban_chat_member:12
 #: telebot.async_telebot.AsyncTeleBot.decline_chat_join_request:11
 #: telebot.async_telebot.AsyncTeleBot.get_chat_member:8
+#: telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:8
 #: telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:6
 #: telebot.async_telebot.AsyncTeleBot.promote_chat_member:11
 #: telebot.async_telebot.AsyncTeleBot.restrict_chat_member:14
@@ -1089,7 +1131,7 @@ msgstr "Уникальный id сделавшего запрос пользов
 #: telebot.async_telebot.AsyncTeleBot.delete_my_commands:16
 #: telebot.async_telebot.AsyncTeleBot.log_out:10
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message:18
-#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:60
+#: telebot.async_telebot.AsyncTeleBot.promote_chat_member:69
 #: telebot.async_telebot.AsyncTeleBot.set_chat_administrator_custom_title:17
 #: telebot.async_telebot.AsyncTeleBot.set_chat_description:13
 #: telebot.async_telebot.AsyncTeleBot.set_chat_menu_button:14
@@ -1156,6 +1198,7 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.ban_chat_member:24
 #: telebot.async_telebot.AsyncTeleBot.delete_chat_sticker_set:10
 #: telebot.async_telebot.AsyncTeleBot.delete_message:22
+#: telebot.async_telebot.AsyncTeleBot.delete_messages:14
 #: telebot.async_telebot.AsyncTeleBot.delete_sticker_set:6
 #: telebot.async_telebot.AsyncTeleBot.delete_webhook:12
 #: telebot.async_telebot.AsyncTeleBot.send_chat_action:25
@@ -1192,13 +1235,16 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.close_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.close_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.copy_message:5
+#: telebot.async_telebot.AsyncTeleBot.copy_messages:3
 #: telebot.async_telebot.AsyncTeleBot.create_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.delete_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.delete_message:13
+#: telebot.async_telebot.AsyncTeleBot.delete_messages:8
 #: telebot.async_telebot.AsyncTeleBot.edit_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.edit_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.edit_message_live_location:13
 #: telebot.async_telebot.AsyncTeleBot.forward_message:8
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:3
 #: telebot.async_telebot.AsyncTeleBot.hide_general_forum_topic:7
 #: telebot.async_telebot.AsyncTeleBot.pin_chat_message:7
 #: telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:7
@@ -1242,18 +1288,22 @@ msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.callback_query_handler:4
 #: telebot.async_telebot.AsyncTeleBot.channel_post_handler:10
+#: telebot.async_telebot.AsyncTeleBot.chat_boost_handler:4
 #: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:5
 #: telebot.async_telebot.AsyncTeleBot.chat_member_handler:6
 #: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:5
 #: telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:10
 #: telebot.async_telebot.AsyncTeleBot.edited_message_handler:11
 #: telebot.async_telebot.AsyncTeleBot.inline_handler:4
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_count_handler:4
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_handler:4
 #: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:5
 #: telebot.async_telebot.AsyncTeleBot.poll_answer_handler:5
 #: telebot.async_telebot.AsyncTeleBot.poll_handler:4
 #: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:4
 #: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:15
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:6
@@ -1261,17 +1311,22 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:15
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:15
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:6
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler:6
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:6
+#: telebot.async_telebot.AsyncTeleBot.removed_chat_boost_handler:4
 #: telebot.async_telebot.AsyncTeleBot.shipping_query_handler:4
 msgid "Function executed as a filter"
 msgstr "Функция, используемая в качестве фильтра"
 
 #: of telebot.async_telebot.AsyncTeleBot.callback_query_handler:7
 #: telebot.async_telebot.AsyncTeleBot.channel_post_handler:16
+#: telebot.async_telebot.AsyncTeleBot.chat_boost_handler:7
 #: telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:8
 #: telebot.async_telebot.AsyncTeleBot.chat_member_handler:9
 #: telebot.async_telebot.AsyncTeleBot.chosen_inline_handler:8
@@ -1279,12 +1334,15 @@ msgstr "Функция, используемая в качестве фильт�
 #: telebot.async_telebot.AsyncTeleBot.edited_message_handler:20
 #: telebot.async_telebot.AsyncTeleBot.inline_handler:7
 #: telebot.async_telebot.AsyncTeleBot.message_handler:50
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_count_handler:7
+#: telebot.async_telebot.AsyncTeleBot.message_reaction_handler:7
 #: telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:8
 #: telebot.async_telebot.AsyncTeleBot.poll_answer_handler:8
 #: telebot.async_telebot.AsyncTeleBot.poll_handler:7
 #: telebot.async_telebot.AsyncTeleBot.pre_checkout_query_handler:7
 #: telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:21
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler:11
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:12
@@ -1292,11 +1350,15 @@ msgstr "Функция, используемая в качестве фильт�
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:24
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:24
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler:12
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler:12
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:11
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler:11
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:12
+#: telebot.async_telebot.AsyncTeleBot.removed_chat_boost_handler:7
 #: telebot.async_telebot.AsyncTeleBot.shipping_query_handler:7
 msgid "Optional keyword arguments(custom filters)"
 msgstr "Необязательные именованные аргументы(кастомные фильтры)"
@@ -1335,6 +1397,15 @@ msgstr "Необязательное регулярное выражение."
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:6
 msgid "Supported message content types. Must be a list. Defaults to ['text']."
 msgstr "Обрабатываемые виды контента. Обязан быть списком. По умолчанию ['text']"
+
+#: of telebot.async_telebot.AsyncTeleBot.chat_boost_handler:1
+#, fuzzy
+msgid ""
+"Handles new incoming chat boost state. it passes "
+":class:`telebot.types.ChatBoostUpdated` object."
+msgstr ""
+"Обрабатывает новый callback запрос. В качестве параметра передаёт в "
+"декорируемую функцию объект :class:`telebot.types.CallbackQuery`."
 
 #: of telebot.async_telebot.AsyncTeleBot.chat_join_request_handler:1
 msgid ""
@@ -1439,6 +1510,7 @@ msgstr ""
 "работы поллинга или вебхука."
 
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:1
+#: telebot.async_telebot.AsyncTeleBot.copy_messages:1
 msgid "Use this method to copy messages of any kind."
 msgstr "Используйте этот метод для копирования любых сообщений."
 
@@ -1447,7 +1519,9 @@ msgid "Telegram documentation: https://core.telegram.org/bots/api#copymessage"
 msgstr "Документация Telegram: https://core.telegram.org/bots/api#copymessage"
 
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:8
+#: telebot.async_telebot.AsyncTeleBot.copy_messages:6
 #: telebot.async_telebot.AsyncTeleBot.forward_message:11
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:6
 msgid ""
 "Unique identifier for the chat where the original message was sent (or "
 "channel username in the format @channelusername)"
@@ -1621,8 +1695,6 @@ msgid "Identifier of a message thread, in which the message will be sent"
 msgstr "id топика, в который нужно отправить сообщение"
 
 #: of telebot.async_telebot.AsyncTeleBot.copy_message:45
-#: telebot.async_telebot.AsyncTeleBot.forward_message:26
-#: telebot.async_telebot.AsyncTeleBot.reply_to:11
 #: telebot.async_telebot.AsyncTeleBot.send_animation:66
 #: telebot.async_telebot.AsyncTeleBot.send_audio:66
 #: telebot.async_telebot.AsyncTeleBot.send_contact:44
@@ -1631,6 +1703,7 @@ msgstr "id топика, в который нужно отправить соо�
 #: telebot.async_telebot.AsyncTeleBot.send_game:32
 #: telebot.async_telebot.AsyncTeleBot.send_invoice:101
 #: telebot.async_telebot.AsyncTeleBot.send_location:49
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:30
 #: telebot.async_telebot.AsyncTeleBot.send_message:46
 #: telebot.async_telebot.AsyncTeleBot.send_photo:48
 #: telebot.async_telebot.AsyncTeleBot.send_poll:70
@@ -1639,26 +1712,61 @@ msgstr "id топика, в который нужно отправить соо�
 #: telebot.async_telebot.AsyncTeleBot.send_video:67
 #: telebot.async_telebot.AsyncTeleBot.send_video_note:51
 #: telebot.async_telebot.AsyncTeleBot.send_voice:49
-msgid "On success, the sent Message is returned."
+msgid "Reply parameters."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:48
+#, fuzzy
+msgid "On success, the MessageId of the sent message is returned."
 msgstr "В случае успеха возвращает отправленное сообщение (Message)."
 
-#: of telebot.async_telebot.AsyncTeleBot.copy_message:46
-#: telebot.async_telebot.AsyncTeleBot.forward_message:27
-#: telebot.async_telebot.AsyncTeleBot.reply_to:12
-#: telebot.async_telebot.AsyncTeleBot.send_animation:67
-#: telebot.async_telebot.AsyncTeleBot.send_audio:67
-#: telebot.async_telebot.AsyncTeleBot.send_contact:45
-#: telebot.async_telebot.AsyncTeleBot.send_dice:36
-#: telebot.async_telebot.AsyncTeleBot.send_document:60
-#: telebot.async_telebot.AsyncTeleBot.send_location:50
-#: telebot.async_telebot.AsyncTeleBot.send_message:47
-#: telebot.async_telebot.AsyncTeleBot.send_photo:49
-#: telebot.async_telebot.AsyncTeleBot.send_sticker:43
-#: telebot.async_telebot.AsyncTeleBot.send_venue:58
-#: telebot.async_telebot.AsyncTeleBot.send_video:68
-#: telebot.async_telebot.AsyncTeleBot.send_video_note:52
-msgid ":class:`telebot.types.Message`"
+#: of telebot.async_telebot.AsyncTeleBot.copy_message:49
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:22
+#, fuzzy
+msgid ":class:`telebot.types.MessageID`"
+msgstr "Экземпляр класса :class:`telebot.types.Message`"
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:9
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:9
+#, fuzzy
+msgid "Message identifiers in the chat specified in from_chat_id"
+msgstr "id сообщения в чате, заданном в from_chat_id"
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:12
+#: telebot.async_telebot.AsyncTeleBot.forward_message:5
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:12
+msgid ""
+"Sends the message silently. Users will receive a notification with no "
+"sound"
 msgstr ""
+"Отправить сообщение, при получении которого пользователи получат "
+"уведомление без звука"
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:15
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:15
+#: telebot.async_telebot.AsyncTeleBot.send_media_group:27
+msgid "Identifier of a message thread, in which the messages will be sent"
+msgstr "id топика, в который будет отправлена группа медиа"
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:18
+#: telebot.async_telebot.AsyncTeleBot.forward_message:17
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:18
+msgid "Protects the contents of the forwarded message from forwarding and saving"
+msgstr "Запретить пересылку и сохранение содержимого пересланного сообщения"
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:21
+msgid "Pass True to copy the messages without their captions"
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:24
+#, fuzzy
+msgid "On success, an array of MessageId of the sent messages is returned."
+msgstr "В случае успеха возвращает отправленное сообщение (Message)."
+
+#: of telebot.async_telebot.AsyncTeleBot.copy_messages:25
+#, fuzzy
+msgid ":obj:`list` of :class:`telebot.types.MessageID`"
+msgstr "Экземпляр класса :class:`telebot.types.Message`"
 
 #: of telebot.async_telebot.AsyncTeleBot.create_chat_invite_link:1
 msgid ""
@@ -2137,6 +2245,24 @@ msgstr "Документация Telegram: https://core.telegram.org/bots/api#de
 msgid "Identifier of the message to delete"
 msgstr "id сообщения, которое нужно удалить"
 
+#: of telebot.async_telebot.AsyncTeleBot.delete_messages:1
+msgid ""
+"Use this method to delete multiple messages in a chat. The number of "
+"messages to be deleted must not exceed 100. If the chat is a private "
+"chat, the user must be an administrator of the chat for this to work and "
+"must have the appropriate admin rights. Returns True on success."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_messages:6
+#, fuzzy
+msgid "Telegram documentation: https://core.telegram.org/bots/api#deletemessages"
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#deletemessage"
+
+#: of telebot.async_telebot.AsyncTeleBot.delete_messages:11
+#, fuzzy
+msgid "Identifiers of the messages to be deleted"
+msgstr "id сообщения, которое нужно удалить"
+
 #: of telebot.async_telebot.AsyncTeleBot.delete_my_commands:1
 msgid ""
 "Use this method to delete the list of the bot's commands for the given "
@@ -2385,7 +2511,7 @@ msgstr "JSON-сериализованный объект inline клавиату
 #: of telebot.async_telebot.AsyncTeleBot.edit_message_caption:26
 #: telebot.async_telebot.AsyncTeleBot.edit_message_media:22
 #: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:17
-#: telebot.async_telebot.AsyncTeleBot.edit_message_text:29
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:32
 msgid ""
 "On success, if edited message is sent by the bot, the edited Message is "
 "returned, otherwise True is returned."
@@ -2538,7 +2664,7 @@ msgstr "Обязательный, если не указан inline_message_id. 
 
 #: of telebot.async_telebot.AsyncTeleBot.edit_message_media:23
 #: telebot.async_telebot.AsyncTeleBot.edit_message_reply_markup:18
-#: telebot.async_telebot.AsyncTeleBot.edit_message_text:30
+#: telebot.async_telebot.AsyncTeleBot.edit_message_text:33
 #: telebot.async_telebot.AsyncTeleBot.set_game_score:27
 msgid ":obj:`types.Message` or :obj:`bool`"
 msgstr ""
@@ -2584,6 +2710,12 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.send_message:21
 msgid "Disables link previews for links in this message"
 msgstr "Отключает превью ссылок в сообщении"
+
+#: of telebot.async_telebot.AsyncTeleBot.edit_message_text:29
+msgid ""
+"A JSON-serialized object for options used to automatically generate "
+"Telegram link previews for messages."
+msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.edited_channel_post_handler:1
 msgid ""
@@ -2655,24 +2787,13 @@ msgid "exported invite link as String on success."
 msgstr "новая ссылка-приглашение (String) в случае успеха."
 
 #: of telebot.async_telebot.AsyncTeleBot.forward_message:1
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:1
 msgid "Use this method to forward messages of any kind."
 msgstr "Используйте этот метод, чтобы переслать любое сообщение."
 
 #: of telebot.async_telebot.AsyncTeleBot.forward_message:3
 msgid "Telegram documentation: https://core.telegram.org/bots/api#forwardmessage"
 msgstr "Документация Telegram: https://core.telegram.org/bots/api#forwardmessage"
-
-#: of telebot.async_telebot.AsyncTeleBot.forward_message:5
-msgid ""
-"Sends the message silently. Users will receive a notification with no "
-"sound"
-msgstr ""
-"Отправить сообщение, при получении которого пользователи получат "
-"уведомление без звука"
-
-#: of telebot.async_telebot.AsyncTeleBot.forward_message:17
-msgid "Protects the contents of the forwarded message from forwarding and saving"
-msgstr "Запретить пересылку и сохранение содержимого пересланного сообщения"
 
 #: of telebot.async_telebot.AsyncTeleBot.forward_message:23
 #: telebot.async_telebot.AsyncTeleBot.send_message:43
@@ -2682,6 +2803,45 @@ msgid ""
 msgstr ""
 "Уникальный id топика, в который нужно переслать сообщение; только для "
 "супергрупп с топиками"
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:26
+#: telebot.async_telebot.AsyncTeleBot.forward_messages:21
+#: telebot.async_telebot.AsyncTeleBot.reply_to:11
+#: telebot.async_telebot.AsyncTeleBot.send_animation:69
+#: telebot.async_telebot.AsyncTeleBot.send_audio:69
+#: telebot.async_telebot.AsyncTeleBot.send_contact:47
+#: telebot.async_telebot.AsyncTeleBot.send_dice:38
+#: telebot.async_telebot.AsyncTeleBot.send_document:62
+#: telebot.async_telebot.AsyncTeleBot.send_game:35
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:104
+#: telebot.async_telebot.AsyncTeleBot.send_location:52
+#: telebot.async_telebot.AsyncTeleBot.send_message:52
+#: telebot.async_telebot.AsyncTeleBot.send_photo:51
+#: telebot.async_telebot.AsyncTeleBot.send_poll:73
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:45
+#: telebot.async_telebot.AsyncTeleBot.send_venue:60
+#: telebot.async_telebot.AsyncTeleBot.send_video:70
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:54
+#: telebot.async_telebot.AsyncTeleBot.send_voice:52
+msgid "On success, the sent Message is returned."
+msgstr "В случае успеха возвращает отправленное сообщение (Message)."
+
+#: of telebot.async_telebot.AsyncTeleBot.forward_message:27
+#: telebot.async_telebot.AsyncTeleBot.reply_to:12
+#: telebot.async_telebot.AsyncTeleBot.send_animation:70
+#: telebot.async_telebot.AsyncTeleBot.send_audio:70
+#: telebot.async_telebot.AsyncTeleBot.send_contact:48
+#: telebot.async_telebot.AsyncTeleBot.send_dice:39
+#: telebot.async_telebot.AsyncTeleBot.send_document:63
+#: telebot.async_telebot.AsyncTeleBot.send_location:53
+#: telebot.async_telebot.AsyncTeleBot.send_message:53
+#: telebot.async_telebot.AsyncTeleBot.send_photo:52
+#: telebot.async_telebot.AsyncTeleBot.send_sticker:46
+#: telebot.async_telebot.AsyncTeleBot.send_venue:61
+#: telebot.async_telebot.AsyncTeleBot.send_video:71
+#: telebot.async_telebot.AsyncTeleBot.send_video_note:55
+msgid ":class:`telebot.types.Message`"
+msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.get_chat:1
 msgid ""
@@ -2702,6 +2862,7 @@ msgstr "Документация Telegram: https://core.telegram.org/bots/api#ge
 #: telebot.async_telebot.AsyncTeleBot.get_chat_administrators:7
 #: telebot.async_telebot.AsyncTeleBot.get_chat_member_count:5
 #: telebot.async_telebot.AsyncTeleBot.leave_chat:5
+#: telebot.async_telebot.AsyncTeleBot.set_message_reaction:5
 msgid ""
 "Unique identifier for the target chat or username of the target "
 "supergroup or channel (in the format @channelusername)"
@@ -3160,6 +3321,43 @@ msgstr "Возвращается массив объектов Update."
 msgid ":obj:`list` of :class:`telebot.types.Update`"
 msgstr ""
 
+#: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:1
+#, fuzzy
+msgid ""
+"Use this method to get the list of boosts added to a chat by a user. "
+"Requires administrator rights in the chat. Returns a UserChatBoosts "
+"object."
+msgstr ""
+"Используйте этот метод, чтобы получить список бустов, полученных от "
+"пользователя. Бот должен быть администратором чата. Возвращает объект "
+"UserChatBoosts в случае успеха."
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:3
+#, fuzzy
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#getuserchatboosts"
+msgstr "Документация Telegram: https://core.telegram.org/bots/api#getuserchatboosts"
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:5
+#: telebot.async_telebot.AsyncTeleBot.send_chat_action:10
+#: telebot.async_telebot.AsyncTeleBot.send_contact:5
+#: telebot.async_telebot.AsyncTeleBot.send_poll:6
+#: telebot.async_telebot.AsyncTeleBot.send_venue:5
+#: telebot.async_telebot.AsyncTeleBot.stop_poll:5
+msgid "Unique identifier for the target chat or username of the target channel"
+msgstr "Уникальный id чата или username канала"
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:11
+#, fuzzy
+msgid "On success, a UserChatBoosts object is returned."
+msgstr "В случае успеха, возвращается объект UserChatBoosts."
+
+#: of telebot.async_telebot.AsyncTeleBot.get_user_chat_boosts:12
+#, fuzzy
+msgid ":class:`telebot.types.UserChatBoosts`"
+msgstr "Экземпляр класса :class:`telebot.types.UserChatBoosts`"
+
 #: of telebot.async_telebot.AsyncTeleBot.get_user_profile_photos:1
 msgid ""
 "Use this method to get a list of profile pictures for a user. Returns a "
@@ -3406,6 +3604,25 @@ msgstr ""
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:13
 msgid "decorated function"
 msgstr "декорируемая функция"
+
+#: of telebot.async_telebot.AsyncTeleBot.message_reaction_count_handler:1
+#, fuzzy
+msgid ""
+"Handles new incoming message reaction count. As a parameter to the "
+"decorator function, it passes "
+":class:`telebot.types.MessageReactionCountUpdated` object."
+msgstr ""
+"Обрабатывает новый callback запрос. В качестве параметра передаёт в "
+"декорируемую функцию объект :class:`telebot.types.CallbackQuery`."
+
+#: of telebot.async_telebot.AsyncTeleBot.message_reaction_handler:1
+#, fuzzy
+msgid ""
+"Handles new incoming message reaction. As a parameter to the decorator "
+"function, it passes :class:`telebot.types.MessageReactionUpdated` object."
+msgstr ""
+"Обрабатывает новый callback запрос. В качестве параметра передаёт в "
+"декорируемую функцию объект :class:`telebot.types.CallbackQuery`."
 
 #: of telebot.async_telebot.AsyncTeleBot.my_chat_member_handler:1
 msgid ""
@@ -3655,12 +3872,34 @@ msgstr ""
 "Передайте True, если пользователю разрешено создавать, переименовывать, "
 "закрывать, и возобновлять топики, только для супергрупп"
 
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:60
+#, fuzzy
+msgid "Pass True if the administrator can create the channel's stories"
+msgstr ""
+"Передайте True, если администратор может создавать посты в канале, только"
+" для каналов"
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:63
+#, fuzzy
+msgid "Pass True if the administrator can edit the channel's stories"
+msgstr ""
+"Передайте True, если администратор может изменять сообщения других "
+"пользователей, только для каналов"
+
+#: of telebot.async_telebot.AsyncTeleBot.promote_chat_member:66
+#, fuzzy
+msgid "Pass True if the administrator can delete the channel's stories"
+msgstr ""
+"Передайте True, если администратор может создавать посты в канале, только"
+" для каналов"
+
 #: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:1
 msgid "Registers callback query handler."
 msgstr "Регистрирует хендлер callback query."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:3
@@ -3668,16 +3907,20 @@ msgstr "Регистрирует хендлер callback query."
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:3
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler:3
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:3
 msgid "function to be called"
 msgstr "функция-хендлер"
 
 #: of telebot.async_telebot.AsyncTeleBot.register_callback_query_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_channel_post_handler:18
+#: telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_chat_member_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_chosen_inline_handler:9
@@ -3685,10 +3928,13 @@ msgstr "функция-хендлер"
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:21
 #: telebot.async_telebot.AsyncTeleBot.register_inline_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_message_handler:21
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler:9
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_poll_answer_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_poll_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_pre_checkout_query_handler:8
+#: telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler:9
 #: telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:9
 msgid ""
 "True if you need to pass TeleBot instance to handler(useful for "
@@ -3713,6 +3959,11 @@ msgstr "список команд"
 #: telebot.async_telebot.AsyncTeleBot.register_edited_message_handler:12
 msgid "Regular expression"
 msgstr "Регулярное выражение"
+
+#: of telebot.async_telebot.AsyncTeleBot.register_chat_boost_handler:1
+#, fuzzy
+msgid "Registers chat boost handler."
+msgstr "Регистрирует хендлер смены состояний участников чата."
 
 #: of telebot.async_telebot.AsyncTeleBot.register_chat_join_request_handler:1
 msgid "Registers chat join request handler."
@@ -3754,6 +4005,17 @@ msgstr "Регистрирует хендлер сообщений."
 msgid "List of chat types"
 msgstr "Список видов чатов"
 
+#: of
+#: telebot.async_telebot.AsyncTeleBot.register_message_reaction_count_handler:1
+#, fuzzy
+msgid "Registers message reaction count handler."
+msgstr "Регистрирует хендлер сообщений."
+
+#: of telebot.async_telebot.AsyncTeleBot.register_message_reaction_handler:1
+#, fuzzy
+msgid "Registers message reaction handler."
+msgstr "Регистрирует хендлер сообщений."
+
 #: of telebot.async_telebot.AsyncTeleBot.register_my_chat_member_handler:1
 msgid "Registers my chat member handler."
 msgstr "Регистрирует хендлер изменений статуса бота."
@@ -3770,6 +4032,11 @@ msgstr "Регистрирует хендлер изменений состоя�
 msgid "Registers pre-checkout request handler."
 msgstr "Регистрирует хендлер pre-checkout query."
 
+#: of telebot.async_telebot.AsyncTeleBot.register_removed_chat_boost_handler:1
+#, fuzzy
+msgid "Registers removed chat boost handler."
+msgstr "Регистрирует хендлер изменений статуса бота."
+
 #: of telebot.async_telebot.AsyncTeleBot.register_shipping_query_handler:1
 msgid "Registers shipping query handler."
 msgstr "Регистрирует хендлер shipping query."
@@ -3777,6 +4044,15 @@ msgstr "Регистрирует хендлер shipping query."
 #: of telebot.async_telebot.AsyncTeleBot.remove_webhook:1
 msgid "Alternative for delete_webhook but uses set_webhook"
 msgstr "Альтернатива delete_webhook, но использует set_webhook"
+
+#: of telebot.async_telebot.AsyncTeleBot.removed_chat_boost_handler:1
+#, fuzzy
+msgid ""
+"Handles new incoming chat boost state. it passes "
+":class:`telebot.types.ChatBoostRemoved` object."
+msgstr ""
+"Обрабатывает inline query. В качестве параметра, передаёт в декорируемую "
+"функцию объект :class:`telebot.types.InlineQuery`."
 
 #: of telebot.async_telebot.AsyncTeleBot.reopen_forum_topic:1
 msgid ""
@@ -4309,14 +4585,6 @@ msgstr ""
 msgid "Telegram documentation: https://core.telegram.org/bots/api#sendchataction"
 msgstr "Документация Telegram: https://core.telegram.org/bots/api#sendchataction"
 
-#: of telebot.async_telebot.AsyncTeleBot.send_chat_action:10
-#: telebot.async_telebot.AsyncTeleBot.send_contact:5
-#: telebot.async_telebot.AsyncTeleBot.send_poll:6
-#: telebot.async_telebot.AsyncTeleBot.send_venue:5
-#: telebot.async_telebot.AsyncTeleBot.stop_poll:5
-msgid "Unique identifier for the target chat or username of the target channel"
-msgstr "Уникальный id чата или username канала"
-
 #: of telebot.async_telebot.AsyncTeleBot.send_chat_action:13
 msgid ""
 "Type of action to broadcast. Choose one, depending on what the user is "
@@ -4520,9 +4788,9 @@ msgstr ""
 msgid "Identifier of the thread to which the message will be sent."
 msgstr "id топика, в которые будет сообщение будет отправлено."
 
-#: of telebot.async_telebot.AsyncTeleBot.send_game:33
-#: telebot.async_telebot.AsyncTeleBot.send_invoice:102
-#: telebot.async_telebot.AsyncTeleBot.send_poll:71
+#: of telebot.async_telebot.AsyncTeleBot.send_game:36
+#: telebot.async_telebot.AsyncTeleBot.send_invoice:105
+#: telebot.async_telebot.AsyncTeleBot.send_poll:74
 msgid ":obj:`types.Message`"
 msgstr ""
 
@@ -4654,11 +4922,7 @@ msgstr ""
 "Отправить сообщение, при получении которого пользователя пользователи "
 "получат уведомление без звука."
 
-#: of telebot.async_telebot.AsyncTeleBot.send_media_group:27
-msgid "Identifier of a message thread, in which the messages will be sent"
-msgstr "id топика, в который будет отправлена группа медиа"
-
-#: of telebot.async_telebot.AsyncTeleBot.send_media_group:30
+#: of telebot.async_telebot.AsyncTeleBot.send_media_group:33
 msgid "On success, an array of Messages that were sent is returned."
 msgstr "В случае успеха, возвращается массив отправленных сообщений (Message)."
 
@@ -4700,6 +4964,10 @@ msgid ""
 msgstr ""
 "Если True, содержимое сообщения будет скрыто от всех пользователей, кроме"
 " заданного"
+
+#: of telebot.async_telebot.AsyncTeleBot.send_message:49
+msgid "Options for previewing links."
+msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.send_photo:1
 msgid "Use this method to send photos. On success, the sent Message is returned."
@@ -5297,6 +5565,43 @@ msgid ""
 msgstr ""
 "В случае успеха, если сообщение было отправлено ботом, возвращает "
 "измененное сообщение (Message), иначе возвращает True."
+
+#: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:1
+#, fuzzy
+msgid ""
+"Use this method to set a reaction to a message in a chat. The bot must be"
+" an administrator in the chat for this to work and must have the "
+"appropriate admin rights. Returns True on success."
+msgstr ""
+"Используйте этот метод, чтобы закрепить сообщение в супергруппе. Бот "
+"должен быть администратором чата и иметь соответствующие права "
+"администратора. Возвращает True в случае успеха."
+
+#: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:3
+#, fuzzy
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#setmessagereaction"
+msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#editmessagecaption"
+
+#: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:8
+#, fuzzy
+msgid "Identifier of the message to set reaction to"
+msgstr "id сообщения, которое нужно удалить"
+
+#: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:11
+msgid ""
+"New list of reaction types to set on the message. Currently, as non-"
+"premium users, bots can set up to one reaction per message. A custom "
+"emoji reaction can be used if it is either already present on the message"
+" or explicitly allowed by chat administrators."
+msgstr ""
+
+#: of telebot.async_telebot.AsyncTeleBot.set_message_reaction:15
+msgid "Pass True to set the reaction with a big animation"
+msgstr ""
 
 #: of telebot.async_telebot.AsyncTeleBot.set_my_commands:1
 msgid "Use this method to change the list of the bot's commands."
@@ -5936,6 +6241,35 @@ msgstr ""
 #: of telebot.async_telebot.AsyncTeleBot.unpin_all_forum_topic_messages:10
 msgid "Identifier of the topic"
 msgstr "id топика"
+
+#: of
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages:1
+#, fuzzy
+msgid ""
+"Use this method to clear the list of pinned messages in a General forum "
+"topic. The bot must be an administrator in the chat for this to work and "
+"must have the can_pin_messages administrator right in the supergroup. "
+"Returns True on success."
+msgstr ""
+"Используйте этот метод, что открепить все закрепленные сообщения в "
+"топике. Бот должен быть администратором чата и иметь права администратора"
+" can_pin_messages в супергруппе. Возвращает True в случае успеха."
+
+#: of
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages:6
+#, fuzzy
+msgid ""
+"Telegram documentation: "
+"https://core.telegram.org/bots/api#unpinAllGeneralForumTopicMessages"
+msgstr ""
+"Документация Telegram: "
+"https://core.telegram.org/bots/api#unpinallforumtopicmessages"
+
+#: of
+#: telebot.async_telebot.AsyncTeleBot.unpin_all_general_forum_topic_messages:8
+#, fuzzy
+msgid "Unique identifier for the target chat or username of chat"
+msgstr "Уникальный id чата или username канала"
 
 #: of telebot.async_telebot.AsyncTeleBot.unpin_chat_message:1
 msgid ""
