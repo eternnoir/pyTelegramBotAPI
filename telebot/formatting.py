@@ -83,9 +83,9 @@ def mbold(content: str, escape: Optional[bool]=True) -> str:
 
 def mcite(content: str, escape: Optional[bool]=True) -> str:
     """
-    Returns a Markdown-formatted bold string.
+    Returns a Markdown-formatted quote string.
 
-    :param content: The string to bold.
+    :param content: The string to quote.
     :type content: :obj:`str`
 
     :param escape: True if you need to escape special characters. Defaults to True.
@@ -94,7 +94,22 @@ def mcite(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '> {}'.format(escape_markdown(content) if escape else content)
+    return '>{}'.format(escape_markdown(content) if escape else content)
+
+def hcite(content: str, escape: Optional[bool]=True) -> str:
+    """
+    Returns an HTML-formatted blockquote string.
+
+    :param content: The string to blockquote.
+    :type content: :obj:`str`
+
+    :param escape: True if you need to escape special characters. Defaults to True.
+    :type escape: :obj:`bool`
+
+    :return: The formatted string.
+    :rtype: :obj:`str`
+    """
+    return '<blockquote>{}</blockquote>'.format(escape_html(content) if escape else content)
 
 
 def hbold(content: str, escape: Optional[bool]=True) -> str:
