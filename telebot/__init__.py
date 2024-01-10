@@ -1657,12 +1657,10 @@ class TeleBot:
                 logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
             else:
                 # create a LinkPreviewOptions object
-                link_preview_options = types.LinkPreviewOptions(
-                    disable_web_page_preview=disable_web_page_preview
-                )
+                link_preview_options = types.LinkPreviewOptions(is_disabled=disable_web_page_preview)
 
-        if link_preview_options and (link_preview_options.disable_web_page_preview is None):
-            link_preview_options.disable_web_page_preview = self.disable_web_page_preview
+        if link_preview_options and (link_preview_options.is_disabled is None):
+            link_preview_options.is_disabled = self.disable_web_page_preview
 
         return types.Message.de_json(
             apihelper.send_message(
@@ -4433,12 +4431,10 @@ class TeleBot:
                 logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
             else:
                 # create a LinkPreviewOptions object
-                link_preview_options = types.LinkPreviewOptions(
-                    disable_web_page_preview=disable_web_page_preview
-                )
+                link_preview_options = types.LinkPreviewOptions(is_disabled=disable_web_page_preview)
 
-        if link_preview_options and (link_preview_options.disable_web_page_preview is None):
-            link_preview_options.disable_web_page_preview = self.disable_web_page_preview
+        if link_preview_options and (link_preview_options.is_disabled is None):
+            link_preview_options.is_disabled = self.disable_web_page_preview
 
         result = apihelper.edit_message_text(
             self.token, text, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,

@@ -2716,7 +2716,7 @@ class AsyncTeleBot:
 
             # create a LinkPreviewOptions object
             link_preview_options = types.LinkPreviewOptions(
-                disable_web_page_preview=disable_web_page_preview
+                is_disabled=disable_web_page_preview
             )
 
         return types.Message.de_json(
@@ -5294,7 +5294,7 @@ class AsyncTeleBot:
 
             # create a LinkPreviewOptions object
             link_preview_options = types.LinkPreviewOptions(
-                disable_web_page_preview=disable_web_page_preview
+                is_disabled=disable_web_page_preview
             )
 
         result = await asyncio_helper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
