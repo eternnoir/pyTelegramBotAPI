@@ -25,10 +25,10 @@ class StatePickleStorage(StateStorageBase):
         new_data = {}
         for key, value in self.data.items():
             # this returns us id and dict with data and state
-            new_data[key] = {key: value} # convert this to new
+            new_data[key] = {key: value}  # convert this to new
         # pass it to global data
         self.data = new_data
-        self.update_data() # update data in file
+        self.update_data()  # update data in file
 
     def create_dir(self):
         """
@@ -37,36 +37,36 @@ class StatePickleStorage(StateStorageBase):
         dirs, filename = os.path.split(self.file_path)
         os.makedirs(dirs, exist_ok=True)
         if not os.path.isfile(self.file_path):
-            with open(self.file_path,'wb') as file:
+            with open(self.file_path, "wb") as file:
                 pickle.dump({}, file)
 
     def read(self):
-        file = open(self.file_path, 'rb')
+        file = open(self.file_path, "rb")
         data = pickle.load(file)
         file.close()
         return data
-    
+
     def update_data(self):
-        file = open(self.file_path, 'wb+')
+        file = open(self.file_path, "wb+")
         pickle.dump(self.data, file, protocol=pickle.HIGHEST_PROTOCOL)
         file.close()
 
     def set_state(self, chat_id, user_id, state):
-        if hasattr(state, 'name'):
+        if hasattr(state, "name"):
             state = state.name
         if chat_id in self.data:
             if user_id in self.data[chat_id]:
-                self.data[chat_id][user_id]['state'] = state
+                self.data[chat_id][user_id]["state"] = state
                 self.update_data()
                 return True
             else:
-                self.data[chat_id][user_id] = {'state': state, 'data': {}}
+                self.data[chat_id][user_id] = {"state": state, "data": {}}
                 self.update_data()
                 return True
-        self.data[chat_id] = {user_id: {'state': state, 'data': {}}}
+        self.data[chat_id] = {user_id: {"state": state, "data": {}}}
         self.update_data()
         return True
-    
+
     def delete_state(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
@@ -78,24 +78,24 @@ class StatePickleStorage(StateStorageBase):
 
         return False
 
-    
     def get_state(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
-                return self.data[chat_id][user_id]['state']
+                return self.data[chat_id][user_id]["state"]
 
         return None
+
     def get_data(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
-                return self.data[chat_id][user_id]['data']
-        
+                return self.data[chat_id][user_id]["data"]
+
         return None
 
     def reset_data(self, chat_id, user_id):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
-                self.data[chat_id][user_id]['data'] = {}
+                self.data[chat_id][user_id]["data"] = {}
                 self.update_data()
                 return True
         return False
@@ -103,14 +103,16 @@ class StatePickleStorage(StateStorageBase):
     def set_data(self, chat_id, user_id, key, value):
         if self.data.get(chat_id):
             if self.data[chat_id].get(user_id):
-                self.data[chat_id][user_id]['data'][key] = value
+                self.data[chat_id][user_id]["data"][key] = value
                 self.update_data()
                 return True
-        raise RuntimeError('chat_id {} and user_id {} does not exist'.format(chat_id, user_id))
+        raise RuntimeError(
+            "chat_id {} and user_id {} does not exist".format(chat_id, user_id)
+        )
 
     def get_interactive_data(self, chat_id, user_id):
         return StateContext(self, chat_id, user_id)
 
     def save(self, chat_id, user_id, data):
-        self.data[chat_id][user_id]['data'] = data
+        self.data[chat_id][user_id]["data"] = data
         self.update_data()

@@ -16,33 +16,33 @@ class StateStorageBase:
         Get data for a user in a particular chat.
         """
         raise NotImplementedError
-    
+
     async def set_state(self, chat_id, user_id, state):
         """
         Set state for a particular user.
 
-        ! Note that you should create a 
-        record if it does not exist, and 
+        ! Note that you should create a
+        record if it does not exist, and
         if a record with state already exists,
         you need to update a record.
         """
         raise NotImplementedError
-    
+
     async def delete_state(self, chat_id, user_id):
         """
         Delete state for a particular user.
         """
         raise NotImplementedError
-    
+
     async def reset_data(self, chat_id, user_id):
         """
         Reset data for a particular user in a chat.
         """
         raise NotImplementedError
-    
+
     async def get_state(self, chat_id, user_id):
         raise NotImplementedError
-        
+
     async def save(self, chat_id, user_id, data):
         raise NotImplementedError
 
@@ -57,8 +57,6 @@ class StateContext:
         self.data = None
         self.chat_id = chat_id
         self.user_id = user_id
-
-    
 
     async def __aenter__(self):
         self.data = copy.deepcopy(await self.obj.get_data(self.chat_id, self.user_id))

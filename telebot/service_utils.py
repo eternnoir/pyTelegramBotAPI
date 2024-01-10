@@ -5,6 +5,7 @@ from io import BytesIO
 try:
     # noinspection PyPackageRequirements
     from PIL import Image
+
     pil_imported = True
 except ImportError:
     pil_imported = False
@@ -56,22 +57,22 @@ def is_pil_image(var) -> bool:
     return pil_imported and isinstance(var, Image.Image)
 
 
-def pil_image_to_file(image, extension='JPEG', quality='web_low'):
+def pil_image_to_file(image, extension="JPEG", quality="web_low"):
     if pil_imported:
         photoBuffer = BytesIO()
-        image.convert('RGB').save(photoBuffer, extension, quality=quality)
+        image.convert("RGB").save(photoBuffer, extension, quality=quality)
         photoBuffer.seek(0)
 
         return photoBuffer
     else:
-        raise RuntimeError('PIL module is not imported')
+        raise RuntimeError("PIL module is not imported")
 
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
     # https://stackoverflow.com/a/312464/9935473
     for i in range(0, len(lst), n):
-        yield lst[i:i + n]
+        yield lst[i : i + n]
 
 
 def generate_random_token() -> str:
@@ -81,4 +82,4 @@ def generate_random_token() -> str:
     :return: a random token
     :rtype: :obj:`str`
     """
-    return ''.join(random.sample(string.ascii_letters, 16))
+    return "".join(random.sample(string.ascii_letters, 16))
