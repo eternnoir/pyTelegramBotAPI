@@ -3814,7 +3814,7 @@ class InputTextMessageContent(Dictionaryable):
         self.message_text: str = message_text
         self.parse_mode: str = parse_mode
         self.entities: List[MessageEntity] = entities
-        link_preview_options: LinkPreviewOptions = link_preview_options
+        self.link_preview_options: LinkPreviewOptions = link_preview_options
         if disable_web_page_preview is not None:
             logger.warning('The parameter "disable_web_page_preview" is deprecated. Use "link_preview_options" instead.')
             
