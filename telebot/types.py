@@ -3821,7 +3821,7 @@ class InputTextMessageContent(Dictionaryable):
             if link_preview_options:
                 logger.warning('Both "link_preview_options" and "disable_web_page_preview" parameters are set: conflicting, "disable_web_page_preview" is deprecated')
             else:
-                self.link_preview_options: LinkPreviewOptions = LinkPreviewOptions(disable_web_page_preview)
+                self.link_preview_options: LinkPreviewOptions = LinkPreviewOptions(is_disabled=disable_web_page_preview)
 
     def to_dict(self):
         json_dict = {'message_text': self.message_text}
