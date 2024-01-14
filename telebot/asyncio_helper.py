@@ -1879,7 +1879,7 @@ async def delete_messages(token, chat_id, message_ids):
     method_url = 'deleteMessages'
     payload = {
         'chat_id': chat_id,
-        'message_ids': message_ids
+        'message_ids': json.dumps(message_ids)
     }
     return await _process_request(token, method_url, params=payload)
 
@@ -1889,7 +1889,7 @@ async def forward_messages(token, chat_id, from_chat_id, message_ids, disable_no
     payload = {
         'chat_id': chat_id,
         'from_chat_id': from_chat_id,
-        'message_ids': message_ids,
+        'message_ids': json.dumps(message_ids),
     }
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
@@ -1907,7 +1907,7 @@ async def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notif
     payload = {
         'chat_id': chat_id,
         'from_chat_id': from_chat_id,
-        'message_ids': message_ids,
+        'message_ids': json.dumps(message_ids),
     }
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
