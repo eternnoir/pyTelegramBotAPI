@@ -1867,6 +1867,8 @@ class TeleBot:
         Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages.
         On success, an array of MessageId of the sent messages is returned.
 
+        Telegram documentation: https://core.telegram.org/bots/api#forwardmessages
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -1908,6 +1910,9 @@ class TeleBot:
             A quiz poll can be copied only if the value of the field correct_option_id is known to the bot.
             The method is analogous to the method forwardMessages, but the copied messages don't have a link to the original message.
             Album grouping is kept for copied messages. On success, an array of MessageId of the sent messages is returned.
+
+            Telegram documentation: https://core.telegram.org/bots/api#copymessages
+
 
             :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
             :type chat_id: :obj:`int` or :obj:`str`
