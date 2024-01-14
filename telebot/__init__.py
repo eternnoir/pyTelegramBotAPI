@@ -1843,9 +1843,7 @@ class TeleBot:
     
     def delete_messages(self, chat_id: Union[int, str], message_ids: List[int]):
         """
-        Use this method to delete multiple messages in a chat. 
-        The number of messages to be deleted must not exceed 100. 
-        If the chat is a private chat, the user must be an administrator of the chat for this to work and must have the appropriate admin rights. 
+        Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletemessages
@@ -1865,7 +1863,9 @@ class TeleBot:
     def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
                          message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None) -> List[types.MessageID]:
         """
-        Use this method to forward messages of any kind.
+        Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped.
+        Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages.
+        On success, an array of MessageId of the sent messages is returned.
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
@@ -1903,7 +1903,11 @@ class TeleBot:
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
                         protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
             """
-            Use this method to copy messages of any kind.
+            Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped.
+            Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
+            A quiz poll can be copied only if the value of the field correct_option_id is known to the bot.
+            The method is analogous to the method forwardMessages, but the copied messages don't have a link to the original message.
+            Album grouping is kept for copied messages. On success, an array of MessageId of the sent messages is returned.
 
             :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
             :type chat_id: :obj:`int` or :obj:`str`
