@@ -244,7 +244,7 @@ def send_message(
     method_url = r'sendMessage'
     payload = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
-        payload['link_preview'] = link_preview_options.to_json()
+        payload['link_preview_options'] = link_preview_options.to_json()
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if parse_mode:
@@ -1304,7 +1304,7 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if link_preview_options is not None:
-        payload['link_preview'] = link_preview_options.to_json()
+        payload['link_preview_options'] = link_preview_options.to_json()
     return _make_request(token, method_url, params=payload, method='post')
 
 
