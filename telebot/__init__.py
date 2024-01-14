@@ -1368,7 +1368,9 @@ class TeleBot:
     
     def set_message_reaction(self, chat_id: Union[int, str], message_id: int, reaction: Optional[List[types.ReactionType]]=None, is_big: Optional[bool]=None) -> bool:
         """
-        Use this method to set a reaction to a message in a chat. Returns True on success.
+        Use this method to change the chosen reactions on a message. 
+        Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same
+        available reactions as messages in the channel. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setmessagereaction
 
