@@ -1939,10 +1939,10 @@ class TeleBot:
     def send_dice(
             self, chat_id: Union[int, str],
             emoji: Optional[str]=None, disable_notification: Optional[bool]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
@@ -2118,14 +2118,14 @@ class TeleBot:
             self, chat_id: Union[int, str], audio: Union[Any, str], 
             caption: Optional[str]=None, duration: Optional[int]=None, 
             performer: Optional[str]=None, title: Optional[str]=None,
+            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None, 
             thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
@@ -2240,13 +2240,13 @@ class TeleBot:
     def send_voice(
             self, chat_id: Union[int, str], voice: Union[Any, str], 
             caption: Optional[str]=None, duration: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
@@ -2337,15 +2337,15 @@ class TeleBot:
 
     def send_document(
             self, chat_id: Union[int, str], document: Union[Any, str],
+            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             caption: Optional[str]=None, 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             parse_mode: Optional[str]=None, 
             disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None, 
             thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             visible_file_name: Optional[str]=None,
             disable_content_type_detection: Optional[bool]=None,
             data: Optional[Union[Any, str]]=None,
@@ -2460,11 +2460,11 @@ class TeleBot:
     def send_sticker(
             self, chat_id: Union[int, str],
             sticker: Union[Any, str],
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            disable_notification: Optional[bool]=None, 
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content:Optional[bool]=None,
             data: Union[Any, str]=None,
             message_thread_id: Optional[int]=None,
@@ -2818,12 +2818,12 @@ class TeleBot:
             self, chat_id: Union[int, str], data: Union[Any, str], 
             duration: Optional[int]=None, 
             length: Optional[int]=None,
+            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None, 
             thumbnail: Optional[Union[Any, str]]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
@@ -2926,8 +2926,8 @@ class TeleBot:
             disable_notification: Optional[bool]=None, 
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None) -> List[types.Message]:
         """
@@ -2996,15 +2996,15 @@ class TeleBot:
     def send_location(
             self, chat_id: Union[int, str], 
             latitude: float, longitude: float, 
-            live_period: Optional[int]=None, 
+            live_period: Optional[int]=None,
+            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility 
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None,
             horizontal_accuracy: Optional[float]=None, 
             heading: Optional[int]=None, 
-            proximity_alert_radius: Optional[int]=None, 
+            proximity_alert_radius: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility 
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
@@ -3198,9 +3198,9 @@ class TeleBot:
             foursquare_type: Optional[str]=None,
             disable_notification: Optional[bool]=None, 
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             google_place_id: Optional[str]=None,
             google_place_type: Optional[str]=None,
             protect_content: Optional[bool]=None,
@@ -3304,9 +3304,9 @@ class TeleBot:
             vcard: Optional[str]=None,
             disable_notification: Optional[bool]=None, 
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
         """
@@ -4522,9 +4522,9 @@ class TeleBot:
             self, chat_id: Union[int, str], game_short_name: str, 
             disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
@@ -4690,10 +4690,10 @@ class TeleBot:
             is_flexible: Optional[bool]=None,
             disable_notification: Optional[bool]=None, 
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
             provider_data: Optional[str]=None, 
             timeout: Optional[int]=None,
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             max_tip_amount: Optional[int] = None,
             suggested_tip_amounts: Optional[List[int]]=None,
             protect_content: Optional[bool]=None,
@@ -4962,8 +4962,8 @@ class TeleBot:
             is_closed: Optional[bool]=None,
             disable_notification: Optional[bool]=False,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None,
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None,

@@ -1416,7 +1416,8 @@ class Message(JsonDeserializable):
             "strikethrough": "<s>{text}</s>",
             "underline":     "<u>{text}</u>",
             "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
-            "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>"
+            "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>",
+            "blockquote": "<blockquote>{text}</blockquote>",
         }
          
         if hasattr(self, "custom_subs"):
