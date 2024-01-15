@@ -1451,13 +1451,13 @@ class Message(JsonDeserializable):
                 html_text += func(utf16_text[offset * 2 : entity.offset * 2])
                 offset = entity.offset
 
-                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user, entity.custom_emoji_id)
+                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], subst_type=entity.type, url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id)
                 start_index = len(html_text)
                 html_text += new_string
                 offset += entity.length
                 end_index = len(html_text)
             elif entity.offset == offset:
-                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], entity.type, entity.url, entity.user, entity.custom_emoji_id)
+                new_string = func(utf16_text[offset * 2 : (offset + entity.length) * 2], subst_type=entity.type, url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id)
                 start_index = len(html_text)
                 html_text += new_string
                 end_index = len(html_text)
@@ -1468,7 +1468,8 @@ class Message(JsonDeserializable):
                 # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
                 # And we don't change it).
                 entity_string = html_text[start_index : end_index].encode("utf-16-le")
-                formatted_string = func(entity_string, entity.type, entity.url, entity.user, entity.custom_emoji_id).replace("&amp;", "&").replace("&lt;", "<").replace("&gt;",">")
+                formatted_string = func(entity_string, subst_type=entity.type, url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id).\
+                                        replace("&amp;", "&").replace("&lt;", "<").replace("&gt;",">")
                 html_text = html_text[:start_index] + formatted_string + html_text[end_index:]
                 end_index = len(html_text)
 
@@ -9214,3 +9215,28 @@ class InaccessibleMessage(JsonDeserializable):
         self.chat = chat
         self.message_id = message_id
         self.date = date
+
+    @staticmethod
+    def __universal_deprecation(property_name):
+        logger.warning(f'Deprecation warning: the filed "{property_name}" is not accessible for InaccessibleMessage. You should check if your object is Message instance before access.')
+        return None
+
+    def __getattr__(self, item):
+        if item in [
+            'message_thread_id', 'from_user', 'sender_chat', 'forward_origin', 'is_topic_message',
+            'is_automatic_forward', 'reply_to_message', 'external_reply', 'qoute', 'via_bot', 'edit_date',
+            'has_protected_content', 'media_group_id', 'author_signature', 'text', 'entities', 'link_preview_options',
+            'animation', 'audio', 'document', 'photo', 'sticker', 'story', 'video', 'video_note', 'voice', 'caption',
+            'caption_entities', 'has_media_spoiler', 'contact', 'dice', 'game', 'poll', 'venue', 'location',
+            'new_chat_members', 'left_chat_member', 'new_chat_title', 'new_chat_photo', 'delete_chat_photo',
+            'group_chat_created', 'supergroup_chat_created', 'channel_chat_created', 'message_auto_delete_timer_changed',
+            'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message', 'invoice', 'successful_payment',
+            'users_shared', 'chat_shared', 'connected_website', 'write_access_allowed', 'passport_data',
+            'proximity_alert_triggered', 'forum_topic_created', 'forum_topic_edited', 'forum_topic_closed',
+            'forum_topic_reopened', 'general_forum_topic_hidden', 'general_forum_topic_unhidden', 'giveaway_created',
+            'giveaway', 'giveaway_winners', 'giveaway_completed', 'video_chat_scheduled', 'video_chat_started',
+            'video_chat_ended', 'video_chat_participants_invited', 'web_app_data', 'reply_markup'
+        ]:
+            return self.__universal_deprecation(item)
+        else:
+            raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
