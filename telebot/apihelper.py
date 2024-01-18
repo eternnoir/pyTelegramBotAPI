@@ -244,7 +244,7 @@ def send_message(
     method_url = r'sendMessage'
     payload = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
-        payload['link_preview'] = link_preview_options.to_json()
+        payload['link_preview_options'] = link_preview_options.to_json()
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if parse_mode:
@@ -1304,7 +1304,7 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if link_preview_options is not None:
-        payload['link_preview'] = link_preview_options.to_json()
+        payload['link_preview_options'] = link_preview_options.to_json()
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1897,7 +1897,7 @@ def delete_messages(token, chat_id, message_ids):
     method_url = 'deleteMessages'
     payload = {
         'chat_id': chat_id,
-        'message_ids': message_ids
+        'message_ids': json.dumps(message_ids)
     }
     return _make_request(token, method_url, params=payload)
 
@@ -1907,7 +1907,7 @@ def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notifica
     payload = {
         'chat_id': chat_id,
         'from_chat_id': from_chat_id,
-        'message_ids': message_ids,
+        'message_ids': json.dumps(message_ids),
     }
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
@@ -1923,7 +1923,7 @@ def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notificatio
     payload = {
         'chat_id': chat_id,
         'from_chat_id': from_chat_id,
-        'message_ids': message_ids,
+        'message_ids': json.dumps(message_ids),
     }
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
