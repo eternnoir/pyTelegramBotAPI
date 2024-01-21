@@ -9146,7 +9146,7 @@ class ChatBoost(JsonDeserializable):
     :param source: Optional. Source of the added boost (made Optional for now due to API error)
     :type source: :class:`ChatBoostSource`
 
-    :return: Instance of the class (made Optional for now due to API error)
+    :return: Instance of the class
     :rtype: :class:`ChatBoost`
     """
 
