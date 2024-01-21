@@ -9000,9 +9000,12 @@ class ChatBoostRemoved(JsonDeserializable):
         self.source = source
         
     
-class ChatBoostSource(JsonDeserializable):
+class ChatBoostSource(ABC, JsonDeserializable):
     """
-    This object describes the source of a chat boost.
+    This object describes the source of a chat boost. It can be one of
+        ChatBoostSourcePremium
+        ChatBoostSourceGiftCode
+        ChatBoostSourceGiveaway
 
     Telegram documentation: https://core.telegram.org/bots/api#chatboostsource
 
@@ -9010,7 +9013,7 @@ class ChatBoostSource(JsonDeserializable):
     :type source: :obj:`str`
 
     :return: Instance of the class
-    :rtype: :class:`ChatBoostSource`
+    :rtype: :class:`ChatBoostSourcePremium` or :class:`ChatBoostSourceGiftCode` or :class:`ChatBoostSourceGiveaway`
     """
 
     @classmethod
@@ -9018,10 +9021,13 @@ class ChatBoostSource(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        return cls(**obj)
-
-    def __init__(self, source, **kwargs):
-        self.source = source
+        if obj["type"] == "premium":
+            return ChatBoostSourcePremium.de_json(obj)
+        elif obj["type"] == "gift_code":
+            return ChatBoostSourceGiftCode.de_json(obj)
+        elif obj["type"] == "giveaway":
+            return ChatBoostSourceGiveaway.de_json(obj)
+        return None
 
 
 # noinspection PyUnresolvedReferences
@@ -9137,10 +9143,10 @@ class ChatBoost(JsonDeserializable):
     :param expiration_date: Point in time (Unix timestamp) when the boost will automatically expire, unless the booster's Telegram Premium subscription is prolonged
     :type expiration_date: :obj:`int`
 
-    :param source: Source of the added boost
+    :param source: Optional. Source of the added boost (made Optional for now due to API error)
     :type source: :class:`ChatBoostSource`
 
-    :return: Instance of the class
+    :return: Instance of the class (made Optional for now due to API error)
     :rtype: :class:`ChatBoost`
     """
 
@@ -9149,7 +9155,8 @@ class ChatBoost(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        obj['source'] = ChatBoostSource.de_json(obj['source'])
+        source = obj.get('source', None)
+        obj['source'] = ChatBoostSource.de_json(source) if source else None
         return cls(**obj)
 
     def __init__(self, boost_id, add_date, expiration_date, source, **kwargs):
