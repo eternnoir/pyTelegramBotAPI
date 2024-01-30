@@ -9021,11 +9021,11 @@ class ChatBoostSource(ABC, JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        if obj["type"] == "premium":
+        if obj["source"] == "premium":
             return ChatBoostSourcePremium.de_json(obj)
-        elif obj["type"] == "gift_code":
+        elif obj["source"] == "gift_code":
             return ChatBoostSourceGiftCode.de_json(obj)
-        elif obj["type"] == "giveaway":
+        elif obj["source"] == "giveaway":
             return ChatBoostSourceGiveaway.de_json(obj)
         return None
 
