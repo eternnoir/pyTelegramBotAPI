@@ -2739,6 +2739,11 @@ class AsyncTeleBot:
         if link_preview_options and (link_preview_options.is_disabled is None):
             link_preview_options.is_disabled = self.disable_web_page_preview
 
+        # Fix preview link options if link_preview_options not provided. Get param from class
+        if not link_preview_options and self.disable_web_page_preview:
+            # create a LinkPreviewOptions object
+            link_preview_options = types.LinkPreviewOptions(is_disabled=self.disable_web_page_preview)
+
         return types.Message.de_json(
             await asyncio_helper.send_message(
                 self.token, chat_id, text,
@@ -5467,6 +5472,11 @@ class AsyncTeleBot:
 
         if link_preview_options and (link_preview_options.is_disabled is None):
             link_preview_options.is_disabled = self.disable_web_page_preview
+
+        # Fix preview link options if link_preview_options not provided. Get param from class
+        if not link_preview_options and self.disable_web_page_preview:
+            # create a LinkPreviewOptions object
+            link_preview_options = types.LinkPreviewOptions(is_disabled=self.disable_web_page_preview)
 
         result = await asyncio_helper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
                                              entities, reply_markup, link_preview_options)
