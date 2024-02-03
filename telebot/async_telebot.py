@@ -6232,8 +6232,8 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
-        if "reply_parameters" in kwargs:
-            reply_parameters = kwargs["reply_parameters"]
+        if kwargs:
+            reply_parameters = kwargs.pop("reply_parameters", None)
         else:
             reply_parameters = None
         if not reply_parameters:
