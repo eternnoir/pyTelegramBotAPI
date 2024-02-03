@@ -2226,9 +2226,9 @@ class ForceReply(JsonSerializable):
         1-64 characters
     :type input_field_placeholder: :obj:`str`
 
-    :param selective: Optional. Use this parameter if you want to force reply from specific users only. Targets: 1) users 
-        that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), 
-        sender of the original message.
+    :param selective: Optional. Use this parameter if you want to force reply from specific users only. Targets: 1) users
+        that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message in the same
+        chat and forum topic, sender of the original message.
     :type selective: :obj:`bool`
 
     :return: Instance of the class
@@ -2343,10 +2343,11 @@ class ReplyKeyboardMarkup(JsonSerializable):
         active; 1-64 characters
     :type input_field_placeholder: :obj:`str`
 
-    :param selective: Optional. Use this parameter if you want to show the keyboard to specific users only. Targets: 1) 
-        users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has 
-        reply_to_message_id), sender of the original message.Example: A user requests to change the bot's language, bot 
-        replies to the request with a keyboard to select the new language. Other users in the group don't see the keyboard.
+    :param selective: Optional. Use this parameter if you want to show the keyboard to specific users only. Targets:
+        1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply to a message
+        in the same chat and forum topic, sender of the original message. Example: A user requests to change the bot's
+        language, bot replies to the request with a keyboard to select the new language. Other users in the group don't
+        see the keyboard.
     :type selective: :obj:`bool`
 
     :param is_persistent: Optional. Use this parameter if you want to show the keyboard to specific users only.
@@ -3424,7 +3425,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None: return json_string
         obj = cls.check_json(json_string, dict_copy=False)
-        return cls(**obj)
+        return cls(**obj, de_json = True)
 
     def __init__(self, can_send_messages=None, can_send_media_messages=None,can_send_audios=None,
                     can_send_documents=None, can_send_photos=None,
@@ -3448,7 +3449,9 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_send_video_notes: bool = can_send_video_notes
         self.can_send_voice_notes: bool = can_send_voice_notes
 
-        if can_send_media_messages is not None:
+        if kwargs.get("de_json", False) and can_send_media_messages is not None:
+            # Telegram passes can_send_media_messages in Chat.permissions. Temporary created parameter "de_json" allows avoid
+            # deprection warning and individual parameters overriding.
             logger.warning('The parameter "can_send_media_messages" is deprecated. Use individual parameters like "can_send_audios", "can_send_documents" etc.')
             self.can_send_audios = can_send_media_messages
             self.can_send_documents = can_send_media_messages
