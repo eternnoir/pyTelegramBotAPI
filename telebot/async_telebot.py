@@ -4606,7 +4606,7 @@ class AsyncTeleBot:
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
-        :type until_date: :obj:`int` or :obj:`datetime`
+        :type until_date: :obj:`int` or :obj:`datetime`, optional
 
         :param can_send_messages: deprecated
         :type can_send_messages: :obj:`bool`
@@ -4632,10 +4632,11 @@ class AsyncTeleBot:
         :param can_pin_messages: deprecated
         :type can_pin_messages: :obj:`bool`
 
-        :param use_independent_chat_permissions: Optional	Pass True if chat permissions are set independently.
+        :param use_independent_chat_permissions: Pass True if chat permissions are set independently.
             Otherwise, the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages,
             can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and can_send_voice_notes
             permissions; the can_send_polls permission will imply the can_send_messages permission.
+        :type use_independent_chat_permissions: :obj:`bool`, optional
 
         :param permissions: Pass ChatPermissions object to set all permissions at once. Use this parameter instead of
             passing all boolean parameters to avoid backward compatibility problems in future.
@@ -6234,14 +6235,16 @@ class AsyncTeleBot:
         """
         if kwargs:
             reply_parameters = kwargs.pop("reply_parameters", None)
+            if "allow_sending_without_reply" in kwargs:
+                logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
         else:
             reply_parameters = None
-        if not reply_parameters:
-            reply_parameters = types.ReplyParameters(message.message_id)
 
-        if "allow_sending_without_reply" in kwargs:
-            logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-            reply_parameters.allow_sending_without_reply = kwargs.pop("allow_sending_without_reply")
+        if not reply_parameters:
+            reply_parameters = types.ReplyParameters(
+                message.message_id,
+                allow_sending_without_reply=kwargs.pop("allow_sending_without_reply", None) if kwargs else None
+            )
 
         return await self.send_message(message.chat.id, text, reply_parameters=reply_parameters, **kwargs)
 
