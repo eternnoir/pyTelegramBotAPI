@@ -4606,41 +4606,37 @@ class AsyncTeleBot:
         :param until_date: Date when restrictions will be lifted for the user, unix time.
             If user is restricted for more than 366 days or less than 30 seconds from the current time,
             they are considered to be restricted forever
-        :type until_date: :obj:`int` or :obj:`datetime`
+        :type until_date: :obj:`int` or :obj:`datetime`, optional
 
-        :param can_send_messages: Pass True, if the user can send text messages, contacts, locations and venues
+        :param can_send_messages: deprecated
         :type can_send_messages: :obj:`bool`
         
-        :param can_send_media_messages: Pass True, if the user can send audios, documents, photos, videos, video notes
-            and voice notes, implies can_send_messages
+        :param can_send_media_messages: deprecated
         :type can_send_media_messages: :obj:`bool`
         
-        :param can_send_polls: Pass True, if the user is allowed to send polls, implies can_send_messages
+        :param can_send_polls: deprecated
         :type can_send_polls: :obj:`bool`
 
-        :param can_send_other_messages: Pass True, if the user can send animations, games, stickers and use inline bots, implies can_send_media_messages
+        :param can_send_other_messages: deprecated
         :type can_send_other_messages: :obj:`bool`
 
-        :param can_add_web_page_previews: Pass True, if the user may add web page previews to their messages,
-            implies can_send_media_messages
+        :param can_add_web_page_previews: deprecated
         :type can_add_web_page_previews: :obj:`bool`
 
-        :param can_change_info: Pass True, if the user is allowed to change the chat title, photo and other settings.
-            Ignored in public supergroups
+        :param can_change_info: deprecated
         :type can_change_info: :obj:`bool`
 
-        :param can_invite_users: Pass True, if the user is allowed to invite new users to the chat,
-            implies can_invite_users
+        :param can_invite_users: deprecated
         :type can_invite_users: :obj:`bool`
 
-        :param can_pin_messages: Pass True, if the user is allowed to pin messages. Ignored in public supergroups
+        :param can_pin_messages: deprecated
         :type can_pin_messages: :obj:`bool`
 
-        :param use_independent_chat_permissions: Pass True if chat permissions are set independently. Otherwise,
-            the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages,
-            can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and
-            can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission.
-        :type use_independent_chat_permissions: :obj:`bool`
+        :param use_independent_chat_permissions: Pass True if chat permissions are set independently.
+            Otherwise, the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages,
+            can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and can_send_voice_notes
+            permissions; the can_send_polls permission will imply the can_send_messages permission.
+        :type use_independent_chat_permissions: :obj:`bool`, optional
 
         :param permissions: Pass ChatPermissions object to set all permissions at once. Use this parameter instead of
             passing all boolean parameters to avoid backward compatibility problems in future.
@@ -6224,7 +6220,7 @@ class AsyncTeleBot:
 
     async def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
         """
-        Convenience function for `send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)`
+        Convenience function for `send_message(message.chat.id, text, reply_parameters=(message.message_id...), **kwargs)`
         
         :param message: Instance of :class:`telebot.types.Message`
         :type message: :obj:`types.Message`
@@ -6237,7 +6233,20 @@ class AsyncTeleBot:
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
-        return await self.send_message(message.chat.id, text, reply_to_message_id=message.message_id, **kwargs)
+        if kwargs:
+            reply_parameters = kwargs.pop("reply_parameters", None)
+            if "allow_sending_without_reply" in kwargs:
+                logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
+        else:
+            reply_parameters = None
+
+        if not reply_parameters:
+            reply_parameters = types.ReplyParameters(
+                message.message_id,
+                allow_sending_without_reply=kwargs.pop("allow_sending_without_reply", None) if kwargs else None
+            )
+
+        return await self.send_message(message.chat.id, text, reply_parameters=reply_parameters, **kwargs)
 
     async def answer_inline_query(
             self, inline_query_id: str, 
