@@ -31,5 +31,5 @@ jobs:
           architecture: x64
       - run: |
           pip3 install -r requirements.txt
-          python setup.py install
+          pip3 install .
           cd tests && py.test
