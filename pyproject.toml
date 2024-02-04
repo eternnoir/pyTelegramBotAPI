@@ -46,4 +46,4 @@ watchdog = ["watchdog"]
 
 
 [tool.hatch.build.targets.wheel]
-package = ["telebot"]
+include = ["telebot/*"]
