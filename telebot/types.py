@@ -9158,6 +9158,18 @@ class ChatBoost(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+        if not 'boost_id' in obj:
+            # Suppose that the field "boost_id" is not always provided by Telegram
+            logger.warning('The field "boost_id" is not found in received ChatBoost.')
+            obj['boost_id'] = None
+        if not 'add_date' in obj:
+            # Suppose that the field "boost_id" is not always provided by Telegram
+            logger.warning('The field "add_date" is not found in received ChatBoost.')
+            obj['add_date'] = None
+        if not 'expiration_date' in obj:
+            # Suppose that the field "boost_id" is not always provided by Telegram
+            logger.warning('The field "expiration_date" is not found in received ChatBoost.')
+            obj['expiration_date'] = None
         source = obj.get('source', None)
         obj['source'] = ChatBoostSource.de_json(source) if source else None
         return cls(**obj)
@@ -9191,7 +9203,7 @@ class UserChatBoosts(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, boosts, **kwargs):
-        self.boosts: ChatBoost = boosts
+        self.boosts: List[ChatBoost] = boosts
     
 
 class InaccessibleMessage(JsonDeserializable):
