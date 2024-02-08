@@ -9055,11 +9055,11 @@ class ChatBoostSourcePremium(ChatBoostSource):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        user = User.de_json(obj['user'])
-        return cls(user)
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
 
-    def __init__(self, user):
-        super().__init__('premium')
+    def __init__(self, source, user, **kwargs):
+        self.source = source
         self.user = user
 
 
@@ -9085,11 +9085,11 @@ class ChatBoostSourceGiftCode(ChatBoostSource):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        user = User.de_json(obj['user'])
-        return cls(user)
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
 
-    def __init__(self, user):
-        super().__init__('gift_code')
+    def __init__(self, source, user, **kwargs):
+        self.source = source
         self.user = user
 
 
@@ -9121,11 +9121,11 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        user = User.de_json(obj['user']) if 'user' in obj else None
-        return cls(obj['giveaway_message_id'], user, obj.get('is_unclaimed'))
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
 
-    def __init__(self, giveaway_message_id, user=None, is_unclaimed=None):
-        super().__init__('giveaway')
+    def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, **kwargs):
+        self.source = source
         self.giveaway_message_id = giveaway_message_id
         self.user = user
         self.is_unclaimed = is_unclaimed
@@ -9158,6 +9158,18 @@ class ChatBoost(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+        if not 'boost_id' in obj:
+            # Suppose that the field "boost_id" is not always provided by Telegram
+            logger.warning('The field "boost_id" is not found in received ChatBoost.')
+            obj['boost_id'] = None
+        if not 'add_date' in obj:
+            # Suppose that the field "boost_id" is not always provided by Telegram
+            logger.warning('The field "add_date" is not found in received ChatBoost.')
+            obj['add_date'] = None
+        if not 'expiration_date' in obj:
+            # Suppose that the field "boost_id" is not always provided by Telegram
+            logger.warning('The field "expiration_date" is not found in received ChatBoost.')
+            obj['expiration_date'] = None
         source = obj.get('source', None)
         obj['source'] = ChatBoostSource.de_json(source) if source else None
         return cls(**obj)
@@ -9191,7 +9203,7 @@ class UserChatBoosts(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, boosts, **kwargs):
-        self.boosts: ChatBoost = boosts
+        self.boosts: List[ChatBoost] = boosts
     
 
 class InaccessibleMessage(JsonDeserializable):
