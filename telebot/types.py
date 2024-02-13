@@ -204,7 +204,7 @@ class Update(JsonDeserializable):
         message_reaction = MessageReactionUpdated.de_json(obj.get('message_reaction'))
         message_reaction_count = MessageReactionCountUpdated.de_json(obj.get('message_reaction_count'))
         removed_chat_boost = ChatBoostRemoved.de_json(obj.get('removed_chat_boost'))
-        chat_boost = ChatBoost.de_json(obj.get('chat_boost'))
+        chat_boost = ChatBoostUpdated.de_json(obj.get('chat_boost'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost)
