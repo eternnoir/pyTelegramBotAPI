@@ -8961,8 +8961,8 @@ class ChatBoostUpdated(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, chat, boost, **kwargs):
-        self.chat = chat
-        self.boost = boost
+        self.chat: Chat = chat
+        self.boost: ChatBoost = boost
         
     
 class ChatBoostRemoved(JsonDeserializable):
@@ -8997,10 +8997,10 @@ class ChatBoostRemoved(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, chat, boost_id, remove_date, source, **kwargs):
-        self.chat = chat
-        self.boost_id = boost_id
-        self.remove_date = remove_date
-        self.source = source
+        self.chat: Chat = chat
+        self.boost_id: str = boost_id
+        self.remove_date: int = remove_date
+        self.source: ChatBoostSource = source
         
     
 class ChatBoostSource(ABC, JsonDeserializable):
@@ -9059,8 +9059,8 @@ class ChatBoostSourcePremium(ChatBoostSource):
         return cls(**obj)
 
     def __init__(self, source, user, **kwargs):
-        self.source = source
-        self.user = user
+        self.source: str = source
+        self.user: User = user
 
 
 # noinspection PyUnresolvedReferences
@@ -9089,8 +9089,8 @@ class ChatBoostSourceGiftCode(ChatBoostSource):
         return cls(**obj)
 
     def __init__(self, source, user, **kwargs):
-        self.source = source
-        self.user = user
+        self.source: str = source
+        self.user: User = user
 
 
 # noinspection PyUnresolvedReferences
@@ -9125,10 +9125,10 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
         return cls(**obj)
 
     def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, **kwargs):
-        self.source = source
-        self.giveaway_message_id = giveaway_message_id
-        self.user = user
-        self.is_unclaimed = is_unclaimed
+        self.source: str = source
+        self.giveaway_message_id: int = giveaway_message_id
+        self.user: User = user
+        self.is_unclaimed: bool = is_unclaimed
 
 
 class ChatBoost(JsonDeserializable):
@@ -9175,9 +9175,9 @@ class ChatBoost(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, boost_id, add_date, expiration_date, source, **kwargs):
-        self.boost_id = boost_id
-        self.add_date = add_date
-        self.expiration_date = expiration_date
+        self.boost_id: str = boost_id
+        self.add_date: int = add_date
+        self.expiration_date: int = expiration_date
         self.source: ChatBoostSource = source
         
 
@@ -9234,9 +9234,9 @@ class InaccessibleMessage(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, chat, message_id, date, **kwargs):
-        self.chat = chat
-        self.message_id = message_id
-        self.date = date
+        self.chat: Chat = chat
+        self.message_id: int = message_id
+        self.date: int = date
 
     @staticmethod
     def __universal_deprecation(property_name):
