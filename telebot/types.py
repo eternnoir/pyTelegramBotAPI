@@ -625,6 +625,10 @@ class Chat(JsonDeserializable):
         by each unpriviledged user; in seconds. Returned only in getChat.
     :type slow_mode_delay: :obj:`int`
 
+    :param unrestrict_boost_count: Optional. For supergroups, the minimum number of boosts that a non-administrator
+        user needs to add in order to ignore slow mode and chat permissions. Returned only in getChat.
+    :type unrestrict_boost_count: :obj:`int`
+
     :param message_auto_delete_time: Optional. The time after which all messages sent to the chat will be 
         automatically deleted; in seconds. Returned only in getChat.
     :type message_auto_delete_time: :obj:`int`
@@ -691,7 +695,8 @@ class Chat(JsonDeserializable):
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-                 profile_background_custom_emoji_id=None, has_visible_history=None, **kwargs):
+                 profile_background_custom_emoji_id=None, has_visible_history=None, 
+                 unrestrict_boost_count=None,**kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -727,6 +732,7 @@ class Chat(JsonDeserializable):
         self.profile_accent_color_id: int = profile_accent_color_id
         self.profile_background_custom_emoji_id: str = profile_background_custom_emoji_id
         self.has_visible_history: bool = has_visible_history
+        self.unrestrict_boost_count: int = unrestrict_boost_count
 
 
 
