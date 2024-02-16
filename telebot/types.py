@@ -656,6 +656,10 @@ class Chat(JsonDeserializable):
         getChat.
     :type can_set_sticker_set: :obj:`bool`
 
+    :param custom_emoji_sticker_set_name: Optional. For supergroups, the name of the group's custom emoji sticker set.
+        Custom emoji from this set can be used by all users and bots in the group. Returned only in getChat.
+    :param custom_emoji_sticker_set_name: :obj:`str`
+
     :param linked_chat_id: Optional. Unique identifier for the linked chat, i.e. the discussion group identifier for 
         a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some 
         programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a 
@@ -696,7 +700,7 @@ class Chat(JsonDeserializable):
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
-                 unrestrict_boost_count=None,**kwargs):
+                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -733,6 +737,7 @@ class Chat(JsonDeserializable):
         self.profile_background_custom_emoji_id: str = profile_background_custom_emoji_id
         self.has_visible_history: bool = has_visible_history
         self.unrestrict_boost_count: int = unrestrict_boost_count
+        self.custom_emoji_sticker_set_name: str = custom_emoji_sticker_set_name
 
 
 
