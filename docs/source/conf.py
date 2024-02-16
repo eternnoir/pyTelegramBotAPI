@@ -22,7 +22,7 @@ copyright = '2022-2023, coder2020official'
 author = 'coder2020official'
 
 # The full version, including alpha/beta/rc tags
-release = '4.15.4'
+release = '4.15.5'
 
 
 # -- General configuration ---------------------------------------------------
