@@ -1012,6 +1012,9 @@ class Message(JsonDeserializable):
         proximity alert while sharing Live Location.
     :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
 
+    :param boost_added: Optional. Service message: user boosted the chat
+    :type boost_added: :class:`telebot.types.ChatBoostAdded`
+
     :param forum_topic_created: Optional. Service message: forum topic created
     :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
 
@@ -1275,6 +1278,10 @@ class Message(JsonDeserializable):
             content_type = 'giveaway_completed'
         if 'forward_origin' in obj:
             opts['forward_origin'] = MessageOrigin.de_json(obj['forward_origin'])
+        if 'boost_added' in obj:
+            opts['boost_added'] = ChatBoostAdded.de_json(obj['boost_added'])
+            content_type = 'boost_added'
+
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1375,6 +1382,7 @@ class Message(JsonDeserializable):
         self.giveaway_winners: Optional[GiveawayWinners] = None
         self.giveaway_completed: Optional[GiveawayCompleted] = None
         self.forward_origin: Optional[MessageOrigin] = None
+        self.boost_added: Optional[ChatBoostAdded] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -9262,3 +9270,27 @@ class InaccessibleMessage(JsonDeserializable):
             return self.__universal_deprecation(item)
         else:
             raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
+
+
+class ChatBoostAdded(JsonDeserializable):
+    """
+    This object represents a service message about a user boosting a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostadded
+
+    :param boost_count: Number of boosts added by the user
+    :type boost_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostAdded`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, boost_count, **kwargs):
+        self.boost_count: int = boost_count
