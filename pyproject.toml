@@ -9,12 +9,11 @@ description = "Python Telegram bot api."
 authors = [{name = "eternnoir", email = "eternnoir@gmail.com"}]
 license = {text = "GPL2"}
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 keywords = ["telegram", "bot", "api", "tools"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
