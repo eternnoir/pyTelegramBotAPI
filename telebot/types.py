@@ -805,6 +805,9 @@ class Message(JsonDeserializable):
         fake sender user in non-channel chats, if the message was sent on behalf of a chat.
     :type sender_chat: :class:`telebot.types.Chat`
 
+    :param sender_boost_count: Optional. If the sender of the message boosted the chat, the number of boosts added by the user
+    :type sender_boost_count: :obj:`int`
+
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
 
@@ -1281,6 +1284,8 @@ class Message(JsonDeserializable):
         if 'boost_added' in obj:
             opts['boost_added'] = ChatBoostAdded.de_json(obj['boost_added'])
             content_type = 'boost_added'
+        if 'sender_boost_count' in obj:
+            opts['sender_boost_count'] = obj['sender_boost_count']
 
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1383,6 +1388,7 @@ class Message(JsonDeserializable):
         self.giveaway_completed: Optional[GiveawayCompleted] = None
         self.forward_origin: Optional[MessageOrigin] = None
         self.boost_added: Optional[ChatBoostAdded] = None
+        self.sender_boost_count: Optional[int] = None
 
         for key in options:
             setattr(self, key, options[key])
