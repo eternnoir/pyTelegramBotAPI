@@ -853,6 +853,9 @@ class Message(JsonDeserializable):
     :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
     :type quote: :class:`telebot.types.TextQuote`
 
+    :param reply_to_story: Optional. For replies to a story, the original story
+    :type reply_to_story: :class:`telebot.types.Story`
+
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
@@ -1286,6 +1289,8 @@ class Message(JsonDeserializable):
             content_type = 'boost_added'
         if 'sender_boost_count' in obj:
             opts['sender_boost_count'] = obj['sender_boost_count']
+        if 'reply_to_story' in obj:
+            opts['reply_to_story'] = Story.de_json(obj['reply_to_story'])
 
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1389,6 +1394,7 @@ class Message(JsonDeserializable):
         self.forward_origin: Optional[MessageOrigin] = None
         self.boost_added: Optional[ChatBoostAdded] = None
         self.sender_boost_count: Optional[int] = None
+        self.reply_to_story: Optional[Story] = None
 
         for key in options:
             setattr(self, key, options[key])
