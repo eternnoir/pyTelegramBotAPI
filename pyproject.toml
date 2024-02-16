@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyTelegramBotAPI"
-version = "4.15.4"
+version = "4.15.5"
 description = "Python Telegram bot api."
 authors = [{name = "eternnoir", email = "eternnoir@gmail.com"}]
 license = {text = "GPL2"}
