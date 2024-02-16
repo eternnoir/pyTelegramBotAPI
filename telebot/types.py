@@ -8063,8 +8063,18 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
 
 class Story(JsonDeserializable):
     """
-    This object represents a message about a forwarded story in the chat.
-    Currently holds no information.
+    This object represents a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#story
+
+    :param chat: Chat that posted the story
+    :type chat: :class:`telebot.types.Chat`
+
+    :param id: Unique identifier for the story in the chat
+    :type id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Story`
     """
 
     @classmethod
@@ -8072,10 +8082,12 @@ class Story(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
         return cls(**obj)
-
-    def __init__(self, **kwargs) -> None:
-        pass
+    
+    def __init__(self, chat: Chat, id: int, **kwargs) -> None:
+        self.chat: Chat = chat
+        self.id: int = id
 
 
 # base class
