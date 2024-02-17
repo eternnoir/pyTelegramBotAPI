@@ -625,6 +625,10 @@ class Chat(JsonDeserializable):
         by each unpriviledged user; in seconds. Returned only in getChat.
     :type slow_mode_delay: :obj:`int`
 
+    :param unrestrict_boost_count: Optional. For supergroups, the minimum number of boosts that a non-administrator
+        user needs to add in order to ignore slow mode and chat permissions. Returned only in getChat.
+    :type unrestrict_boost_count: :obj:`int`
+
     :param message_auto_delete_time: Optional. The time after which all messages sent to the chat will be 
         automatically deleted; in seconds. Returned only in getChat.
     :type message_auto_delete_time: :obj:`int`
@@ -651,6 +655,10 @@ class Chat(JsonDeserializable):
     :param can_set_sticker_set: Optional. :obj:`bool`, if the bot can change the group sticker set. Returned only in 
         getChat.
     :type can_set_sticker_set: :obj:`bool`
+
+    :param custom_emoji_sticker_set_name: Optional. For supergroups, the name of the group's custom emoji sticker set.
+        Custom emoji from this set can be used by all users and bots in the group. Returned only in getChat.
+    :param custom_emoji_sticker_set_name: :obj:`str`
 
     :param linked_chat_id: Optional. Unique identifier for the linked chat, i.e. the discussion group identifier for 
         a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some 
@@ -691,7 +699,8 @@ class Chat(JsonDeserializable):
                  is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-                 profile_background_custom_emoji_id=None, has_visible_history=None, **kwargs):
+                 profile_background_custom_emoji_id=None, has_visible_history=None, 
+                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -727,6 +736,8 @@ class Chat(JsonDeserializable):
         self.profile_accent_color_id: int = profile_accent_color_id
         self.profile_background_custom_emoji_id: str = profile_background_custom_emoji_id
         self.has_visible_history: bool = has_visible_history
+        self.unrestrict_boost_count: int = unrestrict_boost_count
+        self.custom_emoji_sticker_set_name: str = custom_emoji_sticker_set_name
 
 
 
@@ -805,6 +816,9 @@ class Message(JsonDeserializable):
         fake sender user in non-channel chats, if the message was sent on behalf of a chat.
     :type sender_chat: :class:`telebot.types.Chat`
 
+    :param sender_boost_count: Optional. If the sender of the message boosted the chat, the number of boosts added by the user
+    :type sender_boost_count: :obj:`int`
+
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
 
@@ -849,6 +863,9 @@ class Message(JsonDeserializable):
 
     :param quote: Optional. For replies that quote part of the original message, the quoted part of the message
     :type quote: :class:`telebot.types.TextQuote`
+
+    :param reply_to_story: Optional. For replies to a story, the original story
+    :type reply_to_story: :class:`telebot.types.Story`
 
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
@@ -1011,6 +1028,9 @@ class Message(JsonDeserializable):
     :param proximity_alert_triggered: Optional. Service message. A user in the chat triggered another user's
         proximity alert while sharing Live Location.
     :type proximity_alert_triggered: :class:`telebot.types.ProximityAlertTriggered`
+
+    :param boost_added: Optional. Service message: user boosted the chat
+    :type boost_added: :class:`telebot.types.ChatBoostAdded`
 
     :param forum_topic_created: Optional. Service message: forum topic created
     :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
@@ -1275,6 +1295,14 @@ class Message(JsonDeserializable):
             content_type = 'giveaway_completed'
         if 'forward_origin' in obj:
             opts['forward_origin'] = MessageOrigin.de_json(obj['forward_origin'])
+        if 'boost_added' in obj:
+            opts['boost_added'] = ChatBoostAdded.de_json(obj['boost_added'])
+            content_type = 'boost_added'
+        if 'sender_boost_count' in obj:
+            opts['sender_boost_count'] = obj['sender_boost_count']
+        if 'reply_to_story' in obj:
+            opts['reply_to_story'] = Story.de_json(obj['reply_to_story'])
+
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1375,6 +1403,9 @@ class Message(JsonDeserializable):
         self.giveaway_winners: Optional[GiveawayWinners] = None
         self.giveaway_completed: Optional[GiveawayCompleted] = None
         self.forward_origin: Optional[MessageOrigin] = None
+        self.boost_added: Optional[ChatBoostAdded] = None
+        self.sender_boost_count: Optional[int] = None
+        self.reply_to_story: Optional[Story] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -8043,8 +8074,18 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
 
 class Story(JsonDeserializable):
     """
-    This object represents a message about a forwarded story in the chat.
-    Currently holds no information.
+    This object represents a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#story
+
+    :param chat: Chat that posted the story
+    :type chat: :class:`telebot.types.Chat`
+
+    :param id: Unique identifier for the story in the chat
+    :type id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Story`
     """
 
     @classmethod
@@ -8052,10 +8093,12 @@ class Story(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
         return cls(**obj)
-
-    def __init__(self, **kwargs) -> None:
-        pass
+    
+    def __init__(self, chat: Chat, id: int, **kwargs) -> None:
+        self.chat: Chat = chat
+        self.id: int = id
 
 
 # base class
@@ -9262,3 +9305,27 @@ class InaccessibleMessage(JsonDeserializable):
             return self.__universal_deprecation(item)
         else:
             raise AttributeError(f'"{self.__class__.__name__}" object has no attribute "{item}"')
+
+
+class ChatBoostAdded(JsonDeserializable):
+    """
+    This object represents a service message about a user boosting a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatboostadded
+
+    :param boost_count: Number of boosts added by the user
+    :type boost_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBoostAdded`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, boost_count, **kwargs):
+        self.boost_count: int = boost_count
