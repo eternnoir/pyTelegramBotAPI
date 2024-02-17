@@ -9164,7 +9164,7 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
         if json_string is None:
             return None
         obj = cls.check_json(json_string)
-        obj['user'] = User.de_json(obj['user'])
+        obj['user'] = User.de_json(obj.get('user'))
         return cls(**obj)
 
     def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, **kwargs):
