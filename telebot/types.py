@@ -173,7 +173,7 @@ class Update(JsonDeserializable):
     :type chat_join_request: :class:`telebot.types.ChatJoinRequest`
 
     :param chat_boost: Optional. A chat boost was added or changed. The bot must be an administrator in the chat to receive these updates.
-    :type chat_boost: :class:`telebot.types.ChatBoost`
+    :type chat_boost: :class:`telebot.types.ChatBoostUpdated`
 
     :param removed_chat_boost: Optional. A chat boost was removed. The bot must be an administrator in the chat to receive these updates.
     :type removed_chat_boost: :class:`telebot.types.RemovedChatBoost`
@@ -3454,7 +3454,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None: return json_string
+        if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj, de_json = True)
 
@@ -7050,7 +7050,7 @@ class ChatLocation(JsonSerializable, JsonDeserializable, Dictionaryable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None: return json_string
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['location'] = Location.de_json(obj['location'])
         return cls(**obj)
@@ -7967,8 +7967,7 @@ class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerial
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
 
@@ -8015,8 +8014,7 @@ class BotName(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
 
@@ -8090,8 +8088,7 @@ class Story(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         return cls(**obj)
@@ -8117,8 +8114,7 @@ class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         # remove type 
         if obj['type'] == 'emoji':
@@ -8228,8 +8224,7 @@ class MessageReactionUpdated(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
 
         obj['chat'] = Chat.de_json(obj['chat'])
@@ -8277,8 +8272,7 @@ class MessageReactionCountUpdated(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['reactions'] = [ReactionCount.de_json(reaction) for reaction in obj['reactions']]
@@ -8309,8 +8303,7 @@ class ReactionCount(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['type'] = ReactionType.de_json(obj['type'])
         return cls(**obj)
@@ -8401,8 +8394,7 @@ class ExternalReplyInfo(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['origin'] = MessageOrigin.de_json(obj['origin'])
         if 'chat' in obj:
@@ -8514,8 +8506,7 @@ class MessageOrigin(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         message_type = obj['type']
         if message_type == 'user':
@@ -8626,8 +8617,7 @@ class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
 
@@ -8695,8 +8685,7 @@ class Giveaway(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chats'] = [Chat.de_json(chat) for chat in obj['chats']]
         return cls(**obj)
@@ -8760,8 +8749,7 @@ class GiveawayWinners(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['winners'] = [User.de_json(user) for user in obj['winners']]
@@ -8806,8 +8794,7 @@ class GiveawayCompleted(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'giveaway_message' in obj:
             obj['giveaway_message'] = Message.de_json(obj['giveaway_message'])
@@ -8824,8 +8811,17 @@ class GiveawayCreated(JsonDeserializable):
     """
     This object represents a service message about the creation of a scheduled giveaway. Currently holds no information.
     """
-    
-        
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, **kwargs) -> None:
+        pass
+
+
 class TextQuote(JsonDeserializable):
     """
     This object contains information about the quoted part of a message that is replied to by the given message.
@@ -8850,8 +8846,7 @@ class TextQuote(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'entities' in obj:
             obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
@@ -8899,8 +8894,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'quote_entities' in obj:
             obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
@@ -8963,8 +8957,7 @@ class UsersShared(JsonDeserializable):
     """
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
 
@@ -8996,8 +8989,7 @@ class ChatBoostUpdated(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)        
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['boost'] = ChatBoost.de_json(obj['boost'])
@@ -9032,8 +9024,7 @@ class ChatBoostRemoved(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['source'] = ChatBoostSource.de_json(obj['source'])        
@@ -9055,17 +9046,13 @@ class ChatBoostSource(ABC, JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#chatboostsource
 
-    :param source: Source of the boost
-    :type source: :obj:`str`
-
     :return: Instance of the class
     :rtype: :class:`ChatBoostSourcePremium` or :class:`ChatBoostSourceGiftCode` or :class:`ChatBoostSourceGiveaway`
     """
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if obj["source"] == "premium":
             return ChatBoostSourcePremium.de_json(obj)
@@ -9095,8 +9082,7 @@ class ChatBoostSourcePremium(ChatBoostSource):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
@@ -9125,8 +9111,7 @@ class ChatBoostSourceGiftCode(ChatBoostSource):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
@@ -9161,8 +9146,7 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj.get('user'))
         return cls(**obj)
@@ -9198,8 +9182,7 @@ class ChatBoost(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         if not 'boost_id' in obj:
             # Suppose that the field "boost_id" is not always provided by Telegram
@@ -9239,8 +9222,7 @@ class UserChatBoosts(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['boosts'] = [ChatBoost.de_json(boost) for boost in obj['boosts']]
         return cls(**obj)
@@ -9270,8 +9252,7 @@ class InaccessibleMessage(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         return cls(**obj)
@@ -9322,8 +9303,7 @@ class ChatBoostAdded(JsonDeserializable):
 
     @classmethod
     def de_json(cls, json_string):
-        if json_string is None:
-            return None
+        if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
     
