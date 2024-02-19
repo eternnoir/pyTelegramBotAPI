@@ -13,7 +13,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api#february-16-2024">7.1</a>!
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#december-29-2023">7.0</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#december-29-2023">7.1</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>
