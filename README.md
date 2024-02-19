@@ -10,7 +10,7 @@
 
 # <p align="center">pyTelegramBotAPI
 
-<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
+<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api#february-16-2024">7.1</a>!
 <p align="center">Both synchronous and asynchronous.</p>
 
 ## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#december-29-2023">7.0</a>!
@@ -72,7 +72,7 @@
 
 ## Getting started
 
-This API is tested with Python 3.8-3.11 and Pypy 3.
+This API is tested with Python 3.8-3.12 and Pypy 3.
 There are two ways to install the library:
 
 * Installation from source (requires git):
