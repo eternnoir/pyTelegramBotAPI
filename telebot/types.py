@@ -7279,8 +7279,7 @@ class VideoChatParticipantsInvited(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if 'users' in obj:
-            obj['users'] = [User.de_json(u) for u in obj['users']]
+        obj['users'] = [User.de_json(u) for u in obj['users']]
         return cls(**obj)
     
     def __init__(self, users=None, **kwargs):
@@ -7366,8 +7365,8 @@ class MenuButtonCommands(MenuButton):
     :rtype: :class:`telebot.types.MenuButtonCommands`
     """
 
-    def __init__(self, type, **kwargs):
-        self.type = type
+    def __init__(self, type = None, **kwargs):
+        self.type: str = "commands"
 
     def to_dict(self):
         return {'type': self.type}
@@ -7397,7 +7396,7 @@ class MenuButtonWebApp(MenuButton):
     """
 
     def __init__(self, type, text, web_app, **kwargs):
-        self.type: str = type
+        self.type: str = "web_app"
         self.text: str = text
         self.web_app: WebAppInfo = web_app
 
@@ -7420,8 +7419,8 @@ class MenuButtonDefault(MenuButton):
     :return: Instance of the class
     :rtype: :class:`telebot.types.MenuButtonDefault`
     """
-    def __init__(self, type, **kwargs):
-        self.type: str = type
+    def __init__(self, type = None, **kwargs):
+        self.type: str = "default"
 
     def to_dict(self):
         return {'type': self.type}
