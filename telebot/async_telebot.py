@@ -6246,6 +6246,9 @@ class AsyncTeleBot:
                 allow_sending_without_reply=kwargs.pop("allow_sending_without_reply", None) if kwargs else None
             )
 
+        if not reply_parameters.message_id:
+            reply_parameters.message_id = message.message_id
+
         return await self.send_message(message.chat.id, text, reply_parameters=reply_parameters, **kwargs)
 
     async def answer_inline_query(
