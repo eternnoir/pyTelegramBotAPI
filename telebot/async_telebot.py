@@ -6689,7 +6689,7 @@ class AsyncTeleBot:
             tgs_sticker: Optional[Union[Any, str]]=None,  
             webm_sticker: Optional[Union[Any, str]]=None,
             mask_position: Optional[types.MaskPosition]=None,
-            sticker: Optional[List[types.InputSticker]]=None) -> bool:
+            sticker: Optional[types.InputSticker]=None) -> bool:
         """
         Use this method to add a new sticker to a set created by the bot.
         The format of the added sticker must match the format of the other stickers in the set.
@@ -6725,8 +6725,8 @@ class AsyncTeleBot:
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
 
-        :param sticker: A JSON-serialized list of 1-50 initial stickers to be added to the sticker set
-        :type sticker: :obj:`list` of :class:`telebot.types.InputSticker`
+        :param sticker: A JSON-serialized object for sticker to be added to the sticker set
+        :type sticker: :class:`telebot.types.InputSticker`
 
         :return: On success, True is returned.
         :rtype: :obj:`bool`
