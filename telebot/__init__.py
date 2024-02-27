@@ -5746,8 +5746,8 @@ class TeleBot:
         :param mask_position: A JSON-serialized object for position where the mask should be placed on faces
         :type mask_position: :class:`telebot.types.MaskPosition`
 
-        :param sticker: A JSON-serialized list of 1-50 initial stickers to be added to the sticker set
-        :type sticker: :obj:`list` of :class:`telebot.types.InputSticker`
+        :param sticker: A JSON-serialized object for stickers to be added to the sticker set
+        :type sticker: :class:`telebot.types.InputSticker`
 
         :return: On success, True is returned.
         :rtype: :obj:`bool`
