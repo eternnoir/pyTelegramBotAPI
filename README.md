@@ -889,5 +889,6 @@ Here are some examples of template:
 * [QR-Code For You Bot](https://t.me/qrcode_for_you_bot) ([source](https://github.com/arashnm80/qrcode-for-you-bot)) by [Arashnm80](https://github.com/arashnm80). Telegram qrcode generator bot created with pyhton and telebot.
 * [Best Instagram Downloader Bot](https://t.me/Best_Instagram_Downloader_Bot) ([source](https://github.com/arashnm80/best-instagram-downloader)) by [Arashnm80](https://github.com/arashnm80). Free and open source telegram bot to download posts and reels from Instagram.
 * [4K YouTube Downloader](https://github.com/hansanaD/TelegramYTDLBot/) - Youtube Downloader with upto 4K resolution support. 
+* [DrinkGenius-Bot](https://t.me/cocktail_recommendation_bot) ([source](https://github.com/Povladarchik/DrinkGenius-Bot)) by [Povladarchik](https://github.com/Povladarchik). Your personal assistant in the world of cocktails.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
