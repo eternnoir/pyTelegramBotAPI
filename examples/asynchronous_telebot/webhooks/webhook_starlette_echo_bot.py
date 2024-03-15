@@ -29,6 +29,7 @@ telebot.logger.setLevel(logging.INFO)
 
 bot = AsyncTeleBot(token=API_TOKEN)
 
+
 # BOT HANDLERS
 @bot.message_handler(commands=["help", "start"])
 async def send_welcome(message: Message):

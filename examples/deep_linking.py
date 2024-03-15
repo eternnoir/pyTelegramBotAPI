@@ -34,7 +34,7 @@
 
 import telebot
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot("TOKEN")
 
 
 def extract_unique_code(text):
@@ -59,7 +59,7 @@ def save_chat_id(chat_id, username):
     pass
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def send_welcome(message):
     unique_code = extract_unique_code(message.text)
     if unique_code:  # if the '/start' command contains a unique_code

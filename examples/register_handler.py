@@ -1,13 +1,17 @@
 import telebot
 
-api_token = 'token'
+api_token = "token"
 
 bot = telebot.TeleBot(api_token)
 
-def start_executor(message):
-    bot.send_message(message.chat.id, 'Hello!')
 
-bot.register_message_handler(start_executor, commands=['start']) # Start command executor
+def start_executor(message):
+    bot.send_message(message.chat.id, "Hello!")
+
+
+bot.register_message_handler(
+    start_executor, commands=["start"]
+)  # Start command executor
 
 # See also
 # bot.register_callback_query_handler(*args, **kwargs)

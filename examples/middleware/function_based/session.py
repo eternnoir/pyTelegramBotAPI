@@ -17,45 +17,38 @@ from telebot import apihelper
 
 apihelper.ENABLE_MIDDLEWARE = True
 
-INFO_STATE = 'ON_INFO_MENU'
-MAIN_STATE = 'ON_MAIN_MENU'
+INFO_STATE = "ON_INFO_MENU"
+MAIN_STATE = "ON_MAIN_MENU"
 
-SESSIONS = {
-    -10000: {
-        'state': INFO_STATE
-    },
-    -11111: {
-        'state': MAIN_STATE
-    }
-}
+SESSIONS = {-10000: {"state": INFO_STATE}, -11111: {"state": MAIN_STATE}}
 
 
 def get_or_create_session(user_id):
     try:
         return SESSIONS[user_id]
     except KeyError:
-        SESSIONS[user_id] = {'state': MAIN_STATE}
+        SESSIONS[user_id] = {"state": MAIN_STATE}
         return SESSIONS[user_id]
 
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot("TOKEN")
 
 
-@bot.middleware_handler(update_types=['message'])
+@bot.middleware_handler(update_types=["message"])
 def set_session(bot_instance, message):
     bot_instance.session = get_or_create_session(message.from_user.id)
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def start(message):
-    bot.session['state'] = MAIN_STATE
-    bot.send_message(message.chat.id, bot.session['state'])
+    bot.session["state"] = MAIN_STATE
+    bot.send_message(message.chat.id, bot.session["state"])
 
 
-@bot.message_handler(commands=['info'])
+@bot.message_handler(commands=["info"])
 def start(message):
-    bot.session['state'] = INFO_STATE
-    bot.send_message(message.chat.id, bot.session['state'])
+    bot.session["state"] = INFO_STATE
+    bot.send_message(message.chat.id, bot.session["state"])
 
 
 bot.infinity_polling()

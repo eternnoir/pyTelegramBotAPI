@@ -11,14 +11,14 @@ import flask
 
 import telebot
 
-API_TOKEN = '<api_token>'
+API_TOKEN = "<api_token>"
 
-WEBHOOK_HOST = '<ip/host where the bot is running>'
+WEBHOOK_HOST = "<ip/host where the bot is running>"
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
-WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+WEBHOOK_LISTEN = "0.0.0.0"  # In some VPS you may need to put here the IP addr
 
-WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = "./webhook_cert.pem"  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = "./webhook_pkey.pem"  # Path to the ssl private key
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -40,33 +40,34 @@ app = flask.Flask(__name__)
 
 
 # Empty webserver index, return nothing, just http 200
-@app.route('/', methods=['GET', 'HEAD'])
+@app.route("/", methods=["GET", "HEAD"])
 def index():
-    return ''
+    return ""
 
 
 # Process webhook calls
-@app.route(WEBHOOK_URL_PATH, methods=['POST'])
+@app.route(WEBHOOK_URL_PATH, methods=["POST"])
 def webhook():
-    if flask.request.headers.get('content-type') == 'application/json':
-        json_string = flask.request.get_data().decode('utf-8')
+    if flask.request.headers.get("content-type") == "application/json":
+        json_string = flask.request.get_data().decode("utf-8")
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
-        return ''
+        return ""
     else:
         flask.abort(403)
 
 
 # Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=["help", "start"])
 def send_welcome(message):
-    bot.reply_to(message,
-                 ("Hi there, I am EchoBot.\n"
-                  "I am here to echo your kind words back to you."))
+    bot.reply_to(
+        message,
+        ("Hi there, I am EchoBot.\n" "I am here to echo your kind words back to you."),
+    )
 
 
 # Handle all other messages
-@bot.message_handler(func=lambda message: True, content_types=['text'])
+@bot.message_handler(func=lambda message: True, content_types=["text"])
 def echo_message(message):
     bot.reply_to(message, message.text)
 
@@ -77,11 +78,14 @@ bot.remove_webhook()
 time.sleep(0.1)
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+bot.set_webhook(
+    url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH, certificate=open(WEBHOOK_SSL_CERT, "r")
+)
 
 # Start flask server
-app.run(host=WEBHOOK_LISTEN,
-        port=WEBHOOK_PORT,
-        ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
-        debug=True)
+app.run(
+    host=WEBHOOK_LISTEN,
+    port=WEBHOOK_PORT,
+    ssl_context=(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV),
+    debug=True,
+)

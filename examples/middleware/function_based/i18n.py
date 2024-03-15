@@ -17,15 +17,9 @@ from telebot import apihelper
 
 apihelper.ENABLE_MIDDLEWARE = True
 
-TRANSLATIONS = {
-    'hello': {
-        'en': 'hello',
-        'ru': 'привет',
-        'uz': 'salom'
-    }
-}
+TRANSLATIONS = {"hello": {"en": "hello", "ru": "привет", "uz": "salom"}}
 
-_lang = 'en'
+_lang = "en"
 
 
 def activate(lang):
@@ -37,17 +31,17 @@ def _(string):
     return TRANSLATIONS[string][_lang]
 
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot("TOKEN")
 
 
-@bot.middleware_handler(update_types=['message'])
+@bot.middleware_handler(update_types=["message"])
 def activate_language(bot_instance, message):
     activate(message.from_user.language_code)
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def start(message):
-    bot.send_message(message.chat.id, _('hello'))
+    bot.send_message(message.chat.id, _("hello"))
 
 
 bot.infinity_polling()

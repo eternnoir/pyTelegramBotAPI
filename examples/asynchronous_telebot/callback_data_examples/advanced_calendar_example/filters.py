@@ -8,14 +8,14 @@ calendar_zoom = CallbackData("year", prefix="calendar_zoom")
 
 
 class CalendarCallbackFilter(AdvancedCustomFilter):
-    key = 'calendar_config'
+    key = "calendar_config"
 
     async def check(self, call: types.CallbackQuery, config: CallbackDataFilter):
         return config.check(query=call)
 
 
 class CalendarZoomCallbackFilter(AdvancedCustomFilter):
-    key = 'calendar_zoom_config'
+    key = "calendar_zoom_config"
 
     async def check(self, call: types.CallbackQuery, config: CallbackDataFilter):
         return config.check(query=call)
