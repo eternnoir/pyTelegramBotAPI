@@ -147,6 +147,9 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         # noinspection PyUnresolvedReferences
         retry_strategy = requests.packages.urllib3.util.retry.Retry(
             total=MAX_RETRIES,
+            allowed_methods=None,
+            backoff_factor=RETRY_TIMEOUT,
+            backoff_max=RETRY_TIMEOUT
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         for prefix in ('http://', 'https://'):
