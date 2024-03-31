@@ -220,7 +220,7 @@ class Update(JsonDeserializable):
         business_connection = BusinessConnection.de_json(obj.get('business_connection'))
         business_message = Message.de_json(obj.get('business_message'))
         edited_business_message = Message.de_json(obj.get('edited_business_message'))
-        deleted_business_messages = Message.de_json(obj.get('deleted_business_messages'))
+        deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
