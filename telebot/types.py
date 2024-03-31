@@ -481,6 +481,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param supports_inline_queries: Optional. True, if the bot supports inline queries. Returned only in getMe.
     :type supports_inline_queries: :obj:`bool`
 
+    :param can_connect_to_business: Optional. True, if the bot can be connected to a Telegram Business account to receive its messages. Returned only in getMe.
+    :type can_connect_to_business: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.User`
     """
@@ -492,7 +495,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, 
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
-                 is_premium=None, added_to_attachment_menu=None, **kwargs):
+                 is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -504,6 +507,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.supports_inline_queries: bool = supports_inline_queries
         self.is_premium: bool = is_premium
         self.added_to_attachment_menu: bool = added_to_attachment_menu
+        self.can_connect_to_business: bool = can_connect_to_business
 
 
     @property
@@ -530,7 +534,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'can_read_all_group_messages': self.can_read_all_group_messages,
                 'supports_inline_queries': self.supports_inline_queries,
                 'is_premium': self.is_premium,
-                'added_to_attachment_menu': self.added_to_attachment_menu}
+                'added_to_attachment_menu': self.added_to_attachment_menu,
+                'can_connect_to_business': self.can_connect_to_business}
+    
 
 
 class GroupChat(JsonDeserializable):
@@ -592,6 +598,9 @@ class Chat(JsonDeserializable):
 
     :param business_opening_hours : Optional. Business opening hours for the chat. Returned only in getChat.
     :type business_opening_hours: :class:`telebot.types.BusinessHours`
+
+    :param personal_chat: Optional. For private chats, the personal channel of the user. Returned only in getChat.
+    :type personal_chat: :class:`telebot.types.Chat`
 
     :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels.
         Returned only in getChat.
@@ -726,6 +735,8 @@ class Chat(JsonDeserializable):
             obj['business_location'] = BusinessLocation.de_json(obj['business_location'])
         if 'business_opening_hours' in obj:
             obj['business_opening_hours'] = BusinessOpeningHours.de_json(obj['business_opening_hours'])
+        if 'personal_chat' in obj:
+            obj['personal_chat'] = Chat.de_json(obj['personal_chat'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -740,7 +751,7 @@ class Chat(JsonDeserializable):
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
-                    business_opening_hours=None, **kwargs):
+                    business_opening_hours=None, personal_chat=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -781,6 +792,7 @@ class Chat(JsonDeserializable):
         self.business_intro: BusinessIntro = business_intro
         self.business_location: BusinessLocation = business_location
         self.business_opening_hours: BusinessOpeningHours = business_opening_hours
+        self.personal_chat: Chat = personal_chat
 
 
 
