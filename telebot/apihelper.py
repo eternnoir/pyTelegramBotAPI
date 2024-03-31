@@ -383,6 +383,11 @@ def set_sticker_set_thumbnail(token, name, user_id, thumbnail, format):
     return _make_request(token, method_url, params=payload, files=files or None)
 
 
+def replace_sticker_in_set(token, user_id, name, old_sticker, sticker):
+    method_url = r'replaceStickerInSet'
+    payload = {'user_id': user_id, 'name': name, 'old_sticker': old_sticker, 'sticker': sticker.to_json()}
+    return _make_request(token, method_url, params=payload)
+
 def set_chat_sticker_set(token, chat_id, sticker_set_name):
     method_url = r'setChatStickerSet'
     payload = {'chat_id': chat_id, 'sticker_set_name': sticker_set_name}

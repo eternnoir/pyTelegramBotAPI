@@ -352,6 +352,12 @@ async def get_chat_member_count(token, chat_id):
     return await _process_request(token, method_url, params=payload)
 
 
+
+async def replace_sticker_in_set(token, user_id, name, old_sticker, sticker):
+    method_url = r'replaceStickerInSet'
+    payload = {'user_id': user_id, 'name': name, 'old_sticker': old_sticker, 'sticker': sticker.to_json()}
+    return await _process_request(token, method_url, params=payload)
+
 async def set_sticker_set_thumbnail(token, name, user_id, thumbnail, format):
     method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id, 'format': format}
