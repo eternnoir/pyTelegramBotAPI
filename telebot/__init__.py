@@ -231,6 +231,11 @@ class TeleBot:
         self.chat_join_request_handlers = []
         self.chat_boost_handlers = []
         self.removed_chat_boost_handlers = []
+        self.business_connection_handlers = []
+        self.business_message_handlers = []
+        self.edited_business_message_handlers = []
+        self.deleted_business_messages_handlers = []
+
         self.custom_filters = {}
         self.state_handlers = []
 
@@ -694,6 +699,10 @@ class TeleBot:
         new_chat_join_request = None
         new_chat_boosts = None
         new_removed_chat_boosts = None
+        new_business_connections = None
+        new_business_messages = None
+        new_edited_business_messages = None
+        new_deleted_business_messages = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -763,6 +772,19 @@ class TeleBot:
             if update.removed_chat_boost:
                 if new_removed_chat_boosts is None: new_removed_chat_boosts = []
                 new_removed_chat_boosts.append(update.removed_chat_boost)
+            if update.business_connection:
+                if new_business_connections is None: new_business_connections = []
+                new_business_connections.append(update.business_connection)
+            if update.business_message:
+                if new_business_messages is None: new_business_messages = []
+                new_business_messages.append(update.business_message)
+            if update.edited_business_message:
+                if new_edited_business_messages is None: new_edited_business_messages = []
+                new_edited_business_messages.append(update.edited_business_message)
+            if update.deleted_business_messages:
+                if new_deleted_business_messages is None: new_deleted_business_messages = []
+                new_deleted_business_messages.append(update.deleted_business_messages)
+
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -800,6 +822,14 @@ class TeleBot:
             self.process_new_chat_boost(new_chat_boosts)
         if new_removed_chat_boosts:
             self.process_new_removed_chat_boost(new_removed_chat_boosts)
+        if new_business_connections:
+            self.process_new_business_connection(new_business_connections)
+        if new_business_messages:
+            self.process_new_business_message(new_business_messages)
+        if new_edited_business_messages:
+            self.process_new_edited_business_message(new_edited_business_messages)
+        if new_deleted_business_messages:
+            self.process_new_deleted_business_messages(new_deleted_business_messages)
 
     def process_new_messages(self, new_messages):
         """
@@ -911,6 +941,32 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.removed_chat_boost_handlers, new_removed_chat_boosts, 'removed_chat_boost')
+
+    def process_new_business_connection(self, new_business_connections):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.business_connection_handlers, new_business_connections, 'business_connection')
+
+    def process_new_business_message(self, new_business_messages):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.business_message_handlers, new_business_messages, 'business_message')
+
+    def process_new_edited_business_message(self, new_edited_business_messages):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.edited_business_message_handlers, new_edited_business_messages, 'edited_business_message')
+        
+    def process_new_deleted_business_messages(self, new_deleted_business_messages):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.deleted_business_messages_handlers, new_deleted_business_messages, 'deleted_business_messages')
+    
+
 
 
     def process_middlewares(self, update):
@@ -7760,6 +7816,347 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_removed_chat_boost_handler(handler_dict)
+
+    def business_connection_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming business connection state.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_business_connection_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_business_connection_handler(self, handler_dict):
+        """
+        Adds a business_connection handler.
+        Note that you should use register_business_connection_handler to add business_connection_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.business_connection_handlers.append(handler_dict)
+
+    def register_business_connection_handler(
+            self, callback: Callable, func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
+        """
+        Registers business connection handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_business_connection_handler(handler_dict)
+
+    def business_message_handler(
+            self,
+            commands: Optional[List[str]]=None,
+            regexp: Optional[str]=None,
+            func: Optional[Callable]=None,
+            content_types: Optional[List[str]]=None,
+            **kwargs):
+        """
+        Handles New incoming message of any kind(for business accounts, see bot api 7.2 for more) - text, photo, sticker, etc.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+        All message handlers are tested in the order they were added.
+
+        Example:
+
+        .. code-block:: python3
+            :caption: Usage of business_message_handler
+
+            bot = TeleBot('TOKEN')
+
+            # Handles all messages which text matches regexp.
+            @bot.business_message_handler(regexp='someregexp')
+            def command_help(message):
+                bot.send_message(message.chat.id, 'Did someone call for help?')
+
+            # Handle all sent documents of type 'text/plain'.
+            @bot.business_message_handler(func=lambda message: message.document.mime_type == 'text/plain',
+                content_types=['document'])
+            def command_handle_document(message):
+                bot.send_message(message.chat.id, 'Document received, sir!')
+
+            # Handle all other messages.
+            @bot.business_message_handler(func=lambda message: True, content_types=['audio', 'photo', 'voice', 'video', 'document',
+                'text', 'location', 'contact', 'sticker'])
+            def default_command(message):
+                bot.send_message(message.chat.id, "This is the default command handler.")
+
+        :param commands: Optional list of strings (commands to handle).
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Optional regular expression.
+        :type regexp: :obj:`str`
+
+        :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
+            It must return True if the command should handle the message.
+        :type func: :obj:`lambda`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: decorated function
+        """
+        if content_types is None:
+            content_types = ["text"]
+
+        method_name = "business_message_handler"
+
+        if commands is not None:
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
+        if regexp is not None:
+            self.check_regexp_input(regexp, method_name)
+
+        if isinstance(content_types, str):
+            logger.warning("business_message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler,
+                                                    content_types=content_types,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    **kwargs)
+            self.add_message_handler(handler_dict)
+            return handler
+
+        return decorator
+    
+    def add_business_message_handler(self, handler_dict):
+        """
+        Adds a business_message handler.
+        Note that you should use register_business_message_handler to add business_message_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.business_message_handlers.append(handler_dict)
+
+    def register_business_message_handler(self,
+            callback: Callable,
+            commands: Optional[List[str]]=None,
+            regexp: Optional[str]=None,
+            func: Optional[Callable]=None,
+            content_types: Optional[List[str]]=None,
+            **kwargs):
+        """
+        Registers business connection handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs)
+        self.add_business_message_handler(handler_dict)
+
+    
+    
+
+    def edited_business_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
+        """
+        Handles new version of a message(business accounts) that is known to the bot and was edited.
+        As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
+
+        :param commands: Optional list of strings (commands to handle).
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Optional regular expression.
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        if content_types is None:
+            content_types = ["text"]
+
+        method_name = "edited_business_message_handler"
+
+        if commands is not None:
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
+        if regexp is not None:
+            self.check_regexp_input(regexp, method_name)
+
+        if isinstance(content_types, str):
+            logger.warning("edited_business_message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler,
+                                                    content_types=content_types,
+                                                    commands=commands,
+                                                    regexp=regexp,
+                                                    func=func,
+                                                    **kwargs)
+            self.add_edited_message_handler(handler_dict)
+            return handler
+
+        return decorator
+
+
+    def add_edited_business_message_handler(self, handler_dict):
+        """
+        Adds the edit message handler
+        Note that you should use register_edited_business_message_handler to add edited_business_message_handler to the bot.
+        
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.edited_message_handlers.append(handler_dict)
+
+
+    def register_edited_business_message_handler(self, callback: Callable, content_types: Optional[List[str]]=None,
+        commands: Optional[List[str]]=None, regexp: Optional[str]=None, func: Optional[Callable]=None,
+        pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers edited message handler for business accounts.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
+
+        :param commands: list of commands
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Regular expression
+        :type regexp: :obj:`str`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        method_name = "edited_business_message_handler"
+
+        if commands is not None:
+            self.check_commands_input(commands, method_name)
+            if isinstance(commands, str):
+                commands = [commands]
+
+        if regexp is not None:
+            self.check_regexp_input(regexp, method_name)
+
+        if isinstance(content_types, str):
+            logger.warning("edited_business_message_handler: 'content_types' filter should be List of strings (content types), not string.")
+            content_types = [content_types]
+
+        handler_dict = self._build_handler_dict(callback,
+                                                content_types=content_types,
+                                                commands=commands,
+                                                regexp=regexp,
+                                                func=func,
+                                                pass_bot=pass_bot,
+                                                **kwargs)
+        self.add_edited_business_message_handler(handler_dict)
+
+    
+    def deleted_business_messages_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming deleted messages state.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+
+            self.add_deleted_message_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_deleted_business_messages_handler(self, handler_dict):
+        """
+        Adds a deleted_business_messages handler.
+        Note that you should use register_deleted_business_messages_handler to add deleted_business_messages_handler to the bot.
+
+        :meta private:
+        """
+        self.deleted_message_handlers.append(handler_dict)
+
+    def register_deleted_business_messages_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers deleted business messages handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_deleted_business_messages_handler(handler_dict)
+
+        
+
 
 
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):

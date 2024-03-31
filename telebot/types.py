@@ -181,6 +181,15 @@ class Update(JsonDeserializable):
     :param business_connection: Optional. The bot was connected to or disconnected from a business account, or a user edited an existing connection with the bot
     :type business_connection: :class:`telebot.types.BusinessConnection`
 
+    :param business_message: Optional. New non-service message from a connected business account
+    :type business_message: :class:`telebot.types.Message`
+
+    :param edited_business_message: Optional. New version of a non-service message from a connected business account that is known to the bot and was edited
+    :type edited_business_message: :class:`telebot.types.Message`
+
+    :param deleted_business_messages: Optional. Service message: the chat connected to the business account was deleted
+    :type deleted_business_messages: :class:`telebot.types.Message`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -209,15 +218,19 @@ class Update(JsonDeserializable):
         removed_chat_boost = ChatBoostRemoved.de_json(obj.get('removed_chat_boost'))
         chat_boost = ChatBoostUpdated.de_json(obj.get('chat_boost'))
         business_connection = BusinessConnection.de_json(obj.get('business_connection'))
+        business_message = Message.de_json(obj.get('business_message'))
+        edited_business_message = Message.de_json(obj.get('edited_business_message'))
+        deleted_business_messages = Message.de_json(obj.get('deleted_business_messages'))
+
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
-                     business_connection)
+                     business_connection, business_message, edited_business_message, deleted_business_messages, **obj)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
-                    business_connection, **kwargs): 
+                    business_connection, business_message, edited_business_message, deleted_business_messages, **kwargs):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -238,6 +251,9 @@ class Update(JsonDeserializable):
         self.removed_chat_boost = removed_chat_boost
         self.chat_boost = chat_boost
         self.business_connection = business_connection
+        self.business_message = business_message
+        self.edited_business_message = edited_business_message
+        self.deleted_business_messages = deleted_business_messages
 
 
 
@@ -9363,3 +9379,36 @@ class BusinessConnection(JsonDeserializable):
         self.is_enabled: bool = is_enabled
 
 
+
+class BusinessMessagesDeleted(JsonDeserializable):
+    """
+    This object is received when messages are deleted from a connected business account.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessmessagesdeleted
+
+    :param business_connection_id: Unique identifier of the business connection
+    :type business_connection_id: :obj:`str`
+
+    :param chat: Information about a chat in the business account. The bot may not have access to the chat or the corresponding user.
+    :type chat: :class:`Chat`
+
+    :param message_ids: A JSON-serialized list of identifiers of deleted messages in the chat of the business account
+    :type message_ids: :obj:`list` of :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessMessagesDeleted`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
+        return cls(**obj)
+    
+
+    def __init__(self, business_connection_id, chat, message_ids, **kwargs):
+        self.business_connection_id: str = business_connection_id
+        self.chat: Chat = chat
+        self.message_ids: List[int] = message_ids
+        
