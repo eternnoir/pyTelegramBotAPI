@@ -7908,6 +7908,15 @@ class ChatShared(JsonDeserializable):
         and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
     :type chat_id: :obj:`int`
 
+    :param title: Optional. Title of the shared chat
+    :type title: :obj:`str`
+
+    :param photo: Optional. Array of Photosize
+    :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
+
+    :param username: Optional. Username of the shared chat
+    :type username: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatShared`
     """
@@ -7918,9 +7927,13 @@ class ChatShared(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, request_id: int, chat_id: int, **kwargs) -> None:
+    def __init__(self, request_id: int, chat_id: int, title: Optional[str]=None, photo: Optional[List[PhotoSize]]=None,
+                    username: Optional[str]=None, **kwargs) -> None:
         self.request_id: int = request_id
         self.chat_id: int = chat_id
+        self.title: Optional[str] = title
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.username: Optional[str] = username
 
 
 class BotDescription(JsonDeserializable):
