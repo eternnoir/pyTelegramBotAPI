@@ -178,6 +178,9 @@ class Update(JsonDeserializable):
     :param removed_chat_boost: Optional. A chat boost was removed. The bot must be an administrator in the chat to receive these updates.
     :type removed_chat_boost: :class:`telebot.types.RemovedChatBoost`
 
+    :param business_connection: Optional. The bot was connected to or disconnected from a business account, or a user edited an existing connection with the bot
+    :type business_connection: :class:`telebot.types.BusinessConnection`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -205,13 +208,16 @@ class Update(JsonDeserializable):
         message_reaction_count = MessageReactionCountUpdated.de_json(obj.get('message_reaction_count'))
         removed_chat_boost = ChatBoostRemoved.de_json(obj.get('removed_chat_boost'))
         chat_boost = ChatBoostUpdated.de_json(obj.get('chat_boost'))
+        business_connection = BusinessConnection.de_json(obj.get('business_connection'))
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost)
+                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
+                     business_connection)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost):
+                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
+                    business_connection, **kwargs): 
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -231,6 +237,8 @@ class Update(JsonDeserializable):
         self.message_reaction_count = message_reaction_count
         self.removed_chat_boost = removed_chat_boost
         self.chat_boost = chat_boost
+        self.business_connection = business_connection
+
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -9308,3 +9316,50 @@ class ChatBoostAdded(JsonDeserializable):
     
     def __init__(self, boost_count, **kwargs):
         self.boost_count: int = boost_count
+
+
+
+class BusinessConnection(JsonDeserializable):
+    """
+    This object describes the connection of the bot with a business account.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessconnection
+
+    :param id: Unique identifier of the business connection
+    :type id: :obj:`str`
+
+    :param user: Business account user that created the business connection
+    :type user: :class:`User`
+
+    :param user_chat_id: Identifier of a private chat with the user who created the business connection
+    :type user_chat_id: :obj:`int`
+
+    :param date: Date the connection was established in Unix time
+    :type date: :obj:`int`
+
+    :param can_reply: True, if the bot can act on behalf of the business account in chats that were active in the last 24 hours
+    :type can_reply: :obj:`bool`
+
+    :param is_enabled: True, if the connection is active
+    :type is_enabled: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessConnection`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+    
+    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled, **kwargs):
+        self.id: str = id
+        self.user: User = user
+        self.user_chat_id: int = user_chat_id
+        self.date: int = date
+        self.can_reply: bool = can_reply
+        self.is_enabled: bool = is_enabled
+
+
