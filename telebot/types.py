@@ -7950,15 +7950,19 @@ class InputSticker(Dictionaryable, JsonSerializable):
         For “regular” and “custom_emoji” stickers only.
     :type keywords: :obj:`list` of :obj:`str`
 
+    :param format: 	Format of the added sticker, must be one of “static” for a .WEBP or .PNG image, “animated” for a .TGS animation, “video” for a WEBM video
+    :type format: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputSticker`
     """
 
-    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str], mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
+    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str],  format: str, mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
         self.sticker: Union[str, InputFile] = sticker
         self.emoji_list: List[str] = emoji_list
         self.mask_position: Optional[MaskPosition] = mask_position
         self.keywords: Optional[List[str]] = keywords
+        self.format: str = format
 
         if service_utils.is_string(self.sticker):
             self._sticker_name = ''
@@ -7973,7 +7977,8 @@ class InputSticker(Dictionaryable, JsonSerializable):
     def to_dict(self) -> dict:
         json_dict = {
             'sticker': self._sticker_dic,
-            'emoji_list': self.emoji_list
+            'emoji_list': self.emoji_list,
+            'format': self.format
         }
 
         if self.mask_position is not None:
