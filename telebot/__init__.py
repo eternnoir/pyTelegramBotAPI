@@ -1630,7 +1630,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            link_preview_options : Optional[types.LinkPreviewOptions]=None) -> types.Message:
+            link_preview_options : Optional[types.LinkPreviewOptions]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -1683,6 +1684,9 @@ class TeleBot:
         :param link_preview_options: Link preview options.
         :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1730,7 +1734,7 @@ class TeleBot:
                 self.token, chat_id, text,
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, entities=entities, protect_content=protect_content, message_thread_id=message_thread_id,
-                reply_parameters=reply_parameters, link_preview_options=link_preview_options))
+                reply_parameters=reply_parameters, link_preview_options=link_preview_options, business_connection_id=business_connection_id))
 
 
     def forward_message(
@@ -2017,7 +2021,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -2056,6 +2061,9 @@ class TeleBot:
         :param reply_parameters: Additional parameters for replies to messages
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2084,7 +2092,7 @@ class TeleBot:
             apihelper.send_dice(
                 self.token, chat_id, emoji=emoji, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
         )
 
 
@@ -2100,7 +2108,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -2151,6 +2160,9 @@ class TeleBot:
 
         :param reply_parameters: Additional parameters for replies to messages
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -2182,7 +2194,7 @@ class TeleBot:
                 self.token, chat_id, photo, caption=caption, reply_markup=reply_markup,
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters)
+                message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
         )
 
 
@@ -2201,7 +2213,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2271,6 +2284,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2305,7 +2321,7 @@ class TeleBot:
                 self.token, chat_id, audio, caption=caption, duration=duration, performer=performer, title=title,
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -2321,7 +2337,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
         For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as Audio or Document).
@@ -2374,6 +2391,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -2403,7 +2423,7 @@ class TeleBot:
                 self.token, chat_id, voice, caption=caption, duration=duration, reply_markup=reply_markup,
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -2423,7 +2443,8 @@ class TeleBot:
             data: Optional[Union[Any, str]]=None,
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -2486,6 +2507,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2525,7 +2549,7 @@ class TeleBot:
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, caption=caption, thumbnail=thumbnail, caption_entities=caption_entities,
                 disable_content_type_detection=disable_content_type_detection, visible_file_name=visible_file_name,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -2541,7 +2565,8 @@ class TeleBot:
             data: Union[Any, str]=None,
             message_thread_id: Optional[int]=None,
             emoji: Optional[str]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2587,6 +2612,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2620,7 +2648,7 @@ class TeleBot:
                 self.token, chat_id, sticker, 'sticker',
                 reply_markup=reply_markup, disable_notification=disable_notification, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji,
-                reply_parameters=reply_parameters)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -2644,7 +2672,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
             thumb: Optional[Union[Any, str]]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -2715,6 +2744,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2755,7 +2787,7 @@ class TeleBot:
                 supports_streaming=supports_streaming, disable_notification=disable_notification, timeout=timeout,
                 thumbnail=thumbnail, height=height, width=width, caption_entities=caption_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id, has_spoiler=has_spoiler,
-                reply_parameters=reply_parameters)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -2777,7 +2809,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
             thumb: Optional[Union[Any, str]]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -2847,6 +2880,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2882,7 +2918,7 @@ class TeleBot:
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 width=width, height=height, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                has_spoiler=has_spoiler)
+                has_spoiler=has_spoiler, business_connection_id=business_connection_id)
             )
 
 
@@ -2899,7 +2935,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -2954,6 +2991,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2986,7 +3026,7 @@ class TeleBot:
             apihelper.send_video_note(
                 self.token, chat_id, data, duration=duration, length=length, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, thumbnail=thumbnail,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -3001,7 +3041,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> List[types.Message]:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -3035,6 +3076,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -3061,7 +3105,8 @@ class TeleBot:
 
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification=disable_notification, timeout=timeout,
-            protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+            protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
+            business_connection_id=business_connection_id)
         return [types.Message.de_json(msg) for msg in result]
 
 
@@ -3079,7 +3124,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility 
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -3132,6 +3178,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3161,7 +3210,7 @@ class TeleBot:
                 self.token, chat_id, latitude, longitude, live_period=live_period, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, horizontal_accuracy=horizontal_accuracy,
                 heading=heading, proximity_alert_radius=proximity_alert_radius, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
             )
 
 
@@ -3277,7 +3326,8 @@ class TeleBot:
             google_place_type: Optional[str]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
         
@@ -3337,6 +3387,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3366,7 +3419,7 @@ class TeleBot:
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id=foursquare_id,
                 foursquare_type=foursquare_type, disable_notification=disable_notification, reply_markup=reply_markup,
                 timeout=timeout, google_place_id=google_place_id, google_place_type=google_place_type,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
             )
 
 
@@ -3380,7 +3433,8 @@ class TeleBot:
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -3427,6 +3481,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param business_connection_id: Identifier of a business connection
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3455,7 +3512,7 @@ class TeleBot:
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name=last_name, vcard=vcard,
                 disable_notification=disable_notification, reply_markup=reply_markup, timeout=timeout,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
             )
 
 
@@ -4618,7 +4675,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Used to send the game.
 
@@ -4654,6 +4712,9 @@ class TeleBot:
         :param reply_parameters: Reply parameters
         :type reply_parameters: :obj:`ReplyParameters`
 
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -4685,7 +4746,7 @@ class TeleBot:
             apihelper.send_game(
                 self.token, chat_id, game_short_name, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
         )
 
 
@@ -5059,7 +5120,8 @@ class TeleBot:
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -5133,6 +5195,9 @@ class TeleBot:
         :param reply_parameters: reply parameters.
         :type reply_parameters: :obj:`ReplyParameters`
 
+        :param business_connection_id: Identifier of the business connection to use for the poll
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -5174,7 +5239,7 @@ class TeleBot:
                 close_date=close_date, is_closed=is_closed, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, explanation_entities=explanation_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id,
-                reply_parameters=reply_parameters)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
             )
 
 
