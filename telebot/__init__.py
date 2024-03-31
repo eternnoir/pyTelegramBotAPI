@@ -2093,7 +2093,7 @@ class TeleBot:
                 self.token, chat_id, emoji=emoji, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
-        )
+
 
 
     def send_photo(
@@ -2195,7 +2195,7 @@ class TeleBot:
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
-        )
+        
 
 
     def send_audio(
@@ -3517,7 +3517,8 @@ class TeleBot:
 
 
     def send_chat_action(
-            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None) -> bool:
+            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None,
+            business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
@@ -3543,11 +3544,14 @@ class TeleBot:
         :param message_thread_id: The thread identifier of a message from which the reply will be sent(supergroups only)
         :type message_thread_id: :obj:`int`
 
+        :param business_connection_id: Identifier of a business connection
+        :type business_connection_id: :obj:`str`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
         return apihelper.send_chat_action(
-            self.token, chat_id, action, timeout=timeout, message_thread_id=message_thread_id)
+            self.token, chat_id, action, timeout=timeout, message_thread_id=message_thread_id, business_connection_id=business_connection_id)
 
     
     @util.deprecated(deprecation_text="Use ban_chat_member instead")

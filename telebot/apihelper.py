@@ -669,13 +669,15 @@ def send_contact(
     return _make_request(token, method_url, params=payload)
 
 
-def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None):
+def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None, business_connection_id=None):
     method_url = r'sendChatAction'
     payload = {'chat_id': chat_id, 'action': action}
     if timeout:
         payload['timeout'] = timeout
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 

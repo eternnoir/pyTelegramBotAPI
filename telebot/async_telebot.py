@@ -4922,7 +4922,8 @@ class AsyncTeleBot:
         
 
     async def send_chat_action(
-            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None) -> bool:
+            self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None,
+            business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method when you need to tell the user that something is happening on the bot's side.
         The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status).
@@ -4948,10 +4949,13 @@ class AsyncTeleBot:
         :param message_thread_id: The thread to which the message will be sent(supergroups only)
         :type message_thread_id: :obj:`int`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.send_chat_action(self.token, chat_id, action, timeout, message_thread_id)
+        return await asyncio_helper.send_chat_action(self.token, chat_id, action, timeout, message_thread_id, business_connection_id)
 
     async def kick_chat_member(
             self, chat_id: Union[int, str], user_id: int, 
