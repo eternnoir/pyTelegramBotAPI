@@ -843,8 +843,15 @@ class Message(JsonDeserializable):
     :param sender_boost_count: Optional. If the sender of the message boosted the chat, the number of boosts added by the user
     :type sender_boost_count: :obj:`int`
 
+    :param sender_business_bot info: Optional. Information about the business bot that sent the message
+    :type sender_business_bot_info: :class:`telebot.types.User`
+
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
+
+    :param business_connection_id: Optional. Unique identifier of the business connection from which the message was received. If non-empty,
+        the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier.
+    :type business_connection_id: :obj:`str`
 
     :param chat: Conversation the message belongs to
     :type chat: :class:`telebot.types.Chat`
@@ -1326,6 +1333,11 @@ class Message(JsonDeserializable):
             opts['sender_boost_count'] = obj['sender_boost_count']
         if 'reply_to_story' in obj:
             opts['reply_to_story'] = Story.de_json(obj['reply_to_story'])
+        if 'sender_business_bot' in obj:
+            opts['sender_business_bot'] = User.de_json(obj['sender_business_bot'])
+        if 'business_connection_id' in obj:
+            opts['business_connection_id'] = obj['business_connection_id']
+
 
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1430,6 +1442,8 @@ class Message(JsonDeserializable):
         self.boost_added: Optional[ChatBoostAdded] = None
         self.sender_boost_count: Optional[int] = None
         self.reply_to_story: Optional[Story] = None
+        self.sender_business_bot: Optional[User] = None
+        self.business_connection_id: Optional[str] = None
 
         for key in options:
             setattr(self, key, options[key])
