@@ -8208,7 +8208,7 @@ class TeleBot:
         def decorator(handler):
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
 
-            self.add_deleted_message_handler(handler_dict)
+            self.add_deleted_business_messages_handler(handler_dict)
             return handler
         
         return decorator
@@ -8220,7 +8220,7 @@ class TeleBot:
 
         :meta private:
         """
-        self.deleted_message_handlers.append(handler_dict)
+        self.deleted_business_messages_handlers.append(handler_dict)
 
     def register_deleted_business_messages_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """

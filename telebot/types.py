@@ -584,6 +584,15 @@ class Chat(JsonDeserializable):
         Returned only in getChat.
     :type active_usernames: :obj:`list` of :obj:`str`
 
+    :param business_intro: Optional. Business intro for the chat. Returned only in getChat.
+    :type business_intro: :class:`telebot.types.BusinessIntro`
+
+    :param business_location: Optional. Business location for the chat. Returned only in getChat.
+    :type business_location: :class:`telebot.types.BusinessLocation`
+
+    :param business_opening_hours : Optional. Business opening hours for the chat. Returned only in getChat.
+    :type business_opening_hours: :class:`telebot.types.BusinessHours`
+
     :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels.
         Returned only in getChat.
     :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
@@ -711,6 +720,12 @@ class Chat(JsonDeserializable):
             obj['location'] = ChatLocation.de_json(obj['location'])
         if 'available_reactions' in obj:
             obj['available_reactions'] = [ReactionType(reaction) for reaction in obj['available_reactions']]
+        if 'business_intro' in obj:
+            obj['business_intro'] = BusinessIntro.de_json(obj['business_intro'])
+        if 'business_location' in obj:
+            obj['business_location'] = BusinessLocation.de_json(obj['business_location'])
+        if 'business_opening_hours' in obj:
+            obj['business_opening_hours'] = BusinessOpeningHours.de_json(obj['business_opening_hours'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -724,7 +739,8 @@ class Chat(JsonDeserializable):
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
-                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, **kwargs):
+                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
+                    business_opening_hours=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -762,6 +778,9 @@ class Chat(JsonDeserializable):
         self.has_visible_history: bool = has_visible_history
         self.unrestrict_boost_count: int = unrestrict_boost_count
         self.custom_emoji_sticker_set_name: str = custom_emoji_sticker_set_name
+        self.business_intro: BusinessIntro = business_intro
+        self.business_location: BusinessLocation = business_location
+        self.business_opening_hours: BusinessOpeningHours = business_opening_hours
 
 
 
@@ -9426,3 +9445,122 @@ class BusinessMessagesDeleted(JsonDeserializable):
         self.chat: Chat = chat
         self.message_ids: List[int] = message_ids
         
+
+class BusinessIntro(JsonDeserializable):
+    """
+    This object represents a business intro.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessintro
+
+    :param title: Optional. Title text of the business intro
+    :type title: :obj:`str`
+
+    :param message: Optional. Message text of the business intro
+    :type message: :obj:`str`
+
+    :param sticker: Optional. Sticker of the business intro
+    :type sticker: :class:`Sticker`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessIntro`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'sticker' in obj:
+            obj['sticker'] = Sticker.de_json(obj['sticker'])
+        return cls(**obj)
+    
+    def __init__(self, title=None, message=None, sticker=None, **kwargs):
+        self.title: Optional[str] = title
+        self.message: Optional[str] = message
+        self.sticker: Optional[Sticker] = sticker
+
+
+class BusinessLocation(JsonDeserializable):
+    """
+    This object represents a business location.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businesslocation
+
+    :param address: Address of the business
+    :type address: :obj:`str`
+
+    :param location: Optional. Location of the business
+    :type location: :class:`Location`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessLocation`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'location' in obj:
+            obj['location'] = Location.de_json(obj['location'])
+        return cls(**obj)
+    
+    def __init__(self, address, location=None, **kwargs):
+        self.address: str = address
+        self.location: Optional[Location] = location
+
+
+class BusinessOpeningHoursInterval(JsonDeserializable):
+    """
+    This object represents a business opening hours interval.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessopeninghoursinterval
+
+    :param opening_minute: The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7 24 60
+    :type opening_minute: :obj:`int`
+
+    :param closing_minute: The minute's sequence number in a week, starting on Monday, marking the end of the time interval during which the business is open; 0 - 8 24 60
+    :type closing_minute: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessOpeningHoursInterval`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, opening_minute, closing_minute, **kwargs):
+        self.opening_minute: int = opening_minute
+        self.closing_minute: int = closing_minute
+
+
+class BusinessOpeningHours(JsonDeserializable):
+    """
+
+    This object represents business opening hours.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessopeninghours
+
+    :param time_zone_name: Unique name of the time zone for which the opening hours are defined
+    :type time_zone_name: :obj:`str`
+
+    :param opening_hours: List of time intervals describing business opening hours
+    :type opening_hours: :obj:`list` of :class:`BusinessOpeningHoursInterval`
+
+    :return: Instance of the class
+
+    :rtype: :class:`BusinessOpeningHours`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['opening_hours'] = [BusinessOpeningHoursInterval.de_json(interval) for interval in obj['opening_hours']]
+        return cls(**obj)
+    
+    def __init__(self, time_zone_name, opening_hours, **kwargs):
+        self.time_zone_name: str = time_zone_name
+        self.opening_hours: List[BusinessOpeningHoursInterval] = opening_hours
+
