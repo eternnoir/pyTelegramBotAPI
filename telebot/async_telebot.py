@@ -6866,7 +6866,7 @@ class AsyncTeleBot:
         return types.UserChatBoosts.de_json(result)
     
 
-    async def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None):
+    async def set_sticker_set_thumbnail(self, name: str, user_id: int, format: str, thumbnail: Union[Any, str]=None):
         """
         Use this method to set the thumbnail of a sticker set. 
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
@@ -6885,7 +6885,7 @@ class AsyncTeleBot:
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail)
+        return await asyncio_helper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail, format)
     
     @util.deprecated(deprecation_text="Use set_sticker_set_thumbnail instead")
     async def set_sticker_set_thumb(self, name: str, user_id: int, thumb: Union[Any, str]=None):
