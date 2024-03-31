@@ -9043,13 +9043,13 @@ class UsersShared(JsonDeserializable):
     :param request_id: Identifier of the request
     :type request_id: :obj:`int`
 
-    :param user_ids: Identifiers of the shared users. These numbers may have more than 32 significant bits
+    :param user_ids: Array of :obj:`types.SharedUser` of the shared users. These numbers may have more than 32 significant bits
                      and some programming languages may have difficulty/silent defects in interpreting them.
                      But they have at most 52 significant bits, so 64-bit integers or double-precision float
                      types are safe for storing these identifiers. The bot may not have access to the users and
                      could be unable to use these identifiers unless the users are already known to the bot by
                      some other means.
-    :type user_ids: :obj:`list` of :obj:`int`
+    :type user_ids: :obj:`list` of :obj:`types.SharedUser`
 
     :return: Instance of the class
     :rtype: :class:`UsersShared`
@@ -9058,9 +9058,12 @@ class UsersShared(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
+
+        obj['user_ids'] = [SharedUser.de_json(user) for user in obj['user_ids']]
+
         return cls(**obj)
 
-    def __init__(self, request_id, user_ids, **kwargs):
+    def __init__(self, request_id, user_ids: SharedUser, **kwargs):
         self.request_id = request_id
         self.user_ids = user_ids
 
@@ -9607,3 +9610,43 @@ class BusinessOpeningHours(JsonDeserializable):
         self.time_zone_name: str = time_zone_name
         self.opening_hours: List[BusinessOpeningHoursInterval] = opening_hours
 
+
+class SharedUser(JsonDeserializable):
+    """
+    This object contains information about a user that was shared with the bot using a KeyboardButtonRequestUser button.
+
+    Telegram documentation: https://core.telegram.org/bots/api#shareduser
+
+    :param user_id: Identifier of the shared user. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so 64-bit integers or double-precision float types are safe for storing these identifiers. The bot may not have access to the user and could be unable to use this identifier, unless the user is already known to the bot by some other means.
+    :type user_id: :obj:`int`
+
+    :param first_name: Optional. First name of the user, if the name was requested by the bot
+    :type first_name: :obj:`str`
+
+    :param last_name: Optional. Last name of the user, if the name was requested by the bot
+    :type last_name: :obj:`str`
+
+    :param username: Optional. Username of the user, if the username was requested by the bot
+    :type username: :obj:`str`
+
+    :param photo: Optional. Available sizes of the chat photo, if the photo was requested by the bot
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :return: Instance of the class
+    :rtype: :class:`SharedUser`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        return cls(**obj)
+    
+    def __init__(self, user_id, first_name=None, last_name=None, username=None, photo=None, **kwargs):
+        self.user_id: int = user_id
+        self.first_name: Optional[str] = first_name
+        self.last_name: Optional[str] = last_name
+        self.username: Optional[str] = username
+        self.photo: Optional[List[PhotoSize]] = photo
