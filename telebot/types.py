@@ -590,6 +590,9 @@ class Chat(JsonDeserializable):
         Returned only in getChat.
     :type active_usernames: :obj:`list` of :obj:`str`
 
+    :param birthdate: Optional. Birthdate of the other party in a private chat. Returned only in getChat.
+    :type birthdate: :obj:`str`
+
     :param business_intro: Optional. Business intro for the chat. Returned only in getChat.
     :type business_intro: :class:`telebot.types.BusinessIntro`
 
@@ -737,6 +740,8 @@ class Chat(JsonDeserializable):
             obj['business_opening_hours'] = BusinessOpeningHours.de_json(obj['business_opening_hours'])
         if 'personal_chat' in obj:
             obj['personal_chat'] = Chat.de_json(obj['personal_chat'])
+        if 'birthdate' in obj:
+            obj['birthdate'] = Birthdate.de_json(obj['birthdate'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -751,7 +756,7 @@ class Chat(JsonDeserializable):
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
-                    business_opening_hours=None, personal_chat=None, **kwargs):
+                    business_opening_hours=None, personal_chat=None, birthdate=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -793,6 +798,7 @@ class Chat(JsonDeserializable):
         self.business_location: BusinessLocation = business_location
         self.business_opening_hours: BusinessOpeningHours = business_opening_hours
         self.personal_chat: Chat = personal_chat
+        self.birthdate: Birthdate = birthdate
 
 
 
@@ -9682,3 +9688,34 @@ class SharedUser(JsonDeserializable):
         self.last_name: Optional[str] = last_name
         self.username: Optional[str] = username
         self.photo: Optional[List[PhotoSize]] = photo
+
+
+class Birthdate(JsonDeserializable):
+    """
+    This object represents a user's birthdate.
+
+    Telegram documentation: https://core.telegram.org/bots/api#birthdate
+
+    :param day: Day of the user's birth; 1-31
+    :type day: :obj:`int`
+
+    :param month: Month of the user's birth; 1-12
+    :type month: :obj:`int`
+
+    :param year: Optional. Year of the user's birth
+    :type year: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Birthdate`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, day, month, year=None, **kwargs):
+        self.day: int = day
+        self.month: int = month
+        self.year: Optional[int] = year
