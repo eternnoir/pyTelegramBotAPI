@@ -999,6 +999,23 @@ class AsyncTeleBot:
 
         self.middlewares.append(middleware)
 
+    @staticmethod
+    def check_commands_input(commands, method_name):
+        """
+        :meta private:
+        """
+        if not isinstance(commands, list) or not all(isinstance(item, str) for item in commands):
+            logger.error(f"{method_name}: Commands filter should be list of strings (commands), unknown type supplied to the 'commands' filter list. Not able to use the supplied type.")
+
+
+    @staticmethod
+    def check_regexp_input(regexp, method_name):
+        """
+        :meta private:
+        """
+        if not isinstance(regexp, str):
+            logger.error(f"{method_name}: Regexp filter should be string. Not able to use the supplied type.")
+
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
         Handles ew incoming message of any kind - text, photo, sticker, etc.
@@ -2308,7 +2325,7 @@ class AsyncTeleBot:
                                                     regexp=regexp,
                                                     func=func,
                                                     **kwargs)
-            self.add_message_handler(handler_dict)
+            self.add_business_message_handler(handler_dict)
             return handler
 
         return decorator
@@ -2399,7 +2416,7 @@ class AsyncTeleBot:
                                                     regexp=regexp,
                                                     func=func,
                                                     **kwargs)
-            self.add_edited_message_handler(handler_dict)
+            self.add_edited_business_message_handler(handler_dict)
             return handler
 
         return decorator
@@ -2415,7 +2432,7 @@ class AsyncTeleBot:
         :param handler_dict:
         :return:
         """
-        self.edited_message_handlers.append(handler_dict)
+        self.edited_business_message_handlers.append(handler_dict)
 
 
     def register_edited_business_message_handler(self, callback: Callable, content_types: Optional[List[str]]=None,

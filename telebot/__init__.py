@@ -8060,7 +8060,7 @@ class TeleBot:
                                                     regexp=regexp,
                                                     func=func,
                                                     **kwargs)
-            self.add_message_handler(handler_dict)
+            self.add_business_message_handler(handler_dict)
             return handler
 
         return decorator
@@ -8151,7 +8151,7 @@ class TeleBot:
                                                     regexp=regexp,
                                                     func=func,
                                                     **kwargs)
-            self.add_edited_message_handler(handler_dict)
+            self.add_edited_business_message_handler(handler_dict)
             return handler
 
         return decorator
@@ -8167,7 +8167,7 @@ class TeleBot:
         :param handler_dict:
         :return:
         """
-        self.edited_message_handlers.append(handler_dict)
+        self.edited_business_message_handlers.append(handler_dict)
 
 
     def register_edited_business_message_handler(self, callback: Callable, content_types: Optional[List[str]]=None,
