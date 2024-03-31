@@ -926,6 +926,10 @@ class Message(JsonDeserializable):
     :param has_protected_content: Optional. :obj:`bool`, if the message can't be forwarded
     :type has_protected_content: :obj:`bool`
 
+    :param is_from_offline: Optional. True, if the message was sent by an implicit action, for example,
+        as an away or a greeting business message, or as a scheduled message
+    :type is_from_offline: :obj:`bool`
+
     :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
     :type media_group_id: :obj:`str`
 
@@ -1356,6 +1360,8 @@ class Message(JsonDeserializable):
             opts['sender_business_bot'] = User.de_json(obj['sender_business_bot'])
         if 'business_connection_id' in obj:
             opts['business_connection_id'] = obj['business_connection_id']
+        if 'is_from_offline' in obj:
+            opts['is_from_offline'] = obj['is_from_offline']
 
 
 
@@ -1463,6 +1469,7 @@ class Message(JsonDeserializable):
         self.reply_to_story: Optional[Story] = None
         self.sender_business_bot: Optional[User] = None
         self.business_connection_id: Optional[str] = None
+        self.is_from_offline: Optional[bool] = None
 
         for key in options:
             setattr(self, key, options[key])
