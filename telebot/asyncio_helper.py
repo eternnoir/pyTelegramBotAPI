@@ -1234,6 +1234,10 @@ async def set_my_commands(token, commands, scope=None, language_code=None):
         payload['language_code'] = language_code
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def get_business_connection(token, business_connection_id):
+    method_url = 'getBusinessConnection'
+    payload = {'business_connection_id': business_connection_id}
+    return await _process_request(token, method_url, params=payload , method='post')
 
 async def delete_my_commands(token, scope=None, language_code=None):
     method_url = r'deleteMyCommands'

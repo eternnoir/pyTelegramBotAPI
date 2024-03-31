@@ -5647,6 +5647,26 @@ class AsyncTeleBot:
         """
         
         return types.ChatAdministratorRights.de_json(await asyncio_helper.get_my_default_administrator_rights(self.token, for_channels))
+    
+    async def get_business_connection(self, business_connection_id: str) -> types.BusinessConnection:
+        """
+        Use this method to get information about the connection of the bot with a business account.
+        Returns a BusinessConnection object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getbusinessconnection
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :return: Returns a BusinessConnection object on success.
+        :rtype: :class:`telebot.types.BusinessConnection`
+        """
+        result = await asyncio_helper.get_business_connection(self.token, business_connection_id)
+
+        return types.BusinessConnection.de_json(
+            result
+        )
+    
 
     async def set_my_commands(self, commands: List[types.BotCommand], 
             scope: Optional[types.BotCommandScope]=None,

@@ -4280,6 +4280,25 @@ class TeleBot:
             apihelper.get_my_default_administrator_rights(self.token, for_channels=for_channels)
         )
 
+
+    def get_business_connection(self, business_connection_id: str) -> types.BusinessConnection:
+        """
+        Use this method to get information about the connection of the bot with a business account.
+        Returns a BusinessConnection object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getbusinessconnection
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :return: Returns a BusinessConnection object on success.
+        :rtype: :class:`telebot.types.BusinessConnection`
+        """
+
+        return types.BusinessConnection.de_json(
+            apihelper.get_business_connection(self.token, business_connection_id)
+        )
+    
         
     def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
@@ -8155,7 +8174,7 @@ class TeleBot:
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_deleted_business_messages_handler(handler_dict)
 
-        
+
 
 
 
