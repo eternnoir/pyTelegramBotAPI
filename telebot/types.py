@@ -2578,16 +2578,29 @@ class KeyboardButtonRequestUsers(Dictionaryable):
     :param max_quantity: Optional. The maximum number of users to be selected; 1-10. Defaults to 1.
     :type max_quantity: :obj:`int`
 
+    :param request_name: Optional. Request name
+    :type request_name: :obj:`bool`
+
+    :param request_username: Optional. Request username
+    :type request_username: :obj:`bool`
+
+    :param request_photo: Optional. Request photo
+    :type request_photo: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonRequestUsers`
     """
     def __init__(
             self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
-            max_quantity: Optional[int]=None) -> None:
+            max_quantity: Optional[int]=None, request_name: Optional[str]=None, request_username: Optional[bool]=None,
+            request_photo: Optional[bool]=None) -> None:
         self.request_id: int = request_id
         self.user_is_bot: Optional[bool] = user_is_bot
         self.user_is_premium: Optional[bool] = user_is_premium
         self.max_quantity: Optional[int] = max_quantity
+        self.request_name: Optional[str] = request_name
+        self.request_username: Optional[bool] = request_username
+        self.request_photo: Optional[bool] = request_photo
 
     def to_dict(self) -> dict:
         data = {'request_id': self.request_id}
@@ -2597,6 +2610,12 @@ class KeyboardButtonRequestUsers(Dictionaryable):
             data['user_is_premium'] = self.user_is_premium
         if self.max_quantity is not None:
             data['max_quantity'] = self.max_quantity
+        if self.request_name is not None:
+            data['request_name'] = self.request_name
+        if self.request_username is not None:
+            data['request_username'] = self.request_username
+        if self.request_photo is not None:
+            data['request_photo'] = self.request_photo
         return data
 
 
@@ -2645,6 +2664,15 @@ class KeyboardButtonRequestChat(Dictionaryable):
     :param bot_is_member: Optional. Pass True to request a chat where the bot is a member. Otherwise, no additional restrictions are applied.
     :type bot_is_member: :obj:`bool`
 
+    :param request_title: Optional. Request title
+    :type request_title: :obj:`bool`
+
+    :param request_photo: Optional. Request photo
+    :type request_photo: :obj:`bool`
+
+    :param request_username: Optional. Request username
+    :type request_username: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonRequestChat`
     """
@@ -2652,7 +2680,8 @@ class KeyboardButtonRequestChat(Dictionaryable):
     def __init__(self, request_id: int, chat_is_channel: bool, chat_is_forum: Optional[bool]=None,
                  chat_has_username: Optional[bool]=None, chat_is_created: Optional[bool]=None,
                  user_administrator_rights: Optional[ChatAdministratorRights]=None,
-                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None) -> None:
+                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None,
+                 request_title: Optional[str]=None, request_photo: Optional[bool]=None, request_username: Optional[bool]=None):
         self.request_id: int = request_id
         self.chat_is_channel: bool = chat_is_channel
         self.chat_is_forum: Optional[bool] = chat_is_forum
@@ -2661,6 +2690,9 @@ class KeyboardButtonRequestChat(Dictionaryable):
         self.user_administrator_rights: Optional[ChatAdministratorRights] = user_administrator_rights
         self.bot_administrator_rights: Optional[ChatAdministratorRights] = bot_administrator_rights
         self.bot_is_member: Optional[bool] = bot_is_member
+        self.request_title: Optional[str] = request_title
+        self.request_photo: Optional[bool] = request_photo
+        self.request_username: Optional[bool] = request_username
 
 
     def to_dict(self) -> dict:
@@ -2677,6 +2709,12 @@ class KeyboardButtonRequestChat(Dictionaryable):
             data['bot_administrator_rights'] = self.bot_administrator_rights.to_dict()
         if self.bot_is_member is not None:
             data['bot_is_member'] = self.bot_is_member
+        if self.request_title is not None:
+            data['request_title'] = self.request_title
+        if self.request_photo is not None:
+            data['request_photo'] = self.request_photo
+        if self.request_username is not None:
+            data['request_username'] = self.request_username
         return data
 
 
