@@ -6308,7 +6308,7 @@ class StickerSet(JsonDeserializable):
             obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumbnail=None, **kwargs):
+    def __init__(self, name, title, sticker_type, stickers, thumbnail=None, is_animated=False, is_video=False, **kwargs):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
