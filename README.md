@@ -815,11 +815,9 @@ Join the [News channel](https://t.me/pyTelegramBotAPI). Here we will post releas
 * [next_step_handler Example](https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/step_example.py)
 
 ## Code Template
-Template is a ready folder that contains architecture of basic project.
-Here are some examples of template:
-	
-* [AsyncTeleBot template](https://github.com/coder2020official/asynctelebot_template)
-* [TeleBot template](https://github.com/coder2020official/telebot_template)
+Here you will find a list of telegram bot templates on telebot:
+
+* [List TeleBot template](https://github.com/Codwizer/list-telebot)
 	
 	
 ## Bots using this library
