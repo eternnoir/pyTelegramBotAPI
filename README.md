@@ -817,7 +817,8 @@ Join the [News channel](https://t.me/pyTelegramBotAPI). Here we will post releas
 ## Code Template
 Template is a ready folder that contains architecture of basic project.
 Here are some examples of template:
-	
+
+* [List Template TeleBot](https://github.com/Codwizer/list-telebot)
 * [AsyncTeleBot template](https://github.com/coder2020official/asynctelebot_template)
 * [TeleBot template](https://github.com/coder2020official/telebot_template)
 	
