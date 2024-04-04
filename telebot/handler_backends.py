@@ -194,7 +194,7 @@ class StatesGroup:
                 state_list.append(value)
         cls._state_list = state_list
 
-    @property
+    @classmethod
     def state_list(self):
         return self._state_list
 
