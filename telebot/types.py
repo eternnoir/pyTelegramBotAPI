@@ -178,6 +178,18 @@ class Update(JsonDeserializable):
     :param removed_chat_boost: Optional. A chat boost was removed. The bot must be an administrator in the chat to receive these updates.
     :type removed_chat_boost: :class:`telebot.types.RemovedChatBoost`
 
+    :param business_connection: Optional. The bot was connected to or disconnected from a business account, or a user edited an existing connection with the bot
+    :type business_connection: :class:`telebot.types.BusinessConnection`
+
+    :param business_message: Optional. New non-service message from a connected business account
+    :type business_message: :class:`telebot.types.Message`
+
+    :param edited_business_message: Optional. New version of a non-service message from a connected business account that is known to the bot and was edited
+    :type edited_business_message: :class:`telebot.types.Message`
+
+    :param deleted_business_messages: Optional. Service message: the chat connected to the business account was deleted
+    :type deleted_business_messages: :class:`telebot.types.Message`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -205,13 +217,20 @@ class Update(JsonDeserializable):
         message_reaction_count = MessageReactionCountUpdated.de_json(obj.get('message_reaction_count'))
         removed_chat_boost = ChatBoostRemoved.de_json(obj.get('removed_chat_boost'))
         chat_boost = ChatBoostUpdated.de_json(obj.get('chat_boost'))
+        business_connection = BusinessConnection.de_json(obj.get('business_connection'))
+        business_message = Message.de_json(obj.get('business_message'))
+        edited_business_message = Message.de_json(obj.get('edited_business_message'))
+        deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
+
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost)
+                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
+                     business_connection, business_message, edited_business_message, deleted_business_messages)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost):
+                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
+                    business_connection, business_message, edited_business_message, deleted_business_messages, **kwargs):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -231,6 +250,11 @@ class Update(JsonDeserializable):
         self.message_reaction_count = message_reaction_count
         self.removed_chat_boost = removed_chat_boost
         self.chat_boost = chat_boost
+        self.business_connection = business_connection
+        self.business_message = business_message
+        self.edited_business_message = edited_business_message
+        self.deleted_business_messages = deleted_business_messages
+
 
 
 class ChatMemberUpdated(JsonDeserializable):
@@ -457,6 +481,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param supports_inline_queries: Optional. True, if the bot supports inline queries. Returned only in getMe.
     :type supports_inline_queries: :obj:`bool`
 
+    :param can_connect_to_business: Optional. True, if the bot can be connected to a Telegram Business account to receive its messages. Returned only in getMe.
+    :type can_connect_to_business: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.User`
     """
@@ -468,7 +495,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, 
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
-                 is_premium=None, added_to_attachment_menu=None, **kwargs):
+                 is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -480,6 +507,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.supports_inline_queries: bool = supports_inline_queries
         self.is_premium: bool = is_premium
         self.added_to_attachment_menu: bool = added_to_attachment_menu
+        self.can_connect_to_business: bool = can_connect_to_business
 
 
     @property
@@ -506,7 +534,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'can_read_all_group_messages': self.can_read_all_group_messages,
                 'supports_inline_queries': self.supports_inline_queries,
                 'is_premium': self.is_premium,
-                'added_to_attachment_menu': self.added_to_attachment_menu}
+                'added_to_attachment_menu': self.added_to_attachment_menu,
+                'can_connect_to_business': self.can_connect_to_business}
+    
 
 
 class GroupChat(JsonDeserializable):
@@ -559,6 +589,21 @@ class Chat(JsonDeserializable):
     :param active_usernames: Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels.
         Returned only in getChat.
     :type active_usernames: :obj:`list` of :obj:`str`
+
+    :param birthdate: Optional. Birthdate of the other party in a private chat. Returned only in getChat.
+    :type birthdate: :obj:`str`
+
+    :param business_intro: Optional. Business intro for the chat. Returned only in getChat.
+    :type business_intro: :class:`telebot.types.BusinessIntro`
+
+    :param business_location: Optional. Business location for the chat. Returned only in getChat.
+    :type business_location: :class:`telebot.types.BusinessLocation`
+
+    :param business_opening_hours : Optional. Business opening hours for the chat. Returned only in getChat.
+    :type business_opening_hours: :class:`telebot.types.BusinessHours`
+
+    :param personal_chat: Optional. For private chats, the personal channel of the user. Returned only in getChat.
+    :type personal_chat: :class:`telebot.types.Chat`
 
     :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels.
         Returned only in getChat.
@@ -687,6 +732,16 @@ class Chat(JsonDeserializable):
             obj['location'] = ChatLocation.de_json(obj['location'])
         if 'available_reactions' in obj:
             obj['available_reactions'] = [ReactionType(reaction) for reaction in obj['available_reactions']]
+        if 'business_intro' in obj:
+            obj['business_intro'] = BusinessIntro.de_json(obj['business_intro'])
+        if 'business_location' in obj:
+            obj['business_location'] = BusinessLocation.de_json(obj['business_location'])
+        if 'business_opening_hours' in obj:
+            obj['business_opening_hours'] = BusinessOpeningHours.de_json(obj['business_opening_hours'])
+        if 'personal_chat' in obj:
+            obj['personal_chat'] = Chat.de_json(obj['personal_chat'])
+        if 'birthdate' in obj:
+            obj['birthdate'] = Birthdate.de_json(obj['birthdate'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -700,7 +755,8 @@ class Chat(JsonDeserializable):
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
-                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, **kwargs):
+                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
+                    business_opening_hours=None, personal_chat=None, birthdate=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -738,6 +794,11 @@ class Chat(JsonDeserializable):
         self.has_visible_history: bool = has_visible_history
         self.unrestrict_boost_count: int = unrestrict_boost_count
         self.custom_emoji_sticker_set_name: str = custom_emoji_sticker_set_name
+        self.business_intro: BusinessIntro = business_intro
+        self.business_location: BusinessLocation = business_location
+        self.business_opening_hours: BusinessOpeningHours = business_opening_hours
+        self.personal_chat: Chat = personal_chat
+        self.birthdate: Birthdate = birthdate
 
 
 
@@ -819,8 +880,15 @@ class Message(JsonDeserializable):
     :param sender_boost_count: Optional. If the sender of the message boosted the chat, the number of boosts added by the user
     :type sender_boost_count: :obj:`int`
 
+    :param sender_business_bot info: Optional. Information about the business bot that sent the message
+    :type sender_business_bot_info: :class:`telebot.types.User`
+
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
+
+    :param business_connection_id: Optional. Unique identifier of the business connection from which the message was received. If non-empty,
+        the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier.
+    :type business_connection_id: :obj:`str`
 
     :param chat: Conversation the message belongs to
     :type chat: :class:`telebot.types.Chat`
@@ -875,6 +943,10 @@ class Message(JsonDeserializable):
 
     :param has_protected_content: Optional. :obj:`bool`, if the message can't be forwarded
     :type has_protected_content: :obj:`bool`
+
+    :param is_from_offline: Optional. True, if the message was sent by an implicit action, for example,
+        as an away or a greeting business message, or as a scheduled message
+    :type is_from_offline: :obj:`bool`
 
     :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
     :type media_group_id: :obj:`str`
@@ -1302,6 +1374,13 @@ class Message(JsonDeserializable):
             opts['sender_boost_count'] = obj['sender_boost_count']
         if 'reply_to_story' in obj:
             opts['reply_to_story'] = Story.de_json(obj['reply_to_story'])
+        if 'sender_business_bot' in obj:
+            opts['sender_business_bot'] = User.de_json(obj['sender_business_bot'])
+        if 'business_connection_id' in obj:
+            opts['business_connection_id'] = obj['business_connection_id']
+        if 'is_from_offline' in obj:
+            opts['is_from_offline'] = obj['is_from_offline']
+
 
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1406,6 +1485,9 @@ class Message(JsonDeserializable):
         self.boost_added: Optional[ChatBoostAdded] = None
         self.sender_boost_count: Optional[int] = None
         self.reply_to_story: Optional[Story] = None
+        self.sender_business_bot: Optional[User] = None
+        self.business_connection_id: Optional[str] = None
+        self.is_from_offline: Optional[bool] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -2521,16 +2603,29 @@ class KeyboardButtonRequestUsers(Dictionaryable):
     :param max_quantity: Optional. The maximum number of users to be selected; 1-10. Defaults to 1.
     :type max_quantity: :obj:`int`
 
+    :param request_name: Optional. Request name
+    :type request_name: :obj:`bool`
+
+    :param request_username: Optional. Request username
+    :type request_username: :obj:`bool`
+
+    :param request_photo: Optional. Request photo
+    :type request_photo: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonRequestUsers`
     """
     def __init__(
             self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
-            max_quantity: Optional[int]=None) -> None:
+            max_quantity: Optional[int]=None, request_name: Optional[str]=None, request_username: Optional[bool]=None,
+            request_photo: Optional[bool]=None) -> None:
         self.request_id: int = request_id
         self.user_is_bot: Optional[bool] = user_is_bot
         self.user_is_premium: Optional[bool] = user_is_premium
         self.max_quantity: Optional[int] = max_quantity
+        self.request_name: Optional[str] = request_name
+        self.request_username: Optional[bool] = request_username
+        self.request_photo: Optional[bool] = request_photo
 
     def to_dict(self) -> dict:
         data = {'request_id': self.request_id}
@@ -2540,6 +2635,12 @@ class KeyboardButtonRequestUsers(Dictionaryable):
             data['user_is_premium'] = self.user_is_premium
         if self.max_quantity is not None:
             data['max_quantity'] = self.max_quantity
+        if self.request_name is not None:
+            data['request_name'] = self.request_name
+        if self.request_username is not None:
+            data['request_username'] = self.request_username
+        if self.request_photo is not None:
+            data['request_photo'] = self.request_photo
         return data
 
 
@@ -2588,6 +2689,15 @@ class KeyboardButtonRequestChat(Dictionaryable):
     :param bot_is_member: Optional. Pass True to request a chat where the bot is a member. Otherwise, no additional restrictions are applied.
     :type bot_is_member: :obj:`bool`
 
+    :param request_title: Optional. Request title
+    :type request_title: :obj:`bool`
+
+    :param request_photo: Optional. Request photo
+    :type request_photo: :obj:`bool`
+
+    :param request_username: Optional. Request username
+    :type request_username: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonRequestChat`
     """
@@ -2595,7 +2705,8 @@ class KeyboardButtonRequestChat(Dictionaryable):
     def __init__(self, request_id: int, chat_is_channel: bool, chat_is_forum: Optional[bool]=None,
                  chat_has_username: Optional[bool]=None, chat_is_created: Optional[bool]=None,
                  user_administrator_rights: Optional[ChatAdministratorRights]=None,
-                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None) -> None:
+                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None,
+                 request_title: Optional[str]=None, request_photo: Optional[bool]=None, request_username: Optional[bool]=None):
         self.request_id: int = request_id
         self.chat_is_channel: bool = chat_is_channel
         self.chat_is_forum: Optional[bool] = chat_is_forum
@@ -2604,6 +2715,9 @@ class KeyboardButtonRequestChat(Dictionaryable):
         self.user_administrator_rights: Optional[ChatAdministratorRights] = user_administrator_rights
         self.bot_administrator_rights: Optional[ChatAdministratorRights] = bot_administrator_rights
         self.bot_is_member: Optional[bool] = bot_is_member
+        self.request_title: Optional[str] = request_title
+        self.request_photo: Optional[bool] = request_photo
+        self.request_username: Optional[bool] = request_username
 
 
     def to_dict(self) -> dict:
@@ -2620,6 +2734,12 @@ class KeyboardButtonRequestChat(Dictionaryable):
             data['bot_administrator_rights'] = self.bot_administrator_rights.to_dict()
         if self.bot_is_member is not None:
             data['bot_is_member'] = self.bot_is_member
+        if self.request_title is not None:
+            data['request_title'] = self.request_title
+        if self.request_photo is not None:
+            data['request_photo'] = self.request_photo
+        if self.request_username is not None:
+            data['request_username'] = self.request_username
         return data
 
 
@@ -7813,6 +7933,15 @@ class ChatShared(JsonDeserializable):
         and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
     :type chat_id: :obj:`int`
 
+    :param title: Optional. Title of the shared chat
+    :type title: :obj:`str`
+
+    :param photo: Optional. Array of Photosize
+    :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
+
+    :param username: Optional. Username of the shared chat
+    :type username: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatShared`
     """
@@ -7823,9 +7952,13 @@ class ChatShared(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, request_id: int, chat_id: int, **kwargs) -> None:
+    def __init__(self, request_id: int, chat_id: int, title: Optional[str]=None, photo: Optional[List[PhotoSize]]=None,
+                    username: Optional[str]=None, **kwargs) -> None:
         self.request_id: int = request_id
         self.chat_id: int = chat_id
+        self.title: Optional[str] = title
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.username: Optional[str] = username
 
 
 class BotDescription(JsonDeserializable):
@@ -7893,15 +8026,19 @@ class InputSticker(Dictionaryable, JsonSerializable):
         For “regular” and “custom_emoji” stickers only.
     :type keywords: :obj:`list` of :obj:`str`
 
+    :param format: 	Format of the added sticker, must be one of “static” for a .WEBP or .PNG image, “animated” for a .TGS animation, “video” for a WEBM video
+    :type format: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputSticker`
     """
 
-    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str], mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
+    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str],  format: str, mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
         self.sticker: Union[str, InputFile] = sticker
         self.emoji_list: List[str] = emoji_list
         self.mask_position: Optional[MaskPosition] = mask_position
         self.keywords: Optional[List[str]] = keywords
+        self.format: str = format
 
         if service_utils.is_string(self.sticker):
             self._sticker_name = ''
@@ -7916,7 +8053,8 @@ class InputSticker(Dictionaryable, JsonSerializable):
     def to_dict(self) -> dict:
         json_dict = {
             'sticker': self._sticker_dic,
-            'emoji_list': self.emoji_list
+            'emoji_list': self.emoji_list,
+            'format': self.format
         }
 
         if self.mask_position is not None:
@@ -8943,13 +9081,13 @@ class UsersShared(JsonDeserializable):
     :param request_id: Identifier of the request
     :type request_id: :obj:`int`
 
-    :param user_ids: Identifiers of the shared users. These numbers may have more than 32 significant bits
+    :param user_ids: Array of :obj:`types.SharedUser` of the shared users. These numbers may have more than 32 significant bits
                      and some programming languages may have difficulty/silent defects in interpreting them.
                      But they have at most 52 significant bits, so 64-bit integers or double-precision float
                      types are safe for storing these identifiers. The bot may not have access to the users and
                      could be unable to use these identifiers unless the users are already known to the bot by
                      some other means.
-    :type user_ids: :obj:`list` of :obj:`int`
+    :type user_ids: :obj:`list` of :obj:`types.SharedUser`
 
     :return: Instance of the class
     :rtype: :class:`UsersShared`
@@ -8958,9 +9096,12 @@ class UsersShared(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
+
+        obj['user_ids'] = [SharedUser.de_json(user) for user in obj['user_ids']]
+
         return cls(**obj)
 
-    def __init__(self, request_id, user_ids, **kwargs):
+    def __init__(self, request_id, user_ids: SharedUser, **kwargs):
         self.request_id = request_id
         self.user_ids = user_ids
 
@@ -9308,3 +9449,273 @@ class ChatBoostAdded(JsonDeserializable):
     
     def __init__(self, boost_count, **kwargs):
         self.boost_count: int = boost_count
+
+
+
+class BusinessConnection(JsonDeserializable):
+    """
+    This object describes the connection of the bot with a business account.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessconnection
+
+    :param id: Unique identifier of the business connection
+    :type id: :obj:`str`
+
+    :param user: Business account user that created the business connection
+    :type user: :class:`User`
+
+    :param user_chat_id: Identifier of a private chat with the user who created the business connection
+    :type user_chat_id: :obj:`int`
+
+    :param date: Date the connection was established in Unix time
+    :type date: :obj:`int`
+
+    :param can_reply: True, if the bot can act on behalf of the business account in chats that were active in the last 24 hours
+    :type can_reply: :obj:`bool`
+
+    :param is_enabled: True, if the connection is active
+    :type is_enabled: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessConnection`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+    
+    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled, **kwargs):
+        self.id: str = id
+        self.user: User = user
+        self.user_chat_id: int = user_chat_id
+        self.date: int = date
+        self.can_reply: bool = can_reply
+        self.is_enabled: bool = is_enabled
+
+
+
+class BusinessMessagesDeleted(JsonDeserializable):
+    """
+    This object is received when messages are deleted from a connected business account.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessmessagesdeleted
+
+    :param business_connection_id: Unique identifier of the business connection
+    :type business_connection_id: :obj:`str`
+
+    :param chat: Information about a chat in the business account. The bot may not have access to the chat or the corresponding user.
+    :type chat: :class:`Chat`
+
+    :param message_ids: A JSON-serialized list of identifiers of deleted messages in the chat of the business account
+    :type message_ids: :obj:`list` of :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessMessagesDeleted`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
+        return cls(**obj)
+    
+
+    def __init__(self, business_connection_id, chat, message_ids, **kwargs):
+        self.business_connection_id: str = business_connection_id
+        self.chat: Chat = chat
+        self.message_ids: List[int] = message_ids
+        
+
+class BusinessIntro(JsonDeserializable):
+    """
+    This object represents a business intro.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessintro
+
+    :param title: Optional. Title text of the business intro
+    :type title: :obj:`str`
+
+    :param message: Optional. Message text of the business intro
+    :type message: :obj:`str`
+
+    :param sticker: Optional. Sticker of the business intro
+    :type sticker: :class:`Sticker`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessIntro`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'sticker' in obj:
+            obj['sticker'] = Sticker.de_json(obj['sticker'])
+        return cls(**obj)
+    
+    def __init__(self, title=None, message=None, sticker=None, **kwargs):
+        self.title: Optional[str] = title
+        self.message: Optional[str] = message
+        self.sticker: Optional[Sticker] = sticker
+
+
+class BusinessLocation(JsonDeserializable):
+    """
+    This object represents a business location.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businesslocation
+
+    :param address: Address of the business
+    :type address: :obj:`str`
+
+    :param location: Optional. Location of the business
+    :type location: :class:`Location`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessLocation`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'location' in obj:
+            obj['location'] = Location.de_json(obj['location'])
+        return cls(**obj)
+    
+    def __init__(self, address, location=None, **kwargs):
+        self.address: str = address
+        self.location: Optional[Location] = location
+
+
+class BusinessOpeningHoursInterval(JsonDeserializable):
+    """
+    This object represents a business opening hours interval.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessopeninghoursinterval
+
+    :param opening_minute: The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7 24 60
+    :type opening_minute: :obj:`int`
+
+    :param closing_minute: The minute's sequence number in a week, starting on Monday, marking the end of the time interval during which the business is open; 0 - 8 24 60
+    :type closing_minute: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessOpeningHoursInterval`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, opening_minute, closing_minute, **kwargs):
+        self.opening_minute: int = opening_minute
+        self.closing_minute: int = closing_minute
+
+
+class BusinessOpeningHours(JsonDeserializable):
+    """
+
+    This object represents business opening hours.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessopeninghours
+
+    :param time_zone_name: Unique name of the time zone for which the opening hours are defined
+    :type time_zone_name: :obj:`str`
+
+    :param opening_hours: List of time intervals describing business opening hours
+    :type opening_hours: :obj:`list` of :class:`BusinessOpeningHoursInterval`
+
+    :return: Instance of the class
+
+    :rtype: :class:`BusinessOpeningHours`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['opening_hours'] = [BusinessOpeningHoursInterval.de_json(interval) for interval in obj['opening_hours']]
+        return cls(**obj)
+    
+    def __init__(self, time_zone_name, opening_hours, **kwargs):
+        self.time_zone_name: str = time_zone_name
+        self.opening_hours: List[BusinessOpeningHoursInterval] = opening_hours
+
+
+class SharedUser(JsonDeserializable):
+    """
+    This object contains information about a user that was shared with the bot using a KeyboardButtonRequestUser button.
+
+    Telegram documentation: https://core.telegram.org/bots/api#shareduser
+
+    :param user_id: Identifier of the shared user. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so 64-bit integers or double-precision float types are safe for storing these identifiers. The bot may not have access to the user and could be unable to use this identifier, unless the user is already known to the bot by some other means.
+    :type user_id: :obj:`int`
+
+    :param first_name: Optional. First name of the user, if the name was requested by the bot
+    :type first_name: :obj:`str`
+
+    :param last_name: Optional. Last name of the user, if the name was requested by the bot
+    :type last_name: :obj:`str`
+
+    :param username: Optional. Username of the user, if the username was requested by the bot
+    :type username: :obj:`str`
+
+    :param photo: Optional. Available sizes of the chat photo, if the photo was requested by the bot
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :return: Instance of the class
+    :rtype: :class:`SharedUser`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        return cls(**obj)
+    
+    def __init__(self, user_id, first_name=None, last_name=None, username=None, photo=None, **kwargs):
+        self.user_id: int = user_id
+        self.first_name: Optional[str] = first_name
+        self.last_name: Optional[str] = last_name
+        self.username: Optional[str] = username
+        self.photo: Optional[List[PhotoSize]] = photo
+
+
+class Birthdate(JsonDeserializable):
+    """
+    This object represents a user's birthdate.
+
+    Telegram documentation: https://core.telegram.org/bots/api#birthdate
+
+    :param day: Day of the user's birth; 1-31
+    :type day: :obj:`int`
+
+    :param month: Month of the user's birth; 1-12
+    :type month: :obj:`int`
+
+    :param year: Optional. Year of the user's birth
+    :type year: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Birthdate`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+    def __init__(self, day, month, year=None, **kwargs):
+        self.day: int = day
+        self.month: int = month
+        self.year: Optional[int] = year
