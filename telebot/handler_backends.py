@@ -198,6 +198,10 @@ class StatesGroup:
     def state_list(self):
         return self._state_list
 
+    @classmethod
+    def all_states(cls):
+        return cls._state_list
+
 
 class BaseMiddleware:
     """
