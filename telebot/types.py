@@ -900,7 +900,6 @@ class Message(JsonDeserializable):
     :type forward_from_chat: :class:`telebot.types.Chat`
 
     :param forward_from_message_id: deprecated.
-        message in the channel
     :type forward_from_message_id: :obj:`int`
 
     :param forward_signature: deprecated.
@@ -6396,10 +6395,10 @@ class StickerSet(JsonDeserializable):
     :param sticker_type: Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”
     :type sticker_type: :obj:`str`
 
-    :param is_animated: True, if the sticker set contains animated stickers
+    :param is_animated:  deprecated
     :type is_animated: :obj:`bool`
 
-    :param is_video: True, if the sticker set contains video stickers
+    :param is_video:  deprecated
     :type is_video: :obj:`bool`
 
     :param contains_masks: deprecated
@@ -6428,14 +6427,19 @@ class StickerSet(JsonDeserializable):
             obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumbnail=None, **kwargs):
+    def __init__(self, name, title, sticker_type, is_animated=None, is_video=None, stickers=None, thumbnail=None, **kwargs):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
-        self.is_animated: bool = is_animated
-        self.is_video: bool = is_video
         self.stickers: List[Sticker] = stickers
         self.thumbnail: PhotoSize = thumbnail
+
+        if is_animated is not None:
+            logger.warning('The parameter "is_animated" is deprecated.')
+        if is_video is not None:
+            logger.warning('The parameter "is_video" is deprecated.')
+        if stickers is None:
+            raise ValueError('The parameter "stickers" is required for StickerSet.')
 
     @property
     def thumb(self):
@@ -8033,12 +8037,17 @@ class InputSticker(Dictionaryable, JsonSerializable):
     :rtype: :class:`telebot.types.InputSticker`
     """
 
-    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str],  format: str, mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
+    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str],  format: Optional[str]=None,
+                 mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
         self.sticker: Union[str, InputFile] = sticker
         self.emoji_list: List[str] = emoji_list
         self.mask_position: Optional[MaskPosition] = mask_position
         self.keywords: Optional[List[str]] = keywords
         self.format: str = format
+
+        if not self.format:
+            logger.warning("Deprecation warning. 'format' parameter is required in InputSticker. Setting format to 'static'.")
+            self.format = "static"
 
         if service_utils.is_string(self.sticker):
             self._sticker_name = ''

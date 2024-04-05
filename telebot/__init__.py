@@ -213,6 +213,7 @@ class TeleBot:
         # handlers
         self.exception_handler = exception_handler
         self.update_listener = []
+
         self.message_handlers = []
         self.edited_message_handlers = []
         self.channel_post_handlers = []
@@ -247,6 +248,8 @@ class TeleBot:
                 'edited_message': [],
                 'channel_post': [],
                 'edited_channel_post': [],
+                'message_reaction': [],
+                'message_reaction_count': [],
                 'inline_query': [],
                 'chosen_inline_result': [],
                 'callback_query': [],
@@ -256,7 +259,13 @@ class TeleBot:
                 'poll_answer': [],
                 'my_chat_member': [],
                 'chat_member': [],
-                'chat_join_request': []
+                'chat_join_request': [],
+                'chat_boost': [],
+                'removed_chat_boost': [],
+                'business_connection': [],
+                'business_message': [],
+                'edited_business_message': [],
+                'deleted_business_messages': [],
             }
             self.default_middleware_handlers = []
         if apihelper.ENABLE_MIDDLEWARE and use_class_middlewares:
@@ -5570,8 +5579,8 @@ class TeleBot:
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
-        if format is None:
-            logger.warning("Format in set_sticker_set_thumbnail cannot be None. Setting format to 'static'.")
+        if not format:
+            logger.warning("Deprecation warning. 'format' parameter is required in set_sticker_set_thumbnail. Setting format to 'static'.")
             format = "static"
 
         return apihelper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail, format)
@@ -5856,7 +5865,7 @@ class TeleBot:
         :param stickers: List of stickers to be added to the set
         :type stickers: :obj:`list` of :class:`telebot.types.InputSticker`
 
-        :param sticker_format: Format of stickers in the set, must be one of “static”, “animated”, “video”
+        :param sticker_format: deprecated
         :type sticker_format: :obj:`str`
 
         :return: On success, True is returned.
@@ -5880,9 +5889,11 @@ class TeleBot:
                 raise ValueError('You must pass at least one sticker')
             stickers = [types.InputSticker(sticker=stickers, emoji_list=emojis, mask_position=mask_position)]
 
+        if sticker_format:
+            logger.warning('The parameter "sticker_format" is deprecated.')
+
         return apihelper.create_new_sticker_set(
-            self.token, user_id, name, title, stickers, sticker_format, sticker_type=sticker_type,
-            needs_repainting=needs_repainting)
+            self.token, user_id, name, title, stickers, sticker_type=sticker_type, needs_repainting=needs_repainting)
 
 
     def add_sticker_to_set(

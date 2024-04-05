@@ -1481,7 +1481,7 @@ async def send_invoice(
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None,  reply_markup=None, provider_data=None,
         timeout=None,  max_tip_amount=None, suggested_tip_amounts=None,
-        protect_content=None, message_thread_id=None,reply_parameters=None):
+        protect_content=None, message_thread_id=None, reply_parameters=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1513,6 +1513,7 @@ async def send_invoice(
         At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
     :param protect_content: Protects the contents of the sent message from forwarding and saving
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+    :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
     :return:
     """
     method_url = r'sendInvoice'
@@ -1648,7 +1649,7 @@ async def answer_inline_query(token, inline_query_id, results, cache_time=None, 
         payload['next_offset'] = next_offset
     if button is not None:
         payload["button"] = button.to_json()
-    
+
 
     return await _process_request(token, method_url, params=payload, method='post')
 
@@ -1706,12 +1707,12 @@ async def set_sticker_set_title(token, name, title):
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def create_new_sticker_set(
-        token, user_id, name, title, stickers, sticker_format, sticker_type=None, needs_repainting=None):
+        token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
-    payload = {'user_id': user_id, 'name': name, 'title': title, 'sticker_format': sticker_format}
+    payload = {'user_id': user_id, 'name': name, 'title': title}
     if sticker_type:
         payload['sticker_type'] = sticker_type
-    if needs_repainting:
+    if needs_repainting is not None:
         payload['needs_repainting'] = needs_repainting
 
     files = {}
@@ -1728,7 +1729,7 @@ async def create_new_sticker_set(
     
     payload['stickers'] = json.dumps(lst)
 
-    
+
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1736,7 +1737,7 @@ async def add_sticker_to_set(token, user_id, name, sticker):
     method_url = 'addStickerToSet'
     json_dict, files = sticker.convert_input_sticker()
     payload = {'user_id': user_id, 'name': name, 'sticker': json_dict}
-    
+
 
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
