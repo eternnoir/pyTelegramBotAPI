@@ -5890,7 +5890,7 @@ class TeleBot:
             stickers = [types.InputSticker(sticker=stickers, emoji_list=emojis, mask_position=mask_position)]
 
         if sticker_format:
-            logger.warning('The parameter "sticker_format" is deprecated since Bot API 7.2+. Stickers can now be mixed')
+            logger.warning('The parameter "sticker_format" is deprecated since Bot API 7.2. Stickers can now be mixed')
 
         return apihelper.create_new_sticker_set(
             self.token, user_id, name, title, stickers, sticker_type=sticker_type, needs_repainting=needs_repainting)

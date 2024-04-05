@@ -6395,15 +6395,6 @@ class StickerSet(JsonDeserializable):
     :param sticker_type: Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”
     :type sticker_type: :obj:`str`
 
-    :param is_animated:  deprecated
-    :type is_animated: :obj:`bool`
-
-    :param is_video:  deprecated
-    :type is_video: :obj:`bool`
-
-    :param contains_masks: deprecated
-    :type contains_masks: :obj:`bool`
-
     :param stickers: List of all set stickers
     :type stickers: :obj:`list` of :class:`telebot.types.Sticker`
 
@@ -6427,19 +6418,12 @@ class StickerSet(JsonDeserializable):
             obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, name, title, sticker_type, is_animated=None, is_video=None, stickers=None, thumbnail=None, **kwargs):
+    def __init__(self, name, title, sticker_type, stickers, thumbnail=None, **kwargs):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
         self.stickers: List[Sticker] = stickers
         self.thumbnail: PhotoSize = thumbnail
-
-        if is_animated is not None:
-            logger.warning('The parameter "is_animated" is deprecated.')
-        if is_video is not None:
-            logger.warning('The parameter "is_video" is deprecated.')
-        if stickers is None:
-            raise ValueError('The parameter "stickers" is required for StickerSet.')
 
     @property
     def thumb(self):
@@ -6453,6 +6437,22 @@ class StickerSet(JsonDeserializable):
         """
         logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type instead"')
         return self.sticker_type == 'mask'
+
+    @property
+    def is_animated(self):
+        """
+        Deprecated since Bot API 7.2. Stickers can be mixed now.
+        """
+        logger.warning('The parameter "is_animated" is deprecated since Bot API 7.2. Stickers can now be mixed')
+        return False
+
+    @property
+    def is_video(self):
+        """
+        Deprecated since Bot API 7.2. Stickers can be mixed now.
+        """
+        logger.warning('The parameter "is_video" is deprecated since Bot API 7.2. Stickers can now be mixed')
+        return False
 
 
 class Sticker(JsonDeserializable):
