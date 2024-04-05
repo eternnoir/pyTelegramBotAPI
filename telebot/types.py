@@ -893,24 +893,6 @@ class Message(JsonDeserializable):
     :param chat: Conversation the message belongs to
     :type chat: :class:`telebot.types.Chat`
 
-    :param forward_from: deprecated.
-    :type forward_from: :class:`telebot.types.User`
-
-    :param forward_from_chat: deprecated.
-    :type forward_from_chat: :class:`telebot.types.Chat`
-
-    :param forward_from_message_id: deprecated.
-    :type forward_from_message_id: :obj:`int`
-
-    :param forward_signature: deprecated.
-    :type forward_signature: :obj:`str`
-
-    :param forward_sender_name: deprecated.
-    :type forward_sender_name: :obj:`str`
-
-    :param forward_date: deprecated.
-    :type forward_date: :obj:`int`
-
     :forward_origin: Optional. For forwarded messages, information about the original message;
     :type forward_origin: :class:`telebot.types.MessageOrigin`
 
