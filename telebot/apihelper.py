@@ -1708,23 +1708,26 @@ def set_sticker_set_title(token, name, title):
     payload = {'name': name, 'title': title}
     return _make_request(token, method_url, params=payload, method='post')
 
+
 def delete_sticker_set(token, name):
     method_url = 'deleteStickerSet'
     payload = {'name': name}
     return _make_request(token, method_url, params=payload, method='post')
+
 
 def set_sticker_emoji_list(token, sticker, emoji_list):
     method_url = 'setStickerEmojiList'
     payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}
     return _make_request(token, method_url, params=payload, method='post')
 
+
 def create_new_sticker_set(
-        token, user_id, name, title, stickers, sticker_format, sticker_type=None, needs_repainting=None):
+        token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
-    payload = {'user_id': user_id, 'name': name, 'title': title, 'sticker_format': sticker_format}
+    payload = {'user_id': user_id, 'name': name, 'title': title}
     if sticker_type:
         payload['sticker_type'] = sticker_type
-    if needs_repainting:
+    if needs_repainting is not None:
         payload['needs_repainting'] = needs_repainting
 
     files = {}
@@ -1741,8 +1744,6 @@ def create_new_sticker_set(
     
     payload['stickers'] = json.dumps(lst)
 
-
-
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1750,7 +1751,6 @@ def add_sticker_to_set(token, user_id, name, sticker):
     method_url = 'addStickerToSet'
     json_dict, files = sticker.convert_input_sticker()
     payload = {'user_id': user_id, 'name': name, 'sticker': json_dict}
-
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 

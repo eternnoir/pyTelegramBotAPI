@@ -6907,8 +6907,8 @@ class AsyncTeleBot:
         :return: On success, True is returned.
         :rtype: :obj:`bool`
         """
-        if format is None:
-            logger.warning("Format in set_sticker_set_thumbnail cannot be None. Setting format to 'static'.")
+        if not format:
+            logger.warning("Deprecation warning. 'format' parameter is required in set_sticker_set_thumbnail. Setting format to 'static'.")
             format = "static"
         return await asyncio_helper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail, format)
     
@@ -7184,7 +7184,7 @@ class AsyncTeleBot:
         :param stickers: List of stickers to be added to the set
         :type stickers: :obj:`list` of :class:`telebot.types.InputSticker`
 
-        :param sticker_format: Format of stickers in the set, must be one of “static”, “animated”, “video”
+        :param sticker_format: deprecated
         :type sticker_format: :obj:`str`
 
         :return: On success, True is returned.
@@ -7208,10 +7208,11 @@ class AsyncTeleBot:
                 raise ValueError('You must pass at least one sticker')
             stickers = [types.InputSticker(sticker=stickers, emoji_list=emojis, mask_position=mask_position)]
             
+        if sticker_format:
+            logger.warning('The parameter "sticker_format" is deprecated since Bot API 7.2. Stickers can now be mixed')
 
-               
         return await asyncio_helper.create_new_sticker_set(
-            self.token, user_id, name, title, stickers, sticker_format, sticker_type, needs_repainting)
+            self.token, user_id, name, title, stickers, sticker_type, needs_repainting)
 
 
     async def add_sticker_to_set(
