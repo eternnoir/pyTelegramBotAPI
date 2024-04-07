@@ -175,10 +175,10 @@ class TestTeleBot:
         assert ret_msg.message_id
 
     def test_send_video_dis_noti(self):
-        file_data = open('./test_data/test_video.mp4', 'rb')
-        tb = telebot.TeleBot(TOKEN)
-        ret_msg = tb.send_video(CHAT_ID, file_data, disable_notification=True)
-        assert ret_msg.message_id
+        with open('./test_data/test_video.mp4', 'rb') as file_data:
+            tb = telebot.TeleBot(TOKEN)
+            ret_msg = tb.send_video(CHAT_ID, file_data, disable_notification=True)
+            assert ret_msg.message_id
 
     def test_send_video_more_params(self):
         file_data = open('./test_data/test_video.mp4', 'rb')
@@ -542,9 +542,13 @@ let number = loop {
         my_chat_member = None
         chat_member = None
         chat_join_request = None
+        message_reaction = None
+        message_reaction_count = None
+        chat_boost = None
+        chat_boost_removed = None
         return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
                             chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                            my_chat_member, chat_member, chat_join_request)
+                            my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, chat_boost, chat_boost_removed)
 
     def test_is_string_unicode(self):
         s1 = u'string'

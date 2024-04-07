@@ -10,7 +10,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api-changelog#september-22-2023">6.9</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#march-31-2024">7.2</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>
@@ -69,7 +69,7 @@
 
 ## Getting started
 
-This API is tested with Python 3.8-3.11 and Pypy 3.
+This API is tested with Python 3.8-3.12 and Pypy 3.
 There are two ways to install the library:
 
 * Installation using pip (a Python package manager):
@@ -79,12 +79,6 @@ $ pip install pyTelegramBotAPI
 ```
 * Installation from source (requires git):
 
-```
-$ git clone https://github.com/eternnoir/pyTelegramBotAPI.git
-$ cd pyTelegramBotAPI
-$ python setup.py install
-```
-or:
 ```
 $ pip install git+https://github.com/eternnoir/pyTelegramBotAPI.git
 ```
@@ -165,7 +159,7 @@ To start the bot, simply open up a terminal and enter `python echo_bot.py` to ru
 All types are defined in types.py. They are all completely in line with the [Telegram API's definition of the types](https://core.telegram.org/bots/api#available-types), except for the Message's `from` field, which is renamed to `from_user` (because `from` is a Python reserved token). Thus, attributes such as `message_id` can be accessed directly with `message.message_id`. Note that `message.chat` can be either an instance of `User` or `GroupChat` (see [How can I distinguish a User and a GroupChat in message.chat?](#how-can-i-distinguish-a-user-and-a-groupchat-in-messagechat)).
 
 The Message object also has a `content_type`attribute, which defines the type of the Message. `content_type` can be one of the following strings:
-`text`, `audio`, `document`, `photo`, `sticker`, `video`, `video_note`, `voice`, `location`, `contact`, `new_chat_members`, `left_chat_member`, `new_chat_title`, `new_chat_photo`, `delete_chat_photo`, `group_chat_created`, `supergroup_chat_created`, `channel_chat_created`, `migrate_to_chat_id`, `migrate_from_chat_id`, `pinned_message`, `web_app_data`.
+`text`, `audio`, `document`, `animation`, `game`, `photo`, `sticker`, `video`, `video_note`, `voice`, `location`, `contact`, `venue`, `dice`, `new_chat_members`, `left_chat_member`, `new_chat_title`, `new_chat_photo`, `delete_chat_photo`, `group_chat_created`, `supergroup_chat_created`, `channel_chat_created`, `migrate_to_chat_id`, `migrate_from_chat_id`, `pinned_message`, `invoice`, `successful_payment`, `connected_website`, `poll`, `passport_data`, `proximity_alert_triggered`, `video_chat_scheduled`, `video_chat_started`, `video_chat_ended`, `video_chat_participants_invited`, `web_app_data`, `message_auto_delete_timer_changed`, `forum_topic_created`, `forum_topic_closed`, `forum_topic_reopened`, `forum_topic_edited`, `general_forum_topic_hidden`, `general_forum_topic_unhidden`, `write_access_allowed`, `user_shared`, `chat_shared`, `story`.
 
 You can use some types in one function. Example:
 
@@ -894,5 +888,7 @@ Here are some examples of template:
 * [AwesomeChatGPTBot](https://github.com/Kourva/AwesomeChatGPTBot) - Simple ChatGTP-3.5 bot. It is FREE and can remember chat history for a while With pre-defined roles!
 * [QR-Code For You Bot](https://t.me/qrcode_for_you_bot) ([source](https://github.com/arashnm80/qrcode-for-you-bot)) by [Arashnm80](https://github.com/arashnm80). Telegram qrcode generator bot created with pyhton and telebot.
 * [Best Instagram Downloader Bot](https://t.me/Best_Instagram_Downloader_Bot) ([source](https://github.com/arashnm80/best-instagram-downloader)) by [Arashnm80](https://github.com/arashnm80). Free and open source telegram bot to download posts and reels from Instagram.
+* [4K YouTube Downloader](https://github.com/hansanaD/TelegramYTDLBot/) - Youtube Downloader with upto 4K resolution support. 
+* [DrinkGenius-Bot](https://t.me/cocktail_recommendation_bot) ([source](https://github.com/Povladarchik/DrinkGenius-Bot)) by [Povladarchik](https://github.com/Povladarchik). Your personal assistant in the world of cocktails.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**

@@ -149,6 +149,8 @@ class TextFilter:
             text = obj.question
         elif isinstance(obj, types.Message):
             text = obj.text or obj.caption
+            if text is None:
+                return False
         elif isinstance(obj, types.CallbackQuery):
             text = obj.data
         elif isinstance(obj, types.InlineQuery):
