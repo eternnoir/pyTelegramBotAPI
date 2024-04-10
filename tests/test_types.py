@@ -306,6 +306,8 @@ def test_message_entity():
     assert message_6.html_text == "&lt;b&gt;b&lt;/b&gt; &lt;i&gt;i&lt;/i&gt;"
 
 
-
+    sample_string_7 = r'{"update_id":934522167,"message":{"message_id":1374526,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179716,"reply_to_message":{"message_id":1374510,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en"},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1712765863,"text":"text @UserName b i s u c p #hashtag https://example.com","entities":[{"offset":5,"length":9,"type":"mention"},{"offset":15,"length":1,"type":"bold"},{"offset":17,"length":1,"type":"italic"},{"offset":19,"length":1,"type":"strikethrough"},{"offset":21,"length":1,"type":"underline"},{"offset":23,"length":1,"type":"code"},{"offset":25,"length":1,"type":"spoiler"},{"offset":27,"length":8,"type":"hashtag"},{"offset":36,"length":19,"type":"url"}],"link_preview_options":{"is_disabled":true}},"quote":{"text":"text @UserName b i s u c p #hashtag https://example.com","entities":[{"offset":15,"length":1,"type":"bold"},{"offset":17,"length":1,"type":"italic"},{"offset":19,"length":1,"type":"strikethrough"},{"offset":21,"length":1,"type":"underline"},{"offset":25,"length":1,"type":"spoiler"}],"position":0,"is_manual":true},"text":"quote reply"}}'
+    message_7 = types.Update.de_json(sample_string_7).message
+    assert message_7.quote.html_text == 'text @UserName <b>b</b> <i>i</i> <s>s</s> <u>u</u> c <span class="tg-spoiler">p</span> #hashtag https://example.com'
 
 
