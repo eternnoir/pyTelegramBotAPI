@@ -1018,7 +1018,7 @@ class AsyncTeleBot:
 
     def message_handler(self, commands=None, regexp=None, func=None, content_types=None, chat_types=None, **kwargs):
         """
-        Handles ew incoming message of any kind - text, photo, sticker, etc.
+        Handles new incoming message of any kind - text, photo, sticker, etc.
         As a parameter to the decorator function, it passes :class:`telebot.types.Message` object.
         All message handlers are tested in the order they were added.
 
