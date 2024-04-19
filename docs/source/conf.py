@@ -13,12 +13,12 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+from datetime import datetime
 
 # -- Project information -----------------------------------------------------
 
 project = 'pyTelegramBotAPI Documentation'
-copyright = '2022-2024, coder2020official'
+copyright = f'2022-{datetime.now().year}, coder2020official'
 author = 'coder2020official'
 
 # The full version, including alpha/beta/rc tags
