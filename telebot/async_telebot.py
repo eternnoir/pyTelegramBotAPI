@@ -367,15 +367,9 @@ class AsyncTeleBot:
                              allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
-                    e = str(e)
-                    if self.token in e:
-                        e = e.replace(self.token, 'TOKEN')
-                    logger.error("Infinity polling exception: %s", str(e))
+                    logger.error("Infinity polling exception: %s", self.__hide_token(str(e)))
                 if logger_level and logger_level >= logging.DEBUG:
-                    e = traceback.format_exc()
-                    if self.token in e:
-                        e = e.replace(self.token, 'TOKEN')
-                    logger.error("Exception traceback:\n%s", e)
+                    logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                 await asyncio.sleep(3)
                 continue
             if logger_level and logger_level >= logging.INFO:
@@ -437,6 +431,7 @@ class AsyncTeleBot:
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
                     if updates:
                         self.offset = updates[-1].update_id + 1
+                        # noinspection PyAsyncCall
                         asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
                     if interval: await asyncio.sleep(interval)
 

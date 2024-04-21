@@ -1214,9 +1214,9 @@ class TeleBot:
                 handled = self._handle_exception(e)
                 if not handled:
                     if logger_level and logger_level >= logging.ERROR:
-                        logger.error("Threaded polling exception: %s", str(e))
+                        logger.error("Threaded polling exception: %s", self.__hide_token(str(e)))
                     if logger_level and logger_level >= logging.DEBUG:
-                        logger.error("Exception traceback:\n%s", traceback.format_exc())
+                        logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                     if not non_stop:
                         self.__stop_polling.set()
                         # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
