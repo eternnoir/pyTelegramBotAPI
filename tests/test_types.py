@@ -295,9 +295,19 @@ def test_message_entity():
     message_4 = types.Update.de_json(sample_string_4).message
     assert message_4.html_text == '<s><u><i><b>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</b></i></u></s><tg-emoji emoji-id="5456188142006575553">😋</tg-emoji><tg-emoji emoji-id="5456188142006575553">😋</tg-emoji>'
 
-    
+
+    sample_string_5 = r'{"update_id":934522166,"message":{"message_id":1374526,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179716,"text":"b <b>b</b> <i>i</i>","entities":[{"offset":0,"length":1,"type":"bold"}]}}'
+    message_5 = types.Update.de_json(sample_string_5).message
+    assert message_5.html_text == "<b>b</b> &lt;b&gt;b&lt;/b&gt; &lt;i&gt;i&lt;/i&gt;"
 
 
+    sample_string_6 = r'{"update_id":934522166,"message":{"message_id":1374526,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179716,"text":"<b>b</b> <i>i</i>"}}'
+    message_6 = types.Update.de_json(sample_string_6).message
+    assert message_6.html_text == "&lt;b&gt;b&lt;/b&gt; &lt;i&gt;i&lt;/i&gt;"
 
+
+    sample_string_7 = r'{"update_id":934522167,"message":{"message_id":1374526,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179716,"reply_to_message":{"message_id":1374510,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en"},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1712765863,"text":"text @UserName b i s u c p #hashtag https://example.com","entities":[{"offset":5,"length":9,"type":"mention"},{"offset":15,"length":1,"type":"bold"},{"offset":17,"length":1,"type":"italic"},{"offset":19,"length":1,"type":"strikethrough"},{"offset":21,"length":1,"type":"underline"},{"offset":23,"length":1,"type":"code"},{"offset":25,"length":1,"type":"spoiler"},{"offset":27,"length":8,"type":"hashtag"},{"offset":36,"length":19,"type":"url"}],"link_preview_options":{"is_disabled":true}},"quote":{"text":"text @UserName b i s u c p #hashtag https://example.com","entities":[{"offset":15,"length":1,"type":"bold"},{"offset":17,"length":1,"type":"italic"},{"offset":19,"length":1,"type":"strikethrough"},{"offset":21,"length":1,"type":"underline"},{"offset":25,"length":1,"type":"spoiler"}],"position":0,"is_manual":true},"text":"quote reply"}}'
+    message_7 = types.Update.de_json(sample_string_7).message
+    assert message_7.quote.html_text == 'text @UserName <b>b</b> <i>i</i> <s>s</s> <u>u</u> c <span class="tg-spoiler">p</span> #hashtag https://example.com'
 
 
