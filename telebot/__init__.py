@@ -3091,6 +3091,12 @@ class TeleBot:
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
+        if media:
+            # Pass default parse mode to Media items
+            for media_item in media:
+                if media_item.parse_mode is None:
+                    media_item.parse_mode = self.parse_mode
+
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
 
