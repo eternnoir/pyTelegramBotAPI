@@ -393,6 +393,11 @@ class AsyncTeleBot:
             handled = self.exception_handler.handle(exception)  # noqa
         return handled
 
+    def __hide_token(self, message: str) -> str:
+        if self.token in message:
+            code = self.token.split(':')[1]
+            return message.replace(code, "*" * len(code))
+
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
             request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
         """
@@ -442,8 +447,8 @@ class AsyncTeleBot:
                 except asyncio_helper.RequestTimeout as e:
                     handled = await self._handle_exception(e)
                     if not handled:
-                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
-                        logger.debug(traceback.format_exc())
+                        logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
+                        logger.debug(self.__hide_token(traceback.format_exc()))
                         
                     if non_stop or handled:
                         await asyncio.sleep(2)
@@ -453,8 +458,8 @@ class AsyncTeleBot:
                 except asyncio_helper.ApiException as e:
                     handled = await self._handle_exception(e)
                     if not handled:
-                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
-                        logger.debug(traceback.format_exc())
+                        logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
+                        logger.debug(self.__hide_token(traceback.format_exc()))
 
                     if non_stop or handled:
                         continue

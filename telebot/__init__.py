@@ -1030,6 +1030,11 @@ class TeleBot:
         self.event_observer.schedule(self.event_handler, path, recursive=True)
         self.event_observer.start()
 
+    def __hide_token(self, message: str) -> str:
+        if self.token in message:
+            code = self.token.split(':')[1]
+            return message.replace(code, "*" * len(code))
+
     def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, long_polling_timeout: Optional[int]=20,
                          logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,
                          restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None, *args, **kwargs):
@@ -1083,15 +1088,9 @@ class TeleBot:
                              *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
-                    e = str(e)
-                    if self.token in e:
-                        e = e.replace(self.token, 'TOKEN')
-                    logger.error("Infinity polling exception: %s", str(e))
+                    logger.error("Infinity polling exception: %s", self.__hide_token(str(e)))
                 if logger_level and logger_level >= logging.DEBUG:
-                    e = traceback.format_exc()
-                    if self.token in e:
-                        e = e.replace(self.token, 'TOKEN')
-                    logger.error("Exception traceback:\n%s", e)
+                    logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                 time.sleep(3)
                 continue
             if logger_level and logger_level >= logging.INFO:
@@ -6807,7 +6806,7 @@ class TeleBot:
         :param commands: list of commands
         :type commands: :obj:`list` of :obj:`str`
 
-        :param regexp:
+        :param regexp: Regular expression
         :type regexp: :obj:`str`
 
         :param func: Function executed as a filter
@@ -7965,6 +7964,7 @@ class TeleBot:
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_removed_chat_boost_handler(handler_dict)
 
+
     def business_connection_handler(self, func=None, **kwargs):
         """
         Handles new incoming business connection state.
@@ -7981,7 +7981,8 @@ class TeleBot:
             return handler
         
         return decorator
-    
+
+
     def add_business_connection_handler(self, handler_dict):
         """
         Adds a business_connection handler.
@@ -7993,6 +7994,7 @@ class TeleBot:
         :return:
         """
         self.business_connection_handlers.append(handler_dict)
+
 
     def register_business_connection_handler(
             self, callback: Callable, func: Optional[Callable]=None, pass_bot:Optional[bool]=False, **kwargs):
@@ -8014,6 +8016,7 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_business_connection_handler(handler_dict)
+
 
     def business_message_handler(
             self,
@@ -8096,7 +8099,8 @@ class TeleBot:
             return handler
 
         return decorator
-    
+
+
     def add_business_message_handler(self, handler_dict):
         """
         Adds a business_message handler.
@@ -8108,6 +8112,7 @@ class TeleBot:
         :return:
         """
         self.business_message_handlers.append(handler_dict)
+
 
     def register_business_message_handler(self,
             callback: Callable,
@@ -8122,11 +8127,17 @@ class TeleBot:
         :param callback: function to be called
         :type callback: :obj:`function`
 
+        :param commands: list of commands
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Regular expression
+        :type regexp: :obj:`str`
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
-        :type pass_bot: :obj:`bool`
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
 
         :param kwargs: Optional keyword arguments(custom filters)
 
@@ -8135,8 +8146,6 @@ class TeleBot:
         handler_dict = self._build_handler_dict(callback, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs)
         self.add_business_message_handler(handler_dict)
 
-    
-    
 
     def edited_business_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -8253,7 +8262,7 @@ class TeleBot:
                                                 **kwargs)
         self.add_edited_business_message_handler(handler_dict)
 
-    
+
     def deleted_business_messages_handler(self, func=None, **kwargs):
         """
         Handles new incoming deleted messages state.
@@ -8272,7 +8281,8 @@ class TeleBot:
             return handler
         
         return decorator
-    
+
+
     def add_deleted_business_messages_handler(self, handler_dict):
         """
         Adds a deleted_business_messages handler.
@@ -8281,6 +8291,7 @@ class TeleBot:
         :meta private:
         """
         self.deleted_business_messages_handlers.append(handler_dict)
+
 
     def register_deleted_business_messages_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
@@ -8302,9 +8313,6 @@ class TeleBot:
 
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_deleted_business_messages_handler(handler_dict)
-
-
-
 
 
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):
