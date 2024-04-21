@@ -6,7 +6,7 @@ Markdown & HTML formatting functions.
 
 import re
 import html
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 
 def format_text(*args, separator="\n"):
@@ -357,7 +357,7 @@ def hcite(content: str, escape: Optional[bool]=True) -> str:
     return '<blockquote>{}</blockquote>'.format(escape_html(content) if escape else content)
 
 
-def apply_html_entities(text: str, entities: Optional[List], custom_subs: Optional[dict[str, str]]) -> str:
+def apply_html_entities(text: str, entities: Optional[List], custom_subs: Optional[Dict[str, str]]) -> str:
     """
     Author: @sviat9440
     Updaters: @badiboy, @EgorKhabarov
