@@ -367,9 +367,9 @@ class AsyncTeleBot:
                              allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
                 if logger_level and logger_level >= logging.ERROR:
-                    logger.error("Infinity polling exception: %s", str(e))
+                    logger.error("Infinity polling exception: %s", self.__hide_token(str(e)))
                 if logger_level and logger_level >= logging.DEBUG:
-                    logger.error("Exception traceback:\n%s", traceback.format_exc())
+                    logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                 await asyncio.sleep(3)
                 continue
             if logger_level and logger_level >= logging.INFO:
@@ -386,6 +386,11 @@ class AsyncTeleBot:
         else:
             handled = self.exception_handler.handle(exception)  # noqa
         return handled
+
+    def __hide_token(self, message: str) -> str:
+        if self.token in message:
+            code = self.token.split(':')[1]
+            return message.replace(code, "*" * len(code))
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
             request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
@@ -426,6 +431,7 @@ class AsyncTeleBot:
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
                     if updates:
                         self.offset = updates[-1].update_id + 1
+                        # noinspection PyAsyncCall
                         asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
                     if interval: await asyncio.sleep(interval)
 
@@ -436,8 +442,8 @@ class AsyncTeleBot:
                 except asyncio_helper.RequestTimeout as e:
                     handled = await self._handle_exception(e)
                     if not handled:
-                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
-                        logger.debug(traceback.format_exc())
+                        logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
+                        logger.debug(self.__hide_token(traceback.format_exc()))
                         
                     if non_stop or handled:
                         await asyncio.sleep(2)
@@ -447,8 +453,8 @@ class AsyncTeleBot:
                 except asyncio_helper.ApiException as e:
                     handled = await self._handle_exception(e)
                     if not handled:
-                        logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
-                        logger.debug(traceback.format_exc())
+                        logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
+                        logger.debug(self.__hide_token(traceback.format_exc()))
 
                     if non_stop or handled:
                         continue
@@ -4502,6 +4508,11 @@ class AsyncTeleBot:
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
+        if media:
+            # Pass default parse mode to Media items
+            for media_item in media:
+                if media_item.parse_mode is None:
+                    media_item.parse_mode = self.parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
         
