@@ -825,6 +825,7 @@ Here are some examples of template:
 ## Bots using this library
 * [SiteAlert bot](https://telegram.me/SiteAlert_bot) ([source](https://github.com/ilteoood/SiteAlert-Python)) by *ilteoood* - Monitors websites and sends a notification on changes
 * [TelegramLoggingBot](https://github.com/aRandomStranger/TelegramLoggingBot) by *aRandomStranger*
+* [Telegram-Broadcast-Bot](https://github.com/hansanaD/Telegram-Broadcast-Bot) - A Telegram bot to send broadcast messages to all the users on the bot.
 * [Telegram LMGTFY_bot](https://github.com/GabrielRF/telegram-lmgtfy_bot) by *GabrielRF* - Let me Google that for you.
 * [Telegram Proxy Bot](https://github.com/mrgigabyte/proxybot) by *mrgigabyte* 
 * [RadRetroRobot](https://github.com/Tronikart/RadRetroRobot) by *Tronikart* - Multifunctional Telegram Bot RadRetroRobot.
