@@ -891,5 +891,6 @@ Here are some examples of template:
 * [4K YouTube Downloader](https://github.com/hansanaD/TelegramYTDLBot/) - Youtube Downloader with upto 4K resolution support. 
 * [DrinkGenius-Bot](https://t.me/cocktail_recommendation_bot) ([source](https://github.com/Povladarchik/DrinkGenius-Bot)) by [Povladarchik](https://github.com/Povladarchik). Your personal assistant in the world of cocktails.
 * [Broadcast-Bot](https://github.com/hansanaD/Telegram-Broadcast-Bot) - A Simple Telegram bot to send broadcast messages to all the users on the bot.
+* [Youtube-Thumbnail-Downloader](https://github.com/hansanaD/Youtube-Thumbnail-Downloader) - A simple bot that downloads thumbnails of YouTube videos.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**
