@@ -422,7 +422,7 @@ async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, p
     if parse_mode:
         payload['parse_mode'] = parse_mode
     if caption_entities is not None:
-        payload['caption_entities'] = await _convert_entites(caption_entities)
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if reply_parameters is not None:
@@ -1973,18 +1973,6 @@ async def _convert_list_json_serializable(results):
     if len(ret) > 0:
         ret = ret[:-1]
     return '[' + ret + ']'
-
-
-
-async def _convert_entites(entites):
-    if entites is None:
-        return None
-    elif len(entites) == 0:
-        return []
-    elif isinstance(entites[0], types.JsonSerializable):
-        return [entity.to_json() for entity in entites]
-    else:
-        return entites
 
 
 async def _convert_poll_options(poll_options):
