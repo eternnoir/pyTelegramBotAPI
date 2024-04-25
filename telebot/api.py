@@ -50,6 +50,13 @@ Params = dict[str, Any]
 Files = dict[str, Union[tuple[str, FileObject], FileObject]]
 
 
+def _format_fileobject(fo: FileObject) -> str:
+    if not isinstance(fo, BytesIO):
+        return f"{type(fo)}({fo[:16]})"
+    else:
+        return "(bytes IO)"
+
+
 async def _request(
     token: str,
     route: str,
@@ -59,9 +66,14 @@ async def _request(
     request_timeout: Optional[float] = None,
 ):
     session = await session_manager.get_session()
-    request_description = f"{method = } {route = } {params = } {files = } {request_timeout = }"
-    request_description = request_description.replace(token, "<bot-token>")
-    logger.debug("Making request: %s", request_description)
+    if logger.isEnabledFor(logging.DEBUG):
+        files_to_log = {
+            k: (v[0], _format_fileobject(v[1])) if isinstance(v, tuple) else _format_fileobject(v)
+            for k, v in files.items()
+        }
+        request_description = f"{method = } {route = } {params = } files = {files_to_log} {request_timeout = }"
+        request_description = request_description.replace(token, "<bot-token>")
+        logger.debug("Making request: %s", request_description)
     last_exception: Optional[Exception] = None
     for attempt in range(MAX_RETRIES):
         try:
