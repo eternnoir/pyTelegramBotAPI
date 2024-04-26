@@ -1034,6 +1034,8 @@ class TeleBot:
         if self.token in message:
             code = self.token.split(':')[1]
             return message.replace(code, "*" * len(code))
+        else:
+            return message
 
     def infinity_polling(self, timeout: Optional[int]=20, skip_pending: Optional[bool]=False, long_polling_timeout: Optional[int]=20,
                          logger_level: Optional[int]=logging.ERROR, allowed_updates: Optional[List[str]]=None,

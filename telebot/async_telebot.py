@@ -391,6 +391,8 @@ class AsyncTeleBot:
         if self.token in message:
             code = self.token.split(':')[1]
             return message.replace(code, "*" * len(code))
+        else:
+            return message
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
             request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
