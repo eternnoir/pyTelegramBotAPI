@@ -13,11 +13,11 @@ tokens = {config.MAIN_BOT_TOKEN: True}
 
 
 async def webhook(request):
-    token = request.match_info.get('token')
+    token = request.match_info.get("token")
     if not tokens.get(token):
         return web.Response(status=404)
 
-    if request.headers.get('content-type') != 'application/json':
+    if request.headers.get("content-type") != "application/json":
         return web.Response(status=403)
 
     json_string = await request.json()
@@ -35,7 +35,7 @@ async def webhook(request):
 app.router.add_post("/" + config.WEBHOOK_PATH + "/{token}", webhook)
 
 
-@main_bot.message_handler(commands=['add_bot'])
+@main_bot.message_handler(commands=["add_bot"])
 async def add_bot(message: types.Message):
     token = util.extract_arguments(message.text)
     tokens[token] = True
@@ -49,8 +49,11 @@ async def add_bot(message: types.Message):
 
 async def main():
     await main_bot.delete_webhook()
-    await main_bot.set_webhook(f"{config.WEBHOOK_HOST}/{config.WEBHOOK_PATH}/{config.MAIN_BOT_TOKEN}")
+    await main_bot.set_webhook(
+        f"{config.WEBHOOK_HOST}/{config.WEBHOOK_PATH}/{config.MAIN_BOT_TOKEN}"
+    )
     web.run_app(app, host=config.WEBAPP_HOST, port=config.WEBAPP_PORT)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     asyncio.run(main())

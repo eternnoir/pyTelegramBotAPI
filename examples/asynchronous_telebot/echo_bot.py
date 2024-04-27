@@ -6,13 +6,13 @@ import asyncio
 
 from telebot.async_telebot import AsyncTeleBot
 
-bot = AsyncTeleBot('TOKEN')
+bot = AsyncTeleBot("TOKEN")
 
 
 # Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=["help", "start"])
 async def send_welcome(message):
-    text = 'Hi, I am EchoBot.\nJust write me something and I will repeat it!'
+    text = "Hi, I am EchoBot.\nJust write me something and I will repeat it!"
     await bot.reply_to(message, text)
 
 

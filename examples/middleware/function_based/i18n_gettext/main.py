@@ -40,10 +40,10 @@ If you have any exceptions check:
     - you are writing commands from correct path in terminal
 """
 
-from telebot import TeleBot, types, custom_filters
+from telebot import TeleBot, custom_filters
 from telebot import apihelper
 from telebot.storage.memory_storage import StateMemoryStorage
-
+from telebot.types import Message, CallbackQuery
 import keyboards
 from i18n_class import I18N
 
@@ -52,7 +52,7 @@ storage = StateMemoryStorage()
 # IMPORTANT! This example works only if polling is non-threaded.
 bot = TeleBot("", state_storage=storage, threaded=False)
 
-i18n = I18N(translations_path='locales', domain_name='messages')
+i18n = I18N(translations_path="locales", domain_name="messages")
 _ = i18n.gettext  # for singular translations
 __ = i18n.ngettext  # for plural translations
 
@@ -61,42 +61,51 @@ users_lang = {}
 users_clicks = {}
 
 
-@bot.middleware_handler(update_types=['message', 'callback_query'])
+@bot.middleware_handler(update_types=["message", "callback_query"])
 def set_contex_language(bot_instance, message):
-    i18n.context_lang.language = users_lang.get(message.from_user.id, 'en')
+    i18n.context_lang.language = users_lang.get(message.from_user.id, "en")
 
 
-@bot.message_handler(commands=['start'])
-def start_handler(message: types.Message):
-    text = _("Hello, {user_fist_name}!\n"
-             "This is the example of multilanguage bot.\n"
-             "Available commands:\n\n"
-             "/lang - change your language\n"
-             "/plural - pluralization example")
+@bot.message_handler(commands=["start"])
+def start_handler(message: Message):
+    text = _(
+        "Hello, {user_fist_name}!\n"
+        "This is the example of multilanguage bot.\n"
+        "Available commands:\n\n"
+        "/lang - change your language\n"
+        "/plural - pluralization example"
+    )
 
     # remember don't use f string for interpolation, use .format method instead
     text = text.format(user_fist_name=message.from_user.first_name)
     bot.send_message(message.from_user.id, text)
 
 
-@bot.message_handler(commands=['lang'])
-def change_language_handler(message: types.Message):
-    bot.send_message(message.chat.id, "Choose language\nВыберите язык\nTilni tanlang",
-                     reply_markup=keyboards.languages_keyboard())
+@bot.message_handler(commands=["lang"])
+def change_language_handler(message: Message):
+    bot.send_message(
+        message.chat.id,
+        "Choose language\nВыберите язык\nTilni tanlang",
+        reply_markup=keyboards.languages_keyboard(),
+    )
 
 
-@bot.callback_query_handler(func=None, text=custom_filters.TextFilter(contains=['en', 'ru', 'uz_Latn']))
-def language_handler(call: types.CallbackQuery):
+@bot.callback_query_handler(
+    func=None, text=custom_filters.TextFilter(contains=["en", "ru", "uz_Latn"])
+)
+def language_handler(call: CallbackQuery):
     lang = call.data
     users_lang[call.from_user.id] = lang
 
     # When you change user's language, pass language explicitly coz it's not changed in context
-    bot.edit_message_text(_("Language has been changed", lang=lang), call.from_user.id, call.message.id)
+    bot.edit_message_text(
+        _("Language has been changed", lang=lang), call.from_user.id, call.message.id
+    )
     bot.delete_state(call.from_user.id)
 
 
-@bot.message_handler(commands=['plural'])
-def pluralization_handler(message: types.Message):
+@bot.message_handler(commands=["plural"])
+def pluralization_handler(message: Message):
     if not users_clicks.get(message.from_user.id):
         users_clicks[message.from_user.id] = 0
     clicks = users_clicks[message.from_user.id]
@@ -110,8 +119,8 @@ def pluralization_handler(message: types.Message):
     bot.send_message(message.chat.id, text, reply_markup=keyboards.clicker_keyboard(_))
 
 
-@bot.callback_query_handler(func=None, text=custom_filters.TextFilter(equals='click'))
-def click_handler(call: types.CallbackQuery):
+@bot.callback_query_handler(func=None, text=custom_filters.TextFilter(equals="click"))
+def click_handler(call: CallbackQuery):
     if not users_clicks.get(call.from_user.id):
         users_clicks[call.from_user.id] = 1
     else:
@@ -120,15 +129,17 @@ def click_handler(call: types.CallbackQuery):
     clicks = users_clicks[call.from_user.id]
 
     text = __(
-        singular="You have {number} click",
-        plural="You have {number} clicks",
-        n=clicks
+        singular="You have {number} click", plural="You have {number} clicks", n=clicks
     )
     text = _("This is clicker.\n\n") + text.format(number=clicks)
-    bot.edit_message_text(text, call.from_user.id, call.message.message_id,
-                          reply_markup=keyboards.clicker_keyboard(_))
+    bot.edit_message_text(
+        text,
+        call.from_user.id,
+        call.message.message_id,
+        reply_markup=keyboards.clicker_keyboard(_),
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     bot.add_custom_filter(custom_filters.TextMatchFilter())
     bot.infinity_polling()

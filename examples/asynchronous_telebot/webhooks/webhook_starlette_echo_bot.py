@@ -6,11 +6,15 @@ This is a simple bot that echoes each message that is received onto the chat.
 It uses the Starlette ASGI framework to receive updates via webhook requests.
 """
 
+import logging
+
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, Response
 from starlette.routing import Route
+
+import telebot
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, Update
 
@@ -29,6 +33,7 @@ telebot.logger.setLevel(logging.INFO)
 
 bot = AsyncTeleBot(token=API_TOKEN)
 
+
 # BOT HANDLERS
 @bot.message_handler(commands=["help", "start"])
 async def send_welcome(message: Message):
@@ -37,7 +42,7 @@ async def send_welcome(message: Message):
     """
     await bot.reply_to(
         message,
-        ("Hi there, I am EchoBot.\n" "I am here to echo your kind words back to you."),
+        "Hi there, I am EchoBot.\n" "I am here to echo your kind words back to you.",
     )
 
 
@@ -67,7 +72,7 @@ async def startup() -> None:
             f"updating webhook url, old: {webhook_info.url}, new: {WEBHOOK_URL}"
         )
         if not await bot.set_webhook(
-            url=WEBHOOK_URL, secret_token=WEBHOOK_SECRET_TOKEN
+                url=WEBHOOK_URL, secret_token=WEBHOOK_SECRET_TOKEN
         ):
             raise RuntimeError("unable to set webhook")
 
@@ -78,7 +83,6 @@ app = Starlette(
     ],
     on_startup=[startup],
 )
-
 
 uvicorn.run(
     app,

@@ -9,14 +9,14 @@ import fastapi
 import uvicorn
 import telebot
 
-API_TOKEN = 'TOKEN'
+API_TOKEN = "TOKEN"
 
-WEBHOOK_HOST = '<ip/domain>'
+WEBHOOK_HOST = "<ip/domain>"
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
-WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+WEBHOOK_LISTEN = "0.0.0.0"  # In some VPS you may need to put here the IP addr
 
-WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = "./webhook_cert.pem"  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = "./webhook_pkey.pem"  # Path to the ssl private key
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -37,7 +37,7 @@ bot = telebot.TeleBot(API_TOKEN)
 app = fastapi.FastAPI(docs=None, redoc_url=None)
 
 
-@app.post(f'/{API_TOKEN}/')
+@app.post(f"/{API_TOKEN}/")
 def process_webhook(update: dict):
     """
     Process webhook calls
@@ -49,17 +49,18 @@ def process_webhook(update: dict):
         return
 
 
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=["help", "start"])
 def send_welcome(message):
     """
     Handle '/start' and '/help'
     """
-    bot.reply_to(message,
-                 ("Hi there, I am EchoBot.\n"
-                  "I am here to echo your kind words back to you."))
+    bot.reply_to(
+        message,
+        "Hi there, I am EchoBot.\n" "I am here to echo your kind words back to you.",
+    )
 
 
-@bot.message_handler(func=lambda message: True, content_types=['text'])
+@bot.message_handler(func=lambda message: True, content_types=["text"])
 def echo_message(message):
     """
     Handle all other messages
@@ -72,8 +73,7 @@ bot.remove_webhook()
 
 # Set webhook
 bot.set_webhook(
-    url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-    certificate=open(WEBHOOK_SSL_CERT, 'r')
+    url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH, certificate=open(WEBHOOK_SSL_CERT, "r")
 )
 
 
@@ -82,5 +82,5 @@ uvicorn.run(
     host=WEBHOOK_LISTEN,
     port=WEBHOOK_PORT,
     ssl_certfile=WEBHOOK_SSL_CERT,
-    ssl_keyfile=WEBHOOK_SSL_PRIV
+    ssl_keyfile=WEBHOOK_SSL_PRIV,
 )

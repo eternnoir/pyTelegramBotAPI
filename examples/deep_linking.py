@@ -34,7 +34,7 @@
 
 import telebot
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot("TOKEN")
 
 
 def extract_unique_code(text):
@@ -43,23 +43,23 @@ def extract_unique_code(text):
 
 
 def in_storage(unique_code):
-    # (pseudo-code) Should check if a unique code exists in storage
+    # (pseudocode) Should check if a unique code exists in storage
     return True
 
 
 def get_username_from_storage(unique_code):
-    # (pseudo-code) Does a query to the storage, retrieving the associated username
+    # (pseudocode) Does a query to the storage, retrieving the associated username
     # Should be replaced by a real database-lookup.
     return "ABC" if in_storage(unique_code) else None
 
 
 def save_chat_id(chat_id, username):
-    # (pseudo-code) Save the chat_id->username to storage
+    # (pseudocode) Save the chat_id->username to storage
     # Should be replaced by a real database query.
     pass
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=["start"])
 def send_welcome(message):
     unique_code = extract_unique_code(message.text)
     if unique_code:  # if the '/start' command contains a unique_code

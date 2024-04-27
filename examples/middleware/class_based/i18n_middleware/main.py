@@ -5,7 +5,7 @@ Using built-in middleware I18N.
 You need to install babel package 'https://pypi.org/project/Babel/'
 Babel provides a command-line interface for working with message catalogs
 After installing babel package you have a script called 'pybabel'
-Too see all the commands open terminal and type 'pybabel --help'
+To see all the commands open terminal and type 'pybabel --help'
 Full description for pybabel commands can be found here: 'https://babel.pocoo.org/en/latest/cmdline.html'
 
 Create a directory 'locales' where our translations will be stored
@@ -55,8 +55,10 @@ from typing import Union
 import keyboards
 from i18n_base_middleware import I18N
 from telebot import TeleBot
-from telebot import types, StateMemoryStorage
+from telebot import StateMemoryStorage
 from telebot.custom_filters import TextMatchFilter, TextFilter
+from telebot.types import Message, CallbackQuery
+
 
 class I18NMiddleware(I18N):
 
@@ -64,9 +66,9 @@ class I18NMiddleware(I18N):
         """
         Here you need to return a list of update types which you want to be processed
         """
-        return ['message', 'callback_query']
+        return ["message", "callback_query"]
 
-    def get_user_language(self, obj: Union[types.Message, types.CallbackQuery]):
+    def get_user_language(self, obj: Union[Message, CallbackQuery]):
         """
         This method is called when new update comes (only updates which you return in 'process_update_types' method)
         Returned language will be used in 'pre_process' method of parent class
@@ -79,15 +81,15 @@ class I18NMiddleware(I18N):
         user_id = obj.from_user.id
 
         if user_id not in users_lang:
-            users_lang[user_id] = 'en'
+            users_lang[user_id] = "en"
 
         return users_lang[user_id]
 
 
 storage = StateMemoryStorage()
-bot = TeleBot("", state_storage=storage, use_class_middlewares=True)
+bot = TeleBot("TOKEN", state_storage=storage, use_class_middlewares=True)
 
-i18n = I18NMiddleware(translations_path='locales', domain_name='messages')
+i18n = I18NMiddleware(translations_path="locales", domain_name="messages")
 _ = i18n.gettext  # for singular translations
 __ = i18n.ngettext  # for plural translations
 
@@ -95,53 +97,61 @@ __ = i18n.ngettext  # for plural translations
 users_lang = {}
 users_clicks = {}
 
-@bot.message_handler(commands=['start'])
-def start_handler(message: types.Message):
-    text = _("Hello, {user_fist_name}!\n"
-             "This is the example of multilanguage bot.\n"
-             "Available commands:\n\n"
-             "/lang - change your language\n"
-             "/plural - pluralization example\n"
-             "/menu - text menu example")
+
+@bot.message_handler(commands=["start"])
+def start_handler(message: Message):
+    text = _(
+        "Hello, {user_fist_name}!\n"
+        "This is the example of multilanguage bot.\n"
+        "Available commands:\n\n"
+        "/lang - change your language\n"
+        "/plural - pluralization example\n"
+        "/menu - text menu example"
+    )
 
     # remember don't use f string for interpolation, use .format method instead
     text = text.format(user_fist_name=message.from_user.first_name)
     bot.send_message(message.from_user.id, text)
 
 
-@bot.message_handler(commands=['lang'])
-def change_language_handler(message: types.Message):
-    bot.send_message(message.chat.id, "Choose language\nВыберите язык\nTilni tanlang",
-                     reply_markup=keyboards.languages_keyboard())
+@bot.message_handler(commands=["lang"])
+def change_language_handler(message: Message):
+    bot.send_message(
+        message.chat.id,
+        "Choose language\nВыберите язык\nTilni tanlang",
+        reply_markup=keyboards.languages_keyboard(),
+    )
 
 
-@bot.callback_query_handler(func=None, text=TextFilter(contains=['en', 'ru', 'uz_Latn']))
-def language_handler(call: types.CallbackQuery):
+@bot.callback_query_handler(
+    func=None, text=TextFilter(contains=["en", "ru", "uz_Latn"])
+)
+def language_handler(call: CallbackQuery):
     lang = call.data
     users_lang[call.from_user.id] = lang
 
     # When you changed user language, you have to pass it manually beacause it is not changed in context
-    bot.edit_message_text(_("Language has been changed", lang=lang), call.from_user.id, call.message.id)
+    bot.edit_message_text(
+        _("Language has been changed", lang=lang), call.from_user.id, call.message.id
+    )
 
 
-@bot.message_handler(commands=['plural'])
-def pluralization_handler(message: types.Message):
+@bot.message_handler(commands=["plural"])
+def pluralization_handler(message: Message):
     if not users_clicks.get(message.from_user.id):
         users_clicks[message.from_user.id] = 0
     clicks = users_clicks[message.from_user.id]
 
     text = __(
-        singular="You have {number} click",
-        plural="You have {number} clicks",
-        n=clicks
+        singular="You have {number} click", plural="You have {number} clicks", n=clicks
     )
     text = _("This is clicker.\n\n") + text.format(number=clicks)
 
     bot.send_message(message.chat.id, text, reply_markup=keyboards.clicker_keyboard(_))
 
 
-@bot.callback_query_handler(func=None, text=TextFilter(equals='click'))
-def click_handler(call: types.CallbackQuery):
+@bot.callback_query_handler(func=None, text=TextFilter(equals="click"))
+def click_handler(call: CallbackQuery):
     if not users_clicks.get(call.from_user.id):
         users_clicks[call.from_user.id] = 1
     else:
@@ -150,18 +160,20 @@ def click_handler(call: types.CallbackQuery):
     clicks = users_clicks[call.from_user.id]
 
     text = __(
-        singular="You have {number} click",
-        plural="You have {number} clicks",
-        n=clicks
+        singular="You have {number} click", plural="You have {number} clicks", n=clicks
     )
     text = _("This is clicker.\n\n") + text.format(number=clicks)
 
-    bot.edit_message_text(text, call.from_user.id, call.message.message_id,
-                          reply_markup=keyboards.clicker_keyboard(_))
+    bot.edit_message_text(
+        text,
+        call.from_user.id,
+        call.message.message_id,
+        reply_markup=keyboards.clicker_keyboard(_),
+    )
 
 
-@bot.message_handler(commands=['menu'])
-def menu_handler(message: types.Message):
+@bot.message_handler(commands=["menu"])
+def menu_handler(message: Message):
     text = _("This is ReplyKeyboardMarkup menu example in multilanguage bot.")
     bot.send_message(message.chat.id, text, reply_markup=keyboards.menu_keyboard(_))
 
@@ -175,21 +187,21 @@ l_ = i18n.lazy_gettext
 
 # Handlers below will handle text according to user's language
 @bot.message_handler(text=l_("My user id"))
-def return_user_id(message: types.Message):
+def return_user_id(message: Message):
     bot.send_message(message.chat.id, str(message.from_user.id))
 
 
 @bot.message_handler(text=l_("My user name"))
-def return_user_id(message: types.Message):
+def return_user_id(message: Message):
     username = message.from_user.username
     if not username:
-        username = '-'
+        username = "-"
     bot.send_message(message.chat.id, username)
 
 
 # You can make it case-insensitive
 @bot.message_handler(text=TextFilter(equals=l_("My first name"), ignore_case=True))
-def return_user_id(message: types.Message):
+def return_user_id(message: Message):
     bot.send_message(message.chat.id, message.from_user.first_name)
 
 
@@ -201,11 +213,15 @@ for language in i18n.available_translations:
 
 # When user confused language. (handles all menu buttons texts)
 @bot.message_handler(text=TextFilter(contains=all_menu_texts, ignore_case=True))
-def missed_message(message: types.Message):
-    bot.send_message(message.chat.id, _("Seems you confused language"), reply_markup=keyboards.menu_keyboard(_))
+def missed_message(message: Message):
+    bot.send_message(
+        message.chat.id,
+        _("Seems you confused language"),
+        reply_markup=keyboards.menu_keyboard(_),
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     bot.setup_middleware(i18n)
     bot.add_custom_filter(TextMatchFilter())
     asyncio.run(bot.infinity_polling())

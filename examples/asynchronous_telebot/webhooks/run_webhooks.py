@@ -6,12 +6,13 @@
 
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
-bot = AsyncTeleBot('TOKEN')
+
+bot = AsyncTeleBot("TOKEN")
 
 
-WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
-DOMAIN = '1.2.3.4' # either domain, or ip address of vps
+WEBHOOK_SSL_CERT = "./webhook_cert.pem"  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = "./webhook_pkey.pem"  # Path to the ssl private key
+DOMAIN = "1.2.3.4"  # either domain, or ip address of vps
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -23,12 +24,15 @@ DOMAIN = '1.2.3.4' # either domain, or ip address of vps
 
 
 # Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=["help", "start"])
 async def send_welcome(message):
-    await bot.reply_to(message, """\
+    await bot.reply_to(
+        message,
+        """
 Hi there, I am EchoBot.
-I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
-""")
+I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!
+""",
+    )
 
 
 # Handle all other messages with content_type 'text' (content_types defaults to ['text'])
@@ -38,8 +42,8 @@ async def echo_message(message):
 
 
 # it uses fastapi + uvicorn
-asyncio.run(bot.run_webhooks(
-    listen=DOMAIN,
-    certificate=WEBHOOK_SSL_CERT,
-    certificate_key=WEBHOOK_SSL_PRIV
-))
+asyncio.run(
+    bot.run_webhooks(
+        listen=DOMAIN, certificate=WEBHOOK_SSL_CERT, certificate_key=WEBHOOK_SSL_PRIV
+    )
+)
