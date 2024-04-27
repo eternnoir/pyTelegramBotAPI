@@ -1612,10 +1612,12 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
         """
         Converts a list of MessageEntity objects to a list of dictionaries.
         """
-        res = []
-        for e in entity_list:
-            res.append(MessageEntity.to_dict(e))
-        return res or None
+        if entity_list is None or len(entity_list) == 0:
+            return None
+        elif isinstance(entity_list[0], MessageEntity):
+            return [MessageEntity.to_dict(e) for e in entity_list]
+        else:
+            return entity_list
 
     @classmethod
     def de_json(cls, json_string):
