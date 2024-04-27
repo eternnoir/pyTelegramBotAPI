@@ -1,0 +1,14 @@
+certifi==2022.12.7
+charset-normalizer==3.1.0
+click==8.0.3
+Flask==2.0.2
+idna==3.4
+importlib-metadata==6.4.1
+itsdangerous==2.0.1
+Jinja2==3.0.3
+MarkupSafe==2.0.1
+pyTelegramBotAPI==4.11.0
+requests==2.28.2
+urllib3==1.26.15
+Werkzeug==2.0.2
+zipp==3.15.0
