@@ -1,0 +1,4 @@
+runtime: python38
+
+env_variables:
+  BUCKET_NAME: "your-google-application"
