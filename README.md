@@ -76,19 +76,19 @@ There are two ways to install the library:
 * Installation using pip (a Python package manager):
 
 ```
-$ pip install pyTelegramBotAPI
+$ pip install telegram-bale-bot
 ```
 * Installation from source (requires git):
 
 ```
-$ pip install git+https://github.com/eternnoir/pyTelegramBotAPI.git
+$ pip install git+https://github.com/mahdikiani/telegram-bale-bot.git
 ```
 
 It is generally recommended to use the first option.
 
 *While the API is production-ready, it is still under development and it has regular updates, do not forget to update it regularly by calling*
 ```
-pip install pytelegrambotapi --upgrade
+pip install telegram-bale-bot --upgrade
 ```
 
 ## Writing your first bot
@@ -97,6 +97,8 @@ pip install pytelegrambotapi --upgrade
 
 It is presumed that you [have obtained an API token with @BotFather](https://core.telegram.org/bots#botfather). We will call this token `TOKEN`.
 Furthermore, you have basic knowledge of the Python programming language and more importantly [the Telegram Bot API](https://core.telegram.org/bots/api).
+- [Telegram botfather](https://t.me/botfather)
+- [Bale botfather](https://ble.ir/botfather)
 
 ### A simple echo bot
 
