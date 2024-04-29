@@ -82,7 +82,12 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         # noinspection PyUnresolvedReferences
         request_url = API_URL.format(token, method_name)
     else:
-        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
+        if len(token) == 51:
+            request_url = "https://tapi.bale.ai/bot{0}/{1}".format(token, method_name)
+        else:
+            request_url = "https://api.telegram.org/bot{0}/{1}".format(
+                token, method_name
+            )
 
     logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files).replace(token, token.split(':')[0] + ":{TOKEN}"))
     read_timeout = READ_TIMEOUT
@@ -218,7 +223,11 @@ def get_file(token, file_id):
 
 def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)['file_path'])
+        if len(token) == 51:
+            return f"https://tapi.bale.ai/file/bot{token}/{file_id}"
+        return "https://api.telegram.org/file/bot{0}/{1}".format(
+            token, get_file(token, file_id)["file_path"]
+        )
     else:
         # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, get_file(token, file_id)['file_path'])
@@ -226,15 +235,18 @@ def get_file_url(token, file_id):
 
 def download_file(token, file_path):
     if FILE_URL is None:
-        url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+        if len(token) == 51:
+            url = f"https://tapi.bale.ai/file/bot{token}/{file_path}"
+        else:
+            url = "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
     else:
         # noinspection PyUnresolvedReferences
         url =  FILE_URL.format(token, file_path)
-        
+
     result = _get_req_session().get(url, proxies=proxy)
     if result.status_code != 200:
         raise ApiHTTPException('Download file', result)
-        
+
     return result.content
 
 
@@ -344,7 +356,6 @@ def set_message_reaction(token, chat_id, message_id, reaction=None, is_big=None)
     if is_big is not None:
         payload['is_big'] = is_big
     return _make_request(token, method_url, params=payload)
-
 
 
 def get_chat(token, chat_id):
@@ -1189,7 +1200,7 @@ def set_my_description(token, description=None, language_code=None):
     if language_code is not None:
         payload['language_code'] = language_code
     return _make_request(token, method_url, params=payload, method='post')
-    
+
 
 def get_my_description(token, language_code=None):
     method_url = r'getMyDescription'
@@ -1687,7 +1698,7 @@ def set_sticker_mask_position(token, sticker, mask_position=None):
         payload['mask_position'] = mask_position.to_json()
     return _make_request(token, method_url, params=payload, method='post')
 
-    
+
 def upload_sticker_file(token, user_id, sticker, sticker_format):
     method_url = 'uploadStickerFile'
     payload = {'user_id': user_id, 'sticker_format': sticker_format}

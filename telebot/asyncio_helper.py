@@ -57,6 +57,8 @@ class SessionManager:
 
 
 session_manager = SessionManager()
+session_manager_bale = SessionManager()
+
 
 async def _process_request(token, url, method='get', params=None, files=None, **kwargs):
     # Let's resolve all timeout parameters.
@@ -74,24 +76,37 @@ async def _process_request(token, url, method='get', params=None, files=None, **
         request_timeout = params.pop('timeout', None) if params else None
         # we will apply default request_timeout if there is no timeout in params
         # otherwise, we will use timeout parameter applied for payload.
-    
+
     request_timeout = REQUEST_TIMEOUT if request_timeout is None else request_timeout
-    
 
     # Preparing data by adding all parameters and files to FormData
+    file_id = params.get("file_id", None)
     params = _prepare_data(params, files)
 
     timeout = aiohttp.ClientTimeout(total=request_timeout)
     got_result = False
     current_try=0
-    session = await session_manager.get_session()
-    while not got_result and current_try<MAX_RETRIES-1:
+    if len(token) == 51:
+        session = await session_manager_bale.get_session()
+    else:
+        session = await session_manager.get_session()
+    while not got_result and current_try < MAX_RETRIES - 1:
         current_try +=1
         try:
+            if len(token) == 51:
+                if url == "getFile":
+                    return {
+                        "file_id": file_id,
+                        "file_path": file_id,
+                        "file_unique_id": file_id,
+                    }
+                API_URL = "https://tapi.bale.ai/bot{0}/{1}"
+            else:
+                API_URL = "https://api.telegram.org/bot{0}/{1}"
             async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
                 got_result = True
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
-                
+
                 json_result = await _check_result(url, resp)
                 if json_result:
                     return json_result['result']
@@ -103,7 +118,7 @@ async def _process_request(token, url, method='get', params=None, files=None, **
             logger.error(f'Unknown error: {e.__class__.__name__}')
         if not got_result:
             raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
-        
+
 def _prepare_file(obj):
     """
     Prepares file for upload.
@@ -148,7 +163,6 @@ async def _convert_markup(markup):
     return markup
 
 
-
 async def get_me(token):
     method_url = r'getMe'
     return await _process_request(token, method_url)
@@ -171,7 +185,11 @@ async def get_file(token, file_id):
 
 async def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, (await get_file(token, file_id))['file_path'])
+        if len(token) == 51:
+            return f"https://tapi.bale.ai/file/bot{token}/{file_id}"
+        return "https://api.telegram.org/file/bot{0}/{1}".format(
+            token, (await get_file(token, file_id))["file_path"]
+        )
     else:
         # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, (await get_file(token, file_id))['file_path'])
@@ -179,11 +197,15 @@ async def get_file_url(token, file_id):
 
 async def download_file(token, file_path):
     if FILE_URL is None:
-        url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+        if len(token) == 51:
+            url = f"https://tapi.bale.ai/file/bot{token}/{file_path}"
+        else:
+            url = "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+    if len(token) == 51:
+            session = await session_manager_bale.get_session()
     else:
-        # noinspection PyUnresolvedReferences
-        url =  FILE_URL.format(token, file_path)
-    session = await session_manager.get_session()
+        session = await session_manager.get_session()
+    
     async with session.get(url, proxy=proxy) as response:
         if response.status != 200:
             raise ApiHTTPException('Download file', response)
@@ -232,7 +254,6 @@ async def get_webhook_info(token, timeout=None):
     if timeout:
         payload['timeout'] = timeout
     return await _process_request(token, method_url, params=payload)
-
 
 
 async def get_updates(token, offset=None, limit=None,
@@ -350,7 +371,6 @@ async def get_chat_member_count(token, chat_id):
     method_url = r'getChatMemberCount'
     payload = {'chat_id': chat_id}
     return await _process_request(token, method_url, params=payload)
-
 
 
 async def replace_sticker_in_set(token, user_id, name, old_sticker, sticker):
@@ -1754,7 +1774,6 @@ async def delete_sticker_from_set(token, sticker):
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-
 async def create_invoice_link(token, title, description, payload, provider_token,
             currency, prices, max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
             photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None, need_phone_number=None,
@@ -1792,7 +1811,6 @@ async def create_invoice_link(token, title, description, payload, provider_token
     if is_flexible is not None:
         payload['is_flexible'] = is_flexible
     return await _process_request(token, method_url, params=payload, method='post')
-
 
 
 # noinspection PyShadowingBuiltins
@@ -2037,7 +2055,7 @@ class ApiException(Exception):
         super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
         self.function_name = function_name
         self.result = result
-    
+
 class ApiHTTPException(ApiException):
     """
     This class represents an Exception thrown when a call to the 
@@ -2049,7 +2067,7 @@ class ApiHTTPException(ApiException):
             .format(result.status, result.reason, result.request_info),
             function_name,
             result)
-    
+
 class ApiInvalidJSONException(ApiException):
     """
     This class represents an Exception thrown when a call to the 
@@ -2061,7 +2079,7 @@ class ApiInvalidJSONException(ApiException):
             .format(result),
             function_name,
             result)
-    
+
 class ApiTelegramException(ApiException):
     """
     This class represents an Exception thrown when a Telegram API returns error code.
@@ -2081,5 +2099,3 @@ class RequestTimeout(Exception):
     This class represents a request timeout.
     """
     pass
-
-
