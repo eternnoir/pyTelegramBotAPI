@@ -1,13 +1,14 @@
-
+<!-- 
 [![PyPi Package Version](https://img.shields.io/pypi/v/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/pyTelegramBotAPI.svg)](https://pypi.python.org/pypi/pyTelegramBotAPI)
 [![Documentation Status](https://readthedocs.org/projects/pytba/badge/?version=latest)](https://pytba.readthedocs.io/en/latest/?badge=latest)
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyTelegramBotAPI.svg)](https://pypi.org/project/pyTelegramBotAPI/)
 [![PyPi status](https://img.shields.io/pypi/status/pytelegrambotapi.svg?style=flat-square)](https://pypi.python.org/pypi/pytelegrambotapi)
 
-# <p align="center">pyTelegramBotAPI
+# <p align="center">pyTelegramBotAPI -->
+<p align="center">Python package for Telegram and Bale Bot
 
-<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
+<p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a> and <a href="https://docs.bale.ai/">Bale Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
 ## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#march-31-2024">7.2</a>!
