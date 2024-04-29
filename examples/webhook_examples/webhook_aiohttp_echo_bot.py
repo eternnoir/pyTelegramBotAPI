@@ -11,14 +11,14 @@ from aiohttp import web
 
 import telebot
 
-API_TOKEN = '<api_token>'
+API_TOKEN = "<api_token>"
 
-WEBHOOK_HOST = '<ip/host where the bot is running>'
+WEBHOOK_HOST = "<ip/host where the bot is running>"
 WEBHOOK_PORT = 8443  # 443, 80, 88 or 8443 (port need to be 'open')
-WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+WEBHOOK_LISTEN = "0.0.0.0"  # In some VPS you may need to put here the IP addr
 
-WEBHOOK_SSL_CERT = './webhook_cert.pem'  # Path to the ssl certificate
-WEBHOOK_SSL_PRIV = './webhook_pkey.pem'  # Path to the ssl private key
+WEBHOOK_SSL_CERT = "./webhook_cert.pem"  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = "./webhook_pkey.pem"  # Path to the ssl private key
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -41,7 +41,7 @@ app = web.Application()
 
 # Process webhook calls
 async def handle(request):
-    if request.match_info.get('token') == bot.token:
+    if request.match_info.get("token") == bot.token:
         request_body_dict = await request.json()
         update = telebot.types.Update.de_json(request_body_dict)
         bot.process_new_updates([update])
@@ -50,19 +50,20 @@ async def handle(request):
         return web.Response(status=403)
 
 
-app.router.add_post('/{token}/', handle)
+app.router.add_post("/{token}/", handle)
 
 
 # Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=["help", "start"])
 def send_welcome(message):
-    bot.reply_to(message,
-                 ("Hi there, I am EchoBot.\n"
-                  "I am here to echo your kind words back to you."))
+    bot.reply_to(
+        message,
+        ("Hi there, I am EchoBot.\n" "I am here to echo your kind words back to you."),
+    )
 
 
 # Handle all other messages
-@bot.message_handler(func=lambda message: True, content_types=['text'])
+@bot.message_handler(func=lambda message: True, content_types=["text"])
 def echo_message(message):
     bot.reply_to(message, message.text)
 
@@ -71,8 +72,9 @@ def echo_message(message):
 bot.remove_webhook()
 
 # Set webhook
-bot.set_webhook(url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH,
-                certificate=open(WEBHOOK_SSL_CERT, 'r'))
+bot.set_webhook(
+    url=WEBHOOK_URL_BASE + WEBHOOK_URL_PATH, certificate=open(WEBHOOK_SSL_CERT, "r")
+)
 
 # Build ssl context
 context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)

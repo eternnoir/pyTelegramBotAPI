@@ -11,6 +11,7 @@ from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, Response
 from starlette.routing import Route
+
 from telebot.async_telebot import AsyncTeleBot
 from telebot.types import Message, Update
 
@@ -28,6 +29,7 @@ logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
 bot = AsyncTeleBot(token=API_TOKEN)
+
 
 # BOT HANDLERS
 @bot.message_handler(commands=["help", "start"])

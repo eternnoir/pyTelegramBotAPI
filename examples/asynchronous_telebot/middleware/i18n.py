@@ -6,44 +6,45 @@
 # Also, you could check language code in handler itself too.
 # But this example just to show the work of middlewares.
 
-import telebot
-from telebot.async_telebot import AsyncTeleBot
-from telebot import asyncio_handler_backends
 import logging
 
+import telebot
+from telebot import asyncio_handler_backends
+from telebot.async_telebot import AsyncTeleBot
+
 logger = telebot.logger
-telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
+telebot.logger.setLevel(logging.DEBUG)  # Outputs debug messages to console.
 
-TRANSLATIONS = {
-    'hello': {
-        'en': 'hello',
-        'ru': 'привет',
-        'uz': 'salom'
-    }
-}
+TRANSLATIONS = {"hello": {"en": "hello", "ru": "привет", "uz": "salom"}}
 
 
-
-bot = AsyncTeleBot('TOKEN')
+bot = AsyncTeleBot("TOKEN")
 
 
 class LanguageMiddleware(asyncio_handler_backends.BaseMiddleware):
     def __init__(self):
-        self.update_types = ['message'] # Update types that will be handled by this middleware.
+        self.update_types = [
+            "message"
+        ]  # Update types that will be handled by this middleware.
+
     async def pre_process(self, message, data):
-        data['response'] = TRANSLATIONS['hello'][message.from_user.language_code]
+        data["response"] = TRANSLATIONS["hello"][message.from_user.language_code]
+
     async def post_process(self, message, data, exception):
-        if exception: # You can get exception occured in handler.
+        if exception:  # You can get exception occured in handler.
             logger.exception(str(exception))
 
-bot.setup_middleware(LanguageMiddleware()) # do not forget to setup
 
-@bot.message_handler(commands=['start'])
+bot.setup_middleware(LanguageMiddleware())  # do not forget to setup
+
+
+@bot.message_handler(commands=["start"])
 async def start(message, data: dict):
     # you can get the data in handler too.
     # Not necessary to create data parameter in handler function.
-    await bot.send_message(message.chat.id, data['response'])
+    await bot.send_message(message.chat.id, data["response"])
 
 
 import asyncio
+
 asyncio.run(bot.polling())

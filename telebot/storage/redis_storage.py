@@ -1,12 +1,14 @@
-from telebot.storage.base_storage import StateStorageBase, StateContext
 import json
+
+from telebot.storage.base_storage import StateContext, StateStorageBase
 
 redis_installed = True
 try:
-    from redis import Redis, ConnectionPool
+    from redis import ConnectionPool, Redis
 
 except:
     redis_installed = False
+
 
 class StateRedisStorage(StateStorageBase):
     """
@@ -15,19 +17,30 @@ class StateRedisStorage(StateStorageBase):
     To use it, just pass this class to:
     TeleBot(storage=StateRedisStorage())
     """
-    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_', redis_url=None):
+
+    def __init__(
+        self,
+        host="localhost",
+        port=6379,
+        db=0,
+        password=None,
+        prefix="telebot_",
+        redis_url=None,
+    ):
         super().__init__()
         if redis_url:
             self.redis = ConnectionPool.from_url(redis_url)
         else:
             self.redis = ConnectionPool(host=host, port=port, db=db, password=password)
-        #self.con = Redis(connection_pool=self.redis) -> use this when necessary
+        # self.con = Redis(connection_pool=self.redis) -> use this when necessary
         #
         # {chat_id: {user_id: {'state': None, 'data': {}}, ...}, ...}
         self.prefix = prefix
         if not redis_installed:
-            raise Exception("Redis is not installed. Install it via 'pip install redis'")
-    
+            raise Exception(
+                "Redis is not installed. Install it via 'pip install redis'"
+            )
+
     def get_record(self, key):
         """
         Function to get record from database.
@@ -35,9 +48,10 @@ class StateRedisStorage(StateStorageBase):
         Made for backward compatibility
         """
         connection = Redis(connection_pool=self.redis)
-        result = connection.get(self.prefix+str(key))
+        result = connection.get(self.prefix + str(key))
         connection.close()
-        if result: return json.loads(result)
+        if result:
+            return json.loads(result)
         return
 
     def set_record(self, key, value):
@@ -47,7 +61,7 @@ class StateRedisStorage(StateStorageBase):
         Made for backward compatibility
         """
         connection = Redis(connection_pool=self.redis)
-        connection.set(self.prefix+str(key), json.dumps(value))
+        connection.set(self.prefix + str(key), json.dumps(value))
         connection.close()
         return True
 
@@ -58,7 +72,7 @@ class StateRedisStorage(StateStorageBase):
         Made for backward compatibility
         """
         connection = Redis(connection_pool=self.redis)
-        connection.delete(self.prefix+str(key))
+        connection.delete(self.prefix + str(key))
         connection.close()
         return True
 
@@ -68,20 +82,20 @@ class StateRedisStorage(StateStorageBase):
         """
         response = self.get_record(chat_id)
         user_id = str(user_id)
-        if hasattr(state, 'name'):
+        if hasattr(state, "name"):
             state = state.name
 
         if response:
             if user_id in response:
-                response[user_id]['state'] = state
+                response[user_id]["state"] = state
             else:
-                response[user_id] = {'state': state, 'data': {}}
+                response[user_id] = {"state": state, "data": {}}
         else:
-            response = {user_id: {'state': state, 'data': {}}}
+            response = {user_id: {"state": state, "data": {}}}
         self.set_record(chat_id, response)
 
         return True
-    
+
     def delete_state(self, chat_id, user_id):
         """
         Delete state for a particular user in a chat.
@@ -94,10 +108,10 @@ class StateRedisStorage(StateStorageBase):
                 if user_id == str(chat_id):
                     self.delete_record(chat_id)
                     return True
-                else: self.set_record(chat_id, response)
+                else:
+                    self.set_record(chat_id, response)
                 return True
         return False
-
 
     def get_value(self, chat_id, user_id, key):
         """
@@ -107,10 +121,9 @@ class StateRedisStorage(StateStorageBase):
         user_id = str(user_id)
         if response:
             if user_id in response:
-                if key in response[user_id]['data']:
-                    return response[user_id]['data'][key]
+                if key in response[user_id]["data"]:
+                    return response[user_id]["data"][key]
         return None
-    
 
     def get_state(self, chat_id, user_id):
         """
@@ -120,10 +133,9 @@ class StateRedisStorage(StateStorageBase):
         user_id = str(user_id)
         if response:
             if user_id in response:
-                return response[user_id]['state']
+                return response[user_id]["state"]
 
         return None
-
 
     def get_data(self, chat_id, user_id):
         """
@@ -133,9 +145,8 @@ class StateRedisStorage(StateStorageBase):
         user_id = str(user_id)
         if response:
             if user_id in response:
-                return response[user_id]['data']
+                return response[user_id]["data"]
         return None
-
 
     def reset_data(self, chat_id, user_id):
         """
@@ -145,12 +156,9 @@ class StateRedisStorage(StateStorageBase):
         user_id = str(user_id)
         if response:
             if user_id in response:
-                response[user_id]['data'] = {}
+                response[user_id]["data"] = {}
                 self.set_record(chat_id, response)
                 return True
-
-       
-
 
     def set_data(self, chat_id, user_id, key, value):
         """
@@ -160,7 +168,7 @@ class StateRedisStorage(StateStorageBase):
         user_id = str(user_id)
         if response:
             if user_id in response:
-                response[user_id]['data'][key] = value
+                response[user_id]["data"][key] = value
                 self.set_record(chat_id, response)
                 return True
         return False
@@ -171,13 +179,12 @@ class StateRedisStorage(StateStorageBase):
         You can use with() with this function.
         """
         return StateContext(self, chat_id, user_id)
-    
+
     def save(self, chat_id, user_id, data):
         response = self.get_record(chat_id)
         user_id = str(user_id)
         if response:
             if user_id in response:
-                response[user_id]['data'] = data
+                response[user_id]["data"] = data
                 self.set_record(chat_id, response)
                 return True
-    

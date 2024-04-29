@@ -1,10 +1,8 @@
 from abc import ABC
 from typing import Optional, Union
-from telebot.handler_backends import State
 
 from telebot import types
-
-
+from telebot.handler_backends import State
 
 
 class SimpleCustomFilter(ABC):
@@ -92,12 +90,14 @@ class TextFilter:
     :return: None
     """
 
-    def __init__(self,
-                 equals: Optional[str] = None,
-                 contains: Optional[Union[list, tuple]] = None,
-                 starts_with: Optional[Union[str, list, tuple]] = None,
-                 ends_with: Optional[Union[str, list, tuple]] = None,
-                 ignore_case: bool = False):
+    def __init__(
+        self,
+        equals: Optional[str] = None,
+        contains: Optional[Union[list, tuple]] = None,
+        starts_with: Optional[Union[str, list, tuple]] = None,
+        ends_with: Optional[Union[str, list, tuple]] = None,
+        ignore_case: bool = False,
+    ):
         """
         :param equals: string, True if object's text is equal to passed string
         :type equals: :obj:`str`
@@ -118,21 +118,30 @@ class TextFilter:
 
         :return: None
         """
-        
-        to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
+
+        to_check = sum(
+            (
+                pattern is not None
+                for pattern in (equals, contains, starts_with, ends_with)
+            )
+        )
         if to_check == 0:
-            raise ValueError('None of the check modes was specified')
+            raise ValueError("None of the check modes was specified")
 
         self.equals = equals
-        self.contains = self._check_iterable(contains, filter_name='contains')
-        self.starts_with = self._check_iterable(starts_with, filter_name='starts_with')
-        self.ends_with = self._check_iterable(ends_with, filter_name='ends_with')
+        self.contains = self._check_iterable(contains, filter_name="contains")
+        self.starts_with = self._check_iterable(starts_with, filter_name="starts_with")
+        self.ends_with = self._check_iterable(ends_with, filter_name="ends_with")
         self.ignore_case = ignore_case
 
     def _check_iterable(self, iterable, filter_name: str):
         if not iterable:
             pass
-        elif not isinstance(iterable, str) and not isinstance(iterable, list) and not isinstance(iterable, tuple):
+        elif (
+            not isinstance(iterable, str)
+            and not isinstance(iterable, list)
+            and not isinstance(iterable, tuple)
+        ):
             raise ValueError(f"Incorrect value of {filter_name!r}")
         elif isinstance(iterable, str):
             iterable = [iterable]
@@ -140,7 +149,10 @@ class TextFilter:
             iterable = [i for i in iterable if isinstance(i, str)]
         return iterable
 
-    def check(self, obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll]):
+    def check(
+        self,
+        obj: Union[types.Message, types.CallbackQuery, types.InlineQuery, types.Poll],
+    ):
         """
         :meta private:
         """
@@ -174,7 +186,9 @@ class TextFilter:
             result = self.equals == text
             if result:
                 return True
-            elif not result and not any((self.contains, self.starts_with, self.ends_with)):
+            elif not result and not any(
+                (self.contains, self.starts_with, self.ends_with)
+            ):
                 return False
 
         if self.contains:
@@ -196,6 +210,7 @@ class TextFilter:
 
         return False
 
+
 class TextMatchFilter(AdvancedCustomFilter):
     """
     Filter to check Text message.
@@ -207,7 +222,7 @@ class TextMatchFilter(AdvancedCustomFilter):
         # your function
     """
 
-    key = 'text'
+    key = "text"
 
     def check(self, message, text):
         """
@@ -235,13 +250,17 @@ class TextContainsFilter(AdvancedCustomFilter):
         # your function
     """
 
-    key = 'text_contains'
+    key = "text_contains"
 
     def check(self, message, text):
         """
         :meta private:
         """
-        if not isinstance(text, str) and not isinstance(text, list) and not isinstance(text, tuple):
+        if (
+            not isinstance(text, str)
+            and not isinstance(text, list)
+            and not isinstance(text, tuple)
+        ):
             raise ValueError("Incorrect text_contains value")
         elif isinstance(text, str):
             text = [text]
@@ -263,7 +282,7 @@ class TextStartsFilter(AdvancedCustomFilter):
         # your function
     """
 
-    key = 'text_startswith'
+    key = "text_startswith"
 
     def check(self, message, text):
         """
@@ -283,7 +302,7 @@ class ChatFilter(AdvancedCustomFilter):
         # your function
     """
 
-    key = 'chat_id'
+    key = "chat_id"
 
     def check(self, message, text):
         """
@@ -298,14 +317,14 @@ class ForwardFilter(SimpleCustomFilter):
     """
     Check whether message was forwarded from channel or group.
 
-    .. code-block:: python3 
+    .. code-block:: python3
         :caption: Example on using this filter:
 
         @bot.message_handler(is_forwarded=True)
         # your function
     """
 
-    key = 'is_forwarded'
+    key = "is_forwarded"
 
     def check(self, message):
         """
@@ -325,7 +344,7 @@ class IsReplyFilter(SimpleCustomFilter):
         # your function
     """
 
-    key = 'is_reply'
+    key = "is_reply"
 
     def check(self, message):
         """
@@ -347,7 +366,7 @@ class LanguageFilter(AdvancedCustomFilter):
         # your function
     """
 
-    key = 'language_code'
+    key = "language_code"
 
     def check(self, message, text):
         """
@@ -370,7 +389,7 @@ class IsAdminFilter(SimpleCustomFilter):
         # your function
     """
 
-    key = 'is_chat_admin'
+    key = "is_chat_admin"
 
     def __init__(self, bot):
         self._bot = bot
@@ -380,8 +399,12 @@ class IsAdminFilter(SimpleCustomFilter):
         :meta private:
         """
         if isinstance(message, types.CallbackQuery):
-            return self._bot.get_chat_member(message.message.chat.id, message.from_user.id).status in ['creator', 'administrator']
-        return self._bot.get_chat_member(message.chat.id, message.from_user.id).status in ['creator', 'administrator']
+            return self._bot.get_chat_member(
+                message.message.chat.id, message.from_user.id
+            ).status in ["creator", "administrator"]
+        return self._bot.get_chat_member(
+            message.chat.id, message.from_user.id
+        ).status in ["creator", "administrator"]
 
 
 class StateFilter(AdvancedCustomFilter):
@@ -390,7 +413,7 @@ class StateFilter(AdvancedCustomFilter):
 
     .. code-block:: python3
         :caption: Example on using this filter:
-        
+
         @bot.message_handler(state=1)
         # your function
     """
@@ -398,44 +421,42 @@ class StateFilter(AdvancedCustomFilter):
     def __init__(self, bot):
         self.bot = bot
 
-    key = 'state'
+    key = "state"
 
     def check(self, message, text):
         """
         :meta private:
         """
-        if text == '*': return True
-        
+        if text == "*":
+            return True
+
         # needs to work with callbackquery
         if isinstance(message, types.Message):
             chat_id = message.chat.id
             user_id = message.from_user.id
 
         if isinstance(message, types.CallbackQuery):
-            
+
             chat_id = message.message.chat.id
             user_id = message.from_user.id
             message = message.message
 
-        
-        
-
         if isinstance(text, list):
             new_text = []
             for i in text:
-                if isinstance(i, State): i = i.name
+                if isinstance(i, State):
+                    i = i.name
                 new_text.append(i)
             text = new_text
         elif isinstance(text, State):
             text = text.name
-        
-        if message.chat.type in ['group', 'supergroup']:
+
+        if message.chat.type in ["group", "supergroup"]:
             group_state = self.bot.current_states.get_state(chat_id, user_id)
             if group_state == text:
                 return True
             elif type(text) is list and group_state in text:
                 return True
-
 
         else:
             user_state = self.bot.current_states.get_state(chat_id, user_id)
@@ -455,7 +476,8 @@ class IsDigitFilter(SimpleCustomFilter):
         @bot.message_handler(is_digit=True)
         # your function
     """
-    key = 'is_digit'
+
+    key = "is_digit"
 
     def check(self, message):
         """

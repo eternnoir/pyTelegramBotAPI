@@ -5,7 +5,7 @@
 # Documenation to Tornado: http://tornadoweb.org
 
 import signal
-from typing import Optional, Awaitable
+from typing import Awaitable, Optional
 
 import tornado.httpserver
 import tornado.ioloop
@@ -14,13 +14,15 @@ import tornado.web
 
 import telebot
 
-API_TOKEN = '<api_token>'
+API_TOKEN = "<api_token>"
 WEBHOOK_CERT = "./cert.pem"
 WEBHOOK_PKEY = "./pkey.pem"
 WEBHOOK_HOST = "<domain_or_ip>"
 WEBHOOK_SECRET = "<secret_uri_for_updates"
 WEBHOOK_PORT = 88
-WEBHOOK_URL_BASE = "https://{0}:{1}/{2}".format(WEBHOOK_HOST, str(WEBHOOK_PORT), WEBHOOK_SECRET)
+WEBHOOK_URL_BASE = "https://{0}:{1}/{2}".format(
+    WEBHOOK_HOST, str(WEBHOOK_PORT), WEBHOOK_SECRET
+)
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -51,9 +53,11 @@ class WebhookServ(tornado.web.RequestHandler):
         self.finish()
 
     def post(self):
-        if "Content-Length" in self.request.headers and \
-            "Content-Type" in self.request.headers and \
-            self.request.headers['Content-Type'] == "application/json":
+        if (
+            "Content-Length" in self.request.headers
+            and "Content-Type" in self.request.headers
+            and self.request.headers["Content-Type"] == "application/json"
+        ):
 
             # length = int(self.request.headers['Content-Length'])
             json_data = self.request.body.decode("utf-8")
@@ -66,7 +70,9 @@ class WebhookServ(tornado.web.RequestHandler):
             self.finish()
 
 
-tornado.options.define("port", default=WEBHOOK_PORT, help="run on the given port", type=int)
+tornado.options.define(
+    "port", default=WEBHOOK_PORT, help="run on the given port", type=int
+)
 is_closing = False
 
 
@@ -85,28 +91,30 @@ def try_exit():
 
 
 # Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
+@bot.message_handler(commands=["help", "start"])
 def send_welcome(message):
-    bot.reply_to(message,
-                 ("Hi there, I am EchoBot.\n"
-                  "I am here to echo your kind words back to you."))
+    bot.reply_to(
+        message,
+        ("Hi there, I am EchoBot.\n" "I am here to echo your kind words back to you."),
+    )
 
 
 bot.remove_webhook()
-bot.set_webhook(url=WEBHOOK_URL_BASE,
-                certificate=open(WEBHOOK_CERT, 'r'))
+bot.set_webhook(url=WEBHOOK_URL_BASE, certificate=open(WEBHOOK_CERT, "r"))
 tornado.options.options.logging = None
 tornado.options.parse_command_line()
 signal.signal(signal.SIGINT, signal_handler)
-application = tornado.web.Application([
-    (r"/", Root),
-    (r"/" + WEBHOOK_SECRET, WebhookServ)
-])
+application = tornado.web.Application(
+    [(r"/", Root), (r"/" + WEBHOOK_SECRET, WebhookServ)]
+)
 
-http_server = tornado.httpserver.HTTPServer(application, ssl_options={
-    "certfile": WEBHOOK_CERT,
-    "keyfile" : WEBHOOK_PKEY,
-})
+http_server = tornado.httpserver.HTTPServer(
+    application,
+    ssl_options={
+        "certfile": WEBHOOK_CERT,
+        "keyfile": WEBHOOK_PKEY,
+    },
+)
 http_server.listen(tornado.options.options.port)
 tornado.ioloop.PeriodicCallback(try_exit, 100).start()
 tornado.ioloop.IOLoop.instance().start()

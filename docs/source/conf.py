@@ -17,12 +17,12 @@ from datetime import datetime
 
 # -- Project information -----------------------------------------------------
 
-project = 'pyTelegramBotAPI'
-author = 'coder2020official'
-copyright = f'2022-{datetime.now().year}, {author}'
+project = "pyTelegramBotAPI"
+author = "coder2020official"
+copyright = f"2022-{datetime.now().year}, {author}"
 
 # The full version, including alpha/beta/rc tags
-release = '4.17.0'
+release = "4.17.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,16 +31,15 @@ release = '4.17.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autosectionlabel',
-    'sphinx.ext.autodoc',
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx_copybutton",
-    
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -53,13 +52,13 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'furo'
+html_theme = "furo"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-#html_logo = 'logo.png'
+html_static_path = ["_static"]
+# html_logo = 'logo.png'
 html_theme_options = {
     "light_css_variables": {
         "color-brand-primary": "#7C4DFF",

@@ -63,12 +63,16 @@ class I18N(BaseMiddleware):
 
     def lazy_gettext(self, text: str, lang: str = None):
         if not babel_imported:
-            raise RuntimeError('babel module is not imported. Check that you installed it.')
+            raise RuntimeError(
+                "babel module is not imported. Check that you installed it."
+            )
         return LazyProxy(self.gettext, text, lang, enable_cache=False)
 
     def lazy_ngettext(self, singular: str, plural: str, lang: str = None, n=1):
         if not babel_imported:
-            raise RuntimeError('babel module is not imported. Check that you installed it.')
+            raise RuntimeError(
+                "babel module is not imported. Check that you installed it."
+            )
         return LazyProxy(self.ngettext, singular, plural, lang, n, enable_cache=False)
 
     def get_user_language(self, obj):
@@ -99,23 +103,27 @@ class I18N(BaseMiddleware):
         Looks for translations with passed 'domain' in passed 'path'
         """
         if not os.path.exists(self.path):
-            raise RuntimeError(f"Translations directory by path: {self.path!r} was not found")
+            raise RuntimeError(
+                f"Translations directory by path: {self.path!r} was not found"
+            )
 
         result = {}
 
         for name in os.listdir(self.path):
-            translations_path = os.path.join(self.path, name, 'LC_MESSAGES')
+            translations_path = os.path.join(self.path, name, "LC_MESSAGES")
 
             if not os.path.isdir(translations_path):
                 continue
 
-            po_file = os.path.join(translations_path, self.domain + '.po')
-            mo_file = po_file[:-2] + 'mo'
+            po_file = os.path.join(translations_path, self.domain + ".po")
+            mo_file = po_file[:-2] + "mo"
 
             if os.path.isfile(po_file) and not os.path.isfile(mo_file):
-                raise FileNotFoundError(f"Translations for: {name!r} were not compiled!")
+                raise FileNotFoundError(
+                    f"Translations for: {name!r} were not compiled!"
+                )
 
-            with open(mo_file, 'rb') as file:
+            with open(mo_file, "rb") as file:
                 result[name] = gettext.GNUTranslations(file)
 
         return result

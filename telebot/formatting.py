@@ -4,9 +4,9 @@ Markdown & HTML formatting functions.
 .. versionadded:: 4.5.1
 """
 
-import re
 import html
-from typing import Optional, List, Dict
+import re
+from typing import Dict, List, Optional
 
 
 def format_text(*args, separator="\n"):
@@ -57,13 +57,13 @@ def escape_markdown(content: str) -> str:
     :return: The escaped string.
     :rtype: :obj:`str`
     """
-    
+
     parse = re.sub(r"([_*\[\]()~`>\#\+\-=|\.!\{\}\\])", r"\\\1", content)
     reparse = re.sub(r"\\\\([_*\[\]()~`>\#\+\-=|\.!\{\}\\])", r"\1", parse)
     return reparse
 
 
-def mbold(content: str, escape: Optional[bool]=True) -> str:
+def mbold(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted bold string.
 
@@ -76,10 +76,10 @@ def mbold(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '*{}*'.format(escape_markdown(content) if escape else content)
+    return "*{}*".format(escape_markdown(content) if escape else content)
 
 
-def hbold(content: str, escape: Optional[bool]=True) -> str:
+def hbold(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted bold string.
 
@@ -92,10 +92,10 @@ def hbold(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<b>{}</b>'.format(escape_html(content) if escape else content)
+    return "<b>{}</b>".format(escape_html(content) if escape else content)
 
 
-def mitalic(content: str, escape: Optional[bool]=True) -> str:
+def mitalic(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted italic string.
 
@@ -108,10 +108,10 @@ def mitalic(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '_{}_\r'.format(escape_markdown(content) if escape else content)
+    return "_{}_\r".format(escape_markdown(content) if escape else content)
 
 
-def hitalic(content: str, escape: Optional[bool]=True) -> str:
+def hitalic(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted italic string.
 
@@ -124,10 +124,10 @@ def hitalic(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<i>{}</i>'.format(escape_html(content) if escape else content)
+    return "<i>{}</i>".format(escape_html(content) if escape else content)
 
 
-def munderline(content: str, escape: Optional[bool]=True) -> str:
+def munderline(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted underline string.
 
@@ -140,10 +140,10 @@ def munderline(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '__{}__'.format(escape_markdown(content) if escape else content)
+    return "__{}__".format(escape_markdown(content) if escape else content)
 
 
-def hunderline(content: str, escape: Optional[bool]=True) -> str:
+def hunderline(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted underline string.
 
@@ -157,10 +157,10 @@ def hunderline(content: str, escape: Optional[bool]=True) -> str:
     :rtype: :obj:`str`
 
     """
-    return '<u>{}</u>'.format(escape_html(content) if escape else content)
+    return "<u>{}</u>".format(escape_html(content) if escape else content)
 
 
-def mstrikethrough(content: str, escape: Optional[bool]=True) -> str:
+def mstrikethrough(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted strikethrough string.
 
@@ -173,10 +173,10 @@ def mstrikethrough(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '~{}~'.format(escape_markdown(content) if escape else content)
+    return "~{}~".format(escape_markdown(content) if escape else content)
 
 
-def hstrikethrough(content: str, escape: Optional[bool]=True) -> str:
+def hstrikethrough(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted strikethrough string.
 
@@ -189,10 +189,10 @@ def hstrikethrough(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<s>{}</s>'.format(escape_html(content) if escape else content)
+    return "<s>{}</s>".format(escape_html(content) if escape else content)
 
 
-def mspoiler(content: str, escape: Optional[bool]=True) -> str:
+def mspoiler(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted spoiler string.
 
@@ -205,10 +205,10 @@ def mspoiler(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '||{}||'.format(escape_markdown(content) if escape else content)
+    return "||{}||".format(escape_markdown(content) if escape else content)
 
 
-def hspoiler(content: str, escape: Optional[bool]=True) -> str:
+def hspoiler(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted spoiler string.
 
@@ -221,10 +221,12 @@ def hspoiler(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<tg-spoiler>{}</tg-spoiler>'.format(escape_html(content) if escape else content)
+    return "<tg-spoiler>{}</tg-spoiler>".format(
+        escape_html(content) if escape else content
+    )
 
 
-def mlink(content: str, url: str, escape: Optional[bool]=True) -> str:
+def mlink(content: str, url: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted link string.
 
@@ -240,10 +242,12 @@ def mlink(content: str, url: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '[{}]({})'.format(escape_markdown(content), escape_markdown(url) if escape else content)
+    return "[{}]({})".format(
+        escape_markdown(content), escape_markdown(url) if escape else content
+    )
 
 
-def hlink(content: str, url: str, escape: Optional[bool]=True) -> str:
+def hlink(content: str, url: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted link string.
 
@@ -259,10 +263,12 @@ def hlink(content: str, url: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<a href="{}">{}</a>'.format(escape_html(url), escape_html(content) if escape else content)
+    return '<a href="{}">{}</a>'.format(
+        escape_html(url), escape_html(content) if escape else content
+    )
 
 
-def mcode(content: str, language: str="", escape: Optional[bool]=True) -> str:
+def mcode(content: str, language: str = "", escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted code string.
 
@@ -275,10 +281,12 @@ def mcode(content: str, language: str="", escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '```{}\n{}```'.format(language, escape_markdown(content) if escape else content)
+    return "```{}\n{}```".format(
+        language, escape_markdown(content) if escape else content
+    )
 
 
-def hcode(content: str, escape: Optional[bool]=True) -> str:
+def hcode(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns an HTML-formatted code string.
 
@@ -291,10 +299,10 @@ def hcode(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<code>{}</code>'.format(escape_html(content) if escape else content)
+    return "<code>{}</code>".format(escape_html(content) if escape else content)
 
 
-def hpre(content: str, escape: Optional[bool]=True, language: str="") -> str:
+def hpre(content: str, escape: Optional[bool] = True, language: str = "") -> str:
     """
     Returns an HTML-formatted preformatted string.
 
@@ -307,7 +315,9 @@ def hpre(content: str, escape: Optional[bool]=True, language: str="") -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<pre><code class="{}">{}</code></pre>'.format(language, escape_html(content) if escape else content)
+    return '<pre><code class="{}">{}</code></pre>'.format(
+        language, escape_html(content) if escape else content
+    )
 
 
 def hide_link(url: str) -> str:
@@ -316,14 +326,14 @@ def hide_link(url: str) -> str:
 
     :param url: The url of the image.
     :type url: :obj:`str`
-    
+
     :return: The hidden url.
     :rtype: :obj:`str`
     """
     return f'<a href="{url}">&#8288;</a>'
 
 
-def mcite(content: str, escape: Optional[bool]=True) -> str:
+def mcite(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a Markdown-formatted block-quotation string.
 
@@ -337,11 +347,11 @@ def mcite(content: str, escape: Optional[bool]=True) -> str:
     :rtype: :obj:`str`
     """
     content = escape_markdown(content) if escape else content
-    content = '\n'.join(['>' + line for line in content.split('\n')])
+    content = "\n".join([">" + line for line in content.split("\n")])
     return content
 
 
-def hcite(content: str, escape: Optional[bool]=True) -> str:
+def hcite(content: str, escape: Optional[bool] = True) -> str:
     """
     Returns a html-formatted block-quotation string.
 
@@ -350,14 +360,18 @@ def hcite(content: str, escape: Optional[bool]=True) -> str:
 
     :param escape: True if you need to escape special characters. Defaults to True.
     :type escape: :obj:`bool`
-    
+
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<blockquote>{}</blockquote>'.format(escape_html(content) if escape else content)
+    return "<blockquote>{}</blockquote>".format(
+        escape_html(content) if escape else content
+    )
 
 
-def apply_html_entities(text: str, entities: Optional[List], custom_subs: Optional[Dict[str, str]]) -> str:
+def apply_html_entities(
+    text: str, entities: Optional[List], custom_subs: Optional[Dict[str, str]]
+) -> str:
     """
     Author: @sviat9440
     Updaters: @badiboy, @EgorKhabarov
@@ -391,11 +405,11 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         "pre": "<pre>{text}</pre>",
         "code": "<code>{text}</code>",
         # "url": "<a href=\"{url}\">{text}</a>", # @badiboy plain URLs have no text and do not need tags
-        "text_link": "<a href=\"{url}\">{text}</a>",
+        "text_link": '<a href="{url}">{text}</a>',
         "strikethrough": "<s>{text}</s>",
         "underline": "<u>{text}</u>",
-        "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
-        "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>",
+        "spoiler": '<span class="tg-spoiler">{text}</span>',
+        "custom_emoji": '<tg-emoji emoji-id="{custom_emoji_id}">{text}</tg-emoji>',
         "blockquote": "<blockquote>{text}</blockquote>",
     }
 
@@ -412,7 +426,9 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
             url = "tg://user?id={0}".format(user.id)
         elif subst_type == "mention":
             url = "https://t.me/{0}".format(upd_text[1:])
-        upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        upd_text = (
+            upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        )
         if not subst_type or not _subs.get(subst_type):
             return upd_text
         subs = _subs.get(subst_type)
@@ -427,18 +443,28 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         if entity.offset > offset:
             # when the offset is not 0: for example, a __b__
             # we need to add the text before the entity to the html_text
-            html_text += func(utf16_text[offset * 2: entity.offset * 2])
+            html_text += func(utf16_text[offset * 2 : entity.offset * 2])
             offset = entity.offset
 
-            new_string = func(utf16_text[offset * 2: (offset + entity.length) * 2], subst_type=entity.type,
-                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id)
+            new_string = func(
+                utf16_text[offset * 2 : (offset + entity.length) * 2],
+                subst_type=entity.type,
+                url=entity.url,
+                user=entity.user,
+                custom_emoji_id=entity.custom_emoji_id,
+            )
             start_index = len(html_text)
             html_text += new_string
             offset += entity.length
             end_index = len(html_text)
         elif entity.offset == offset:
-            new_string = func(utf16_text[offset * 2: (offset + entity.length) * 2], subst_type=entity.type,
-                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id)
+            new_string = func(
+                utf16_text[offset * 2 : (offset + entity.length) * 2],
+                subst_type=entity.type,
+                url=entity.url,
+                user=entity.user,
+                custom_emoji_id=entity.custom_emoji_id,
+            )
             start_index = len(html_text)
             html_text += new_string
             end_index = len(html_text)
@@ -448,14 +474,25 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
             # We shouldn't update offset, because they are the same as entity before.
             # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
             # And we don't change it).
-            entity_string = html_text[start_index: end_index].encode("utf-16-le")
-            formatted_string = func(entity_string, subst_type=entity.type, url=entity.url, user=entity.user,
-                                    custom_emoji_id=entity.custom_emoji_id). \
-                replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-            html_text = html_text[:start_index] + formatted_string + html_text[end_index:]
+            entity_string = html_text[start_index:end_index].encode("utf-16-le")
+            formatted_string = (
+                func(
+                    entity_string,
+                    subst_type=entity.type,
+                    url=entity.url,
+                    user=entity.user,
+                    custom_emoji_id=entity.custom_emoji_id,
+                )
+                .replace("&amp;", "&")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+            )
+            html_text = (
+                html_text[:start_index] + formatted_string + html_text[end_index:]
+            )
             end_index = len(html_text)
 
     if offset * 2 < len(utf16_text):
-        html_text += func(utf16_text[offset * 2:])
+        html_text += func(utf16_text[offset * 2 :])
 
     return html_text

@@ -7,8 +7,7 @@
 
 import telebot
 
-
-API_TOKEN = '<api_token>'
+API_TOKEN = "<api_token>"
 bot = telebot.TeleBot(API_TOKEN)
 
 # use in for delete with the necessary scope and language_code if necessary
@@ -17,7 +16,7 @@ bot.delete_my_commands(scope=None, language_code=None)
 bot.set_my_commands(
     commands=[
         telebot.types.BotCommand("command1", "command1 description"),
-        telebot.types.BotCommand("command2", "command2 description")
+        telebot.types.BotCommand("command2", "command2 description"),
     ],
     # scope=telebot.types.BotCommandScopeChat(12345678)  # use for personal command for users
     # scope=telebot.types.BotCommandScopeAllPrivateChats()  # use for all private chats
