@@ -4003,7 +4003,7 @@ class TeleBot:
         horizontal_accuracy: Optional[float] = None,
         heading: Optional[int] = None,
         proximity_alert_radius: Optional[int] = None,
-    ) -> types.Message | bool:
+    ) -> types.Message or bool:
         """
         Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly
             disabled by a call to stopMessageLiveLocation. On success, if the edited message is not an inline message, the edited Message
@@ -4068,7 +4068,7 @@ class TeleBot:
         inline_message_id: Optional[str] = None,
         reply_markup: Optional[types.InlineKeyboardMarkup] = None,
         timeout: Optional[int] = None,
-    ) -> types.Message | bool:
+    ) -> types.Message or bool:
         """
         Use this method to stop updating a live location message before live_period expires.
         On success, if the message is not an inline message, the edited Message is returned, otherwise True is returned.
