@@ -548,6 +548,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'can_connect_to_business': self.can_connect_to_business}
 
 
+# noinspection PyShadowingBuiltins
 class GroupChat(JsonDeserializable):
     """
     :meta private:
@@ -563,6 +564,7 @@ class GroupChat(JsonDeserializable):
         self.title: str = title
 
 
+# noinspection PyShadowingBuiltins
 class Chat(JsonDeserializable):
     """
     This object represents a chat.
@@ -1584,6 +1586,7 @@ class Message(JsonDeserializable):
         return self.users_shared
 
 
+# noinspection PyShadowingBuiltins
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     """
     This object represents one special entity in a text message. For example, hashtags, usernames, URLs, etc.
@@ -2461,20 +2464,20 @@ class ReplyKeyboardMarkup(JsonSerializable):
         return json.dumps(json_dict)
 
 
+# noinspection PyShadowingBuiltins
 class KeyboardButtonPollType(Dictionaryable):
     """
     This object represents type of a poll, which is allowed to be created and sent when the corresponding button is pressed.
 
     Telegram Documentation: https://core.telegram.org/bots/api#keyboardbuttonpolltype
 
-    :param type: Optional. If quiz is passed, the user will be allowed to create only polls in the quiz mode. If regular is 
-        passed, only regular polls will be allowed. Otherwise, the user will be allowed to create a poll of any type.
+    :param type: Optional. If quiz is passed, the user will be allowed to create only polls in the quiz mode. If regular is passed, only regular polls will be allowed. Otherwise, the user will be allowed to create a poll of any type.
     :type type: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonPollType`
     """
-    def __init__(self, type=''):
+    def __init__(self, type=None):
         self.type: str = type
 
     def to_dict(self):
@@ -2991,6 +2994,7 @@ class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
         return json_dict
 
 
+# noinspection PyShadowingBuiltins
 class CallbackQuery(JsonDeserializable):
     """
     This object represents an incoming callback query from a callback button in an inline keyboard. If the button that originated the query was attached to a message sent by the bot, the field message will be present. If the button was attached to a message sent via the bot (in inline mode), the field inline_message_id will be present. Exactly one of the fields data or game_short_name will be present.
@@ -3585,6 +3589,7 @@ class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
 
 # BotCommandScopes
 
+# noinspection PyShadowingBuiltins
 class BotCommandScope(ABC, JsonSerializable):
     """
     This object represents the scope to which bot commands are applied. Currently, the following 7 scopes are supported:
@@ -3790,6 +3795,7 @@ class BotCommandScopeChatMember(BotCommandScope):
 
 # InlineQuery
 
+# noinspection PyShadowingBuiltins
 class InlineQuery(JsonDeserializable):
     """
     This object represents an incoming inline query. When the user sends an empty query, your bot could return some default or trending results.
@@ -4316,7 +4322,7 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultArticle(InlineQueryResultBase):
     """
     Represents a link to an article or web page.
@@ -4401,7 +4407,7 @@ class InlineQueryResultArticle(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultPhoto(InlineQueryResultBase):
     """
     Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
@@ -4481,7 +4487,7 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultGif(InlineQueryResultBase):
     """
     Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
@@ -4574,7 +4580,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
@@ -4667,7 +4673,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultVideo(InlineQueryResultBase):
     """
     Represents a link to a page containing an embedded video player or a video file. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
@@ -4759,7 +4765,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultAudio(InlineQueryResultBase):
     """
     Represents a link to an MP3 audio file. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
@@ -4824,7 +4830,7 @@ class InlineQueryResultAudio(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultVoice(InlineQueryResultBase):
     """
     Represents a link to a voice recording in an .OGG container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the the voice message.
@@ -4882,7 +4888,7 @@ class InlineQueryResultVoice(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultDocument(InlineQueryResultBase):
     """
     Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
@@ -4979,7 +4985,7 @@ class InlineQueryResultDocument(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultLocation(InlineQueryResultBase):
     """
     Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location.
@@ -5081,7 +5087,7 @@ class InlineQueryResultLocation(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultVenue(InlineQueryResultBase):
     """
     Represents a venue. By default, the venue will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the venue.
@@ -5190,7 +5196,7 @@ class InlineQueryResultVenue(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultContact(InlineQueryResultBase):
     """
     Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the contact.
@@ -5278,7 +5284,7 @@ class InlineQueryResultContact(InlineQueryResultBase):
         return json_dict
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultGame(InlineQueryResultBase):
     """
     Represents a Game.
@@ -5347,7 +5353,7 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
         return json.dumps(json_dict)
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
     """
     Represents a link to a photo stored on the Telegram servers. By default, this photo will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
@@ -5406,7 +5412,7 @@ class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
         self.payload_dic['photo_file_id'] = photo_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
     """
     Represents a link to an animated GIF file stored on the Telegram servers. By default, this animated GIF file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with specified content instead of the animation.
@@ -5461,7 +5467,7 @@ class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
         self.payload_dic['gif_file_id'] = gif_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound) stored on the Telegram servers. By default, this animated MPEG-4 file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
@@ -5516,7 +5522,7 @@ class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
     """
     Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker.
@@ -5551,7 +5557,7 @@ class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
         self.payload_dic['sticker_file_id'] = sticker_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedDocument(InlineQueryResultCachedBase):
     """
     Represents a link to a file stored on the Telegram servers. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file.
@@ -5610,7 +5616,7 @@ class InlineQueryResultCachedDocument(InlineQueryResultCachedBase):
         self.payload_dic['document_file_id'] = document_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
     """
     Represents a link to a video file stored on the Telegram servers. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
@@ -5670,7 +5676,7 @@ class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
         self.payload_dic['video_file_id'] = video_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedVoice(InlineQueryResultCachedBase):
     """
     Represents a link to a voice message stored on the Telegram servers. By default, this voice message will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the voice message.
@@ -5724,7 +5730,7 @@ class InlineQueryResultCachedVoice(InlineQueryResultCachedBase):
         self.payload_dic['voice_file_id'] = voice_file_id
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedAudio(InlineQueryResultCachedBase):
     """
     Represents a link to an MP3 audio file stored on the Telegram servers. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
@@ -6092,7 +6098,7 @@ class OrderInfo(JsonDeserializable):
         self.shipping_address: ShippingAddress = shipping_address
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class ShippingOption(JsonSerializable):
     """
     This object represents one shipping option.
@@ -6187,6 +6193,7 @@ class SuccessfulPayment(JsonDeserializable):
         self.provider_payment_charge_id: str = provider_payment_charge_id
 
 
+# noinspection PyShadowingBuiltins
 class ShippingQuery(JsonDeserializable):
     """
     This object contains information about an incoming shipping query.
@@ -6223,6 +6230,7 @@ class ShippingQuery(JsonDeserializable):
         self.shipping_address: ShippingAddress = shipping_address
 
 
+# noinspection PyShadowingBuiltins
 class PreCheckoutQuery(JsonDeserializable):
     """
     This object contains information about an incoming pre-checkout query.
@@ -6350,6 +6358,7 @@ class StickerSet(JsonDeserializable):
         return False
 
 
+# noinspection PyShadowingBuiltins
 class Sticker(JsonDeserializable):
     """
     This object represents a sticker.
@@ -6494,6 +6503,7 @@ class MaskPosition(Dictionaryable, JsonDeserializable, JsonSerializable):
 
 # InputMedia
 
+# noinspection PyShadowingBuiltins
 class InputMedia(Dictionaryable, JsonSerializable):
     """
     This object represents the content of a media message to be sent. It should be one of
@@ -7398,12 +7408,12 @@ class MenuButton(JsonDeserializable, JsonSerializable, Dictionaryable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        map = {
+        types = {
             'commands': MenuButtonCommands,
             'web_app': MenuButtonWebApp,
             'default': MenuButtonDefault
         }
-        return map[obj['type']](**obj)
+        return types[obj['type']](**obj)
     
     def to_json(self):
         """
@@ -7416,8 +7426,9 @@ class MenuButton(JsonDeserializable, JsonSerializable, Dictionaryable):
         :meta private:
         """
         raise NotImplementedError
-        
 
+
+# noinspection PyUnusedLocal
 class MenuButtonCommands(MenuButton):
     """
     Represents a menu button, which opens the bot's list of commands.
@@ -7441,6 +7452,7 @@ class MenuButtonCommands(MenuButton):
         return json.dumps(self.to_dict())
 
 
+# noinspection PyUnusedLocal
 class MenuButtonWebApp(MenuButton):
     """
     Represents a menu button, which launches a Web App.
@@ -7472,7 +7484,8 @@ class MenuButtonWebApp(MenuButton):
     def to_json(self):
         return json.dumps(self.to_dict())
 
-    
+
+# noinspection PyUnusedLocal
 class MenuButtonDefault(MenuButton):
     """
     Describes that no specific value for the menu button was set.
@@ -7953,6 +7966,7 @@ class BotShortDescription(JsonDeserializable):
         self.short_description: str = short_description
 
 
+# noinspection PyShadowingBuiltins
 class InputSticker(Dictionaryable, JsonSerializable):
     """
     This object describes a sticker to be added to a sticker set.
@@ -8187,6 +8201,7 @@ class Story(JsonDeserializable):
 
 
 # base class
+# noinspection PyShadowingBuiltins
 class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
     """
     This object represents a reaction type.
@@ -8371,8 +8386,9 @@ class MessageReactionCountUpdated(JsonDeserializable):
         self.message_id: int = message_id
         self.date: int = date
         self.reactions: List[ReactionCount] = reactions
-        
 
+
+# noinspection PyShadowingBuiltins
 class ReactionCount(JsonDeserializable):
     """
     This object represents a reaction added to a message along with the number of times it was added.
@@ -8563,7 +8579,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.venue: Optional[Venue] = venue
 
 
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class MessageOrigin(JsonDeserializable):
     """
     This object describes the origin of a message.
@@ -9409,7 +9425,7 @@ class ChatBoostAdded(JsonDeserializable):
         self.boost_count: int = boost_count
 
 
-
+# noinspection PyShadowingBuiltins
 class BusinessConnection(JsonDeserializable):
     """
     This object describes the connection of the bot with a business account.
