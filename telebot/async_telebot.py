@@ -4696,7 +4696,7 @@ class AsyncTeleBot:
         :param proximity_alert_radius: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
         :type proximity_alert_radius: :obj:`int`
 
-        :param live_period: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+        :param live_period: New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged
         :type live_period: :obj:`int`
 
         :return: On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
