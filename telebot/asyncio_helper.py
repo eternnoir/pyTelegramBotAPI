@@ -581,7 +581,7 @@ async def edit_message_live_location(
     if live_period:
         payload['live_period'] = live_period
     if inline_message_id:
-        payload['inline_message_id'] = inline_message_id\
+        payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
     if timeout:
