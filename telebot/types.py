@@ -6916,16 +6916,13 @@ class Poll(JsonDeserializable):
     :param allows_multiple_answers: True, if the poll allows multiple answers
     :type allows_multiple_answers: :obj:`bool`
 
-    :param correct_option_id: Optional. 0-based identifier of the correct answer option. Available only for polls in 
-        the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot.
+    :param correct_option_id: Optional. 0-based identifier of the correct answer option. Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot.
     :type correct_option_id: :obj:`int`
 
-    :param explanation: Optional. Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a 
-        quiz-style poll, 0-200 characters
+    :param explanation: Optional. Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters
     :type explanation: :obj:`str`
 
-    :param explanation_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in 
-        the explanation
+    :param explanation_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the explanation
     :type explanation_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
     :param open_period: Optional. Amount of time in seconds the poll will be active after creation
@@ -6933,6 +6930,9 @@ class Poll(JsonDeserializable):
 
     :param close_date: Optional. Point in time (Unix timestamp) when the poll will be automatically closed
     :type close_date: :obj:`int`
+
+    :param question_entities: Optional. Special entities that appear in the question. Currently, only custom emoji entities are allowed in poll questions
+    :type question_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.Poll`
@@ -6948,6 +6948,8 @@ class Poll(JsonDeserializable):
         obj['options'] = options or None
         if 'explanation_entities' in obj:
             obj['explanation_entities'] = Message.parse_entities(obj['explanation_entities'])
+        if 'question_entities' in obj:
+            obj['question_entities'] = Message.parse_entities(obj['question_entities'])
         return cls(**obj)
 
     # noinspection PyShadowingBuiltins
@@ -6956,7 +6958,8 @@ class Poll(JsonDeserializable):
             question, options,
             poll_id=None, total_voter_count=None, is_closed=None, is_anonymous=None, type=None,
             allows_multiple_answers=None, correct_option_id=None, explanation=None, explanation_entities=None,
-            open_period=None, close_date=None, poll_type=None, **kwargs):
+            open_period=None, close_date=None, poll_type=None, question_entities=None,
+            **kwargs):
         self.id: str = poll_id
         self.question: str = question
         self.options: List[PollOption] = options
@@ -6972,6 +6975,7 @@ class Poll(JsonDeserializable):
         self.correct_option_id: int = correct_option_id
         self.explanation: str = explanation
         self.explanation_entities: List[MessageEntity] = explanation_entities
+        self.question_entities: List[MessageEntity] = question_entities
         self.open_period: int = open_period
         self.close_date: int = close_date
 
