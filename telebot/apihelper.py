@@ -439,6 +439,8 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
         payload['disable_notification'] = disable_notification
     if reply_parameters is not None:
         payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup is not None:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
     if protect_content is not None:

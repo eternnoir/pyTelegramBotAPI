@@ -1891,7 +1891,7 @@ class TeleBot:
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption=caption,
                 parse_mode=parse_mode, caption_entities=caption_entities, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-               message_thread_id=message_thread_id, reply_parameters=reply_parameters))
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters))
 
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
