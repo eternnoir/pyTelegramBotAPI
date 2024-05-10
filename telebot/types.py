@@ -6868,6 +6868,9 @@ class PollOption(JsonDeserializable):
     :param voter_count: Number of users that voted for this option
     :type voter_count: :obj:`int`
 
+    :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
+    :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollOption`
     """
@@ -6875,11 +6878,14 @@ class PollOption(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
+        if 'text_entities' in obj:
+            obj['text_entities'] = Message.parse_entities(obj['text_entities'])
         return cls(**obj)
 
-    def __init__(self, text, voter_count = 0, **kwargs):
+    def __init__(self, text, voter_count = 0, text_entities=None, **kwargs):
         self.text: str = text
         self.voter_count: int = voter_count
+        self.text_entities: List[MessageEntity] = text_entities
     # Converted in _convert_poll_options
     # def to_json(self):
     #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
