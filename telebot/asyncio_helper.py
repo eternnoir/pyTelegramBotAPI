@@ -1798,8 +1798,7 @@ async def create_invoice_link(token, title, description, payload, provider_token
 
 # noinspection PyShadowingBuiltins
 async def send_poll(
-        token, chat_id,
-        question, options,
+        token, chat_id, question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
         disable_notification=False,  
@@ -1809,7 +1808,8 @@ async def send_poll(
     payload = {
         'chat_id': str(chat_id),
         'question': question,
-        'options': json.dumps(await _convert_poll_options(options))}
+        'options': json.dumps([option.to_dict() for option in options])
+    }
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
@@ -1978,20 +1978,6 @@ async def _convert_list_json_serializable(results):
     if len(ret) > 0:
         ret = ret[:-1]
     return '[' + ret + ']'
-
-
-async def _convert_poll_options(poll_options):
-    if poll_options is None:
-        return None
-    elif len(poll_options) == 0:
-        return []
-    elif isinstance(poll_options[0], str):
-        # Compatibility mode with previous bug when only list of string was accepted as poll_options
-        return poll_options
-    elif isinstance(poll_options[0], types.PollOption):
-        return [option.text for option in poll_options]
-    else:
-        return poll_options
 
 
 async def convert_input_media(media):

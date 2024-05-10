@@ -6892,6 +6892,43 @@ class PollOption(JsonDeserializable):
     #     return json.dumps(self.text)
 
 
+class InputPollOption(JsonSerializable):
+    """
+    This object contains information about one answer option in a poll to send.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputpolloption
+
+    :param text: Option text, 1-100 characters
+    :type text: :obj:`str`
+
+    :param text_parse_mode: Optional. Mode for parsing entities in the text. See formatting options for more details. Currently, only custom emoji entities are allowed
+    :type text_parse_mode: :obj:`str`
+
+    :param text_entities: Optional. A JSON-serialized list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode
+    :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.PollOption`
+    """
+    def __init__(self, text, text_parse_mode=None, text_entities=None, **kwargs):
+        self.text: str = text
+        self.text_parse_mode: Optional[str] = text_parse_mode
+        self.text_entities: List[MessageEntity] = text_entities
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        json_dict = {
+            "text": self.text,
+        }
+        if self.text_parse_mode:
+            json_dict["text_parse_mode"] = self.text_parse_mode
+        if self.text_entities:
+            json_dict['text_entities'] = [entity.to_dict() for entity in self.text_entities]
+        return json_dict
+
+
 class Poll(JsonDeserializable):
     """
     This object contains information about a poll.

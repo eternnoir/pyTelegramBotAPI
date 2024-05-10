@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 try:
+    # noinspection PyPackageRequirements
     import ujson as json
 except ImportError:
     import json
@@ -371,6 +372,7 @@ def get_chat_member_count(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
+# noinspection PyShadowingBuiltins
 def set_sticker_set_thumbnail(token, name, user_id, thumbnail, format):
     method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id, 'format': format}
@@ -1814,8 +1816,7 @@ def create_invoice_link(token, title, description, payload, provider_token,
 
 # noinspection PyShadowingBuiltins
 def send_poll(
-        token, chat_id,
-        question, options,
+        token, chat_id, question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None, explanation = None,
         explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None, disable_notification=False,
         reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
@@ -1824,7 +1825,8 @@ def send_poll(
     payload = {
         'chat_id': str(chat_id),
         'question': question,
-        'options': json.dumps(_convert_poll_options(options))}
+        'options': json.dumps([option.to_dict() for option in options])
+    }
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
@@ -2000,20 +2002,6 @@ def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
-
-
-def _convert_poll_options(poll_options):
-    if poll_options is None:
-        return None
-    elif len(poll_options) == 0:
-        return []
-    elif isinstance(poll_options[0], str):
-        # Compatibility mode with previous bug when only list of string was accepted as poll_options
-        return poll_options
-    elif isinstance(poll_options[0], types.PollOption):
-        return [option.text for option in poll_options]
-    else:
-        return poll_options
 
 
 def convert_input_media(media):
