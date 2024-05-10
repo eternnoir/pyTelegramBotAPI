@@ -1818,8 +1818,8 @@ def send_poll(
         question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None, explanation = None,
         explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None, disable_notification=False,
-        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None, reply_parameters=None,
-        business_connection_id=None):
+        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
+        reply_parameters=None, business_connection_id=None, question_parse_mode=None, question_entities=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -1828,19 +1828,19 @@ def send_poll(
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
-    if type is not None:
+    if type:
         payload['type'] = type
     if allows_multiple_answers is not None:
         payload['allows_multiple_answers'] = allows_multiple_answers
     if correct_option_id is not None:
         payload['correct_option_id'] = correct_option_id
-    if explanation is not None:
+    if explanation:
         payload['explanation'] = explanation
-    if explanation_parse_mode is not None:
+    if explanation_parse_mode:
         payload['explanation_parse_mode'] = explanation_parse_mode
-    if open_period is not None:
+    if open_period:
         payload['open_period'] = open_period
-    if close_date is not None:
+    if close_date:
         if isinstance(close_date, datetime):
             payload['close_date'] = close_date.timestamp()
         else:
@@ -1849,21 +1849,24 @@ def send_poll(
         payload['is_closed'] = is_closed
     if disable_notification:
         payload['disable_notification'] = disable_notification
-    if reply_markup is not None:
+    if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
     if explanation_entities:
-        payload['explanation_entities'] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(explanation_entities))
+        payload['explanation_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(explanation_entities))
     if protect_content:
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
-    if reply_parameters is not None:
+    if reply_parameters:
         payload['reply_parameters'] = reply_parameters.to_json()
-    if business_connection_id is not None:
+    if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if question_parse_mode:
+        payload['question_parse_mode'] = question_parse_mode
+    if question_entities:
+        payload['question_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(question_entities))
     return _make_request(token, method_url, params=payload)
 
 def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):

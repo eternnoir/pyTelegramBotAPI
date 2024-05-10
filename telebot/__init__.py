@@ -5150,7 +5150,10 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            question_parse_mode: Optional[str] = None,
+            question_entities: Optional[List[types.MessageEntity]] = None,
+    ) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -5175,12 +5178,10 @@ class TeleBot:
         :param allows_multiple_answers: True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
         :type allows_multiple_answers: :obj:`bool`
 
-        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode,
-            defaults to None
+        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode, defaults to None
         :type correct_option_id: :obj:`int`
 
-        :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll,
-            0-200 characters with at most 2 line feeds after entities parsing
+        :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing
         :type explanation: :obj:`str`
 
         :param explanation_parse_mode: Mode for parsing entities in the explanation. See formatting options for more details.
@@ -5204,15 +5205,13 @@ class TeleBot:
         :param allow_sending_without_reply: deprecated. Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
 
-        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
-            instructions to remove reply keyboard or to force a reply from the user.
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
         :type reply_markup: :obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`
 
         :param timeout: Timeout in seconds for waiting for a response from the user.
         :type timeout: :obj:`int`
 
-        :param explanation_entities: A JSON-serialized list of special entities that appear in the explanation,
-            which can be specified instead of parse_mode
+        :param explanation_entities: A JSON-serialized list of special entities that appear in the explanation, which can be specified instead of parse_mode
         :type explanation_entities: :obj:`list` of :obj:`MessageEntity`
 
         :param protect_content: Protects the contents of the sent message from forwarding and saving
@@ -5226,6 +5225,12 @@ class TeleBot:
 
         :param business_connection_id: Identifier of the business connection to use for the poll
         :type business_connection_id: :obj:`str`
+
+        :param question_parse_mode: Mode for parsing entities in the question. See formatting options for more details. Currently, only custom emoji entities are allowed
+        :type question_parse_mode: :obj:`str`
+
+        :param question_entities: A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode
+        :type question_entities: :obj:`list` of :obj:`MessageEntity`
 
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
@@ -5258,6 +5263,7 @@ class TeleBot:
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
+        question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
 
         return types.Message.de_json(
             apihelper.send_poll(
@@ -5268,7 +5274,8 @@ class TeleBot:
                 close_date=close_date, is_closed=is_closed, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, explanation_entities=explanation_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id,
-                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                question_parse_mode=question_parse_mode, question_entities=question_entities)
             )
 
 

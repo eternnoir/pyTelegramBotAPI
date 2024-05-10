@@ -1803,7 +1803,8 @@ async def send_poll(
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
         disable_notification=False,  
-        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,reply_parameters=None,business_connection_id=None):
+        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
+        reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -1831,7 +1832,6 @@ async def send_poll(
             payload['close_date'] = close_date
     if is_closed is not None:
         payload['is_closed'] = is_closed
-
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if reply_parameters is not None:
@@ -1849,6 +1849,10 @@ async def send_poll(
         payload['message_thread_id'] = message_thread_id
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if question_parse_mode:
+        payload['question_parse_mode'] = question_parse_mode
+    if question_entities:
+        payload['question_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(question_entities))
     return await _process_request(token, method_url, params=payload)
 
 

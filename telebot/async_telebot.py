@@ -6495,7 +6495,10 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            question_parse_mode: Optional[str] = None,
+            question_entities: Optional[List[types.MessageEntity]] = None,
+    ) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -6572,6 +6575,12 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of the business connection to send the message through
         :type business_connection_id: :obj:`str`
 
+        :param question_parse_mode: Mode for parsing entities in the question. See formatting options for more details. Currently, only custom emoji entities are allowed
+        :type question_parse_mode: :obj:`str`
+
+        :param question_entities: A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode
+        :type question_entities: :obj:`list` of :obj:`MessageEntity`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6579,6 +6588,7 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
         
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
+        question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
@@ -6610,7 +6620,8 @@ class AsyncTeleBot:
                 is_anonymous, type, allows_multiple_answers, correct_option_id,
                 explanation, explanation_parse_mode, open_period, close_date, is_closed,
                 disable_notification,
-                reply_markup, timeout, explanation_entities, protect_content, message_thread_id, reply_parameters, business_connection_id))
+                reply_markup, timeout, explanation_entities, protect_content, message_thread_id, reply_parameters,
+                business_connection_id, question_parse_mode=question_parse_mode, question_entities=question_entities))
 
     async def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 
