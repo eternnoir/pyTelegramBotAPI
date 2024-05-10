@@ -564,9 +564,8 @@ async def send_location(
 
 
 async def edit_message_live_location(
-        token, latitude, longitude, chat_id=None, message_id=None,
-        inline_message_id=None, reply_markup=None, timeout=None,
-        horizontal_accuracy=None, heading=None, proximity_alert_radius=None):
+        token, latitude, longitude, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None,
+        timeout=None, horizontal_accuracy=None, heading=None, proximity_alert_radius=None, live_period=None):
     method_url = r'editMessageLiveLocation'
     payload = {'latitude': latitude, 'longitude': longitude}
     if chat_id:
@@ -579,8 +578,10 @@ async def edit_message_live_location(
         payload['heading'] = heading
     if proximity_alert_radius:
         payload['proximity_alert_radius'] = proximity_alert_radius
+    if live_period:
+        payload['live_period'] = live_period
     if inline_message_id:
-        payload['inline_message_id'] = inline_message_id
+        payload['inline_message_id'] = inline_message_id\
     if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
     if timeout:

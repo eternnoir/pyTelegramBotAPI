@@ -3243,7 +3243,9 @@ class TeleBot:
             timeout: Optional[int]=None,
             horizontal_accuracy: Optional[float]=None, 
             heading: Optional[int]=None, 
-            proximity_alert_radius: Optional[int]=None) -> types.Message or bool:
+            proximity_alert_radius: Optional[int]=None,
+            live_period: Optional[int]=None,
+    ) -> types.Message or bool:
         """
         Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly
             disabled by a call to stopMessageLiveLocation. On success, if the edited message is not an inline message, the edited Message
@@ -3282,6 +3284,9 @@ class TeleBot:
         :param proximity_alert_radius: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
         :type proximity_alert_radius: :obj:`int`
 
+        :param live_period: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+        :type live_period: :obj:`int`
+
         :return: On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
         :rtype: :class:`telebot.types.Message` or bool
         """
@@ -3289,7 +3294,7 @@ class TeleBot:
             apihelper.edit_message_live_location(
                 self.token, latitude, longitude, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
                 reply_markup=reply_markup, timeout=timeout, horizontal_accuracy=horizontal_accuracy, heading=heading,
-                proximity_alert_radius=proximity_alert_radius)
+                proximity_alert_radius=proximity_alert_radius, live_period=live_period)
             )
 
 
