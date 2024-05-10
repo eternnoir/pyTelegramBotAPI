@@ -284,6 +284,9 @@ class ChatMemberUpdated(JsonDeserializable):
         link events only.
     :type invite_link: :class:`telebot.types.ChatInviteLink`
 
+    :param via_join_request: Optional. True, if the user joined the chat after sending a direct join request without using an invite link and being approved by an administrator
+    :type via_join_request: :obj:`bool`
+
     :param via_chat_folder_invite_link: Optional. True, if the user joined the chat via a chat folder invite link
     :type via_chat_folder_invite_link: :obj:`bool`
 
@@ -301,7 +304,8 @@ class ChatMemberUpdated(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
     
-    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None, via_chat_folder_invite_link=None,
+    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None,
+                 via_join_request=None, via_chat_folder_invite_link=None,
                  **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
@@ -309,8 +313,9 @@ class ChatMemberUpdated(JsonDeserializable):
         self.old_chat_member: ChatMember = old_chat_member
         self.new_chat_member: ChatMember = new_chat_member
         self.invite_link: Optional[ChatInviteLink] = invite_link
+        self.via_join_request: Optional[bool] = via_join_request
         self.via_chat_folder_invite_link: Optional[bool] = via_chat_folder_invite_link
-    
+
     @property
     def difference(self) -> Dict[str, List]:
         """
