@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Union
 from abc import ABC
 
 try:
+    # noinspection PyPackageRequirements
     import ujson as json
 except ImportError:
     import json
@@ -190,7 +191,7 @@ class Update(JsonDeserializable):
     :type edited_business_message: :class:`telebot.types.Message`
 
     :param deleted_business_messages: Optional. Service message: the chat connected to the business account was deleted
-    :type deleted_business_messages: :class:`telebot.types.Message`
+    :type deleted_business_messages: :class:`telebot.types.BusinessMessagesDeleted`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
@@ -226,13 +227,15 @@ class Update(JsonDeserializable):
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
-                     business_connection, business_message, edited_business_message, deleted_business_messages)
+                   my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
+                   removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
+                   deleted_business_messages)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, removed_chat_boost, chat_boost,
-                    business_connection, business_message, edited_business_message, deleted_business_messages, **kwargs):
+                 my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
+                 removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
+                 deleted_business_messages, **kwargs):
         self.update_id = update_id
         self.message = message
         self.edited_message = edited_message
@@ -500,7 +503,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None, 
+    # noinspection PyShadowingBuiltins
+    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, **kwargs):
         self.id: int = id
@@ -515,7 +519,6 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.is_premium: bool = is_premium
         self.added_to_attachment_menu: bool = added_to_attachment_menu
         self.can_connect_to_business: bool = can_connect_to_business
-
 
     @property
     def full_name(self):
@@ -543,7 +546,6 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'is_premium': self.is_premium,
                 'added_to_attachment_menu': self.added_to_attachment_menu,
                 'can_connect_to_business': self.can_connect_to_business}
-    
 
 
 class GroupChat(JsonDeserializable):
@@ -1092,6 +1094,9 @@ class Message(JsonDeserializable):
     :param boost_added: Optional. Service message: user boosted the chat
     :type boost_added: :class:`telebot.types.ChatBoostAdded`
 
+    :param chat_background_set: Optional. Service message: chat background set
+    :type chat_background_set: :class:`telebot.types.ChatBackground`
+
     :param forum_topic_created: Optional. Service message: forum topic created
     :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
 
@@ -1137,8 +1142,7 @@ class Message(JsonDeserializable):
     :param web_app_data: Optional. Service message: data sent by a Web App
     :type web_app_data: :class:`telebot.types.WebAppData`
 
-    :param reply_markup: Optional. Inline keyboard attached to the message. login_url buttons are represented as
-        ordinary url buttons.
+    :param reply_markup: Optional. Inline keyboard attached to the message. login_url buttons are represented as ordinary url buttons.
     :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
 
     :return: Instance of the class
@@ -1303,6 +1307,9 @@ class Message(JsonDeserializable):
             content_type = 'message_auto_delete_timer_changed'
         if 'reply_markup' in obj:
             opts['reply_markup'] = InlineKeyboardMarkup.de_json(obj['reply_markup'])
+        if 'chat_background_set' in obj:
+            opts['chat_background_set'] = ChatBackground.de_json(obj['chat_background_set'])
+            content_type = 'chat_background_set'
         if 'forum_topic_created' in obj:
             opts['forum_topic_created'] = ForumTopicCreated.de_json(obj['forum_topic_created'])
             content_type = 'forum_topic_created'
@@ -1451,6 +1458,7 @@ class Message(JsonDeserializable):
         self.reply_markup: Optional[InlineKeyboardMarkup] = None
         self.message_thread_id: Optional[int] = None
         self.is_topic_message: Optional[bool] = None
+        self.chat_background_set: Optional[ChatBackground] = None
         self.forum_topic_created: Optional[ForumTopicCreated] = None
         self.forum_topic_closed: Optional[ForumTopicClosed] = None
         self.forum_topic_reopened: Optional[ForumTopicReopened] = None
@@ -9368,7 +9376,7 @@ class InaccessibleMessage(JsonDeserializable):
             'group_chat_created', 'supergroup_chat_created', 'channel_chat_created', 'message_auto_delete_timer_changed',
             'migrate_to_chat_id', 'migrate_from_chat_id', 'pinned_message', 'invoice', 'successful_payment',
             'users_shared', 'chat_shared', 'connected_website', 'write_access_allowed', 'passport_data',
-            'proximity_alert_triggered', 'forum_topic_created', 'forum_topic_edited', 'forum_topic_closed',
+            'proximity_alert_triggered', 'chat_background_set', 'forum_topic_created', 'forum_topic_edited', 'forum_topic_closed',
             'forum_topic_reopened', 'general_forum_topic_hidden', 'general_forum_topic_unhidden', 'giveaway_created',
             'giveaway', 'giveaway_winners', 'giveaway_completed', 'video_chat_scheduled', 'video_chat_started',
             'video_chat_ended', 'video_chat_participants_invited', 'web_app_data', 'reply_markup'
@@ -9669,3 +9677,323 @@ class Birthdate(JsonDeserializable):
         self.day: int = day
         self.month: int = month
         self.year: Optional[int] = year
+
+
+class BackgroundFill(ABC, JsonDeserializable):
+    """
+    This object describes the way a background is filled based on the selected colors. Currently, it can be one of
+        BackgroundFillSolid
+        BackgroundFillGradient
+        BackgroundFillFreeformGradient
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundfill
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundFillSolid` or :class:`BackgroundFillGradient` or :class:`BackgroundFillFreeformGradient`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "solid":
+            return BackgroundFillSolid.de_json(obj)
+        elif obj["type"] == "gradient":
+            return BackgroundFillGradient.de_json(obj)
+        elif obj["type"] == "freeform_gradient":
+            return BackgroundFillFreeformGradient.de_json(obj)
+        return None
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundFillSolid(BackgroundFill):
+    """
+    The background is filled using the selected color.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundfillsolid
+
+    :param type: Type of the background fill, always “solid”
+    :type type: :obj:`str`
+
+    :param color: The color of the background fill in the RGB24 format
+    :type color: :class:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundFillSolid`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, type, color, **kwargs):
+        self.type: str = type
+        self.color: int = color
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundFillGradient(BackgroundFill):
+    """
+    The background is a gradient fill.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundfillgradient
+
+    :param type: Type of the background fill, always “gradient”
+    :type type: :obj:`str`
+
+    :param top_color: Top color of the gradient in the RGB24 format
+    :type top_color: :class:`int`
+
+    :param bottom_color: Bottom color of the gradient in the RGB24 format
+    :type bottom_color: :class:`int`
+
+    :param rotation_angle: Clockwise rotation angle of the background fill in degrees; 0-359
+    :type rotation_angle: :class:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundFillGradient`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, type, top_color, bottom_color, rotation_angle, **kwargs):
+        self.type: str = type
+        self.top_color: int = top_color
+        self.bottom_color: int = bottom_color
+        self.rotation_angle: int = rotation_angle
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundFillFreeformGradient(BackgroundFill):
+    """
+    The background is a freeform gradient that rotates after every message in the chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundfillfreeformgradient
+
+    :param type: Type of the background fill, always “freeform_gradient”
+    :type type: :obj:`str`
+
+    :param colors: A list of the 3 or 4 base colors that are used to generate the freeform gradient in the RGB24 format
+    :type colors: :obj:`list` of :class:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundFillFreeformGradient`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, type, colors, **kwargs):
+        self.type: str = type
+        self.colors: List[int] = colors
+
+
+class BackgroundType(ABC, JsonDeserializable):
+    """
+    This object describes the type of a background. Currently, it can be one of
+        BackgroundTypeFill
+        BackgroundTypeWallpaper
+        BackgroundTypePattern
+        BackgroundTypeChatTheme
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundtype
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundTypeFill` or :class:`BackgroundTypeWallpaper` or :class:`BackgroundTypePattern` or :class:`BackgroundTypeChatTheme`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "fill":
+            return BackgroundTypeFill.de_json(obj)
+        elif obj["type"] == "wallpaper":
+            return BackgroundTypeWallpaper.de_json(obj)
+        elif obj["type"] == "pattern":
+            return BackgroundTypePattern.de_json(obj)
+        elif obj["type"] == "chat_theme":
+            return BackgroundTypeChatTheme.de_json(obj)
+        return None
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundTypeFill(BackgroundFill):
+    """
+    The background is automatically filled based on the selected colors.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundtypefill
+
+    :param type: Type of the background, always “fill”
+    :type type: :obj:`str`
+
+    :param fill: The background fill
+    :type fill: :class:`BackgroundFill`
+
+    :param dark_theme_dimming: Dimming of the background in dark themes, as a percentage; 0-100
+    :type dark_theme_dimming: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundTypeFill`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['fill'] = BackgroundFill.de_json(obj['fill'])
+        return cls(**obj)
+
+    def __init__(self, type, fill, dark_theme_dimming, **kwargs):
+        self.type: str = type
+        self.fill: BackgroundFill = fill
+        self.dark_theme_dimming: int = dark_theme_dimming
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundTypeWallpaper(BackgroundFill):
+    """
+    The background is a wallpaper in the JPEG format.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundtypewallpaper
+
+    :param type: Type of the background, always “wallpaper”
+    :type type: :obj:`str`
+
+    :param document: Document with the wallpaper
+    :type document: :class:`Document`
+
+    :param dark_theme_dimming: Dimming of the background in dark themes, as a percentage; 0-100
+    :type dark_theme_dimming: :obj:`int`
+
+    :param is_blurred: Optional. True, if the wallpaper is downscaled to fit in a 450x450 square and then box-blurred with radius 12
+    :type is_blurred: :obj:`bool`
+
+    :param is_moving: Optional. True, if the background moves slightly when the device is tilted
+    :type is_moving: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundTypeWallpaper`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['document'] = Document.de_json(obj['document'])
+        obj['fill'] = BackgroundFill.de_json(obj['fill'])
+        return cls(**obj)
+
+    def __init__(self, type, document, dark_theme_dimming, is_blurred=None, is_moving=None, **kwargs):
+        self.type: str = type
+        self.document: Document = document
+        self.dark_theme_dimming: int = dark_theme_dimming
+        self.is_blurred: Optional[bool] = is_blurred
+        self.is_moving: Optional[bool] = is_moving
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundTypePattern(BackgroundFill):
+    """
+    The background is a wallpaper in the JPEG format.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundtypepattern
+
+    :param type: Type of the background, always “pattern”
+    :type type: :obj:`str`
+
+    :param document: Document with the pattern
+    :type document: :class:`Document`
+
+    :param fill: The background fill that is combined with the pattern
+    :type fill: :class:`BackgroundFill`
+
+    :param intensity: Intensity of the pattern when it is shown above the filled background; 0-100
+    :type intensity: :obj:`int`
+
+    :param is_inverted: Optional. True, if the background fill must be applied only to the pattern itself. All other pixels are black in this case. For dark themes only
+    :type is_inverted: :obj:`bool`
+
+    :param is_moving: Optional. True, if the background moves slightly when the device is tilted
+    :type is_moving: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundTypePattern`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['document'] = Document.de_json(obj['document'])
+        return cls(**obj)
+
+    def __init__(self, type, document, fill, intensity, is_inverted=None, is_moving=None, **kwargs):
+        self.type: str = type
+        self.document: Document = document
+        self.fill: BackgroundFill = fill
+        self.intensity: int = intensity
+        self.is_inverted: Optional[bool] = is_inverted
+        self.is_moving: Optional[bool] = is_moving
+
+
+# noinspection PyShadowingBuiltins
+class BackgroundTypeChatTheme(BackgroundFill):
+    """
+    The background is taken directly from a built-in chat theme.
+
+    Telegram documentation: https://core.telegram.org/bots/api#backgroundtypechattheme
+
+    :param type: Type of the background, always “chat_theme”
+    :type type: :obj:`str`
+
+    :param theme_name: Intensity of the pattern when it is shown above the filled background; 0-100
+    :type theme_name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`BackgroundTypeChatTheme`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def __init__(self, type, theme_name, **kwargs):
+        self.type: str = type
+        self.theme_name: str = theme_name
+
+
+# noinspection PyShadowingBuiltins
+class ChatBackground(JsonDeserializable):
+    """
+    This object represents a chat background.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatbackground
+
+    :param type: Type of the background
+    :type type: :class:`BackgroundType`
+
+    :return: Instance of the class
+    :rtype: :class:`ChatBackground`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['type'] = BackgroundType.de_json(obj['type'])
+        return cls(**obj)
+
+    def __init__(self, type, **kwargs):
+        self.type: BackgroundType = type
