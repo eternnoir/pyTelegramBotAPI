@@ -3160,7 +3160,7 @@ class TeleBot:
         :param longitude: Longitude of the location
         :type longitude: :obj:`float`
 
-        :param live_period: Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400.
+        :param live_period: Period in seconds during which the location will be updated (see Live Locations, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.
         :type live_period: :obj:`int`
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard

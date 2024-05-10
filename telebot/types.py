@@ -3897,16 +3897,13 @@ class InputLocationMessageContent(Dictionaryable):
     :param horizontal_accuracy: Optional. The radius of uncertainty for the location, measured in meters; 0-1500
     :type horizontal_accuracy: :obj:`float` number
 
-    :param live_period: Optional. Period in seconds for which the location can be updated, should be between 60 and 
-        86400.
+    :param live_period: Optional. Period in seconds during which the location can be updated, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.
     :type live_period: :obj:`int`
 
-    :param heading: Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 
-        and 360 if specified.
+    :param heading: Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
     :type heading: :obj:`int`
 
-    :param proximity_alert_radius: Optional. For live locations, a maximum distance for proximity alerts about 
-        approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+    :param proximity_alert_radius: Optional. For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
     :type proximity_alert_radius: :obj:`int`
 
     :return: Instance of the class
@@ -4999,16 +4996,13 @@ class InlineQueryResultLocation(InlineQueryResultBase):
     :param horizontal_accuracy: Optional. The radius of uncertainty for the location, measured in meters; 0-1500
     :type horizontal_accuracy: :obj:`float` number
 
-    :param live_period: Optional. Period in seconds for which the location can be updated, should be between 60 and 
-        86400.
+    :param live_period: Optional. Period in seconds during which the location can be updated, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.
     :type live_period: :obj:`int`
 
-    :param heading: Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 
-        and 360 if specified.
+    :param heading: Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
     :type heading: :obj:`int`
 
-    :param proximity_alert_radius: Optional. For live locations, a maximum distance for proximity alerts about 
-        approaching another chat member, in meters. Must be between 1 and 100000 if specified.
+    :param proximity_alert_radius: Optional. For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
     :type proximity_alert_radius: :obj:`int`
 
     :param reply_markup: Optional. Inline keyboard attached to the message
