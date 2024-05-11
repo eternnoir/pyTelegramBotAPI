@@ -565,7 +565,7 @@ class GroupChat(JsonDeserializable):
 
 
 # noinspection PyShadowingBuiltins
-class Chat(JsonDeserializable):
+class ChatFullInfo(JsonDeserializable):
     """
     This object represents a chat.
 
@@ -594,11 +594,13 @@ class Chat(JsonDeserializable):
     :param is_forum: Optional. True, if the supergroup chat is a forum (has topics enabled)
     :type is_forum: :obj:`bool`
 
+    :param max_reaction_count: Optional. The maximum number of reactions that can be set on a message in the chat
+    :type max_reaction_count: :obj:`int`
+
     :param photo: Optional. Chat photo. Returned only in getChat.
     :type photo: :class:`telebot.types.ChatPhoto`
 
-    :param active_usernames: Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels.
-        Returned only in getChat.
+    :param active_usernames: Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in getChat.
     :type active_usernames: :obj:`list` of :obj:`str`
 
     :param birthdate: Optional. Birthdate of the other party in a private chat. Returned only in getChat.
@@ -616,100 +618,80 @@ class Chat(JsonDeserializable):
     :param personal_chat: Optional. For private chats, the personal channel of the user. Returned only in getChat.
     :type personal_chat: :class:`telebot.types.Chat`
 
-    :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels.
-        Returned only in getChat.
+    :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels. Returned only in getChat.
     :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
 
     :param accent_color_id: Optional. Optional. Identifier of the accent color for the chat name and backgrounds of the chat photo,
         reply header, and link preview. See accent colors for more details. Returned only in getChat. Always returned in getChat.
     :type accent_color_id: :obj:`int`
 
-    :param background_custom_emoji_id: Optional. Custom emoji identifier of emoji chosen by the chat for the reply header
-        and link preview background. Returned only in getChat.
+    :param background_custom_emoji_id: Optional. Custom emoji identifier of emoji chosen by the chat for the reply header and link preview background. Returned only in getChat.
     :type background_custom_emoji_id: :obj:`str`
 
-    :param profile_accent_color_id: Optional. Identifier of the accent color for the chat's profile background.
-        See profile accent colors for more details. Returned only in getChat.
+    :param profile_accent_color_id: Optional. Identifier of the accent color for the chat's profile background. See profile accent colors for more details. Returned only in getChat.
     :type profile_accent_color_id: :obj:`int`
 
-    :param profile_background_custom_emoji_id: Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background.
-        Returned only in getChat.
+    :param profile_background_custom_emoji_id: Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background. Returned only in getChat.
     :type profile_background_custom_emoji_id: :obj:`str`
 
-    :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of emoji status of the other party in a private chat.
-        Returned only in getChat.
+    :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of emoji status of the other party in a private chat. Returned only in getChat.
     :type emoji_status_custom_emoji_id: :obj:`str`
 
-    :param emoji_status_expiration_date: Optional. Expiration date of the emoji status of the other party in a private chat,
-        if any. Returned only in getChat.
+    :param emoji_status_expiration_date: Optional. Expiration date of the emoji status of the other party in a private chat, if any. Returned only in getChat.
     :type emoji_status_expiration_date: :obj:`int`
 
     :param bio: Optional. Bio of the other party in a private chat. Returned only in getChat.
     :type bio: :obj:`str`
 
-    :param has_private_forwards: Optional. :obj:`bool`, if privacy settings of the other party in the private chat 
-        allows to use tg://user?id=<user_id> links only in chats with the user. Returned only in getChat.
+    :param has_private_forwards: Optional. :obj:`bool`, if privacy settings of the other party in the private chat allows to use tg://user?id=<user_id> links only in chats with the user. Returned only in getChat.
     :type has_private_forwards: :obj:`bool`
 
-    :param has_restricted_voice_and_video_messages: Optional. True, if the privacy settings of the other party restrict sending voice and video note messages
-        in the private chat. Returned only in getChat.
+    :param has_restricted_voice_and_video_messages: Optional. True, if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in getChat.
     :type :obj:`bool`
 
-    :param join_to_send_messages: Optional. :obj:`bool`, if users need to join the supergroup before they can send 
-        messages. Returned only in getChat.
+    :param join_to_send_messages: Optional. :obj:`bool`, if users need to join the supergroup before they can send messages. Returned only in getChat.
     :type join_to_send_messages: :obj:`bool`
 
-    :param join_by_request: Optional. :obj:`bool`, if all users directly joining the supergroup need to be approved 
-        by supergroup administrators. Returned only in getChat.
+    :param join_by_request: Optional. :obj:`bool`, if all users directly joining the supergroup need to be approved by supergroup administrators. Returned only in getChat.
     :type join_by_request: :obj:`bool`
 
     :param description: Optional. Description, for groups, supergroups and channel chats. Returned only in getChat.
     :type description: :obj:`str`
 
-    :param invite_link: Optional. Primary invite link, for groups, supergroups and channel chats. Returned only in 
-        getChat.
+    :param invite_link: Optional. Primary invite link, for groups, supergroups and channel chats. Returned only in getChat.
     :type invite_link: :obj:`str`
 
     :param pinned_message: Optional. The most recent pinned message (by sending date). Returned only in getChat.
     :type pinned_message: :class:`telebot.types.Message`
 
-    :param permissions: Optional. Default chat member permissions, for groups and supergroups. Returned only in 
-        getChat.
+    :param permissions: Optional. Default chat member permissions, for groups and supergroups. Returned only in getChat.
     :type permissions: :class:`telebot.types.ChatPermissions`
 
-    :param slow_mode_delay: Optional. For supergroups, the minimum allowed delay between consecutive messages sent 
-        by each unpriviledged user; in seconds. Returned only in getChat.
+    :param slow_mode_delay: Optional. For supergroups, the minimum allowed delay between consecutive messages sent by each unpriviledged user; in seconds. Returned only in getChat.
     :type slow_mode_delay: :obj:`int`
 
-    :param unrestrict_boost_count: Optional. For supergroups, the minimum number of boosts that a non-administrator
-        user needs to add in order to ignore slow mode and chat permissions. Returned only in getChat.
+    :param unrestrict_boost_count: Optional. For supergroups, the minimum number of boosts that a non-administrator user needs to add in order to ignore slow mode and chat permissions. Returned only in getChat.
     :type unrestrict_boost_count: :obj:`int`
 
-    :param message_auto_delete_time: Optional. The time after which all messages sent to the chat will be 
-        automatically deleted; in seconds. Returned only in getChat.
+    :param message_auto_delete_time: Optional. The time after which all messages sent to the chat will be automatically deleted; in seconds. Returned only in getChat.
     :type message_auto_delete_time: :obj:`int`
 
-    :param has_aggressive_anti_spam_enabled: Optional. :obj:`bool`, if the chat has enabled aggressive anti-spam
-        protection. Returned only in getChat.
+    :param has_aggressive_anti_spam_enabled: Optional. :obj:`bool`, if the chat has enabled aggressive anti-spam protection. Returned only in getChat.
     :type has_aggressive_anti_spam_enabled: :obj:`bool`
 
-    :param has_hidden_members: Optional. :obj:`bool`, if the chat has enabled hidden members. Returned only in
-        getChat.
+    :param has_hidden_members: Optional. :obj:`bool`, if the chat has enabled hidden members. Returned only in getChat.
     :type has_hidden_members: :obj:`bool`
 
-    :param has_protected_content: Optional. :obj:`bool`, if messages from the chat can't be forwarded to other 
-        chats. Returned only in getChat.
+    :param has_protected_content: Optional. :obj:`bool`, if messages from the chat can't be forwarded to other chats. Returned only in getChat.
     :type has_protected_content: :obj:`bool`
 
-    :param has_visible_history: Optional. True, if new chat members will have access to old messages;
-        available only to chat administrators. Returned only in getChat.
+    :param has_visible_history: Optional. True, if new chat members will have access to old messages; available only to chat administrators. Returned only in getChat.
     :type has_visible_history: :obj:`bool`
 
     :param sticker_set_name: Optional. For supergroups, name of group sticker set. Returned only in getChat.
     :type sticker_set_name: :obj:`str`
 
-    :param can_set_sticker_set: Optional. :obj:`bool`, if the bot can change the group sticker set. Returned only in 
-        getChat.
+    :param can_set_sticker_set: Optional. :obj:`bool`, if the bot can change the group sticker set. Returned only in getChat.
     :type can_set_sticker_set: :obj:`bool`
 
     :param custom_emoji_sticker_set_name: Optional. For supergroups, the name of the group's custom emoji sticker set.
@@ -722,12 +704,11 @@ class Chat(JsonDeserializable):
         signed 64 bit integer or double-precision float type are safe for storing this identifier. Returned only in getChat.
     :type linked_chat_id: :obj:`int`
 
-    :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in 
-        getChat.
+    :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat.
     :type location: :class:`telebot.types.ChatLocation`
 
     :return: Instance of the class
-    :rtype: :class:`telebot.types.Chat`
+    :rtype: :class:`telebot.types.ChatFullInfo`
     """
     @classmethod
     def de_json(cls, json_string):
@@ -762,7 +743,7 @@ class Chat(JsonDeserializable):
                  message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
                  can_set_sticker_set=None, linked_chat_id=None, location=None, 
                  join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None, 
-                 is_forum=None, active_usernames=None, emoji_status_custom_emoji_id=None,
+                 is_forum=None, max_reaction_count=None, active_usernames=None, emoji_status_custom_emoji_id=None,
                  has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None, 
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
@@ -775,6 +756,7 @@ class Chat(JsonDeserializable):
         self.first_name: str = first_name
         self.last_name: str = last_name
         self.is_forum: bool = is_forum
+        self.max_reaction_count: int = max_reaction_count
         self.photo: ChatPhoto = photo
         self.bio: str = bio
         self.join_to_send_messages: bool = join_to_send_messages
@@ -811,6 +793,17 @@ class Chat(JsonDeserializable):
         self.personal_chat: Chat = personal_chat
         self.birthdate: Birthdate = birthdate
 
+
+class Chat(ChatFullInfo):
+    """
+    In BotAPI 7.3 Chat was reduced and full info moved to ChatFullInfo:
+    "Split out the class ChatFullInfo from the class Chat and changed the return type of the method getChat to ChatFullInfo."
+
+    https://core.telegram.org/bots/api#chatfullinfo
+
+    Currently Chat is left as full copy of ChatFullInfo for compatibility.
+    """
+    pass
 
 
 class MessageID(JsonDeserializable):

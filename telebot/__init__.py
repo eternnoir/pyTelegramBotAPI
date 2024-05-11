@@ -1493,7 +1493,7 @@ class TeleBot:
         )
 
 
-    def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
+    def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
@@ -1504,9 +1504,9 @@ class TeleBot:
         :type chat_id: :obj:`int` or :obj:`str`
 
         :return: Chat information
-        :rtype: :class:`telebot.types.Chat`
+        :rtype: :class:`telebot.types.ChatFullInfo`
         """
-        return types.Chat.de_json(
+        return types.ChatFullInfo.de_json(
             apihelper.get_chat(self.token, chat_id)
         )
 

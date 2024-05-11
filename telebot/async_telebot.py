@@ -2889,7 +2889,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_user_profile_photos(self.token, user_id, offset, limit)
         return types.UserProfilePhotos.de_json(result)
 
-    async def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
+    async def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
@@ -2900,10 +2900,10 @@ class AsyncTeleBot:
         :type chat_id: :obj:`int` or :obj:`str`
 
         :return: Chat information
-        :rtype: :class:`telebot.types.Chat`
+        :rtype: :class:`telebot.types.ChatFullInfo`
         """
         result = await asyncio_helper.get_chat(self.token, chat_id)
-        return types.Chat.de_json(result)
+        return types.ChatFullInfo.de_json(result)
 
     async def leave_chat(self, chat_id: Union[int, str]) -> bool:
         """

@@ -1527,10 +1527,10 @@ def send_invoice(
     :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
     :param timeout:
     :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
-    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
-        At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency. At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
     :param protect_content: Protects the contents of the sent message from forwarding and saving
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+    :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
     :return:
     """
     method_url = r'sendInvoice'
