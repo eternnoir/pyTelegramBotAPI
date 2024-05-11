@@ -189,6 +189,7 @@ class TeleBot:
         # logs-related
         if colorful_logs:
             try:
+                # noinspection PyPackageRequirements
                 import coloredlogs
                 coloredlogs.install(logger=logger, level=logger.level)
             except ImportError:
@@ -1012,6 +1013,7 @@ class TeleBot:
 
     def _setup_change_detector(self, path_to_watch: str):
         try:
+            # noinspection PyPackageRequirements
             from watchdog.observers import Observer
             from telebot.ext.reloader import EventHandler
         except ImportError:
@@ -1491,7 +1493,7 @@ class TeleBot:
         )
 
 
-    def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
+    def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
@@ -1502,9 +1504,9 @@ class TeleBot:
         :type chat_id: :obj:`int` or :obj:`str`
 
         :return: Chat information
-        :rtype: :class:`telebot.types.Chat`
+        :rtype: :class:`telebot.types.ChatFullInfo`
         """
-        return types.Chat.de_json(
+        return types.ChatFullInfo.de_json(
             apihelper.get_chat(self.token, chat_id)
         )
 
@@ -1889,7 +1891,7 @@ class TeleBot:
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption=caption,
                 parse_mode=parse_mode, caption_entities=caption_entities, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-               message_thread_id=message_thread_id, reply_parameters=reply_parameters))
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters))
 
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
@@ -2356,9 +2358,7 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None) -> types.Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
-        For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as Audio or Document).
-        On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
         
@@ -3162,7 +3162,7 @@ class TeleBot:
         :param longitude: Longitude of the location
         :type longitude: :obj:`float`
 
-        :param live_period: Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400.
+        :param live_period: Period in seconds during which the location will be updated (see Live Locations, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.
         :type live_period: :obj:`int`
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard
@@ -3245,7 +3245,9 @@ class TeleBot:
             timeout: Optional[int]=None,
             horizontal_accuracy: Optional[float]=None, 
             heading: Optional[int]=None, 
-            proximity_alert_radius: Optional[int]=None) -> types.Message or bool:
+            proximity_alert_radius: Optional[int]=None,
+            live_period: Optional[int]=None,
+    ) -> types.Message or bool:
         """
         Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly
             disabled by a call to stopMessageLiveLocation. On success, if the edited message is not an inline message, the edited Message
@@ -3284,6 +3286,9 @@ class TeleBot:
         :param proximity_alert_radius: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
         :type proximity_alert_radius: :obj:`int`
 
+        :param live_period: New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged
+        :type live_period: :obj:`int`
+
         :return: On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
         :rtype: :class:`telebot.types.Message` or bool
         """
@@ -3291,7 +3296,7 @@ class TeleBot:
             apihelper.edit_message_live_location(
                 self.token, latitude, longitude, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
                 reply_markup=reply_markup, timeout=timeout, horizontal_accuracy=horizontal_accuracy, heading=heading,
-                proximity_alert_radius=proximity_alert_radius)
+                proximity_alert_radius=proximity_alert_radius, live_period=live_period)
             )
 
 
@@ -5129,7 +5134,7 @@ class TeleBot:
 
     # noinspection PyShadowingBuiltins
     def send_poll(
-            self, chat_id: Union[int, str], question: str, options: List[str],
+            self, chat_id: Union[int, str], question: str, options: List[types.InputPollOption],
             is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
             allows_multiple_answers: Optional[bool]=None, 
             correct_option_id: Optional[int]=None,
@@ -5147,7 +5152,10 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            question_parse_mode: Optional[str] = None,
+            question_entities: Optional[List[types.MessageEntity]] = None,
+    ) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -5160,8 +5168,8 @@ class TeleBot:
         :param question: Poll question, 1-300 characters
         :type question: :obj:`str`
 
-        :param options: A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
-        :type options: :obj:`list` of :obj:`str`
+        :param options: A JSON-serialized list of 2-10 answer options
+        :type options: :obj:`list` of :obj:`InputPollOption`
 
         :param is_anonymous: True, if the poll needs to be anonymous, defaults to True
         :type is_anonymous: :obj:`bool`
@@ -5172,12 +5180,10 @@ class TeleBot:
         :param allows_multiple_answers: True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
         :type allows_multiple_answers: :obj:`bool`
 
-        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode,
-            defaults to None
+        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode, defaults to None
         :type correct_option_id: :obj:`int`
 
-        :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll,
-            0-200 characters with at most 2 line feeds after entities parsing
+        :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing
         :type explanation: :obj:`str`
 
         :param explanation_parse_mode: Mode for parsing entities in the explanation. See formatting options for more details.
@@ -5201,15 +5207,13 @@ class TeleBot:
         :param allow_sending_without_reply: deprecated. Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
 
-        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard,
-            instructions to remove reply keyboard or to force a reply from the user.
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
         :type reply_markup: :obj:`InlineKeyboardMarkup` | :obj:`ReplyKeyboardMarkup` | :obj:`ReplyKeyboardRemove` | :obj:`ForceReply`
 
         :param timeout: Timeout in seconds for waiting for a response from the user.
         :type timeout: :obj:`int`
 
-        :param explanation_entities: A JSON-serialized list of special entities that appear in the explanation,
-            which can be specified instead of parse_mode
+        :param explanation_entities: A JSON-serialized list of special entities that appear in the explanation, which can be specified instead of parse_mode
         :type explanation_entities: :obj:`list` of :obj:`MessageEntity`
 
         :param protect_content: Protects the contents of the sent message from forwarding and saving
@@ -5223,6 +5227,12 @@ class TeleBot:
 
         :param business_connection_id: Identifier of the business connection to use for the poll
         :type business_connection_id: :obj:`str`
+
+        :param question_parse_mode: Mode for parsing entities in the question. See formatting options for more details. Currently, only custom emoji entities are allowed
+        :type question_parse_mode: :obj:`str`
+
+        :param question_entities: A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode
+        :type question_entities: :obj:`list` of :obj:`MessageEntity`
 
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
@@ -5255,6 +5265,18 @@ class TeleBot:
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
+        question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
+
+        if options and (not isinstance(options[0], types.InputPollOption)):
+            # show a deprecation warning
+            logger.warning("The parameter 'options' changed, should be List[types.InputPollOption], other types are deprecated.")
+            # convert options to appropriate type
+            if isinstance(options[0], str):
+                options = [types.InputPollOption(option) for option in options]
+            elif isinstance(options[0], types.PollOption):
+                options = [types.InputPollOption(option.text, text_entities=option.text_entities) for option in options]
+            else:
+                raise RuntimeError("Type of 'options' items is unknown. Options should be List[types.InputPollOption], other types are deprecated.")
 
         return types.Message.de_json(
             apihelper.send_poll(
@@ -5265,7 +5287,8 @@ class TeleBot:
                 close_date=close_date, is_closed=is_closed, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, explanation_entities=explanation_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id,
-                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                question_parse_mode=question_parse_mode, question_entities=question_entities)
             )
 
 
@@ -5564,7 +5587,7 @@ class TeleBot:
             apihelper.get_user_chat_boosts(self.token, chat_id, user_id)
         )
 
-
+    # noinspection PyShadowingBuiltins
     def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None, format: Optional[str]=None) -> bool:
         """
         Use this method to set the thumbnail of a sticker set. 

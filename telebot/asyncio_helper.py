@@ -564,9 +564,8 @@ async def send_location(
 
 
 async def edit_message_live_location(
-        token, latitude, longitude, chat_id=None, message_id=None,
-        inline_message_id=None, reply_markup=None, timeout=None,
-        horizontal_accuracy=None, heading=None, proximity_alert_radius=None):
+        token, latitude, longitude, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None,
+        timeout=None, horizontal_accuracy=None, heading=None, proximity_alert_radius=None, live_period=None):
     method_url = r'editMessageLiveLocation'
     payload = {'latitude': latitude, 'longitude': longitude}
     if chat_id:
@@ -579,6 +578,8 @@ async def edit_message_live_location(
         payload['heading'] = heading
     if proximity_alert_radius:
         payload['proximity_alert_radius'] = proximity_alert_radius
+    if live_period:
+        payload['live_period'] = live_period
     if inline_message_id:
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
@@ -1797,17 +1798,18 @@ async def create_invoice_link(token, title, description, payload, provider_token
 
 # noinspection PyShadowingBuiltins
 async def send_poll(
-        token, chat_id,
-        question, options,
+        token, chat_id, question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
         disable_notification=False,  
-        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,reply_parameters=None,business_connection_id=None):
+        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
+        reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
         'question': question,
-        'options': json.dumps(await _convert_poll_options(options))}
+        'options': json.dumps([option.to_dict() for option in options])
+    }
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
@@ -1830,7 +1832,6 @@ async def send_poll(
             payload['close_date'] = close_date
     if is_closed is not None:
         payload['is_closed'] = is_closed
-
     if disable_notification:
         payload['disable_notification'] = disable_notification
     if reply_parameters is not None:
@@ -1848,6 +1849,10 @@ async def send_poll(
         payload['message_thread_id'] = message_thread_id
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if question_parse_mode:
+        payload['question_parse_mode'] = question_parse_mode
+    if question_entities:
+        payload['question_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(question_entities))
     return await _process_request(token, method_url, params=payload)
 
 
@@ -1973,20 +1978,6 @@ async def _convert_list_json_serializable(results):
     if len(ret) > 0:
         ret = ret[:-1]
     return '[' + ret + ']'
-
-
-async def _convert_poll_options(poll_options):
-    if poll_options is None:
-        return None
-    elif len(poll_options) == 0:
-        return []
-    elif isinstance(poll_options[0], str):
-        # Compatibility mode with previous bug when only list of string was accepted as poll_options
-        return poll_options
-    elif isinstance(poll_options[0], types.PollOption):
-        return [option.text for option in poll_options]
-    else:
-        return poll_options
 
 
 async def convert_input_media(media):
