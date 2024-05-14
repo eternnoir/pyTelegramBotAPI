@@ -4043,7 +4043,7 @@ class TeleBot:
                 reply_markup=reply_markup, timeout=timeout, horizontal_accuracy=horizontal_accuracy, heading=heading,
                 proximity_alert_radius=proximity_alert_radius)
             )
-        )
+        
 
     def stop_message_live_location(
         self,
@@ -6385,7 +6385,7 @@ class TeleBot:
                 protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id)
             )
-        )
+        
 
     def stop_poll(
         self,
