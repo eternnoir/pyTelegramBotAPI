@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 try:
+    # noinspection PyPackageRequirements
     import ujson as json
 except ImportError:
     import json
@@ -459,6 +460,7 @@ def get_chat_member_count(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
+# noinspection PyShadowingBuiltins
 def set_sticker_set_thumbnail(token, name, user_id, thumbnail, format):
     method_url = r"setStickerSetThumbnail"
     payload = {"name": name, "user_id": user_id, "format": format}
@@ -559,7 +561,9 @@ def copy_message(
     if disable_notification is not None:
         payload["disable_notification"] = disable_notification
     if reply_parameters is not None:
-        payload["reply_parameters"] = reply_parameters.to_json()
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup is not None:
+        payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload["timeout"] = timeout
     if protect_content is not None:
@@ -734,20 +738,10 @@ def send_location(
 
 
 def edit_message_live_location(
-    token,
-    latitude,
-    longitude,
-    chat_id=None,
-    message_id=None,
-    inline_message_id=None,
-    reply_markup=None,
-    timeout=None,
-    horizontal_accuracy=None,
-    heading=None,
-    proximity_alert_radius=None,
-):
-    method_url = r"editMessageLiveLocation"
-    payload = {"latitude": latitude, "longitude": longitude}
+        token, latitude, longitude, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None,
+        timeout=None, horizontal_accuracy=None, heading=None, proximity_alert_radius=None, live_period=None):
+    method_url = r'editMessageLiveLocation'
+    payload = {'latitude': latitude, 'longitude': longitude}
     if chat_id:
         payload["chat_id"] = chat_id
     if message_id:
@@ -757,7 +751,9 @@ def edit_message_live_location(
     if heading:
         payload["heading"] = heading
     if proximity_alert_radius:
-        payload["proximity_alert_radius"] = proximity_alert_radius
+        payload['proximity_alert_radius'] = proximity_alert_radius
+    if live_period:
+        payload['live_period'] = live_period
     if inline_message_id:
         payload["inline_message_id"] = inline_message_id
     if reply_markup:
@@ -1931,10 +1927,10 @@ def send_invoice(
     :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
     :param timeout:
     :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
-    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
-        At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency. At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
     :param protect_content: Protects the contents of the sent message from forwarding and saving
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+    :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
     :return:
     """
     method_url = r"sendInvoice"
@@ -2275,50 +2271,33 @@ def create_invoice_link(
 
 # noinspection PyShadowingBuiltins
 def send_poll(
-    token,
-    chat_id,
-    question,
-    options,
-    is_anonymous=None,
-    type=None,
-    allows_multiple_answers=None,
-    correct_option_id=None,
-    explanation=None,
-    explanation_parse_mode=None,
-    open_period=None,
-    close_date=None,
-    is_closed=None,
-    disable_notification=False,
-    reply_markup=None,
-    timeout=None,
-    explanation_entities=None,
-    protect_content=None,
-    message_thread_id=None,
-    reply_parameters=None,
-    business_connection_id=None,
-):
-    method_url = r"sendPoll"
+        token, chat_id, question, options,
+        is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None, explanation = None,
+        explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None, disable_notification=False,
+        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
+        reply_parameters=None, business_connection_id=None, question_parse_mode=None, question_entities=None):
+    method_url = r'sendPoll'
     payload = {
-        "chat_id": str(chat_id),
-        "question": question,
-        "options": json.dumps(_convert_poll_options(options)),
+        'chat_id': str(chat_id),
+        'question': question,
+        'options': json.dumps([option.to_dict() for option in options])
     }
 
     if is_anonymous is not None:
-        payload["is_anonymous"] = is_anonymous
-    if type is not None:
-        payload["type"] = type
+        payload['is_anonymous'] = is_anonymous
+    if type:
+        payload['type'] = type
     if allows_multiple_answers is not None:
         payload["allows_multiple_answers"] = allows_multiple_answers
     if correct_option_id is not None:
-        payload["correct_option_id"] = correct_option_id
-    if explanation is not None:
-        payload["explanation"] = explanation
-    if explanation_parse_mode is not None:
-        payload["explanation_parse_mode"] = explanation_parse_mode
-    if open_period is not None:
-        payload["open_period"] = open_period
-    if close_date is not None:
+        payload['correct_option_id'] = correct_option_id
+    if explanation:
+        payload['explanation'] = explanation
+    if explanation_parse_mode:
+        payload['explanation_parse_mode'] = explanation_parse_mode
+    if open_period:
+        payload['open_period'] = open_period
+    if close_date:
         if isinstance(close_date, datetime):
             payload["close_date"] = close_date.timestamp()
         else:
@@ -2326,23 +2305,25 @@ def send_poll(
     if is_closed is not None:
         payload["is_closed"] = is_closed
     if disable_notification:
-        payload["disable_notification"] = disable_notification
-    if reply_markup is not None:
-        payload["reply_markup"] = _convert_markup(reply_markup)
+        payload['disable_notification'] = disable_notification
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload["timeout"] = timeout
     if explanation_entities:
-        payload["explanation_entities"] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(explanation_entities)
-        )
+        payload['explanation_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(explanation_entities))
     if protect_content:
         payload["protect_content"] = protect_content
     if message_thread_id:
-        payload["message_thread_id"] = message_thread_id
-    if reply_parameters is not None:
-        payload["reply_parameters"] = reply_parameters.to_json()
-    if business_connection_id is not None:
-        payload["business_connection_id"] = business_connection_id
+        payload['message_thread_id'] = message_thread_id
+    if reply_parameters:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if question_parse_mode:
+        payload['question_parse_mode'] = question_parse_mode
+    if question_entities:
+        payload['question_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(question_entities))
     return _make_request(token, method_url, params=payload)
 
 
@@ -2508,20 +2489,6 @@ def _convert_markup(markup):
     if isinstance(markup, types.JsonSerializable):
         return markup.to_json()
     return markup
-
-
-def _convert_poll_options(poll_options):
-    if poll_options is None:
-        return None
-    elif len(poll_options) == 0:
-        return []
-    elif isinstance(poll_options[0], str):
-        # Compatibility mode with previous bug when only list of string was accepted as poll_options
-        return poll_options
-    elif isinstance(poll_options[0], types.PollOption):
-        return [option.text for option in poll_options]
-    else:
-        return poll_options
 
 
 def convert_input_media(media):

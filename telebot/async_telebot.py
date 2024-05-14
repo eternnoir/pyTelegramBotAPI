@@ -3411,7 +3411,7 @@ class AsyncTeleBot:
         )
         return types.UserProfilePhotos.de_json(result)
 
-    async def get_chat(self, chat_id: Union[int, str]) -> types.Chat:
+    async def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """
         Use this method to get up to date information about the chat (current name of the user for one-on-one
         conversations, current username of a user, group or channel, etc.). Returns a Chat object on success.
@@ -3422,10 +3422,10 @@ class AsyncTeleBot:
         :type chat_id: :obj:`int` or :obj:`str`
 
         :return: Chat information
-        :rtype: :class:`telebot.types.Chat`
+        :rtype: :class:`telebot.types.ChatFullInfo`
         """
         result = await asyncio_helper.get_chat(self.token, chat_id)
-        return types.Chat.de_json(result)
+        return types.ChatFullInfo.de_json(result)
 
     async def leave_chat(self, chat_id: Union[int, str]) -> bool:
         """
@@ -4544,9 +4544,7 @@ class AsyncTeleBot:
         business_connection_id: Optional[str] = None,
     ) -> types.Message:
         """
-        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message.
-        For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as Audio or Document).
-        On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+        Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
 
@@ -5599,7 +5597,7 @@ class AsyncTeleBot:
         :param longitude: Longitude of the location
         :type longitude: :obj:`float`
 
-        :param live_period: Period in seconds for which the location will be updated (see Live Locations, should be between 60 and 86400.
+        :param live_period: Period in seconds during which the location will be updated (see Live Locations, should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.
         :type live_period: :obj:`int`
 
         :param reply_to_message_id: Deprecated - Use reply_parameters instead. If the message is a reply, ID of the original message
@@ -5705,17 +5703,16 @@ class AsyncTeleBot:
         )
 
     async def edit_message_live_location(
-        self,
-        latitude: float,
-        longitude: float,
-        chat_id: Optional[Union[int, str]] = None,
-        message_id: Optional[int] = None,
-        inline_message_id: Optional[str] = None,
-        reply_markup: Optional[types.InlineKeyboardMarkup] = None,
-        timeout: Optional[int] = None,
-        horizontal_accuracy: Optional[float] = None,
-        heading: Optional[int] = None,
-        proximity_alert_radius: Optional[int] = None,
+            self, latitude: float, longitude: float, 
+            chat_id: Optional[Union[int, str]]=None, 
+            message_id: Optional[int]=None,
+            inline_message_id: Optional[str]=None, 
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            timeout: Optional[int]=None,
+            horizontal_accuracy: Optional[float]=None, 
+            heading: Optional[int]=None, 
+            proximity_alert_radius: Optional[int]=None,
+            live_period: Optional[int]=None,
     ) -> types.Message:
         """
         Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly
@@ -5755,23 +5752,17 @@ class AsyncTeleBot:
         :param proximity_alert_radius: The maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
         :type proximity_alert_radius: :obj:`int`
 
+        :param live_period: New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged
+        :type live_period: :obj:`int`
+
         :return: On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
         :rtype: :class:`telebot.types.Message` or bool
         """
         return types.Message.de_json(
             await asyncio_helper.edit_message_live_location(
-                self.token,
-                latitude,
-                longitude,
-                chat_id,
-                message_id,
-                inline_message_id,
-                reply_markup,
-                timeout,
-                horizontal_accuracy,
-                heading,
-                proximity_alert_radius,
-            )
+                self.token, latitude, longitude, chat_id, message_id,
+                inline_message_id, reply_markup, timeout,
+                horizontal_accuracy, heading, proximity_alert_radius, live_period=live_period)
         )
 
     async def stop_message_live_location(
@@ -7917,29 +7908,27 @@ class AsyncTeleBot:
 
     # noinspection PyShadowingBuiltins
     async def send_poll(
-        self,
-        chat_id: Union[int, str],
-        question: str,
-        options: List[str],
-        is_anonymous: Optional[bool] = None,
-        type: Optional[str] = None,
-        allows_multiple_answers: Optional[bool] = None,
-        correct_option_id: Optional[int] = None,
-        explanation: Optional[str] = None,
-        explanation_parse_mode: Optional[str] = None,
-        open_period: Optional[int] = None,
-        close_date: Optional[Union[int, datetime]] = None,
-        is_closed: Optional[bool] = None,
-        disable_notification: Optional[bool] = False,
-        reply_to_message_id: Optional[int] = None,
-        reply_markup: Optional[REPLY_MARKUP_TYPES] = None,
-        allow_sending_without_reply: Optional[bool] = None,
-        timeout: Optional[int] = None,
-        explanation_entities: Optional[List[types.MessageEntity]] = None,
-        protect_content: Optional[bool] = None,
-        message_thread_id: Optional[int] = None,
-        reply_parameters: Optional[types.ReplyParameters] = None,
-        business_connection_id: Optional[str] = None,
+            self, chat_id: Union[int, str], question: str, options: List[InputPollOption],
+            is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
+            allows_multiple_answers: Optional[bool]=None, 
+            correct_option_id: Optional[int]=None,
+            explanation: Optional[str]=None, 
+            explanation_parse_mode: Optional[str]=None, 
+            open_period: Optional[int]=None, 
+            close_date: Optional[Union[int, datetime]]=None, 
+            is_closed: Optional[bool]=None,
+            disable_notification: Optional[bool]=False,
+            reply_to_message_id: Optional[int]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            allow_sending_without_reply: Optional[bool]=None, 
+            timeout: Optional[int]=None,
+            explanation_entities: Optional[List[types.MessageEntity]]=None,
+            protect_content: Optional[bool]=None,
+            message_thread_id: Optional[int]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None,
+            question_parse_mode: Optional[str] = None,
+            question_entities: Optional[List[types.MessageEntity]] = None,
     ) -> types.Message:
         """
         Use this method to send a native poll.
@@ -7953,8 +7942,8 @@ class AsyncTeleBot:
         :param question: Poll question, 1-300 characters
         :type question: :obj:`str`
 
-        :param options: A JSON-serialized list of answer options, 2-10 strings 1-100 characters each
-        :type options: :obj:`list` of :obj:`str`
+        :param options: A JSON-serialized list of 2-10 answer options
+        :type options: :obj:`list` of :obj:`InputPollOption`
 
         :param is_anonymous: True, if the poll needs to be anonymous, defaults to True
         :type is_anonymous: :obj:`bool`
@@ -8017,23 +8006,20 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of the business connection to send the message through
         :type business_connection_id: :obj:`str`
 
+        :param question_parse_mode: Mode for parsing entities in the question. See formatting options for more details. Currently, only custom emoji entities are allowed
+        :type question_parse_mode: :obj:`str`
+
+        :param question_entities: A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode
+        :type question_entities: :obj:`list` of :obj:`MessageEntity`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
-        disable_notification = (
-            self.disable_notification
-            if (disable_notification is None)
-            else disable_notification
-        )
-        protect_content = (
-            self.protect_content if (protect_content is None) else protect_content
-        )
-
-        explanation_parse_mode = (
-            self.parse_mode
-            if (explanation_parse_mode is None)
-            else explanation_parse_mode
-        )
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        
+        explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
+        question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
 
         if allow_sending_without_reply is not None:
             logger.warning(
@@ -8072,6 +8058,17 @@ class AsyncTeleBot:
                 "The send_poll signature was changed, please see send_poll function details."
             )
 
+        if options and (not isinstance(options[0], types.InputPollOption)):
+            # show a deprecation warning
+            logger.warning("The parameter 'options' changed, should be List[types.InputPollOption], other types are deprecated.")
+            # convert options to appropriate type
+            if isinstance(options[0], str):
+                options = [types.InputPollOption(option) for option in options]
+            elif isinstance(options[0], types.PollOption):
+                options = [types.InputPollOption(option.text, text_entities=option.text_entities) for option in options]
+            else:
+                raise RuntimeError("Type of 'options' items is unknown. Options should be List[types.InputPollOption], other types are deprecated.")
+
         return types.Message.de_json(
             await asyncio_helper.send_poll(
                 self.token,
@@ -8088,15 +8085,8 @@ class AsyncTeleBot:
                 close_date,
                 is_closed,
                 disable_notification,
-                reply_markup,
-                timeout,
-                explanation_entities,
-                protect_content,
-                message_thread_id,
-                reply_parameters,
-                business_connection_id,
-            )
-        )
+                reply_markup, timeout, explanation_entities, protect_content, message_thread_id, reply_parameters,
+                business_connection_id, question_parse_mode=question_parse_mode, question_entities=question_entities))
 
     async def stop_poll(
         self,

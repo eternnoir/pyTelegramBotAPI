@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "telegram-bale-bot"
-version = "4.17.3"
-description = "A simple and easy-to-use library for creating Telegram bots and Bale messenger bots."
+version = "4.18.3"
+description = "A simple and easy-to-use library for creating Telegram bots and Bale messenger bots, forked from pyTelegramBotAPI"
 authors = [{name = "Mahdi Kiani", email = "mahdikiany@gmail.com"}]
 license = {text = "GPL2"}
 readme = "README.md"
