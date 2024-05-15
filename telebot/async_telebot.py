@@ -6477,7 +6477,7 @@ class AsyncTeleBot:
 
     # noinspection PyShadowingBuiltins
     async def send_poll(
-            self, chat_id: Union[int, str], question: str, options: List[InputPollOption],
+            self, chat_id: Union[int, str], question: str, options: List[types.InputPollOption],
             is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
             allows_multiple_answers: Optional[bool]=None, 
             correct_option_id: Optional[int]=None,
