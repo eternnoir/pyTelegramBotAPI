@@ -5375,7 +5375,23 @@ class TeleBot:
         """
         return apihelper.answer_pre_checkout_query(
             self.token, pre_checkout_query_id, ok, error_message=error_message)
+    
+    def refund_star_payment(self, user_id: int, telegram_payment_charge_id: str) -> bool:
+        """
+        Refunds a successful payment in Telegram Stars. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#refundstarpayment
+
+        :param user_id: Identifier of the user whose payment will be refunded
+        :type user_id: :obj:`int`
+
+        :param telegram_payment_charge_id: Telegram payment identifier
+        :type telegram_payment_charge_id: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.refund_star_payment(self.token, user_id, telegram_payment_charge_id)
 
     def edit_message_caption(
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 

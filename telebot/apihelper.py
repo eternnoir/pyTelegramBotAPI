@@ -1616,6 +1616,11 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
         payload['error_message'] = error_message
     return _make_request(token, method_url, params=payload)
 
+def refund_star_payment(token, user_id, telegram_payment_charge_id):
+    method_url = 'refundStarPayment'
+    payload = {'user_id': user_id, 'telegram_payment_charge_id': telegram_payment_charge_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
 
 def unpin_all_general_forum_topic_messages(token, chat_id):
     method_url = 'unpinAllGeneralForumTopicMessages'
