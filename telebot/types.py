@@ -951,6 +951,9 @@ class Message(JsonDeserializable):
         if it is a text message and link preview options were changed
     :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
 
+    :param effect_id: Optional. Unique identifier of the message effect added to the message
+    :type effect_id: :obj:`str`
+
     :param animation: Optional. Message is an animation, information about the animation. For backward
         compatibility, when this field is set, the document field will also be set
     :type animation: :class:`telebot.types.Animation`
@@ -1370,6 +1373,8 @@ class Message(JsonDeserializable):
             opts['business_connection_id'] = obj['business_connection_id']
         if 'is_from_offline' in obj:
             opts['is_from_offline'] = obj['is_from_offline']
+        if 'effect_id' in obj:
+            opts['effect_id'] = obj['effect_id']
 
 
 
@@ -1479,6 +1484,7 @@ class Message(JsonDeserializable):
         self.sender_business_bot: Optional[User] = None
         self.business_connection_id: Optional[str] = None
         self.is_from_offline: Optional[bool] = None
+        self.effect_id: Optional[str] = None
 
         for key in options:
             setattr(self, key, options[key])
