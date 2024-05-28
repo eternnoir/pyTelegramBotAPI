@@ -1819,6 +1819,7 @@ class TeleBot:
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
+            show_caption_above_media: Optional[bool]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
 
@@ -1829,6 +1830,7 @@ class TeleBot:
 
         :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
         :type from_chat_id: :obj:`int` or :obj:`str`
+
         :param message_id: Message identifier in the chat specified in from_chat_id
         :type message_id: :obj:`int`
 
@@ -1872,7 +1874,9 @@ class TeleBot:
         
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
+
         """
+        
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         protect_content = self.protect_content if (protect_content is None) else protect_content
