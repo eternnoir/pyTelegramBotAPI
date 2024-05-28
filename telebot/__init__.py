@@ -2360,7 +2360,6 @@ class TeleBot:
                 timeout=timeout, thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id))
-        )
 
 
     def send_voice(
