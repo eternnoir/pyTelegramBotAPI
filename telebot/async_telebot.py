@@ -3061,7 +3061,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             link_preview_options: Optional[types.LinkPreviewOptions]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -3117,6 +3118,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3171,7 +3175,8 @@ class AsyncTeleBot:
             await asyncio_helper.send_message(
                 self.token, chat_id, text,
                 reply_markup, parse_mode, disable_notification, timeout,
-                entities, protect_content, message_thread_id, reply_parameters, link_preview_options, business_connection_id))
+                entities, protect_content, message_thread_id, reply_parameters, link_preview_options, business_connection_id,
+                message_effect_id=message_effect_id))
 
     async def forward_message(
             self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
@@ -3445,7 +3450,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -3487,6 +3493,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3517,7 +3526,7 @@ class AsyncTeleBot:
         return types.Message.de_json(
             await asyncio_helper.send_dice(
                 self.token, chat_id, emoji, disable_notification,
-                reply_markup, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id))
+                reply_markup, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
         
 
     async def send_photo(
@@ -3533,7 +3542,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -3587,6 +3597,9 @@ class AsyncTeleBot:
 
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
+
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -3620,7 +3633,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_photo(
                 self.token, chat_id, photo, caption, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id))
+                protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
 
     async def send_audio(
             self, chat_id: Union[int, str], audio: Union[Any, str], 
@@ -3638,7 +3651,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -3711,6 +3725,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3747,7 +3764,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_audio(
                 self.token, chat_id, audio, caption, duration, performer, title,
                 reply_markup, parse_mode, disable_notification, timeout, thumbnail,
-                caption_entities, protect_content, message_thread_id, reply_parameters, business_connection_id))
+                caption_entities, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
 
     async def send_voice(
             self, chat_id: Union[int, str], voice: Union[Any, str], 
@@ -3762,7 +3779,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
@@ -3816,6 +3834,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -3847,7 +3868,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_voice(
                 self.token, chat_id, voice, caption, duration, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
-                protect_content, message_thread_id, reply_parameters, business_connection_id))
+                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
 
     async def send_document(
             self, chat_id: Union[int, str], document: Union[Any, str],
@@ -3867,7 +3888,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -3933,6 +3955,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3977,7 +4002,7 @@ class AsyncTeleBot:
                 disable_notification = disable_notification, timeout = timeout, caption = caption, thumbnail= thumbnail,
                 caption_entities = caption_entities,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content,
-                message_thread_id = message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
+                message_thread_id = message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id))
 
     async def send_sticker(
             self, chat_id: Union[int, str], sticker: Union[Any, str], 
@@ -3991,7 +4016,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             emoji: Optional[str]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -4040,6 +4066,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier for the target business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier for the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4078,7 +4107,7 @@ class AsyncTeleBot:
                 reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, 
                 protect_content=protect_content,
-                message_thread_id=message_thread_id, emoji=emoji, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
+                message_thread_id=message_thread_id, emoji=emoji, reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id))
 
     async def send_video(
             self, chat_id: Union[int, str], video: Union[Any, str], 
@@ -4101,7 +4130,8 @@ class AsyncTeleBot:
             has_spoiler: Optional[bool]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -4175,6 +4205,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4216,7 +4249,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_video(
                 self.token, chat_id, video, duration, caption, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumbnail, width, height,
-                caption_entities, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id))
+                caption_entities, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
 
     async def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
@@ -4237,7 +4270,8 @@ class AsyncTeleBot:
             has_spoiler: Optional[bool]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -4310,6 +4344,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4346,7 +4383,8 @@ class AsyncTeleBot:
             await asyncio_helper.send_animation(
                 self.token, chat_id, animation, duration, caption,
                 reply_markup, parse_mode, disable_notification, timeout, thumbnail,
-                caption_entities, width, height, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id))
+                caption_entities, width, height, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id,
+                message_effect_id=message_effect_id))
 
     async def send_video_note(
             self, chat_id: Union[int, str], data: Union[Any, str], 
@@ -4362,7 +4400,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -4420,6 +4459,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4454,7 +4496,7 @@ class AsyncTeleBot:
         return types.Message.de_json(
             await asyncio_helper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_markup,
-                disable_notification, timeout, thumbnail, protect_content, message_thread_id, reply_parameters, business_connection_id))
+                disable_notification, timeout, thumbnail, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
 
     async def send_media_group(
             self, chat_id: Union[int, str], 
@@ -4468,7 +4510,8 @@ class AsyncTeleBot:
             allow_sending_without_reply: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> List[types.Message]:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -4505,6 +4548,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -4538,7 +4584,7 @@ class AsyncTeleBot:
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
         result = await asyncio_helper.send_media_group(
-            self.token, chat_id, media, disable_notification, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id)
+            self.token, chat_id, media, disable_notification, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id)
         return [types.Message.de_json(msg) for msg in result]
 
     async def send_location(
@@ -4556,7 +4602,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -4612,6 +4659,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4644,7 +4694,7 @@ class AsyncTeleBot:
                 self.token, chat_id, latitude, longitude, live_period, 
                 reply_markup, disable_notification, timeout, 
                 horizontal_accuracy, heading, proximity_alert_radius, 
-                protect_content, message_thread_id, reply_parameters, business_connection_id))
+                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
 
     async def edit_message_live_location(
             self, latitude: float, longitude: float, 
@@ -4760,7 +4810,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
         
@@ -4824,6 +4875,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4855,7 +4909,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_venue(
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
                 disable_notification, reply_markup, timeout,
-                google_place_id, google_place_type, protect_content, message_thread_id, reply_parameters, business_connection_id))
+                google_place_id, google_place_type, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
         
 
     async def send_contact(
@@ -4870,7 +4924,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -4921,6 +4976,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4952,7 +5010,7 @@ class AsyncTeleBot:
             await asyncio_helper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
                 disable_notification, reply_markup, timeout,
-                protect_content, message_thread_id, reply_parameters, business_connection_id))
+                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
         
 
     async def send_chat_action(
@@ -6063,7 +6121,8 @@ class AsyncTeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Used to send the game.
 
@@ -6102,6 +6161,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of the business connection.
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Identifier of the message effect.
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6132,7 +6194,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
             reply_markup, timeout, 
-            protect_content, message_thread_id, reply_parameters, business_connection_id)
+            protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id)
         return types.Message.de_json(result)
 
     async def set_game_score(
@@ -6230,7 +6292,8 @@ class AsyncTeleBot:
             suggested_tip_amounts: Optional[List[int]]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Sends invoice.
 
@@ -6335,6 +6398,9 @@ class AsyncTeleBot:
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
+        :param message_effect_id: The identifier of a message effect to be applied to the message
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6368,7 +6434,8 @@ class AsyncTeleBot:
             photo_height, need_name, need_phone_number, need_email, need_shipping_address,
             send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
             reply_markup, provider_data, timeout,
-            max_tip_amount, suggested_tip_amounts, protect_content, message_thread_id, reply_parameters)
+            max_tip_amount, suggested_tip_amounts, protect_content, message_thread_id, reply_parameters,
+            message_effect_id=message_effect_id)
         return types.Message.de_json(result)
 
 
@@ -6498,7 +6565,7 @@ class AsyncTeleBot:
             business_connection_id: Optional[str]=None,
             question_parse_mode: Optional[str] = None,
             question_entities: Optional[List[types.MessageEntity]] = None,
-    ) -> types.Message:
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -6581,6 +6648,9 @@ class AsyncTeleBot:
         :param question_entities: A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode
         :type question_entities: :obj:`list` of :obj:`MessageEntity`
 
+        :param message_effect_id: Identifier of the message effect to apply to the sent message
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6632,7 +6702,8 @@ class AsyncTeleBot:
                 explanation, explanation_parse_mode, open_period, close_date, is_closed,
                 disable_notification,
                 reply_markup, timeout, explanation_entities, protect_content, message_thread_id, reply_parameters,
-                business_connection_id, question_parse_mode=question_parse_mode, question_entities=question_entities))
+                business_connection_id, question_parse_mode=question_parse_mode, question_entities=question_entities,
+                message_effect_id=message_effect_id))
 
     async def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 
