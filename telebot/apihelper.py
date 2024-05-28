@@ -485,7 +485,8 @@ def send_photo(
         caption=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, protect_content=None,
-        message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None, message_effect_id=None):
+        message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None, message_effect_id=None,
+        show_caption_above_media=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -519,6 +520,8 @@ def send_photo(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -712,7 +715,8 @@ def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=Non
 def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=None,
                parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
                thumbnail=None, width=None, height=None, caption_entities=None, protect_content=None,
-               message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None, message_effect_id=None):
+               message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None, message_effect_id=None,
+               show_caption_above_media=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -760,6 +764,8 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -768,7 +774,7 @@ def send_animation(
         token, chat_id, data, duration=None, caption=None,  reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
         protect_content=None, width=None, height=None, message_thread_id=None, reply_parameters=None,
-        has_spoiler=None, business_connection_id=None, message_effect_id=None):
+        has_spoiler=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -814,6 +820,8 @@ def send_animation(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1390,7 +1398,7 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
 
 
 def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, caption_entities=None,reply_markup=None):
+                         parse_mode=None, caption_entities=None,reply_markup=None, show_caption_above_media=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -1405,6 +1413,8 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -2016,7 +2026,7 @@ def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notifica
     return _make_request(token, method_url, params=payload)
 
 def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
-                        message_thread_id=None, protect_content=None, remove_caption=None):
+                        message_thread_id=None, protect_content=None, remove_caption=None, show_caption_above_media=None):
     method_url = 'copyMessages'
     payload = {
         'chat_id': chat_id,
@@ -2031,6 +2041,8 @@ def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notificatio
         payload['protect_content'] = protect_content
     if remove_caption is not None:
         payload['remove_caption'] = remove_caption
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload)
 
 

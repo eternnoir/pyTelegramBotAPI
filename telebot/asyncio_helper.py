@@ -416,7 +416,7 @@ async def forward_message(
 
 async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None,  
-                 reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None):
+                 reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -437,6 +437,8 @@ async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, p
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return await _process_request(token, method_url, params=payload)
 
 
@@ -474,7 +476,7 @@ async def send_photo(
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None,  protect_content=None,
         message_thread_id=None, has_spoiler=None,reply_parameters=None,
-        business_connection_id=None, message_effect_id=None):
+        business_connection_id=None, message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -508,6 +510,8 @@ async def send_photo(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -699,7 +703,7 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
                      parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
                      thumbnail=None, width=None, height=None, caption_entities=None, 
                      protect_content=None, message_thread_id=None, has_spoiler=None,reply_parameters=None, business_connection_id=None,
-                     message_effect_id=None):
+                     message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -747,6 +751,8 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -754,7 +760,7 @@ async def send_animation(
         token, chat_id, data, duration=None, caption=None,  reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
          width=None, height=None, protect_content=None, message_thread_id=None,
-        has_spoiler=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+        has_spoiler=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -800,6 +806,8 @@ async def send_animation(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1370,7 +1378,7 @@ async def edit_message_text(token, text, chat_id=None, message_id=None, inline_m
 
 
 async def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, caption_entities=None,reply_markup=None):
+                         parse_mode=None, caption_entities=None,reply_markup=None, show_caption_above_media=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -1385,6 +1393,8 @@ async def edit_message_caption(token, caption, chat_id=None, message_id=None, in
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return await _process_request(token, method_url, params=payload, method='post')
 
 
