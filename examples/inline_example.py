@@ -61,7 +61,7 @@ def default_query(inline_query):
 
 
 def main_loop():
-    bot.infinity_polling()
+    bot.infinity_polling(allowed_updates=[])
     while 1:
         time.sleep(3)
 
