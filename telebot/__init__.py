@@ -4954,7 +4954,7 @@ class TeleBot:
 
     def send_invoice(
             self, chat_id: Union[int, str], title: str, description: str, 
-            invoice_payload: str, provider_token: str, currency: str, 
+            invoice_payload: str, provider_token: Union[str, None], currency: str, 
             prices: List[types.LabeledPrice], start_parameter: Optional[str]=None, 
             photo_url: Optional[str]=None, photo_size: Optional[int]=None, 
             photo_width: Optional[int]=None, photo_height: Optional[int]=None,
@@ -4993,7 +4993,8 @@ class TeleBot:
             use for your internal processes.
         :type invoice_payload: :obj:`str`
 
-        :param provider_token: Payments provider token, obtained via @Botfather
+        :param provider_token: Payments provider token, obtained via @Botfather; Pass None to omit the parameter
+            to use "XTR" currency
         :type provider_token: :obj:`str`
 
         :param currency: Three-letter ISO 4217 currency code,
@@ -5125,7 +5126,7 @@ class TeleBot:
         )
 
     def create_invoice_link(self,
-            title: str, description: str, payload:str, provider_token: str, 
+            title: str, description: str, payload:str, provider_token: Union[str, None], 
             currency: str, prices: List[types.LabeledPrice],
             max_tip_amount: Optional[int] = None, 
             suggested_tip_amounts: Optional[List[int]]=None,
@@ -5159,7 +5160,8 @@ class TeleBot:
             use for your internal processes.
         :type payload: :obj:`str`
 
-        :param provider_token: Payments provider token, obtained via @Botfather
+        :param provider_token: Payments provider token, obtained via @Botfather; Pass None to omit the parameter
+            to use "XTR" currency
         :type provider_token: :obj:`str`
 
         :param currency: Three-letter ISO 4217 currency code,

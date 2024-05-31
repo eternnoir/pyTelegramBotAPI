@@ -1580,7 +1580,7 @@ def send_invoice(
     """
     method_url = r'sendInvoice'
     payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
-               'provider_token': provider_token, 'currency': currency,
+                'currency': currency,
                'prices': _convert_list_json_serializable(prices)}
     if start_parameter:
         payload['start_parameter'] = start_parameter
@@ -1626,6 +1626,8 @@ def send_invoice(
         payload['reply_parameters'] = reply_parameters.to_json()
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if provider_token is not None:
+        payload['provider_token'] = provider_token
     return _make_request(token, method_url, params=payload)
 
 
@@ -1666,13 +1668,13 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
 def refund_star_payment(token, user_id, telegram_payment_charge_id):
     method_url = 'refundStarPayment'
     payload = {'user_id': user_id, 'telegram_payment_charge_id': telegram_payment_charge_id}
-    return _make_request(token, method_url, params=payload, method='post')
+    return _make_request(token, method_url, params=payload)
 
 
 def unpin_all_general_forum_topic_messages(token, chat_id):
     method_url = 'unpinAllGeneralForumTopicMessages'
     payload = {'chat_id': chat_id}
-    return _make_request(token, method_url, params=payload, method='post')
+    return _make_request(token, method_url, params=payload)
 
 # InlineQuery
 
@@ -1835,7 +1837,7 @@ def create_invoice_link(token, title, description, payload, provider_token,
             need_email=None, need_shipping_address=None, send_phone_number_to_provider=None,
             send_email_to_provider=None, is_flexible=None):
     method_url = r'createInvoiceLink'
-    payload = {'title': title, 'description': description, 'payload': payload, 'provider_token': provider_token,
+    payload = {'title': title, 'description': description, 'payload': payload,
                 'currency': currency, 'prices': _convert_list_json_serializable(prices)}
     if max_tip_amount:
         payload['max_tip_amount'] = max_tip_amount
@@ -1865,6 +1867,8 @@ def create_invoice_link(token, title, description, payload, provider_token,
         payload['send_email_to_provider'] = send_email_to_provider
     if is_flexible is not None:
         payload['is_flexible'] = is_flexible
+    if provider_token is not None:
+        payload['provider_token'] = provider_token
     return _make_request(token, method_url, params=payload, method='post')
 
 

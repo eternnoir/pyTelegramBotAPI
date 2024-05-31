@@ -4494,7 +4494,7 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
             json_dict['photo_height'] = self.photo_height
         if self.description:
             json_dict['description'] = self.description
-        if self.show_caption_above_media:
+        if self.show_caption_above_media is not None:
             json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
@@ -4593,7 +4593,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
             json_dict['gif_duration'] = self.gif_duration
         if self.thumbnail_mime_type:
             json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
-        if self.show_caption_above_media:
+        if self.show_caption_above_media is not None:
             json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
@@ -4692,7 +4692,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
             json_dict['mpeg4_duration '] = self.mpeg4_duration
         if self.thumbnail_mime_type:
             json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
-        if self.show_caption_above_media:
+        if self.show_caption_above_media is not None:
             json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
@@ -4790,7 +4790,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
             json_dict['video_duration'] = self.video_duration
         if self.description:
             json_dict['description'] = self.description
-        if self.show_caption_above_media:
+        if self.show_caption_above_media is not None:
             json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
@@ -5381,7 +5381,7 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
             json_dict['parse_mode'] = self.parse_mode
         if self.caption_entities:
             json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
-        if self.show_caption_above_media:
+        if self.show_caption_above_media is not None:
             json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json.dumps(json_dict)
 
