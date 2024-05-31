@@ -9899,7 +9899,6 @@ class BackgroundTypeWallpaper(BackgroundFill):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['document'] = Document.de_json(obj['document'])
-        obj['fill'] = BackgroundFill.de_json(obj['fill'])
         return cls(**obj)
 
     def __init__(self, type, document, dark_theme_dimming, is_blurred=None, is_moving=None, **kwargs):
