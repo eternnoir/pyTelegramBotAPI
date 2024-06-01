@@ -1649,7 +1649,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             link_preview_options : Optional[types.LinkPreviewOptions]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -1705,6 +1706,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1752,7 +1756,8 @@ class TeleBot:
                 self.token, chat_id, text,
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, entities=entities, protect_content=protect_content, message_thread_id=message_thread_id,
-                reply_parameters=reply_parameters, link_preview_options=link_preview_options, business_connection_id=business_connection_id))
+                reply_parameters=reply_parameters, link_preview_options=link_preview_options, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id))
 
 
     def forward_message(
@@ -1813,7 +1818,8 @@ class TeleBot:
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.MessageID:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            show_caption_above_media: Optional[bool]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
 
@@ -1824,6 +1830,7 @@ class TeleBot:
 
         :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
         :type from_chat_id: :obj:`int` or :obj:`str`
+
         :param message_id: Message identifier in the chat specified in from_chat_id
         :type message_id: :obj:`int`
 
@@ -1861,10 +1868,15 @@ class TeleBot:
 
         :param reply_parameters: Additional parameters for replies to messages
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages.
+        :type show_caption_above_media: :obj:`bool`
         
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
+
         """
+        
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         protect_content = self.protect_content if (protect_content is None) else protect_content
@@ -1891,7 +1903,7 @@ class TeleBot:
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption=caption,
                 parse_mode=parse_mode, caption_entities=caption_entities, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters))
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, show_caption_above_media=show_caption_above_media))
 
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
@@ -2040,7 +2052,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -2082,6 +2095,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2110,7 +2126,8 @@ class TeleBot:
             apihelper.send_dice(
                 self.token, chat_id, emoji=emoji, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id))
 
 
 
@@ -2127,7 +2144,9 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None,
+            show_caption_above_media: Optional[bool]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -2181,6 +2200,12 @@ class TeleBot:
 
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages.
+        :type show_caption_above_media: :obj:`bool`
         
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -2212,7 +2237,8 @@ class TeleBot:
                 self.token, chat_id, photo, caption=caption, reply_markup=reply_markup,
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters, business_connection_id=business_connection_id))
+                message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id, show_caption_above_media=show_caption_above_media))
         
 
 
@@ -2232,7 +2258,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2305,6 +2332,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2339,8 +2369,8 @@ class TeleBot:
                 self.token, chat_id, audio, caption=caption, duration=duration, performer=performer, title=title,
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
-        )
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id))
 
 
     def send_voice(
@@ -2356,7 +2386,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
@@ -2410,6 +2441,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -2439,7 +2473,8 @@ class TeleBot:
                 self.token, chat_id, voice, caption=caption, duration=duration, reply_markup=reply_markup,
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id)
         )
 
 
@@ -2460,7 +2495,8 @@ class TeleBot:
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -2526,6 +2562,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2565,7 +2604,8 @@ class TeleBot:
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, caption=caption, thumbnail=thumbnail, caption_entities=caption_entities,
                 disable_content_type_detection=disable_content_type_detection, visible_file_name=visible_file_name,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id)
         )
 
 
@@ -2582,7 +2622,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             emoji: Optional[str]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2631,6 +2672,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2664,7 +2708,8 @@ class TeleBot:
                 self.token, chat_id, sticker, 'sticker',
                 reply_markup=reply_markup, disable_notification=disable_notification, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji,
-                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id)
         )
 
 
@@ -2689,7 +2734,9 @@ class TeleBot:
             has_spoiler: Optional[bool]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None,
+            show_caption_above_media: Optional[bool]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -2763,6 +2810,12 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Identifier of a message effect
+        :type message_effect_id: :obj:`str`
+
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages.
+        :type show_caption_above_media: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2803,7 +2856,8 @@ class TeleBot:
                 supports_streaming=supports_streaming, disable_notification=disable_notification, timeout=timeout,
                 thumbnail=thumbnail, height=height, width=width, caption_entities=caption_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id, has_spoiler=has_spoiler,
-                reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
+                show_caption_above_media=show_caption_above_media)
         )
 
 
@@ -2826,7 +2880,9 @@ class TeleBot:
             has_spoiler: Optional[bool]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None,
+            show_caption_above_media: Optional[bool]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -2899,6 +2955,12 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages.
+        :type show_caption_above_media: :obj:`bool`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2934,7 +2996,8 @@ class TeleBot:
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 width=width, height=height, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                has_spoiler=has_spoiler, business_connection_id=business_connection_id)
+                has_spoiler=has_spoiler, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
+                show_caption_above_media=show_caption_above_media)
             )
 
 
@@ -2952,7 +3015,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             thumb: Optional[Union[Any, str]]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -3010,6 +3074,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3042,7 +3109,8 @@ class TeleBot:
             apihelper.send_video_note(
                 self.token, chat_id, data, duration=duration, length=length, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, thumbnail=thumbnail,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id)
         )
 
 
@@ -3058,7 +3126,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> List[types.Message]:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -3095,6 +3164,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -3128,7 +3200,7 @@ class TeleBot:
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification=disable_notification, timeout=timeout,
             protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-            business_connection_id=business_connection_id)
+            business_connection_id=business_connection_id, message_effect_id=message_effect_id)
         return [types.Message.de_json(msg) for msg in result]
 
 
@@ -3147,7 +3219,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -3203,6 +3276,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :parameter message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3232,7 +3308,8 @@ class TeleBot:
                 self.token, chat_id, latitude, longitude, live_period=live_period, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, horizontal_accuracy=horizontal_accuracy,
                 heading=heading, proximity_alert_radius=proximity_alert_radius, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id)
             )
 
 
@@ -3354,7 +3431,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
         
@@ -3417,6 +3495,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3446,7 +3527,8 @@ class TeleBot:
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id=foursquare_id,
                 foursquare_type=foursquare_type, disable_notification=disable_notification, reply_markup=reply_markup,
                 timeout=timeout, google_place_id=google_place_id, google_place_type=google_place_type,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id)
             )
 
 
@@ -3461,7 +3543,8 @@ class TeleBot:
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -3511,6 +3594,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3539,7 +3625,8 @@ class TeleBot:
             apihelper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name=last_name, vcard=vcard,
                 disable_notification=disable_notification, reply_markup=reply_markup, timeout=timeout,
-                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id)
             )
 
 
@@ -4707,7 +4794,8 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
-            business_connection_id: Optional[str]=None) -> types.Message:
+            business_connection_id: Optional[str]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Used to send the game.
 
@@ -4746,6 +4834,9 @@ class TeleBot:
         :param business_connection_id: Unique identifier of the business connection
         :type business_connection_id: :obj:`str`
 
+        :param message_effect_id: Unique identifier of the message effect
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -4777,7 +4868,8 @@ class TeleBot:
             apihelper.send_game(
                 self.token, chat_id, game_short_name, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id)
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
+                message_effect_id=message_effect_id)
         )
 
 
@@ -4862,7 +4954,7 @@ class TeleBot:
 
     def send_invoice(
             self, chat_id: Union[int, str], title: str, description: str, 
-            invoice_payload: str, provider_token: str, currency: str, 
+            invoice_payload: str, provider_token: Union[str, None], currency: str, 
             prices: List[types.LabeledPrice], start_parameter: Optional[str]=None, 
             photo_url: Optional[str]=None, photo_size: Optional[int]=None, 
             photo_width: Optional[int]=None, photo_height: Optional[int]=None,
@@ -4881,7 +4973,8 @@ class TeleBot:
             suggested_tip_amounts: Optional[List[int]]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
-            reply_parameters: Optional[types.ReplyParameters]=None) -> types.Message:
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Sends invoice.
 
@@ -4900,7 +4993,8 @@ class TeleBot:
             use for your internal processes.
         :type invoice_payload: :obj:`str`
 
-        :param provider_token: Payments provider token, obtained via @Botfather
+        :param provider_token: Payments provider token, obtained via @Botfather; Pass None to omit the parameter
+            to use "XTR" currency
         :type provider_token: :obj:`str`
 
         :param currency: Three-letter ISO 4217 currency code,
@@ -4986,6 +5080,9 @@ class TeleBot:
         :param reply_parameters: Required if the message is a reply. Additional interface options.
         :type reply_parameters: :obj:`types.ReplyParameters`
 
+        :param message_effect_id: The identifier of a message effect, which will be applied to the sent message
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -5024,11 +5121,12 @@ class TeleBot:
                 disable_notification=disable_notification, reply_markup=reply_markup,
                 provider_data=provider_data, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                max_tip_amount=max_tip_amount, suggested_tip_amounts=suggested_tip_amounts)
+                max_tip_amount=max_tip_amount, suggested_tip_amounts=suggested_tip_amounts,
+                message_effect_id=message_effect_id)
         )
 
     def create_invoice_link(self,
-            title: str, description: str, payload:str, provider_token: str, 
+            title: str, description: str, payload:str, provider_token: Union[str, None], 
             currency: str, prices: List[types.LabeledPrice],
             max_tip_amount: Optional[int] = None, 
             suggested_tip_amounts: Optional[List[int]]=None,
@@ -5062,7 +5160,8 @@ class TeleBot:
             use for your internal processes.
         :type payload: :obj:`str`
 
-        :param provider_token: Payments provider token, obtained via @Botfather
+        :param provider_token: Payments provider token, obtained via @Botfather; Pass None to omit the parameter
+            to use "XTR" currency
         :type provider_token: :obj:`str`
 
         :param currency: Three-letter ISO 4217 currency code,
@@ -5155,7 +5254,7 @@ class TeleBot:
             business_connection_id: Optional[str]=None,
             question_parse_mode: Optional[str] = None,
             question_entities: Optional[List[types.MessageEntity]] = None,
-    ) -> types.Message:
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -5234,6 +5333,9 @@ class TeleBot:
         :param question_entities: A JSON-serialized list of special entities that appear in the poll question. It can be specified instead of question_parse_mode
         :type question_entities: :obj:`list` of :obj:`MessageEntity`
 
+        :param message_effect_id: Unique identifier of the message effect to apply to the sent message
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -5288,7 +5390,8 @@ class TeleBot:
                 reply_markup=reply_markup, timeout=timeout, explanation_entities=explanation_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                question_parse_mode=question_parse_mode, question_entities=question_entities)
+                question_parse_mode=question_parse_mode, question_entities=question_entities,
+                message_effect_id=message_effect_id)
             )
 
 
@@ -5375,7 +5478,23 @@ class TeleBot:
         """
         return apihelper.answer_pre_checkout_query(
             self.token, pre_checkout_query_id, ok, error_message=error_message)
+    
+    def refund_star_payment(self, user_id: int, telegram_payment_charge_id: str) -> bool:
+        """
+        Refunds a successful payment in Telegram Stars. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#refundstarpayment
+
+        :param user_id: Identifier of the user whose payment will be refunded
+        :type user_id: :obj:`int`
+
+        :param telegram_payment_charge_id: Telegram payment identifier
+        :type telegram_payment_charge_id: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.refund_star_payment(self.token, user_id, telegram_payment_charge_id)
 
     def edit_message_caption(
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 
@@ -5383,7 +5502,8 @@ class TeleBot:
             inline_message_id: Optional[str]=None,
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            show_caption_above_media: Optional[bool]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
 
@@ -5410,6 +5530,9 @@ class TeleBot:
         :param reply_markup: A JSON-serialized object for an inline keyboard.
         :type reply_markup: :obj:`InlineKeyboardMarkup`
 
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages.
+        :type show_caption_above_media: :obj:`bool`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` | :obj:`bool`
         """
@@ -5417,7 +5540,7 @@ class TeleBot:
 
         result = apihelper.edit_message_caption(
             self.token, caption, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
-            parse_mode=parse_mode, caption_entities=caption_entities, reply_markup=reply_markup)
+            parse_mode=parse_mode, caption_entities=caption_entities, reply_markup=reply_markup, show_caption_above_media=show_caption_above_media)
 
         if type(result) == bool:
             return result
