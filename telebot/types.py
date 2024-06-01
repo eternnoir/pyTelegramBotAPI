@@ -1665,8 +1665,8 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
                 "offset": self.offset,
                 "length": self.length,
                 "url": self.url,
-                "user": self.user,
-                "language":  self.language,
+                "user": self.user.to_dict(),
+                "language": self.language,
                 "custom_emoji_id": self.custom_emoji_id}
 
 
