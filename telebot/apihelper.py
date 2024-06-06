@@ -428,7 +428,7 @@ def forward_message(
 
 def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None, reply_markup=None, timeout=None, protect_content=None, message_thread_id=None,
-                 reply_parameters=None):
+                 reply_parameters=None, show_caption_above_media=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -449,6 +449,8 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
         payload['protect_content'] = protect_content
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload)
 
 
