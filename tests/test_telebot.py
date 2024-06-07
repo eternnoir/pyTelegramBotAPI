@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import sys
 import warnings
 
@@ -551,7 +550,7 @@ let number = loop {
                             my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, chat_boost, chat_boost_removed)
 
     def test_is_string_unicode(self):
-        s1 = u'string'
+        s1 = 'string'
         assert util.is_string(s1)
 
     def test_is_string_string(self):

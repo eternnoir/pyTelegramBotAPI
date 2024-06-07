@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This Example will show you an advanced usage of CallbackData.
 In this example calendar was implemented

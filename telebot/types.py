@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from __future__ import annotations
 
 from io import IOBase
@@ -22,7 +21,7 @@ DISABLE_KEYLEN_ERROR = False
 
 logger = logging.getLogger('TeleBot')
 
-class JsonSerializable(object):
+class JsonSerializable:
     """
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
@@ -41,7 +40,7 @@ class JsonSerializable(object):
         raise NotImplementedError
 
 
-class Dictionaryable(object):
+class Dictionaryable:
     """
     Subclasses of this class are guaranteed to be able to be converted to dictionary.
     All subclasses of this class must override to_dict.
@@ -60,7 +59,7 @@ class Dictionaryable(object):
         raise NotImplementedError
 
 
-class JsonDeserializable(object):
+class JsonDeserializable:
     """
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
     All subclasses of this class must override de_json.
@@ -315,12 +314,12 @@ class ChatMemberUpdated(JsonDeserializable):
         self.date: int = date
         self.old_chat_member: ChatMember = old_chat_member
         self.new_chat_member: ChatMember = new_chat_member
-        self.invite_link: Optional[ChatInviteLink] = invite_link
-        self.via_join_request: Optional[bool] = via_join_request
-        self.via_chat_folder_invite_link: Optional[bool] = via_chat_folder_invite_link
+        self.invite_link: ChatInviteLink | None = invite_link
+        self.via_join_request: bool | None = via_join_request
+        self.via_chat_folder_invite_link: bool | None = via_chat_folder_invite_link
 
     @property
-    def difference(self) -> Dict[str, List]:
+    def difference(self) -> dict[str, list]:
         """
         Get the difference between `old_chat_member` and `new_chat_member`
         as a dict in the following format {'parameter': [old_value, new_value]}
@@ -330,8 +329,8 @@ class ChatMemberUpdated(JsonDeserializable):
         :return: Dict of differences
         :rtype: Dict[str, List]
         """
-        old: Dict = self.old_chat_member.__dict__
-        new: Dict = self.new_chat_member.__dict__
+        old: dict = self.old_chat_member.__dict__
+        new: dict = self.new_chat_member.__dict__
         dif = {}
         for key in new:
             if key == 'user': continue
@@ -527,7 +526,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         """
         full_name = self.first_name
         if self.last_name:
-            full_name += ' {0}'.format(self.last_name)
+            full_name += f' {self.last_name}'
         return full_name
 
     def to_json(self):
@@ -774,12 +773,12 @@ class ChatFullInfo(JsonDeserializable):
         self.can_set_sticker_set: bool = can_set_sticker_set
         self.linked_chat_id: int = linked_chat_id
         self.location: ChatLocation = location
-        self.active_usernames: List[str] = active_usernames
+        self.active_usernames: list[str] = active_usernames
         self.emoji_status_custom_emoji_id: str = emoji_status_custom_emoji_id
         self.has_hidden_members: bool = has_hidden_members
         self.has_aggressive_anti_spam_enabled: bool = has_aggressive_anti_spam_enabled
         self.emoji_status_expiration_date: int = emoji_status_expiration_date
-        self.available_reactions: List[ReactionType] = available_reactions
+        self.available_reactions: list[ReactionType] = available_reactions
         self.accent_color_id: int = accent_color_id
         self.background_custom_emoji_id: str = background_custom_emoji_id
         self.profile_accent_color_id: int = profile_accent_color_id
@@ -1422,75 +1421,75 @@ class Message(JsonDeserializable):
         self.from_user: User = from_user
         self.date: int = date
         self.chat: Chat = chat
-        self.sender_chat: Optional[Chat] = None
-        self.is_automatic_forward: Optional[bool] = None
-        self.reply_to_message: Optional[Message] = None
-        self.via_bot: Optional[User] = None
-        self.edit_date: Optional[int] = None
-        self.has_protected_content: Optional[bool] = None
-        self.media_group_id: Optional[str] = None
-        self.author_signature: Optional[str] = None
-        self.text: Optional[str] = None
-        self.entities: Optional[List[MessageEntity]] = None
-        self.caption_entities: Optional[List[MessageEntity]] = None
-        self.audio: Optional[Audio] = None
-        self.document: Optional[Document] = None
-        self.photo: Optional[List[PhotoSize]] = None
-        self.sticker: Optional[Sticker] = None
-        self.video: Optional[Video] = None
-        self.video_note: Optional[VideoNote] = None
-        self.voice: Optional[Voice] = None
-        self.caption: Optional[str] = None
-        self.contact: Optional[Contact] = None
-        self.location: Optional[Location] = None
-        self.venue: Optional[Venue] = None
-        self.animation: Optional[Animation] = None
-        self.dice: Optional[Dice] = None
-        self.new_chat_members: Optional[List[User]] = None
-        self.left_chat_member: Optional[User] = None
-        self.new_chat_title: Optional[str] = None
-        self.new_chat_photo: Optional[List[PhotoSize]] = None
-        self.delete_chat_photo: Optional[bool] = None
-        self.group_chat_created: Optional[bool] = None
-        self.supergroup_chat_created: Optional[bool] = None
-        self.channel_chat_created: Optional[bool] = None
-        self.migrate_to_chat_id: Optional[int] = None
-        self.migrate_from_chat_id: Optional[int] = None
-        self.pinned_message: Optional[Union[Message, InaccessibleMessage]] = None
-        self.invoice: Optional[Invoice] = None
-        self.successful_payment: Optional[SuccessfulPayment] = None
-        self.connected_website: Optional[str] = None
-        self.reply_markup: Optional[InlineKeyboardMarkup] = None
-        self.message_thread_id: Optional[int] = None
-        self.is_topic_message: Optional[bool] = None
-        self.chat_background_set: Optional[ChatBackground] = None
-        self.forum_topic_created: Optional[ForumTopicCreated] = None
-        self.forum_topic_closed: Optional[ForumTopicClosed] = None
-        self.forum_topic_reopened: Optional[ForumTopicReopened] = None
-        self.has_media_spoiler: Optional[bool] = None
-        self.forum_topic_edited: Optional[ForumTopicEdited] = None
-        self.general_forum_topic_hidden: Optional[GeneralForumTopicHidden] = None
-        self.general_forum_topic_unhidden: Optional[GeneralForumTopicUnhidden] = None
-        self.write_access_allowed: Optional[WriteAccessAllowed] = None
-        self.users_shared: Optional[UsersShared] = None
-        self.chat_shared: Optional[ChatShared] = None
-        self.story: Optional[Story] = None
-        self.external_reply: Optional[ExternalReplyInfo] = None
-        self.quote: Optional[TextQuote] = None
-        self.link_preview_options: Optional[LinkPreviewOptions] = None
-        self.giveaway_created: Optional[GiveawayCreated] = None
-        self.giveaway: Optional[Giveaway] = None
-        self.giveaway_winners: Optional[GiveawayWinners] = None
-        self.giveaway_completed: Optional[GiveawayCompleted] = None
-        self.forward_origin: Optional[MessageOrigin] = None
-        self.boost_added: Optional[ChatBoostAdded] = None
-        self.sender_boost_count: Optional[int] = None
-        self.reply_to_story: Optional[Story] = None
-        self.sender_business_bot: Optional[User] = None
-        self.business_connection_id: Optional[str] = None
-        self.is_from_offline: Optional[bool] = None
-        self.effect_id: Optional[str] = None
-        self.show_caption_above_media: Optional[bool] = None
+        self.sender_chat: Chat | None = None
+        self.is_automatic_forward: bool | None = None
+        self.reply_to_message: Message | None = None
+        self.via_bot: User | None = None
+        self.edit_date: int | None = None
+        self.has_protected_content: bool | None = None
+        self.media_group_id: str | None = None
+        self.author_signature: str | None = None
+        self.text: str | None = None
+        self.entities: list[MessageEntity] | None = None
+        self.caption_entities: list[MessageEntity] | None = None
+        self.audio: Audio | None = None
+        self.document: Document | None = None
+        self.photo: list[PhotoSize] | None = None
+        self.sticker: Sticker | None = None
+        self.video: Video | None = None
+        self.video_note: VideoNote | None = None
+        self.voice: Voice | None = None
+        self.caption: str | None = None
+        self.contact: Contact | None = None
+        self.location: Location | None = None
+        self.venue: Venue | None = None
+        self.animation: Animation | None = None
+        self.dice: Dice | None = None
+        self.new_chat_members: list[User] | None = None
+        self.left_chat_member: User | None = None
+        self.new_chat_title: str | None = None
+        self.new_chat_photo: list[PhotoSize] | None = None
+        self.delete_chat_photo: bool | None = None
+        self.group_chat_created: bool | None = None
+        self.supergroup_chat_created: bool | None = None
+        self.channel_chat_created: bool | None = None
+        self.migrate_to_chat_id: int | None = None
+        self.migrate_from_chat_id: int | None = None
+        self.pinned_message: Message | InaccessibleMessage | None = None
+        self.invoice: Invoice | None = None
+        self.successful_payment: SuccessfulPayment | None = None
+        self.connected_website: str | None = None
+        self.reply_markup: InlineKeyboardMarkup | None = None
+        self.message_thread_id: int | None = None
+        self.is_topic_message: bool | None = None
+        self.chat_background_set: ChatBackground | None = None
+        self.forum_topic_created: ForumTopicCreated | None = None
+        self.forum_topic_closed: ForumTopicClosed | None = None
+        self.forum_topic_reopened: ForumTopicReopened | None = None
+        self.has_media_spoiler: bool | None = None
+        self.forum_topic_edited: ForumTopicEdited | None = None
+        self.general_forum_topic_hidden: GeneralForumTopicHidden | None = None
+        self.general_forum_topic_unhidden: GeneralForumTopicUnhidden | None = None
+        self.write_access_allowed: WriteAccessAllowed | None = None
+        self.users_shared: UsersShared | None = None
+        self.chat_shared: ChatShared | None = None
+        self.story: Story | None = None
+        self.external_reply: ExternalReplyInfo | None = None
+        self.quote: TextQuote | None = None
+        self.link_preview_options: LinkPreviewOptions | None = None
+        self.giveaway_created: GiveawayCreated | None = None
+        self.giveaway: Giveaway | None = None
+        self.giveaway_winners: GiveawayWinners | None = None
+        self.giveaway_completed: GiveawayCompleted | None = None
+        self.forward_origin: MessageOrigin | None = None
+        self.boost_added: ChatBoostAdded | None = None
+        self.sender_boost_count: int | None = None
+        self.reply_to_story: Story | None = None
+        self.sender_business_bot: User | None = None
+        self.business_connection_id: str | None = None
+        self.is_from_offline: bool | None = None
+        self.effect_id: str | None = None
+        self.show_caption_above_media: bool | None = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -1629,7 +1628,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     :rtype: :class:`telebot.types.MessageEntity`
     """
     @staticmethod
-    def to_list_of_dicts(entity_list) -> Union[List[Dict], None]:
+    def to_list_of_dicts(entity_list) -> list[dict] | None:
         """
         Converts a list of MessageEntity objects to a list of dictionaries.
         """
@@ -2191,7 +2190,7 @@ class UserProfilePhotos(JsonDeserializable):
 
     def __init__(self, total_count, photos=None, **kwargs):
         self.total_count: int = total_count
-        self.photos: List[PhotoSize] = photos
+        self.photos: list[PhotoSize] = photos
 
 
 class File(JsonDeserializable):
@@ -2255,7 +2254,7 @@ class ForceReply(JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ForceReply`
     """
-    def __init__(self, selective: Optional[bool]=None, input_field_placeholder: Optional[str]=None):
+    def __init__(self, selective: bool | None=None, input_field_placeholder: str | None=None):
         self.selective: bool = selective
         self.input_field_placeholder: str = input_field_placeholder
 
@@ -2383,9 +2382,9 @@ class ReplyKeyboardMarkup(JsonSerializable):
     """
     max_row_keys = 12
 
-    def __init__(self, resize_keyboard: Optional[bool]=None, one_time_keyboard: Optional[bool]=None, 
-            selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None,
-            is_persistent: Optional[bool]=None):
+    def __init__(self, resize_keyboard: bool | None=None, one_time_keyboard: bool | None=None, 
+            selective: bool | None=None, row_width: int=3, input_field_placeholder: str | None=None,
+            is_persistent: bool | None=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             if not DISABLE_KEYLEN_ERROR:
@@ -2397,7 +2396,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.selective: bool = selective
         self.row_width: int = row_width
         self.input_field_placeholder: str = input_field_placeholder
-        self.keyboard: List[List[KeyboardButton]] = []
+        self.keyboard: list[list[KeyboardButton]] = []
         self.is_persistent: bool = is_persistent
 
     def add(self, *args, row_width=None):
@@ -2524,16 +2523,16 @@ class KeyboardButtonRequestUsers(Dictionaryable):
     :rtype: :class:`telebot.types.KeyboardButtonRequestUsers`
     """
     def __init__(
-            self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
-            max_quantity: Optional[int]=None, request_name: Optional[str]=None, request_username: Optional[bool]=None,
-            request_photo: Optional[bool]=None) -> None:
+            self, request_id: int, user_is_bot: bool | None=None, user_is_premium: bool | None=None,
+            max_quantity: int | None=None, request_name: str | None=None, request_username: bool | None=None,
+            request_photo: bool | None=None) -> None:
         self.request_id: int = request_id
-        self.user_is_bot: Optional[bool] = user_is_bot
-        self.user_is_premium: Optional[bool] = user_is_premium
-        self.max_quantity: Optional[int] = max_quantity
-        self.request_name: Optional[str] = request_name
-        self.request_username: Optional[bool] = request_username
-        self.request_photo: Optional[bool] = request_photo
+        self.user_is_bot: bool | None = user_is_bot
+        self.user_is_premium: bool | None = user_is_premium
+        self.max_quantity: int | None = max_quantity
+        self.request_name: str | None = request_name
+        self.request_username: bool | None = request_username
+        self.request_photo: bool | None = request_photo
 
     def to_dict(self) -> dict:
         data = {'request_id': self.request_id}
@@ -2555,8 +2554,8 @@ class KeyboardButtonRequestUsers(Dictionaryable):
 class KeyboardButtonRequestUser(KeyboardButtonRequestUsers):
     """Deprecated. Use KeyboardButtonRequestUsers instead."""
     def __init__(
-            self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
-            max_quantity: Optional[int]=None) -> None:
+            self, request_id: int, user_is_bot: bool | None=None, user_is_premium: bool | None=None,
+            max_quantity: int | None=None) -> None:
         logger.warning('The parameter "voice_chat_scheduled" is deprecated, use "video_chat_scheduled" instead')
         super().__init__(request_id, user_is_bot=user_is_bot, user_is_premium=user_is_premium, max_quantity=max_quantity)
 
@@ -2610,22 +2609,22 @@ class KeyboardButtonRequestChat(Dictionaryable):
     :rtype: :class:`telebot.types.KeyboardButtonRequestChat`
     """
 
-    def __init__(self, request_id: int, chat_is_channel: bool, chat_is_forum: Optional[bool]=None,
-                 chat_has_username: Optional[bool]=None, chat_is_created: Optional[bool]=None,
-                 user_administrator_rights: Optional[ChatAdministratorRights]=None,
-                 bot_administrator_rights: Optional[ChatAdministratorRights]=None, bot_is_member: Optional[bool]=None,
-                 request_title: Optional[str]=None, request_photo: Optional[bool]=None, request_username: Optional[bool]=None):
+    def __init__(self, request_id: int, chat_is_channel: bool, chat_is_forum: bool | None=None,
+                 chat_has_username: bool | None=None, chat_is_created: bool | None=None,
+                 user_administrator_rights: ChatAdministratorRights | None=None,
+                 bot_administrator_rights: ChatAdministratorRights | None=None, bot_is_member: bool | None=None,
+                 request_title: str | None=None, request_photo: bool | None=None, request_username: bool | None=None):
         self.request_id: int = request_id
         self.chat_is_channel: bool = chat_is_channel
-        self.chat_is_forum: Optional[bool] = chat_is_forum
-        self.chat_has_username: Optional[bool] = chat_has_username
-        self.chat_is_created: Optional[bool] = chat_is_created
-        self.user_administrator_rights: Optional[ChatAdministratorRights] = user_administrator_rights
-        self.bot_administrator_rights: Optional[ChatAdministratorRights] = bot_administrator_rights
-        self.bot_is_member: Optional[bool] = bot_is_member
-        self.request_title: Optional[str] = request_title
-        self.request_photo: Optional[bool] = request_photo
-        self.request_username: Optional[bool] = request_username
+        self.chat_is_forum: bool | None = chat_is_forum
+        self.chat_has_username: bool | None = chat_has_username
+        self.chat_is_created: bool | None = chat_is_created
+        self.user_administrator_rights: ChatAdministratorRights | None = user_administrator_rights
+        self.bot_administrator_rights: ChatAdministratorRights | None = bot_administrator_rights
+        self.bot_is_member: bool | None = bot_is_member
+        self.request_title: str | None = request_title
+        self.request_photo: bool | None = request_photo
+        self.request_username: bool | None = request_username
 
 
     def to_dict(self) -> dict:
@@ -2692,10 +2691,10 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButton`
     """
-    def __init__(self, text: str, request_contact: Optional[bool]=None, 
-            request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
-            web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
-            request_chat: Optional[KeyboardButtonRequestChat]=None, request_users: Optional[KeyboardButtonRequestUsers]=None):
+    def __init__(self, text: str, request_contact: bool | None=None, 
+            request_location: bool | None=None, request_poll: KeyboardButtonPollType | None=None,
+            web_app: WebAppInfo | None=None, request_user: KeyboardButtonRequestUser | None=None,
+            request_chat: KeyboardButtonRequestChat | None=None, request_users: KeyboardButtonRequestUsers | None=None):
         self.text: str = text
         self.request_contact: bool = request_contact
         self.request_location: bool = request_location
@@ -2777,7 +2776,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
             row_width = self.max_row_keys
         
         self.row_width: int = row_width
-        self.keyboard: List[List[InlineKeyboardButton]] = keyboard or []
+        self.keyboard: list[list[InlineKeyboardButton]] = keyboard or []
 
     def add(self, *args, row_width=None):
         """
@@ -3056,7 +3055,7 @@ class CallbackQuery(JsonDeserializable):
             game_short_name=None, **kwargs):
         self.id: int = id
         self.from_user: User = from_user
-        self.message: Union[Message, InaccessibleMessage] = message
+        self.message: Message | InaccessibleMessage = message
         self.inline_message_id: str = inline_message_id
         self.chat_instance: str = chat_instance
         self.data: str = data
@@ -3639,8 +3638,8 @@ class BotCommandScope(ABC, JsonSerializable):
     """
     def __init__(self, type='default', chat_id=None, user_id=None):
         self.type: str = type
-        self.chat_id: Optional[Union[int, str]] = chat_id
-        self.user_id: Optional[Union[int, str]] = user_id
+        self.chat_id: int | str | None = chat_id
+        self.user_id: int | str | None = user_id
 
     def to_json(self):
         json_dict = {'type': self.type}
@@ -3669,7 +3668,7 @@ class BotCommandScopeDefault(BotCommandScope):
         Represents the default scope of bot commands.
         Default commands are used if no commands with a narrower scope are specified for the user.
         """
-        super(BotCommandScopeDefault, self).__init__(type='default')
+        super().__init__(type='default')
 
 
 # noinspection PyUnresolvedReferences
@@ -3689,7 +3688,7 @@ class BotCommandScopeAllPrivateChats(BotCommandScope):
         """
         Represents the scope of bot commands, covering all private chats.
         """
-        super(BotCommandScopeAllPrivateChats, self).__init__(type='all_private_chats')
+        super().__init__(type='all_private_chats')
 
 
 # noinspection PyUnresolvedReferences
@@ -3709,7 +3708,7 @@ class BotCommandScopeAllGroupChats(BotCommandScope):
         """
         Represents the scope of bot commands, covering all group and supergroup chats.
         """
-        super(BotCommandScopeAllGroupChats, self).__init__(type='all_group_chats')
+        super().__init__(type='all_group_chats')
 
 
 # noinspection PyUnresolvedReferences
@@ -3729,7 +3728,7 @@ class BotCommandScopeAllChatAdministrators(BotCommandScope):
         """
         Represents the scope of bot commands, covering all group and supergroup chat administrators.
         """
-        super(BotCommandScopeAllChatAdministrators, self).__init__(type='all_chat_administrators')
+        super().__init__(type='all_chat_administrators')
 
 
 # noinspection PyUnresolvedReferences
@@ -3750,7 +3749,7 @@ class BotCommandScopeChat(BotCommandScope):
     :rtype: :class:`telebot.types.BotCommandScopeChat`
     """
     def __init__(self, chat_id=None):
-        super(BotCommandScopeChat, self).__init__(type='chat', chat_id=chat_id)
+        super().__init__(type='chat', chat_id=chat_id)
 
 
 # noinspection PyUnresolvedReferences
@@ -3771,7 +3770,7 @@ class BotCommandScopeChatAdministrators(BotCommandScope):
     :rtype: :class:`telebot.types.BotCommandScopeChatAdministrators`
     """
     def __init__(self, chat_id=None):
-        super(BotCommandScopeChatAdministrators, self).__init__(type='chat_administrators', chat_id=chat_id)
+        super().__init__(type='chat_administrators', chat_id=chat_id)
 
 
 # noinspection PyUnresolvedReferences
@@ -3795,7 +3794,7 @@ class BotCommandScopeChatMember(BotCommandScope):
     :rtype: :class:`telebot.types.BotCommandScopeChatMember`
     """
     def __init__(self, chat_id=None, user_id=None):
-        super(BotCommandScopeChatMember, self).__init__(type='chat_member', chat_id=chat_id, user_id=user_id)
+        super().__init__(type='chat_member', chat_id=chat_id, user_id=user_id)
 
 
 # InlineQuery
@@ -3880,7 +3879,7 @@ class InputTextMessageContent(Dictionaryable):
             link_preview_options=None):
         self.message_text: str = message_text
         self.parse_mode: str = parse_mode
-        self.entities: List[MessageEntity] = entities
+        self.entities: list[MessageEntity] = entities
         self.link_preview_options: LinkPreviewOptions = link_preview_options
         if disable_web_page_preview is not None:
             logger.warning('The parameter "disable_web_page_preview" is deprecated. Use "link_preview_options" instead.')
@@ -4138,21 +4137,21 @@ class InputInvoiceMessageContent(Dictionaryable):
         self.payload: str = payload
         self.provider_token: str = provider_token
         self.currency: str = currency
-        self.prices: List[LabeledPrice] = prices
-        self.max_tip_amount: Optional[int] = max_tip_amount
-        self.suggested_tip_amounts: Optional[List[int]] = suggested_tip_amounts
-        self.provider_data: Optional[str] = provider_data
-        self.photo_url: Optional[str] = photo_url
-        self.photo_size: Optional[int] = photo_size
-        self.photo_width: Optional[int] = photo_width
-        self.photo_height: Optional[int] = photo_height
-        self.need_name: Optional[bool] = need_name
-        self.need_phone_number: Optional[bool] = need_phone_number
-        self.need_email: Optional[bool] = need_email
-        self.need_shipping_address: Optional[bool] = need_shipping_address
-        self.send_phone_number_to_provider: Optional[bool] = send_phone_number_to_provider
-        self.send_email_to_provider: Optional[bool] = send_email_to_provider
-        self.is_flexible: Optional[bool] = is_flexible
+        self.prices: list[LabeledPrice] = prices
+        self.max_tip_amount: int | None = max_tip_amount
+        self.suggested_tip_amounts: list[int] | None = suggested_tip_amounts
+        self.provider_data: str | None = provider_data
+        self.photo_url: str | None = photo_url
+        self.photo_size: int | None = photo_size
+        self.photo_width: int | None = photo_width
+        self.photo_height: int | None = photo_height
+        self.need_name: bool | None = need_name
+        self.need_phone_number: bool | None = need_phone_number
+        self.need_email: bool | None = need_email
+        self.need_shipping_address: bool | None = need_shipping_address
+        self.send_phone_number_to_provider: bool | None = send_phone_number_to_provider
+        self.send_email_to_provider: bool | None = send_email_to_provider
+        self.is_flexible: bool | None = is_flexible
     
     def to_dict(self):
         json_dict = {
@@ -4477,7 +4476,7 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
         self.photo_width = photo_width
         self.photo_height = photo_height
         self.description = description
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4569,7 +4568,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
         self.thumbnail_url = thumbnail_url
         self.gif_duration = gif_duration
         self.thumbnail_mime_type = thumbnail_mime_type
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4668,7 +4667,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         self.thumbnail_url = thumbnail_url
         self.mpeg4_duration = mpeg4_duration
         self.thumbnail_mime_type = thumbnail_mime_type
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4772,7 +4771,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
         self.video_height = video_height
         self.video_duration = video_duration
         self.description = description
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -5446,7 +5445,7 @@ class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['photo_file_id'] = photo_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -5505,7 +5504,7 @@ class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['gif_file_id'] = gif_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -5564,7 +5563,7 @@ class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
@@ -5721,7 +5720,7 @@ class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['video_file_id'] = video_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -5893,9 +5892,9 @@ class Game(JsonDeserializable):
     def __init__(self, title, description, photo, text=None, text_entities=None, animation=None, **kwargs):
         self.title: str = title
         self.description: str = description
-        self.photo: List[PhotoSize] = photo
+        self.photo: list[PhotoSize] = photo
         self.text: str = text
-        self.text_entities: List[MessageEntity] = text_entities
+        self.text_entities: list[MessageEntity] = text_entities
         self.animation: Animation = animation
 
 
@@ -6168,7 +6167,7 @@ class ShippingOption(JsonSerializable):
     def __init__(self, id, title):
         self.id: str = id
         self.title: str = title
-        self.prices: List[LabeledPrice] = []
+        self.prices: list[LabeledPrice] = []
 
     def add_price(self, *args):
         """
@@ -6373,7 +6372,7 @@ class StickerSet(JsonDeserializable):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
-        self.stickers: List[Sticker] = stickers
+        self.stickers: list[Sticker] = stickers
         self.thumbnail: PhotoSize = thumbnail
 
     @property
@@ -6565,16 +6564,16 @@ class InputMedia(Dictionaryable, JsonSerializable):
     def __init__(self, type, media, caption=None, parse_mode=None, caption_entities=None):
         self.type: str = type
         self.media: str = media
-        self.caption: Optional[str] = caption
-        self.parse_mode: Optional[str] = parse_mode
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
+        self.caption: str | None = caption
+        self.parse_mode: str | None = parse_mode
+        self.caption_entities: list[MessageEntity] | None = caption_entities
 
         if service_utils.is_string(self.media):
             self._media_name = ''
             self._media_dic = self.media
         else:
             self._media_name = service_utils.generate_random_token()
-            self._media_dic = 'attach://{0}'.format(self._media_name)
+            self._media_dic = f'attach://{self._media_name}'
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -6634,14 +6633,14 @@ class InputMediaPhoto(InputMedia):
         if service_utils.is_pil_image(media):
             media = service_utils.pil_image_to_file(media)
     
-        super(InputMediaPhoto, self).__init__(
+        super().__init__(
             type="photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
 
-        self.has_spoiler: Optional[bool] = has_spoiler
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.has_spoiler: bool | None = has_spoiler
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     def to_dict(self):
-        ret = super(InputMediaPhoto, self).to_dict()
+        ret = super().to_dict()
         if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
         if self.show_caption_above_media is not None:
@@ -6701,15 +6700,15 @@ class InputMediaVideo(InputMedia):
     """
     def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  width=None, height=None, duration=None, supports_streaming=None, has_spoiler=None, show_caption_above_media=None):
-        super(InputMediaVideo, self).__init__(
+        super().__init__(
             type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
         self.width = width
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
-        self.has_spoiler: Optional[bool] = has_spoiler
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.has_spoiler: bool | None = has_spoiler
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     @property
     def thumb(self):
@@ -6717,7 +6716,7 @@ class InputMediaVideo(InputMedia):
         return self.thumbnail
 
     def to_dict(self):
-        ret = super(InputMediaVideo, self).to_dict()
+        ret = super().to_dict()
         if self.thumbnail:
             ret['thumbnail'] = self.thumbnail
         if self.width:
@@ -6784,14 +6783,14 @@ class InputMediaAnimation(InputMedia):
     """
     def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  width=None, height=None, duration=None, has_spoiler=None, show_caption_above_media=None):
-        super(InputMediaAnimation, self).__init__(
+        super().__init__(
             type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
         self.width = width
         self.height = height
         self.duration = duration
-        self.has_spoiler: Optional[bool] = has_spoiler
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.has_spoiler: bool | None = has_spoiler
+        self.show_caption_above_media: bool | None = show_caption_above_media
 
     @property
     def thumb(self):
@@ -6799,7 +6798,7 @@ class InputMediaAnimation(InputMedia):
         return self.thumbnail
 
     def to_dict(self):
-        ret = super(InputMediaAnimation, self).to_dict()
+        ret = super().to_dict()
         if self.thumbnail:
             ret['thumbnail'] = self.thumbnail
         if self.width:
@@ -6858,7 +6857,7 @@ class InputMediaAudio(InputMedia):
     """
     def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  duration=None, performer=None, title=None):
-        super(InputMediaAudio, self).__init__(
+        super().__init__(
             type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
         self.duration = duration
@@ -6871,7 +6870,7 @@ class InputMediaAudio(InputMedia):
         return self.thumbnail
 
     def to_dict(self):
-        ret = super(InputMediaAudio, self).to_dict()
+        ret = super().to_dict()
         if self.thumbnail:
             ret['thumbnail'] = self.thumbnail
         if self.duration:
@@ -6921,7 +6920,7 @@ class InputMediaDocument(InputMedia):
     """
     def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
                  disable_content_type_detection=None):
-        super(InputMediaDocument, self).__init__(
+        super().__init__(
             type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
         self.disable_content_type_detection = disable_content_type_detection
@@ -6932,7 +6931,7 @@ class InputMediaDocument(InputMedia):
         return self.thumbnail
 
     def to_dict(self):
-        ret = super(InputMediaDocument, self).to_dict()
+        ret = super().to_dict()
         if self.thumbnail:
             ret['thumbnail'] = self.thumbnail
         if self.disable_content_type_detection is not None:
@@ -6969,7 +6968,7 @@ class PollOption(JsonDeserializable):
     def __init__(self, text, voter_count = 0, text_entities=None, **kwargs):
         self.text: str = text
         self.voter_count: int = voter_count
-        self.text_entities: List[MessageEntity] = text_entities
+        self.text_entities: list[MessageEntity] = text_entities
     # Converted in _convert_poll_options
     # def to_json(self):
     #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
@@ -6996,8 +6995,8 @@ class InputPollOption(JsonSerializable):
     """
     def __init__(self, text, text_parse_mode=None, text_entities=None, **kwargs):
         self.text: str = text
-        self.text_parse_mode: Optional[str] = text_parse_mode
-        self.text_entities: List[MessageEntity] = text_entities
+        self.text_parse_mode: str | None = text_parse_mode
+        self.text_entities: list[MessageEntity] = text_entities
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -7089,7 +7088,7 @@ class Poll(JsonDeserializable):
             **kwargs):
         self.id: str = poll_id
         self.question: str = question
-        self.options: List[PollOption] = options
+        self.options: list[PollOption] = options
         self.total_voter_count: int = total_voter_count
         self.is_closed: bool = is_closed
         self.is_anonymous: bool = is_anonymous
@@ -7101,8 +7100,8 @@ class Poll(JsonDeserializable):
         self.allows_multiple_answers: bool = allows_multiple_answers
         self.correct_option_id: int = correct_option_id
         self.explanation: str = explanation
-        self.explanation_entities: List[MessageEntity] = explanation_entities
-        self.question_entities: List[MessageEntity] = question_entities
+        self.explanation_entities: list[MessageEntity] = explanation_entities
+        self.question_entities: list[MessageEntity] = question_entities
         self.open_period: int = open_period
         self.close_date: int = close_date
 
@@ -7153,9 +7152,9 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
 
     def __init__(self, poll_id, option_ids, user=None, voter_chat=None, **kwargs):
         self.poll_id: str = poll_id
-        self.user: Optional[User] = user
-        self.option_ids: List[int] = option_ids
-        self.voter_chat: Optional[Chat] = voter_chat
+        self.user: User | None = user
+        self.option_ids: list[int] = option_ids
+        self.voter_chat: Chat | None = voter_chat
 
 
     def to_json(self):
@@ -7425,7 +7424,7 @@ class VideoChatParticipantsInvited(JsonDeserializable):
         return cls(**obj)
     
     def __init__(self, users=None, **kwargs):
-        self.users: List[User] = users
+        self.users: list[User] = users
 
 
 class VoiceChatParticipantsInvited(VideoChatParticipantsInvited):
@@ -7783,10 +7782,10 @@ class ForumTopicCreated(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None, **kwargs) -> None:
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: str | None=None, **kwargs) -> None:
         self.name: str = name
         self.icon_color: int = icon_color
-        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+        self.icon_custom_emoji_id: str | None = icon_custom_emoji_id
 
 
 class ForumTopicClosed(JsonDeserializable):
@@ -7837,9 +7836,9 @@ class ForumTopicEdited(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: Optional[str]=None, icon_custom_emoji_id: Optional[str]=None, **kwargs) -> None:
-        self.name: Optional[str] = name
-        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+    def __init__(self, name: str | None=None, icon_custom_emoji_id: str | None=None, **kwargs) -> None:
+        self.name: str | None = name
+        self.icon_custom_emoji_id: str | None = icon_custom_emoji_id
 
 
 class GeneralForumTopicHidden(JsonDeserializable):
@@ -7902,12 +7901,12 @@ class ForumTopic(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None,
+    def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: str | None=None,
                  **kwargs) -> None:
         self.message_thread_id: int = message_thread_id
         self.name: str = name
         self.icon_color: int = icon_color
-        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+        self.icon_custom_emoji_id: str | None = icon_custom_emoji_id
 
 
 class WriteAccessAllowed(JsonDeserializable):
@@ -7935,7 +7934,7 @@ class WriteAccessAllowed(JsonDeserializable):
         return cls(**obj)
         
 
-    def __init__(self, from_request: Optional[bool]=None, web_app_name: Optional[str]=None, from_attachment_menu: Optional[bool]=None,
+    def __init__(self, from_request: bool | None=None, web_app_name: str | None=None, from_attachment_menu: bool | None=None,
                  **kwargs) -> None:
         self.web_app_name: str = web_app_name
         self.from_request: bool = from_request
@@ -7977,13 +7976,13 @@ class ChatShared(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, request_id: int, chat_id: int, title: Optional[str]=None, photo: Optional[List[PhotoSize]]=None,
-                    username: Optional[str]=None, **kwargs) -> None:
+    def __init__(self, request_id: int, chat_id: int, title: str | None=None, photo: list[PhotoSize] | None=None,
+                    username: str | None=None, **kwargs) -> None:
         self.request_id: int = request_id
         self.chat_id: int = chat_id
-        self.title: Optional[str] = title
-        self.photo: Optional[List[PhotoSize]] = photo
-        self.username: Optional[str] = username
+        self.title: str | None = title
+        self.photo: list[PhotoSize] | None = photo
+        self.username: str | None = username
 
 
 class BotDescription(JsonDeserializable):
@@ -8059,12 +8058,12 @@ class InputSticker(Dictionaryable, JsonSerializable):
     :rtype: :class:`telebot.types.InputSticker`
     """
 
-    def __init__(self, sticker: Union[str, InputFile], emoji_list: List[str],  format: Optional[str]=None,
-                 mask_position: Optional[MaskPosition]=None, keywords: Optional[List[str]]=None) -> None:
-        self.sticker: Union[str, InputFile] = sticker
-        self.emoji_list: List[str] = emoji_list
-        self.mask_position: Optional[MaskPosition] = mask_position
-        self.keywords: Optional[List[str]] = keywords
+    def __init__(self, sticker: str | InputFile, emoji_list: list[str],  format: str | None=None,
+                 mask_position: MaskPosition | None=None, keywords: list[str] | None=None) -> None:
+        self.sticker: str | InputFile = sticker
+        self.emoji_list: list[str] = emoji_list
+        self.mask_position: MaskPosition | None = mask_position
+        self.keywords: list[str] | None = keywords
         self.format: str = format
 
         if not self.format:
@@ -8079,7 +8078,7 @@ class InputSticker(Dictionaryable, JsonSerializable):
             self._sticker_name = service_utils.generate_random_token()
             # uses attach://_sticker_name for sticker param. then,
             # actual file is sent using files param of the request
-            self._sticker_dic = 'attach://{0}'.format(self._sticker_name)
+            self._sticker_dic = f'attach://{self._sticker_name}'
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -8217,10 +8216,10 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
     :rtype: :class:`InlineQueryResultsButton`
     """
 
-    def __init__(self, text: str, web_app: Optional[WebAppInfo]=None, start_parameter: Optional[str]=None) -> None:
+    def __init__(self, text: str, web_app: WebAppInfo | None=None, start_parameter: str | None=None) -> None:
         self.text: str = text
-        self.web_app: Optional[WebAppInfo] = web_app
-        self.start_parameter: Optional[str] = start_parameter
+        self.web_app: WebAppInfo | None = web_app
+        self.start_parameter: str | None = start_parameter
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -8405,15 +8404,15 @@ class MessageReactionUpdated(JsonDeserializable):
         obj['new_reaction'] = [ReactionType.de_json(reaction) for reaction in obj['new_reaction']]
         return cls(**obj)
 
-    def __init__(self, chat: Chat, message_id: int, date: int, old_reaction: List[ReactionType], new_reaction: List[ReactionType],
-                 user: Optional[User]=None, actor_chat: Optional[Chat]=None, **kwargs) -> None:
+    def __init__(self, chat: Chat, message_id: int, date: int, old_reaction: list[ReactionType], new_reaction: list[ReactionType],
+                 user: User | None=None, actor_chat: Chat | None=None, **kwargs) -> None:
         self.chat: Chat = chat
         self.message_id: int = message_id
-        self.user: Optional[User] = user
-        self.actor_chat: Optional[Chat] = actor_chat
+        self.user: User | None = user
+        self.actor_chat: Chat | None = actor_chat
         self.date: int = date
-        self.old_reaction: List[ReactionType] = old_reaction
-        self.new_reaction: List[ReactionType] = new_reaction
+        self.old_reaction: list[ReactionType] = old_reaction
+        self.new_reaction: list[ReactionType] = new_reaction
 
 
 
@@ -8447,11 +8446,11 @@ class MessageReactionCountUpdated(JsonDeserializable):
         obj['reactions'] = [ReactionCount.de_json(reaction) for reaction in obj['reactions']]
         return cls(**obj)
 
-    def __init__(self, chat: Chat, message_id: int, date: int, reactions: List[ReactionCount], **kwargs) -> None:
+    def __init__(self, chat: Chat, message_id: int, date: int, reactions: list[ReactionCount], **kwargs) -> None:
         self.chat: Chat = chat
         self.message_id: int = message_id
         self.date: int = date
-        self.reactions: List[ReactionCount] = reactions
+        self.reactions: list[ReactionCount] = reactions
 
 
 # noinspection PyShadowingBuiltins
@@ -8610,39 +8609,39 @@ class ExternalReplyInfo(JsonDeserializable):
         return cls(**obj)
 
     def __init__(
-            self, origin: MessageOrigin, chat: Optional[Chat]=None, message_id: Optional[int]=None,
-            link_preview_options: Optional[LinkPreviewOptions]=None, animation: Optional[Animation]=None,
-            audio: Optional[Audio]=None, document: Optional[Document]=None, photo: Optional[List[PhotoSize]]=None,
-            sticker: Optional[Sticker]=None, story: Optional[Story]=None, video: Optional[Video]=None,
-            video_note: Optional[VideoNote]=None, voice: Optional[Voice]=None,
-            has_media_spoiler: Optional[bool]=None, contact: Optional[Contact]=None,
-            dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
-            giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
-            location: Optional[Location]=None, poll: Optional[Poll]=None,
-            venue: Optional[Venue]=None, **kwargs) -> None:
+            self, origin: MessageOrigin, chat: Chat | None=None, message_id: int | None=None,
+            link_preview_options: LinkPreviewOptions | None=None, animation: Animation | None=None,
+            audio: Audio | None=None, document: Document | None=None, photo: list[PhotoSize] | None=None,
+            sticker: Sticker | None=None, story: Story | None=None, video: Video | None=None,
+            video_note: VideoNote | None=None, voice: Voice | None=None,
+            has_media_spoiler: bool | None=None, contact: Contact | None=None,
+            dice: Dice | None=None, game: Game | None=None, giveaway: Giveaway | None=None,
+            giveaway_winners: GiveawayWinners | None=None, invoice: Invoice | None=None,
+            location: Location | None=None, poll: Poll | None=None,
+            venue: Venue | None=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
-        self.chat: Optional[Chat] = chat
-        self.message_id: Optional[int] = message_id
-        self.link_preview_options: Optional[LinkPreviewOptions] = link_preview_options
-        self.animation: Optional[Animation] = animation
-        self.audio: Optional[Audio] = audio
-        self.document: Optional[Document] = document
-        self.photo: Optional[List[PhotoSize]] = photo
-        self.sticker: Optional[Sticker] = sticker
-        self.story: Optional[Story] = story
-        self.video: Optional[Video] = video
-        self.video_note: Optional[VideoNote] = video_note
-        self.voice: Optional[Voice] = voice
-        self.has_media_spoiler: Optional[bool] = has_media_spoiler
-        self.contact: Optional[Contact] = contact
-        self.dice: Optional[Dice] = dice
-        self.game: Optional[Game] = game
-        self.giveaway: Optional[Giveaway] = giveaway
-        self.giveaway_winners: Optional[GiveawayWinners] = giveaway_winners
-        self.invoice: Optional[Invoice] = invoice
-        self.location: Optional[Location] = location
-        self.poll: Optional[Poll] = poll
-        self.venue: Optional[Venue] = venue
+        self.chat: Chat | None = chat
+        self.message_id: int | None = message_id
+        self.link_preview_options: LinkPreviewOptions | None = link_preview_options
+        self.animation: Animation | None = animation
+        self.audio: Audio | None = audio
+        self.document: Document | None = document
+        self.photo: list[PhotoSize] | None = photo
+        self.sticker: Sticker | None = sticker
+        self.story: Story | None = story
+        self.video: Video | None = video
+        self.video_note: VideoNote | None = video_note
+        self.voice: Voice | None = voice
+        self.has_media_spoiler: bool | None = has_media_spoiler
+        self.contact: Contact | None = contact
+        self.dice: Dice | None = dice
+        self.game: Game | None = game
+        self.giveaway: Giveaway | None = giveaway
+        self.giveaway_winners: GiveawayWinners | None = giveaway_winners
+        self.invoice: Invoice | None = invoice
+        self.location: Location | None = location
+        self.poll: Poll | None = poll
+        self.venue: Venue | None = venue
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -8733,10 +8732,10 @@ class MessageOriginChat(MessageOrigin):
     :type author_signature: :obj:`str`
     """
 
-    def __init__(self, date: int, sender_chat: Chat, author_signature: Optional[str] = None) -> None:
+    def __init__(self, date: int, sender_chat: Chat, author_signature: str | None = None) -> None:
         super().__init__('chat', date)
         self.sender_chat: Chat = sender_chat
-        self.author_signature: Optional[str] = author_signature
+        self.author_signature: str | None = author_signature
 
 
 class MessageOriginChannel(MessageOrigin):
@@ -8753,11 +8752,11 @@ class MessageOriginChannel(MessageOrigin):
     :type author_signature: :obj:`str`
     """
 
-    def __init__(self, date: int, chat: Chat, message_id: int, author_signature: Optional[str] = None) -> None:
+    def __init__(self, date: int, chat: Chat, message_id: int, author_signature: str | None = None) -> None:
         super().__init__('channel', date)
         self.chat: Chat = chat
         self.message_id: int = message_id
-        self.author_signature: Optional[str] = author_signature
+        self.author_signature: str | None = author_signature
 
 
 class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
@@ -8791,14 +8790,14 @@ class LinkPreviewOptions(JsonDeserializable, Dictionaryable, JsonSerializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, is_disabled: Optional[bool] = None, url: Optional[str] = None,
-                 prefer_small_media: Optional[bool] = None, prefer_large_media: Optional[bool] = None,
-                 show_above_text: Optional[bool] = None, **kwargs) -> None:
-        self.is_disabled: Optional[bool] = is_disabled
-        self.url: Optional[str] = url
-        self.prefer_small_media: Optional[bool] = prefer_small_media
-        self.prefer_large_media: Optional[bool] = prefer_large_media
-        self.show_above_text: Optional[bool] = show_above_text
+    def __init__(self, is_disabled: bool | None = None, url: str | None = None,
+                 prefer_small_media: bool | None = None, prefer_large_media: bool | None = None,
+                 show_above_text: bool | None = None, **kwargs) -> None:
+        self.is_disabled: bool | None = is_disabled
+        self.url: str | None = url
+        self.prefer_small_media: bool | None = prefer_small_media
+        self.prefer_large_media: bool | None = prefer_large_media
+        self.show_above_text: bool | None = show_above_text
 
     def to_dict(self) -> dict:
         json_dict = {}
@@ -8860,18 +8859,18 @@ class Giveaway(JsonDeserializable):
         obj['chats'] = [Chat.de_json(chat) for chat in obj['chats']]
         return cls(**obj)
 
-    def __init__(self, chats: List[Chat], winners_selection_date: int, winner_count: int,
-                 only_new_members: Optional[bool] = None, has_public_winners: Optional[bool] = None,
-                 prize_description: Optional[str] = None, country_codes: Optional[List[str]] = None,
-                 premium_subscription_month_count: Optional[int] = None, **kwargs) -> None:
-        self.chats: List[Chat] = chats
+    def __init__(self, chats: list[Chat], winners_selection_date: int, winner_count: int,
+                 only_new_members: bool | None = None, has_public_winners: bool | None = None,
+                 prize_description: str | None = None, country_codes: list[str] | None = None,
+                 premium_subscription_month_count: int | None = None, **kwargs) -> None:
+        self.chats: list[Chat] = chats
         self.winners_selection_date: int = winners_selection_date
         self.winner_count: int = winner_count
-        self.only_new_members: Optional[bool] = only_new_members
-        self.has_public_winners: Optional[bool] = has_public_winners
-        self.prize_description: Optional[str] = prize_description
-        self.country_codes: Optional[List[str]] = country_codes
-        self.premium_subscription_month_count: Optional[int] = premium_subscription_month_count
+        self.only_new_members: bool | None = only_new_members
+        self.has_public_winners: bool | None = has_public_winners
+        self.prize_description: str | None = prize_description
+        self.country_codes: list[str] | None = country_codes
+        self.premium_subscription_month_count: int | None = premium_subscription_month_count
                      
 
 class GiveawayWinners(JsonDeserializable):
@@ -8926,21 +8925,21 @@ class GiveawayWinners(JsonDeserializable):
         return cls(**obj)
     
     def __init__(self, chat: Chat, giveaway_message_id: int, winners_selection_date: int, winner_count: int,
-                 winners: List[User], additional_chat_count: Optional[int] = None,
-                 premium_subscription_month_count: Optional[int] = None, unclaimed_prize_count: Optional[int] = None,
-                 only_new_members: Optional[bool] = None, was_refunded: Optional[bool] = None,
-                 prize_description: Optional[str] = None, **kwargs) -> None:
+                 winners: list[User], additional_chat_count: int | None = None,
+                 premium_subscription_month_count: int | None = None, unclaimed_prize_count: int | None = None,
+                 only_new_members: bool | None = None, was_refunded: bool | None = None,
+                 prize_description: str | None = None, **kwargs) -> None:
         self.chat: Chat = chat
         self.giveaway_message_id: int = giveaway_message_id
         self.winners_selection_date: int = winners_selection_date
         self.winner_count: int = winner_count
-        self.winners: List[User] = winners
-        self.additional_chat_count: Optional[int] = additional_chat_count
-        self.premium_subscription_month_count: Optional[int] = premium_subscription_month_count
-        self.unclaimed_prize_count: Optional[int] = unclaimed_prize_count
-        self.only_new_members: Optional[bool] = only_new_members
-        self.was_refunded: Optional[bool] = was_refunded
-        self.prize_description: Optional[str] = prize_description
+        self.winners: list[User] = winners
+        self.additional_chat_count: int | None = additional_chat_count
+        self.premium_subscription_month_count: int | None = premium_subscription_month_count
+        self.unclaimed_prize_count: int | None = unclaimed_prize_count
+        self.only_new_members: bool | None = only_new_members
+        self.was_refunded: bool | None = was_refunded
+        self.prize_description: str | None = prize_description
                      
         
 class GiveawayCompleted(JsonDeserializable):
@@ -8970,11 +8969,11 @@ class GiveawayCompleted(JsonDeserializable):
             obj['giveaway_message'] = Message.de_json(obj['giveaway_message'])
         return cls(**obj)
     
-    def __init__(self, winner_count: int, unclaimed_prize_count: Optional[int] = None,
-                    giveaway_message: Optional[Message] = None, **kwargs) -> None:
+    def __init__(self, winner_count: int, unclaimed_prize_count: int | None = None,
+                    giveaway_message: Message | None = None, **kwargs) -> None:
         self.winner_count: int = winner_count
-        self.unclaimed_prize_count: Optional[int] = unclaimed_prize_count
-        self.giveaway_message: Optional[Message] = giveaway_message
+        self.unclaimed_prize_count: int | None = unclaimed_prize_count
+        self.giveaway_message: Message | None = giveaway_message
                         
 
 class GiveawayCreated(JsonDeserializable):
@@ -9023,12 +9022,12 @@ class TextQuote(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, text: str, position: int,
-                 entities: Optional[List[MessageEntity]] = None,
-                 is_manual: Optional[bool] = None, **kwargs) -> None:
+                 entities: list[MessageEntity] | None = None,
+                 is_manual: bool | None = None, **kwargs) -> None:
         self.text: str = text
-        self.entities: Optional[List[MessageEntity]] = entities
-        self.position: Optional[int] = position
-        self.is_manual: Optional[bool] = is_manual
+        self.entities: list[MessageEntity] | None = entities
+        self.position: int | None = position
+        self.is_manual: bool | None = is_manual
 
     @property
     def html_text(self):
@@ -9077,17 +9076,17 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
         return cls(**obj)    
 
-    def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
-                 allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
-                 quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
-                 quote_position: Optional[int] = None, **kwargs) -> None:
+    def __init__(self, message_id: int, chat_id: int | str | None = None,
+                 allow_sending_without_reply: bool | None = None, quote: str | None = None,
+                 quote_parse_mode: str | None = None, quote_entities: list[MessageEntity] | None = None,
+                 quote_position: int | None = None, **kwargs) -> None:
         self.message_id: int = message_id
-        self.chat_id: Optional[Union[int, str]] = chat_id
-        self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
-        self.quote: Optional[str] = quote
-        self.quote_parse_mode: Optional[str] = quote_parse_mode
-        self.quote_entities: Optional[List[MessageEntity]] = quote_entities
-        self.quote_position: Optional[int] = quote_position
+        self.chat_id: int | str | None = chat_id
+        self.allow_sending_without_reply: bool | None = allow_sending_without_reply
+        self.quote: str | None = quote
+        self.quote_parse_mode: str | None = quote_parse_mode
+        self.quote_entities: list[MessageEntity] | None = quote_entities
+        self.quote_position: int | None = quote_position
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -9408,7 +9407,7 @@ class UserChatBoosts(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, boosts, **kwargs):
-        self.boosts: List[ChatBoost] = boosts
+        self.boosts: list[ChatBoost] = boosts
     
 
 class InaccessibleMessage(JsonDeserializable):
@@ -9567,7 +9566,7 @@ class BusinessMessagesDeleted(JsonDeserializable):
     def __init__(self, business_connection_id, chat, message_ids, **kwargs):
         self.business_connection_id: str = business_connection_id
         self.chat: Chat = chat
-        self.message_ids: List[int] = message_ids
+        self.message_ids: list[int] = message_ids
         
 
 class BusinessIntro(JsonDeserializable):
@@ -9598,9 +9597,9 @@ class BusinessIntro(JsonDeserializable):
         return cls(**obj)
     
     def __init__(self, title=None, message=None, sticker=None, **kwargs):
-        self.title: Optional[str] = title
-        self.message: Optional[str] = message
-        self.sticker: Optional[Sticker] = sticker
+        self.title: str | None = title
+        self.message: str | None = message
+        self.sticker: Sticker | None = sticker
 
 
 class BusinessLocation(JsonDeserializable):
@@ -9629,7 +9628,7 @@ class BusinessLocation(JsonDeserializable):
     
     def __init__(self, address, location=None, **kwargs):
         self.address: str = address
-        self.location: Optional[Location] = location
+        self.location: Location | None = location
 
 
 class BusinessOpeningHoursInterval(JsonDeserializable):
@@ -9686,7 +9685,7 @@ class BusinessOpeningHours(JsonDeserializable):
     
     def __init__(self, time_zone_name, opening_hours, **kwargs):
         self.time_zone_name: str = time_zone_name
-        self.opening_hours: List[BusinessOpeningHoursInterval] = opening_hours
+        self.opening_hours: list[BusinessOpeningHoursInterval] = opening_hours
 
 
 class SharedUser(JsonDeserializable):
@@ -9724,10 +9723,10 @@ class SharedUser(JsonDeserializable):
     
     def __init__(self, user_id, first_name=None, last_name=None, username=None, photo=None, **kwargs):
         self.user_id: int = user_id
-        self.first_name: Optional[str] = first_name
-        self.last_name: Optional[str] = last_name
-        self.username: Optional[str] = username
-        self.photo: Optional[List[PhotoSize]] = photo
+        self.first_name: str | None = first_name
+        self.last_name: str | None = last_name
+        self.username: str | None = username
+        self.photo: list[PhotoSize] | None = photo
 
 
 class Birthdate(JsonDeserializable):
@@ -9758,7 +9757,7 @@ class Birthdate(JsonDeserializable):
     def __init__(self, day, month, year=None, **kwargs):
         self.day: int = day
         self.month: int = month
-        self.year: Optional[int] = year
+        self.year: int | None = year
 
 
 class BackgroundFill(ABC, JsonDeserializable):
@@ -9876,7 +9875,7 @@ class BackgroundFillFreeformGradient(BackgroundFill):
 
     def __init__(self, type, colors, **kwargs):
         self.type: str = type
-        self.colors: List[int] = colors
+        self.colors: list[int] = colors
 
 
 class BackgroundType(ABC, JsonDeserializable):
@@ -9978,8 +9977,8 @@ class BackgroundTypeWallpaper(BackgroundFill):
         self.type: str = type
         self.document: Document = document
         self.dark_theme_dimming: int = dark_theme_dimming
-        self.is_blurred: Optional[bool] = is_blurred
-        self.is_moving: Optional[bool] = is_moving
+        self.is_blurred: bool | None = is_blurred
+        self.is_moving: bool | None = is_moving
 
 
 # noinspection PyShadowingBuiltins
@@ -10023,8 +10022,8 @@ class BackgroundTypePattern(BackgroundFill):
         self.document: Document = document
         self.fill: BackgroundFill = fill
         self.intensity: int = intensity
-        self.is_inverted: Optional[bool] = is_inverted
-        self.is_moving: Optional[bool] = is_moving
+        self.is_inverted: bool | None = is_inverted
+        self.is_moving: bool | None = is_moving
 
 
 # noinspection PyShadowingBuiltins

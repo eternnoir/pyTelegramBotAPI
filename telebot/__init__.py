@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
 
 import logging
@@ -536,7 +535,7 @@ class TeleBot:
         
         protocol = "https" if certificate else "http"
         if not webhook_url:
-            webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
+            webhook_url = f"{protocol}://{listen}:{port}/{url_path}"
 
         if certificate and certificate_key:
             # noinspection PyTypeChecker
@@ -688,7 +687,7 @@ class TeleBot:
         :return None:
         """
         upd_count = len(updates)
-        logger.debug('Received {0} new updates'.format(upd_count))
+        logger.debug(f'Received {upd_count} new updates')
         if upd_count == 0: return
 
         new_messages = None
@@ -1227,7 +1226,7 @@ class TeleBot:
                         logger.info("Exception occurred. Stopping." + warning)
                     else:
                         # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info("Waiting for {0} seconds until retry".format(error_interval) + warning)
+                        logger.info(f"Waiting for {error_interval} seconds until retry" + warning)
                         time.sleep(error_interval)
                         if error_interval * 2 < 60:
                             error_interval *= 2
@@ -1291,7 +1290,7 @@ class TeleBot:
                         logger.info("Exception occurred. Stopping." + warning)
                     else:
                         # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info("Waiting for {0} seconds until retry".format(error_interval) + warning)
+                        logger.info(f"Waiting for {error_interval} seconds until retry" + warning)
                         time.sleep(error_interval)
                         error_interval *= 2
                 else:
@@ -8584,7 +8583,7 @@ class TeleBot:
                     if hasattr(middleware, f'pre_process_{update_type}'):
                         result = getattr(middleware, f'pre_process_{update_type}')(message, data)
                     else:
-                        logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                        logger.error(f'Middleware {middleware.__class__.__name__} does not have pre_process_{update_type} method. pre_process function execution was skipped.')
                         result = None
                 else:
                     result = middleware.pre_process(message, data)
@@ -8640,7 +8639,7 @@ class TeleBot:
                     if hasattr(middleware, f'post_process_{update_type}'):
                         getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
                     else:
-                        logger.error("Middleware: {} does not have post_process_{} method. Post process function was not executed.".format(middleware.__class__.__name__, update_type))
+                        logger.error(f"Middleware: {middleware.__class__.__name__} does not have post_process_{update_type} method. Post process function was not executed.")
                 else:
                     middleware.post_process(message, data, handler_error)
 

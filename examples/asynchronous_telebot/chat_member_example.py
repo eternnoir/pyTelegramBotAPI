@@ -9,7 +9,7 @@ async def chat_m(message: types.ChatMemberUpdated):
     old = message.old_chat_member
     new = message.new_chat_member
     if new.status == "member":
-        await bot.send_message(message.chat.id,"Hello {name}!".format(name=new.user.first_name)) # Welcome message
+        await bot.send_message(message.chat.id,f"Hello {new.user.first_name}!") # Welcome message
 
 #if bot is added to group, this handler will work
 @bot.my_chat_member_handler()

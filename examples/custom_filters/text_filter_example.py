@@ -12,7 +12,7 @@ def start_filter(message):
 # Check if text is hi or hello
 @bot.message_handler(text=['hi','hello'])
 def text_filter(message):
-    bot.send_message(message.chat.id, "Hi, {name}!".format(name=message.from_user.first_name))
+    bot.send_message(message.chat.id, f"Hi, {message.from_user.first_name}!")
 
 # Do not forget to register filters
 bot.add_custom_filter(custom_filters.TextMatchFilter())

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # This bot was made specifically for the pyTelegramAPI Telegram chat,
 # and goes by the name 'TeleBot (@pyTeleBot)'. Join our group to talk to him!
 # WARNING: Tested with Python 2.7
@@ -9,23 +8,23 @@ import telebot
 
 text_messages = {
     'welcome':
-        u'Please welcome {name}!\n\n'
-        u'This chat is intended for questions about and discussion of the pyTelegramBotAPI.\n'
-        u'To enable group members to answer your questions fast and accurately, please make sure to study the '
-        u'project\'s documentation (https://github.com/eternnoir/pyTelegramBotAPI/blob/master/README.md) and the '
-        u'examples (https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples) first.\n\n'
-        u'I hope you enjoy your stay here!',
+        'Please welcome {name}!\n\n'
+        'This chat is intended for questions about and discussion of the pyTelegramBotAPI.\n'
+        'To enable group members to answer your questions fast and accurately, please make sure to study the '
+        'project\'s documentation (https://github.com/eternnoir/pyTelegramBotAPI/blob/master/README.md) and the '
+        'examples (https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples) first.\n\n'
+        'I hope you enjoy your stay here!',
 
     'info':
-        u'My name is TeleBot,\n'
-        u'I am a bot that assists these wonderful bot-creating people of this bot library group chat.\n'
-        u'Also, I am still under development. Please improve my functionality by making a pull request! '
-        u'Suggestions are also welcome, just drop them in this group chat!',
+        'My name is TeleBot,\n'
+        'I am a bot that assists these wonderful bot-creating people of this bot library group chat.\n'
+        'Also, I am still under development. Please improve my functionality by making a pull request! '
+        'Suggestions are also welcome, just drop them in this group chat!',
 
     'wrong_chat':
-        u'Hi there!\nThanks for trying me out. However, this bot can only be used in the pyTelegramAPI group chat.\n'
-        u'Join us!\n\n'
-        u'https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b'
+        'Hi there!\nThanks for trying me out. However, this bot can only be used in the pyTelegramAPI group chat.\n'
+        'Join us!\n\n'
+        'https://telegram.me/joinchat/067e22c60035523fda8f6025ee87e30b'
 }
 
 if "TELEBOT_BOT_TOKEN" not in os.environ or "GROUP_CHAT_ID" not in os.environ:
@@ -46,10 +45,10 @@ def on_user_joins(message):
 
     name = message.new_chat_participant.first_name
     if hasattr(message.new_chat_participant, 'last_name') and message.new_chat_participant.last_name is not None:
-        name += u" {}".format(message.new_chat_participant.last_name)
+        name += f" {message.new_chat_participant.last_name}"
 
     if hasattr(message.new_chat_participant, 'username') and message.new_chat_participant.username is not None:
-        name += u" (@{})".format(message.new_chat_participant.username)
+        name += f" (@{message.new_chat_participant.username})"
 
     bot.reply_to(message, text_messages['welcome'].format(name=name))
 

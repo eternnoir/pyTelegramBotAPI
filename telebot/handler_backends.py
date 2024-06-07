@@ -10,7 +10,7 @@ except:
     redis_installed = False
 
 
-class HandlerBackend(object):
+class HandlerBackend:
     """
     Class for saving (next step|reply) handlers.
 
@@ -56,7 +56,7 @@ class FileHandlerBackend(HandlerBackend):
     :meta private:
     """
     def __init__(self, handlers=None, filename='./.handler-saves/handlers.save', delay=120):
-        super(FileHandlerBackend, self).__init__(handlers)
+        super().__init__(handlers)
         self.filename = filename
         self.delay = delay
         self.timer = threading.Timer(delay, self.save_handlers)
@@ -131,7 +131,7 @@ class RedisHandlerBackend(HandlerBackend):
     :meta private:
     """
     def __init__(self, handlers=None, host='localhost', port=6379, db=0, prefix='telebot', password=None):
-        super(RedisHandlerBackend, self).__init__(handlers)
+        super().__init__(handlers)
         if not redis_installed:
             raise Exception("Redis is not installed. Install it via 'pip install redis'")
         self.prefix = prefix

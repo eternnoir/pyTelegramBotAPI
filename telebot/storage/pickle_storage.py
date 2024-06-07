@@ -106,7 +106,7 @@ class StatePickleStorage(StateStorageBase):
                 self.data[chat_id][user_id]['data'][key] = value
                 self.update_data()
                 return True
-        raise RuntimeError('chat_id {} and user_id {} does not exist'.format(chat_id, user_id))
+        raise RuntimeError(f'chat_id {chat_id} and user_id {user_id} does not exist')
 
     def get_interactive_data(self, chat_id, user_id):
         return StateContext(self, chat_id, user_id)

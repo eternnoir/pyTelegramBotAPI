@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
 
 import logging
@@ -516,7 +515,7 @@ class AsyncTeleBot:
                     if hasattr(middleware, f'pre_process_{update_type}'):
                         middleware_result = await getattr(middleware, f'pre_process_{update_type}')(message, data)
                     else:
-                        logger.error('Middleware {} does not have pre_process_{} method. pre_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                        logger.error(f'Middleware {middleware.__class__.__name__} does not have pre_process_{update_type} method. pre_process function execution was skipped.')
                         middleware_result = None
                 else:
                     middleware_result = await middleware.pre_process(message, data)
@@ -571,7 +570,7 @@ class AsyncTeleBot:
                     if hasattr(middleware, f'post_process_{update_type}'):
                         await getattr(middleware, f'post_process_{update_type}')(message, data, handler_error)
                     else:
-                        logger.error('Middleware {} does not have post_process_{} method. post_process function execution was skipped.'.format(middleware.__class__.__name__, update_type))
+                        logger.error(f'Middleware {middleware.__class__.__name__} does not have post_process_{update_type} method. post_process function execution was skipped.')
                 else: await middleware.post_process(message, data, handler_error)
 
     async def process_new_updates(self, updates: List[types.Update]):
@@ -586,7 +585,7 @@ class AsyncTeleBot:
         :return: None
         """
         upd_count = len(updates)
-        logger.info('Received {0} new updates'.format(upd_count))
+        logger.info(f'Received {upd_count} new updates')
         if upd_count == 0: return
 
         new_messages = None
@@ -614,7 +613,7 @@ class AsyncTeleBot:
 
 
         for update in updates:
-            logger.debug('Processing updates: {0}'.format(update))
+            logger.debug(f'Processing updates: {update}')
             if update.message:
                 if new_messages is None: new_messages = []
                 new_messages.append(update.message)
@@ -2767,7 +2766,7 @@ class AsyncTeleBot:
 
         protocol = "https" if certificate else "http"
         if not webhook_url:
-            webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
+            webhook_url = f"{protocol}://{listen}:{port}/{url_path}"
 
         if certificate and certificate_key:
             ssl_ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)

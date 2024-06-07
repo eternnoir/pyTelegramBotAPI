@@ -76,7 +76,7 @@ def mbold(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '*{}*'.format(escape_markdown(content) if escape else content)
+    return f'*{escape_markdown(content) if escape else content}*'
 
 
 def hbold(content: str, escape: Optional[bool]=True) -> str:
@@ -92,7 +92,7 @@ def hbold(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<b>{}</b>'.format(escape_html(content) if escape else content)
+    return f'<b>{escape_html(content) if escape else content}</b>'
 
 
 def mitalic(content: str, escape: Optional[bool]=True) -> str:
@@ -108,7 +108,7 @@ def mitalic(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '_{}_\r'.format(escape_markdown(content) if escape else content)
+    return f'_{escape_markdown(content) if escape else content}_\r'
 
 
 def hitalic(content: str, escape: Optional[bool]=True) -> str:
@@ -124,7 +124,7 @@ def hitalic(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<i>{}</i>'.format(escape_html(content) if escape else content)
+    return f'<i>{escape_html(content) if escape else content}</i>'
 
 
 def munderline(content: str, escape: Optional[bool]=True) -> str:
@@ -140,7 +140,7 @@ def munderline(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '__{}__'.format(escape_markdown(content) if escape else content)
+    return f'__{escape_markdown(content) if escape else content}__'
 
 
 def hunderline(content: str, escape: Optional[bool]=True) -> str:
@@ -157,7 +157,7 @@ def hunderline(content: str, escape: Optional[bool]=True) -> str:
     :rtype: :obj:`str`
 
     """
-    return '<u>{}</u>'.format(escape_html(content) if escape else content)
+    return f'<u>{escape_html(content) if escape else content}</u>'
 
 
 def mstrikethrough(content: str, escape: Optional[bool]=True) -> str:
@@ -173,7 +173,7 @@ def mstrikethrough(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '~{}~'.format(escape_markdown(content) if escape else content)
+    return f'~{escape_markdown(content) if escape else content}~'
 
 
 def hstrikethrough(content: str, escape: Optional[bool]=True) -> str:
@@ -189,7 +189,7 @@ def hstrikethrough(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<s>{}</s>'.format(escape_html(content) if escape else content)
+    return f'<s>{escape_html(content) if escape else content}</s>'
 
 
 def mspoiler(content: str, escape: Optional[bool]=True) -> str:
@@ -205,7 +205,7 @@ def mspoiler(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '||{}||'.format(escape_markdown(content) if escape else content)
+    return f'||{escape_markdown(content) if escape else content}||'
 
 
 def hspoiler(content: str, escape: Optional[bool]=True) -> str:
@@ -221,7 +221,7 @@ def hspoiler(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<tg-spoiler>{}</tg-spoiler>'.format(escape_html(content) if escape else content)
+    return f'<tg-spoiler>{escape_html(content) if escape else content}</tg-spoiler>'
 
 
 def mlink(content: str, url: str, escape: Optional[bool]=True) -> str:
@@ -240,7 +240,7 @@ def mlink(content: str, url: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '[{}]({})'.format(escape_markdown(content), escape_markdown(url) if escape else content)
+    return f'[{escape_markdown(content)}]({escape_markdown(url) if escape else content})'
 
 
 def hlink(content: str, url: str, escape: Optional[bool]=True) -> str:
@@ -259,7 +259,7 @@ def hlink(content: str, url: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<a href="{}">{}</a>'.format(escape_html(url), escape_html(content) if escape else content)
+    return f'<a href="{escape_html(url)}">{escape_html(content) if escape else content}</a>'
 
 
 def mcode(content: str, language: str="", escape: Optional[bool]=True) -> str:
@@ -275,7 +275,7 @@ def mcode(content: str, language: str="", escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '```{}\n{}```'.format(language, escape_markdown(content) if escape else content)
+    return f'```{language}\n{escape_markdown(content) if escape else content}```'
 
 
 def hcode(content: str, escape: Optional[bool]=True) -> str:
@@ -291,7 +291,7 @@ def hcode(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<code>{}</code>'.format(escape_html(content) if escape else content)
+    return f'<code>{escape_html(content) if escape else content}</code>'
 
 
 def hpre(content: str, escape: Optional[bool]=True, language: str="") -> str:
@@ -307,7 +307,7 @@ def hpre(content: str, escape: Optional[bool]=True, language: str="") -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<pre><code class="{}">{}</code></pre>'.format(language, escape_html(content) if escape else content)
+    return f'<pre><code class="{language}">{escape_html(content) if escape else content}</code></pre>'
 
 
 def hide_link(url: str) -> str:
@@ -354,7 +354,7 @@ def hcite(content: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<blockquote>{}</blockquote>'.format(escape_html(content) if escape else content)
+    return f'<blockquote>{escape_html(content) if escape else content}</blockquote>'
 
 
 def apply_html_entities(text: str, entities: Optional[List], custom_subs: Optional[Dict[str, str]]) -> str:
@@ -411,9 +411,9 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         upd_text = upd_text.decode("utf-16-le")
         if subst_type == "text_mention":
             subst_type = "text_link"
-            url = "tg://user?id={0}".format(user.id)
+            url = f"tg://user?id={user.id}"
         elif subst_type == "mention":
-            url = "https://t.me/{0}".format(upd_text[1:])
+            url = f"https://t.me/{upd_text[1:]}"
         upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         if not subst_type or not _subs.get(subst_type):
             return upd_text

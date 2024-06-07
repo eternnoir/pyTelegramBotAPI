@@ -90,7 +90,7 @@ async def _process_request(token, url, method='get', params=None, files=None, **
         try:
             async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
                 got_result = True
-                logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
+                logger.debug(f"Request: method={method} url={url} params={params} files={files} request_timeout={request_timeout} current_try={current_try}".replace(token, token.split(':')[0] + ":{TOKEN}"))
                 
                 json_result = await _check_result(url, resp)
                 if json_result:
@@ -98,11 +98,11 @@ async def _process_request(token, url, method='get', params=None, files=None, **
         except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
             raise e
         except aiohttp.ClientError as e:
-            logger.error('Aiohttp ClientError: {0}'.format(e.__class__.__name__))
+            logger.error(f'Aiohttp ClientError: {e.__class__.__name__}')
         except Exception as e:
             logger.error(f'Unknown error: {e.__class__.__name__}')
         if not got_result:
-            raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
+            raise RequestTimeout(f"Request timeout. Request: method={method} url={url} params={params} files={files} request_timeout={request_timeout}")
         
 def _prepare_file(obj):
     """
@@ -171,7 +171,7 @@ async def get_file(token, file_id):
 
 async def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, (await get_file(token, file_id))['file_path'])
+        return "https://api.telegram.org/file/bot{}/{}".format(token, (await get_file(token, file_id))['file_path'])
     else:
         # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, (await get_file(token, file_id))['file_path'])
@@ -179,7 +179,7 @@ async def get_file_url(token, file_id):
 
 async def download_file(token, file_path):
     if FILE_URL is None:
-        url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+        url =  f"https://api.telegram.org/file/bot{token}/{file_path}"
     else:
         # noinspection PyUnresolvedReferences
         url =  FILE_URL.format(token, file_path)
@@ -2058,7 +2058,7 @@ async def convert_input_media_array(array):
 async def _no_encode(func):
     def wrapper(key, val):
         if key == 'filename':
-            return u'{0}={1}'.format(key, val)
+            return f'{key}={val}'
         else:
             return func(key, val)
 
@@ -2081,7 +2081,7 @@ class ApiException(Exception):
     """
 
     def __init__(self, msg, function_name, result):
-        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
+        super().__init__(f"A request to the Telegram API was unsuccessful. {msg}")
         self.function_name = function_name
         self.result = result
     
@@ -2091,8 +2091,8 @@ class ApiHTTPException(ApiException):
     Telegram API server returns HTTP code that is not 200.
     """
     def __init__(self, function_name, result: aiohttp.ClientResponse):
-        super(ApiHTTPException, self).__init__(
-            "The server returned HTTP {0} {1}. Response body:\n[{2}]" \
+        super().__init__(
+            "The server returned HTTP {} {}. Response body:\n[{}]" \
             .format(result.status, result.reason, result.request_info),
             function_name,
             result)
@@ -2103,8 +2103,8 @@ class ApiInvalidJSONException(ApiException):
     Telegram API server returns invalid json.
     """
     def __init__(self, function_name, result):
-        super(ApiInvalidJSONException, self).__init__(
-            "The server returned an invalid JSON response. Response body:\n[{0}]" \
+        super().__init__(
+            "The server returned an invalid JSON response. Response body:\n[{}]" \
             .format(result),
             function_name,
             result)
@@ -2114,8 +2114,8 @@ class ApiTelegramException(ApiException):
     This class represents an Exception thrown when a Telegram API returns error code.
     """
     def __init__(self, function_name, result, result_json):
-        super(ApiTelegramException, self).__init__(
-            "Error code: {0}. Description: {1}" \
+        super().__init__(
+            "Error code: {}. Description: {}" \
             .format(result_json['error_code'], result_json['description']),
             function_name,
             result)

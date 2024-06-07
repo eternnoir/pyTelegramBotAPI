@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This Example will show you usage of TextFilter
 In this example you will see how to use TextFilter

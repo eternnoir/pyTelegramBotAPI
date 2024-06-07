@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # This example shows webhook echo bot with Tornado web framework
 # Documenation to Tornado: http://tornadoweb.org
@@ -20,7 +19,7 @@ WEBHOOK_PKEY = "./pkey.pem"
 WEBHOOK_HOST = "<domain_or_ip>"
 WEBHOOK_SECRET = "<secret_uri_for_updates"
 WEBHOOK_PORT = 88
-WEBHOOK_URL_BASE = "https://{0}:{1}/{2}".format(WEBHOOK_HOST, str(WEBHOOK_PORT), WEBHOOK_SECRET)
+WEBHOOK_URL_BASE = f"https://{WEBHOOK_HOST}:{str(WEBHOOK_PORT)}/{WEBHOOK_SECRET}"
 
 # Quick'n'dirty SSL certificate generation:
 #
@@ -94,7 +93,7 @@ def send_welcome(message):
 
 bot.remove_webhook()
 bot.set_webhook(url=WEBHOOK_URL_BASE,
-                certificate=open(WEBHOOK_CERT, 'r'))
+                certificate=open(WEBHOOK_CERT))
 tornado.options.options.logging = None
 tornado.options.parse_command_line()
 signal.signal(signal.SIGINT, signal_handler)

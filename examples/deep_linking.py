@@ -66,7 +66,7 @@ def send_welcome(message):
         username = get_username_from_storage(unique_code)
         if username:  # if the username exists in our database
             save_chat_id(message.chat.id, username)
-            reply = "Hello {0}, how are you?".format(username)
+            reply = f"Hello {username}, how are you?"
         else:
             reply = "I have no clue who you are..."
     else:

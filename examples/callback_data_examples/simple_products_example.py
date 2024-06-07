@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This Example will show you how to use CallbackData
 """

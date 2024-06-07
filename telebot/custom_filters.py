@@ -119,7 +119,7 @@ class TextFilter:
         :return: None
         """
         
-        to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
+        to_check = sum(pattern is not None for pattern in (equals, contains, starts_with, ends_with))
         if to_check == 0:
             raise ValueError('None of the check modes was specified')
 

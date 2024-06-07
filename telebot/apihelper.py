@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import time
 from datetime import datetime
 
@@ -83,9 +82,9 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         # noinspection PyUnresolvedReferences
         request_url = API_URL.format(token, method_name)
     else:
-        request_url = "https://api.telegram.org/bot{0}/{1}".format(token, method_name)
+        request_url = f"https://api.telegram.org/bot{token}/{method_name}"
 
-    logger.debug("Request: method={0} url={1} params={2} files={3}".format(method, request_url, params, files).replace(token, token.split(':')[0] + ":{TOKEN}"))
+    logger.debug(f"Request: method={method} url={request_url} params={params} files={files}".replace(token, token.split(':')[0] + ":{TOKEN}"))
     read_timeout = READ_TIMEOUT
     connect_timeout = CONNECT_TIMEOUT
 
@@ -131,13 +130,13 @@ def _make_request(token, method_name, method='get', params=None, files=None):
                     timeout=(connect_timeout, read_timeout), proxies=proxy)
                 got_result = True
             except HTTPError:
-                logger.debug("HTTP Error on {0} method (Try #{1})".format(method_name, current_try))
+                logger.debug(f"HTTP Error on {method_name} method (Try #{current_try})")
                 time.sleep(RETRY_TIMEOUT)
             except ConnectionError:
-                logger.debug("Connection Error on {0} method (Try #{1})".format(method_name, current_try))
+                logger.debug(f"Connection Error on {method_name} method (Try #{current_try})")
                 time.sleep(RETRY_TIMEOUT)
             except Timeout:
-                logger.debug("Timeout Error on {0} method (Try #{1})".format(method_name, current_try))
+                logger.debug(f"Timeout Error on {method_name} method (Try #{current_try})")
                 time.sleep(RETRY_TIMEOUT)
         if not got_result:
             result = _get_req_session().request(
@@ -163,7 +162,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
             method, request_url, params=params, files=files,
             timeout=(connect_timeout, read_timeout), proxies=proxy)
     
-    logger.debug("The server returned: '{0}'".format(result.text.encode('utf8')))
+    logger.debug("The server returned: '{}'".format(result.text.encode('utf8')))
     
     json_result = _check_result(method_name, result)
     if json_result:
@@ -219,7 +218,7 @@ def get_file(token, file_id):
 
 def get_file_url(token, file_id):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, get_file(token, file_id)['file_path'])
+        return "https://api.telegram.org/file/bot{}/{}".format(token, get_file(token, file_id)['file_path'])
     else:
         # noinspection PyUnresolvedReferences
         return FILE_URL.format(token, get_file(token, file_id)['file_path'])
@@ -227,7 +226,7 @@ def get_file_url(token, file_id):
 
 def download_file(token, file_path):
     if FILE_URL is None:
-        url =  "https://api.telegram.org/file/bot{0}/{1}".format(token, file_path)
+        url =  f"https://api.telegram.org/file/bot{token}/{file_path}"
     else:
         # noinspection PyUnresolvedReferences
         url =  FILE_URL.format(token, file_path)
@@ -2088,7 +2087,7 @@ def convert_input_media_array(array):
 def _no_encode(func):
     def wrapper(key, val):
         if key == 'filename':
-            return u'{0}={1}'.format(key, val)
+            return f'{key}={val}'
         else:
             return func(key, val)
 
@@ -2104,7 +2103,7 @@ class ApiException(Exception):
     """
 
     def __init__(self, msg, function_name, result):
-        super(ApiException, self).__init__("A request to the Telegram API was unsuccessful. {0}".format(msg))
+        super().__init__(f"A request to the Telegram API was unsuccessful. {msg}")
         self.function_name = function_name
         self.result = result
 
@@ -2115,8 +2114,8 @@ class ApiHTTPException(ApiException):
     Telegram API server returns HTTP code that is not 200.
     """
     def __init__(self, function_name, result):
-        super(ApiHTTPException, self).__init__(
-            "The server returned HTTP {0} {1}. Response body:\n[{2}]" \
+        super().__init__(
+            "The server returned HTTP {} {}. Response body:\n[{}]" \
             .format(result.status_code, result.reason, result.text.encode('utf8')),
             function_name,
             result)
@@ -2128,8 +2127,8 @@ class ApiInvalidJSONException(ApiException):
     Telegram API server returns invalid json.
     """
     def __init__(self, function_name, result):
-        super(ApiInvalidJSONException, self).__init__(
-            "The server returned an invalid JSON response. Response body:\n[{0}]" \
+        super().__init__(
+            "The server returned an invalid JSON response. Response body:\n[{}]" \
             .format(result.text.encode('utf8')),
             function_name,
             result)
@@ -2140,8 +2139,8 @@ class ApiTelegramException(ApiException):
     This class represents an Exception thrown when a Telegram API returns error code.
     """
     def __init__(self, function_name, result, result_json):
-        super(ApiTelegramException, self).__init__(
-            "Error code: {0}. Description: {1}" \
+        super().__init__(
+            "Error code: {}. Description: {}" \
             .format(result_json['error_code'], result_json['description']),
             function_name,
             result)
