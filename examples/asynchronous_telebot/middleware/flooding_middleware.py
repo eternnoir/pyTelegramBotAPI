@@ -14,7 +14,7 @@ class SimpleMiddleware(BaseMiddleware):
 
 
     async def pre_process(self, message, data):
-        if not message.from_user.id in self.last_time:
+        if message.from_user.id not in self.last_time:
             # User is not in a dict, so lets add and cancel this function
             self.last_time[message.from_user.id] = message.date
             return

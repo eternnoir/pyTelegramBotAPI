@@ -27,7 +27,6 @@ gcloud config set project PROJECT_ID
 gcloud run deploy
 '''
 
-import os
 
 from flask import Flask, request
 

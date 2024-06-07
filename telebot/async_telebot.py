@@ -7,8 +7,6 @@ from typing import Any, Awaitable, Callable, List, Optional, Union
 import sys
 
 # this imports are used to avoid circular import error
-import telebot.util
-import telebot.types
 
 
 # storages

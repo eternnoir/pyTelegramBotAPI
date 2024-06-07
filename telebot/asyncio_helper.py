@@ -1,4 +1,3 @@
-import asyncio # for future uses
 import ssl
 import aiohttp
 import certifi

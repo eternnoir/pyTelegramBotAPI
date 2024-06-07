@@ -37,7 +37,7 @@ def process_name_step(message):
         user_dict[chat_id] = user
         msg = bot.reply_to(message, 'How old are you?')
         bot.register_next_step_handler(msg, process_age_step)
-    except Exception as e:
+    except Exception:
         bot.reply_to(message, 'oooops')
 
 
@@ -55,7 +55,7 @@ def process_age_step(message):
         markup.add('Male', 'Female')
         msg = bot.reply_to(message, 'What is your gender', reply_markup=markup)
         bot.register_next_step_handler(msg, process_sex_step)
-    except Exception as e:
+    except Exception:
         bot.reply_to(message, 'oooops')
 
 
@@ -69,7 +69,7 @@ def process_sex_step(message):
         else:
             raise Exception("Unknown sex")
         bot.send_message(chat_id, 'Nice to meet you ' + user.name + '\n Age:' + str(user.age) + '\n Sex:' + user.sex)
-    except Exception as e:
+    except Exception:
         bot.reply_to(message, 'oooops')
 
 

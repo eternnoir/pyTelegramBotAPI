@@ -4,7 +4,6 @@ from io import IOBase
 import logging
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Union
 from abc import ABC
 
 try:
@@ -3036,7 +3035,7 @@ class CallbackQuery(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if not "data" in obj:
+        if "data" not in obj:
             # "data" field is Optional in the API, but historically is mandatory in the class constructor
             obj['data'] = None
         obj['from_user'] = User.de_json(obj.pop('from'))
@@ -9363,15 +9362,15 @@ class ChatBoost(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if not 'boost_id' in obj:
+        if 'boost_id' not in obj:
             # Suppose that the field "boost_id" is not always provided by Telegram
             logger.warning('The field "boost_id" is not found in received ChatBoost.')
             obj['boost_id'] = None
-        if not 'add_date' in obj:
+        if 'add_date' not in obj:
             # Suppose that the field "boost_id" is not always provided by Telegram
             logger.warning('The field "add_date" is not found in received ChatBoost.')
             obj['add_date'] = None
-        if not 'expiration_date' in obj:
+        if 'expiration_date' not in obj:
             # Suppose that the field "boost_id" is not always provided by Telegram
             logger.warning('The field "expiration_date" is not found in received ChatBoost.')
             obj['expiration_date'] = None

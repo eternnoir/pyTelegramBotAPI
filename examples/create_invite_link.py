@@ -1,5 +1,5 @@
 import telebot
-from time import sleep, time
+from time import time
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton #Only for creating Inline Buttons, not necessary for creating Invite Links
 
 Token = "api_token" #Your Bot Access Token
