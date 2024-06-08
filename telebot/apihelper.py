@@ -487,8 +487,8 @@ def send_photo(
         caption=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, protect_content=None,
-        message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None, message_effect_id=None,
-        show_caption_above_media=None):
+        message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
+        message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -717,8 +717,8 @@ def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=Non
 def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=None,
                parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
                thumbnail=None, width=None, height=None, caption_entities=None, protect_content=None,
-               message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None, message_effect_id=None,
-               show_caption_above_media=None):
+               message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
+               message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
