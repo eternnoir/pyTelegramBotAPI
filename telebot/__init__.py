@@ -1874,7 +1874,6 @@ class TeleBot:
         
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
-
         """
         
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
@@ -1903,7 +1902,8 @@ class TeleBot:
             apihelper.copy_message(self.token, chat_id, from_chat_id, message_id, caption=caption,
                 parse_mode=parse_mode, caption_entities=caption_entities, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
-                message_thread_id=message_thread_id, reply_parameters=reply_parameters, show_caption_above_media=show_caption_above_media))
+                message_thread_id=message_thread_id, reply_parameters=reply_parameters,
+                show_caption_above_media=show_caption_above_media))
 
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
@@ -1950,13 +1950,13 @@ class TeleBot:
         :type message_ids: :obj:`list` of :obj:`int`
 
         :return: Returns True on success.
-
         """
         return apihelper.delete_messages(self.token, chat_id, message_ids)
 
     
-    def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
-                         message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None) -> List[types.MessageID]:
+    def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
+                         disable_notification: Optional[bool]=None, message_thread_id: Optional[int]=None,
+                         protect_content: Optional[bool]=None) -> List[types.MessageID]:
         """
         Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped.
         Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages.
@@ -2237,9 +2237,9 @@ class TeleBot:
                 self.token, chat_id, photo, caption=caption, reply_markup=reply_markup,
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
-                message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, show_caption_above_media=show_caption_above_media))
-        
+                message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters,
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id,
+                show_caption_above_media=show_caption_above_media))
 
 
     def send_audio(
@@ -5540,7 +5540,8 @@ class TeleBot:
 
         result = apihelper.edit_message_caption(
             self.token, caption, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
-            parse_mode=parse_mode, caption_entities=caption_entities, reply_markup=reply_markup, show_caption_above_media=show_caption_above_media)
+            parse_mode=parse_mode, caption_entities=caption_entities, reply_markup=reply_markup,
+            show_caption_above_media=show_caption_above_media)
 
         if type(result) == bool:
             return result
