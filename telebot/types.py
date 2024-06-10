@@ -9121,13 +9121,8 @@ class UsersShared(JsonDeserializable):
     :param request_id: Identifier of the request
     :type request_id: :obj:`int`
 
-    :param user_ids: Array of :obj:`types.SharedUser` of the shared users. These numbers may have more than 32 significant bits
-                     and some programming languages may have difficulty/silent defects in interpreting them.
-                     But they have at most 52 significant bits, so 64-bit integers or double-precision float
-                     types are safe for storing these identifiers. The bot may not have access to the users and
-                     could be unable to use these identifiers unless the users are already known to the bot by
-                     some other means.
-    :type user_ids: :obj:`list` of :obj:`types.SharedUser`
+    :param users: Information about users shared with the bot
+    :type users: :obj:`list` of :obj:`types.SharedUser`
 
     :return: Instance of the class
     :rtype: :class:`UsersShared`
@@ -9136,20 +9131,23 @@ class UsersShared(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-
-        obj['user_ids'] = [SharedUser.de_json(user) for user in obj['user_ids']]
-
+        obj['users'] = [SharedUser.de_json(user) for user in obj['users']]
         return cls(**obj)
 
-    def __init__(self, request_id, user_ids: SharedUser, **kwargs):
+    def __init__(self, request_id, users: List[SharedUser], **kwargs):
         self.request_id = request_id
-        self.user_ids = user_ids
+        self.users = users
 
     @property
     def user_id(self):
         logger.warning('The parameter "user_id" is deprecated, use "user_ids" instead')
         return None
-    
+
+    @property
+    def user_ids(self):
+        logger.warning('The parameter "user_ids" is deprecated, use "users" instead')
+        return self.users
+
 
 class ChatBoostUpdated(JsonDeserializable):
     """
