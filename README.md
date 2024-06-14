@@ -303,7 +303,7 @@ def query_text(inline_query):
 
 #### Chosen Inline handler
 
-Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
+Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forget to add the /setinlinefeedback
 command for @Botfather.
 
 More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
