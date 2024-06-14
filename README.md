@@ -262,7 +262,7 @@ Handle shipping queries
 `@bot.shipping_query_handler() # <- passes a ShippingQuery type object to your function`
 
 #### Pre Checkout Query Handler
-Handle pre checkoupt queries
+Handle pre checkout queries
 `@bot.pre_checkout_query_handler() # <- passes a PreCheckoutQuery type object to your function`
 
 #### Poll Handler
