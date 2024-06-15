@@ -52,7 +52,7 @@ Files = dict[str, Union[tuple[str, FileObject], FileObject]]
 
 def _format_fileobject(fo: FileObject) -> str:
     if not isinstance(fo, BytesIO):
-        return f"{type(fo)}({fo[:16]})"
+        return f"{type(fo)}({fo[:16]!r})"
     else:
         return "(bytes IO)"
 
@@ -67,10 +67,14 @@ async def _request(
 ):
     session = await session_manager.get_session()
     if logger.isEnabledFor(logging.DEBUG):
-        files_to_log = {
-            k: (v[0], _format_fileobject(v[1])) if isinstance(v, tuple) else _format_fileobject(v)
-            for k, v in files.items()
-        }
+        files_to_log = (
+            {
+                k: (v[0], _format_fileobject(v[1])) if isinstance(v, tuple) else _format_fileobject(v)
+                for k, v in files.items()
+            }
+            if files is not None
+            else {}
+        )
         request_description = f"{method = } {route = } {params = } files = {files_to_log} {request_timeout = }"
         request_description = request_description.replace(token, "<bot-token>")
         logger.debug("Making request: %s", request_description)
@@ -2333,11 +2337,11 @@ class ApiHTTPException(ApiException):
     """
 
     def __init__(self, response_json: Any, response: aiohttp.ClientResponse):
-        self.error_parameters = ErrorResponseParameters.parse(response_json.get("parameters"))
-
         if isinstance(response_json, dict) and "description" in response_json:
+            self.error_parameters = ErrorResponseParameters.parse(response_json.get("parameters"))
             self.error_description: Optional[str] = str(response_json["description"])
         else:
+            self.error_parameters = None
             self.error_description = None
 
         error_title = (

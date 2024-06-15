@@ -64,8 +64,7 @@ class HandlerResult:
 
 class HandlerFunction(Protocol[_UCT]):
     @overload
-    async def __call__(self, update_content: _UCT) -> Optional[HandlerResult]:
-        ...
+    async def __call__(self, update_content: _UCT) -> Optional[HandlerResult]: ...
 
     @overload
     async def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> Optional[HandlerResult]:  # type: ignore

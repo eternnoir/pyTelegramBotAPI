@@ -25,8 +25,7 @@ class SimpleCustomFilter(ABC, Generic[_UCT]):
     key: str
 
     @abstractmethod
-    async def check(self, update_content: _UCT) -> bool:
-        ...
+    async def check(self, update_content: _UCT) -> bool: ...
 
 
 class AdvancedCustomFilter(ABC, Generic[_UCT]):
@@ -43,8 +42,7 @@ class AdvancedCustomFilter(ABC, Generic[_UCT]):
     key: str
 
     @abstractmethod
-    async def check(self, update_content: _UCT, filter_value: service_types.FilterValue) -> bool:
-        ...
+    async def check(self, update_content: _UCT, filter_value: service_types.FilterValue) -> bool: ...
 
 
 AnyCustomFilter = Union[SimpleCustomFilter, AdvancedCustomFilter]
