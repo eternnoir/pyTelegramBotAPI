@@ -157,9 +157,9 @@ async def get_file(token, file_id):
 
 async def get_file_url(token: str, file_id: str):
     if FILE_URL is None:
-        return "https://api.telegram.org/file/bot{0}/{1}".format(token, await get_file(token, file_id)["file_path"])
+        return "https://api.telegram.org/file/bot{0}/{1}".format(token, (await get_file(token, file_id))["file_path"])
     else:
-        return FILE_URL.format(token, await get_file(token, file_id)["file_path"])
+        return FILE_URL.format(token, (await get_file(token, file_id))["file_path"])
 
 
 async def download_file(token: str, file_path: str):
