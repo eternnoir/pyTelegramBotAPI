@@ -173,11 +173,13 @@ async def download_file(token: str, file_path: str):
         url = FILE_URL.format(token, file_path)
     session = await session_manager.get_session()
     async with session.get(url) as response:
-        result = await response.read()
         if response.status != 200:
-            raise ApiHTTPException("Error downloading file", response)
-
-    return result
+            try:
+                response_json = await response.json()
+            except Exception:
+                response_json = None
+            raise ApiHTTPException(response_json, response)
+        return await response.read()
 
 
 async def set_webhook(
@@ -2337,9 +2339,9 @@ class ApiHTTPException(ApiException):
     """
 
     def __init__(self, response_json: Any, response: aiohttp.ClientResponse):
-        if isinstance(response_json, dict) and "description" in response_json:
+        if isinstance(response_json, dict):
             self.error_parameters = ErrorResponseParameters.parse(response_json.get("parameters"))
-            self.error_description: Optional[str] = str(response_json["description"])
+            self.error_description: Optional[str] = response_json.get("description")
         else:
             self.error_parameters = None
             self.error_description = None
