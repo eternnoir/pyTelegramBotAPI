@@ -523,7 +523,6 @@ class AsyncTeleBot:
                 if isinstance(middleware_result, CancelUpdate):
                     return
                 elif isinstance(middleware_result, SkipHandler):
-                    await middleware.post_process(message, data, handler_error)
                     skip_handlers = True
 
         if handlers and not(skip_handlers):
