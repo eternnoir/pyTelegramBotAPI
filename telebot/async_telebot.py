@@ -523,7 +523,6 @@ class AsyncTeleBot:
                 if isinstance(middleware_result, CancelUpdate):
                     return
                 elif isinstance(middleware_result, SkipHandler):
-                    await middleware.post_process(message, data, handler_error)
                     skip_handlers = True
 
         if handlers and not(skip_handlers):
@@ -3440,8 +3439,8 @@ class AsyncTeleBot:
             """
             disable_notification = self.disable_notification if disable_notification is None else disable_notification
             protect_content = self.protect_content if protect_content is None else protect_content
-            result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification,
-                                            protect_content, message_thread_id, remove_caption)
+            result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
+                                            protect_content, remove_caption)
             return [types.MessageID.de_json(message_id) for message_id in result]
 
     async def send_dice(
