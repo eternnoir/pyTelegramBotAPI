@@ -5418,7 +5418,8 @@ class TeleBot:
 
     def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> types.Poll:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            business_connection_id: Optional[str]=None) -> types.Poll:
         """
         Use this method to stop a poll which was sent by the bot. On success, the stopped Poll is returned.
 
@@ -5433,11 +5434,14 @@ class TeleBot:
         :param reply_markup: A JSON-serialized object for a new message markup.
         :type reply_markup: :obj:`InlineKeyboardMarkup`
 
+        :param business_connection_id: Identifier of the business connection to use for the poll
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the stopped Poll is returned.
         :rtype: :obj:`types.Poll`
         """
         return types.Poll.de_json(
-            apihelper.stop_poll(self.token, chat_id, message_id, reply_markup=reply_markup)
+            apihelper.stop_poll(self.token, chat_id, message_id, reply_markup=reply_markup, business_connection_id=business_connection_id)
         )
 
 

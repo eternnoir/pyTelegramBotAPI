@@ -1997,11 +1997,13 @@ def get_forum_topic_icon_stickers(token):
     method_url = r'getForumTopicIconStickers'
     return _make_request(token, method_url)
 
-def stop_poll(token, chat_id, message_id, reply_markup=None):
+def stop_poll(token, chat_id, message_id, reply_markup=None, business_connection_id=None):
     method_url = r'stopPoll'
     payload = {'chat_id': str(chat_id), 'message_id': message_id}
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 def edit_general_forum_topic(token, chat_id, name):

@@ -2084,11 +2084,13 @@ async def _no_encode(func):
 
     return wrapper
 
-async def stop_poll(token, chat_id, message_id, reply_markup=None):
+async def stop_poll(token, chat_id, message_id, reply_markup=None, business_connection_id=None):
     method_url = r'stopPoll'
     payload = {'chat_id': str(chat_id), 'message_id': message_id}
     if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return await _process_request(token, method_url, params=payload)
 
 # exceptions

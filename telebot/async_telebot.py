@@ -6746,7 +6746,8 @@ class AsyncTeleBot:
 
     async def stop_poll(
             self, chat_id: Union[int, str], message_id: int, 
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> types.Poll:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            business_connection_id: Optional[str]=None) -> types.Poll:
         """
         Use this method to stop a poll which was sent by the bot. On success, the stopped Poll is returned.
 
@@ -6761,10 +6762,13 @@ class AsyncTeleBot:
         :param reply_markup: A JSON-serialized object for a new message markup.
         :type reply_markup: :obj:`InlineKeyboardMarkup`
 
+        :param business_connection_id: Identifier of the business connection to send the message through
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the stopped Poll is returned.
         :rtype: :obj:`types.Poll`
         """
-        return types.Poll.de_json(await asyncio_helper.stop_poll(self.token, chat_id, message_id, reply_markup))
+        return types.Poll.de_json(await asyncio_helper.stop_poll(self.token, chat_id, message_id, reply_markup, business_connection_id))
 
     async def answer_shipping_query(
             self, shipping_query_id: str, ok: bool, 
