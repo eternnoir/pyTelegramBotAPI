@@ -951,6 +951,9 @@ class Message(JsonDeserializable):
         if it is a text message and link preview options were changed
     :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
 
+    :param effect_id: Optional. Unique identifier of the message effect added to the message
+    :type effect_id: :obj:`str`
+
     :param animation: Optional. Message is an animation, information about the animation. For backward
         compatibility, when this field is set, the document field will also be set
     :type animation: :class:`telebot.types.Animation`
@@ -985,6 +988,9 @@ class Message(JsonDeserializable):
     :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot
         commands, etc. that appear in the caption
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param show_caption_above_media: Optional. True, if the caption must be shown above the message media
+    :type show_caption_above_media: :obj:`bool`
 
     :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
     :type has_media_spoiler: :obj:`bool`
@@ -1370,6 +1376,10 @@ class Message(JsonDeserializable):
             opts['business_connection_id'] = obj['business_connection_id']
         if 'is_from_offline' in obj:
             opts['is_from_offline'] = obj['is_from_offline']
+        if 'effect_id' in obj:
+            opts['effect_id'] = obj['effect_id']
+        if 'show_caption_above_media' in obj:
+            opts['show_caption_above_media'] = obj['show_caption_above_media']
 
 
 
@@ -1479,6 +1489,8 @@ class Message(JsonDeserializable):
         self.sender_business_bot: Optional[User] = None
         self.business_connection_id: Optional[str] = None
         self.is_from_offline: Optional[bool] = None
+        self.effect_id: Optional[str] = None
+        self.show_caption_above_media: Optional[bool] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -1586,12 +1598,12 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
 
     Telegram Documentation: https://core.telegram.org/bots/api#messageentity
 
-    :param type: Type of the entity. Currently, can be “mention” (@username), “hashtag” (#hashtag), “cashtag” 
-        ($USD), “bot_command” (/start@jobs_bot), “url” (https://telegram.org), “email” 
-        (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bold” (bold text), “italic” (italic text), 
-        “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “code” 
-        (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users 
-        without usernames), “custom_emoji” (for inline custom emoji stickers)
+    :param type: Type of the entity. Currently, can be “mention” (@username), “hashtag” (#hashtag), “cashtag” ($USD),
+        “bot_command” (/start@jobs_bot),“url” (https://telegram.org), “email” (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123),
+        “bold” (bold text), “italic” (italic text), “underline” (underlined text), “strikethrough” (strikethrough text),
+        “spoiler” (spoiler message), “blockquote” (block quotation), “expandable_blockquote” (collapsed-by-default block quotation),
+        “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs),
+        “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers)
     :type type: :obj:`str`
 
     :param offset: Offset in UTF-16 code units to the start of the entity
@@ -1653,8 +1665,8 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
                 "offset": self.offset,
                 "length": self.length,
                 "url": self.url,
-                "user": self.user,
-                "language":  self.language,
+                "user": self.user.to_dict() if self.user else None,
+                "language": self.language,
                 "custom_emoji_id": self.custom_emoji_id}
 
 
@@ -4448,11 +4460,15 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the photo
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. If true, a caption is shown over the photo or video
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultPhoto`
     """
     def __init__(self, id, photo_url, thumbnail_url, photo_width=None, photo_height=None, title=None,
-                 description=None, caption=None, caption_entities=None, parse_mode=None, reply_markup=None, input_message_content=None):
+                 description=None, caption=None, caption_entities=None, parse_mode=None, reply_markup=None, input_message_content=None,
+                 show_caption_above_media=None):
         super().__init__('photo', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
@@ -4461,6 +4477,7 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
         self.photo_width = photo_width
         self.photo_height = photo_height
         self.description = description
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4477,6 +4494,8 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
             json_dict['photo_height'] = self.photo_height
         if self.description:
             json_dict['description'] = self.description
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
@@ -4531,13 +4550,16 @@ class InlineQueryResultGif(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the GIF animation
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. If true, a caption is shown over the photo or video
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultGif`
     """
     def __init__(self, id, gif_url, thumbnail_url, gif_width=None, gif_height=None,
                  title=None, caption=None, caption_entities=None,
                  reply_markup=None, input_message_content=None, gif_duration=None, parse_mode=None,
-                 thumbnail_mime_type=None):
+                 thumbnail_mime_type=None, show_caption_above_media=None):
         super().__init__('gif', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
@@ -4547,6 +4569,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
         self.thumbnail_url = thumbnail_url
         self.gif_duration = gif_duration
         self.thumbnail_mime_type = thumbnail_mime_type
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4570,6 +4593,8 @@ class InlineQueryResultGif(InlineQueryResultBase):
             json_dict['gif_duration'] = self.gif_duration
         if self.thumbnail_mime_type:
             json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
@@ -4624,13 +4649,16 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the video animation
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. If true, a caption is shown over the photo or video
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultMpeg4Gif`
     """
     def __init__(self, id, mpeg4_url, thumbnail_url, mpeg4_width=None, mpeg4_height=None,
                  title=None, caption=None, caption_entities=None,
                  parse_mode=None, reply_markup=None, input_message_content=None, mpeg4_duration=None,
-                 thumbnail_mime_type=None):
+                 thumbnail_mime_type=None, show_caption_above_media=None):
         super().__init__('mpeg4_gif', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
@@ -4640,6 +4668,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
         self.thumbnail_url = thumbnail_url
         self.mpeg4_duration = mpeg4_duration
         self.thumbnail_mime_type = thumbnail_mime_type
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4663,6 +4692,8 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
             json_dict['mpeg4_duration '] = self.mpeg4_duration
         if self.thumbnail_mime_type:
             json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
@@ -4721,13 +4752,16 @@ class InlineQueryResultVideo(InlineQueryResultBase):
         required if InlineQueryResultVideo is used to send an HTML-page as a result (e.g., a YouTube video).
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. If true, a caption is shown over the video
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultVideo`
     """
     def __init__(self, id, video_url, mime_type, thumbnail_url,
                  title, caption=None, caption_entities=None, parse_mode=None,
                  video_width=None, video_height=None, video_duration=None,
-                 description=None, reply_markup=None, input_message_content=None):
+                 description=None, reply_markup=None, input_message_content=None, show_caption_above_media=None):
         super().__init__('video', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
                          parse_mode = parse_mode, caption_entities = caption_entities)
@@ -4738,6 +4772,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
         self.video_height = video_height
         self.video_duration = video_duration
         self.description = description
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     @property
     def thumb_url(self):
@@ -4755,6 +4790,8 @@ class InlineQueryResultVideo(InlineQueryResultBase):
             json_dict['video_duration'] = self.video_duration
         if self.description:
             json_dict['description'] = self.description
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
@@ -5324,6 +5361,7 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
         self.parse_mode = None
         self.caption_entities = None
         self.payload_dic = {}
+        self.show_caption_above_media = None
 
     def to_json(self):
         json_dict = self.payload_dic
@@ -5343,6 +5381,8 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
             json_dict['parse_mode'] = self.parse_mode
         if self.caption_entities:
             json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json.dumps(json_dict)
 
 
@@ -5385,12 +5425,15 @@ class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the photo
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. Pass True, if a caption is not required for the media
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultCachedPhoto`
     """
     def __init__(self, id, photo_file_id, title=None, description=None,
                  caption=None, caption_entities = None, parse_mode=None,
-                 reply_markup=None, input_message_content=None):
+                 reply_markup=None, input_message_content=None, show_caption_above_media=None):
         InlineQueryResultCachedBase.__init__(self)
         self.type = 'photo'
         self.id = id
@@ -5403,6 +5446,7 @@ class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['photo_file_id'] = photo_file_id
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -5440,12 +5484,15 @@ class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the GIF animation
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. Pass True, if a caption is not required for the media
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultCachedGif`
     """
     def __init__(self, id, gif_file_id, title=None, description=None,
                  caption=None, caption_entities = None, parse_mode=None,
-                 reply_markup=None, input_message_content=None):
+                 reply_markup=None, input_message_content=None, show_caption_above_media=None):
         InlineQueryResultCachedBase.__init__(self)
         self.type = 'gif'
         self.id = id
@@ -5458,6 +5505,7 @@ class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['gif_file_id'] = gif_file_id
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -5495,12 +5543,15 @@ class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the video animation
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. Pass True, if caption should be shown above the media
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultCachedMpeg4Gif`
     """
     def __init__(self, id, mpeg4_file_id, title=None, description=None,
                  caption=None, caption_entities = None, parse_mode=None,
-                 reply_markup=None, input_message_content=None):
+                 reply_markup=None, input_message_content=None, show_caption_above_media=None):
         InlineQueryResultCachedBase.__init__(self)
         self.type = 'mpeg4_gif'
         self.id = id
@@ -5513,7 +5564,7 @@ class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
-
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
 class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
@@ -5648,13 +5699,16 @@ class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
     :param input_message_content: Optional. Content of the message to be sent instead of the video
     :type input_message_content: :class:`telebot.types.InputMessageContent`
 
+    :param show_caption_above_media: Optional. Pass True, if a caption is not required for the media
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineQueryResultCachedVideo`
     """
     def __init__(self, id, video_file_id, title, description=None,
                  caption=None, caption_entities = None, parse_mode=None,
                  reply_markup=None,
-                 input_message_content=None):
+                 input_message_content=None, show_caption_above_media=None):
         InlineQueryResultCachedBase.__init__(self)
         self.type = 'video'
         self.id = id
@@ -5667,6 +5721,7 @@ class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
         self.input_message_content = input_message_content
         self.parse_mode = parse_mode
         self.payload_dic['video_file_id'] = video_file_id
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -6569,10 +6624,13 @@ class InputMediaPhoto(InputMedia):
     :param has_spoiler: Optional. True, if the uploaded photo is a spoiler
     :type has_spoiler: :obj:`bool`
 
+    :param show_caption_above_media: Optional. True, if the caption should be shown above the photo
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaPhoto`
     """
-    def __init__(self, media, caption=None, parse_mode=None, caption_entities=None, has_spoiler=None):
+    def __init__(self, media, caption=None, parse_mode=None, caption_entities=None, has_spoiler=None, show_caption_above_media=None):
         if service_utils.is_pil_image(media):
             media = service_utils.pil_image_to_file(media)
     
@@ -6580,11 +6638,14 @@ class InputMediaPhoto(InputMedia):
             type="photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
 
         self.has_spoiler: Optional[bool] = has_spoiler
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     def to_dict(self):
         ret = super(InputMediaPhoto, self).to_dict()
         if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
+        if self.show_caption_above_media is not None:
+            ret['show_caption_above_media'] = self.show_caption_above_media
         return ret
 
 
@@ -6632,11 +6693,14 @@ class InputMediaVideo(InputMedia):
     :param has_spoiler: Optional. True, if the uploaded video is a spoiler
     :type has_spoiler: :obj:`bool`
 
+    :param show_caption_above_media: Optional. True, if the caption should be shown above the video
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaVideo`
     """
     def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
-                 width=None, height=None, duration=None, supports_streaming=None, has_spoiler=None):
+                 width=None, height=None, duration=None, supports_streaming=None, has_spoiler=None, show_caption_above_media=None):
         super(InputMediaVideo, self).__init__(
             type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
@@ -6645,6 +6709,7 @@ class InputMediaVideo(InputMedia):
         self.duration = duration
         self.supports_streaming = supports_streaming
         self.has_spoiler: Optional[bool] = has_spoiler
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     @property
     def thumb(self):
@@ -6665,6 +6730,8 @@ class InputMediaVideo(InputMedia):
             ret['supports_streaming'] = self.supports_streaming
         if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
+        if self.show_caption_above_media is not None:
+            ret['show_caption_above_media'] = self.show_caption_above_media
         return ret
 
 
@@ -6709,11 +6776,14 @@ class InputMediaAnimation(InputMedia):
     :param has_spoiler: Optional. True, if the uploaded animation is a spoiler
     :type has_spoiler: :obj:`bool`
 
+    :param show_caption_above_media: Optional. True, if the caption should be shown above the animation
+    :type show_caption_above_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InputMediaAnimation`
     """
     def __init__(self, media, thumbnail=None, caption=None, parse_mode=None, caption_entities=None,
-                 width=None, height=None, duration=None, has_spoiler=None):
+                 width=None, height=None, duration=None, has_spoiler=None, show_caption_above_media=None):
         super(InputMediaAnimation, self).__init__(
             type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail = thumbnail
@@ -6721,6 +6791,7 @@ class InputMediaAnimation(InputMedia):
         self.height = height
         self.duration = duration
         self.has_spoiler: Optional[bool] = has_spoiler
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
     @property
     def thumb(self):
@@ -6739,6 +6810,8 @@ class InputMediaAnimation(InputMedia):
             ret['duration'] = self.duration
         if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
+        if self.show_caption_above_media is not None:
+            ret['show_caption_above_media'] = self.show_caption_above_media
         return ret
 
 
@@ -9048,13 +9121,8 @@ class UsersShared(JsonDeserializable):
     :param request_id: Identifier of the request
     :type request_id: :obj:`int`
 
-    :param user_ids: Array of :obj:`types.SharedUser` of the shared users. These numbers may have more than 32 significant bits
-                     and some programming languages may have difficulty/silent defects in interpreting them.
-                     But they have at most 52 significant bits, so 64-bit integers or double-precision float
-                     types are safe for storing these identifiers. The bot may not have access to the users and
-                     could be unable to use these identifiers unless the users are already known to the bot by
-                     some other means.
-    :type user_ids: :obj:`list` of :obj:`types.SharedUser`
+    :param users: Information about users shared with the bot
+    :type users: :obj:`list` of :obj:`types.SharedUser`
 
     :return: Instance of the class
     :rtype: :class:`UsersShared`
@@ -9063,20 +9131,23 @@ class UsersShared(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-
-        obj['user_ids'] = [SharedUser.de_json(user) for user in obj['user_ids']]
-
+        obj['users'] = [SharedUser.de_json(user) for user in obj['users']]
         return cls(**obj)
 
-    def __init__(self, request_id, user_ids: SharedUser, **kwargs):
+    def __init__(self, request_id, users: List[SharedUser], **kwargs):
         self.request_id = request_id
-        self.user_ids = user_ids
+        self.users = users
 
     @property
     def user_id(self):
         logger.warning('The parameter "user_id" is deprecated, use "user_ids" instead')
         return None
-    
+
+    @property
+    def user_ids(self):
+        logger.warning('The parameter "user_ids" is deprecated, use "users" instead')
+        return self.users
+
 
 class ChatBoostUpdated(JsonDeserializable):
     """

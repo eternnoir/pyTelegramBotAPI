@@ -10,7 +10,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#may-6-2024">7.3</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#june-18-2024">7.5</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>
@@ -262,7 +262,7 @@ Handle shipping queries
 `@bot.shipping_query_handler() # <- passes a ShippingQuery type object to your function`
 
 #### Pre Checkout Query Handler
-Handle pre checkoupt queries
+Handle pre checkout queries
 `@bot.pre_checkout_query_handler() # <- passes a PreCheckoutQuery type object to your function`
 
 #### Poll Handler
@@ -303,7 +303,7 @@ def query_text(inline_query):
 
 #### Chosen Inline handler
 
-Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
+Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forget to add the /setinlinefeedback
 command for @Botfather.
 
 More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
