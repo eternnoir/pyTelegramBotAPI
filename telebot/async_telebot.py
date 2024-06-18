@@ -6802,6 +6802,25 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
     
+
+    async def get_star_transactions(self, offset: Optional[int]=None, limit: Optional[int]=None) -> types.StarTransactions:
+        """
+        Returns the bot's Telegram Star transactions in chronological order.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getstartransactions
+
+        :param offset: Number of transactions to skip in the response
+        :type offset: :obj:`int`
+
+        :param limit: The maximum number of transactions to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+        :type limit: :obj:`int`
+
+        :return: On success, returns a StarTransactions object.
+        :rtype: :obj:`types.StarTransactions`
+        """
+
+        return types.StarTransactions.de_json(await asyncio_helper.get_star_transactions(self.token, offset, limit))
+    
     async def refund_star_payment(self, user_id: int, telegram_payment_charge_id: str) -> bool:
         """
         Refunds a successful payment in Telegram Stars. Returns True on success.

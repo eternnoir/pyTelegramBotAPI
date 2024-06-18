@@ -1646,6 +1646,14 @@ async def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_mess
         payload['error_message'] = error_message
     return await _process_request(token, method_url, params=payload)
 
+async def get_star_transactions(token, offset=None, limit=None):
+    method_url = 'getStarTransactions'
+    payload = {}
+    if offset:
+        payload['offset'] = offset
+    if limit:
+        payload['limit'] = limit
+    return await _process_request(token, method_url, params=payload)
 
 async def refund_star_payment(token, user_id, telegram_payment_charge_id):
     method_url = 'refundStarPayment'

@@ -5478,6 +5478,27 @@ class TeleBot:
         """
         return apihelper.answer_pre_checkout_query(
             self.token, pre_checkout_query_id, ok, error_message=error_message)
+
+
+    def get_star_transactions(self, offset: Optional[int]=None, limit: Optional[int]=None) -> types.StarTransactions:
+        """
+        Returns the bot's Telegram Star transactions in chronological order. On success, returns a StarTransactions object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getstartransactions
+
+        :param offset: Number of transactions to skip in the response
+        :type offset: :obj:`int`
+
+        :param limit: The maximum number of transactions to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+        :type limit: :obj:`int`
+
+        :return: On success, returns a StarTransactions object.
+        :rtype: :obj:`types.StarTransactions`
+        """
+        return types.StarTransactions.de_json(
+            apihelper.get_star_transactions(self.token, offset=offset, limit=limit)
+        )
+    
     
     def refund_star_payment(self, user_id: int, telegram_payment_charge_id: str) -> bool:
         """
