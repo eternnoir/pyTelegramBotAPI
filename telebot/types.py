@@ -10123,6 +10123,12 @@ class RevenueWithdrawalStatePending(RevenueWithdrawalState):
     def __init__(self, type, **kwargs):
         self.type: str = type
 
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
 
 class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
     """
@@ -10148,6 +10154,13 @@ class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
         self.date: int = date
         self.url: str = url
 
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
     
 class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
     """
@@ -10164,6 +10177,12 @@ class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
 
     def __init__(self, type, **kwargs):
         self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
 
 
 class TransactionPartner(JsonDeserializable):
@@ -10214,6 +10233,15 @@ class TransactionPartnerFragment(TransactionPartner):
         self.type: str = type
         self.withdrawal_state: Optional[RevenueWithdrawalState] = withdrawal_state
 
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'withdrawal_state' in obj:
+            obj['withdrawal_state'] = RevenueWithdrawalState.de_json(obj['withdrawal_state'])
+        return cls(**obj)
+    
+
 
 class TransactionPartnerUser(TransactionPartner):
     """
@@ -10234,6 +10262,14 @@ class TransactionPartnerUser(TransactionPartner):
     def __init__(self, type, user, **kwargs):
         self.type: str = type
         self.user: User = user
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+    
         
 class TransactionPartnerOther(TransactionPartner):
     """
@@ -10250,6 +10286,13 @@ class TransactionPartnerOther(TransactionPartner):
 
     def __init__(self, type, **kwargs):
         self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
 
 
 class StarTransaction(JsonDeserializable):
