@@ -10076,3 +10076,288 @@ class ChatBackground(JsonDeserializable):
 
     def __init__(self, type, **kwargs):
         self.type: BackgroundType = type
+
+
+class RevenueWithdrawalState(JsonDeserializable):
+    """
+    This object describes the state of a revenue withdrawal operation. Currently, it can be one of
+        RevenueWithdrawalStatePending
+        RevenueWithdrawalStateSucceeded
+        RevenueWithdrawalStateFailed
+
+    Telegram documentation: https://core.telegram.org/bots/api#revenuewithdrawalstate
+
+    :param type: Type of the state, always “pending” or “succeeded” or “failed”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RevenueWithdrawalStatePending` or :class:`RevenueWithdrawalStateSucceeded` or :class:`RevenueWithdrawalStateFailed`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "pending":
+            return RevenueWithdrawalStatePending.de_json(obj)
+        elif obj["type"] == "succeeded":
+            return RevenueWithdrawalStateSucceeded.de_json(obj)
+        elif obj["type"] == "failed":
+            return RevenueWithdrawalStateFailed.de_json(obj)
+        return None
+    
+
+class RevenueWithdrawalStatePending(RevenueWithdrawalState):
+    """
+    The withdrawal is in progress.
+
+    Telegram documentation: https://core.telegram.org/bots/api#revenuewithdrawalstatepending
+
+    :param type: Type of the state, always “pending”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RevenueWithdrawalStatePending`
+    """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
+    """
+    The withdrawal succeeded.
+
+    Telegram documentation: https://core.telegram.org/bots/api#revenuewithdrawalstatesucceeded
+
+    :param type: Type of the state, always “succeeded”
+    :type type: :obj:`str`
+
+    :param date: Date the withdrawal was completed in Unix time
+    :type date: :obj:`int`
+
+    :param url: An HTTPS URL that can be used to see transaction details
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RevenueWithdrawalStateSucceeded`
+    """
+
+    def __init__(self, type, date, url, **kwargs):
+        self.type: str = type
+        self.date: int = date
+        self.url: str = url
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+    
+class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
+    """
+    The withdrawal failed and the transaction was refunded.
+
+    Telegram documentation: https://core.telegram.org/bots/api#revenuewithdrawalstatefailed
+
+    :param type: Type of the state, always “failed”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RevenueWithdrawalStateFailed`
+    """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class TransactionPartner(JsonDeserializable):
+    """
+    This object describes the source of a transaction, or its recipient for outgoing transactions. Currently, it can be one of
+        TransactionPartnerFragment
+        TransactionPartnerUser
+        TransactionPartnerOther
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartner
+
+    :param type: Type of the transaction partner
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerFragment` or :class:`TransactionPartnerUser` or :class:`TransactionPartnerOther`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "fragment":
+            return TransactionPartnerFragment.de_json(obj)
+        elif obj["type"] == "user":
+            return TransactionPartnerUser.de_json(obj)
+        elif obj["type"] == "other":
+            return TransactionPartnerOther.de_json(obj)
+        
+class TransactionPartnerFragment(TransactionPartner):
+    """
+    Describes a withdrawal transaction with Fragment.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartnerfragment
+
+    :param type: Type of the transaction partner, always “fragment”
+    :type type: :obj:`str`
+
+    :param withdrawal_state: Optional. State of the transaction if the transaction is outgoing
+    :type withdrawal_state: :class:`RevenueWithdrawalState`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerFragment`
+
+    """
+
+    def __init__(self, type, withdrawal_state=None, **kwargs):
+        self.type: str = type
+        self.withdrawal_state: Optional[RevenueWithdrawalState] = withdrawal_state
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'withdrawal_state' in obj:
+            obj['withdrawal_state'] = RevenueWithdrawalState.de_json(obj['withdrawal_state'])
+        return cls(**obj)
+    
+
+
+class TransactionPartnerUser(TransactionPartner):
+    """
+    Describes a transaction with a user.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartneruser
+
+    :param type: Type of the transaction partner, always “user”
+    :type type: :obj:`str`
+
+    :param user: Information about the user
+    :type user: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerUser`
+    """
+
+    def __init__(self, type, user, **kwargs):
+        self.type: str = type
+        self.user: User = user
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+    
+        
+class TransactionPartnerOther(TransactionPartner):
+    """
+    Describes a transaction with an unknown source or recipient.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartnerother
+
+    :param type: Type of the transaction partner, always “other”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerOther`
+    """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+
+class StarTransaction(JsonDeserializable):
+    """
+    Describes a Telegram Star transaction.
+
+    Telegram documentation: https://core.telegram.org/bots/api#startransaction
+
+    :param id: Unique identifier of the transaction. Coincides with the identifer of the original transaction for refund transactions. Coincides with SuccessfulPayment.telegram_payment_charge_id for successful incoming payments from users.
+    :type id: :obj:`str`
+
+    :param amount: Number of Telegram Stars transferred by the transaction
+    :type amount: :obj:`int`
+
+    :param date: Date the transaction was created in Unix time
+    :type date: :obj:`int`
+
+    :param source: Optional. Source of an incoming transaction (e.g., a user purchasing goods or services, Fragment refunding a failed withdrawal). Only for incoming transactions
+    :type source: :class:`TransactionPartner`
+
+    :param receiver: Optional. Receiver of an outgoing transaction (e.g., a user for a purchase refund, Fragment for a withdrawal). Only for outgoing transactions
+    :type receiver: :class:`TransactionPartner`
+
+    :return: Instance of the class
+    :rtype: :class:`StarTransaction`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'source' in obj:
+            obj['source'] = TransactionPartner.de_json(obj['source'])
+        if 'receiver' in obj:
+            obj['receiver'] = TransactionPartner.de_json(obj['receiver'])
+        return cls(**obj)
+    
+    def __init__(self, id, amount, date, source=None, receiver=None, **kwargs):
+        self.id: str = id
+        self.amount: int = amount
+        self.date: int = date
+        self.source: Optional[TransactionPartner] = source
+        self.receiver: Optional[TransactionPartner] = receiver
+
+
+class StarTransactions(JsonDeserializable):
+    """
+    Contains a list of Telegram Star transactions.
+
+    Telegram documentation: https://core.telegram.org/bots/api#startransactions
+
+    :param transactions: The list of transactions
+    :type transactions: :obj:`list` of :class:`StarTransaction`
+
+    :return: Instance of the class
+    :rtype: :class:`StarTransactions`
+
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['transactions'] = [StarTransaction.de_json(transaction) for transaction in obj['transactions']]
+        return cls(**obj)
+    
+    def __init__(self, transactions, **kwargs):
+        self.transactions: List[StarTransaction] = transactions

@@ -594,7 +594,7 @@ def send_location(
 
 def edit_message_live_location(
         token, latitude, longitude, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None,
-        timeout=None, horizontal_accuracy=None, heading=None, proximity_alert_radius=None, live_period=None):
+        timeout=None, horizontal_accuracy=None, heading=None, proximity_alert_radius=None, live_period=None, business_connection_id=None):
     method_url = r'editMessageLiveLocation'
     payload = {'latitude': latitude, 'longitude': longitude}
     if chat_id:
@@ -615,12 +615,14 @@ def edit_message_live_location(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 
 def stop_message_live_location(
         token, chat_id=None, message_id=None,
-        inline_message_id=None, reply_markup=None, timeout=None):
+        inline_message_id=None, reply_markup=None, timeout=None, business_connection_id=None):
     method_url = r'stopMessageLiveLocation'
     payload = {}
     if chat_id:
@@ -633,6 +635,8 @@ def stop_message_live_location(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -1379,7 +1383,7 @@ def unpin_all_chat_messages(token, chat_id):
 # Updating messages
 
 def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
-                      entities = None, reply_markup=None, link_preview_options=None):
+                      entities = None, reply_markup=None, link_preview_options=None, business_connection_id=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1396,11 +1400,13 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
         payload['reply_markup'] = _convert_markup(reply_markup)
     if link_preview_options is not None:
         payload['link_preview_options'] = link_preview_options.to_json()
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
 def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, caption_entities=None,reply_markup=None, show_caption_above_media=None):
+                         parse_mode=None, caption_entities=None,reply_markup=None, show_caption_above_media=None, business_connection_id=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -1417,10 +1423,12 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
         payload['reply_markup'] = _convert_markup(reply_markup)
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None, business_connection_id=None):
     method_url = r'editMessageMedia'
     media_json, file = convert_input_media(media)
     payload = {'media': media_json}
@@ -1432,10 +1440,12 @@ def edit_message_media(token, media, chat_id=None, message_id=None, inline_messa
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload, files=file, method='post' if file else 'get')
 
 
-def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None, business_connection_id=None):
     method_url = r'editMessageReplyMarkup'
     payload = {}
     if chat_id:
@@ -1446,6 +1456,8 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1666,6 +1678,16 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
     if error_message:
         payload['error_message'] = error_message
     return _make_request(token, method_url, params=payload)
+
+def get_star_transactions(token, offset=None, limit=None):
+    method_url = 'getStarTransactions'
+    payload = {}
+    if offset:
+        payload['offset'] = offset
+    if limit:
+        payload['limit'] = limit
+    return _make_request(token, method_url, params=payload)
+
 
 def refund_star_payment(token, user_id, telegram_payment_charge_id):
     method_url = 'refundStarPayment'
@@ -1975,11 +1997,13 @@ def get_forum_topic_icon_stickers(token):
     method_url = r'getForumTopicIconStickers'
     return _make_request(token, method_url)
 
-def stop_poll(token, chat_id, message_id, reply_markup=None):
+def stop_poll(token, chat_id, message_id, reply_markup=None, business_connection_id=None):
     method_url = r'stopPoll'
     payload = {'chat_id': str(chat_id), 'message_id': message_id}
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 def edit_general_forum_topic(token, chat_id, name):
