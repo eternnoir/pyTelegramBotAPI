@@ -2362,11 +2362,17 @@ class AsyncTeleBot:
         :param callback: function to be called
         :type callback: :obj:`function`
 
+        :param commands: list of commands
+        :type commands: :obj:`list` of :obj:`str`
+
+        :param regexp: Regular expression
+        :type regexp: :obj:`str`
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
-        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
-        :type pass_bot: :obj:`bool`
+        :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
+        :type content_types: :obj:`list` of :obj:`str`
 
         :param kwargs: Optional keyword arguments(custom filters)
 
@@ -6009,7 +6015,8 @@ class AsyncTeleBot:
             disable_web_page_preview: Optional[bool]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             link_preview_options: Optional[types.LinkPreviewOptions]=None,
-            business_connection_id: Optional[str]=None) -> Union[types.Message, bool]:
+            business_connection_id: Optional[str]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -6045,6 +6052,9 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier of the business connection
         :type business_connection_id: :obj:`str`
 
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
@@ -6069,8 +6079,9 @@ class AsyncTeleBot:
             # create a LinkPreviewOptions object
             link_preview_options = types.LinkPreviewOptions(is_disabled=self.disable_web_page_preview)
 
-        result = await asyncio_helper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                             entities, reply_markup, link_preview_options, business_connection_id)
+        result = await asyncio_helper.edit_message_text(
+            self.token, text, chat_id, message_id, inline_message_id, parse_mode, entities, reply_markup,
+            link_preview_options, business_connection_id, timeout)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -6080,7 +6091,8 @@ class AsyncTeleBot:
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
-            business_connection_id: Optional[str]=None) -> Union[types.Message, bool]:
+            business_connection_id: Optional[str]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit animation, audio, document, photo, or video messages.
         If a message is a part of a message album, then it can be edited only to a photo or a video.
@@ -6106,10 +6118,14 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier of the business connection
         :type business_connection_id: :obj:`str`
 
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
-        result = await asyncio_helper.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup, business_connection_id)
+        result = await asyncio_helper.edit_message_media(
+            self.token, media, chat_id, message_id, inline_message_id, reply_markup, business_connection_id, timeout)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -6119,7 +6135,8 @@ class AsyncTeleBot:
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
-            business_connection_id: Optional[str]=None) -> Union[types.Message, bool]:
+            business_connection_id: Optional[str]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
 
@@ -6140,10 +6157,14 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier of the business connection
         :type business_connection_id: :obj:`str`
 
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
-        result = await asyncio_helper.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup, business_connection_id)
+        result = await asyncio_helper.edit_message_reply_markup(
+            self.token, chat_id, message_id, inline_message_id, reply_markup, business_connection_id, timeout)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
@@ -6870,7 +6891,8 @@ class AsyncTeleBot:
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             show_caption_above_media: Optional[bool]=None,
-            business_connection_id: Optional[str]=None) -> Union[types.Message, bool]:
+            business_connection_id: Optional[str]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
 
@@ -6903,13 +6925,18 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of the business connection to send the message through
         :type business_connection_id: :obj:`str`
 
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` | :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        result = await asyncio_helper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
-                                                parse_mode, caption_entities, reply_markup, show_caption_above_media=show_caption_above_media, business_connection_id=business_connection_id)
+        result = await asyncio_helper.edit_message_caption(
+            self.token, caption, chat_id, message_id, inline_message_id, parse_mode, caption_entities, reply_markup,
+            show_caption_above_media=show_caption_above_media, business_connection_id=business_connection_id,
+            timeout=timeout)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
