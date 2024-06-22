@@ -2355,6 +2355,7 @@ class AsyncTeleBot:
             regexp: Optional[str]=None,
             func: Optional[Callable]=None,
             content_types: Optional[List[str]]=None,
+            pass_bot: Optional[bool]=False,
             **kwargs):
         """
         Registers business connection handler.
@@ -2374,11 +2375,15 @@ class AsyncTeleBot:
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
         :type content_types: :obj:`list` of :obj:`str`
 
+        :param pass_bot: True, if bot instance should be passed to handler
+        :type pass_bot: :obj:`bool`
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
         """
-        handler_dict = self._build_handler_dict(callback, content_types=content_types, commands=commands, regexp=regexp, func=func, **kwargs)
+        handler_dict = self._build_handler_dict(callback, content_types=content_types, commands=commands, regexp=regexp, func=func,
+                                                pass_bot=pass_bot,**kwargs)
         self.add_business_message_handler(handler_dict)
 
     
