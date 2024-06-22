@@ -1356,8 +1356,9 @@ async def unpin_all_chat_messages(token, chat_id):
 
 # Updating messages
 
-async def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
-                      entities = None, reply_markup=None, link_preview_options=None):
+async def edit_message_text(
+        token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
+        reply_markup=None, link_preview_options=None, timeout=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1374,11 +1375,14 @@ async def edit_message_text(token, text, chat_id=None, message_id=None, inline_m
         payload['reply_markup'] = await _convert_markup(reply_markup)
     if link_preview_options is not None:
         payload['link_preview_options'] = link_preview_options.to_json()
+    if timeout:
+        payload['timeout'] = timeout
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, caption_entities=None,reply_markup=None, show_caption_above_media=None):
+async def edit_message_caption(
+        token, caption, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, caption_entities=None,
+        reply_markup=None, show_caption_above_media=None, timeout=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -1395,10 +1399,13 @@ async def edit_message_caption(token, caption, chat_id=None, message_id=None, in
         payload['reply_markup'] = await _convert_markup(reply_markup)
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if timeout:
+        payload['timeout'] = timeout
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+async def edit_message_media(
+        token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None, timeout=None):
     method_url = r'editMessageMedia'
     media_json, file = await convert_input_media(media)
     payload = {'media': media_json}
@@ -1410,10 +1417,13 @@ async def edit_message_media(token, media, chat_id=None, message_id=None, inline
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
+    if timeout:
+        payload['timeout'] = timeout
     return await _process_request(token, method_url, params=payload, files=file, method='post' if file else 'get')
 
 
-async def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+async def edit_message_reply_markup(
+        token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None, timeout=None):
     method_url = r'editMessageReplyMarkup'
     payload = {}
     if chat_id:
@@ -1424,6 +1434,8 @@ async def edit_message_reply_markup(token, chat_id=None, message_id=None, inline
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
+    if timeout:
+        payload['timeout'] = timeout
     return await _process_request(token, method_url, params=payload, method='post')
 
 
@@ -1557,6 +1569,7 @@ async def send_invoice(
     :param protect_content: Protects the contents of the sent message from forwarding and saving
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
     :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
+    :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
     :return:
     """
     method_url = r'sendInvoice'

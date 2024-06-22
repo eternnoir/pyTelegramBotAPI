@@ -4645,7 +4645,8 @@ class TeleBot:
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,        # deprecated, for backward compatibility
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
-            link_preview_options : Optional[types.LinkPreviewOptions]=None) -> Union[types.Message, bool]:
+            link_preview_options : Optional[types.LinkPreviewOptions]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -4680,6 +4681,9 @@ class TeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
                 
@@ -4715,7 +4719,8 @@ class TeleBot:
             self, media: Any, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit animation, audio, document, photo, or video messages.
         If a message is a part of a message album, then it can be edited only to a photo or a video.
@@ -4740,10 +4745,13 @@ class TeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
         result = apihelper.edit_message_media(
             self.token, media, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
-            reply_markup=reply_markup)
+            reply_markup=reply_markup, timeout=timeout)
 
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
@@ -4754,7 +4762,8 @@ class TeleBot:
             self, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
 
@@ -4774,10 +4783,13 @@ class TeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
         result = apihelper.edit_message_reply_markup(
             self.token, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
-            reply_markup=reply_markup)
+            reply_markup=reply_markup, timeout=timeout)
 
         if type(result) == bool:
             return result
@@ -5503,7 +5515,8 @@ class TeleBot:
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
-            show_caption_above_media: Optional[bool]=None) -> Union[types.Message, bool]:
+            show_caption_above_media: Optional[bool]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
 
@@ -5535,13 +5548,16 @@ class TeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` | :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         result = apihelper.edit_message_caption(
             self.token, caption, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
             parse_mode=parse_mode, caption_entities=caption_entities, reply_markup=reply_markup,
-            show_caption_above_media=show_caption_above_media)
+            show_caption_above_media=show_caption_above_media, timeout=timeout)
 
         if type(result) == bool:
             return result

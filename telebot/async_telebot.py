@@ -6000,7 +6000,8 @@ class AsyncTeleBot:
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
-            link_preview_options: Optional[types.LinkPreviewOptions]=None) -> Union[types.Message, bool]:
+            link_preview_options: Optional[types.LinkPreviewOptions]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -6035,6 +6036,9 @@ class AsyncTeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
@@ -6057,8 +6061,9 @@ class AsyncTeleBot:
             # create a LinkPreviewOptions object
             link_preview_options = types.LinkPreviewOptions(is_disabled=self.disable_web_page_preview)
 
-        result = await asyncio_helper.edit_message_text(self.token, text, chat_id, message_id, inline_message_id, parse_mode,
-                                             entities, reply_markup, link_preview_options)
+        result = await asyncio_helper.edit_message_text(
+            self.token, text, chat_id, message_id, inline_message_id, parse_mode, entities, reply_markup,
+            link_preview_options, timeout=timeout)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -6067,7 +6072,8 @@ class AsyncTeleBot:
             self, media: Any, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit animation, audio, document, photo, or video messages.
         If a message is a part of a message album, then it can be edited only to a photo or a video.
@@ -6092,8 +6098,11 @@ class AsyncTeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
-        result = await asyncio_helper.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup)
+        result = await asyncio_helper.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup, timeout=timeout)
         if type(result) == bool:  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -6102,7 +6111,8 @@ class AsyncTeleBot:
             self, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None, 
-            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> Union[types.Message, bool]:
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit only the reply markup of messages.
 
@@ -6122,8 +6132,11 @@ class AsyncTeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
-        result = await asyncio_helper.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
+        result = await asyncio_helper.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup, timeout=timeout)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
@@ -6826,7 +6839,8 @@ class AsyncTeleBot:
             parse_mode: Optional[str]=None, 
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
-            show_caption_above_media: Optional[bool]=None) -> Union[types.Message, bool]:
+            show_caption_above_media: Optional[bool]=None,
+            timeout: Optional[int]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit captions of messages.
 
@@ -6858,11 +6872,15 @@ class AsyncTeleBot:
 
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` | :obj:`bool`
+
+        :param timeout: Timeout in seconds for the request.
+        :type timeout: :obj:`int`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
-        result = await asyncio_helper.edit_message_caption(self.token, caption, chat_id, message_id, inline_message_id,
-                                                parse_mode, caption_entities, reply_markup, show_caption_above_media=show_caption_above_media)
+        result = await asyncio_helper.edit_message_caption(
+            self.token, caption, chat_id, message_id, inline_message_id, parse_mode, caption_entities, reply_markup,
+            show_caption_above_media=show_caption_above_media, timeout=timeout)
         if type(result) == bool:
             return result
         return types.Message.de_json(result)
