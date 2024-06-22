@@ -2355,7 +2355,7 @@ class AsyncTeleBot:
             regexp: Optional[str]=None,
             func: Optional[Callable]=None,
             content_types: Optional[List[str]]=None,
-            pass_bot: Optional[bool]=False
+            pass_bot: Optional[bool]=False,
             **kwargs):
         """
         Registers business connection handler.
