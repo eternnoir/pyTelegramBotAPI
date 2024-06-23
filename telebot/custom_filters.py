@@ -7,6 +7,7 @@ from telebot import types
 
 
 
+
 class SimpleCustomFilter(ABC):
     """
     Simple Custom Filter base class.
@@ -417,8 +418,6 @@ class StateFilter(AdvancedCustomFilter):
             user_id = message.from_user.id
             message = message.message
 
-        
-        
 
         if isinstance(text, list):
             new_text = []
@@ -430,7 +429,11 @@ class StateFilter(AdvancedCustomFilter):
             text = text.name
         
         if message.chat.type in ['group', 'supergroup']:
-            group_state = self.bot.current_states.get_state(chat_id, user_id)
+            group_state = self.bot.current_states.get_state(chat_id=chat_id, user_id=user_id, business_connection_id=message.business_connection_id, bot_id=self.bot._user.id,
+                                                            message_thread_id=message.message_thread_id)
+            if group_state is None and not message.is_topic_message: # needed for general topic and group messages
+                group_state = self.bot.current_states.get_state(chat_id=chat_id, user_id=user_id, business_connection_id=message.business_connection_id, bot_id=self.bot._user.id)
+                
             if group_state == text:
                 return True
             elif type(text) is list and group_state in text:
@@ -438,7 +441,12 @@ class StateFilter(AdvancedCustomFilter):
 
 
         else:
-            user_state = self.bot.current_states.get_state(chat_id, user_id)
+            user_state = self.bot.current_states.get_state(
+                chat_id=chat_id,
+                user_id=user_id,
+                business_connection_id=message.business_connection_id,
+                bot_id=self.bot._user.id
+            )
             if user_state == text:
                 return True
             elif type(text) is list and user_state in text:
