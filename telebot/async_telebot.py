@@ -6087,7 +6087,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.edit_message_text(
             self.token, text, chat_id, message_id, inline_message_id, parse_mode, entities, reply_markup,
             link_preview_options, business_connection_id, timeout)
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -6131,7 +6131,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.edit_message_media(
             self.token, media, chat_id, message_id, inline_message_id, reply_markup, business_connection_id, timeout)
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -6170,7 +6170,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.edit_message_reply_markup(
             self.token, chat_id, message_id, inline_message_id, reply_markup, business_connection_id, timeout)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -6298,7 +6298,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.set_game_score(self.token, user_id, score, force, disable_edit_message, chat_id,
                                           message_id, inline_message_id)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -6942,7 +6942,7 @@ class AsyncTeleBot:
             self.token, caption, chat_id, message_id, inline_message_id, parse_mode, caption_entities, reply_markup,
             show_caption_above_media=show_caption_above_media, business_connection_id=business_connection_id,
             timeout=timeout)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
