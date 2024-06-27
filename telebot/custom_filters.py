@@ -215,7 +215,7 @@ class TextMatchFilter(AdvancedCustomFilter):
         """
         if isinstance(text, TextFilter):
             return text.check(message)
-        elif type(text) is list:
+        elif isinstance(text, list):
             return message.text in text
         else:
             return text == message.text
@@ -353,7 +353,7 @@ class LanguageFilter(AdvancedCustomFilter):
         """
         :meta private:
         """
-        if type(text) is list:
+        if isinstance(text, list):
             return message.from_user.language_code in text
         else:
             return message.from_user.language_code == text
@@ -433,7 +433,7 @@ class StateFilter(AdvancedCustomFilter):
             group_state = self.bot.current_states.get_state(chat_id, user_id)
             if group_state == text:
                 return True
-            elif type(text) is list and group_state in text:
+            elif isinstance(text, list) and group_state in text:
                 return True
 
 
@@ -441,7 +441,7 @@ class StateFilter(AdvancedCustomFilter):
             user_state = self.bot.current_states.get_state(chat_id, user_id)
             if user_state == text:
                 return True
-            elif type(text) is list and user_state in text:
+            elif isinstance(text, list) and user_state in text:
                 return True
 
 

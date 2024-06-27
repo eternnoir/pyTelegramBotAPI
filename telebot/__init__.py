@@ -4723,7 +4723,7 @@ class TeleBot:
             parse_mode=parse_mode, entities=entities, reply_markup=reply_markup, link_preview_options=link_preview_options,
             business_connection_id=business_connection_id, timeout=timeout)
 
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -4770,7 +4770,7 @@ class TeleBot:
             self.token, media, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
             reply_markup=reply_markup, business_connection_id=business_connection_id, timeout=timeout)
 
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -4812,7 +4812,7 @@ class TeleBot:
             self.token, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
             reply_markup=reply_markup, business_connection_id=business_connection_id, timeout=timeout)
 
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -4946,7 +4946,7 @@ class TeleBot:
             self.token, user_id, score, force=force, disable_edit_message=disable_edit_message,
             chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id)
 
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -5610,7 +5610,7 @@ class TeleBot:
             show_caption_above_media=show_caption_above_media, business_connection_id=business_connection_id,
             timeout=timeout)
 
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
