@@ -7,7 +7,7 @@ import sys
 import threading
 import time
 import traceback
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union, Dict
 
 # these imports are used to avoid circular import error
 import telebot.util
@@ -168,7 +168,8 @@ class TeleBot:
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            colorful_logs: Optional[bool]=False
+            colorful_logs: Optional[bool]=False,
+            token_check: Optional[bool]=True
     ):
 
         # update-related
@@ -185,6 +186,11 @@ class TeleBot:
         self.allow_sending_without_reply = allow_sending_without_reply
         self.webhook_listener = None
         self._user = None
+
+        # token check
+        if token_check:
+            self._user = self.get_me()
+            self.bot_id = self._user.id
 
         # logs-related
         if colorful_logs:
@@ -280,6 +286,8 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
+
+
     
     @property
     def user(self) -> types.User:
@@ -6572,7 +6580,9 @@ class TeleBot:
         self.middlewares.append(middleware)
 
 
-    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: Optional[int]=None) -> None:
+    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: Optional[int]=None,
+                    business_connection_id: Optional[str]=None, message_thread_id: Optional[int]=None,
+                    bot_id: Optional[int]=None) -> None:
         """
         Sets a new state of a user.
 
@@ -6591,14 +6601,29 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: None
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.set_state(chat_id, user_id, state)
+        if bot_id is None:
+            bot_id = self.bot_id
+        self.current_states.set_state(
+            chat_id=chat_id, user_id=user_id, state=state, bot_id=bot_id,
+            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def reset_data(self, user_id: int, chat_id: Optional[int]=None):
+    def reset_data(self, user_id: int, chat_id: Optional[int]=None, 
+                     business_connection_id: Optional[str]=None,
+                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> None:
         """
         Reset data for a user in chat.
 
@@ -6608,14 +6633,27 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: None
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.reset_data(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        self.current_states.reset_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                        business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def delete_state(self, user_id: int, chat_id: Optional[int]=None) -> None:
+    def delete_state(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
+                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> None:
         """
         Delete the current state of a user.
 
@@ -6629,10 +6667,14 @@ class TeleBot:
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.delete_state(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        self.current_states.delete_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None) -> Optional[Any]:
+    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
+                      message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> Optional[Dict[str, Any]]:
         """
         Returns context manager with data for a user in chat.
 
@@ -6642,15 +6684,30 @@ class TeleBot:
         :param chat_id: Chat's unique identifier, defaults to user_id
         :type chat_id: int, optional
 
+        :param bot_id: Bot's identifier
+        :type bot_id: int, optional
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: str, optional
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: int, optional
+
         :return: Context manager with data for a user in chat
         :rtype: Optional[Any]
         """
         if chat_id is None:
             chat_id = user_id
-        return self.current_states.get_interactive_data(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.get_interactive_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                                            business_connection_id=business_connection_id,
+                                                            message_thread_id=message_thread_id)
 
 
-    def get_state(self, user_id: int, chat_id: Optional[int]=None) -> Optional[Union[int, str, State]]:
+    def get_state(self, user_id: int, chat_id: Optional[int]=None, 
+                    business_connection_id: Optional[str]=None,
+                    message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> Union[int, str]:
         """
         Gets current state of a user.
         Not recommended to use this method. But it is ok for debugging.
@@ -6661,15 +6718,31 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: state of a user
         :rtype: :obj:`int` or :obj:`str` or :class:`telebot.types.State`
         """
         if chat_id is None:
             chat_id = user_id
-        return self.current_states.get_state(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.get_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                                business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def add_data(self, user_id: int, chat_id: Optional[int]=None, **kwargs):
+    def add_data(self, user_id: int, chat_id: Optional[int]=None, 
+                    business_connection_id: Optional[str]=None,
+                    message_thread_id: Optional[int]=None, 
+                    bot_id: Optional[int]=None,
+                    **kwargs) -> None:
         """
         Add data to states.
 
@@ -6679,13 +6752,25 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :param kwargs: Data to add
         :return: None
         """
         if chat_id is None:
             chat_id = user_id
+        if bot_id is None:
+            bot_id = self.bot_id
         for key, value in kwargs.items():
-            self.current_states.set_data(chat_id, user_id, key, value)
+            self.current_states.set_data(chat_id=chat_id, user_id=user_id, key=key, value=value, bot_id=bot_id,
+                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     def register_next_step_handler_by_chat_id(
