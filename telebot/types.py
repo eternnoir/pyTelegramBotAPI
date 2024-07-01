@@ -10224,6 +10224,8 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerFragment.de_json(obj)
         elif obj["type"] == "user":
             return TransactionPartnerUser.de_json(obj)
+        elif obj["type"] == "telegram_ads":
+            return TransactionPartnerTelegramAds.de_json(obj)
         elif obj["type"] == "other":
             return TransactionPartnerOther.de_json(obj)
         
@@ -10284,6 +10286,27 @@ class TransactionPartnerUser(TransactionPartner):
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
+    
+class TransactionPartnerTelegramAds(TransactionPartner):
+    """
+    Describes a transaction with Telegram Ads.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartnertelegramads
+    
+    :param type: Type of the transaction partner, always “telegram_ads”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerTelegramAds`
+    """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
     
         
 class TransactionPartnerOther(TransactionPartner):
@@ -10629,4 +10652,5 @@ class InputPaidMediaVideo(InputPaidMedia):
         if self.supports_streaming:
             data['supports_streaming'] = self.supports_streaming
         return data
+    
     
