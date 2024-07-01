@@ -3248,6 +3248,10 @@ class AsyncTeleBot:
             show_caption_above_media: Optional[bool]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
+        If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
+        and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous
+        to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array
+        of MessageId of the sent messages is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#copymessage
 
@@ -3415,44 +3419,43 @@ class AsyncTeleBot:
     async def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
                         protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
-            """
-            Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. 
-            Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied
-            only if the value of the field correct_option_id is known to the bot. The method is analogous to the method forwardMessages, but
-            the copied messages don't have a link to the original message. Album grouping is kept for copied messages.
-            On success, an array of MessageId of the sent messages is returned.
+        """
+        Use this method to copy messages of any kind.
+        Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
+        A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous to the method
+        forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success.
 
-            Telegram documentation: https://core.telegram.org/bots/api#copymessages
+        Telegram documentation: https://core.telegram.org/bots/api#copymessages
 
-            :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-            :type chat_id: :obj:`int` or :obj:`str`
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
 
-            :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
-            :type from_chat_id: :obj:`int` or :obj:`str`
+        :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        :type from_chat_id: :obj:`int` or :obj:`str`
 
-            :param message_ids: Message identifiers in the chat specified in from_chat_id
-            :type message_ids: :obj:`list` of :obj:`int`
+        :param message_ids: Message identifiers in the chat specified in from_chat_id
+        :type message_ids: :obj:`list` of :obj:`int`
 
-            :param disable_notification: Sends the message silently. Users will receive a notification with no sound
-            :type disable_notification: :obj:`bool`
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+        :type disable_notification: :obj:`bool`
 
-            :param message_thread_id: Identifier of a message thread, in which the messages will be sent
-            :type message_thread_id: :obj:`int`
+        :param message_thread_id: Identifier of a message thread, in which the messages will be sent
+        :type message_thread_id: :obj:`int`
 
-            :param protect_content: Protects the contents of the forwarded message from forwarding and saving
-            :type protect_content: :obj:`bool`
+        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+        :type protect_content: :obj:`bool`
 
-            :param remove_caption: Pass True to copy the messages without their captions
-            :type remove_caption: :obj:`bool`
+        :param remove_caption: Pass True to copy the messages without their captions
+        :type remove_caption: :obj:`bool`
 
-            :return: On success, an array of MessageId of the sent messages is returned.
-            :rtype: :obj:`list` of :class:`telebot.types.MessageID`
-            """
-            disable_notification = self.disable_notification if disable_notification is None else disable_notification
-            protect_content = self.protect_content if protect_content is None else protect_content
-            result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
-                                            protect_content, remove_caption)
-            return [types.MessageID.de_json(message_id) for message_id in result]
+        :return: On success, an array of MessageId of the sent messages is returned.
+        :rtype: :obj:`list` of :class:`telebot.types.MessageID`
+        """
+        disable_notification = self.disable_notification if disable_notification is None else disable_notification
+        protect_content = self.protect_content if protect_content is None else protect_content
+        result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
+                                        protect_content, remove_caption)
+        return [types.MessageID.de_json(message_id) for message_id in result]
 
     async def send_dice(
             self, chat_id: Union[int, str],
