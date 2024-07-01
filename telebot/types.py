@@ -970,6 +970,9 @@ class Message(JsonDeserializable):
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`telebot.types.Document`
 
+    :param paid_media: Optional. Message contains paid media; information about the paid media
+    :type paid_media: :class:`telebot.types.PaidMediaInfo`
+
     :param photo: Optional. Message is a photo, available sizes of the photo
     :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
 
@@ -1386,7 +1389,8 @@ class Message(JsonDeserializable):
             opts['effect_id'] = obj['effect_id']
         if 'show_caption_above_media' in obj:
             opts['show_caption_above_media'] = obj['show_caption_above_media']
-
+        if 'paid_media' in obj:
+            opts['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
 
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1497,6 +1501,7 @@ class Message(JsonDeserializable):
         self.is_from_offline: Optional[bool] = None
         self.effect_id: Optional[str] = None
         self.show_caption_above_media: Optional[bool] = None
+        self.paid_media : Optional[PaidMediaInfo] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -8517,6 +8522,9 @@ class ExternalReplyInfo(JsonDeserializable):
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`Document`
 
+    :param paid_media: Optional. Message is a paid media content
+    :type paid_media: :class:`PaidMedia`
+
     :param photo: Optional. Message is a photo, available sizes of the photo
     :type photo: :obj:`list` of :class:`PhotoSize`
 
@@ -8625,7 +8633,7 @@ class ExternalReplyInfo(JsonDeserializable):
             dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
-            venue: Optional[Venue]=None, **kwargs) -> None:
+            venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -8649,6 +8657,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.location: Optional[Location] = location
         self.poll: Optional[Poll] = poll
         self.venue: Optional[Venue] = venue
+        self.paid_media: Optional[PaidMediaInfo] = paid_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -10485,6 +10494,34 @@ class PaidMediaVideo(PaidMedia):
         obj = cls.check_json(json_string)
         obj['video'] = Video.de_json(obj['video'])
         return cls(**obj)
+
+
+class PaidMediaInfo(JsonDeserializable):
+    """
+    Describes the paid media added to a message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediainfo
+
+    :param star_count: The number of Telegram Stars that must be paid to buy access to the media
+    :type star_count: :obj:`int`
+
+    :param paid_media: Information about the paid media
+    :type paid_media: :obj:`list` of :class:`PaidMedia`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaInfo`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
+        return cls(**obj)
+    
+    def __init__(self, star_count, paid_media, **kwargs):
+        self.star_count: int = star_count
+        self.paid_media: List[PaidMedia] = paid_media
 
 
 class InputPaidMedia(JsonSerializable):
