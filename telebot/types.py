@@ -10272,13 +10272,17 @@ class TransactionPartnerUser(TransactionPartner):
     :param user: Information about the user
     :type user: :class:`User`
 
+    :param invoice_payload: Optional, Bot-specified invoice payload
+    :type invoice_payload: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
-    def __init__(self, type, user, **kwargs):
+    def __init__(self, type, user, invoice_payload=None, **kwargs):
         self.type: str = type
         self.user: User = user
+        self.invoice_payload: Optional[str] = invoice_payload
 
     @classmethod
     def de_json(cls, json_string):
