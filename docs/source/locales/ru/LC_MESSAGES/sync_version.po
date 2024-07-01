@@ -483,6 +483,12 @@ msgid ""
 "video sticker sets can have up to 50 stickers. Static sticker sets can "
 "have up to 120 stickers. Returns True on success."
 msgstr ""
+"Используйте этот метод, чтобы добавить новый стикер к набору," 
+"созданному ботом. Формат добавленного стикера должен совпадать"
+"с форматом других стикеров в наборе. В наборах стикеров с эмодзи может"
+"быть до 200 стикеров. В наборах анимированных наклеек и наклеек для видео"
+"может быть до 50 наклеек. В наборах статических наклеек может быть"
+"до 120 наклеек. В случае успеха возвращает значение True."
 
 #: of telebot.TeleBot.add_sticker_to_set:7
 msgid "Telegram documentation: https://core.telegram.org/bots/api#addstickertoset"
