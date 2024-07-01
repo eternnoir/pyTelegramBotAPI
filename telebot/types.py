@@ -10361,3 +10361,122 @@ class StarTransactions(JsonDeserializable):
     
     def __init__(self, transactions, **kwargs):
         self.transactions: List[StarTransaction] = transactions
+        
+
+class PaidMedia(JsonDeserializable):
+    """
+    This object describes paid media. Currently, it can be one of
+
+        PaidMediaPreview
+        PaidMediaPhoto
+        PaidMediaVideo
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmedia
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPreview` or :class:`PaidMediaPhoto` or :class:`PaidMediaVideo`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "preview":
+            return PaidMediaPreview.de_json(obj)
+        elif obj["type"] == "photo":
+            return PaidMediaPhoto.de_json(obj)
+        elif obj["type"] == "video":
+            return PaidMediaVideo.de_json(obj)
+        
+class PaidMediaPreview(PaidMedia):
+    """
+    The paid media isn't available before the payment.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediapreview
+
+    :param type: Type of the paid media, always “preview”
+    :type type: :obj:`str`
+
+    :param width: Optional. Media width as defined by the sender
+    :type width: :obj:`int`
+
+    :param height: Optional. Media height as defined by the sender
+    :type height: :obj:`int`
+
+    :param duration: Optional. Duration of the media in seconds as defined by the sender
+    :type duration: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPreview`
+    """
+
+    def __init__(self, type, width=None, height=None, duration=None, **kwargs):
+        self.type: str = type
+        self.width: Optional[int] = width
+        self.height: Optional[int] = height
+        self.duration: Optional[int] = duration
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class PaidMediaPhoto(PaidMedia):
+    """
+    The paid media is a photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediaphoto
+
+    :param type: Type of the paid media, always “photo”
+    :type type: :obj:`str`
+
+    :param photo: The photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPhoto`
+
+    """
+
+    def __init__(self, type, photo, **kwargs):
+        self.type: str = type
+        self.photo: List[PhotoSize] = photo
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+
+        obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        return cls(**obj)
+    
+
+class PaidMediaVideo(PaidMedia):
+    """
+    The paid media is a video.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediavideo
+
+    :param type: Type of the paid media, always “video”
+    :type type: :obj:`str`
+
+    :param video: The video
+    :type video: :class:`Video`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaVideo`
+    """
+
+    def __init__(self, type, video, **kwargs):
+        self.type: str = type
+        self.video: Video = video
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['video'] = Video.de_json(obj['video'])
+        return cls(**obj)
+    
