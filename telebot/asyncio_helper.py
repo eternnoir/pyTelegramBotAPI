@@ -130,6 +130,8 @@ def _prepare_data(params=None, files=None):
             if isinstance(f, tuple):
                 if len(f) == 2:
                     file_name, file = f
+                    if isinstance(file, types.InputFile):
+                        file = file.file
                 else:
                     raise ValueError('Tuple must have exactly 2 elements: filename, fileobj')
             elif isinstance(f, types.InputFile):

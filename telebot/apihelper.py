@@ -94,7 +94,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         # process types.InputFile
         for key, value in files_copy.items():
             if isinstance(value, types.InputFile):
-                files[key] = value.file
+                files[key] = (value.file_name, value.file)
             elif isinstance(value, tuple) and (len(value) == 2) and isinstance(value[1], types.InputFile):
                 files[key] = (value[0], value[1].file)
 
