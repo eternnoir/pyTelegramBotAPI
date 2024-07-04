@@ -452,10 +452,11 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
                         logger.debug(self.__hide_token(traceback.format_exc()))
+
+                    if non_stop:
                         error_interval = await self._handle_error_interval(error_interval)
                         
                     if non_stop or handled:
-                        #await asyncio.sleep(2) # used error_interval instead
                         continue
                     else:
                         return
@@ -464,6 +465,8 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
                         logger.debug(self.__hide_token(traceback.format_exc()))
+
+                    if non_stop:
                         error_interval = await self._handle_error_interval(error_interval)
 
                     if non_stop or handled:
@@ -475,6 +478,8 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
                         logger.debug(traceback.format_exc())
+
+                    if non_stop:
                         error_interval = await self._handle_error_interval(error_interval)
 
                     if non_stop or handled:
