@@ -6737,7 +6737,7 @@ class InputMediaVideo(InputMedia):
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
-        if self.supports_streaming:
+        if self.supports_streaming is not None:
             ret['supports_streaming'] = self.supports_streaming
         if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
@@ -10569,13 +10569,21 @@ class InputPaidMedia(JsonSerializable):
         self.type = type
         self.media = media
 
+        if service_utils.is_string(self.media):
+            self._media_name = ''
+            self._media_dic = self.media
+        else:
+            self._media_name = service_utils.generate_random_token()
+            self._media_dic = 'attach://{0}'.format(self._media_name)
+
     def to_json(self):
         return json.dumps(self.to_dict())
     
     def to_dict(self):
-        data = {}
-        data['type'] = str(self.type)
-        data['media'] = str(self.media)
+        data = {
+            'type': self.type,
+            'media': self._media_dic
+        }
         return data
     
 class InputPaidMediaPhoto(InputPaidMedia):
@@ -10648,14 +10656,14 @@ class InputPaidMediaVideo(InputPaidMedia):
     def to_dict(self):
         data = super().to_dict()
         if self.thumbnail:
-            data['thumbnail'] = self.thumbnail.to_dict()
+            data['thumbnail'] = self.thumbnail
         if self.width:
             data['width'] = self.width
         if self.height:
             data['height'] = self.height
         if self.duration:
             data['duration'] = self.duration
-        if self.supports_streaming:
+        if self.supports_streaming is not None:
             data['supports_streaming'] = self.supports_streaming
         return data
     
