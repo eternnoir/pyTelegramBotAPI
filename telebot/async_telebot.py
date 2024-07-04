@@ -246,7 +246,7 @@ class AsyncTeleBot:
         self.event_observer.schedule(self.event_handler, path, recursive=True)
         self.event_observer.start()
 
-    async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
+    async def polling(self, non_stop: bool=True, skip_pending=False, interval: int=0, timeout: int=20,
             request_timeout: Optional[int]=None, allowed_updates: Optional[List[str]]=None,
             none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None):
         """
@@ -256,11 +256,6 @@ class AsyncTeleBot:
         Warning: Do not call this function more than once!
         
         Always gets updates.
-
-        .. note::
-
-            Set non_stop=True if you want your bot to continue receiving updates
-            if there is an error.
 
         .. note::
 
@@ -393,6 +388,15 @@ class AsyncTeleBot:
             return message.replace(code, "*" * len(code))
         else:
             return message
+        
+    async def _handle_error_interval(self, error_interval: float):
+        logger.debug('Waiting for %s seconds before retrying', error_interval)
+        await asyncio.sleep(error_interval)
+        if error_interval * 2 < 60: # same logic as sync
+            error_interval *= 2
+        else:
+            error_interval = 60
+        return error_interval
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
             request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
@@ -426,16 +430,18 @@ class AsyncTeleBot:
 
         self._polling = True
 
+        error_interval = 0.25
+
         try:
             while self._polling:
                 try:
-                    
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         # noinspection PyAsyncCall
                         asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
                     if interval: await asyncio.sleep(interval)
+                    error_interval = 0.25 # drop error_interval if no errors
 
                 except KeyboardInterrupt:
                     return
@@ -446,9 +452,11 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
                         logger.debug(self.__hide_token(traceback.format_exc()))
+
+                    if non_stop:
+                        error_interval = await self._handle_error_interval(error_interval)
                         
                     if non_stop or handled:
-                        await asyncio.sleep(2)
                         continue
                     else:
                         return
@@ -457,6 +465,9 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
                         logger.debug(self.__hide_token(traceback.format_exc()))
+
+                    if non_stop:
+                        error_interval = await self._handle_error_interval(error_interval)
 
                     if non_stop or handled:
                         continue
@@ -467,6 +478,9 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
                         logger.debug(traceback.format_exc())
+
+                    if non_stop:
+                        error_interval = await self._handle_error_interval(error_interval)
 
                     if non_stop or handled:
                         continue
@@ -4017,6 +4031,10 @@ class AsyncTeleBot:
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
+        if isinstance(document, types.InputFile) and visible_file_name:
+            # inputfile name ignored, warn
+            logger.warning('Cannot use both InputFile and visible_file_name. InputFile name will be ignored.')
+            
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, document, 'document',

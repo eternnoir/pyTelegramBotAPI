@@ -2601,6 +2601,10 @@ class TeleBot:
             logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
             thumbnail = thumb
 
+        if isinstance(document, types.InputFile) and visible_file_name:
+            # inputfile name ignored, warn
+            logger.warning('Cannot use both InputFile and visible_file_name. InputFile name will be ignored.')
+
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, document, 'document',

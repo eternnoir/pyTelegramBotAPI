@@ -7748,8 +7748,11 @@ class InputFile:
             InputFile(pathlib.Path('/path/to/file/file.txt'))
         )
     """
-    def __init__(self, file) -> None:
-        self._file, self.file_name = self._resolve_file(file)
+    def __init__(self, file: Union[str, IOBase, Path], file_name: Optional[str] = None):
+        self._file, self._file_name = self._resolve_file(file)
+        if file_name:
+            self._file_name = file_name
+        
 
     @staticmethod
     def _resolve_file(file):
@@ -7770,6 +7773,13 @@ class InputFile:
         File object.
         """
         return self._file
+    
+    @property
+    def file_name(self):
+        """
+        File name.
+        """
+        return self._file_name
 
 
 class ForumTopicCreated(JsonDeserializable):
