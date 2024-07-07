@@ -1,13 +1,12 @@
 import urllib.parse
 from dataclasses import dataclass, field
 from hashlib import sha256
-from typing import Awaitable, Callable, Coroutine, Optional
+from typing import Coroutine
 
 from aiohttp import hdrs
 from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import AsyncTeleBot
-from telebot.metrics import TelegramUpdateMetrics
 from telebot.util import create_error_logging_task
 
 

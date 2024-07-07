@@ -48,7 +48,7 @@ class CheckText:
 
         if self.ignore_case:
             text = text.lower()
-            prepare_func = lambda string: str(string).lower()
+            prepare_func = lambda string: str(string).lower()  # noqa
         else:
             prepare_func = str
 

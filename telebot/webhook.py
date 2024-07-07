@@ -4,7 +4,7 @@ import logging
 import signal
 import time
 from types import FrameType
-from typing import Any, Awaitable, Callable, Coroutine, Optional
+from typing import Any, Callable, Coroutine, Optional
 
 from aiohttp import web
 from aiohttp.typedefs import Handler as AiohttpHandler
@@ -17,7 +17,7 @@ from telebot.metrics import (
     noop_metrics_handler,
 )
 from telebot.runner import BotRunner
-from telebot.util import create_error_logging_task, log_error
+from telebot.util import create_error_logging_task
 
 logger = logging.getLogger(__name__)
 

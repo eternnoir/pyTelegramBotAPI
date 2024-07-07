@@ -250,7 +250,7 @@ async def test_webhook_app_graceful_shutdown():
         except SystemExit:
             server_exited_with_sys_exit.set_result(None)
 
-    server_task = asyncio.create_task(safe_run_webhook_app())
+    asyncio.create_task(safe_run_webhook_app())
     await server_listening
 
     # validating setup sequence in bot
@@ -312,7 +312,8 @@ async def test_graceful_shutdown_conditions():
 
     for _ in range(1000):
         async with PreventShutdown("dummy"):
-            i = 1 + 2
+            a = 1 + 2
+            a + 3
 
     actual_conditions = GracefulShutdownCondition.instances
     gc.collect()

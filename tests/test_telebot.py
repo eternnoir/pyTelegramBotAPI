@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from dotenv import load_dotenv
 
-from telebot import AsyncTeleBot, api, types, util
+from telebot import AsyncTeleBot, api, types
 
 load_dotenv()
 
@@ -380,7 +380,7 @@ class TestIntegration(_HasBotAttr):
                 message_id=msg_original.message_id,
                 media=types.InputMediaPhoto(image_file_2, caption="Test editMessageMedia uloading new"),
             )
-            assert type(msg_edited_1) != bool
+            assert not isinstance(msg_edited_1, bool)
             assert msg_edited_1.caption == "Test editMessageMedia uloading new"
 
         with open(IMAGE, "rb") as image_file_1:
@@ -390,7 +390,7 @@ class TestIntegration(_HasBotAttr):
                 message_id=msg_original.message_id,
                 media=types.InputMediaPhoto(msg_edited_1.photo[0].file_id, caption="Test editMessageMedia by file id"),
             )
-            assert type(msg_edited_1) != bool
+            assert not isinstance(msg_edited_1, bool)
             assert msg_edited_2.caption == "Test editMessageMedia by file id"
 
     @respect_rate_limit

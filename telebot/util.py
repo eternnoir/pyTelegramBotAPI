@@ -345,7 +345,7 @@ def create_error_logging_task(coro: Coroutine[None, None, None], name: str) -> a
     async def wrapper() -> None:
         try:
             await coro
-        except Exception as e:
+        except Exception:
             logger.exception(f"Unhandled exception in task {name!r}")
 
     return asyncio.create_task(wrapper(), name=name)

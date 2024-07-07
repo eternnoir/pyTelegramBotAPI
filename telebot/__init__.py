@@ -468,8 +468,8 @@ class AsyncTeleBot:
                     + f"or AdvancedCustomFilter, got {custom_filter!r}."
                 )
                 return False
-        except Exception as e:
-            self.logger.exception(f"Unexpected error testing custom filters")
+        except Exception:
+            self.logger.exception("Unexpected error testing custom filters")
             return False
 
     # handlers building decorators and methods
@@ -681,7 +681,7 @@ class AsyncTeleBot:
                     finally:
                         try:
                             await self.answer_callback_query(cq.id)
-                        except:
+                        except Exception:
                             pass
 
             else:
@@ -2836,7 +2836,7 @@ class AsyncTeleBot:
             disable_web_page_preview,
             reply_markup,
         )
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if not isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -2864,7 +2864,7 @@ class AsyncTeleBot:
         :return:
         """
         result = await api.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup)
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if not isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -2887,7 +2887,7 @@ class AsyncTeleBot:
         :return:
         """
         result = await api.edit_message_reply_markup(self.token, chat_id, message_id, inline_message_id, reply_markup)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -2966,7 +2966,7 @@ class AsyncTeleBot:
             message_id,
             inline_message_id,
         )
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -3375,7 +3375,7 @@ class AsyncTeleBot:
             caption_entities,
             reply_markup,
         )
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 

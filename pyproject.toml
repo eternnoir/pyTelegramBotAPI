@@ -17,6 +17,7 @@ python-dotenv = "^0.20.0"
 isort = "^5.10.1"
 pre-commit = "^2.19.0"
 mypy = "^0.960"
+flake8-pyproject = "^1.2.3"
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -51,3 +52,7 @@ files = "."
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 markers = ['integration: requires a real bot to run']
+
+[tool.flake8]
+extend_ignore = ['E501', 'E203', 'E251', 'E202', 'E701', 'W503']
+max-line-length = 120

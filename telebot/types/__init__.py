@@ -1673,7 +1673,7 @@ class CallbackQuery(JsonDeserializable):
         if json_string is None:
             return None
         obj = cls.ensure_json_dict(json_string)
-        if not "data" in obj:
+        if "data" not in obj:
             # "data" field is Optional in the API, but historically is mandatory in the class constructor
             obj["data"] = None
         obj["from_user"] = User.de_json(obj.pop("from"))
