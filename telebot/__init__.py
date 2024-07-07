@@ -2836,7 +2836,7 @@ class AsyncTeleBot:
             disable_web_page_preview,
             reply_markup,
         )
-        if not isinstance(result, bool):  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -2864,7 +2864,7 @@ class AsyncTeleBot:
         :return:
         """
         result = await api.edit_message_media(self.token, media, chat_id, message_id, inline_message_id, reply_markup)
-        if not isinstance(result, bool):  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
