@@ -23,14 +23,15 @@ from telebot import api, callback_data, filters, types, util
 from telebot.metrics import (
     ExceptionInfo,
     TelegramUpdateMetrics,
+    TelegramUpdateMetricsHandler,
     save_handler_test_duration,
     save_processing_duration,
 )
 from telebot.types import constants
 from telebot.types import service as service_types
-from telebot.util import MAX_MESSAGE_LENGTH, smart_split
+from telebot.util import MAX_MESSAGE_LENGTH, log_error, smart_split
 
-logger = logging.getLogger("telebot")
+global_logger = logging.getLogger("telebot")
 
 _UpdateContentT = TypeVar("_UpdateContentT", bound=service_types.UpdateContent)
 
@@ -60,11 +61,24 @@ class AsyncTeleBot:
         custom_filters: Optional[list[filters.AnyCustomFilter]] = None,
         force_allowed_updates: Optional[list[constants.UpdateType]] = None,
         log_marker: Optional[str] = None,
+        logger: Optional[logging.Logger] = None,
+        update_metrics_handler: Optional[TelegramUpdateMetricsHandler] = None,
     ):
         self.token = token
         self.offset = offset
         self.parse_mode = parse_mode
+
+        if logger is not None and log_marker is not None:
+            raise ValueError("logger and log_marker arguments are mutually exclusive")
         self.log_marker = log_marker
+        if self.log_marker is not None:
+            self.logger = logging.getLogger(f"telebot[{self.log_marker}]")
+        elif logger is not None:
+            self.logger = logger
+        else:
+            self.logger = global_logger
+
+        self.update_metrics_handler = update_metrics_handler
 
         self.update_listeners: list[Callable[[types.Update], service_types.NoneCoro]] = []
 
@@ -97,13 +111,6 @@ class AsyncTeleBot:
 
         # updated automatically from added handlers
         self.allowed_updates: set[constants.UpdateType] = set(force_allowed_updates) if force_allowed_updates else set()
-
-    @property
-    def logger(self) -> logging.Logger:
-        if self.log_marker is None:
-            return logger
-        else:
-            return logging.getLogger(f"telebot[{self.log_marker}]")
 
     async def close_session(self):
         """
@@ -179,7 +186,11 @@ class AsyncTeleBot:
 
     # update handling
 
-    async def process_new_updates(self, updates: list[types.Update]):
+    async def process_new_updates(
+        self,
+        updates: list[types.Update],
+        global_update_metrics_handler: Optional[TelegramUpdateMetricsHandler] = None,
+    ):
         upd_count = len(updates)
         if upd_count == 0:
             return
@@ -311,7 +322,22 @@ class AsyncTeleBot:
                     )
                 )
 
-        await asyncio.gather(*coroutines, return_exceptions=True)
+        results = await asyncio.gather(*coroutines, return_exceptions=True)
+        exc_results = [r for r in results if isinstance(r, Exception)]
+        if exc_results:
+            self.logger.exception(
+                f"{len(exc_results)} of {len(updates)} update processing coroutines raised an exception: {exc_results}"
+            )
+
+        for update in updates:
+            if update.metrics is None:
+                continue
+            if global_update_metrics_handler is not None:
+                with log_error("Handling metrics with app-wide handler", global_logger):
+                    await global_update_metrics_handler(update.metrics)
+            if self.update_metrics_handler is not None:
+                with log_error("Handling metrics with bot-specific handler", self.logger):
+                    await self.update_metrics_handler(update.metrics)
 
     async def _process_update(
         self,
@@ -2180,7 +2206,7 @@ class AsyncTeleBot:
                 can_invite_users=can_invite_users,
                 can_pin_messages=can_pin_messages,
             )
-            logger.warning("Individual parameters are deprecated and will be removed, use 'permissions' instead.")
+            self.logger.warning("Individual parameters are deprecated and will be removed, use 'permissions' instead.")
         return await api.restrict_chat_member(
             self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions
         )

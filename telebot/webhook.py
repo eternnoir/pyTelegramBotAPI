@@ -11,7 +11,11 @@ from aiohttp.typedefs import Handler as AiohttpHandler
 
 from telebot import api, types
 from telebot.graceful_shutdown import GracefulShutdownCondition
-from telebot.metrics import TelegramUpdateMetrics
+from telebot.metrics import (
+    TelegramUpdateMetrics,
+    TelegramUpdateMetricsHandler,
+    noop_metrics_handler,
+)
 from telebot.runner import BotRunner
 from telebot.util import create_error_logging_task, log_error
 
@@ -21,15 +25,11 @@ logger = logging.getLogger(__name__)
 WEBHOOK_ROUTE = "/webhook/{subroute}/"
 
 
-async def noop_metrics_handler(m: TelegramUpdateMetrics) -> None:
-    logger.debug(f"Metrics: {m}")
-
-
 class WebhookApp:
     def __init__(
         self,
         base_url: str,
-        metrics_handler: Callable[[TelegramUpdateMetrics], Awaitable[None]] = noop_metrics_handler,
+        metrics_handler: TelegramUpdateMetricsHandler = noop_metrics_handler,
     ):
         self.base_url = base_url
         self.bot_runner_by_subroute: dict[str, BotRunner] = dict()
@@ -58,17 +58,14 @@ class WebhookApp:
                 ),
             )
             if update is not None:
-                await bot_runner.bot.process_new_updates([update])
+                await bot_runner.bot.process_new_updates(
+                    [update],
+                    global_update_metrics_handler=self._metrics_handler,
+                )
         except Exception:
             update_id = update.update_id if update is not None else "<not defined>"
             logger.exception(f"Unexpected error processing update #{update_id}:\n{update}")
         finally:
-            if update is not None and update.metrics is not None:
-                with log_error("Handling metrics with app-wide handler", logger):
-                    await self._metrics_handler(update.metrics)
-                if bot_runner.metrics_handler is not None:
-                    with log_error("Handling metrics with runner-specific handler", bot_runner.bot.logger):
-                        await bot_runner.metrics_handler(update.metrics)
             return web.Response()
 
     @web.middleware

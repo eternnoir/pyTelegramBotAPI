@@ -28,7 +28,6 @@ class BotRunner:
     bot: AsyncTeleBot
     background_jobs: list[Coroutine[None, None, None]] = field(default_factory=list)
     aux_endpoints: list[AuxBotEndpoint] = field(default_factory=list)
-    metrics_handler: Optional[Callable[[TelegramUpdateMetrics], Awaitable[None]]] = None
 
     def __post_init__(self):
         if self.bot.log_marker is None:

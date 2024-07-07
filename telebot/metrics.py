@@ -1,8 +1,11 @@
 import contextlib
+import logging
 import time
-from typing import Any, Generator, Optional, TypedDict
+from typing import Any, Awaitable, Callable, Generator, Optional, TypedDict
 
 from typing_extensions import Required
+
+logger = logging.getLogger(__name__)
 
 
 class UserInfo(TypedDict):
@@ -66,3 +69,10 @@ def save_processing_duration(metrics: TelegramUpdateMetrics) -> Generator[None, 
         yield
     finally:
         metrics["processing_duration"] = time.time() - start_time
+
+
+TelegramUpdateMetricsHandler = Callable[[TelegramUpdateMetrics], Awaitable[None]]
+
+
+async def noop_metrics_handler(m: TelegramUpdateMetrics) -> None:
+    logger.debug(f"Metrics: {m}")
