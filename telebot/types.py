@@ -1080,6 +1080,9 @@ class Message(JsonDeserializable):
         the payment. More about payments »
     :type successful_payment: :class:`telebot.types.SuccessfulPayment`
 
+    :param refunded_payment: Optional. Message is a service message about a refunded payment, information about the payment. More about payments »
+    :type refunded_payment: :class:`telebot.types.RefundedPayment`
+
     :param users_shared: Optional. Service message: a user was shared with the bot
     :type users_shared: :class:`telebot.types.UsersShared`
 
@@ -1391,7 +1394,8 @@ class Message(JsonDeserializable):
             opts['show_caption_above_media'] = obj['show_caption_above_media']
         if 'paid_media' in obj:
             opts['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
-
+        if 'refunded_payment' in obj:
+            opts['refunded_payment'] = RefundedPayment.de_json(obj['refunded_payment'])
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1502,6 +1506,7 @@ class Message(JsonDeserializable):
         self.effect_id: Optional[str] = None
         self.show_caption_above_media: Optional[bool] = None
         self.paid_media : Optional[PaidMediaInfo] = None
+        self.refunded_payment : Optional[RefundedPayment] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -10676,5 +10681,43 @@ class InputPaidMediaVideo(InputPaidMedia):
         if self.supports_streaming is not None:
             data['supports_streaming'] = self.supports_streaming
         return data
+
+class RefundedPayment(JsonDeserializable):
+    """
+    This object contains basic information about a refunded payment.
+
+    Telegram documentation: https://core.telegram.org/bots/api#refundedpayment
+
+    :param currency: Three-letter ISO 4217 currency code, or “XTR” for payments in Telegram Stars. Currently, always “XTR”
+    :type currency: :obj:`str`
+
+    :param total_amount: Total refunded price in the smallest units of the currency (integer, not float/double). For example, for a price of US$ 1.45, total_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies).
+    :type total_amount: :obj:`int`
+
+    :param invoice_payload: Bot-specified invoice payload
+    :type invoice_payload: :obj:`str`
+
+    :param telegram_payment_charge_id: Telegram payment identifier
+    :type telegram_payment_charge_id: :obj:`str`
+
+    :param provider_payment_charge_id: Optional. Provider payment identifier
+    :type provider_payment_charge_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RefundedPayment`
+    """
+
+    def __init__(self, currency, total_amount, invoice_payload, telegram_payment_charge_id, provider_payment_charge_id=None, **kwargs):
+        self.currency: str = currency
+        self.total_amount: int = total_amount
+        self.invoice_payload: str = invoice_payload
+        self.telegram_payment_charge_id: str = telegram_payment_charge_id
+        self.provider_payment_charge_id: Optional[str] = provider_payment_charge_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
     
     
