@@ -130,6 +130,8 @@ def _prepare_data(params=None, files=None):
             if isinstance(f, tuple):
                 if len(f) == 2:
                     file_name, file = f
+                    if isinstance(file, types.InputFile):
+                        file = file.file
                 else:
                     raise ValueError('Tuple must have exactly 2 elements: filename, fileobj')
             elif isinstance(f, types.InputFile):
@@ -514,6 +516,33 @@ async def send_photo(
         payload['show_caption_above_media'] = show_caption_above_media
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
+async def send_paid_media(
+        token, chat_id, star_count, media,
+        caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
+        disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None):
+    method_url = r'sendPaidMedia'
+    media_json, files = convert_input_media_array(media)
+    payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if reply_parameters is not None:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return await _process_request(
+        token, method_url, params=payload,
+        method='post' if files else 'get',
+        files=files if files else None)
 
 async def send_media_group(
         token, chat_id, media,
@@ -2081,7 +2110,7 @@ async def convert_input_media_array(array):
     media = []
     files = {}
     for input_media in array:
-        if isinstance(input_media, types.InputMedia):
+        if isinstance(input_media, types.InputMedia) or isinstance(input_media, types.InputPaidMedia):
             media_dict = input_media.to_dict()
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')

@@ -707,6 +707,10 @@ class ChatFullInfo(JsonDeserializable):
     :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat.
     :type location: :class:`telebot.types.ChatLocation`
 
+    :param can_send_paid_media: Optional. True, if paid media messages can be sent or forwarded to the channel chat.
+        The field is available only for channel chats.
+    :type can_send_paid_media: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -748,7 +752,8 @@ class ChatFullInfo(JsonDeserializable):
                  available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
-                    business_opening_hours=None, personal_chat=None, birthdate=None, **kwargs):
+                    business_opening_hours=None, personal_chat=None, birthdate=None, 
+                    can_send_paid_media=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: str = title
@@ -792,6 +797,7 @@ class ChatFullInfo(JsonDeserializable):
         self.business_opening_hours: BusinessOpeningHours = business_opening_hours
         self.personal_chat: Chat = personal_chat
         self.birthdate: Birthdate = birthdate
+        self.can_send_paid_media: bool = can_send_paid_media
 
 
 class Chat(ChatFullInfo):
@@ -963,6 +969,9 @@ class Message(JsonDeserializable):
 
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`telebot.types.Document`
+
+    :param paid_media: Optional. Message contains paid media; information about the paid media
+    :type paid_media: :class:`telebot.types.PaidMediaInfo`
 
     :param photo: Optional. Message is a photo, available sizes of the photo
     :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
@@ -1380,7 +1389,8 @@ class Message(JsonDeserializable):
             opts['effect_id'] = obj['effect_id']
         if 'show_caption_above_media' in obj:
             opts['show_caption_above_media'] = obj['show_caption_above_media']
-
+        if 'paid_media' in obj:
+            opts['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
 
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
@@ -1491,6 +1501,7 @@ class Message(JsonDeserializable):
         self.is_from_offline: Optional[bool] = None
         self.effect_id: Optional[str] = None
         self.show_caption_above_media: Optional[bool] = None
+        self.paid_media : Optional[PaidMediaInfo] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -6726,7 +6737,7 @@ class InputMediaVideo(InputMedia):
             ret['height'] = self.height
         if self.duration:
             ret['duration'] = self.duration
-        if self.supports_streaming:
+        if self.supports_streaming is not None:
             ret['supports_streaming'] = self.supports_streaming
         if self.has_spoiler is not None:
             ret['has_spoiler'] = self.has_spoiler
@@ -7532,7 +7543,9 @@ class MenuButtonWebApp(MenuButton):
     :type text: :obj:`str`
 
     :param web_app: Description of the Web App that will be launched when the user presses the button. The Web App will be 
-        able to send an arbitrary message on behalf of the user using the method answerWebAppQuery.
+        able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Alternatively, a t.me link
+        to a Web App of the bot can be specified in the object instead of the Web App's URL, in which case the Web App will be
+        opened as if the user pressed the link.
     :type web_app: :class:`telebot.types.WebAppInfo`
 
     :return: Instance of the class
@@ -7735,8 +7748,11 @@ class InputFile:
             InputFile(pathlib.Path('/path/to/file/file.txt'))
         )
     """
-    def __init__(self, file) -> None:
-        self._file, self.file_name = self._resolve_file(file)
+    def __init__(self, file: Union[str, IOBase, Path], file_name: Optional[str] = None):
+        self._file, self._file_name = self._resolve_file(file)
+        if file_name:
+            self._file_name = file_name
+        
 
     @staticmethod
     def _resolve_file(file):
@@ -7757,6 +7773,13 @@ class InputFile:
         File object.
         """
         return self._file
+    
+    @property
+    def file_name(self):
+        """
+        File name.
+        """
+        return self._file_name
 
 
 class ForumTopicCreated(JsonDeserializable):
@@ -8511,6 +8534,9 @@ class ExternalReplyInfo(JsonDeserializable):
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`Document`
 
+    :param paid_media: Optional. Message is a paid media content
+    :type paid_media: :class:`PaidMedia`
+
     :param photo: Optional. Message is a photo, available sizes of the photo
     :type photo: :obj:`list` of :class:`PhotoSize`
 
@@ -8619,7 +8645,7 @@ class ExternalReplyInfo(JsonDeserializable):
             dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
-            venue: Optional[Venue]=None, **kwargs) -> None:
+            venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -8643,6 +8669,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.location: Optional[Location] = location
         self.poll: Optional[Poll] = poll
         self.venue: Optional[Venue] = venue
+        self.paid_media: Optional[PaidMediaInfo] = paid_media
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -10209,6 +10236,8 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerFragment.de_json(obj)
         elif obj["type"] == "user":
             return TransactionPartnerUser.de_json(obj)
+        elif obj["type"] == "telegram_ads":
+            return TransactionPartnerTelegramAds.de_json(obj)
         elif obj["type"] == "other":
             return TransactionPartnerOther.de_json(obj)
         
@@ -10255,13 +10284,17 @@ class TransactionPartnerUser(TransactionPartner):
     :param user: Information about the user
     :type user: :class:`User`
 
+    :param invoice_payload: Optional, Bot-specified invoice payload
+    :type invoice_payload: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
-    def __init__(self, type, user, **kwargs):
+    def __init__(self, type, user, invoice_payload=None, **kwargs):
         self.type: str = type
         self.user: User = user
+        self.invoice_payload: Optional[str] = invoice_payload
 
     @classmethod
     def de_json(cls, json_string):
@@ -10269,6 +10302,27 @@ class TransactionPartnerUser(TransactionPartner):
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
+    
+class TransactionPartnerTelegramAds(TransactionPartner):
+    """
+    Describes a transaction with Telegram Ads.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartnertelegramads
+    
+    :param type: Type of the transaction partner, always “telegram_ads”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerTelegramAds`
+    """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
     
         
 class TransactionPartnerOther(TransactionPartner):
@@ -10361,3 +10415,266 @@ class StarTransactions(JsonDeserializable):
     
     def __init__(self, transactions, **kwargs):
         self.transactions: List[StarTransaction] = transactions
+
+
+class PaidMedia(JsonDeserializable):
+    """
+    This object describes paid media. Currently, it can be one of
+
+        PaidMediaPreview
+        PaidMediaPhoto
+        PaidMediaVideo
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmedia
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPreview` or :class:`PaidMediaPhoto` or :class:`PaidMediaVideo`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "preview":
+            return PaidMediaPreview.de_json(obj)
+        elif obj["type"] == "photo":
+            return PaidMediaPhoto.de_json(obj)
+        elif obj["type"] == "video":
+            return PaidMediaVideo.de_json(obj)
+        
+class PaidMediaPreview(PaidMedia):
+    """
+    The paid media isn't available before the payment.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediapreview
+
+    :param type: Type of the paid media, always “preview”
+    :type type: :obj:`str`
+
+    :param width: Optional. Media width as defined by the sender
+    :type width: :obj:`int`
+
+    :param height: Optional. Media height as defined by the sender
+    :type height: :obj:`int`
+
+    :param duration: Optional. Duration of the media in seconds as defined by the sender
+    :type duration: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPreview`
+    """
+
+    def __init__(self, type, width=None, height=None, duration=None, **kwargs):
+        self.type: str = type
+        self.width: Optional[int] = width
+        self.height: Optional[int] = height
+        self.duration: Optional[int] = duration
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class PaidMediaPhoto(PaidMedia):
+    """
+    The paid media is a photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediaphoto
+
+    :param type: Type of the paid media, always “photo”
+    :type type: :obj:`str`
+
+    :param photo: The photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPhoto`
+
+    """
+
+    def __init__(self, type, photo, **kwargs):
+        self.type: str = type
+        self.photo: List[PhotoSize] = photo
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+
+        obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        return cls(**obj)
+    
+
+class PaidMediaVideo(PaidMedia):
+    """
+    The paid media is a video.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediavideo
+
+    :param type: Type of the paid media, always “video”
+    :type type: :obj:`str`
+
+    :param video: The video
+    :type video: :class:`Video`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaVideo`
+    """
+
+    def __init__(self, type, video, **kwargs):
+        self.type: str = type
+        self.video: Video = video
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['video'] = Video.de_json(obj['video'])
+        return cls(**obj)
+
+
+class PaidMediaInfo(JsonDeserializable):
+    """
+    Describes the paid media added to a message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediainfo
+
+    :param star_count: The number of Telegram Stars that must be paid to buy access to the media
+    :type star_count: :obj:`int`
+
+    :param paid_media: Information about the paid media
+    :type paid_media: :obj:`list` of :class:`PaidMedia`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaInfo`
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
+        return cls(**obj)
+    
+    def __init__(self, star_count, paid_media, **kwargs):
+        self.star_count: int = star_count
+        self.paid_media: List[PaidMedia] = paid_media
+
+
+class InputPaidMedia(JsonSerializable):
+    """
+    This object describes the paid media to be sent. Currently, it can be one of
+        InputPaidMediaPhoto
+        InputPaidMediaVideo
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputpaidmedia
+
+    :return: Instance of the class
+    :rtype: :class:`InputPaidMediaPhoto` or :class:`InputPaidMediaVideo`
+    """
+
+    def __init__(self, type, media, **kwargs):
+        self.type = type
+        self.media = media
+
+        if service_utils.is_string(self.media):
+            self._media_name = ''
+            self._media_dic = self.media
+        else:
+            self._media_name = service_utils.generate_random_token()
+            self._media_dic = 'attach://{0}'.format(self._media_name)
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'media': self._media_dic
+        }
+        return data
+    
+class InputPaidMediaPhoto(InputPaidMedia):
+    """
+    The paid media to send is a photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputpaidmediaphoto
+
+    :param type: Type of the media, must be photo
+    :type type: :obj:`str`
+
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for
+        Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data
+        under <file_attach_name> name. More information on Sending Files »
+    :type media: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputPaidMediaPhoto`
+    """
+
+    def __init__(self, media, **kwargs):
+        super().__init__(type='photo', media=media)
+    
+class InputPaidMediaVideo(InputPaidMedia):
+    """
+    The paid media to send is a video.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputpaidmediavideo
+
+    :param type: Type of the media, must be video
+    :type type: :obj:`str`
+
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for
+        Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data
+        under <file_attach_name> name. More information on Sending Files »
+    :type media: :obj:`str`
+
+    :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
+        The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
+        Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
+        so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        More information on Sending Files »
+    :type thumbnail: :class:`InputFile`
+
+    :param width: Optional. Video width
+    :type width: :obj:`int`
+
+    :param height: Optional. Video height
+    :type height: :obj:`int`
+
+    :param duration: Optional. Video duration in seconds
+    :type duration: :obj:`int`
+
+    :param supports_streaming: Optional. Pass True if the uploaded video is suitable for streaming
+    :type supports_streaming: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`InputPaidMediaVideo`
+
+    """
+
+    def __init__(self, media, thumbnail=None, width=None, height=None, duration=None, supports_streaming=None, **kwargs):
+        super().__init__(type='video', media=media)
+        self.thumbnail = thumbnail
+        self.width = width
+        self.height = height
+        self.duration = duration
+        self.supports_streaming = supports_streaming
+
+    def to_dict(self):
+        data = super().to_dict()
+        if self.thumbnail:
+            data['thumbnail'] = self.thumbnail
+        if self.width:
+            data['width'] = self.width
+        if self.height:
+            data['height'] = self.height
+        if self.duration:
+            data['duration'] = self.duration
+        if self.supports_streaming is not None:
+            data['supports_streaming'] = self.supports_streaming
+        return data
+    
+    

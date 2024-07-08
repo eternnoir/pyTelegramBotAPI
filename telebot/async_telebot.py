@@ -246,7 +246,7 @@ class AsyncTeleBot:
         self.event_observer.schedule(self.event_handler, path, recursive=True)
         self.event_observer.start()
 
-    async def polling(self, non_stop: bool=False, skip_pending=False, interval: int=0, timeout: int=20,
+    async def polling(self, non_stop: bool=True, skip_pending=False, interval: int=0, timeout: int=20,
             request_timeout: Optional[int]=None, allowed_updates: Optional[List[str]]=None,
             none_stop: Optional[bool]=None, restart_on_change: Optional[bool]=False, path_to_watch: Optional[str]=None):
         """
@@ -256,11 +256,6 @@ class AsyncTeleBot:
         Warning: Do not call this function more than once!
         
         Always gets updates.
-
-        .. note::
-
-            Set non_stop=True if you want your bot to continue receiving updates
-            if there is an error.
 
         .. note::
 
@@ -393,6 +388,15 @@ class AsyncTeleBot:
             return message.replace(code, "*" * len(code))
         else:
             return message
+        
+    async def _handle_error_interval(self, error_interval: float):
+        logger.debug('Waiting for %s seconds before retrying', error_interval)
+        await asyncio.sleep(error_interval)
+        if error_interval * 2 < 60: # same logic as sync
+            error_interval *= 2
+        else:
+            error_interval = 60
+        return error_interval
 
     async def _process_polling(self, non_stop: bool=False, interval: int=0, timeout: int=20,
             request_timeout: int=None, allowed_updates: Optional[List[str]]=None):
@@ -426,16 +430,18 @@ class AsyncTeleBot:
 
         self._polling = True
 
+        error_interval = 0.25
+
         try:
             while self._polling:
                 try:
-                    
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         # noinspection PyAsyncCall
                         asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
                     if interval: await asyncio.sleep(interval)
+                    error_interval = 0.25 # drop error_interval if no errors
 
                 except KeyboardInterrupt:
                     return
@@ -446,9 +452,11 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
                         logger.debug(self.__hide_token(traceback.format_exc()))
+
+                    if non_stop:
+                        error_interval = await self._handle_error_interval(error_interval)
                         
                     if non_stop or handled:
-                        await asyncio.sleep(2)
                         continue
                     else:
                         return
@@ -457,6 +465,9 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', self.__hide_token(str(e)))
                         logger.debug(self.__hide_token(traceback.format_exc()))
+
+                    if non_stop:
+                        error_interval = await self._handle_error_interval(error_interval)
 
                     if non_stop or handled:
                         continue
@@ -467,6 +478,9 @@ class AsyncTeleBot:
                     if not handled:
                         logger.error('Unhandled exception (full traceback for debug level): %s', str(e))
                         logger.debug(traceback.format_exc())
+
+                    if non_stop:
+                        error_interval = await self._handle_error_interval(error_interval)
 
                     if non_stop or handled:
                         continue
@@ -3248,6 +3262,10 @@ class AsyncTeleBot:
             show_caption_above_media: Optional[bool]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
+        If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
+        and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous
+        to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array
+        of MessageId of the sent messages is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#copymessage
 
@@ -3415,44 +3433,43 @@ class AsyncTeleBot:
     async def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
                         protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
-            """
-            Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. 
-            Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied
-            only if the value of the field correct_option_id is known to the bot. The method is analogous to the method forwardMessages, but
-            the copied messages don't have a link to the original message. Album grouping is kept for copied messages.
-            On success, an array of MessageId of the sent messages is returned.
+        """
+        Use this method to copy messages of any kind.
+        Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
+        A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous to the method
+        forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success.
 
-            Telegram documentation: https://core.telegram.org/bots/api#copymessages
+        Telegram documentation: https://core.telegram.org/bots/api#copymessages
 
-            :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
-            :type chat_id: :obj:`int` or :obj:`str`
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
 
-            :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
-            :type from_chat_id: :obj:`int` or :obj:`str`
+        :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        :type from_chat_id: :obj:`int` or :obj:`str`
 
-            :param message_ids: Message identifiers in the chat specified in from_chat_id
-            :type message_ids: :obj:`list` of :obj:`int`
+        :param message_ids: Message identifiers in the chat specified in from_chat_id
+        :type message_ids: :obj:`list` of :obj:`int`
 
-            :param disable_notification: Sends the message silently. Users will receive a notification with no sound
-            :type disable_notification: :obj:`bool`
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound
+        :type disable_notification: :obj:`bool`
 
-            :param message_thread_id: Identifier of a message thread, in which the messages will be sent
-            :type message_thread_id: :obj:`int`
+        :param message_thread_id: Identifier of a message thread, in which the messages will be sent
+        :type message_thread_id: :obj:`int`
 
-            :param protect_content: Protects the contents of the forwarded message from forwarding and saving
-            :type protect_content: :obj:`bool`
+        :param protect_content: Protects the contents of the forwarded message from forwarding and saving
+        :type protect_content: :obj:`bool`
 
-            :param remove_caption: Pass True to copy the messages without their captions
-            :type remove_caption: :obj:`bool`
+        :param remove_caption: Pass True to copy the messages without their captions
+        :type remove_caption: :obj:`bool`
 
-            :return: On success, an array of MessageId of the sent messages is returned.
-            :rtype: :obj:`list` of :class:`telebot.types.MessageID`
-            """
-            disable_notification = self.disable_notification if disable_notification is None else disable_notification
-            protect_content = self.protect_content if protect_content is None else protect_content
-            result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
-                                            protect_content, remove_caption)
-            return [types.MessageID.de_json(message_id) for message_id in result]
+        :return: On success, an array of MessageId of the sent messages is returned.
+        :rtype: :obj:`list` of :class:`telebot.types.MessageID`
+        """
+        disable_notification = self.disable_notification if disable_notification is None else disable_notification
+        protect_content = self.protect_content if protect_content is None else protect_content
+        result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
+                                        protect_content, remove_caption)
+        return [types.MessageID.de_json(message_id) for message_id in result]
 
     async def send_dice(
             self, chat_id: Union[int, str],
@@ -4014,6 +4031,10 @@ class AsyncTeleBot:
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
+        if isinstance(document, types.InputFile) and visible_file_name:
+            # inputfile name ignored, warn
+            logger.warning('Cannot use both InputFile and visible_file_name. InputFile name will be ignored.')
+            
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, document, 'document',
@@ -4525,6 +4546,61 @@ class AsyncTeleBot:
             await asyncio_helper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_markup,
                 disable_notification, timeout, thumbnail, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id))
+
+    async def send_paid_media(
+            self, chat_id: Union[int, str], star_count: int, media: List[types.InputPaidMedia],
+            caption: Optional[str]=None, parse_mode: Optional[str]=None, caption_entities: Optional[List[types.MessageEntity]]=None,
+            show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send paid media to channel chats. On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendpaidmedia
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param star_count: The number of Telegram Stars that must be paid to buy access to the media
+        :type star_count: :obj:`int`
+
+        :param media: A JSON-serialized array describing the media to be sent; up to 10 items
+        :type media: :obj:`list` of :class:`telebot.types.InputPaidMedia`
+
+        :param caption: Media caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the media caption
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: List of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media
+        :type show_caption_above_media: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param reply_parameters: Description of the message to reply to
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove` or :class:`telebot.types.ForceReply`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        return types.Message.de_json(
+            await asyncio_helper.send_paid_media(
+                self.token, chat_id, star_count, media, caption=caption, parse_mode=parse_mode,
+                caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
+                disable_notification=disable_notification, protect_content=protect_content,
+                reply_parameters=reply_parameters, reply_markup=reply_markup)
+        )
 
     async def send_media_group(
             self, chat_id: Union[int, str], 
@@ -6087,7 +6163,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.edit_message_text(
             self.token, text, chat_id, message_id, inline_message_id, parse_mode, entities, reply_markup,
             link_preview_options, business_connection_id, timeout)
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -6131,7 +6207,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.edit_message_media(
             self.token, media, chat_id, message_id, inline_message_id, reply_markup, business_connection_id, timeout)
-        if type(result) == bool:  # if edit inline message return is bool not Message.
+        if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
 
@@ -6170,7 +6246,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.edit_message_reply_markup(
             self.token, chat_id, message_id, inline_message_id, reply_markup, business_connection_id, timeout)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -6298,7 +6374,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.set_game_score(self.token, user_id, score, force, disable_edit_message, chat_id,
                                           message_id, inline_message_id)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
@@ -6942,7 +7018,7 @@ class AsyncTeleBot:
             self.token, caption, chat_id, message_id, inline_message_id, parse_mode, caption_entities, reply_markup,
             show_caption_above_media=show_caption_above_media, business_connection_id=business_connection_id,
             timeout=timeout)
-        if type(result) == bool:
+        if isinstance(result, bool):
             return result
         return types.Message.de_json(result)
 
