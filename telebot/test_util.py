@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from types import MethodType
 from typing import Any, Callable, Literal, Optional, TypeVar, Union
 
-from telebot import AsyncTeleBot, api, constants, filters, types
+from telebot import AsyncTeleBot, api, types
 
 
 @dataclass
@@ -128,15 +128,8 @@ class MockedAsyncTeleBot(AsyncTeleBot):
     >>> bot = MockAsyncTeleBot("dummy-token")
     """
 
-    def __init__(
-        self,
-        token: str,
-        parse_mode: Optional[str] = None,
-        offset: Optional[int] = None,
-        custom_filters: Optional[list[filters.AnyCustomFilter]] = None,
-        force_allowed_updates: Optional[list[constants.UpdateType]] = None,
-    ):
-        super().__init__(token, parse_mode, offset, custom_filters, force_allowed_updates)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
         self.method_calls: dict[str, list[MethodCall]] = defaultdict(list)
         self._return_value_queues: dict[str, deque[Any]] = defaultdict(deque)
         self._repeating_return_values: dict[str, deque[Any]] = defaultdict(deque)
