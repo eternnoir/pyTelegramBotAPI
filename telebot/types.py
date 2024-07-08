@@ -10111,6 +10111,7 @@ class ChatBackground(JsonDeserializable):
 
 
 class RevenueWithdrawalState(JsonDeserializable):
+    # noinspection PyUnresolvedReferences
     """
     This object describes the state of a revenue withdrawal operation. Currently, it can be one of
         RevenueWithdrawalStatePending
@@ -10152,6 +10153,7 @@ class RevenueWithdrawalStatePending(RevenueWithdrawalState):
     :rtype: :class:`RevenueWithdrawalStatePending`
     """
 
+    # noinspection PyPackageRequirements
     def __init__(self, type, **kwargs):
         self.type: str = type
 
@@ -10181,6 +10183,7 @@ class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
     :rtype: :class:`RevenueWithdrawalStateSucceeded`
     """
 
+    # noinspection PyPackageRequirements
     def __init__(self, type, date, url, **kwargs):
         self.type: str = type
         self.date: int = date
@@ -10207,6 +10210,7 @@ class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
     :rtype: :class:`RevenueWithdrawalStateFailed`
     """
 
+    # noinspection PyPackageRequirements
     def __init__(self, type, **kwargs):
         self.type: str = type
 
@@ -10218,6 +10222,7 @@ class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
 
 
 class TransactionPartner(JsonDeserializable):
+    # noinspection PyUnresolvedReferences
     """
     This object describes the source of a transaction, or its recipient for outgoing transactions. Currently, it can be one of
         TransactionPartnerFragment
@@ -10263,6 +10268,7 @@ class TransactionPartnerFragment(TransactionPartner):
 
     """
 
+    # noinspection PyPackageRequirements
     def __init__(self, type, withdrawal_state=None, **kwargs):
         self.type: str = type
         self.withdrawal_state: Optional[RevenueWithdrawalState] = withdrawal_state
