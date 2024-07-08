@@ -118,7 +118,7 @@ class TextFilter:
 
         :return: None
         """
-        
+
         to_check = sum((pattern is not None for pattern in (equals, contains, starts_with, ends_with)))
         if to_check == 0:
             raise ValueError('None of the check modes was specified')
@@ -298,7 +298,7 @@ class ForwardFilter(SimpleCustomFilter):
     """
     Check whether message was forwarded from channel or group.
 
-    .. code-block:: python3 
+    .. code-block:: python3
         :caption: Example on using this filter:
 
         @bot.message_handler(is_forwarded=True)
@@ -311,7 +311,7 @@ class ForwardFilter(SimpleCustomFilter):
         """
         :meta private:
         """
-        return message.forward_date is not None
+        return message.forward_origin is not None
 
 
 class IsReplyFilter(SimpleCustomFilter):
@@ -390,7 +390,7 @@ class StateFilter(AdvancedCustomFilter):
 
     .. code-block:: python3
         :caption: Example on using this filter:
-        
+
         @bot.message_handler(state=1)
         # your function
     """
@@ -405,20 +405,20 @@ class StateFilter(AdvancedCustomFilter):
         :meta private:
         """
         if text == '*': return True
-        
+
         # needs to work with callbackquery
         if isinstance(message, types.Message):
             chat_id = message.chat.id
             user_id = message.from_user.id
 
         if isinstance(message, types.CallbackQuery):
-            
+
             chat_id = message.message.chat.id
             user_id = message.from_user.id
             message = message.message
 
-        
-        
+
+
 
         if isinstance(text, list):
             new_text = []
@@ -428,7 +428,7 @@ class StateFilter(AdvancedCustomFilter):
             text = new_text
         elif isinstance(text, State):
             text = text.name
-        
+
         if message.chat.type in ['group', 'supergroup']:
             group_state = self.bot.current_states.get_state(chat_id, user_id)
             if group_state == text:
