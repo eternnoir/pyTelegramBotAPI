@@ -1,8 +1,10 @@
 from telebot.states import State, StatesGroup
 from telebot.types import CallbackQuery, Message
-from telebot import TeleBot
+from telebot import TeleBot, types
+from telebot.states import resolve_context
 
 from typing import Union
+
 
 
 class StateContext():
@@ -25,24 +27,6 @@ class StateContext():
         self.bot: TeleBot = bot
         self.bot_id = self.bot.bot_id
 
-    def _resolve_context(self) -> Union[Message, CallbackQuery]:
-        chat_id = None
-        user_id = None
-        business_connection_id = self.message.business_connection_id
-        bot_id = self.bot_id
-        message_thread_id = None
-
-        if isinstance(self.message, Message):
-            chat_id = self.message.chat.id
-            user_id = self.message.from_user.id
-            message_thread_id = self.message.message_thread_id if self.message.is_topic_message else None
-        elif isinstance(self.message, CallbackQuery):
-            chat_id = self.message.message.chat.id
-            user_id = self.message.from_user.id
-            message_thread_id = self.message.message.message_thread_id if self.message.message.is_topic_message else None
-
-        return chat_id, user_id, business_connection_id, bot_id, message_thread_id
-    
     def set(self, state: Union[State, str]) -> None:
         """
         Set state for current user.
@@ -58,7 +42,7 @@ class StateContext():
                 bot.send_message(message.chat.id, 'Hi, write me a name', reply_to_message_id=message.message_id)
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = self._resolve_context()
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         if isinstance(state, State):
             state = state.name
         return self.bot.set_state(
@@ -78,7 +62,7 @@ class StateContext():
         :rtype: str
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = self._resolve_context()
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         return self.bot.get_state(
             chat_id=chat_id,
             user_id=user_id,
@@ -93,7 +77,7 @@ class StateContext():
         State will not be changed.
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = self._resolve_context()
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         return self.bot.reset_data(
             chat_id=chat_id,
             user_id=user_id,
@@ -106,7 +90,7 @@ class StateContext():
         """
         Deletes state and data for current user.
         """
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = self._resolve_context()
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         return self.bot.delete_state(
             chat_id=chat_id,
             user_id=user_id,
@@ -125,7 +109,7 @@ class StateContext():
                 print(data)
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = self._resolve_context()
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         return self.bot.retrieve_data(
             chat_id=chat_id,
             user_id=user_id,
@@ -142,7 +126,7 @@ class StateContext():
         :type kwargs: dict
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = self._resolve_context()
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         return self.bot.add_data(
             chat_id=chat_id,
             user_id=user_id,
@@ -151,3 +135,4 @@ class StateContext():
             message_thread_id=message_thread_id,
             **kwargs
         )
+    

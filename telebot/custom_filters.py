@@ -4,7 +4,7 @@ from telebot.handler_backends import State
 
 from telebot import types
 
-
+from telebot.states import resolve_context
 
 
 
@@ -407,17 +407,7 @@ class StateFilter(AdvancedCustomFilter):
         """
         if text == '*': return True
         
-        # needs to work with callbackquery
-        if isinstance(message, types.Message):
-            chat_id = message.chat.id
-            user_id = message.from_user.id
-
-        if isinstance(message, types.CallbackQuery):
-            
-            chat_id = message.message.chat.id
-            user_id = message.from_user.id
-            message = message.message
-
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(message, self.bot._user.id)
 
         if isinstance(text, list):
             new_text = []
@@ -428,29 +418,17 @@ class StateFilter(AdvancedCustomFilter):
         elif isinstance(text, State):
             text = text.name
         
-        if message.chat.type in ['group', 'supergroup']:
-            group_state = self.bot.current_states.get_state(chat_id=chat_id, user_id=user_id, business_connection_id=message.business_connection_id, bot_id=self.bot._user.id,
-                                                            message_thread_id=message.message_thread_id)
-            if group_state is None and not message.is_topic_message: # needed for general topic and group messages
-                group_state = self.bot.current_states.get_state(chat_id=chat_id, user_id=user_id, business_connection_id=message.business_connection_id, bot_id=self.bot._user.id)
-                
-            if group_state == text:
-                return True
-            elif type(text) is list and group_state in text:
-                return True
-
-
-        else:
-            user_state = self.bot.current_states.get_state(
-                chat_id=chat_id,
-                user_id=user_id,
-                business_connection_id=message.business_connection_id,
-                bot_id=self.bot._user.id
-            )
-            if user_state == text:
-                return True
-            elif type(text) is list and user_state in text:
-                return True
+        user_state = self.bot.current_states.get_state(
+            chat_id=chat_id,
+            user_id=user_id,
+            business_connection_id=business_connection_id,
+            bot_id=bot_id,
+            message_thread_id=message_thread_id
+        )
+        if user_state == text:
+            return True
+        elif type(text) is list and user_state in text:
+            return True
 
 
 class IsDigitFilter(SimpleCustomFilter):

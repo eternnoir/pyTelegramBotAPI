@@ -1,13 +1,15 @@
 from telebot.handler_backends import BaseMiddleware
 from telebot import TeleBot
 from telebot.states.sync.context import StateContext
+from telebot.util import update_types
+from telebot import types
 
 
 class StateMiddleware(BaseMiddleware):
 
     def __init__(self, bot: TeleBot) -> None:
         self.update_sensitive = False
-        self.update_types = ['message', 'edited_message', 'callback_query'] #TODO: support other types
+        self.update_types = update_types
         self.bot: TeleBot = bot
 
     def pre_process(self, message, data):
