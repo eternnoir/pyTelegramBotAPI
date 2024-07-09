@@ -127,6 +127,7 @@ class AsyncTeleBot:
         limit: Optional[int] = None,
         timeout: Optional[int] = None,
         request_timeout: Optional[int] = None,
+        bot_prefix: Optional[str] = None,
     ) -> list[types.Update]:
         json_updates = await api.get_updates(
             self.token,
@@ -136,7 +137,16 @@ class AsyncTeleBot:
             [ut.value for ut in self.allowed_updates],
             request_timeout,
         )
-        maybe_updates = [types.Update.de_json(ju) for ju in json_updates]
+        maybe_updates = [
+            types.Update.de_json(
+                ju,
+                metrics=TelegramUpdateMetrics(
+                    bot_prefix=bot_prefix or "<unknown>",
+                    received_at=time.time(),
+                ),
+            )
+            for ju in json_updates
+        ]
         return [u for u in maybe_updates if u is not None]
 
     async def infinity_polling(
@@ -147,6 +157,7 @@ class AsyncTeleBot:
         request_timeout: int = 60,
         max_error_retry_count: Optional[int] = 10,
         auto_close_session: bool = True,
+        bot_prefix: Optional[str] = None,  # for bot metrics
     ):
         interval = max(interval, 0.3)
         error_retry_count = 0
@@ -160,6 +171,7 @@ class AsyncTeleBot:
                         offset=self.offset,
                         timeout=timeout,
                         request_timeout=request_timeout,
+                        bot_prefix=bot_prefix,
                     )
                     if updates:
                         self.offset = updates[-1].update_id + 1
