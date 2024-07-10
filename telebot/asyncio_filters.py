@@ -27,7 +27,7 @@ class SimpleCustomFilter(ABC):
 
     key: str = None
 
-    async def check(self, message):
+    async def check(self, message) -> bool:
         """
         Perform a check.
         """

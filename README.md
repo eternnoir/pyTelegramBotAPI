@@ -10,7 +10,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#march-31-2024">7.2</a>!
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#july-7-2024">7.7</a>!
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>
@@ -262,7 +262,7 @@ Handle shipping queries
 `@bot.shipping_query_handler() # <- passes a ShippingQuery type object to your function`
 
 #### Pre Checkout Query Handler
-Handle pre checkoupt queries
+Handle pre checkout queries
 `@bot.pre_checkout_query_handler() # <- passes a PreCheckoutQuery type object to your function`
 
 #### Poll Handler
@@ -303,7 +303,7 @@ def query_text(inline_query):
 
 #### Chosen Inline handler
 
-Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forgot add the /setinlinefeedback
+Use chosen_inline_handler to get chosen_inline_result in telebot. Don't forget to add the /setinlinefeedback
 command for @Botfather.
 
 More information : [collecting-feedback](https://core.telegram.org/bots/inline#collecting-feedback)
@@ -890,5 +890,6 @@ Here are some examples of template:
 * [Best Instagram Downloader Bot](https://t.me/Best_Instagram_Downloader_Bot) ([source](https://github.com/arashnm80/best-instagram-downloader)) by [Arashnm80](https://github.com/arashnm80). Free and open source telegram bot to download posts and reels from Instagram.
 * [4K YouTube Downloader](https://github.com/hansanaD/TelegramYTDLBot/) - Youtube Downloader with upto 4K resolution support. 
 * [DrinkGenius-Bot](https://t.me/cocktail_recommendation_bot) ([source](https://github.com/Povladarchik/DrinkGenius-Bot)) by [Povladarchik](https://github.com/Povladarchik). Your personal assistant in the world of cocktails.
+* [Pytgpt-Bot](https://t.me/pytgpt_bot) ([source](https://github.com/Simatwa/pytgpt-bot)) by [Smartwa](https://github.com/Simatwa). AI powered bot for chatting, text-to-image and text-to-speech conversions.
 
 **Want to have your bot listed here? Just make a pull request. Only bots with public source code are accepted.**

@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 try:
+    # noinspection PyPackageRequirements
     import ujson as json
 except ImportError:
     import json
@@ -93,7 +94,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
         # process types.InputFile
         for key, value in files_copy.items():
             if isinstance(value, types.InputFile):
-                files[key] = value.file
+                files[key] = (value.file_name, value.file)
             elif isinstance(value, tuple) and (len(value) == 2) and isinstance(value[1], types.InputFile):
                 files[key] = (value[0], value[1].file)
 
@@ -244,7 +245,7 @@ def send_message(
         parse_mode=None, disable_notification=None, timeout=None,
         entities=None, protect_content=None,
         message_thread_id=None, reply_parameters=None, link_preview_options=None,
-        business_connection_id=None):
+        business_connection_id=None, message_effect_id=None):
     method_url = r'sendMessage'
     payload = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
@@ -267,6 +268,8 @@ def send_message(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -371,6 +374,7 @@ def get_chat_member_count(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
+# noinspection PyShadowingBuiltins
 def set_sticker_set_thumbnail(token, name, user_id, thumbnail, format):
     method_url = r'setStickerSetThumbnail'
     payload = {'name': name, 'user_id': user_id, 'format': format}
@@ -424,7 +428,7 @@ def forward_message(
 
 def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None, reply_markup=None, timeout=None, protect_content=None, message_thread_id=None,
-                 reply_parameters=None):
+                 reply_parameters=None, show_caption_above_media=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -432,17 +436,21 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
     if parse_mode:
         payload['parse_mode'] = parse_mode
     if caption_entities is not None:
-        payload['caption_entities'] = _convert_entites(caption_entities)
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if reply_parameters is not None:
         payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup is not None:
+        payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
     if protect_content is not None:
         payload['protect_content'] = protect_content
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload)
 
 
@@ -450,7 +458,7 @@ def send_dice(
         token, chat_id,
         emoji=None, disable_notification=None,
         reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None,
-        business_connection_id=None):
+        business_connection_id=None, message_effect_id=None):
     method_url = r'sendDice'
     payload = {'chat_id': chat_id}
     if emoji:
@@ -469,6 +477,8 @@ def send_dice(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -477,7 +487,8 @@ def send_photo(
         caption=None, reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, protect_content=None,
-        message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None):
+        message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
+        message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -509,13 +520,46 @@ def send_photo(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload, files=files, method='post')
+    
+def send_paid_media(
+        token, chat_id, star_count, media,
+        caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
+        disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None):
+    method_url = r'sendPaidMedia'
+    media_json, files = convert_input_media_array(media)
+    payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if reply_parameters is not None:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(
+        token, method_url, params=payload,
+        method='post' if files else 'get',
+        files=files if files else None)
 
 
 def send_media_group(
         token, chat_id, media,
         disable_notification=None,
-        timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None):
+        timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
+        message_effect_id=None):
     method_url = r'sendMediaGroup'
     media_json, files = convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
@@ -531,6 +575,8 @@ def send_media_group(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(
         token, method_url, params=payload,
         method='post' if files else 'get',
@@ -543,7 +589,8 @@ def send_location(
         reply_markup=None, disable_notification=None, 
         timeout=None, horizontal_accuracy=None, heading=None,
         proximity_alert_radius=None, protect_content=None,
-        message_thread_id=None, reply_parameters=None, business_connection_id=None):
+        message_thread_id=None, reply_parameters=None, business_connection_id=None,
+        message_effect_id=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
@@ -568,13 +615,14 @@ def send_location(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 
 def edit_message_live_location(
-        token, latitude, longitude, chat_id=None, message_id=None,
-        inline_message_id=None, reply_markup=None, timeout=None,
-        horizontal_accuracy=None, heading=None, proximity_alert_radius=None):
+        token, latitude, longitude, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None,
+        timeout=None, horizontal_accuracy=None, heading=None, proximity_alert_radius=None, live_period=None, business_connection_id=None):
     method_url = r'editMessageLiveLocation'
     payload = {'latitude': latitude, 'longitude': longitude}
     if chat_id:
@@ -587,18 +635,22 @@ def edit_message_live_location(
         payload['heading'] = heading
     if proximity_alert_radius:
         payload['proximity_alert_radius'] = proximity_alert_radius
+    if live_period:
+        payload['live_period'] = live_period
     if inline_message_id:
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 
 def stop_message_live_location(
         token, chat_id=None, message_id=None,
-        inline_message_id=None, reply_markup=None, timeout=None):
+        inline_message_id=None, reply_markup=None, timeout=None, business_connection_id=None):
     method_url = r'stopMessageLiveLocation'
     payload = {}
     if chat_id:
@@ -611,6 +663,8 @@ def stop_message_live_location(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -618,7 +672,8 @@ def send_venue(
         token, chat_id, latitude, longitude, title, address,
         foursquare_id=None, foursquare_type=None, disable_notification=None,
         reply_markup=None, timeout=None, google_place_id=None,
-        google_place_type=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None):
+        google_place_type=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
+        message_effect_id=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
@@ -643,13 +698,16 @@ def send_venue(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 
 def send_contact(
         token, chat_id, phone_number, first_name, last_name=None, vcard=None,
         disable_notification=None, reply_markup=None, timeout=None,
-        protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None):
+        protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
+        message_effect_id=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
@@ -670,6 +728,8 @@ def send_contact(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
 
     return _make_request(token, method_url, params=payload)
 
@@ -689,7 +749,8 @@ def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=Non
 def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=None,
                parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
                thumbnail=None, width=None, height=None, caption_entities=None, protect_content=None,
-               message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None):
+               message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
+               message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -735,6 +796,10 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -743,7 +808,7 @@ def send_animation(
         token, chat_id, data, duration=None, caption=None,  reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
         protect_content=None, width=None, height=None, message_thread_id=None, reply_parameters=None,
-        has_spoiler=None, business_connection_id=None):
+        has_spoiler=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -787,12 +852,17 @@ def send_animation(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=None,
                parse_mode=None, disable_notification=None, timeout=None, caption_entities=None,
-                 protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None):
+                 protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
+                 message_effect_id=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -822,12 +892,14 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_video_note(token, chat_id, data, duration=None, length=None, reply_markup=None,
                     disable_notification=None, timeout=None, thumbnail=None, protect_content=None,
-                    message_thread_id=None, reply_parameters=None,business_connection_id=None):
+                    message_thread_id=None, reply_parameters=None,business_connection_id=None, message_effect_id=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -863,12 +935,15 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_mark
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None,
                reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
-               caption_entities=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None):
+               caption_entities=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
+               message_effect_id=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -910,13 +985,16 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=None,
               disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
               disable_content_type_detection=None, visible_file_name=None,
-              protect_content = None, message_thread_id=None, emoji=None, reply_parameters=None, business_connection_id=None):
+              protect_content = None, message_thread_id=None, emoji=None, reply_parameters=None, business_connection_id=None,
+              message_effect_id=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -959,6 +1037,8 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1330,8 +1410,9 @@ def unpin_all_chat_messages(token, chat_id):
 
 # Updating messages
 
-def edit_message_text(token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None,
-                      entities = None, reply_markup=None, link_preview_options=None):
+def edit_message_text(
+        token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
+        reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1348,11 +1429,16 @@ def edit_message_text(token, text, chat_id=None, message_id=None, inline_message
         payload['reply_markup'] = _convert_markup(reply_markup)
     if link_preview_options is not None:
         payload['link_preview_options'] = link_preview_options.to_json()
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if timeout:
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_message_id=None,
-                         parse_mode=None, caption_entities=None,reply_markup=None):
+def edit_message_caption(
+        token, caption, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, caption_entities=None,
+        reply_markup=None, show_caption_above_media=None, business_connection_id=None, timeout=None):
     method_url = r'editMessageCaption'
     payload = {'caption': caption}
     if chat_id:
@@ -1367,10 +1453,18 @@ def edit_message_caption(token, caption, chat_id=None, message_id=None, inline_m
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if timeout:
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def edit_message_media(token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_media(
+        token, media, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None,
+        business_connection_id=None, timeout=None):
     method_url = r'editMessageMedia'
     media_json, file = convert_input_media(media)
     payload = {'media': media_json}
@@ -1382,10 +1476,16 @@ def edit_message_media(token, media, chat_id=None, message_id=None, inline_messa
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if timeout:
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, files=file, method='post' if file else 'get')
 
 
-def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None):
+def edit_message_reply_markup(
+        token, chat_id=None, message_id=None, inline_message_id=None, reply_markup=None, business_connection_id=None,
+        timeout=None):
     method_url = r'editMessageReplyMarkup'
     payload = {}
     if chat_id:
@@ -1396,6 +1496,10 @@ def edit_message_reply_markup(token, chat_id=None, message_id=None, inline_messa
         payload['inline_message_id'] = inline_message_id
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if timeout:
+        payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1412,7 +1516,7 @@ def delete_message(token, chat_id, message_id, timeout=None):
 def send_game(
         token, chat_id, game_short_name,
         disable_notification=None, reply_markup=None, timeout=None,
-       protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None):
+       protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None, message_effect_id=None):
     method_url = r'sendGame'
     payload = {'chat_id': chat_id, 'game_short_name': game_short_name}
     if disable_notification is not None:
@@ -1429,6 +1533,8 @@ def send_game(
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -1494,7 +1600,7 @@ def send_invoice(
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None, reply_markup=None, provider_data=None,
         timeout=None, max_tip_amount=None, suggested_tip_amounts=None,
-        protect_content=None, message_thread_id=None, reply_parameters=None):
+        protect_content=None, message_thread_id=None, reply_parameters=None, message_effect_id=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1522,15 +1628,16 @@ def send_invoice(
     :param provider_data: A JSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
     :param timeout:
     :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
-    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency.
-        At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+    :param suggested_tip_amounts: A JSON-serialized array of suggested amounts of tips in the smallest units of the currency. At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
     :param protect_content: Protects the contents of the sent message from forwarding and saving
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+    :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
+    :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
     :return:
     """
     method_url = r'sendInvoice'
     payload = {'chat_id': chat_id, 'title': title, 'description': description, 'payload': invoice_payload,
-               'provider_token': provider_token, 'currency': currency,
+                'currency': currency,
                'prices': _convert_list_json_serializable(prices)}
     if start_parameter:
         payload['start_parameter'] = start_parameter
@@ -1574,6 +1681,10 @@ def send_invoice(
         payload['message_thread_id'] = message_thread_id
     if reply_parameters is not None:
         payload['reply_parameters'] = reply_parameters.to_json()
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if provider_token is not None:
+        payload['provider_token'] = provider_token
     return _make_request(token, method_url, params=payload)
 
 
@@ -1611,11 +1722,26 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
         payload['error_message'] = error_message
     return _make_request(token, method_url, params=payload)
 
+def get_star_transactions(token, offset=None, limit=None):
+    method_url = 'getStarTransactions'
+    payload = {}
+    if offset:
+        payload['offset'] = offset
+    if limit:
+        payload['limit'] = limit
+    return _make_request(token, method_url, params=payload)
+
+
+def refund_star_payment(token, user_id, telegram_payment_charge_id):
+    method_url = 'refundStarPayment'
+    payload = {'user_id': user_id, 'telegram_payment_charge_id': telegram_payment_charge_id}
+    return _make_request(token, method_url, params=payload)
+
 
 def unpin_all_general_forum_topic_messages(token, chat_id):
     method_url = 'unpinAllGeneralForumTopicMessages'
     payload = {'chat_id': chat_id}
-    return _make_request(token, method_url, params=payload, method='post')
+    return _make_request(token, method_url, params=payload)
 
 # InlineQuery
 
@@ -1778,7 +1904,7 @@ def create_invoice_link(token, title, description, payload, provider_token,
             need_email=None, need_shipping_address=None, send_phone_number_to_provider=None,
             send_email_to_provider=None, is_flexible=None):
     method_url = r'createInvoiceLink'
-    payload = {'title': title, 'description': description, 'payload': payload, 'provider_token': provider_token,
+    payload = {'title': title, 'description': description, 'payload': payload,
                 'currency': currency, 'prices': _convert_list_json_serializable(prices)}
     if max_tip_amount:
         payload['max_tip_amount'] = max_tip_amount
@@ -1808,38 +1934,40 @@ def create_invoice_link(token, title, description, payload, provider_token,
         payload['send_email_to_provider'] = send_email_to_provider
     if is_flexible is not None:
         payload['is_flexible'] = is_flexible
+    if provider_token is not None:
+        payload['provider_token'] = provider_token
     return _make_request(token, method_url, params=payload, method='post')
 
 
 # noinspection PyShadowingBuiltins
 def send_poll(
-        token, chat_id,
-        question, options,
+        token, chat_id, question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None, explanation = None,
         explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None, disable_notification=False,
-        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None, reply_parameters=None,
-        business_connection_id=None):
+        reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
+        reply_parameters=None, business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
         'question': question,
-        'options': json.dumps(_convert_poll_options(options))}
+        'options': json.dumps([option.to_dict() for option in options])
+    }
 
     if is_anonymous is not None:
         payload['is_anonymous'] = is_anonymous
-    if type is not None:
+    if type:
         payload['type'] = type
     if allows_multiple_answers is not None:
         payload['allows_multiple_answers'] = allows_multiple_answers
     if correct_option_id is not None:
         payload['correct_option_id'] = correct_option_id
-    if explanation is not None:
+    if explanation:
         payload['explanation'] = explanation
-    if explanation_parse_mode is not None:
+    if explanation_parse_mode:
         payload['explanation_parse_mode'] = explanation_parse_mode
-    if open_period is not None:
+    if open_period:
         payload['open_period'] = open_period
-    if close_date is not None:
+    if close_date:
         if isinstance(close_date, datetime):
             payload['close_date'] = close_date.timestamp()
         else:
@@ -1848,21 +1976,26 @@ def send_poll(
         payload['is_closed'] = is_closed
     if disable_notification:
         payload['disable_notification'] = disable_notification
-    if reply_markup is not None:
+    if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     if timeout:
         payload['timeout'] = timeout
     if explanation_entities:
-        payload['explanation_entities'] = json.dumps(
-            types.MessageEntity.to_list_of_dicts(explanation_entities))
+        payload['explanation_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(explanation_entities))
     if protect_content:
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
-    if reply_parameters is not None:
+    if reply_parameters:
         payload['reply_parameters'] = reply_parameters.to_json()
-    if business_connection_id is not None:
+    if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if question_parse_mode:
+        payload['question_parse_mode'] = question_parse_mode
+    if question_entities:
+        payload['question_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(question_entities))
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
@@ -1907,11 +2040,13 @@ def get_forum_topic_icon_stickers(token):
     method_url = r'getForumTopicIconStickers'
     return _make_request(token, method_url)
 
-def stop_poll(token, chat_id, message_id, reply_markup=None):
+def stop_poll(token, chat_id, message_id, reply_markup=None, business_connection_id=None):
     method_url = r'stopPoll'
     payload = {'chat_id': str(chat_id), 'message_id': message_id}
     if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
 
 def edit_general_forum_topic(token, chat_id, name):
@@ -1964,7 +2099,7 @@ def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notifica
     return _make_request(token, method_url, params=payload)
 
 def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
-                        message_thread_id=None, protect_content=None, remove_caption=None):
+                        message_thread_id=None, protect_content=None, remove_caption=None, show_caption_above_media=None):
     method_url = 'copyMessages'
     payload = {
         'chat_id': chat_id,
@@ -1979,6 +2114,8 @@ def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notificatio
         payload['protect_content'] = protect_content
     if remove_caption is not None:
         payload['remove_caption'] = remove_caption
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
     return _make_request(token, method_url, params=payload)
 
 
@@ -1998,31 +2135,6 @@ def _convert_markup(markup):
     return markup
 
 
-def _convert_entites(entites):
-    if entites is None:
-        return None
-    elif len(entites) == 0:
-        return []
-    elif isinstance(entites[0], types.JsonSerializable):
-        return [entity.to_json() for entity in entites]
-    else:
-        return entites
-
-
-def _convert_poll_options(poll_options):
-    if poll_options is None:
-        return None
-    elif len(poll_options) == 0:
-        return []
-    elif isinstance(poll_options[0], str):
-        # Compatibility mode with previous bug when only list of string was accepted as poll_options
-        return poll_options
-    elif isinstance(poll_options[0], types.PollOption):
-        return [option.text for option in poll_options]
-    else:
-        return poll_options
-
-
 def convert_input_media(media):
     if isinstance(media, types.InputMedia):
         return media.convert_input_media()
@@ -2033,7 +2145,7 @@ def convert_input_media_array(array):
     media = []
     files = {}
     for input_media in array:
-        if isinstance(input_media, types.InputMedia):
+        if isinstance(input_media, types.InputMedia) or isinstance(input_media, types.InputPaidMedia):
             media_dict = input_media.to_dict()
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
