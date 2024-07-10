@@ -98,11 +98,21 @@ class JsonDeserializable(object):
             raise ValueError("json_type should be a json dict or string.")
 
     def __str__(self):
-        d = {
-            x: y.__dict__ if hasattr(y, '__dict__') else y
-            for x, y in self.__dict__.items()
-        }
-        return str(d)
+        return json.dumps(
+            self,
+            default=lambda obj: (
+                repr(obj) if not isinstance(obj, JsonDeserializable)
+                else {
+                    attr: getattr(obj, attr)
+                    for attr in filter(
+                        lambda x: not x.startswith("_") and getattr(obj, x) is not None,
+                        obj.__dict__
+                    )
+                }
+            ),
+            indent=2,
+            ensure_ascii=False
+        )
 
 
 class Update(JsonDeserializable):
