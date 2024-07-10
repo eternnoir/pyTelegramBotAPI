@@ -341,7 +341,7 @@ def mcite(content: str, escape: Optional[bool]=True) -> str:
     return content
 
 
-def hcite(content: str, escape: Optional[bool]=True) -> str:
+def hcite(content: str, escape: Optional[bool] = True, expandable: Optional[bool] = False) -> str:
     """
     Returns a html-formatted block-quotation string.
 
@@ -350,11 +350,17 @@ def hcite(content: str, escape: Optional[bool]=True) -> str:
 
     :param escape: True if you need to escape special characters. Defaults to True.
     :type escape: :obj:`bool`
-    
+
+    :param expandable: True if you need the quote to be expandable. Defaults to False.
+    :type expandable: :obj:`bool`
+
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<blockquote>{}</blockquote>'.format(escape_html(content) if escape else content)
+    return "<blockquote{}>{}</blockquote>".format(
+        " expandable" if expandable else "",
+        escape_html(content) if escape else content,
+    )
 
 
 def apply_html_entities(text: str, entities: Optional[List], custom_subs: Optional[Dict[str, str]]) -> str:
