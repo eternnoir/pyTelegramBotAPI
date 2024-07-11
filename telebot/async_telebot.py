@@ -2569,7 +2569,7 @@ class AsyncTeleBot:
         self.add_deleted_business_messages_handler(handler_dict)
 
     @staticmethod
-    def _build_handler_dict(handler, pass_bot=False, **filters):
+    def     _build_handler_dict(handler, pass_bot=False, **filters):
         """
         Builds a dictionary for a handler.
 
@@ -7940,3 +7940,61 @@ class AsyncTeleBot:
             chat_id = user_id
         for key, value in kwargs.items():
             await self.current_states.set_data(chat_id, user_id, key, value)
+
+
+
+    def step_handler(self):
+        """
+            This decorator should be on top of a method for being used as step handeler
+
+            Example: 
+            @bot.step_handler()
+            def test(message):
+                pass
+        """
+        def decorator(handler):
+            handler_name = handler.__name__
+            module_name = handler.__module__
+            signature = f"{hash(handler.__code__.co_filename)}:{module_name}.{handler_name}:{handler.__code__.co_firstlineno}"
+            async def wrapper(*args, **kwargs):
+                msg=args[0]
+                async with self.retrieve_data(msg.from_user.id,msg.chat.id) as data:
+                    step_kwargs=data.get('__step_handler_kwargs__',{})
+                    step_args=data.get('__step_handler_args__',())
+                    if '__step_handler_kwargs__' in data:
+                        del data['__step_handler_kwargs__']
+                    if '__step_handler_args__' in data:
+                        del data['__step_handler_args__']
+                return await handler(*args, *step_args, **kwargs, **step_kwargs)
+            self.message_handlers.insert(0,{
+                'function': wrapper,
+                'pass_bot': False,
+                'filters': {'state': signature}
+            })
+            wrapper.signature = signature
+            return wrapper
+        return decorator
+    
+    async def register_next_step_handler(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
+        """
+        Registers a callback function to be notified when new message arrives after `message`.
+
+        Warning: In case `callback` as lambda function, saving next step handlers will not work.
+
+        :param message: The message for which we want to handle new message in the same chat.
+        :type message: :class:`telebot.types.Message`
+
+        :param callback: The callback function which next new message arrives.
+        :type callback: :obj:`Callable[[telebot.types.Message], None]`
+
+        :param args: Args to pass in callback func
+
+        :param kwargs: Args to pass in callback func
+
+        :return: None
+        """
+
+        if not hasattr(callback,'signature'):
+            raise ValueError("Do not forget to add @bot.step_handler() before function")
+        await self.set_state(message.from_user.id, callback.signature, message.chat.id)
+        await self.add_data(message.from_user.id, message.chat.id,__step_handler_args__=args, __step_handler_kwargs__=kwargs )
