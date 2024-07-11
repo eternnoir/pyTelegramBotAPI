@@ -7700,7 +7700,7 @@ class TeleBot:
         self.add_chosen_inline_handler(handler_dict)
 
 
-    def callback_query_handler(self, func, **kwargs):
+    def callback_query_handler(self, func=None, **kwargs):
         """
         Handles new incoming callback query.
         As a parameter to the decorator function, it passes :class:`telebot.types.CallbackQuery` object.
