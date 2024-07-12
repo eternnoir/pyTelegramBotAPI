@@ -10,7 +10,6 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_storage.memory_storage import StateMemoryStorage
 
 API_TOKEN = '<api_token>'
-
 bot = AsyncTeleBot(API_TOKEN, state_storage=StateMemoryStorage())
 
 
@@ -23,7 +22,7 @@ async def send_welcome(message):
 Hi there, I am Example bot.
 What's your name?
 """)
-    await bot.register_next_step_handler(message, process_name_step)
+    await bot.register_next_step_handler(message.from_user.id, message.chat.id, process_name_step)
 
 
 @bot.step_handler()
@@ -32,7 +31,7 @@ async def process_name_step(message):
         chat_id = message.chat.id
         name = message.text
         msg = await bot.reply_to(message, 'How old are you?')
-        await bot.register_next_step_handler(message, process_age_step,name=name)
+        await bot.register_next_step_handler(message.from_user.id, message.chat.id, process_age_step,name=name)
     except Exception as e:
         await bot.reply_to(message, 'oooops')
 
@@ -43,12 +42,12 @@ async def process_age_step(message, name):
         age = message.text
         if not age.isdigit():
             msg = await bot.reply_to(message, 'Age should be a number. How old are you?')
-            await bot.register_next_step_handler(message, process_age_step, name=name)
+            await bot.register_next_step_handler(message.from_user.id, message.chat.id, process_age_step, name=name)
             return
         markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
         markup.add('Male', 'Female')
         msg = await bot.reply_to(message,f'Name: {name}\nWhat is your gender', reply_markup=markup)
-        await bot.register_next_step_handler(message, process_sex_step, name=name, age=age)
+        await bot.register_next_step_handler(message.from_user.id, message.chat.id, process_sex_step, name=name, age=age)
     except Exception as e:
         await bot.reply_to(message, 'oooops')
 

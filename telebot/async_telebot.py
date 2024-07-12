@@ -7941,8 +7941,6 @@ class AsyncTeleBot:
         for key, value in kwargs.items():
             await self.current_states.set_data(chat_id, user_id, key, value)
 
-
-
     def step_handler(self):
         """
             This decorator should be on top of a method for being used as step handeler
@@ -7975,7 +7973,7 @@ class AsyncTeleBot:
             return wrapper
         return decorator
     
-    async def register_next_step_handler(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
+    async def register_next_step_handler(self, user_id: int, chat_id: int, callback: Callable, *args, **kwargs) -> None:
         """
         Registers a callback function to be notified when new message arrives after `message`.
 
@@ -7996,5 +7994,5 @@ class AsyncTeleBot:
 
         if not hasattr(callback,'signature'):
             raise ValueError("Do not forget to add @bot.step_handler() before function")
-        await self.set_state(message.from_user.id, callback.signature, message.chat.id)
-        await self.add_data(message.from_user.id, message.chat.id,__step_handler_args__=args, __step_handler_kwargs__=kwargs )
+        await self.set_state(user_id, callback.signature, chat_id)
+        await self.add_data(user_id, chat_id, __step_handler_args__=args, __step_handler_kwargs__=kwargs )
