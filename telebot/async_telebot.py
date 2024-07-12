@@ -7963,6 +7963,7 @@ class AsyncTeleBot:
                         del data['__step_handler_kwargs__']
                     if '__step_handler_args__' in data:
                         del data['__step_handler_args__']
+                await self.set_state(msg.from_user.id, None, msg.chat.id)
                 return await handler(*args, *step_args, **kwargs, **step_kwargs)
             self.message_handlers.insert(0,{
                 'function': wrapper,
