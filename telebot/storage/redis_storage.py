@@ -1,183 +1,147 @@
-from telebot.storage.base_storage import StateStorageBase, StateContext
 import json
-
-redis_installed = True
-try:
-    from redis import Redis, ConnectionPool
-
-except:
-    redis_installed = False
+import redis
+from telebot.storage.base_storage import StateStorageBase, StateContext
+from typing import Optional, Union
 
 class StateRedisStorage(StateStorageBase):
-    """
-    This class is for Redis storage.
-    This will work only for states.
-    To use it, just pass this class to:
-    TeleBot(storage=StateRedisStorage())
-    """
-    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_', redis_url=None):
-        super().__init__()
-        if redis_url:
-            self.redis = ConnectionPool.from_url(redis_url)
-        else:
-            self.redis = ConnectionPool(host=host, port=port, db=db, password=password)
-        #self.con = Redis(connection_pool=self.redis) -> use this when necessary
-        #
-        # {chat_id: {user_id: {'state': None, 'data': {}}, ...}, ...}
+    def __init__(self, host='localhost', port=6379, db=0, password=None,
+                 prefix='telebot',
+                 redis_url=None,
+                 connection_pool: redis.ConnectionPool=None,
+                 separator: Optional[str]=":",
+                 ) -> None:
+        self.separator = separator
         self.prefix = prefix
-        if not redis_installed:
-            raise Exception("Redis is not installed. Install it via 'pip install redis'")
+        if not self.prefix:
+            raise ValueError("Prefix cannot be empty")
+        
+        if redis_url:
+            self.redis = redis.Redis.from_url(redis_url)
+        elif connection_pool:
+            self.redis = redis.Redis(connection_pool=connection_pool)
+        else:
+            self.redis = redis.Redis(host=host, port=port, db=db, password=password)
     
-    def get_record(self, key):
-        """
-        Function to get record from database.
-        It has nothing to do with states.
-        Made for backward compatibility
-        """
-        connection = Redis(connection_pool=self.redis)
-        result = connection.get(self.prefix+str(key))
-        connection.close()
-        if result: return json.loads(result)
-        return
 
-    def set_record(self, key, value):
-        """
-        Function to set record to database.
-        It has nothing to do with states.
-        Made for backward compatibility
-        """
-        connection = Redis(connection_pool=self.redis)
-        connection.set(self.prefix+str(key), json.dumps(value))
-        connection.close()
-        return True
-
-    def delete_record(self, key):
-        """
-        Function to delete record from database.
-        It has nothing to do with states.
-        Made for backward compatibility
-        """
-        connection = Redis(connection_pool=self.redis)
-        connection.delete(self.prefix+str(key))
-        connection.close()
-        return True
-
-    def set_state(self, chat_id, user_id, state):
-        """
-        Set state for a particular user in a chat.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if hasattr(state, 'name'):
+    def set_state(
+            self, chat_id: int, user_id: int, state: str, 
+            business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> bool:
+        if hasattr(state, "name"):
             state = state.name
 
-        if response:
-            if user_id in response:
-                response[user_id]['state'] = state
-            else:
-                response[user_id] = {'state': state, 'data': {}}
-        else:
-            response = {user_id: {'state': state, 'data': {}}}
-        self.set_record(chat_id, response)
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+        )
 
+        def set_state_action(pipe):
+            pipe.multi()
+            #pipe.hset(_key, mapping={"state": state, "data": "{}"})
+            pipe.hset(_key, "state", state)
+        
+        self.redis.transaction(set_state_action, _key)
         return True
-    
-    def delete_state(self, chat_id, user_id):
-        """
-        Delete state for a particular user in a chat.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                del response[user_id]
-                if user_id == str(chat_id):
-                    self.delete_record(chat_id)
-                    return True
-                else: self.set_record(chat_id, response)
-                return True
-        return False
 
+    def get_state(
+            self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> Union[str, None]:
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+        )
+        state_bytes = self.redis.hget(_key, "state")
+        return state_bytes.decode('utf-8') if state_bytes else None
 
-    def get_value(self, chat_id, user_id, key):
-        """
-        Get value for a data of a user in a chat.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                if key in response[user_id]['data']:
-                    return response[user_id]['data'][key]
-        return None
-    
+    def delete_state(
+            self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> bool:
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+        )
+        return self.redis.delete(_key) > 0
 
-    def get_state(self, chat_id, user_id):
-        """
-        Get state of a user in a chat.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                return response[user_id]['state']
+    def set_data(
+            self, chat_id: int, user_id: int, key: str, value: Union[str, int, float, dict],
+            business_connection_id: Optional[str] = None, message_thread_id: Optional[int] = None,
+            bot_id: Optional[int] = None
+    ) -> bool:
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+        )
 
-        return None
+        def set_data_action(pipe):
+            pipe.multi()
+            data = pipe.hget(_key, "data")
+            data = data.execute()[0]
+            if data is None:
+                pipe.hset(_key, "data", json.dumps({key: value}))
+            else:
+                data = json.loads(data)
+                data[key] = value
+                pipe.hset(_key, "data", json.dumps(data))
 
+        self.redis.transaction(set_data_action, _key)
+        return True
 
-    def get_data(self, chat_id, user_id):
-        """
-        Get data of particular user in a particular chat.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                return response[user_id]['data']
-        return None
+    def get_data(
+            self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> dict:
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+        )
+        data = self.redis.hget(_key, "data")
+        return json.loads(data) if data else {}
 
+    def reset_data(
+            self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> bool:
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+        )
 
-    def reset_data(self, chat_id, user_id):
-        """
-        Reset data of a user in a chat.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                response[user_id]['data'] = {}
-                self.set_record(chat_id, response)
-                return True
+        def reset_data_action(pipe):
+            pipe.multi()
+            if pipe.exists(_key):
+                pipe.hset(_key, "data", "{}")
+            else:
+                return False
 
-       
+        self.redis.transaction(reset_data_action, _key)
+        return True
 
+    def get_interactive_data(
+            self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> Optional[dict]:
+        return StateContext(
+            self, chat_id=chat_id, user_id=user_id, business_connection_id=business_connection_id,
+            message_thread_id=message_thread_id, bot_id=bot_id
+        )
 
-    def set_data(self, chat_id, user_id, key, value):
-        """
-        Set data without interactive data.
-        """
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                response[user_id]['data'][key] = value
-                self.set_record(chat_id, response)
-                return True
-        return False
+    def save(
+            self, chat_id: int, user_id: int, data: dict, business_connection_id: Optional[str] = None,
+            message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
+    ) -> bool:
+        _key = self.convert_params_to_key(
+            chat_id, user_id, self.prefix, self.separator, business_connection_id,
+            message_thread_id, bot_id
+        )
 
-    def get_interactive_data(self, chat_id, user_id):
-        """
-        Get Data in interactive way.
-        You can use with() with this function.
-        """
-        return StateContext(self, chat_id, user_id)
-    
-    def save(self, chat_id, user_id, data):
-        response = self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                response[user_id]['data'] = data
-                self.set_record(chat_id, response)
-                return True
-    
+        def save_action(pipe):
+            pipe.multi()
+            if pipe.exists(_key):
+                pipe.hset(_key, "data", json.dumps(data))
+            else:
+                return False
+
+        self.redis.transaction(save_action, _key)
+        return True
+
+    def __str__(self) -> str:
+        keys = self.redis.keys(f"{self.prefix}{self.separator}*")
+        data = {key.decode(): self.redis.hgetall(key) for key in keys}
+        return f"<StateRedisStorage: {data}>"

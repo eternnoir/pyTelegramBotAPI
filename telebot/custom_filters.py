@@ -407,6 +407,9 @@ class StateFilter(AdvancedCustomFilter):
         
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(message, self.bot._user.id)
 
+        if chat_id is None:
+            chat_id = user_id # May change in future
+
         if isinstance(text, list):
             new_text = []
             for i in text:
@@ -423,6 +426,7 @@ class StateFilter(AdvancedCustomFilter):
             bot_id=bot_id,
             message_thread_id=message_thread_id
         )
+
         if user_state == text:
             return True
         elif type(text) is list and user_state in text:
