@@ -1,7 +1,12 @@
 import json
-import redis
 from telebot.storage.base_storage import StateStorageBase, StateContext
 from typing import Optional, Union
+
+redis_installed = True
+try:
+    import redis
+except ImportError:
+    redis_installed = False
 
 class StateRedisStorage(StateStorageBase):
     def __init__(self, host='localhost', port=6379, db=0, password=None,
@@ -10,6 +15,10 @@ class StateRedisStorage(StateStorageBase):
                  connection_pool: redis.ConnectionPool=None,
                  separator: Optional[str]=":",
                  ) -> None:
+        
+        if not redis_installed:
+            raise ImportError("Redis is not installed. Please install it via pip install redis")
+
         self.separator = separator
         self.prefix = prefix
         if not self.prefix:
