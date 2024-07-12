@@ -12,7 +12,7 @@ class StateRedisStorage(StateStorageBase):
     def __init__(self, host='localhost', port=6379, db=0, password=None,
                  prefix='telebot',
                  redis_url=None,
-                 connection_pool: redis.ConnectionPool=None,
+                 connection_pool: 'redis.ConnectionPool'=None,
                  separator: Optional[str]=":",
                  ) -> None:
         
