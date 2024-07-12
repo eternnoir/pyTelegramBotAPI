@@ -48,7 +48,7 @@ class StateStorageBase:
     def save(self, chat_id, user_id, data):
         raise NotImplementedError
     
-    def convert_params_to_key(
+    def _get_key(
             self,
             chat_id: int,
             user_id: int,

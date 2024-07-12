@@ -21,7 +21,7 @@ class StateMemoryStorage(StateStorageBase):
         if hasattr(state, "name"):
             state = state.name
 
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -37,7 +37,7 @@ class StateMemoryStorage(StateStorageBase):
             message_thread_id: Optional[int]=None, bot_id: Optional[int]=None
     ) -> Union[str, None]:
 
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -50,7 +50,7 @@ class StateMemoryStorage(StateStorageBase):
             self, chat_id: int, user_id: int, business_connection_id: Optional[str]=None,
             message_thread_id: Optional[int]=None, bot_id: Optional[int]=None
     ) -> bool:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
         
@@ -66,7 +66,7 @@ class StateMemoryStorage(StateStorageBase):
             business_connection_id: Optional[str]=None, message_thread_id: Optional[int]=None,
             bot_id: Optional[int]=None) -> bool:
         
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -81,7 +81,7 @@ class StateMemoryStorage(StateStorageBase):
             message_thread_id: Optional[int]=None, bot_id: Optional[int]=None
     ) -> dict:
         
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -92,7 +92,7 @@ class StateMemoryStorage(StateStorageBase):
             message_thread_id: Optional[int]=None, bot_id: Optional[int]=None
     ) -> bool:
         
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -114,7 +114,7 @@ class StateMemoryStorage(StateStorageBase):
             self, chat_id: int, user_id: int, data: dict, business_connection_id: Optional[str]=None,
             message_thread_id: Optional[int]=None, bot_id: Optional[int]=None
     ) -> bool:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id,
             message_thread_id, bot_id
         )

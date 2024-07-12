@@ -40,7 +40,7 @@ class StateRedisStorage(StateStorageBase):
         if hasattr(state, "name"):
             state = state.name
 
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -56,7 +56,7 @@ class StateRedisStorage(StateStorageBase):
             self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
             message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
     ) -> Union[str, None]:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
         state_bytes = self.redis.hget(_key, "state")
@@ -66,7 +66,7 @@ class StateRedisStorage(StateStorageBase):
             self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
             message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
     ) -> bool:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
         return self.redis.delete(_key) > 0
@@ -76,7 +76,7 @@ class StateRedisStorage(StateStorageBase):
             business_connection_id: Optional[str] = None, message_thread_id: Optional[int] = None,
             bot_id: Optional[int] = None
     ) -> bool:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -98,7 +98,7 @@ class StateRedisStorage(StateStorageBase):
             self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
             message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
     ) -> dict:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
         data = self.redis.hget(_key, "data")
@@ -108,7 +108,7 @@ class StateRedisStorage(StateStorageBase):
             self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
             message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
     ) -> bool:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
@@ -135,7 +135,7 @@ class StateRedisStorage(StateStorageBase):
             self, chat_id: int, user_id: int, data: dict, business_connection_id: Optional[str] = None,
             message_thread_id: Optional[int] = None, bot_id: Optional[int] = None
     ) -> bool:
-        _key = self.convert_params_to_key(
+        _key = self._get_key(
             chat_id, user_id, self.prefix, self.separator, business_connection_id,
             message_thread_id, bot_id
         )
