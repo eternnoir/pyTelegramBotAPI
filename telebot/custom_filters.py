@@ -6,8 +6,6 @@ from telebot import types
 
 from telebot.states import resolve_context
 
-
-
 class SimpleCustomFilter(ABC):
     """
     Simple Custom Filter base class.
@@ -312,7 +310,7 @@ class ForwardFilter(SimpleCustomFilter):
         """
         :meta private:
         """
-        return message.forward_date is not None
+        return message.forward_origin is not None
 
 
 class IsReplyFilter(SimpleCustomFilter):
