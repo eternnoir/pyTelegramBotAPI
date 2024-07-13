@@ -575,7 +575,7 @@ class AsyncTeleBot:
                 handler_error = e
                 handled = await self._handle_exception(e)
                 if not handled:
-                    logger.error(str(e))
+                    logger.exception(e)
                     logger.debug("Exception traceback:\n%s", traceback.format_exc())
 
         if middlewares:
