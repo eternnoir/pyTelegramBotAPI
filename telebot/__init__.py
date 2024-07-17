@@ -1180,6 +1180,9 @@ class TeleBot:
         if restart_on_change:
             self._setup_change_detector(path_to_watch)
 
+        if not self._user:
+            self._user = self.get_me()
+
         logger.info('Starting your bot with username: [@%s]', self.user.username)
             
         if self.threaded:
@@ -6678,7 +6681,7 @@ class TeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        self.current_states.set_state(
+        return self.current_states.set_state(
             chat_id=chat_id, user_id=user_id, state=state, bot_id=bot_id,
             business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
@@ -6710,7 +6713,7 @@ class TeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        self.current_states.reset_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+        return self.current_states.reset_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
                                         business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
@@ -6731,7 +6734,7 @@ class TeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        self.current_states.delete_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+        return self.current_states.delete_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
                                             business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 

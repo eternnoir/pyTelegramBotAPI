@@ -2,7 +2,7 @@ import os
 import pickle
 import threading
 from typing import Optional, Union
-from telebot.storage.base_storage import StateStorageBase, StateContext
+from telebot.storage.base_storage import StateStorageBase, StateDataContext
 
 class StatePickleStorage(StateStorageBase):
     def __init__(self, file_path: str="./.state-save/states.pkl",
@@ -110,7 +110,7 @@ class StatePickleStorage(StateStorageBase):
 
     def get_interactive_data(self, chat_id: int, user_id: int, business_connection_id: Optional[str]=None,
                              message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> Optional[dict]:
-        return StateContext(
+        return StateDataContext(
             self, chat_id=chat_id, user_id=user_id, business_connection_id=business_connection_id,
             message_thread_id=message_thread_id, bot_id=bot_id
         )

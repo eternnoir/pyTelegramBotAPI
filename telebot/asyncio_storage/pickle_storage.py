@@ -1,4 +1,4 @@
-from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
+from telebot.asyncio_storage.base_storage import StateStorageBase, StateDataContext
 import os
 
 import pickle
@@ -103,7 +103,7 @@ class StatePickleStorage(StateStorageBase):
         raise RuntimeError('chat_id {} and user_id {} does not exist'.format(chat_id, user_id))
 
     def get_interactive_data(self, chat_id, user_id):
-        return StateContext(self, chat_id, user_id)
+        return StateDataContext(self, chat_id, user_id)
 
     async def save(self, chat_id, user_id, data):
         self.data[chat_id][user_id]['data'] = data

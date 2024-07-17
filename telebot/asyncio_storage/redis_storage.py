@@ -1,4 +1,4 @@
-from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
+from telebot.asyncio_storage.base_storage import StateStorageBase, StateDataContext
 import json
 
 redis_installed = True
@@ -167,7 +167,7 @@ class StateRedisStorage(StateStorageBase):
         Get Data in interactive way.
         You can use with() with this function.
         """
-        return StateContext(self, chat_id, user_id)
+        return StateDataContext(self, chat_id, user_id)
     
     async def save(self, chat_id, user_id, data):
         response = await self.get_record(chat_id)

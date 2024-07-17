@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 import re
 import traceback
-from typing import Any, Awaitable, Callable, List, Optional, Union
+from typing import Any, Awaitable, Callable, List, Optional, Union, Dict
 import sys
 
 # this imports are used to avoid circular import error
@@ -18,7 +18,7 @@ from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipH
 
 from inspect import signature, iscoroutinefunction
 
-from telebot import util, types, asyncio_helper
+from telebot import util, types, asyncio_helper, apihelper # have to use sync
 import asyncio
 from telebot import asyncio_filters
 
@@ -117,6 +117,8 @@ class AsyncTeleBot:
     :param colorful_logs: Outputs colorful logs
     :type colorful_logs: :obj:`bool`, optional
 
+    :param token_check: Check token on start
+    :type token_check: :obj:`bool`, optional, defaults to True
     """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset: Optional[int]=None,
@@ -126,7 +128,8 @@ class AsyncTeleBot:
                 disable_notification: Optional[bool]=None,
                 protect_content: Optional[bool]=None,
                 allow_sending_without_reply: Optional[bool]=None,
-                colorful_logs: Optional[bool]=False) -> None:
+                colorful_logs: Optional[bool]=False,
+                token_check: Optional[bool]=True) -> None:
         
         # update-related
         self.token = token
@@ -183,6 +186,14 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
+        self.bot_id = None
+
+        if token_check:
+            result = apihelper.get_me(token)
+            self._user = types.User.de_json(result)
+            self.bot_id = self._user.id
+            
+
 
     @property
     def user(self):
@@ -424,7 +435,8 @@ class AsyncTeleBot:
             # show warning
             logger.warning("Setting non_stop to False will stop polling on API and system exceptions.")
 
-        self._user = await self.get_me()
+        if not self._user:
+            self._user = await self.get_me()
             
         logger.info('Starting your bot with username: [@%s]', self.user.username)
 
@@ -7831,7 +7843,10 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.get_forum_topic_icon_stickers(self.token)
 
-    async def set_state(self, user_id: int, state: Union[State, int, str], chat_id: Optional[int]=None):
+
+    async def set_state(self, user_id: int, state: Union[int, str, State], chat_id: Optional[int]=None,
+                    business_connection_id: Optional[str]=None, message_thread_id: Optional[int]=None,
+                    bot_id: Optional[int]=None) -> None:
         """
         Sets a new state of a user.
 
@@ -7850,13 +7865,29 @@ class AsyncTeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: None
         """
-        if not chat_id:
+        if chat_id is None:
             chat_id = user_id
-        await self.current_states.set_state(chat_id, user_id, state)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return await self.current_states.set_state(
+            chat_id=chat_id, user_id=user_id, state=state, bot_id=bot_id,
+            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
-    async def reset_data(self, user_id: int, chat_id: Optional[int]=None):
+
+    async def reset_data(self, user_id: int, chat_id: Optional[int]=None, 
+                     business_connection_id: Optional[str]=None,
+                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> None:
         """
         Reset data for a user in chat.
 
@@ -7866,13 +7897,27 @@ class AsyncTeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: None
         """
         if chat_id is None:
             chat_id = user_id
-        await self.current_states.reset_data(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return await self.current_states.reset_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                        business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
-    async def delete_state(self, user_id: int, chat_id: Optional[int]=None):
+
+    async def delete_state(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
+                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> None:
         """
         Delete the current state of a user.
 
@@ -7884,11 +7929,16 @@ class AsyncTeleBot:
 
         :return: None
         """
-        if not chat_id:
+        if chat_id is None:
             chat_id = user_id
-        await self.current_states.delete_state(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return await self.current_states.delete_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
-    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None):
+
+    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
+                      message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> Optional[Dict[str, Any]]:
         """
         Returns context manager with data for a user in chat.
 
@@ -7898,14 +7948,30 @@ class AsyncTeleBot:
         :param chat_id: Chat's unique identifier, defaults to user_id
         :type chat_id: int, optional
 
+        :param bot_id: Bot's identifier
+        :type bot_id: int, optional
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: str, optional
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: int, optional
+
         :return: Context manager with data for a user in chat
         :rtype: Optional[Any]
         """
-        if not chat_id:
+        if chat_id is None:
             chat_id = user_id
-        return self.current_states.get_interactive_data(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.get_interactive_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                                            business_connection_id=business_connection_id,
+                                                            message_thread_id=message_thread_id)
 
-    async def get_state(self, user_id, chat_id: Optional[int]=None):
+
+    async def get_state(self, user_id: int, chat_id: Optional[int]=None, 
+                    business_connection_id: Optional[str]=None,
+                    message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> Union[int, str]:
         """
         Gets current state of a user.
         Not recommended to use this method. But it is ok for debugging.
@@ -7916,14 +7982,31 @@ class AsyncTeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: state of a user
         :rtype: :obj:`int` or :obj:`str` or :class:`telebot.types.State`
         """
-        if not chat_id:
+        if chat_id is None:
             chat_id = user_id
-        return await self.current_states.get_state(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return await self.current_states.get_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                                business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
-    async def add_data(self, user_id: int, chat_id: Optional[int]=None, **kwargs):
+
+    async def add_data(self, user_id: int, chat_id: Optional[int]=None, 
+                    business_connection_id: Optional[str]=None,
+                    message_thread_id: Optional[int]=None, 
+                    bot_id: Optional[int]=None,
+                    **kwargs) -> None:
         """
         Add data to states.
 
@@ -7933,10 +8016,22 @@ class AsyncTeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :param kwargs: Data to add
         :return: None
         """
-        if not chat_id:
+        if chat_id is None:
             chat_id = user_id
+        if bot_id is None:
+            bot_id = self.bot_id
         for key, value in kwargs.items():
-            await self.current_states.set_data(chat_id, user_id, key, value)
+            await self.current_states.set_data(chat_id=chat_id, user_id=user_id, key=key, value=value, bot_id=bot_id,
+                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)

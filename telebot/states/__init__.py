@@ -16,7 +16,7 @@ class State:
         self.name: str = None
         self.group: StatesGroup = None
     def __str__(self) -> str:
-        return f"<{self.group.__name__}:{self.name}>"
+        return f"<{self.name}>"
 
 
 class StatesGroup:

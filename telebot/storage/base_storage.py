@@ -78,7 +78,7 @@ class StateStorageBase:
         
 
 
-class StateContext:
+class StateDataContext:
     """
     Class for data.
     """

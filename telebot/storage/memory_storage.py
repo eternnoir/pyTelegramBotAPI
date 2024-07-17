@@ -1,4 +1,4 @@
-from telebot.storage.base_storage import StateStorageBase, StateContext
+from telebot.storage.base_storage import StateStorageBase, StateDataContext
 from typing import Optional, Union
 
 class StateMemoryStorage(StateStorageBase):
@@ -105,7 +105,7 @@ class StateMemoryStorage(StateStorageBase):
             self, chat_id: int, user_id: int, business_connection_id: Optional[str]=None,
             message_thread_id: Optional[int]=None, bot_id: Optional[int]=None
     ) -> Optional[dict]:
-        return StateContext(
+        return StateDataContext(
             self, chat_id=chat_id, user_id=user_id, business_connection_id=business_connection_id,
             message_thread_id=message_thread_id, bot_id=bot_id
         )
