@@ -151,6 +151,4 @@ class StateRedisStorage(StateStorageBase):
         return True
 
     def __str__(self) -> str:
-        keys = self.redis.keys(f"{self.prefix}{self.separator}*")
-        data = {key.decode(): self.redis.hgetall(key) for key in keys}
-        return f"<StateRedisStorage: {data}>"
+        return f"StateRedisStorage({self.redis})"

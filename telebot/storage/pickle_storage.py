@@ -127,7 +127,4 @@ class StatePickleStorage(StateStorageBase):
         return True
     
     def __str__(self) -> str:
-        with self.lock:
-            with open(self.file_path, 'rb') as f:
-                data = pickle.load(f)
-            return f"<StatePickleStorage: {data}>"
+        return f"StatePickleStorage({self.file_path}, {self.prefix})"
