@@ -397,7 +397,6 @@ class StateFilter(AdvancedCustomFilter):
         """
         :meta private:
         """
-        if text == '*': return True
         
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(message, self.bot._user.id)
 
@@ -421,10 +420,15 @@ class StateFilter(AdvancedCustomFilter):
             message_thread_id=message_thread_id
         )
 
+        # CHANGED BEHAVIOUR
+        if text == "*" and user_state is not None:
+            return True
+
         if user_state == text:
             return True
         elif type(text) is list and user_state in text:
             return True
+        return False
 
 
 class IsDigitFilter(SimpleCustomFilter):
