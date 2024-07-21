@@ -27,7 +27,7 @@ class StateContext():
         self.bot: TeleBot = bot
         self.bot_id = self.bot.bot_id
 
-    def set(self, state: Union[State, str]) -> None:
+    def set(self, state: Union[State, str]) -> bool:
         """
         Set state for current user.
 
@@ -71,7 +71,24 @@ class StateContext():
             message_thread_id=message_thread_id
         )
     
-    def reset_data(self) -> None:
+    def delete(self) -> bool:
+        """
+        Deletes state and data for current user.
+
+        .. warning::
+            
+                This method deletes state and associated data for current user.
+        """
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        return self.bot.delete_state(
+            chat_id=chat_id,
+            user_id=user_id,
+            business_connection_id=business_connection_id,
+            bot_id=bot_id,
+            message_thread_id=message_thread_id
+        )
+
+    def reset_data(self) -> bool:
         """
         Reset data for current user. 
         State will not be changed.
@@ -79,19 +96,6 @@ class StateContext():
 
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
         return self.bot.reset_data(
-            chat_id=chat_id,
-            user_id=user_id,
-            business_connection_id=business_connection_id,
-            bot_id=bot_id,
-            message_thread_id=message_thread_id
-        )
-    
-    def delete(self) -> None:
-        """
-        Deletes state and data for current user.
-        """
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
-        return self.bot.delete_state(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
@@ -107,6 +111,7 @@ class StateContext():
  
             with state_context.data() as data:
                 print(data)
+                data['name'] = 'John'
         """
 
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)

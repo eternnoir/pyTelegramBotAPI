@@ -1,4 +1,5 @@
 
+redis_installed = True
 try:
     import redis
     from redis.asyncio import Redis, ConnectionPool
@@ -28,6 +29,39 @@ def async_with_pipeline(func: Callable[..., Coroutine]) -> Callable[..., Corouti
     return wrapper
 
 class StateRedisStorage(StateStorageBase):
+    """
+    State storage based on Redis.
+
+    .. code-block:: python3
+
+        storage = StateRedisStorage(...)
+        bot = AsyncTeleBot(token, storage=storage)
+
+    :param host: Redis host, default is "localhost".
+    :type host: str
+
+    :param port: Redis port, default is 6379.
+    :type port: int
+
+    :param db: Redis database, default is 0.
+    :type db: int
+
+    :param password: Redis password, default is None.
+    :type password: Optional[str]
+
+    :param prefix: Prefix for keys, default is "telebot".
+    :type prefix: Optional[str]
+
+    :param redis_url: Redis URL, default is None.
+    :type redis_url: Optional[str]
+
+    :param connection_pool: Redis connection pool, default is None.
+    :type connection_pool: Optional[ConnectionPool]
+
+    :param separator: Separator for keys, default is ":".
+    :type separator: Optional[str]
+
+    """
     def __init__(self, host='localhost', port=6379, db=0, password=None,
                  prefix='telebot',
                  redis_url=None,

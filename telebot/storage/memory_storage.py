@@ -2,6 +2,22 @@ from telebot.storage.base_storage import StateStorageBase, StateDataContext
 from typing import Optional, Union
 
 class StateMemoryStorage(StateStorageBase):
+    """
+    Memory storage for states.
+
+    Stores states in memory as a dictionary.
+
+    .. code-block:: python3
+
+        storage = StateMemoryStorage()
+        bot = TeleBot(token, storage=storage)
+
+    :param separator: Separator for keys, default is ":".
+    :type separator: Optional[str]
+
+    :param prefix: Prefix for keys, default is "telebot".
+    :type prefix: Optional[str]
+    """
     def __init__(self, 
                  separator: Optional[str]=":",
                  prefix: Optional[str]="telebot"

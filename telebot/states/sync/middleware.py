@@ -13,7 +13,9 @@ class StateMiddleware(BaseMiddleware):
         self.bot: TeleBot = bot
 
     def pre_process(self, message, data):
-        data['state_context'] = StateContext(message, self.bot)
+        state_context = StateContext(message, self.bot)
+        data['state_context'] = state_context
+        data['state'] = state_context # 2 ways to access state context
 
     def post_process(self, message, data, exception):
         pass

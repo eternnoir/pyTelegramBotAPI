@@ -1,4 +1,5 @@
 
+aiofiles_installed = True
 try:
     import aiofiles
 except ImportError:
@@ -18,6 +19,29 @@ def with_lock(func: Callable) -> Callable:
     return wrapper
 
 class StatePickleStorage(StateStorageBase):
+    """
+    State storage based on pickle file.
+
+    .. warning::
+
+        This storage is not recommended for production use.
+        Data may be corrupted. If you face a case where states do not work as expected,
+        try to use another storage.
+    
+    .. code-block:: python3
+
+        storage = StatePickleStorage()
+        bot = AsyncTeleBot(token, storage=storage)
+
+    :param file_path: Path to file where states will be stored.
+    :type file_path: str
+
+    :param prefix: Prefix for keys, default is "telebot".
+    :type prefix: Optional[str]
+
+    :param separator: Separator for keys, default is ":".
+    :type separator: Optional[str]
+    """
     def __init__(self, file_path: str = "./.state-save/states.pkl",
                  prefix='telebot', separator: Optional[str] = ":") -> None:
         

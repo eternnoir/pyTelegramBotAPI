@@ -27,7 +27,7 @@ class StateContext():
         self.bot: AsyncTeleBot = bot
         self.bot_id = self.bot.bot_id
 
-    async def set(self, state: Union[State, str]) -> None:
+    async def set(self, state: Union[State, str]) -> bool:
         """
         Set state for current user.
 
@@ -71,14 +71,16 @@ class StateContext():
             message_thread_id=message_thread_id
         )
     
-    async def reset_data(self) -> None:
+    async def delete(self) -> bool:
         """
-        Reset data for current user. 
-        State will not be changed.
-        """
+        Deletes state and data for current user.
 
+        .. warning::
+            
+                This method deletes state and associated data for current user.
+        """
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
-        return await self.bot.reset_data(
+        return await self.bot.delete_state(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
@@ -86,12 +88,14 @@ class StateContext():
             message_thread_id=message_thread_id
         )
     
-    async def delete(self) -> None:
+    async def reset_data(self) -> bool:
         """
-        Deletes state and data for current user.
+        Reset data for current user. 
+        State will not be changed.
         """
+
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
-        return await self.bot.delete_state(
+        return await self.bot.reset_data(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
@@ -107,6 +111,7 @@ class StateContext():
  
             with state_context.data() as data:
                 print(data)
+                data['name'] = 'John'
         """
 
         chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
