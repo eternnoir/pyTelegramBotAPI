@@ -301,7 +301,7 @@ class ForwardFilter(SimpleCustomFilter):
         """
         :meta private:
         """
-        return message.forward_date is not None
+        return message.forward_origin is not None
 
 
 class IsReplyFilter(SimpleCustomFilter):
