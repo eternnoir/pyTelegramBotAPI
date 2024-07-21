@@ -19,6 +19,8 @@ from telebot.formatting import apply_html_entities
 
 
 DISABLE_KEYLEN_ERROR = False
+JSONDESERIALIZABLE_PARSE_OUTPUT = False
+JSONDESERIALIZABLE_SKIP_NONE = True
 
 logger = logging.getLogger('TeleBot')
 
@@ -97,21 +99,34 @@ class JsonDeserializable(object):
         else:
             raise ValueError("json_type should be a json dict or string.")
 
-    def __str__(self):
-        return json.dumps(
-            self,
-            default=lambda obj: (
-                repr(obj) if not isinstance(obj, JsonDeserializable)
-                else {
-                    attr: getattr(obj, attr)
-                    for attr in filter(
-                        lambda x: not x.startswith("_") and getattr(obj, x) is not None,
-                        obj.__dict__
-                    )
+    def __str__(self) -> str:
+        default = (
+            lambda obj: (repr(obj) if JSONDESERIALIZABLE_PARSE_OUTPUT else obj)
+            if not isinstance(obj, JsonDeserializable)
+            else {
+                attr: getattr(obj, attr)
+                for attr in filter(
+                    (lambda x: not x.startswith("_") and getattr(obj, x) is not None)
+                    if JSONDESERIALIZABLE_SKIP_NONE
+                    else (lambda x: not x.startswith("_")),
+                    obj.__dict__,
+                )
+            }
+        )
+        return (
+            json.dumps(
+                self, default=default, indent=2, ensure_ascii=False
+            )
+            if JSONDESERIALIZABLE_PARSE_OUTPUT
+            else str(
+                {
+                    x: default(y)
+                    if isinstance(y, JsonDeserializable)
+                    else y
+                    for x, y in self.__dict__.items()
+                    if y is not None or not JSONDESERIALIZABLE_SKIP_NONE
                 }
-            ),
-            indent=2,
-            ensure_ascii=False
+            )
         )
 
 
