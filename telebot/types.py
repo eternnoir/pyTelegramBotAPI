@@ -106,23 +106,20 @@ class JsonDeserializable(object):
             else {
                 attr: getattr(obj, attr)
                 for attr in filter(
-                    (lambda x: not x.startswith("_") and getattr(obj, x) is not None)
-                    if JSONDESERIALIZABLE_SKIP_NONE
-                    else (lambda x: not x.startswith("_")),
+                    lambda x: not x.startswith("_")
+                    and (
+                        getattr(obj, x) is not None or not JSONDESERIALIZABLE_SKIP_NONE
+                    ),
                     obj.__dict__,
                 )
             }
         )
         return (
-            json.dumps(
-                self, default=default, indent=2, ensure_ascii=False
-            )
+            json.dumps(self, default=default, indent=2, ensure_ascii=False)
             if JSONDESERIALIZABLE_PARSE_OUTPUT
             else str(
                 {
-                    x: default(y)
-                    if isinstance(y, JsonDeserializable)
-                    else y
+                    x: default(y) if isinstance(y, JsonDeserializable) else y
                     for x, y in self.__dict__.items()
                     if y is not None or not JSONDESERIALIZABLE_SKIP_NONE
                 }
