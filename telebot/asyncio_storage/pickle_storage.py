@@ -98,7 +98,7 @@ class StatePickleStorage(StateStorageBase):
         state_data = data.get(_key, {})
         state_data["data"][key] = value
         if _key not in data:
-            data[_key] = {"state": None, "data": state_data}
+            raise RuntimeError(f"StatePickleStorage: key {_key} does not exist.")
         else:
             data[_key]["data"][key] = value
         await self._write_to_file(data)

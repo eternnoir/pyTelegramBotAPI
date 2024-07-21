@@ -71,7 +71,7 @@ class StateMemoryStorage(StateStorageBase):
         )
 
         if self.data.get(_key) is None:
-            return False
+            raise RuntimeError(f"MemoryStorage: key {_key} does not exist.")
         self.data[_key]["data"][key] = value
         return True
 
@@ -85,7 +85,7 @@ class StateMemoryStorage(StateStorageBase):
             chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
         )
 
-        return self.data.get(_key, {}).get("data", None)
+        return self.data.get(_key, {}).get("data", {})
     
     async def reset_data(
             self, chat_id: int, user_id: int, business_connection_id: Optional[str]=None,

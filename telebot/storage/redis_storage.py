@@ -85,7 +85,7 @@ class StateRedisStorage(StateStorageBase):
             data = pipe.hget(_key, "data")
             data = data.execute()[0]
             if data is None:
-                pipe.hset(_key, "data", json.dumps({key: value}))
+                raise RuntimeError(f"RedisStorage: key {_key} does not exist.")
             else:
                 data = json.loads(data)
                 data[key] = value
