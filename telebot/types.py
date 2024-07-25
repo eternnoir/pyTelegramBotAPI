@@ -19,6 +19,7 @@ from telebot.formatting import apply_html_entities
 
 
 DISABLE_KEYLEN_ERROR = False
+JSONDESERIALIZABLE_INDENT = 2
 JSONDESERIALIZABLE_PARSE_OUTPUT = False
 JSONDESERIALIZABLE_SKIP_NONE = True
 
@@ -115,7 +116,7 @@ class JsonDeserializable(object):
             }
         )
         return (
-            json.dumps(self, default=default, indent=2, ensure_ascii=False)
+            json.dumps(self, default=default, indent=JSONDESERIALIZABLE_INDENT, ensure_ascii=False)
             if JSONDESERIALIZABLE_PARSE_OUTPUT
             else str(
                 {
