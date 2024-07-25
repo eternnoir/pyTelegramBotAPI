@@ -182,6 +182,47 @@ class StateRedisStorage(StateStorageBase):
 
         self.redis.transaction(save_action, _key)
         return True
+    
+    def migrate_format(self, bot_id: int,
+                       prefix: Optional[str]="telebot_"):
+        """
+        Migrate from old to new format of keys.
+        Run this function once to migrate all redis existing keys to new format.
+
+        Starting from version 4.22.0, the format of keys has been changed:
+        <key>:value
+        - Old format: {prefix}chat_id: {user_id: {'state': None, 'data': {}}, ...}
+        - New format:
+        {prefix}{separator}{bot_id}{separator}{business_connection_id}{separator}{message_thread_id}{separator}{chat_id}{separator}{user_id}: {'state': ..., 'data': {}}
+
+        This function will help you to migrate from the old format to the new one in order to avoid data loss.
+
+        :param bot_id: Bot ID; To get it, call a getMe request and grab the id from the response.
+        :type bot_id: int
+
+        :param prefix: Prefix for keys, default is "telebot_"(old default value)
+        :type prefix: Optional[str]
+        """
+        keys = self.redis.keys(f"{prefix}*")
+        
+        for key in keys:
+            old_key = key.decode('utf-8')
+            # old: {prefix}chat_id: {user_id: {'state': None, 'data': {}}, ...}
+            value = self.redis.get(old_key)
+            value = json.loads(value)
+
+            chat_id = old_key[len(prefix):]
+            user_id = list(value.keys())[0]
+            state = value[user_id]['state']
+            state_data = value[user_id]['data']
+
+            # set new format
+            new_key = self._get_key(int(chat_id), int(user_id), self.prefix, self.separator, bot_id=bot_id)
+            self.redis.hset(new_key, "state", state)
+            self.redis.hset(new_key, "data", json.dumps(state_data))
+
+            # delete old key
+            self.redis.delete(old_key)
 
     def __str__(self) -> str:
         return f"StateRedisStorage({self.redis})"
