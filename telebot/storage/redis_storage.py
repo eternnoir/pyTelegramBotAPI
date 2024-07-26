@@ -79,9 +79,17 @@ class StateRedisStorage(StateStorageBase):
 
         def set_state_action(pipe):
             pipe.multi()
-            #pipe.hset(_key, mapping={"state": state, "data": "{}"})
+
+            data = pipe.hget(_key, "data")
+            result = pipe.execute()
+            data = result[0]
+            if data is None:
+                # If data is None, set it to an empty dictionary
+                data = {}
+                pipe.hset(_key, "data", json.dumps(data))
+
             pipe.hset(_key, "state", state)
-        
+            
         self.redis.transaction(set_state_action, _key)
         return True
 

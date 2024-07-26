@@ -95,7 +95,14 @@ class StateRedisStorage(StateStorageBase):
             state = state.name
 
         _key = self._get_key(chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id)
+        pipe.hget(_key, "data")
+        result = await pipe.execute()
+        data = result[0]
+        if data is None:
+            pipe.hset(_key, "data", json.dumps({}))
+    
         await pipe.hset(_key, "state", state)
+        
         return True
 
     async def get_state(self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
