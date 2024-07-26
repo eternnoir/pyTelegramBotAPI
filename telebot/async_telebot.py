@@ -117,8 +117,11 @@ class AsyncTeleBot:
     :param colorful_logs: Outputs colorful logs
     :type colorful_logs: :obj:`bool`, optional
 
-    :param token_check: Check token on start
-    :type token_check: :obj:`bool`, optional, defaults to True
+    :param validate_token: Validate token, defaults to True;
+    :type validate_token: :obj:`bool`, optional
+
+    :raises ImportError: If coloredlogs module is not installed and colorful_logs is True
+    :raises ValueError: If token is invalid
     """
 
     def __init__(self, token: str, parse_mode: Optional[str]=None, offset: Optional[int]=None,
@@ -129,7 +132,7 @@ class AsyncTeleBot:
                 protect_content: Optional[bool]=None,
                 allow_sending_without_reply: Optional[bool]=None,
                 colorful_logs: Optional[bool]=False,
-                token_check: Optional[bool]=True) -> None:
+                validate_token: Optional[bool]=True) -> None:
         
         # update-related
         self.token = token
@@ -186,14 +189,13 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
-        self.bot_id = None
+        self.bot_id: int = None
 
-        if token_check:
-            result = apihelper.get_me(token)
-            self._user = types.User.de_json(result)
-            self.bot_id = self._user.id
+        if validate_token:
+            util.validate_token(self.token)
+        
+        self.bot_id: int = util.extract_bot_id(self.token) # subject to change, unspecified
             
-
 
     @property
     def user(self):

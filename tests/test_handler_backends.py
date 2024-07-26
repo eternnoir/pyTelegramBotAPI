@@ -19,7 +19,7 @@ if REDIS_TESTS:
 
 @pytest.fixture()
 def telegram_bot():
-    return telebot.TeleBot('', threaded=False, token_check=False)
+    return telebot.TeleBot('', threaded=False, validate_token=False)
 
 
 @pytest.fixture
