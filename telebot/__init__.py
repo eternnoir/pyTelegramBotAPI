@@ -20,6 +20,7 @@ from telebot.storage import StatePickleStorage, StateMemoryStorage, StateStorage
 # random module to generate random string
 import random
 import string
+import copy
 
 import ssl
 
@@ -8749,7 +8750,7 @@ class TeleBot:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
                     else:
-                        data_copy = data.copy()
+                        data_copy = copy.deepcopy(data)
                         for key in list(data_copy):
                             # remove data from data_copy if handler does not accept it
                             if key not in params:
