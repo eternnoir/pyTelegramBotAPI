@@ -1,4 +1,3 @@
-
 aiofiles_installed = True
 try:
     import aiofiles
@@ -12,11 +11,14 @@ from typing import Optional, Union, Callable, Any
 
 from telebot.asyncio_storage.base_storage import StateStorageBase, StateDataContext
 
+
 def with_lock(func: Callable) -> Callable:
     async def wrapper(self, *args, **kwargs):
         async with self.lock:
             return await func(self, *args, **kwargs)
+
     return wrapper
+
 
 class StatePickleStorage(StateStorageBase):
     """
@@ -27,7 +29,7 @@ class StatePickleStorage(StateStorageBase):
         This storage is not recommended for production use.
         Data may be corrupted. If you face a case where states do not work as expected,
         try to use another storage.
-    
+
     .. code-block:: python3
 
         storage = StatePickleStorage()
@@ -42,9 +44,14 @@ class StatePickleStorage(StateStorageBase):
     :param separator: Separator for keys, default is ":".
     :type separator: Optional[str]
     """
-    def __init__(self, file_path: str = "./.state-save/states.pkl",
-                 prefix='telebot', separator: Optional[str] = ":") -> None:
-        
+
+    def __init__(
+        self,
+        file_path: str = "./.state-save/states.pkl",
+        prefix="telebot",
+        separator: Optional[str] = ":",
+    ) -> None:
+
         if not aiofiles_installed:
             raise ImportError("Please install aiofiles using `pip install aiofiles`")
 
@@ -55,12 +62,12 @@ class StatePickleStorage(StateStorageBase):
         self.create_dir()
 
     async def _read_from_file(self) -> dict:
-        async with aiofiles.open(self.file_path, 'rb') as f:
+        async with aiofiles.open(self.file_path, "rb") as f:
             data = await f.read()
             return pickle.loads(data)
 
     async def _write_to_file(self, data: dict) -> None:
-        async with aiofiles.open(self.file_path, 'wb') as f:
+        async with aiofiles.open(self.file_path, "wb") as f:
             await f.write(pickle.dumps(data))
 
     def create_dir(self):
@@ -70,16 +77,27 @@ class StatePickleStorage(StateStorageBase):
         dirs, filename = os.path.split(self.file_path)
         os.makedirs(dirs, exist_ok=True)
         if not os.path.isfile(self.file_path):
-            with open(self.file_path,'wb') as file:
+            with open(self.file_path, "wb") as file:
                 pickle.dump({}, file)
 
-
     @with_lock
-    async def set_state(self, chat_id: int, user_id: int, state: str,
-                        business_connection_id: Optional[str] = None, message_thread_id: Optional[int] = None,
-                        bot_id: Optional[int] = None) -> bool:
+    async def set_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        state: str,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         if _key not in data:
@@ -90,19 +108,43 @@ class StatePickleStorage(StateStorageBase):
         return True
 
     @with_lock
-    async def get_state(self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
-                        message_thread_id: Optional[int] = None, bot_id: Optional[int] = None) -> Union[str, None]:
+    async def get_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> Union[str, None]:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         return data.get(_key, {}).get("state")
 
     @with_lock
-    async def delete_state(self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
-                           message_thread_id: Optional[int] = None, bot_id: Optional[int] = None) -> bool:
+    async def delete_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         if _key in data:
@@ -112,11 +154,24 @@ class StatePickleStorage(StateStorageBase):
         return False
 
     @with_lock
-    async def set_data(self, chat_id: int, user_id: int, key: str, value: Union[str, int, float, dict],
-                       business_connection_id: Optional[str] = None, message_thread_id: Optional[int] = None,
-                       bot_id: Optional[int] = None) -> bool:
+    async def set_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        key: str,
+        value: Union[str, int, float, dict],
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         state_data = data.get(_key, {})
@@ -129,19 +184,43 @@ class StatePickleStorage(StateStorageBase):
         return True
 
     @with_lock
-    async def get_data(self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
-                       message_thread_id: Optional[int] = None, bot_id: Optional[int] = None) -> dict:
+    async def get_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> dict:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         return data.get(_key, {}).get("data", {})
 
     @with_lock
-    async def reset_data(self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
-                         message_thread_id: Optional[int] = None, bot_id: Optional[int] = None) -> bool:
+    async def reset_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         if _key in data:
@@ -150,18 +229,41 @@ class StatePickleStorage(StateStorageBase):
             return True
         return False
 
-    def get_interactive_data(self, chat_id: int, user_id: int, business_connection_id: Optional[str] = None,
-                             message_thread_id: Optional[int] = None, bot_id: Optional[int] = None) -> Optional[dict]:
+    def get_interactive_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> Optional[dict]:
         return StateDataContext(
-            self, chat_id=chat_id, user_id=user_id, business_connection_id=business_connection_id,
-            message_thread_id=message_thread_id, bot_id=bot_id
+            self,
+            chat_id=chat_id,
+            user_id=user_id,
+            business_connection_id=business_connection_id,
+            message_thread_id=message_thread_id,
+            bot_id=bot_id,
         )
 
     @with_lock
-    async def save(self, chat_id: int, user_id: int, data: dict, business_connection_id: Optional[str] = None,
-                   message_thread_id: Optional[int] = None, bot_id: Optional[int] = None) -> bool:
+    async def save(
+        self,
+        chat_id: int,
+        user_id: int,
+        data: dict,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
         _key = self._get_key(
-            chat_id, user_id, self.prefix, self.separator, business_connection_id, message_thread_id, bot_id
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
         )
         data = await self._read_from_file()
         data[_key]["data"] = data

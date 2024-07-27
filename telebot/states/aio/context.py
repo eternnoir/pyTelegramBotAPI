@@ -6,8 +6,7 @@ from telebot.states import resolve_context
 from typing import Union
 
 
-
-class StateContext():
+class StateContext:
     """
     Class representing a state context.
 
@@ -21,7 +20,7 @@ class StateContext():
             await bot.send_message(message.chat.id, 'Hi, write me a name', reply_to_message_id=message.message_id)
             # also, state_context.data(), .add_data(), .reset_data(), .delete() methods available.
     """
-    
+
     def __init__(self, message: Union[Message, CallbackQuery], bot: str) -> None:
         self.message: Union[Message, CallbackQuery] = message
         self.bot: AsyncTeleBot = bot
@@ -42,7 +41,9 @@ class StateContext():
                 await bot.send_message(message.chat.id, 'Hi, write me a name', reply_to_message_id=message.message_id)
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = (
+            resolve_context(self.message, self.bot.bot_id)
+        )
         if isinstance(state, State):
             state = state.name
         return await self.bot.set_state(
@@ -51,9 +52,9 @@ class StateContext():
             state=state,
             business_connection_id=business_connection_id,
             bot_id=bot_id,
-            message_thread_id=message_thread_id
+            message_thread_id=message_thread_id,
         )
-    
+
     async def get(self) -> str:
         """
         Get current state for current user.
@@ -62,67 +63,75 @@ class StateContext():
         :rtype: str
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = (
+            resolve_context(self.message, self.bot.bot_id)
+        )
         return await self.bot.get_state(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
             bot_id=bot_id,
-            message_thread_id=message_thread_id
+            message_thread_id=message_thread_id,
         )
-    
+
     async def delete(self) -> bool:
         """
         Deletes state and data for current user.
 
         .. warning::
-            
+
                 This method deletes state and associated data for current user.
         """
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = (
+            resolve_context(self.message, self.bot.bot_id)
+        )
         return await self.bot.delete_state(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
             bot_id=bot_id,
-            message_thread_id=message_thread_id
+            message_thread_id=message_thread_id,
         )
-    
+
     async def reset_data(self) -> bool:
         """
-        Reset data for current user. 
+        Reset data for current user.
         State will not be changed.
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = (
+            resolve_context(self.message, self.bot.bot_id)
+        )
         return await self.bot.reset_data(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
             bot_id=bot_id,
-            message_thread_id=message_thread_id
+            message_thread_id=message_thread_id,
         )
-    
+
     def data(self) -> dict:
         """
         Get data for current user.
 
         .. code-block:: python3
- 
+
             with state_context.data() as data:
                 print(data)
                 data['name'] = 'John'
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = (
+            resolve_context(self.message, self.bot.bot_id)
+        )
         return self.bot.retrieve_data(
             chat_id=chat_id,
             user_id=user_id,
             business_connection_id=business_connection_id,
             bot_id=bot_id,
-            message_thread_id=message_thread_id
+            message_thread_id=message_thread_id,
         )
-    
+
     async def add_data(self, **kwargs) -> None:
         """
         Add data for current user.
@@ -131,7 +140,9 @@ class StateContext():
         :type kwargs: dict
         """
 
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(self.message, self.bot.bot_id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = (
+            resolve_context(self.message, self.bot.bot_id)
+        )
         return await self.bot.add_data(
             chat_id=chat_id,
             user_id=user_id,
@@ -140,4 +151,3 @@ class StateContext():
             message_thread_id=message_thread_id,
             **kwargs
         )
-    
