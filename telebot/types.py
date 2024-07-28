@@ -100,32 +100,34 @@ class JsonDeserializable(object):
         else:
             raise ValueError("json_type should be a json dict or string.")
 
-    def __str__(self) -> str:
-        default = (
-            lambda obj: (repr(obj) if JSONDESERIALIZABLE_PARSE_OUTPUT else obj)
-            if not isinstance(obj, JsonDeserializable)
-            else {
+    @staticmethod
+    def _default(obj) -> Union[dict, str]:
+        if not isinstance(obj, JsonDeserializable):
+            return repr(obj) if JSONDESERIALIZABLE_PARSE_OUTPUT else obj
+        else:
+            return {
                 attr: getattr(obj, attr)
                 for attr in filter(
-                    lambda x: not x.startswith("_")
-                    and (
-                        getattr(obj, x) is not None or not JSONDESERIALIZABLE_SKIP_NONE
-                    ),
+                    lambda x: not x.startswith("_"),
                     obj.__dict__,
                 )
+                if getattr(obj, attr) is not None or not JSONDESERIALIZABLE_SKIP_NONE
             }
-        )
-        return (
-            json.dumps(self, default=default, indent=JSONDESERIALIZABLE_INDENT, ensure_ascii=False)
-            if JSONDESERIALIZABLE_PARSE_OUTPUT
-            else str(
+
+    def __str__(self) -> str:
+        if JSONDESERIALIZABLE_PARSE_OUTPUT:
+            return json.dumps(
+                self,
+                default=JsonDeserializable._default,
+                indent=JSONDESERIALIZABLE_INDENT, ensure_ascii=False)
+        else:
+            return str(
                 {
-                    x: default(y) if isinstance(y, JsonDeserializable) else y
+                    x: JsonDeserializable._default(y) if isinstance(y, JsonDeserializable) else y
                     for x, y in self.__dict__.items()
                     if y is not None or not JSONDESERIALIZABLE_SKIP_NONE
                 }
             )
-        )
 
 
 class Update(JsonDeserializable):
