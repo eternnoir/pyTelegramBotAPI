@@ -18,7 +18,7 @@ from telebot.asyncio_handler_backends import BaseMiddleware, CancelUpdate, SkipH
 
 from inspect import signature, iscoroutinefunction
 
-from telebot import util, types, asyncio_helper, apihelper # have to use sync
+from telebot import util, types, asyncio_helper
 import asyncio
 from telebot import asyncio_filters
 
