@@ -1526,6 +1526,8 @@ class Message(JsonDeserializable):
         """
         Returns html-rendered caption.
         """
+        if self.caption is None:
+            return None
         return apply_html_entities(self.caption, self.caption_entities, getattr(self, "custom_subs", None))
 
     @property
