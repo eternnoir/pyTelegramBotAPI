@@ -1517,6 +1517,8 @@ class Message(JsonDeserializable):
         """
         Returns html-rendered text.
         """
+        if self.text is None:
+            return None
         return apply_html_entities(self.text, self.entities, getattr(self, "custom_subs", None))
 
     @property
@@ -9067,6 +9069,8 @@ class TextQuote(JsonDeserializable):
         """
         Returns html-rendered text.
         """
+        if self.text is None:
+            return None
         return apply_html_entities(self.text, self.entities, getattr(self, "custom_subs", None))
 
 
