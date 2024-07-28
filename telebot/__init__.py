@@ -6699,7 +6699,7 @@ class TeleBot:
                      business_connection_id: Optional[str]=None,
                      message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> bool:
         """
-        Reset data for a user in chat: sets the 'data' fieldi to an empty dictionary.
+        Reset data for a user in chat: sets the 'data' field to an empty dictionary.
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
