@@ -195,8 +195,7 @@ class TeleBot:
 
         if validate_token:
             util.validate_token(self.token)
-
-        self.bot_id = util.extract_bot_id(self.token) # subject to change in future, unspecified
+            self.bot_id = util.extract_bot_id(self.token) # subject to change in future, unspecified
 
         # logs-related
         if colorful_logs:
@@ -1183,9 +1182,6 @@ class TeleBot:
 
         if restart_on_change:
             self._setup_change_detector(path_to_watch)
-
-        if not self._user:
-            self._user = self.get_me()
 
         logger.info('Starting your bot with username: [@%s]', self.user.username)
             

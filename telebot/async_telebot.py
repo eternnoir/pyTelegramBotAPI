@@ -193,8 +193,7 @@ class AsyncTeleBot:
 
         if validate_token:
             util.validate_token(self.token)
-        
-        self.bot_id: int = util.extract_bot_id(self.token) # subject to change, unspecified
+            self.bot_id: int = util.extract_bot_id(self.token) # subject to change, unspecified
             
 
     @property
@@ -437,8 +436,7 @@ class AsyncTeleBot:
             # show warning
             logger.warning("Setting non_stop to False will stop polling on API and system exceptions.")
 
-        if not self._user:
-            self._user = await self.get_me()
+        self._user = await self.get_me()
             
         logger.info('Starting your bot with username: [@%s]', self.user.username)
 
