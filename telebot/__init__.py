@@ -191,11 +191,11 @@ class TeleBot:
         self.allow_sending_without_reply = allow_sending_without_reply
         self.webhook_listener = None
         self._user = None
-        self.bot_id: int = None
 
         if validate_token:
             util.validate_token(self.token)
-            self.bot_id = util.extract_bot_id(self.token) # subject to change in future, unspecified
+        
+        self.bot_id: Union[int, None] = util.extract_bot_id(self.token) # subject to change in future, unspecified
 
         # logs-related
         if colorful_logs:

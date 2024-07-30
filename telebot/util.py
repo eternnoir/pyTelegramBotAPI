@@ -698,7 +698,11 @@ def validate_token(token) -> bool:
     
     return True
 
-def extract_bot_id(token) -> str:
+def extract_bot_id(token) -> Union[int, None]:
+    try:
+        validate_token(token)
+    except ValueError:
+        return None
     return int(token.split(':')[0])
 
 

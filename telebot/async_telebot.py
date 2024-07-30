@@ -189,11 +189,11 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
-        self.bot_id: int = None
 
         if validate_token:
             util.validate_token(self.token)
-            self.bot_id: int = util.extract_bot_id(self.token) # subject to change, unspecified
+        
+        self.bot_id: Union[int, None] = util.extract_bot_id(self.token) # subject to change, unspecified
             
 
     @property
