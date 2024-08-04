@@ -4640,7 +4640,7 @@ class TeleBot:
 
     def pin_chat_message(
             self, chat_id: Union[int, str], message_id: int, 
-            disable_notification: Optional[bool]=False) -> bool:
+            disable_notification: Optional[bool]=False, business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method to pin a message in a supergroup.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -4659,15 +4659,19 @@ class TeleBot:
             to all group members about the new pinned message
         :type disable_notification: :obj:`bool`
 
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
 
-        return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification=disable_notification)
+        return apihelper.pin_chat_message(self.token, chat_id, message_id, disable_notification=disable_notification,
+                                            business_connection_id=business_connection_id)
 
 
-    def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None) -> bool:
+    def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None, business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method to unpin specific pinned message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -4682,10 +4686,13 @@ class TeleBot:
         :param message_id: Int: Identifier of a message to unpin
         :type message_id: :obj:`int`
 
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.unpin_chat_message(self.token, chat_id, message_id)
+        return apihelper.unpin_chat_message(self.token, chat_id, message_id, business_connection_id=business_connection_id)
 
 
     def unpin_all_chat_messages(self, chat_id: Union[int, str]) -> bool:
