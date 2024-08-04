@@ -1365,19 +1365,23 @@ async def set_chat_description(token, chat_id, description):
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def pin_chat_message(token, chat_id, message_id, disable_notification=None):
+async def pin_chat_message(token, chat_id, message_id, disable_notification=None, business_connection_id=None):
     method_url = 'pinChatMessage'
     payload = {'chat_id': chat_id, 'message_id': message_id}
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def unpin_chat_message(token, chat_id, message_id):
+async def unpin_chat_message(token, chat_id, message_id, business_connection_id=None):
     method_url = 'unpinChatMessage'
     payload = {'chat_id': chat_id}
     if message_id:
         payload['message_id'] = message_id
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return await _process_request(token, method_url, params=payload, method='post')
 
 
