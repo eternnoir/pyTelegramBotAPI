@@ -686,6 +686,26 @@ def validate_web_app_data(token: str, raw_init_data: str):
     return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
 
 
+def validate_token(token) -> bool:        
+    if any(char.isspace() for char in token):
+        raise ValueError('Token must not contain spaces')
+    
+    if ':' not in token:
+        raise ValueError('Token must contain a colon')
+    
+    if len(token.split(':')) != 2:
+        raise ValueError('Token must contain exactly 2 parts separated by a colon')
+    
+    return True
+
+def extract_bot_id(token) -> Union[int, None]:
+    try:
+        validate_token(token)
+    except ValueError:
+        return None
+    return int(token.split(':')[0])
+
+
 __all__ = (
     "content_type_media", "content_type_service", "update_types",
     "WorkerThread", "AsyncTask", "CustomRequestResponse",
@@ -696,5 +716,5 @@ __all__ = (
     "split_string", "smart_split", "escape", "user_link", "quick_markup",
     "antiflood", "parse_web_app_data", "validate_web_app_data",
     "or_set", "or_clear", "orify", "OrEvent", "per_thread",
-    "webhook_google_functions"
+    "webhook_google_functions", "validate_token", "extract_bot_id"
 )

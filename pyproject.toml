@@ -35,7 +35,6 @@ Issues = "https://github.com/eternnoir/pyTelegramBotAPI/issues"
 json = ["ujson"]
 PIL = ["Pillow"]
 redis = ["redis>=3.4.1"]
-aioredis = ["aioredis"]
 aiohttp = ["aiohttp"]
 fastapi = ["fastapi"]
 uvicorn = ["uvicorn"]
