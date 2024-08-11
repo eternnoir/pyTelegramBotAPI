@@ -32,7 +32,7 @@ REPLY_MARKUP_TYPES = Union[
 import string
 import random
 import ssl
-import copy
+
 
 """
 Module : telebot
@@ -558,7 +558,7 @@ class AsyncTeleBot:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
                     else:
-                        data_copy = copy.deepcopy(data)
+                        data_copy = data.copy()
                         for key in list(data_copy):
                             # remove data from data_copy if handler does not accept it
                             if key not in params:
