@@ -7856,7 +7856,7 @@ class AsyncTeleBot:
             Otherwise, if you only set user_id, chat_id will equal to user_id, this means that
             state will be set for the user in his private chat with a bot.
 
-        .. versionchanged:: 4.22.0
+        .. versionchanged:: 4.23.0
 
             Added additional parameters to support topics, business connections, and message threads.
 

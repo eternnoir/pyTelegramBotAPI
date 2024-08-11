@@ -283,7 +283,7 @@ class StateRedisStorage(StateStorageBase):
         Migrate from old to new format of keys.
         Run this function once to migrate all redis existing keys to new format.
 
-        Starting from version 4.22.0, the format of keys has been changed:
+        Starting from version 4.23.0, the format of keys has been changed:
         <key>:value
         - Old format: {prefix}chat_id: {user_id: {'state': None, 'data': {}}, ...}
         - New format:
