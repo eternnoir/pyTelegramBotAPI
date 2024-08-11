@@ -7,7 +7,7 @@ import sys
 import threading
 import time
 import traceback
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union, Dict
 
 # these imports are used to avoid circular import error
 import telebot.util
@@ -153,9 +153,14 @@ class TeleBot:
     :param allow_sending_without_reply: Default value for allow_sending_without_reply, defaults to None
     :type allow_sending_without_reply: :obj:`bool`, optional
     
-
     :param colorful_logs: Outputs colorful logs
     :type colorful_logs: :obj:`bool`, optional
+
+    :param validate_token: Validate token, defaults to True;
+    :type validate_token: :obj:`bool`, optional
+
+    :raises ImportError: If coloredlogs module is not installed and colorful_logs is True
+    :raises ValueError: If token is invalid
     """
 
     def __init__(
@@ -169,7 +174,8 @@ class TeleBot:
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            colorful_logs: Optional[bool]=False
+            colorful_logs: Optional[bool]=False,
+            validate_token: Optional[bool]=True
     ):
 
         # update-related
@@ -186,6 +192,11 @@ class TeleBot:
         self.allow_sending_without_reply = allow_sending_without_reply
         self.webhook_listener = None
         self._user = None
+
+        if validate_token:
+            util.validate_token(self.token)
+        
+        self.bot_id: Union[int, None] = util.extract_bot_id(self.token) # subject to change in future, unspecified
 
         # logs-related
         if colorful_logs:
@@ -281,7 +292,7 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
-    
+        
     @property
     def user(self) -> types.User:
         """
@@ -6642,7 +6653,9 @@ class TeleBot:
         self.middlewares.append(middleware)
 
 
-    def set_state(self, user_id: int, state: Union[int, str, State], chat_id: Optional[int]=None) -> None:
+    def set_state(self, user_id: int, state: Union[str, State], chat_id: Optional[int]=None,
+                    business_connection_id: Optional[str]=None, message_thread_id: Optional[int]=None,
+                    bot_id: Optional[int]=None) -> bool:
         """
         Sets a new state of a user.
 
@@ -6652,25 +6665,49 @@ class TeleBot:
             Otherwise, if you only set user_id, chat_id will equal to user_id, this means that
             state will be set for the user in his private chat with a bot.
 
+        .. versionchanged:: 4.23.0
+
+            Added additional parameters to support topics, business connections, and message threads.
+
+        .. seealso:: 
+        
+            For more details, visit the `custom_states.py example <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_states.py>`_.
+
         :param user_id: User's identifier
         :type user_id: :obj:`int`
 
-        :param state: new state. can be string, integer, or :class:`telebot.types.State`
+        :param state: new state. can be string, or :class:`telebot.types.State`
         :type state: :obj:`int` or :obj:`str` or :class:`telebot.types.State`
 
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
-        :return: None
+        :param bot_id: Bot's identifier, defaults to current bot id
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
+        :return: True on success
+        :rtype: :obj:`bool`
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.set_state(chat_id, user_id, state)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.set_state(
+            chat_id=chat_id, user_id=user_id, state=state, bot_id=bot_id,
+            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def reset_data(self, user_id: int, chat_id: Optional[int]=None):
+    def reset_data(self, user_id: int, chat_id: Optional[int]=None, 
+                     business_connection_id: Optional[str]=None,
+                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> bool:
         """
-        Reset data for a user in chat.
+        Reset data for a user in chat: sets the 'data' field to an empty dictionary.
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
@@ -6678,16 +6715,34 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
-        :return: None
+        :param bot_id: Bot's identifier, defaults to current bot id
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
+        :return: True on success
+        :rtype: :obj:`bool`
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.reset_data(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.reset_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                        business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def delete_state(self, user_id: int, chat_id: Optional[int]=None) -> None:
+    def delete_state(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
+                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> bool:
         """
-        Delete the current state of a user.
+        Fully deletes the storage record of a user in chat.
+
+        .. warning::
+
+            This does NOT set state to None, but deletes the object from storage.
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
@@ -6695,14 +6750,19 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
-        :return: None
+        :return: True on success
+        :rtype: :obj:`bool`
         """
         if chat_id is None:
             chat_id = user_id
-        self.current_states.delete_state(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.delete_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None) -> Optional[Any]:
+    def retrieve_data(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
+                      message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> Optional[Dict[str, Any]]:
         """
         Returns context manager with data for a user in chat.
 
@@ -6712,18 +6772,38 @@ class TeleBot:
         :param chat_id: Chat's unique identifier, defaults to user_id
         :type chat_id: int, optional
 
+        :param bot_id: Bot's identifier, defaults to current bot id
+        :type bot_id: int, optional
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: str, optional
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: int, optional
+
         :return: Context manager with data for a user in chat
         :rtype: Optional[Any]
         """
         if chat_id is None:
             chat_id = user_id
-        return self.current_states.get_interactive_data(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.get_interactive_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                                            business_connection_id=business_connection_id,
+                                                            message_thread_id=message_thread_id)
 
 
-    def get_state(self, user_id: int, chat_id: Optional[int]=None) -> Optional[Union[int, str, State]]:
+    def get_state(self, user_id: int, chat_id: Optional[int]=None, 
+                    business_connection_id: Optional[str]=None,
+                    message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> str:
         """
         Gets current state of a user.
         Not recommended to use this method. But it is ok for debugging.
+
+        .. warning::
+
+            Even if you are using :class:`telebot.types.State`, this method will return a string.
+            When comparing(not recommended), you should compare this string with :class:`telebot.types.State`.name
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
@@ -6731,15 +6811,31 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier, defaults to current bot id
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: state of a user
         :rtype: :obj:`int` or :obj:`str` or :class:`telebot.types.State`
         """
         if chat_id is None:
             chat_id = user_id
-        return self.current_states.get_state(chat_id, user_id)
+        if bot_id is None:
+            bot_id = self.bot_id
+        return self.current_states.get_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
+                                                business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def add_data(self, user_id: int, chat_id: Optional[int]=None, **kwargs):
+    def add_data(self, user_id: int, chat_id: Optional[int]=None, 
+                    business_connection_id: Optional[str]=None,
+                    message_thread_id: Optional[int]=None, 
+                    bot_id: Optional[int]=None,
+                    **kwargs) -> None:
         """
         Add data to states.
 
@@ -6749,13 +6845,25 @@ class TeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier, defaults to current bot id
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :param kwargs: Data to add
         :return: None
         """
         if chat_id is None:
             chat_id = user_id
+        if bot_id is None:
+            bot_id = self.bot_id
         for key, value in kwargs.items():
-            self.current_states.set_data(chat_id, user_id, key, value)
+            self.current_states.set_data(chat_id=chat_id, user_id=user_id, key=key, value=value, bot_id=bot_id,
+                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     def register_next_step_handler_by_chat_id(

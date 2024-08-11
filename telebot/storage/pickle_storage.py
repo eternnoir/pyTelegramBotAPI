@@ -1,34 +1,63 @@
-from telebot.storage.base_storage import StateStorageBase, StateContext
 import os
-
 import pickle
+import threading
+from typing import Optional, Union, Callable
+from telebot.storage.base_storage import StateStorageBase, StateDataContext
+
+
+def with_lock(func: Callable) -> Callable:
+    def wrapper(self, *args, **kwargs):
+        with self.lock:
+            return func(self, *args, **kwargs)
+
+    return wrapper
 
 
 class StatePickleStorage(StateStorageBase):
-    def __init__(self, file_path="./.state-save/states.pkl") -> None:
-        super().__init__()
-        self.file_path = file_path
-        self.create_dir()
-        self.data = self.read()
+    """
+    State storage based on pickle file.
 
-    def convert_old_to_new(self):
-        """
-        Use this function to convert old storage to new storage.
-        This function is for people who was using pickle storage
-        that was in version <=4.3.1.
-        """
-        # old looks like:
-        # {1: {'state': 'start', 'data': {'name': 'John'}}
-        # we should update old version pickle to new.
-        # new looks like:
-        # {1: {2: {'state': 'start', 'data': {'name': 'John'}}}}
-        new_data = {}
-        for key, value in self.data.items():
-            # this returns us id and dict with data and state
-            new_data[key] = {key: value} # convert this to new
-        # pass it to global data
-        self.data = new_data
-        self.update_data() # update data in file
+    .. warning::
+
+        This storage is not recommended for production use.
+        Data may be corrupted. If you face a case where states do not work as expected,
+        try to use another storage.
+
+    .. code-block:: python3
+
+        storage = StatePickleStorage()
+        bot = TeleBot(token, storage=storage)
+
+    :param file_path: Path to file where states will be stored.
+    :type file_path: str
+
+    :param prefix: Prefix for keys, default is "telebot".
+    :type prefix: Optional[str]
+
+    :param separator: Separator for keys, default is ":".
+    :type separator: Optional[str]
+    """
+
+    def __init__(
+        self,
+        file_path: str = "./.state-save/states.pkl",
+        prefix="telebot",
+        separator: Optional[str] = ":",
+    ) -> None:
+        self.file_path = file_path
+        self.prefix = prefix
+        self.separator = separator
+        self.lock = threading.Lock()
+
+        self.create_dir()
+
+    def _read_from_file(self) -> dict:
+        with open(self.file_path, "rb") as f:
+            return pickle.load(f)
+
+    def _write_to_file(self, data: dict) -> None:
+        with open(self.file_path, "wb") as f:
+            pickle.dump(data, f)
 
     def create_dir(self):
         """
@@ -37,80 +66,198 @@ class StatePickleStorage(StateStorageBase):
         dirs, filename = os.path.split(self.file_path)
         os.makedirs(dirs, exist_ok=True)
         if not os.path.isfile(self.file_path):
-            with open(self.file_path,'wb') as file:
+            with open(self.file_path, "wb") as file:
                 pickle.dump({}, file)
 
-    def read(self):
-        file = open(self.file_path, 'rb')
-        data = pickle.load(file)
-        file.close()
-        return data
-    
-    def update_data(self):
-        file = open(self.file_path, 'wb+')
-        pickle.dump(self.data, file, protocol=pickle.HIGHEST_PROTOCOL)
-        file.close()
-
-    def set_state(self, chat_id, user_id, state):
-        if hasattr(state, 'name'):
-            state = state.name
-        if chat_id in self.data:
-            if user_id in self.data[chat_id]:
-                self.data[chat_id][user_id]['state'] = state
-                self.update_data()
-                return True
-            else:
-                self.data[chat_id][user_id] = {'state': state, 'data': {}}
-                self.update_data()
-                return True
-        self.data[chat_id] = {user_id: {'state': state, 'data': {}}}
-        self.update_data()
+    @with_lock
+    def set_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        state: str,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        if _key not in data:
+            data[_key] = {"state": state, "data": {}}
+        else:
+            data[_key]["state"] = state
+        self._write_to_file(data)
         return True
-    
-    def delete_state(self, chat_id, user_id):
-        if self.data.get(chat_id):
-            if self.data[chat_id].get(user_id):
-                del self.data[chat_id][user_id]
-                if chat_id == user_id:
-                    del self.data[chat_id]
-                self.update_data()
-                return True
 
+    @with_lock
+    def get_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> Union[str, None]:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        return data.get(_key, {}).get("state")
+
+    @with_lock
+    def delete_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        if _key in data:
+            del data[_key]
+            self._write_to_file(data)
+            return True
         return False
 
-    
-    def get_state(self, chat_id, user_id):
-        if self.data.get(chat_id):
-            if self.data[chat_id].get(user_id):
-                return self.data[chat_id][user_id]['state']
+    @with_lock
+    def set_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        key: str,
+        value: Union[str, int, float, dict],
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        state_data = data.get(_key, {})
+        state_data["data"][key] = value
 
-        return None
-    def get_data(self, chat_id, user_id):
-        if self.data.get(chat_id):
-            if self.data[chat_id].get(user_id):
-                return self.data[chat_id][user_id]['data']
-        
-        return None
+        if _key not in data:
+            raise RuntimeError(f"PickleStorage: key {_key} does not exist.")
 
-    def reset_data(self, chat_id, user_id):
-        if self.data.get(chat_id):
-            if self.data[chat_id].get(user_id):
-                self.data[chat_id][user_id]['data'] = {}
-                self.update_data()
-                return True
+        self._write_to_file(data)
+        return True
+
+    @with_lock
+    def get_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> dict:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        return data.get(_key, {}).get("data", {})
+
+    @with_lock
+    def reset_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        if _key in data:
+            data[_key]["data"] = {}
+            self._write_to_file(data)
+            return True
         return False
 
-    def set_data(self, chat_id, user_id, key, value):
-        if self.data.get(chat_id):
-            if self.data[chat_id].get(user_id):
-                self.data[chat_id][user_id]['data'][key] = value
-                self.update_data()
-                return True
-        raise RuntimeError('chat_id {} and user_id {} does not exist'.format(chat_id, user_id))
+    def get_interactive_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> Optional[dict]:
+        return StateDataContext(
+            self,
+            chat_id=chat_id,
+            user_id=user_id,
+            business_connection_id=business_connection_id,
+            message_thread_id=message_thread_id,
+            bot_id=bot_id,
+        )
 
-    def get_interactive_data(self, chat_id, user_id):
-        return StateContext(self, chat_id, user_id)
+    @with_lock
+    def save(
+        self,
+        chat_id: int,
+        user_id: int,
+        data: dict,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = self._read_from_file()
+        data[_key]["data"] = data
+        self._write_to_file(data)
+        return True
 
-    def save(self, chat_id, user_id, data):
-        self.data[chat_id][user_id]['data'] = data
-        self.update_data()
+    def __str__(self) -> str:
+        return f"StatePickleStorage({self.file_path}, {self.prefix})"

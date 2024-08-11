@@ -9,6 +9,8 @@ try:
 except:
     redis_installed = False
 
+# backward compatibility
+from telebot.states import State, StatesGroup
 
 class HandlerBackend(object):
     """
@@ -158,45 +160,6 @@ class RedisHandlerBackend(HandlerBackend):
             handlers = pickle.loads(value)
             self.clear_handlers(handler_group_id)
         return handlers
-
-
-class State:
-    """
-    Class representing a state.
-
-    .. code-block:: python3
-
-        class MyStates(StatesGroup):
-            my_state = State() # returns my_state:State string.
-    """
-    def __init__(self) -> None:
-        self.name = None
-    def __str__(self) -> str:
-        return self.name
-
-
-class StatesGroup:
-    """
-    Class representing common states.
-
-    .. code-block:: python3
-
-        class MyStates(StatesGroup):
-            my_state = State() # returns my_state:State string.
-    """
-    def __init_subclass__(cls) -> None:
-        state_list = []
-        for name, value in cls.__dict__.items():
-            if not name.startswith('__') and not callable(value) and isinstance(value, State):
-                # change value of that variable
-                value.name = ':'.join((cls.__name__, name))
-                value.group = cls
-                state_list.append(value)
-        cls._state_list = state_list
-
-    @classmethod
-    def state_list(self):
-        return self._state_list
 
 
 class BaseMiddleware:

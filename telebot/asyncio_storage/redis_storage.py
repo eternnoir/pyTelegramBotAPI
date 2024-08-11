@@ -1,179 +1,339 @@
-from telebot.asyncio_storage.base_storage import StateStorageBase, StateContext
-import json
-
 redis_installed = True
-is_actual_aioredis = False
 try:
-    import aioredis
-    is_actual_aioredis = True
+    import redis
+    from redis.asyncio import Redis, ConnectionPool
 except ImportError:
-    try:
-        from redis import asyncio as aioredis
-    except ImportError:
-        redis_installed = False
+    redis_installed = False
+
+import json
+from typing import Optional, Union, Callable, Coroutine
+import asyncio
+
+from telebot.asyncio_storage.base_storage import StateStorageBase, StateDataContext
+
+
+def async_with_lock(func: Callable[..., Coroutine]) -> Callable[..., Coroutine]:
+    async def wrapper(self, *args, **kwargs):
+        async with self.lock:
+            return await func(self, *args, **kwargs)
+
+    return wrapper
+
+
+def async_with_pipeline(func: Callable[..., Coroutine]) -> Callable[..., Coroutine]:
+    async def wrapper(self, *args, **kwargs):
+        async with self.redis.pipeline() as pipe:
+            pipe.multi()
+            result = await func(self, pipe, *args, **kwargs)
+            await pipe.execute()
+            return result
+
+    return wrapper
 
 
 class StateRedisStorage(StateStorageBase):
     """
-    This class is for Redis storage.
-    This will work only for states.
-    To use it, just pass this class to:
-    TeleBot(storage=StateRedisStorage())
+    State storage based on Redis.
+
+    .. code-block:: python3
+
+        storage = StateRedisStorage(...)
+        bot = AsyncTeleBot(token, storage=storage)
+
+    :param host: Redis host, default is "localhost".
+    :type host: str
+
+    :param port: Redis port, default is 6379.
+    :type port: int
+
+    :param db: Redis database, default is 0.
+    :type db: int
+
+    :param password: Redis password, default is None.
+    :type password: Optional[str]
+
+    :param prefix: Prefix for keys, default is "telebot".
+    :type prefix: Optional[str]
+
+    :param redis_url: Redis URL, default is None.
+    :type redis_url: Optional[str]
+
+    :param connection_pool: Redis connection pool, default is None.
+    :type connection_pool: Optional[ConnectionPool]
+
+    :param separator: Separator for keys, default is ":".
+    :type separator: Optional[str]
+
     """
-    def __init__(self, host='localhost', port=6379, db=0, password=None, prefix='telebot_', redis_url=None):
+
+    def __init__(
+        self,
+        host="localhost",
+        port=6379,
+        db=0,
+        password=None,
+        prefix="telebot",
+        redis_url=None,
+        connection_pool: "ConnectionPool" = None,
+        separator: Optional[str] = ":",
+    ) -> None:
+
         if not redis_installed:
-            raise ImportError('AioRedis is not installed. Install it via "pip install aioredis"')
+            raise ImportError("Please install redis using `pip install redis`")
 
-        if is_actual_aioredis:
-            aioredis_version = tuple(map(int, aioredis.__version__.split(".")[0]))
-            if aioredis_version < (2,):
-                raise ImportError('Invalid aioredis version. Aioredis version should be >= 2.0.0')
-        if redis_url:
-            self.redis = aioredis.Redis.from_url(redis_url)
-        else:
-            self.redis = aioredis.Redis(host=host, port=port, db=db, password=password)
-
+        self.separator = separator
         self.prefix = prefix
-        #self.con = Redis(connection_pool=self.redis) -> use this when necessary
-        #
-        # {chat_id: {user_id: {'state': None, 'data': {}}, ...}, ...}
-    
-    async def get_record(self, key):
-        """
-        Function to get record from database.
-        It has nothing to do with states.
-        Made for backward compatibility
-        """
-        result = await self.redis.get(self.prefix+str(key))
-        if result: return json.loads(result)
-        return
+        if not self.prefix:
+            raise ValueError("Prefix cannot be empty")
 
-    async def set_record(self, key, value):
-        """
-        Function to set record to database.
-        It has nothing to do with states.
-        Made for backward compatibility
-        """
-    
-        await self.redis.set(self.prefix+str(key), json.dumps(value))
-        return True
-
-    async def delete_record(self, key):
-        """
-        Function to delete record from database.
-        It has nothing to do with states.
-        Made for backward compatibility
-        """
-        await self.redis.delete(self.prefix+str(key))
-        return True
-
-    async def set_state(self, chat_id, user_id, state):
-        """
-        Set state for a particular user in a chat.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if hasattr(state, 'name'):
-            state = state.name
-        if response:
-            if user_id in response:
-                response[user_id]['state'] = state
-            else:
-                response[user_id] = {'state': state, 'data': {}}
+        if redis_url:
+            self.redis = redis.asyncio.from_url(redis_url)
+        elif connection_pool:
+            self.redis = Redis(connection_pool=connection_pool)
         else:
-            response = {user_id: {'state': state, 'data': {}}}
-        await self.set_record(chat_id, response)
+            self.redis = Redis(host=host, port=port, db=db, password=password)
+
+        self.lock = asyncio.Lock()
+
+    @async_with_lock
+    @async_with_pipeline
+    async def set_state(
+        self,
+        pipe,
+        chat_id: int,
+        user_id: int,
+        state: str,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        if hasattr(state, "name"):
+            state = state.name
+
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        pipe.hget(_key, "data")
+        result = await pipe.execute()
+        data = result[0]
+        if data is None:
+            pipe.hset(_key, "data", json.dumps({}))
+
+        await pipe.hset(_key, "state", state)
 
         return True
-    
-    async def delete_state(self, chat_id, user_id):
-        """
-        Delete state for a particular user in a chat.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                del response[user_id]
-                if user_id == str(chat_id):
-                    await self.delete_record(chat_id)
-                    return True
-                else: await self.set_record(chat_id, response)
-                return True
-        return False
 
-    async def get_value(self, chat_id, user_id, key):
-        """
-        Get value for a data of a user in a chat.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                if key in response[user_id]['data']:
-                    return response[user_id]['data'][key]
-        return None
+    async def get_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> Union[str, None]:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        state_bytes = await self.redis.hget(_key, "state")
+        return state_bytes.decode("utf-8") if state_bytes else None
 
-    async def get_state(self, chat_id, user_id):
-        """
-        Get state of a user in a chat.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                return response[user_id]['state']
+    async def delete_state(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        result = await self.redis.delete(_key)
+        return result > 0
 
-        return None
+    @async_with_lock
+    @async_with_pipeline
+    async def set_data(
+        self,
+        pipe,
+        chat_id: int,
+        user_id: int,
+        key: str,
+        value: Union[str, int, float, dict],
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = await pipe.hget(_key, "data")
+        data = await pipe.execute()
+        data = data[0]
+        if data is None:
+            raise RuntimeError(f"StateRedisStorage: key {_key} does not exist.")
+        else:
+            data = json.loads(data)
+            data[key] = value
+            await pipe.hset(_key, "data", json.dumps(data))
+        return True
 
-    async def get_data(self, chat_id, user_id):
-        """
-        Get data of particular user in a particular chat.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                return response[user_id]['data']
-        return None
+    async def get_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> dict:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        data = await self.redis.hget(_key, "data")
+        return json.loads(data) if data else {}
 
-    async def reset_data(self, chat_id, user_id):
-        """
-        Reset data of a user in a chat.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                response[user_id]['data'] = {}
-                await self.set_record(chat_id, response)
-                return True
+    @async_with_lock
+    @async_with_pipeline
+    async def reset_data(
+        self,
+        pipe,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        if await pipe.exists(_key):
+            await pipe.hset(_key, "data", "{}")
+        else:
+            return False
+        return True
 
-    async def set_data(self, chat_id, user_id, key, value):
-        """
-        Set data without interactive data.
-        """
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                response[user_id]['data'][key] = value
-                await self.set_record(chat_id, response)
-                return True
-        return False
+    def get_interactive_data(
+        self,
+        chat_id: int,
+        user_id: int,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> Optional[dict]:
+        return StateDataContext(
+            self,
+            chat_id=chat_id,
+            user_id=user_id,
+            business_connection_id=business_connection_id,
+            message_thread_id=message_thread_id,
+            bot_id=bot_id,
+        )
 
-    def get_interactive_data(self, chat_id, user_id):
+    @async_with_lock
+    @async_with_pipeline
+    async def save(
+        self,
+        pipe,
+        chat_id: int,
+        user_id: int,
+        data: dict,
+        business_connection_id: Optional[str] = None,
+        message_thread_id: Optional[int] = None,
+        bot_id: Optional[int] = None,
+    ) -> bool:
+        _key = self._get_key(
+            chat_id,
+            user_id,
+            self.prefix,
+            self.separator,
+            business_connection_id,
+            message_thread_id,
+            bot_id,
+        )
+        if await pipe.exists(_key):
+            await pipe.hset(_key, "data", json.dumps(data))
+        else:
+            return False
+        return True
+
+    def migrate_format(self, bot_id: int, prefix: Optional[str] = "telebot_"):
         """
-        Get Data in interactive way.
-        You can use with() with this function.
+        Migrate from old to new format of keys.
+        Run this function once to migrate all redis existing keys to new format.
+
+        Starting from version 4.23.0, the format of keys has been changed:
+        <key>:value
+        - Old format: {prefix}chat_id: {user_id: {'state': None, 'data': {}}, ...}
+        - New format:
+        {prefix}{separator}{bot_id}{separator}{business_connection_id}{separator}{message_thread_id}{separator}{chat_id}{separator}{user_id}: {'state': ..., 'data': {}}
+
+        This function will help you to migrate from the old format to the new one in order to avoid data loss.
+
+        :param bot_id: Bot ID; To get it, call a getMe request and grab the id from the response.
+        :type bot_id: int
+
+        :param prefix: Prefix for keys, default is "telebot_"(old default value)
+        :type prefix: Optional[str]
         """
-        return StateContext(self, chat_id, user_id)
-    
-    async def save(self, chat_id, user_id, data):
-        response = await self.get_record(chat_id)
-        user_id = str(user_id)
-        if response:
-            if user_id in response:
-                response[user_id]['data'] = data
-                await self.set_record(chat_id, response)
-                return True
+        keys = self.redis.keys(f"{prefix}*")
+
+        for key in keys:
+            old_key = key.decode("utf-8")
+            # old: {prefix}chat_id: {user_id: {'state': None, 'data': {}}, ...}
+            value = self.redis.get(old_key)
+            value = json.loads(value)
+
+            chat_id = old_key[len(prefix) :]
+            user_id = list(value.keys())[0]
+            state = value[user_id]["state"]
+            state_data = value[user_id]["data"]
+
+            # set new format
+            new_key = self._get_key(
+                int(chat_id), int(user_id), self.prefix, self.separator, bot_id=bot_id
+            )
+            self.redis.hset(new_key, "state", state)
+            self.redis.hset(new_key, "data", json.dumps(state_data))
+
+            # delete old key
+            self.redis.delete(old_key)
+
+    def __str__(self) -> str:
+        # include some connection info
+        return f"StateRedisStorage({self.redis})"
