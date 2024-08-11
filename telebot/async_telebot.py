@@ -32,7 +32,7 @@ REPLY_MARKUP_TYPES = Union[
 import string
 import random
 import ssl
-
+import copy
 
 """
 Module : telebot
@@ -558,7 +558,7 @@ class AsyncTeleBot:
                             logger.error("It is not allowed to pass data and values inside data to the handler. Check your handler: {}".format(handler['function']))
                             return
                     else:
-                        data_copy = data.copy()
+                        data_copy = copy.deepcopy(data)
                         for key in list(data_copy):
                             # remove data from data_copy if handler does not accept it
                             if key not in params:
@@ -6023,7 +6023,7 @@ class AsyncTeleBot:
 
     async def pin_chat_message(
             self, chat_id: Union[int, str], message_id: int, 
-            disable_notification: Optional[bool]=False) -> bool:
+            disable_notification: Optional[bool]=False, business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method to pin a message in a supergroup.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -6042,14 +6042,17 @@ class AsyncTeleBot:
             to all group members about the new pinned message
         :type disable_notification: :obj:`bool`
 
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
 
-        return await asyncio_helper.pin_chat_message(self.token, chat_id, message_id, disable_notification)
+        return await asyncio_helper.pin_chat_message(self.token, chat_id, message_id, disable_notification, business_connection_id)
 
-    async def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None) -> bool:
+    async def unpin_chat_message(self, chat_id: Union[int, str], message_id: Optional[int]=None, business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method to unpin specific pinned message in a supergroup chat.
         The bot must be an administrator in the chat for this to work and must have the appropriate admin rights.
@@ -6064,10 +6067,13 @@ class AsyncTeleBot:
         :param message_id: Int: Identifier of a message to unpin
         :type message_id: :obj:`int`
 
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.unpin_chat_message(self.token, chat_id, message_id)
+        return await asyncio_helper.unpin_chat_message(self.token, chat_id, message_id, business_connection_id)
 
     async def unpin_all_chat_messages(self, chat_id: Union[int, str]) -> bool:
         """
