@@ -124,7 +124,7 @@ text.platform.innerText += telegram.platform;
 
 button.send_message.addEventListener('click', () => {
   telegram.sendData(input.message.value);
-  if (telegram.initDataUnsafe) telegram.showAlert('SendData only works in webapp that opened with reply keyboard.')
+  if (telegram.initDataUnsafe) telegram.showAlert('SendData only works in miniapp that opened with reply keyboard.')
   input.message.value = ''
 });
 

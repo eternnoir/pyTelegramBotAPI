@@ -1,3 +1,5 @@
+# The source of the "https://pytelegrambotminiapp.vercel.app" can be found in https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/mini_app_web
+
 from telebot import TeleBot
 from telebot.types import (
     ReplyKeyboardMarkup, 
@@ -8,7 +10,7 @@ from telebot.types import (
 )
 
 BOT_TOKEN = "" 
-WEB_URL = "https://pytelegrambotminiapp.vercel.app" # https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/webapp/webapp
+WEB_URL = "https://pytelegrambotminiapp.vercel.app" 
 
 bot = TeleBot(BOT_TOKEN)
 
