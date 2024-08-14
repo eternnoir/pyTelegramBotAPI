@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>PyTelegramBotApi MiniApp</title>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body class='body'>
+    <div class='content-block content-block_send-message send-message'>
+      <input class="send-message__input" type="text" placeholder="type your message here">
+      <button class="send-message__button" id="send-message-button"> send the message </button>
+    </div> 
+
+    <p class="header-text"> client buttons </p>
+    <div class="content-block content-block_client-btn client">
+      <button class="default-button default-button_disable" id='back-button' value="disable"> back </button>     
+      <button class="default-button" id='main-button' value="enable"> main </button>     
+      <button class="default-button default-button_disable" id='settings-button' value="disable"> settings </button>     
+    </div>
+    <p class="header-text"> hapticFeedback (notification) </p>
+    <div class="content-block content-block_haptic-feedback haptic_feedback">
+      <button class="default-button" id='success-button'> success </button>     
+      <button class="default-button default-button_yellow" id='warning-button'> warning </button>     
+      <button class="default-button default-button_red" id='error-button'> error </button>     
+    </div>
+
+    <p class="header-text"> tweak color [Bot API 6.1+]</p>
+    <div class="content-block content-block_tweak-color tweak-color">
+      <div class="tweak-color__header">
+        <p class="tweak-color__text">Header color: </p> 
+        <div class="tweak-color__circle-block">
+          <div class="tweak-color__circle tweak-color__circle_yellow" id="header-yellow"> </div> 
+          <div class="tweak-color__circle tweak-color__circle_button" id="header-button_color"> </div> 
+          <div class="tweak-color__circle tweak-color__circle_red" id="header-red"> </div> 
+          <div class="tweak-color__circle tweak-color__circle_header" id="header-default"> </div> 
+        </div>
+      </div>
+      <div class="tweak-color__background">
+        <p class="tweak-color__text">Background color: </p> 
+        <div class="tweak-color__circle-block">
+          <div class="tweak-color__circle tweak-color__circle_yellow" id="background-yellow"> </div> 
+          <div class="tweak-color__circle tweak-color__circle_button" id="background-button_color"> </div> 
+          <div class="tweak-color__circle tweak-color__circle_red" id="background-red"> </div> 
+          <div class="tweak-color__circle tweak-color__circle_background" id="background-default"> </div> 
+        </div>
+      </div>
+    </div>
+
+    <p class="header-text"> popup and alert [Bot API 6.2+] </p>
+    <div class="content-block content-block_popup-alert popup-alert">
+      <button class="default-button" id="popup-button"> popup </button>     
+      <button class="default-button" id="alert-button"> alert </button>     
+      <button class="default-button" id="confirm-button"> confirm </button>     
+    </div>
+
+    <p class="header-text"> request [Bot API 6.9+]</p>
+    <div class="content-block content-block_request block_request">
+      <button class="default-button" id="contact-button"> contact </button>     
+      <button class="default-button" id="write-access-button"> write access </button>     
+      <button class="default-button" id="biometrics-button"> biometrics </button>     
+    </div>
+
+    <p class="header-text"> story [Bot API 7.8+]</p>
+    <div class="content-block content-block_story story">
+      <button class="default-button" id="post-story-photo-button"> story (photo) </button>     
+      <button class="default-button" id="post-story-video-button"> story (video) </button>     
+      <button class="default-button" id="post-story-with-link-button">  story + link</button>     
+    </div>
+
+    <p class="header-text"> cloud storage [Bot API 6.9+] </p>
+    <div class="content-block content-block_cloud-storage cloud-storage">
+      <div class="cloud-storage__input-block">
+        <input class="cloud-storage__input cloud-storage__input_add-key" type="text" name="" value=""  placeholder="key">
+        <input class="cloud-storage__input cloud-storage__input_add-value" type="text" name="" value="" placeholder="value">
+      </div>
+      <button class="cloud-storage__button cloud-storage__button_add" id="cloud-add-button"> add to cloud storage </button>
+      <table class="cloud-storage__table" id="cloud-storage-table">
+        <tr>
+          <th id="cloud-storage-key"> key </th>
+          <th id="cloud-storage-value"> value </th>
+        </tr> 
+        <tr id="null-storage-row">
+          <td> - </td>
+          <td> - </td>
+        </tr> 
+      </table>
+      <div class="cloud-storage__input-block cloud-storage__input-block_remove">
+        <input class="cloud-storage__input cloud-storage__input_remove" type="text" value="" placeholder="key">
+        <button class="cloud-storage__button cloud-storage__button_remove" id='cloud-remove-button'> remove from cloud storage </button>
+      </div>
+    </div>
+    <p class="header-text"> data from telegram </p>
+    <div class="content-block content-block_data">
+      <div class="data__content" id="initDataUnsafe-block">
+        <p class="content-block__text"> initDataUnsafe </p>
+      </div>
+      <div class="data__content" id="themeParams-block">
+        <p class="content-block__text"> ThemeParams </p>
+      </div>
+      <div class="data__content" id="biometrics-block">
+        <p class="content-block__text"> Biometrics Manager</p>
+        <table class="biometrics__table" id="biometrics-table">
+          <tr id="null-biometrics-row">
+            <td>support</td>
+            <td>Unsupported in this platform</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <p class="header-text"> event from telegram </p>
+    <div class="content-block content-block_event event">
+      <div class="event__content" id="event-block">
+       </div> 
+    </div>
+
+    <p class="header-text"> vertical scroll behaviour [Bot API 7.7+] </p>
+    <div class="content-block content-block_scroll-behaviour scroll-behaviour">
+      <p class="content-block__text"> close the miniapp when scroll vertically </p>
+      <div class="scroll-behaviour__toggle-box">
+        <button class="default-button" id="enable-scroll-button" value="enable"> Enable </button>
+        <button class="default-button default-button_disable" id="disable-scroll-button" value="disable"> Disable </button>
+      </div>
+    </div>
+
+    <p class="header-text"> closing confirmation [Bot API 6.2+]</p>
+    <div class="content-block content-block_close-confirmation close-confirmation">
+      <p class="content-block__text"> Confimation dialog when closing miniapp </p>
+      <div class="content-block__toggle-box">
+        <button class="default-button default-button_disable" id="enable-close-confirm-button" value="disable"> Enable </button>
+        <button class="default-button" id="disable-close-confirm-button" value="enable"> Disable </button>
+      </div>
+    </div>
+
+    <p class="header-text"> links </p>
+    <div class="content-block content-block_link link">
+      <ul class="link__list">
+        <li>
+          <p class="link__text"> <a class="link__text link__text_blue" id="telegram-link" href="javascript:telegram.openTelegramLink(https://t.me/joinchat/Bn4ixj84FIZVkwhk2jag6A)"> pyTelegramBotApi </a> - opens telegram link in telegram </p>
+        </li>
+        <li>
+          <p class="link__text"> <a class="link__text link__text_blue" id="internal-link" href="javascript:telegram.openLink(https://telegram.org)"> Telegram </a> - opens link inside telegram in browser. </p>
+        </li>
+      </ul>
+    </div>
+    
+    <p class="header-text"> other </p>
+    <div class="content-block content-block_other other">
+      <button class="default-button" id="show-QR-button"> show QR </button>     
+      <button class="default-button" id="expand-button">  expand </button>     
+      <button class="default-button default-button_red" id="close-button"> close </button>     
+    </div>
+
+    <div class="description-block">
+      <pre class="description__text" id="version-text"> version: </pre>
+      <pre class="description__text" id="platform-text"> platform: </pre>
+      <pre class="description__text" id="color-scheme-text"> color scheme: </pre>
+    </div>
+  </body>
+  <script src="script.js"></script>
+</html>
