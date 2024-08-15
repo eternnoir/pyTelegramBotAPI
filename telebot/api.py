@@ -66,6 +66,7 @@ async def _request(
     request_timeout: Optional[float] = None,
 ):
     session = await session_manager.get_session()
+    request_description = "<request description not available>"
     if logger.isEnabledFor(logging.DEBUG):
         files_to_log = (
             {
