@@ -8465,6 +8465,27 @@ class ReactionTypeCustomEmoji(ReactionType):
         return json_dict
 
 
+class ReactionTypePaid(ReactionType):
+    """
+    This object represents a paid reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypepaid
+
+    :param type: Type of the reaction, must be paid
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionTypePaid`
+    """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__('paid')
+
+    def to_dict(self) -> dict:
+        return super().to_dict()
+    
+
+
 class MessageReactionUpdated(JsonDeserializable):
     """
     This object represents a service message about a change in the list of the current user's reactions to a message.
