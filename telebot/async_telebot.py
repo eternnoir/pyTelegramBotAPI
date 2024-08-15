@@ -5605,6 +5605,63 @@ class AsyncTeleBot:
         return types.ChatInviteLink.de_json(
             await asyncio_helper.edit_chat_invite_link(self.token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request)
         )
+    
+    async def create_chat_subscription_invite_link(
+            self, chat_id: Union[int, str], subscription_period: int, subscription_price: int,
+            name: Optional[str]=None) -> types.ChatInviteLink:
+        """
+        Use this method to create a subscription invite link for a channel chat. The bot must have the can_invite_users administrator rights.
+        The link can be edited using the method editChatSubscriptionInviteLink or revoked using the method revokeChatInviteLink.
+        Returns the new invite link as a ChatInviteLink object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createchatsubscriptioninvitelink
+
+        :param chat_id: Unique identifier for the target channel chat or username of the target channel
+            (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        
+        :param name: Invite link name; 0-32 characters
+        :type name: :obj:`str`
+
+        :param subscription_period: The number of seconds the subscription will be active for before the next payment.
+            Currently, it must always be 2592000 (30 days).
+        :type subscription_period: :obj:`int`
+
+        :param subscription_price: The amount of Telegram Stars a user must pay initially and after each subsequent
+            subscription period to be a member of the chat; 1-2500
+        :type subscription_price: :obj:`int`
+
+        :return: Returns the new invite link as a ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
+        """
+        return types.ChatInviteLink.de_json(
+            await asyncio_helper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name)
+        )
+
+    async def edit_chat_subscription_invite_link(
+            self, chat_id: Union[int, str], invite_link: str, name: Optional[str]=None) -> types.ChatInviteLink:
+        """
+        Use this method to edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator rights.
+        Returns the edited invite link as a ChatInviteLink object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editchatsubscriptioninvitelink
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+            (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param invite_link: The invite link to edit
+        :type invite_link: :obj:`str`
+
+        :param name: Invite link name; 0-32 characters
+        :type name: :obj:`str`
+
+        :return: Returns the edited invite link as a ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
+        """
+        return types.ChatInviteLink.de_json(
+            await asyncio_helper.edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name)
+        )
 
     async def revoke_chat_invite_link(
             self, chat_id: Union[int, str], invite_link: str) -> types.ChatInviteLink:

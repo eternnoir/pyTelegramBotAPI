@@ -1185,6 +1185,28 @@ async def edit_chat_invite_link(token, chat_id, invite_link, name, expire_date, 
 
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def create_chat_subscription_invite_link(token, chat_id, subscription_period, subscription_price, name=None):
+    method_url = 'createChatSubscriptionInviteLink'
+    payload = {
+        'chat_id': chat_id,
+        'subscription_period': subscription_period,
+        'subscription_price': subscription_price
+    }
+    if name:
+        payload['name'] = name
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def edit_chat_subscription_invite_link(token, chat_id, invite_link, name=None):
+    method_url = 'editChatSubscriptionInviteLink'
+    payload = {
+        'chat_id': chat_id,
+        'invite_link': invite_link
+    }
+    if name:
+        payload['name'] = name
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
 async def revoke_chat_invite_link(token, chat_id, invite_link):
     method_url = 'revokeChatInviteLink'
     payload = {
