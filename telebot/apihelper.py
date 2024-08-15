@@ -1216,7 +1216,7 @@ def create_chat_subscription_invite_link(token, chat_id, subscription_period, su
         payload['name'] = name
     return _make_request(token, method_url, params=payload, method='post')
 
-def edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name=None):
+def edit_chat_subscription_invite_link(token, chat_id, invite_link, name=None):
     method_url = 'editChatSubscriptionInviteLink'
     payload = {
         'chat_id': chat_id,
