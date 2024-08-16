@@ -398,7 +398,7 @@ class StateFilter(AdvancedCustomFilter):
         :meta private:
         """
         
-        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(message, self.bot._user.id)
+        chat_id, user_id, business_connection_id, bot_id, message_thread_id = resolve_context(message, self.bot.bot_id)
 
         if chat_id is None:
             chat_id = user_id # May change in future
