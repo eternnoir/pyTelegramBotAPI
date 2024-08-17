@@ -1618,6 +1618,14 @@ class Message(JsonDeserializable):
         logger.warning('The parameter "user_shared" is deprecated, use "users_shared" instead')
         return self.users_shared
 
+    @property
+    def any_text(self):
+        return self.caption if (self.caption is not None) else self.text
+
+    @property
+    def any_entities(self):
+        return self.caption_entities if (self.caption_entities is not None) else self.entities
+
 
 # noinspection PyShadowingBuiltins
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
