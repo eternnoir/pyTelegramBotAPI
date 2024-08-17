@@ -8478,6 +8478,27 @@ class ReactionTypeCustomEmoji(ReactionType):
         return json_dict
 
 
+class ReactionTypePaid(ReactionType):
+    """
+    This object represents a paid reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypepaid
+
+    :param type: Type of the reaction, must be paid
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionTypePaid`
+    """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__('paid')
+
+    def to_dict(self) -> dict:
+        return super().to_dict()
+    
+
+
 class MessageReactionUpdated(JsonDeserializable):
     """
     This object represents a service message about a change in the list of the current user's reactions to a message.
@@ -10390,20 +10411,26 @@ class TransactionPartnerUser(TransactionPartner):
     :param invoice_payload: Optional, Bot-specified invoice payload
     :type invoice_payload: :obj:`str`
 
+    :param paid_media: Optional. Information about the paid media bought by the user
+    :type paid_media: :obj:`list` of :class:`PaidMedia`
+
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
-    def __init__(self, type, user, invoice_payload=None, **kwargs):
+    def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.invoice_payload: Optional[str] = invoice_payload
+        self.paid_media: Optional[List[PaidMedia]] = paid_media
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
+        if 'paid_media' in obj:
+            obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
         return cls(**obj)
 
 

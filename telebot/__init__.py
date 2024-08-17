@@ -3136,7 +3136,8 @@ class TeleBot:
             caption: Optional[str]=None, parse_mode: Optional[str]=None, caption_entities: Optional[List[types.MessageEntity]]=None,
             show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None,
+    ) -> types.Message:
         """
         Use this method to send paid media to channel chats. On success, the sent Message is returned.
 
@@ -3175,6 +3176,9 @@ class TeleBot:
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user
         :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove` or :class:`telebot.types.ForceReply`
 
+        :param business_connection_id: Identifier of a business connection, in which the message will be sent
+        :type business_connection_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3183,7 +3187,7 @@ class TeleBot:
                 self.token, chat_id, star_count, media, caption=caption, parse_mode=parse_mode,
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
-                reply_parameters=reply_parameters, reply_markup=reply_markup)
+                reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id)
         )
 
 
@@ -4195,6 +4199,62 @@ class TeleBot:
             apihelper.edit_chat_invite_link(self.token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request)
         )
 
+    def create_chat_subscription_invite_link(
+            self, chat_id: Union[int, str], subscription_period: int, subscription_price: int,
+            name: Optional[str]=None) -> types.ChatInviteLink:
+        """
+        Use this method to create a subscription invite link for a channel chat. The bot must have the can_invite_users administrator rights.
+        The link can be edited using the method editChatSubscriptionInviteLink or revoked using the method revokeChatInviteLink.
+        Returns the new invite link as a ChatInviteLink object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#createchatsubscriptioninvitelink
+
+        :param chat_id: Unique identifier for the target channel chat or username of the target channel
+            (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+        
+        :param name: Invite link name; 0-32 characters
+        :type name: :obj:`str`
+
+        :param subscription_period: The number of seconds the subscription will be active for before the next payment.
+            Currently, it must always be 2592000 (30 days).
+        :type subscription_period: :obj:`int`
+
+        :param subscription_price: The amount of Telegram Stars a user must pay initially and after each subsequent
+            subscription period to be a member of the chat; 1-2500
+        :type subscription_price: :obj:`int`
+
+        :return: Returns the new invite link as a ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
+        """
+        return types.ChatInviteLink.de_json(
+            apihelper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name=name)
+        )
+    
+    def edit_chat_subscription_invite_link(
+            self, chat_id: Union[int, str], invite_link: str, name: Optional[str]=None) -> types.ChatInviteLink:
+        """
+        Use this method to edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator rights.
+        Returns the edited invite link as a ChatInviteLink object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editchatsubscriptioninvitelink
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+            (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param invite_link: The invite link to edit
+        :type invite_link: :obj:`str`
+
+        :param name: Invite link name; 0-32 characters
+        :type name: :obj:`str`
+
+        :return: Returns the edited invite link as a ChatInviteLink object.
+        :rtype: :class:`telebot.types.ChatInviteLink`
+        """
+        return types.ChatInviteLink.de_json(
+            apihelper.edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name=name)
+        )
 
     def revoke_chat_invite_link(
             self, chat_id: Union[int, str], invite_link: str) -> types.ChatInviteLink:
