@@ -5635,7 +5635,7 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
-            await asyncio_helper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name)
+            await asyncio_helper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name=name)
         )
 
     async def edit_chat_subscription_invite_link(
@@ -5660,7 +5660,7 @@ class AsyncTeleBot:
         :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
-            await asyncio_helper.edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name)
+            await asyncio_helper.edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name=name)
         )
 
     async def revoke_chat_invite_link(

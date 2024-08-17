@@ -4228,7 +4228,7 @@ class TeleBot:
         :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
-            apihelper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name)
+            apihelper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name=name)
         )
     
     def edit_chat_subscription_invite_link(
@@ -4253,7 +4253,7 @@ class TeleBot:
         :rtype: :class:`telebot.types.ChatInviteLink`
         """
         return types.ChatInviteLink.de_json(
-            apihelper.edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name)
+            apihelper.edit_chat_subscription_invite_link(self.token, chat_id, invite_link, name=name)
         )
 
     def revoke_chat_invite_link(
