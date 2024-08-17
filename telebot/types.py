@@ -1525,7 +1525,7 @@ class Message(JsonDeserializable):
         self.json = json_string
 
     @property
-    def html_text(self) -> str:
+    def html_text(self) -> Optional[str]:
         """
         Returns html-rendered text.
         """
@@ -1534,7 +1534,7 @@ class Message(JsonDeserializable):
         return apply_html_entities(self.text, self.entities, getattr(self, "custom_subs", None))
 
     @property
-    def html_caption(self) -> str:
+    def html_caption(self) -> Optional[str]:
         """
         Returns html-rendered caption.
         """
@@ -1617,6 +1617,14 @@ class Message(JsonDeserializable):
     def user_shared(self):
         logger.warning('The parameter "user_shared" is deprecated, use "users_shared" instead')
         return self.users_shared
+
+    @property
+    def any_text(self) -> Optional[str]:
+        return self.caption if (self.caption is not None) else self.text
+
+    @property
+    def any_entities(self) -> Optional[List[MessageEntity]]:
+        return self.caption_entities if (self.caption_entities is not None) else self.entities
 
 
 # noinspection PyShadowingBuiltins
@@ -2734,6 +2742,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         if request_user is not None:
             logger.warning('The parameter "request_user" is deprecated, use "request_users" instead')
             if self.request_users is None:
+                # noinspection PyTypeChecker
                 self.request_users = request_user
 
 
@@ -4268,6 +4277,7 @@ class ChosenInlineResult(JsonDeserializable):
         self.query: str = query
 
 
+# noinspection PyShadowingBuiltins
 class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
     """
     This object represents one result of an inline query. Telegram clients currently support results of the following 20 types:
@@ -5407,8 +5417,8 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
     Base class of all InlineQueryResultCached* classes.
     """
     def __init__(self):
-        self.type: str = None
-        self.id: str = None
+        self.type: str = ""
+        self.id: str = ""
         self.title: Optional[str] = None
         self.description: Optional[str] = None
         self.caption: Optional[str] = None
@@ -5416,6 +5426,7 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
         self.input_message_content: Optional[InputMessageContent] = None
         self.parse_mode: Optional[str] = None
         self.caption_entities: Optional[List[MessageEntity]] = None
+        # noinspection PyTypeChecker
         self.payload_dic: Dict[str] = {}
         self.show_caption_above_media: Optional[bool] = None
 
@@ -7104,6 +7115,7 @@ class InputPollOption(JsonSerializable):
         return json_dict
 
 
+# noinspection PyShadowingBuiltins
 class Poll(JsonDeserializable):
     """
     This object contains information about a poll.
@@ -7586,7 +7598,7 @@ class MenuButton(JsonDeserializable, JsonSerializable, Dictionaryable):
         raise NotImplementedError
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,PyShadowingBuiltins
 class MenuButtonCommands(MenuButton):
     """
     Represents a menu button, which opens the bot's list of commands.
@@ -7610,7 +7622,7 @@ class MenuButtonCommands(MenuButton):
         return json.dumps(self.to_dict())
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,PyShadowingBuiltins
 class MenuButtonWebApp(MenuButton):
     """
     Represents a menu button, which launches a Web App.
@@ -7645,7 +7657,7 @@ class MenuButtonWebApp(MenuButton):
         return json.dumps(self.to_dict())
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,PyShadowingBuiltins
 class MenuButtonDefault(MenuButton):
     """
     Describes that no specific value for the menu button was set.
@@ -8202,7 +8214,7 @@ class InputSticker(Dictionaryable, JsonSerializable):
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
     
-    def convert_input_sticker(self) -> Tuple[dict, Optional[dict]]:
+    def convert_input_sticker(self) -> Tuple[str, Optional[dict]]:
         if service_utils.is_string(self.sticker):
             return self.to_json(), None
 
@@ -8343,6 +8355,7 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
         return json.dumps(self.to_dict())
 
 
+# noinspection PyShadowingBuiltins
 class Story(JsonDeserializable):
     """
     This object represents a story.
@@ -9250,12 +9263,12 @@ class UsersShared(JsonDeserializable):
         self.users: List[SharedUser] = users
 
     @property
-    def user_id(self) -> int:
+    def user_id(self) -> None:
         logger.warning('The parameter "user_id" is deprecated, use "user_ids" instead')
         return None
 
     @property
-    def user_ids(self) -> List[int]:
+    def user_ids(self) -> List[SharedUser]:
         logger.warning('The parameter "user_ids" is deprecated, use "users" instead')
         return self.users
 
@@ -10217,8 +10230,9 @@ class RevenueWithdrawalState(JsonDeserializable):
         elif obj["type"] == "failed":
             return RevenueWithdrawalStateFailed.de_json(obj)
         return None
-    
 
+
+# noinspection PyShadowingBuiltins
 class RevenueWithdrawalStatePending(RevenueWithdrawalState):
     """
     The withdrawal is in progress.
@@ -10232,7 +10246,6 @@ class RevenueWithdrawalStatePending(RevenueWithdrawalState):
     :rtype: :class:`RevenueWithdrawalStatePending`
     """
 
-    # noinspection PyPackageRequirements
     def __init__(self, type, **kwargs):
         self.type: str = type
 
@@ -10243,6 +10256,7 @@ class RevenueWithdrawalStatePending(RevenueWithdrawalState):
         return cls(**obj)
 
 
+# noinspection PyShadowingBuiltins
 class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
     """
     The withdrawal succeeded.
@@ -10262,7 +10276,6 @@ class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
     :rtype: :class:`RevenueWithdrawalStateSucceeded`
     """
 
-    # noinspection PyPackageRequirements
     def __init__(self, type, date, url, **kwargs):
         self.type: str = type
         self.date: int = date
@@ -10273,9 +10286,9 @@ class RevenueWithdrawalStateSucceeded(RevenueWithdrawalState):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
 
-    
+
+# noinspection PyShadowingBuiltins
 class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
     """
     The withdrawal failed and the transaction was refunded.
@@ -10289,7 +10302,6 @@ class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
     :rtype: :class:`RevenueWithdrawalStateFailed`
     """
 
-    # noinspection PyPackageRequirements
     def __init__(self, type, **kwargs):
         self.type: str = type
 
@@ -10329,7 +10341,9 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerTelegramAds.de_json(obj)
         elif obj["type"] == "other":
             return TransactionPartnerOther.de_json(obj)
-        
+
+
+# noinspection PyShadowingBuiltins
 class TransactionPartnerFragment(TransactionPartner):
     """
     Describes a withdrawal transaction with Fragment.
@@ -10347,7 +10361,6 @@ class TransactionPartnerFragment(TransactionPartner):
 
     """
 
-    # noinspection PyPackageRequirements
     def __init__(self, type, withdrawal_state=None, **kwargs):
         self.type: str = type
         self.withdrawal_state: Optional[RevenueWithdrawalState] = withdrawal_state
@@ -10359,9 +10372,9 @@ class TransactionPartnerFragment(TransactionPartner):
         if 'withdrawal_state' in obj:
             obj['withdrawal_state'] = RevenueWithdrawalState.de_json(obj['withdrawal_state'])
         return cls(**obj)
-    
 
 
+# noinspection PyShadowingBuiltins
 class TransactionPartnerUser(TransactionPartner):
     """
     Describes a transaction with a user.
@@ -10392,7 +10405,9 @@ class TransactionPartnerUser(TransactionPartner):
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
-    
+
+
+# noinspection PyShadowingBuiltins
 class TransactionPartnerTelegramAds(TransactionPartner):
     """
     Describes a transaction with Telegram Ads.
@@ -10413,8 +10428,10 @@ class TransactionPartnerTelegramAds(TransactionPartner):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-    
-        
+        return obj
+
+
+# noinspection PyShadowingBuiltins
 class TransactionPartnerOther(TransactionPartner):
     """
     Describes a transaction with an unknown source or recipient.
@@ -10436,9 +10453,9 @@ class TransactionPartnerOther(TransactionPartner):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
 
 
+# noinspection PyShadowingBuiltins
 class StarTransaction(JsonDeserializable):
     """
     Describes a Telegram Star transaction.
@@ -10531,7 +10548,9 @@ class PaidMedia(JsonDeserializable):
             return PaidMediaPhoto.de_json(obj)
         elif obj["type"] == "video":
             return PaidMediaVideo.de_json(obj)
-        
+
+
+# noinspection PyShadowingBuiltins
 class PaidMediaPreview(PaidMedia):
     """
     The paid media isn't available before the payment.
@@ -10565,8 +10584,9 @@ class PaidMediaPreview(PaidMedia):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
 
+
+# noinspection PyShadowingBuiltins
 class PaidMediaPhoto(PaidMedia):
     """
     The paid media is a photo.
@@ -10595,8 +10615,9 @@ class PaidMediaPhoto(PaidMedia):
 
         obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
         return cls(**obj)
-    
 
+
+# noinspection PyShadowingBuiltins
 class PaidMediaVideo(PaidMedia):
     """
     The paid media is a video.
@@ -10653,6 +10674,7 @@ class PaidMediaInfo(JsonDeserializable):
         self.paid_media: List[PaidMedia] = paid_media
 
 
+# noinspection PyShadowingBuiltins
 class InputPaidMedia(JsonSerializable):
     """
     This object describes the paid media to be sent. Currently, it can be one of
