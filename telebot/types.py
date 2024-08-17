@@ -1619,11 +1619,11 @@ class Message(JsonDeserializable):
         return self.users_shared
 
     @property
-    def any_text(self):
+    def any_text(self) -> Optional[str]:
         return self.caption if (self.caption is not None) else self.text
 
     @property
-    def any_entities(self):
+    def any_entities(self) -> Optional[List[MessageEntity]]:
         return self.caption_entities if (self.caption_entities is not None) else self.entities
 
 
