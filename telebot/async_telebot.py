@@ -6977,7 +6977,7 @@ class AsyncTeleBot:
         return await asyncio_helper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
     async def answer_pre_checkout_query(
-            self, pre_checkout_query_id: int, ok: bool, 
+            self, pre_checkout_query_id: str, ok: bool, 
             error_message: Optional[str]=None) -> bool:
         """
         Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the
