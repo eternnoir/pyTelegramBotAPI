@@ -39,7 +39,13 @@ class BotRunner:
             for idx, job in enumerate(self.background_jobs)
         ]
         try:
-            await self.bot.infinity_polling(interval=1, bot_prefix=self.bot_prefix)
+            await self.bot.infinity_polling(
+                interval=3,
+                timeout=60,
+                request_timeout=120,
+                auto_close_session=False,
+                bot_prefix=self.bot_prefix,
+            )
         finally:
             for t in background_job_tasks:
                 if t.cancel():
