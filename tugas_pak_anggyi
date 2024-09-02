@@ -1,0 +1,37 @@
+#include <iostream>
+using namespace std;
+
+int biaya_awal, biaya_akhir, y, diskon, nilai_d, umur_p, jumlah_p;
+
+int biaya_masuk(){
+    if(umur_p<5){
+        biaya_awal = 30000;
+    }
+    else if(umur_p>60){
+        biaya_awal = 40000;
+    }
+    else{
+        biaya_awal = 50000;
+    }
+    return 0;
+}
+
+int main(){
+    cout<<"Masukkan Umur Pelanggan : ";
+    cin>>umur_p;
+    cout<<"Masukkan Jumlah Pelanggan : ";
+    cin>>jumlah_p;
+    nilai_d = 5;
+    biaya_masuk();
+    y = biaya_awal*jumlah_p;
+    if (jumlah_p > 5){
+        diskon = (y * nilai_d / 100);
+    }
+    biaya_akhir = y - diskon;
+    cout<<"Biaya yang harus dibayarkan adalah sebesar Rp "<<biaya_akhir<<endl;    
+    cout<<"Berikut adalah rincian dari biaya pembayaran : "<<endl; 
+    cout<<"Biaya masuk awal  : Rp "<<y<<endl;
+    cout<<"Diskon            : Rp "<<diskon<<endl;
+    cout<<"Biaya masuk final : Rp "<<biaya_akhir<<endl;
+    return 0;
+}
