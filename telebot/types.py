@@ -2561,13 +2561,13 @@ class KeyboardButtonRequestUsers(Dictionaryable):
     """
     def __init__(
             self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
-            max_quantity: Optional[int]=None, request_name: Optional[str]=None, request_username: Optional[bool]=None,
+            max_quantity: Optional[int]=None, request_name: Optional[bool]=None, request_username: Optional[bool]=None,
             request_photo: Optional[bool]=None) -> None:
         self.request_id: int = request_id
         self.user_is_bot: Optional[bool] = user_is_bot
         self.user_is_premium: Optional[bool] = user_is_premium
         self.max_quantity: Optional[int] = max_quantity
-        self.request_name: Optional[str] = request_name
+        self.request_name: Optional[bool] = request_name
         self.request_username: Optional[bool] = request_username
         self.request_photo: Optional[bool] = request_photo
 
