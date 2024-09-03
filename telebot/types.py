@@ -19,6 +19,9 @@ from telebot.formatting import apply_html_entities
 
 
 DISABLE_KEYLEN_ERROR = False
+JSONDESERIALIZABLE_INDENT = 2
+JSONDESERIALIZABLE_PARSE_OUTPUT = False
+JSONDESERIALIZABLE_SKIP_NONE = True
 
 logger = logging.getLogger('TeleBot')
 
@@ -95,12 +98,34 @@ class JsonDeserializable(object):
         else:
             raise ValueError("json_type should be a json dict or string.")
 
-    def __str__(self):
-        d = {
-            x: y.__dict__ if hasattr(y, '__dict__') else y
-            for x, y in self.__dict__.items()
-        }
-        return str(d)
+    @staticmethod
+    def _default(obj) -> Union[dict, str]:
+        if not isinstance(obj, JsonDeserializable):
+            return repr(obj) if JSONDESERIALIZABLE_PARSE_OUTPUT else obj
+        else:
+            return {
+                attr: getattr(obj, attr)
+                for attr in filter(
+                    lambda x: not x.startswith("_"),
+                    obj.__dict__,
+                )
+                if getattr(obj, attr) is not None or not JSONDESERIALIZABLE_SKIP_NONE
+            }
+
+    def __str__(self) -> str:
+        if JSONDESERIALIZABLE_PARSE_OUTPUT:
+            return json.dumps(
+                self,
+                default=JsonDeserializable._default,
+                indent=JSONDESERIALIZABLE_INDENT, ensure_ascii=False)
+        else:
+            return str(
+                {
+                    x: JsonDeserializable._default(y) if isinstance(y, JsonDeserializable) else y
+                    for x, y in self.__dict__.items()
+                    if y is not None or not JSONDESERIALIZABLE_SKIP_NONE
+                }
+            )
 
 
 class Update(JsonDeserializable):
