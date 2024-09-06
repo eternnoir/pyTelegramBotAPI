@@ -530,7 +530,7 @@ def send_paid_media(
         token, chat_id, star_count, media,
         caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
         disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
-        business_connection_id=None):
+        business_connection_id=None, media_payload=None):
     method_url = r'sendPaidMedia'
     media_json, files = convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
@@ -552,6 +552,8 @@ def send_paid_media(
         payload['reply_markup'] = _convert_markup(reply_markup)
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
+    if media_payload:
+        payload['payload'] = media_payload
     return _make_request(
         token, method_url, params=payload,
         method='post' if files else 'get',

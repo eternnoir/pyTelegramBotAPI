@@ -4627,7 +4627,8 @@ class AsyncTeleBot:
             caption: Optional[str]=None, parse_mode: Optional[str]=None, caption_entities: Optional[List[types.MessageEntity]]=None,
             show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None) -> types.Message:
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None,
+            payload: Optional[str]=None) -> types.Message:
         """
         Use this method to send paid media to channel chats. On success, the sent Message is returned.
 
@@ -4669,6 +4670,9 @@ class AsyncTeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param payload: Bot-defined paid media payload, 0-128 bytes. This will not be displayed to the user, use it for your internal processes.
+        :type payload: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4677,7 +4681,8 @@ class AsyncTeleBot:
                 self.token, chat_id, star_count, media, caption=caption, parse_mode=parse_mode,
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
-                reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id))
+                reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id,
+                media_payload=payload))
 
     async def send_media_group(
             self, chat_id: Union[int, str], 
