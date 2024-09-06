@@ -183,6 +183,7 @@ class AsyncTeleBot:
         self.business_message_handlers = []
         self.edited_business_message_handlers = []
         self.deleted_business_messages_handlers = []
+        self.purchased_paid_media_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -636,6 +637,7 @@ class AsyncTeleBot:
         new_business_messages = None
         new_edited_business_messages = None
         new_deleted_business_messages = None
+        new_purchased_paid_media = None
 
 
         for update in updates:
@@ -706,6 +708,9 @@ class AsyncTeleBot:
             if update.deleted_business_messages:
                 if new_deleted_business_messages is None: new_deleted_business_messages = []
                 new_deleted_business_messages.append(update.deleted_business_messages)
+            if update.purchased_paid_media:
+                if new_purchased_paid_media is None: new_purchased_paid_media = []
+                new_purchased_paid_media.append(update.purchased_paid_media)
 
 
         if new_messages:
@@ -750,6 +755,8 @@ class AsyncTeleBot:
             await self.process_new_edited_business_message(new_edited_business_messages)
         if new_deleted_business_messages:
             await self.process_new_deleted_business_messages(new_deleted_business_messages)
+        if new_purchased_paid_media:
+            await self.process_new_purchased_paid_media(new_purchased_paid_media)
 
     async def process_new_messages(self, new_messages):
         """
@@ -883,6 +890,12 @@ class AsyncTeleBot:
         :meta private:
         """
         await self._process_updates(self.deleted_business_messages_handlers, new_deleted_business_messages, 'deleted_business_messages')
+
+    async def process_new_purchased_paid_media(self, new_purchased_paid_media):
+        """
+        :meta private:
+        """
+        await self._process_updates(self.purchased_paid_media_handlers, new_purchased_paid_media, 'purchased_paid_media')
 
     async def _get_middlewares(self, update_type):
         """
@@ -1866,6 +1879,56 @@ class AsyncTeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
+
+    def purchased_paid_media_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming purchased paid media.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_purchased_paid_media_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_purchased_paid_media_handler(self, handler_dict):
+        """
+        Adds a purchased paid media handler
+        Note that you should use register_purchased_paid_media_handler to add purchased_paid_media_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.purchased_paid_media_handlers.append(handler_dict)
+
+    def register_purchased_paid_media_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers purchased paid media handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+        
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_purchased_paid_media_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
         """

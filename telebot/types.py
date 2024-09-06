@@ -153,6 +153,9 @@ class Update(JsonDeserializable):
         checkout
     :type pre_checkout_query: :class:`telebot.types.PreCheckoutQuery`
 
+    :purchased_paid_media: Optional. A user purchased paid media with a non-empty payload sent by the bot in a non-channel chat
+    :type purchased_paid_media: :class:`telebot.types.PaidMediaPurchased`
+
     :param poll: Optional. New poll state. Bots receive only updates about stopped polls and polls, which are sent by the 
         bot
     :type poll: :class:`telebot.types.Poll`
@@ -222,18 +225,19 @@ class Update(JsonDeserializable):
         business_message = Message.de_json(obj.get('business_message'))
         edited_business_message = Message.de_json(obj.get('edited_business_message'))
         deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
+        purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages)
+                   deleted_business_messages, purchased_paid_media)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, **kwargs):
+                 deleted_business_messages, purchased_paid_media):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -257,6 +261,7 @@ class Update(JsonDeserializable):
         self.business_message: Optional[Message] = business_message
         self.edited_business_message: Optional[Message] = edited_business_message
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
+        self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
 
 
 
@@ -10856,4 +10861,31 @@ class RefundedPayment(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
     
+    
+class PaidMediaPurchased(JsonDeserializable):
+    """
+    This object contains information about a paid media purchase.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediapurchased
+
+    :param from_user: User who purchased the media
+    :type from_user: :class:`User`
+
+    :param paid_media_payload: Bot-specified paid media payload
+    :type paid_media_payload: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPurchased`
+    """
+
+    def __init__(self, from_user, paid_media_payload, **kwargs):
+        self.from_user: User = from_user
+        self.paid_media_payload: str = paid_media_payload
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['from_user'] = User.de_json(obj['from_user'])
+        return cls(**obj)
     
