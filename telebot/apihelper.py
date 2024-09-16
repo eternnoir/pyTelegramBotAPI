@@ -530,32 +530,32 @@ def send_paid_media(
         token, chat_id, star_count, media,
         caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
         disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
-        business_connection_id=None, media_payload=None):
+        business_connection_id=None, payload=None):
     method_url = r'sendPaidMedia'
     media_json, files = convert_input_media_array(media)
-    payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
+    _payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
     if caption:
-        payload['caption'] = caption
+        _payload['caption'] = caption
     if parse_mode:
-        payload['parse_mode'] = parse_mode
+        _payload['parse_mode'] = parse_mode
     if caption_entities:
-        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+        _payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if show_caption_above_media is not None:
-        payload['show_caption_above_media'] = show_caption_above_media
+        _payload['show_caption_above_media'] = show_caption_above_media
     if disable_notification is not None:
-        payload['disable_notification'] = disable_notification
+        _payload['disable_notification'] = disable_notification
     if protect_content is not None:
-        payload['protect_content'] = protect_content
+        _payload['protect_content'] = protect_content
     if reply_parameters is not None:
-        payload['reply_parameters'] = reply_parameters.to_json()
+        _payload['reply_parameters'] = reply_parameters.to_json()
     if reply_markup:
-        payload['reply_markup'] = _convert_markup(reply_markup)
+        _payload['reply_markup'] = _convert_markup(reply_markup)
     if business_connection_id:
-        payload['business_connection_id'] = business_connection_id
-    if media_payload:
-        payload['payload'] = media_payload
+        _payload['business_connection_id'] = business_connection_id
+    if payload:
+        _payload['payload'] = payload
     return _make_request(
-        token, method_url, params=payload,
+        token, method_url, params=_payload,
         method='post' if files else 'get',
         files=files if files else None)
 

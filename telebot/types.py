@@ -9502,8 +9502,8 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
     def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, prize_star_count=None, **kwargs):
         self.source: str = source
         self.giveaway_message_id: int = giveaway_message_id
-        self.user: User = user
-        self.is_unclaimed: bool = is_unclaimed
+        self.user: Optional[User] = user
+        self.is_unclaimed: Optional[bool] = is_unclaimed
         self.prize_star_count: Optional[int] = prize_star_count
 
 

@@ -4682,7 +4682,7 @@ class AsyncTeleBot:
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
                 reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id,
-                media_payload=payload))
+                payload=payload))
 
     async def send_media_group(
             self, chat_id: Union[int, str], 
