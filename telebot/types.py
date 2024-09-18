@@ -153,6 +153,9 @@ class Update(JsonDeserializable):
         checkout
     :type pre_checkout_query: :class:`telebot.types.PreCheckoutQuery`
 
+    :purchased_paid_media: Optional. A user purchased paid media with a non-empty payload sent by the bot in a non-channel chat
+    :type purchased_paid_media: :class:`telebot.types.PaidMediaPurchased`
+
     :param poll: Optional. New poll state. Bots receive only updates about stopped polls and polls, which are sent by the 
         bot
     :type poll: :class:`telebot.types.Poll`
@@ -222,18 +225,19 @@ class Update(JsonDeserializable):
         business_message = Message.de_json(obj.get('business_message'))
         edited_business_message = Message.de_json(obj.get('edited_business_message'))
         deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
+        purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages)
+                   deleted_business_messages, purchased_paid_media)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, **kwargs):
+                 deleted_business_messages, purchased_paid_media):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -257,6 +261,7 @@ class Update(JsonDeserializable):
         self.business_message: Optional[Message] = business_message
         self.edited_business_message: Optional[Message] = edited_business_message
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
+        self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
 
 
 
@@ -8989,6 +8994,9 @@ class Giveaway(JsonDeserializable):
     :param country_codes: Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which eligible users for the giveaway must come. If empty, then all users can participate in the giveaway.
     :type country_codes: :obj:`list` of :obj:`str`
 
+    :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+    :type prize_star_count: :obj:`int`
+
     :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
     :type premium_subscription_month_count: :obj:`int`
 
@@ -9006,7 +9014,7 @@ class Giveaway(JsonDeserializable):
     def __init__(self, chats: List[Chat], winners_selection_date: int, winner_count: int,
                  only_new_members: Optional[bool] = None, has_public_winners: Optional[bool] = None,
                  prize_description: Optional[str] = None, country_codes: Optional[List[str]] = None,
-                 premium_subscription_month_count: Optional[int] = None, **kwargs) -> None:
+                 premium_subscription_month_count: Optional[int] = None, prize_star_count: Optional[int] = None, **kwargs) -> None:
         self.chats: List[Chat] = chats
         self.winners_selection_date: int = winners_selection_date
         self.winner_count: int = winner_count
@@ -9015,6 +9023,7 @@ class Giveaway(JsonDeserializable):
         self.prize_description: Optional[str] = prize_description
         self.country_codes: Optional[List[str]] = country_codes
         self.premium_subscription_month_count: Optional[int] = premium_subscription_month_count
+        self.prize_star_count: Optional[int] = prize_star_count
                      
 
 class GiveawayWinners(JsonDeserializable):
@@ -9056,6 +9065,9 @@ class GiveawayWinners(JsonDeserializable):
     :param prize_description: Optional. Description of additional giveaway prize
     :type prize_description: :obj:`str`
 
+    :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+    :type prize_star_count: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`GiveawayWinners`
     """
@@ -9072,7 +9084,7 @@ class GiveawayWinners(JsonDeserializable):
                  winners: List[User], additional_chat_count: Optional[int] = None,
                  premium_subscription_month_count: Optional[int] = None, unclaimed_prize_count: Optional[int] = None,
                  only_new_members: Optional[bool] = None, was_refunded: Optional[bool] = None,
-                 prize_description: Optional[str] = None, **kwargs) -> None:
+                 prize_description: Optional[str] = None, prize_star_count: Optional[int] = None, **kwargs) -> None:
         self.chat: Chat = chat
         self.giveaway_message_id: int = giveaway_message_id
         self.winners_selection_date: int = winners_selection_date
@@ -9084,6 +9096,7 @@ class GiveawayWinners(JsonDeserializable):
         self.only_new_members: Optional[bool] = only_new_members
         self.was_refunded: Optional[bool] = was_refunded
         self.prize_description: Optional[str] = prize_description
+        self.prize_star_count: Optional[int] = prize_star_count
                      
         
 class GiveawayCompleted(JsonDeserializable):
@@ -9101,6 +9114,9 @@ class GiveawayCompleted(JsonDeserializable):
     :param giveaway_message: Optional. Message with the giveaway that was completed, if it wasn't deleted
     :type giveaway_message: :class:`Message`
 
+    :param is_star_giveaway: Optional. True, if the giveaway was a Telegram Star giveaway
+    :type is_star_giveaway: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`GiveawayCompleted`
     """
@@ -9114,15 +9130,21 @@ class GiveawayCompleted(JsonDeserializable):
         return cls(**obj)
     
     def __init__(self, winner_count: int, unclaimed_prize_count: Optional[int] = None,
-                    giveaway_message: Optional[Message] = None, **kwargs) -> None:
+                    giveaway_message: Optional[Message] = None, is_star_giveaway: Optional[bool] = None, **kwargs) -> None:
         self.winner_count: int = winner_count
         self.unclaimed_prize_count: Optional[int] = unclaimed_prize_count
         self.giveaway_message: Optional[Message] = giveaway_message
+        self.is_star_giveaway: Optional[bool] = is_star_giveaway
                         
 
 class GiveawayCreated(JsonDeserializable):
     """
-    This object represents a service message about the creation of a scheduled giveaway. Currently holds no information.
+    This object represents a service message about the creation of a scheduled giveaway.
+
+    :prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+    :type prize_star_count: :obj:`int`
+
+    :return: Instance of the class
     """
 
     @classmethod
@@ -9131,8 +9153,8 @@ class GiveawayCreated(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, **kwargs) -> None:
-        pass
+    def __init__(self, prize_star_count=None, **kwargs) -> None:
+        self.prize_star_count: Optional[str] = prize_star_count
 
 
 class TextQuote(JsonDeserializable):
@@ -9463,6 +9485,9 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
     :param is_unclaimed: True, if the giveaway was completed, but there was no user to win the prize
     :type is_unclaimed: :obj:`bool`
 
+    :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+    :type prize_star_count: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`ChatBoostSourceGiveaway`
     """
@@ -9474,11 +9499,12 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
         obj['user'] = User.de_json(obj.get('user'))
         return cls(**obj)
 
-    def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, **kwargs):
+    def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, prize_star_count=None, **kwargs):
         self.source: str = source
         self.giveaway_message_id: int = giveaway_message_id
-        self.user: User = user
-        self.is_unclaimed: bool = is_unclaimed
+        self.user: Optional[User] = user
+        self.is_unclaimed: Optional[bool] = is_unclaimed
+        self.prize_star_count: Optional[int] = prize_star_count
 
 
 class ChatBoost(JsonDeserializable):
@@ -10856,4 +10882,31 @@ class RefundedPayment(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
     
+    
+class PaidMediaPurchased(JsonDeserializable):
+    """
+    This object contains information about a paid media purchase.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmediapurchased
+
+    :param from_user: User who purchased the media
+    :type from_user: :class:`User`
+
+    :param paid_media_payload: Bot-specified paid media payload
+    :type paid_media_payload: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaPurchased`
+    """
+
+    def __init__(self, from_user, paid_media_payload, **kwargs):
+        self.from_user: User = from_user
+        self.paid_media_payload: str = paid_media_payload
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['from_user'] = User.de_json(obj['from_user'])
+        return cls(**obj)
     

@@ -248,6 +248,7 @@ class TeleBot:
         self.business_message_handlers = []
         self.edited_business_message_handlers = []
         self.deleted_business_messages_handlers = []
+        self.purchased_paid_media_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -724,6 +725,7 @@ class TeleBot:
         new_business_messages = None
         new_edited_business_messages = None
         new_deleted_business_messages = None
+        new_purchased_paid_media = None
         
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -805,8 +807,10 @@ class TeleBot:
             if update.deleted_business_messages:
                 if new_deleted_business_messages is None: new_deleted_business_messages = []
                 new_deleted_business_messages.append(update.deleted_business_messages)
-
-
+            if update.purchased_paid_media:
+                if new_purchased_paid_media is None: new_purchased_paid_media = []
+                new_purchased_paid_media.append(update.purchased_paid_media)
+                
         if new_messages:
             self.process_new_messages(new_messages)
         if new_edited_messages:
@@ -851,6 +855,8 @@ class TeleBot:
             self.process_new_edited_business_message(new_edited_business_messages)
         if new_deleted_business_messages:
             self.process_new_deleted_business_messages(new_deleted_business_messages)
+        if new_purchased_paid_media:
+            self.process_new_purchased_paid_media(new_purchased_paid_media)
 
     def process_new_messages(self, new_messages):
         """
@@ -987,8 +993,11 @@ class TeleBot:
         """
         self._notify_command_handlers(self.deleted_business_messages_handlers, new_deleted_business_messages, 'deleted_business_messages')
     
-
-
+    def process_new_purchased_paid_media(self, new_purchased_paid_media):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.purchased_paid_media_handlers, new_purchased_paid_media, 'purchased_paid_media')
 
     def process_middlewares(self, update):
         """
@@ -3137,6 +3146,7 @@ class TeleBot:
             show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None,
+            payload: Optional[str]=None
     ) -> types.Message:
         """
         Use this method to send paid media to channel chats. On success, the sent Message is returned.
@@ -3179,6 +3189,9 @@ class TeleBot:
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
         :type business_connection_id: :obj:`str`
 
+        :param payload: Bot-defined paid media payload, 0-128 bytes. This will not be displayed to the user, use it for your internal processes.
+        :type payload: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3187,7 +3200,8 @@ class TeleBot:
                 self.token, chat_id, star_count, media, caption=caption, parse_mode=parse_mode,
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
-                reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id)
+                reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id,
+                payload=payload)
         )
 
 
@@ -8035,6 +8049,55 @@ class TeleBot:
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_pre_checkout_query_handler(handler_dict)
 
+    def purchased_paid_media_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming purchased paid media.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_purchased_paid_media_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_purchased_paid_media_handler(self, handler_dict):
+        """
+        Adds a purchased paid media handler
+        Note that you should use register_purchased_paid_media_handler to add purchased_paid_media_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.purchased_paid_media_handlers.append(handler_dict)
+
+    def register_purchased_paid_media_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers purchased paid media handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+        
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_purchased_paid_media_handler(handler_dict)
 
     def poll_handler(self, func, **kwargs):
         """
