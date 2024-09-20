@@ -15,9 +15,13 @@ class State:
             my_state = State() # returns my_state:State string.
     """
 
+    id = 0
+
     def __init__(self) -> None:
+        self.id = self.__class__.id
         self.name: str = None
         self.group: StatesGroup = None
+        self.__class__.id += 1
 
     def __str__(self) -> str:
         return f"<{self.name}>"
@@ -42,7 +46,7 @@ class StatesGroup:
                 and isinstance(value, State)
             ):
                 # change value of that variable
-                value.name = ":".join((cls.__name__, name))
+                value.name = ":".join((cls.__name__, name, str(value.id)))
                 value.group = cls
                 state_list.append(value)
         cls._state_list = state_list
