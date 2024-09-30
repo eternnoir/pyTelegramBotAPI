@@ -3,6 +3,7 @@ from telebot import custom_filters, types
 from telebot.states import State, StatesGroup
 from telebot.states.sync.context import StateContext
 from telebot.storage import StateMemoryStorage
+from telebot.types import ReplyParameters
 
 # Initialize the bot
 state_storage = StateMemoryStorage()  # don't use this in production; switch to redis
@@ -24,7 +25,7 @@ def start_ex(message: types.Message, state: StateContext):
     bot.send_message(
         message.chat.id,
         "Hello! What is your first name?",
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -35,7 +36,7 @@ def any_state(message: types.Message, state: StateContext):
     bot.send_message(
         message.chat.id,
         "Your information has been cleared. Type /start to begin again.",
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -44,7 +45,8 @@ def any_state(message: types.Message, state: StateContext):
 def name_get(message: types.Message, state: StateContext):
     state.set(MyStates.age)
     bot.send_message(
-        message.chat.id, "How old are you?", reply_to_message_id=message.message_id
+        message.chat.id, "How old are you?",
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
     state.add_data(name=message.text)
 
@@ -65,7 +67,7 @@ def ask_color(message: types.Message, state: StateContext):
         message.chat.id,
         "What is your favorite color? Choose from the options below.",
         reply_markup=keyboard,
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -85,7 +87,7 @@ def ask_hobby(message: types.Message, state: StateContext):
         message.chat.id,
         "What is one of your hobbies? Choose from the options below.",
         reply_markup=keyboard,
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -124,7 +126,8 @@ def finish(message: types.Message, state: StateContext):
         )
 
     bot.send_message(
-        message.chat.id, msg, parse_mode="html", reply_to_message_id=message.message_id
+        message.chat.id, msg, parse_mode="html",
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
     state.delete()
 
@@ -135,7 +138,7 @@ def age_incorrect(message: types.Message):
     bot.send_message(
         message.chat.id,
         "Please enter a valid number for age.",
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 

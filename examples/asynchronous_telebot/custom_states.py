@@ -2,6 +2,7 @@ from telebot import async_telebot, asyncio_filters, types
 from telebot.asyncio_storage import StateMemoryStorage
 from telebot.states import State, StatesGroup
 from telebot.states.asyncio.context import StateContext
+from telebot.types import ReplyParameters
 
 # Initialize the bot
 state_storage = StateMemoryStorage()  # don't use this in production; switch to redis
@@ -23,7 +24,7 @@ async def start_ex(message: types.Message, state: StateContext):
     await bot.send_message(
         message.chat.id,
         "Hello! What is your first name?",
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -34,7 +35,7 @@ async def any_state(message: types.Message, state: StateContext):
     await bot.send_message(
         message.chat.id,
         "Your information has been cleared. Type /start to begin again.",
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -43,7 +44,8 @@ async def any_state(message: types.Message, state: StateContext):
 async def name_get(message: types.Message, state: StateContext):
     await state.set(MyStates.age)
     await bot.send_message(
-        message.chat.id, "How old are you?", reply_to_message_id=message.message_id
+        message.chat.id, "How old are you?",
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
     await state.add_data(name=message.text)
 
@@ -64,7 +66,7 @@ async def ask_color(message: types.Message, state: StateContext):
         message.chat.id,
         "What is your favorite color? Choose from the options below.",
         reply_markup=keyboard,
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -84,7 +86,7 @@ async def ask_hobby(message: types.Message, state: StateContext):
         message.chat.id,
         "What is one of your hobbies? Choose from the options below.",
         reply_markup=keyboard,
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
@@ -123,7 +125,8 @@ async def finish(message: types.Message, state: StateContext):
         )
 
     await bot.send_message(
-        message.chat.id, msg, parse_mode="html", reply_to_message_id=message.message_id
+        message.chat.id, msg, parse_mode="html",
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
     await state.delete()
 
@@ -134,7 +137,7 @@ async def age_incorrect(message: types.Message):
     await bot.send_message(
         message.chat.id,
         "Please enter a valid number for age.",
-        reply_to_message_id=message.message_id,
+        reply_parameters=ReplyParameters(message_id=message.message_id),
     )
 
 
