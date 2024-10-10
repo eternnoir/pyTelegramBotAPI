@@ -254,9 +254,9 @@ class StatePickleStorage(StateStorageBase):
             message_thread_id,
             bot_id,
         )
-        data = self._read_from_file()
-        data[_key]["data"] = data
-        self._write_to_file(data)
+        file_data = self._read_from_file()
+        file_data[_key]["data"] = data
+        self._write_to_file(file_data)
         return True
 
     def __str__(self) -> str:
