@@ -4,6 +4,7 @@ from __future__ import annotations
 from io import IOBase
 import logging
 import os
+import traceback
 from pathlib import Path
 from typing import Dict, List, Optional, Union, Any, Tuple
 from abc import ABC
@@ -19,6 +20,7 @@ from telebot.formatting import apply_html_entities
 
 
 DISABLE_KEYLEN_ERROR = False
+DEPRECATION_STACK_SHOW_DEPTH = 0
 
 logger = logging.getLogger('TeleBot')
 
@@ -1550,31 +1552,43 @@ class Message(JsonDeserializable):
     @property
     def voice_chat_scheduled(self):
         logger.warning('The parameter "voice_chat_scheduled" is deprecated, use "video_chat_scheduled" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.video_chat_scheduled
 
     @property
     def voice_chat_started(self):
         logger.warning('The parameter "voice_chat_started" is deprecated, use "video_chat_started" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.video_chat_started
 
     @property
     def voice_chat_ended(self):
         logger.warning('The parameter "voice_chat_ended" is deprecated, use "video_chat_ended" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.video_chat_ended
 
     @property
     def voice_chat_participants_invited(self):
         logger.warning('The parameter "voice_chat_participants_invited" is deprecated, use "video_chat_participants_invited" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.video_chat_participants_invited
 
     @property
     def new_chat_member(self):
         logger.warning('The parameter "new_chat_member" is deprecated, use "new_chat_members" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return None
 
     @property
     def forward_from(self):
         logger.warning('The parameter "forward_from" is deprecated, use "forward_origin" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         if self.forward_origin and isinstance(self.forward_origin, MessageOriginUser):
             return self.forward_origin.sender_user
         return None
@@ -1582,6 +1596,8 @@ class Message(JsonDeserializable):
     @property
     def forward_from_chat(self):
         logger.warning('The parameter "forward_from_chat" is deprecated, use "forward_origin" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         if self.forward_origin and isinstance(self.forward_origin, MessageOriginChat):
             return self.forward_origin.sender_chat
         elif self.forward_origin and isinstance(self.forward_origin, MessageOriginChannel):
@@ -1591,6 +1607,8 @@ class Message(JsonDeserializable):
     @property
     def forward_from_message_id(self):
         logger.warning('The parameter "forward_from_message_id" is deprecated, use "forward_origin" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         if self.forward_origin and isinstance(self.forward_origin, MessageOriginChannel):
             return self.forward_origin.message_id
         return None
@@ -1598,6 +1616,8 @@ class Message(JsonDeserializable):
     @property
     def forward_signature(self):
         logger.warning('The parameter "forward_signature" is deprecated, use "forward_origin" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         if self.forward_origin and isinstance(self.forward_origin, MessageOriginChat):
             return self.forward_origin.author_signature
         elif self.forward_origin and isinstance(self.forward_origin, MessageOriginChannel):
@@ -1607,6 +1627,8 @@ class Message(JsonDeserializable):
     @property
     def forward_sender_name(self):
         logger.warning('The parameter "forward_sender_name" is deprecated, use "forward_origin" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         if self.forward_origin and isinstance(self.forward_origin, MessageOriginHiddenUser):
             return self.forward_origin.sender_user_name
         return None
@@ -1614,6 +1636,8 @@ class Message(JsonDeserializable):
     @property
     def forward_date(self):
         logger.warning('The parameter "forward_date" is deprecated, use "forward_origin" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         if self.forward_origin:
             return self.forward_origin.date
         return None
@@ -1621,6 +1645,8 @@ class Message(JsonDeserializable):
     @property
     def user_shared(self):
         logger.warning('The parameter "user_shared" is deprecated, use "users_shared" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.users_shared
 
     @property
@@ -1847,6 +1873,8 @@ class Audio(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
 
@@ -1942,6 +1970,8 @@ class Document(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
 
@@ -2006,6 +2036,8 @@ class Video(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
 
@@ -2056,6 +2088,8 @@ class VideoNote(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
 
@@ -2598,7 +2632,9 @@ class KeyboardButtonRequestUser(KeyboardButtonRequestUsers):
     def __init__(
             self, request_id: int, user_is_bot: Optional[bool]=None, user_is_premium: Optional[bool]=None,
             max_quantity: Optional[int]=None) -> None:
-        logger.warning('The parameter "voice_chat_scheduled" is deprecated, use "video_chat_scheduled" instead')
+        logger.warning('The class "KeyboardButtonRequestUser" is deprecated, use "KeyboardButtonRequestUsers" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         super().__init__(request_id, user_is_bot=user_is_bot, user_is_premium=user_is_premium, max_quantity=max_quantity)
 
 
@@ -2746,6 +2782,8 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         self.request_users: Optional[KeyboardButtonRequestUsers] = request_users
         if request_user is not None:
             logger.warning('The parameter "request_user" is deprecated, use "request_users" instead')
+            if DEPRECATION_STACK_SHOW_DEPTH:
+                logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
             if self.request_users is None:
                 # noinspection PyTypeChecker
                 self.request_users = request_user
@@ -3233,6 +3271,8 @@ class ChatMember(JsonDeserializable):
     @property
     def can_manage_voice_chats(self):
         logger.warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.can_manage_video_chats
 
 
@@ -3558,6 +3598,8 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             # Telegram passes can_send_media_messages in Chat.permissions. Temporary created parameter "de_json" allows avoid
             # deprection warning and individual parameters overriding.
             logger.warning('The parameter "can_send_media_messages" is deprecated. Use individual parameters like "can_send_audios", "can_send_documents" etc.')
+            if DEPRECATION_STACK_SHOW_DEPTH:
+                logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
             self.can_send_audios: Optional[bool] = can_send_media_messages
             self.can_send_documents: Optional[bool] = can_send_media_messages
             self.can_send_photos: Optional[bool] = can_send_media_messages
@@ -3928,7 +3970,9 @@ class InputTextMessageContent(Dictionaryable):
         self.link_preview_options: Optional[LinkPreviewOptions] = link_preview_options
         if disable_web_page_preview is not None:
             logger.warning('The parameter "disable_web_page_preview" is deprecated. Use "link_preview_options" instead.')
-            
+            if DEPRECATION_STACK_SHOW_DEPTH:
+                logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
+
             if link_preview_options:
                 logger.warning('Both "link_preview_options" and "disable_web_page_preview" parameters are set: conflicting, "disable_web_page_preview" is deprecated')
             else:
@@ -4434,16 +4478,22 @@ class InlineQueryResultArticle(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_width(self) -> int:
         logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_width
 
     @property
     def thumb_height(self) -> int:
         logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_height
 
     def to_dict(self):
@@ -4535,6 +4585,8 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     def to_dict(self):
@@ -4629,11 +4681,15 @@ class InlineQueryResultGif(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_mime_type(self) -> str:
         logger.warning('The parameter "thumb_mime_type" is deprecated, use "thumbnail_mime_type" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_mime_type
 
     def to_dict(self):
@@ -4729,11 +4785,15 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_mime_type(self) -> str:
         logger.warning('The parameter "thumb_mime_type" is deprecated, use "thumbnail_mime_type" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_mime_type
 
     def to_dict(self):
@@ -4835,6 +4895,8 @@ class InlineQueryResultVideo(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     def to_dict(self):
@@ -5052,16 +5114,22 @@ class InlineQueryResultDocument(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_width(self) -> int:
         logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_width
 
     @property
     def thumb_height(self) -> int:
         logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_height
 
     def to_dict(self):
@@ -5151,16 +5219,22 @@ class InlineQueryResultLocation(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_width(self) -> int:
         logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_width
 
     @property
     def thumb_height(self) -> int:
         logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_height
 
     def to_dict(self):
@@ -5261,16 +5335,22 @@ class InlineQueryResultVenue(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_width(self) -> int:
         logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_width
 
     @property
     def thumb_height(self) -> int:
         logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_height
 
     def to_dict(self):
@@ -5356,16 +5436,22 @@ class InlineQueryResultContact(InlineQueryResultBase):
     @property
     def thumb_url(self) -> str:
         logger.warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_url
 
     @property
     def thumb_width(self) -> int:
         logger.warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_width
 
     @property
     def thumb_height(self) -> int:
         logger.warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail_height
 
     def to_dict(self):
@@ -6054,6 +6140,8 @@ class Animation(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
 
@@ -6470,30 +6558,29 @@ class StickerSet(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
     @property
     def contains_masks(self) -> bool:
-        """
-        Deprecated since Bot API 6.2, use sticker_type instead.
-        """
         logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type instead"')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.sticker_type == 'mask'
 
     @property
     def is_animated(self) -> bool:
-        """
-        Deprecated since Bot API 7.2. Stickers can be mixed now.
-        """
         logger.warning('The parameter "is_animated" is deprecated since Bot API 7.2. Stickers can now be mixed')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return False
 
     @property
     def is_video(self) -> bool:
-        """
-        Deprecated since Bot API 7.2. Stickers can be mixed now.
-        """
         logger.warning('The parameter "is_video" is deprecated since Bot API 7.2. Stickers can now be mixed')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return False
 
 
@@ -6593,6 +6680,8 @@ class Sticker(JsonDeserializable):
     @property
     def thumb(self) -> Optional[PhotoSize]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
 
@@ -6811,6 +6900,8 @@ class InputMediaVideo(InputMedia):
     @property
     def thumb(self) -> Optional[Union[str, Any]]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
     def to_dict(self):
@@ -6898,6 +6989,8 @@ class InputMediaAnimation(InputMedia):
     @property
     def thumb(self) -> Optional[Union[str, Any]]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
     def to_dict(self):
@@ -6972,6 +7065,8 @@ class InputMediaAudio(InputMedia):
     @property
     def thumb(self) -> Optional[Union[str, Any]]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
     def to_dict(self):
@@ -7035,6 +7130,8 @@ class InputMediaDocument(InputMedia):
     @property
     def thumb(self) -> Optional[Union[str, Any]]:
         logger.warning('The parameter "thumb" is deprecated, use "thumbnail" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.thumbnail
 
     def to_dict(self):
@@ -7204,6 +7301,8 @@ class Poll(JsonDeserializable):
         self.type: str = type
         if poll_type is not None:
             logger.warning("Poll: poll_type parameter is deprecated. Use type instead.")
+            if DEPRECATION_STACK_SHOW_DEPTH:
+                logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
             if type is None:
                 self.type: str = poll_type
         self.allows_multiple_answers: bool = allows_multiple_answers
@@ -7447,6 +7546,8 @@ class VoiceChatStarted(VideoChatStarted):
 
     def __init__(self):
         logger.warning('VoiceChatStarted is deprecated. Use VideoChatStarted instead.')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         super().__init__()
 
 
@@ -7479,6 +7580,8 @@ class VoiceChatScheduled(VideoChatScheduled):
     """
     def __init__(self, *args, **kwargs):
         logger.warning('VoiceChatScheduled is deprecated. Use VideoChatScheduled instead.')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         super().__init__(*args, **kwargs)
 
 
@@ -7510,6 +7613,8 @@ class VoiceChatEnded(VideoChatEnded):
     """
     def __init__(self, *args, **kwargs):
         logger.warning('VoiceChatEnded is deprecated. Use VideoChatEnded instead.')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         super().__init__(*args, **kwargs)
 
 
@@ -7543,6 +7648,8 @@ class VoiceChatParticipantsInvited(VideoChatParticipantsInvited):
     """
     def __init__(self, *args, **kwargs):
         logger.warning('VoiceChatParticipantsInvited is deprecated. Use VideoChatParticipantsInvited instead.')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         super().__init__(*args, **kwargs)
 
 
@@ -8190,6 +8297,8 @@ class InputSticker(Dictionaryable, JsonSerializable):
 
         if not self.format:
             logger.warning("Deprecation warning. 'format' parameter is required in InputSticker. Setting format to 'static'.")
+            if DEPRECATION_STACK_SHOW_DEPTH:
+                logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
             self.format = "static"
 
         if service_utils.is_string(self.sticker):
@@ -9308,11 +9417,15 @@ class UsersShared(JsonDeserializable):
     @property
     def user_id(self) -> None:
         logger.warning('The parameter "user_id" is deprecated, use "user_ids" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return None
 
     @property
     def user_ids(self) -> List[SharedUser]:
         logger.warning('The parameter "user_ids" is deprecated, use "users" instead')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return self.users
 
 
@@ -9613,7 +9726,9 @@ class InaccessibleMessage(JsonDeserializable):
 
     @staticmethod
     def __universal_deprecation(property_name):
-        logger.warning(f'Deprecation warning: the filed "{property_name}" is not accessible for InaccessibleMessage. You should check if your object is Message instance before access.')
+        logger.warning(f'Deprecation warning: the field "{property_name}" is not accessible for InaccessibleMessage. You should check if your object is Message instance before access.')
+        if DEPRECATION_STACK_SHOW_DEPTH:
+            logger.warning("".join(traceback.format_stack(limit=DEPRECATION_STACK_SHOW_DEPTH)))
         return None
 
     def __getattr__(self, item):
