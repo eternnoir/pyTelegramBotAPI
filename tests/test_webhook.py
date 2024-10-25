@@ -16,7 +16,6 @@ from telebot.types import service as service_types
 from telebot.webhook import WebhookApp
 from tests.utils import find_free_port
 
-MOCK_BOT_NAME = "testing-bot"
 MOCK_TOKEN = uuid4().hex
 
 
@@ -56,19 +55,22 @@ def bot() -> MockedAsyncTeleBot:
     return bot
 
 
-@pytest.fixture
-def bot_runner(bot: AsyncTeleBot) -> BotRunner:
+@pytest.fixture(
+    params=[
+        "testing-bot",
+        "prefix/with-slashes",
+        "префикс со странными символами 🎃🎃🎃",
+        "unreasonably long prefix " * 100,
+    ]
+)
+def bot_runner(bot: AsyncTeleBot, request: pytest.FixtureRequest) -> BotRunner:
     async def count_milliseconds():
         global COUNTED_MILLISECONDS
         while True:
             COUNTED_MILLISECONDS += 10
             await asyncio.sleep(0.01)
 
-    return BotRunner(
-        bot_prefix=MOCK_BOT_NAME,
-        bot=bot,
-        background_jobs=[count_milliseconds()],
-    )
+    return BotRunner(bot_prefix=request.param, bot=bot, background_jobs=[count_milliseconds()])
 
 
 @pytest.mark.parametrize("webhook_already_exists", [True, False])
@@ -136,7 +138,7 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohtt
     assert COUNTED_MILLISECONDS > 1, "Background job didn't count milliseconds!"
 
     assert len(metrics) == 6
-    assert all(m["bot_prefix"] == "testing-bot" for m in metrics)
+    assert all(m["bot_prefix"] == bot_runner.bot_prefix for m in metrics)
     assert [m["update_id"] for m in metrics] == [
         10001110101,
         10001110102,
@@ -185,7 +187,9 @@ async def test_bot_runner(bot_runner: BotRunner, bot: MockedAsyncTeleBot, aiohtt
     [
         pytest.param("hello-world", uuid4().hex, "hello-world"),
         pytest.param("hello world", uuid4().hex, "hello-world"),
-        pytest.param(" Very Bad  Name For   a Bot!!!   ", uuid4().hex, "Very-Bad-Name-For-a-Bot%21%21%21"),
+        pytest.param(" Very Bad  Name For   a Bot!!!   ", uuid4().hex, "Very-Bad-Name-For-a-Bot!!!"),
+        pytest.param("name/with/slashes", uuid4().hex, "name-with-slashes"),
+        pytest.param("non-ASCII-✅", uuid4().hex, "non-ASCII-✅"),
     ],
 )
 def test_webhook_route_generation(bot_name: str, token: str, expected_route_prefix: str):

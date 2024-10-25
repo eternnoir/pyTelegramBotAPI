@@ -56,5 +56,8 @@ class BotRunner:
         return urllib.parse.quote("-".join(self.bot_prefix.split()))
 
     def webhook_subroute(self) -> str:
+        prefix = self.bot_prefix.replace("/", " ")
+        prefix = "-".join(prefix.split())
+        prefix = prefix[:80]
         token_hash = sha256(self.bot.token.encode("utf-8")).hexdigest()
-        return f"{self.bot_prefix_urlsafe}-{token_hash}"
+        return f"{prefix}-{token_hash}"
