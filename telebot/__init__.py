@@ -1234,31 +1234,6 @@ class TeleBot:
                 polling_thread.raise_exceptions()
                 self.worker_pool.raise_exceptions()
                 error_interval = 0.25
-            except apihelper.ApiException as e:
-                handled = self._handle_exception(e)
-                if not handled:
-                    if logger_level and logger_level >= logging.ERROR:
-                        logger.error("Threaded polling exception: %s", self.__hide_token(str(e)))
-                    if logger_level and logger_level >= logging.DEBUG:
-                        logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
-                    if not non_stop:
-                        self.__stop_polling.set()
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info("Exception occurred. Stopping." + warning)
-                    else:
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
-                        logger.info("Waiting for {0} seconds until retry".format(error_interval) + warning)
-                        time.sleep(error_interval)
-                        if error_interval * 2 < 60:
-                            error_interval *= 2
-                        else:
-                            error_interval = 60
-                else:
-                    # polling_thread.clear_exceptions()
-                    # self.worker_pool.clear_exceptions()
-                    time.sleep(error_interval)
-                polling_thread.clear_exceptions()   #*
-                self.worker_pool.clear_exceptions() #*
             except KeyboardInterrupt:
                 # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
                 logger.info("KeyboardInterrupt received." + warning)
