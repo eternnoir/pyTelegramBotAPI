@@ -2932,6 +2932,9 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         the first row and can only be used in invoice messages.
     :type pay: :obj:`bool`
 
+    :param copy_text: Optional. Description of the button that copies the specified text to the clipboard.
+    :type copy_text: :class:`telebot.types.CopyTextButton`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.InlineKeyboardButton`
     """
@@ -2945,13 +2948,15 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             obj['web_app'] = WebAppInfo.de_json(obj.get('web_app'))
         if 'switch_inline_query_chosen_chat' in obj:
             obj['switch_inline_query_chosen_chat'] = SwitchInlineQueryChosenChat.de_json(obj.get('switch_inline_query_chosen_chat'))
+        if 'copy_text' in obj:
+            obj['copy_text'] = CopyTextButton.de_json(obj.get('copy_text'))
         
         return cls(**obj)
 
     def __init__(self, text: str, url: Optional[str]=None, callback_data: Optional[str]=None, web_app: Optional[WebAppInfo]=None,
             switch_inline_query: Optional[str]=None, switch_inline_query_current_chat: Optional[str]=None,
             switch_inline_query_chosen_chat: Optional[SwitchInlineQueryChosenChat]=None, callback_game=None, pay: Optional[bool]=None,
-            login_url: Optional[LoginUrl]=None, **kwargs):
+            login_url: Optional[LoginUrl]=None, copy_text: Optional[CopyTextButton]=None, **kwargs):
         self.text: str = text
         self.url: Optional[str] = url
         self.callback_data: Optional[str] = callback_data
@@ -2962,6 +2967,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         self.callback_game = callback_game # Not Implemented
         self.pay: Optional[bool] = pay
         self.login_url: Optional[LoginUrl] = login_url
+        self.copy_text: Optional[CopyTextButton] = copy_text
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -2986,6 +2992,8 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             json_dict['login_url'] = self.login_url.to_dict()
         if self.switch_inline_query_chosen_chat is not None:
             json_dict['switch_inline_query_chosen_chat'] = self.switch_inline_query_chosen_chat.to_dict()
+        if self.copy_text is not None:
+            json_dict['copy_text'] = self.copy_text.to_dict()
         return json_dict
 
 
@@ -10910,3 +10918,33 @@ class PaidMediaPurchased(JsonDeserializable):
         obj['from_user'] = User.de_json(obj['from_user'])
         return cls(**obj)
     
+
+class CopyTextButton(JsonSerializable, JsonDeserializable):
+    """
+    This object represents an inline keyboard button that copies specified text to the clipboard.
+
+    Telegram documentation: https://core.telegram.org/bots/api#copytextbutton
+
+    :param text: The text to be copied to the clipboard; 1-256 characters
+    :type text: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`CopyTextButton`
+    """
+    def __init__(self, text: str, **kwargs):
+        self.text: str = text
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'text': self.text
+        }
+        return data
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
