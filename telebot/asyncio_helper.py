@@ -283,7 +283,8 @@ async def send_message(
         reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None,
         entities=None, protect_content=None,
-        message_thread_id=None, reply_parameters=None, link_preview_options=None, business_connection_id=None, message_effect_id=None):
+        message_thread_id=None, reply_parameters=None, link_preview_options=None, business_connection_id=None, message_effect_id=None,
+        allow_paid_broadcast=None):
     method_name = 'sendMessage'
     params = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
@@ -308,6 +309,8 @@ async def send_message(
         params['business_connection_id'] = business_connection_id
     if message_effect_id:
         params['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        params['allow_paid_broadcast'] = allow_paid_broadcast
     
     return await _process_request(token, method_name, params=params, method='post')
 
@@ -418,7 +421,8 @@ async def forward_message(
 
 async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None,  
-                 reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None):
+                 reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None,
+                 allow_paid_broadcast=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -441,6 +445,8 @@ async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, p
         payload['message_thread_id'] = message_thread_id
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
@@ -448,7 +454,7 @@ async def send_dice(
         token, chat_id,
         emoji=None, disable_notification=None, 
         reply_markup=None, timeout=None,  protect_content=None,
-        message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+        message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None):
     method_url = r'sendDice'
     payload = {'chat_id': chat_id}
     if emoji:
@@ -469,6 +475,8 @@ async def send_dice(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
@@ -478,7 +486,7 @@ async def send_photo(
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None,  protect_content=None,
         message_thread_id=None, has_spoiler=None,reply_parameters=None,
-        business_connection_id=None, message_effect_id=None, show_caption_above_media=None):
+        business_connection_id=None, message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -514,13 +522,15 @@ async def send_photo(
         payload['message_effect_id'] = message_effect_id
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 async def send_paid_media(
         token, chat_id, star_count, media,
         caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
         disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
-        business_connection_id=None, payload=None):
+        business_connection_id=None, payload=None, allow_paid_broadcast=None):
     method_url = r'sendPaidMedia'
     media_json, files = convert_input_media_array(media)
     _payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
@@ -545,6 +555,8 @@ async def send_paid_media(
         _payload['business_connection_id'] = business_connection_id
     if payload:
         _payload['payload'] = payload
+    if allow_paid_broadcast is not None:
+        _payload['allow_paid_broadcast'] = allow_paid_broadcast
         
     return await _process_request(
         token, method_url, params=_payload,
@@ -554,7 +566,8 @@ async def send_paid_media(
 async def send_media_group(
         token, chat_id, media,
         disable_notification=None, 
-        timeout=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+        timeout=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None,
+        allow_paid_broadcast=None):
     method_url = r'sendMediaGroup'
     media_json, files = await convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
@@ -572,6 +585,8 @@ async def send_media_group(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(
         token, method_url, params=payload,
         method='post' if files else 'get',
@@ -584,7 +599,7 @@ async def send_location(
         reply_markup=None, disable_notification=None, 
         timeout=None, horizontal_accuracy=None, heading=None,
         proximity_alert_radius=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
-        message_effect_id=None):
+        message_effect_id=None, allow_paid_broadcast=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
@@ -611,6 +626,8 @@ async def send_location(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
@@ -668,7 +685,7 @@ async def send_venue(
          reply_markup=None, timeout=None,
          google_place_id=None,
         google_place_type=None, protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
-        message_effect_id=None):
+        message_effect_id=None, allow_paid_broadcast=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
@@ -695,13 +712,16 @@ async def send_venue(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
 async def send_contact(
         token, chat_id, phone_number, first_name, last_name=None, vcard=None,
         disable_notification=None,  reply_markup=None, timeout=None,
-         protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+         protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None,
+         allow_paid_broadcast=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
@@ -724,6 +744,8 @@ async def send_contact(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
@@ -743,7 +765,7 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
                      parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
                      thumbnail=None, width=None, height=None, caption_entities=None, 
                      protect_content=None, message_thread_id=None, has_spoiler=None,reply_parameters=None, business_connection_id=None,
-                     message_effect_id=None, show_caption_above_media=None):
+                     message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -793,6 +815,8 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
         payload['message_effect_id'] = message_effect_id
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -800,7 +824,8 @@ async def send_animation(
         token, chat_id, data, duration=None, caption=None,  reply_markup=None,
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
          width=None, height=None, protect_content=None, message_thread_id=None,
-        has_spoiler=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None):
+        has_spoiler=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None,
+        allow_paid_broadcast=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -848,12 +873,15 @@ async def send_animation(
         payload['message_effect_id'] = message_effect_id
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_voice(token, chat_id, voice, caption=None, duration=None,  reply_markup=None,
                parse_mode=None, disable_notification=None, timeout=None, caption_entities=None,
-                protect_content=None, message_thread_id=None,reply_parameters=None,business_connection_id=None, message_effect_id=None):
+                protect_content=None, message_thread_id=None,reply_parameters=None,business_connection_id=None, message_effect_id=None,
+                allow_paid_broadcast=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -885,12 +913,14 @@ async def send_voice(token, chat_id, voice, caption=None, duration=None,  reply_
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_video_note(token, chat_id, data, duration=None, length=None,  reply_markup=None,
                           disable_notification=None, timeout=None, thumbnail=None,  protect_content=None,
-                          message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+                          message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -928,13 +958,15 @@ async def send_video_note(token, chat_id, data, duration=None, length=None,  rep
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, 
                      reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
                      caption_entities=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
-                     message_effect_id=None):
+                     message_effect_id=None, allow_paid_broadcast=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -978,13 +1010,16 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_data(token, chat_id, data, data_type,  reply_markup=None, parse_mode=None,
                     disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
                      disable_content_type_detection=None, visible_file_name=None, protect_content=None,
-                    message_thread_id=None, emoji=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+                    message_thread_id=None, emoji=None,reply_parameters=None, business_connection_id=None, message_effect_id=None,
+                    allow_paid_broadcast=None):
     method_url = await get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -1029,6 +1064,8 @@ async def send_data(token, chat_id, data, data_type,  reply_markup=None, parse_m
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1528,7 +1565,8 @@ async def delete_message(token, chat_id, message_id, timeout=None):
 async def send_game(
         token, chat_id, game_short_name,
         disable_notification=None,  reply_markup=None, timeout=None,
-         protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None):
+         protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None,
+         allow_paid_broadcast=None):
     method_url = r'sendGame'
     payload = {'chat_id': chat_id, 'game_short_name': game_short_name}
     if disable_notification is not None:
@@ -1547,6 +1585,8 @@ async def send_game(
         payload['business_connection_id'] = business_connection_id
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
@@ -1612,7 +1652,7 @@ async def send_invoice(
         send_phone_number_to_provider = None, send_email_to_provider = None, is_flexible=None,
         disable_notification=None,  reply_markup=None, provider_data=None,
         timeout=None,  max_tip_amount=None, suggested_tip_amounts=None,
-        protect_content=None, message_thread_id=None, reply_parameters=None, message_effect_id=None):
+        protect_content=None, message_thread_id=None, reply_parameters=None, message_effect_id=None, allow_paid_broadcast=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1646,6 +1686,7 @@ async def send_invoice(
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
     :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
     :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+    :param allow_paid_broadcast:
     :return:
     """
     method_url = r'sendInvoice'
@@ -1698,6 +1739,8 @@ async def send_invoice(
         payload['message_effect_id'] = message_effect_id
     if provider_token is not None:
         payload['provider_token'] = provider_token
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
@@ -1954,7 +1997,8 @@ async def send_poll(
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
         disable_notification=False,  
         reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
-        reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None):
+        reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None,
+        allow_paid_broadcast=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -2006,6 +2050,8 @@ async def send_poll(
         payload['question_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(question_entities))
     if message_effect_id:
         payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
 
