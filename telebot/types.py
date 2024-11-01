@@ -10394,6 +10394,8 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerUser.de_json(obj)
         elif obj["type"] == "telegram_ads":
             return TransactionPartnerTelegramAds.de_json(obj)
+        elif obj["type"] == "telegram_api":
+            return TransactionPartnerTelegramApi.de_json(obj)
         elif obj["type"] == "other":
             return TransactionPartnerOther.de_json(obj)
 
@@ -10426,6 +10428,33 @@ class TransactionPartnerFragment(TransactionPartner):
         obj = cls.check_json(json_string)
         if 'withdrawal_state' in obj:
             obj['withdrawal_state'] = RevenueWithdrawalState.de_json(obj['withdrawal_state'])
+        return cls(**obj)
+
+
+class TransactionPartnerTelegramApi(TransactionPartner):
+    """
+    Describes a transaction with payment for paid broadcasting.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartnertelegramapi
+
+    :param type: Type of the transaction partner, always “telegram_api”
+    :type type: :obj:`str`
+
+    :param request_count: The number of successful requests that exceeded regular limits and were therefore billed
+    :type request_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerTelegramApi`
+    """
+
+    def __init__(self, type, request_count, **kwargs):
+        self.type: str = type
+        self.request_count: int = request_count
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
         return cls(**obj)
 
 
