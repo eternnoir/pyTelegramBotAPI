@@ -1793,6 +1793,12 @@ async def refund_star_payment(token, user_id, telegram_payment_charge_id):
     return await _process_request(token, method_url, params=payload)
 
 
+async def edit_user_star_subscription(token, user_id, telegram_payment_charge_id, is_canceled):
+    method_url = 'editUserStarSubscription'
+    payload = {'user_id': user_id, 'telegram_payment_charge_id': telegram_payment_charge_id, 'is_canceled': is_canceled}
+    return await _process_request(token, method_url, params=payload)
+
+
 async def unpin_all_general_forum_topic_messages(token, chat_id):
     method_url = 'unpinAllGeneralForumTopicMessages'
     payload = {'chat_id': chat_id}

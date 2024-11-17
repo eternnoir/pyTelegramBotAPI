@@ -5814,6 +5814,26 @@ class TeleBot:
         """
         return apihelper.refund_star_payment(self.token, user_id, telegram_payment_charge_id)
 
+    def edit_user_star_subscription(self, user_id: int, telegram_payment_charge_id: str, is_canceled: bool) -> bool:
+        """
+        Allows the bot to cancel or re-enable extension of a subscription paid in Telegram Stars. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#edituserstarsubscription
+
+        :param user_id: Identifier of the user whose subscription will be edited
+        :type user_id: :obj:`int`
+
+        :param telegram_payment_charge_id: Telegram payment identifier for the subscription
+        :type telegram_payment_charge_id: :obj:`str`
+
+        :param is_canceled: Pass True to cancel extension of the user subscription; the subscription must be active up to the end of the current subscription period. Pass False to allow the user to re-enable a subscription that was previously canceled by the bot.
+        :type is_canceled: :obj:`bool`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.edit_user_star_subscription(self.token, user_id, telegram_payment_charge_id, is_canceled)
+
     def edit_message_caption(
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 
             message_id: Optional[int]=None, 
