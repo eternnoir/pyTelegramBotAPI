@@ -10489,6 +10489,9 @@ class TransactionPartnerUser(TransactionPartner):
     :param invoice_payload: Optional, Bot-specified invoice payload
     :type invoice_payload: :obj:`str`
 
+    :param subscription_period: Optional. The duration of the paid subscription
+    :type subscription_period: :obj:`int`
+
     :param paid_media: Optional. Information about the paid media bought by the user
     :type paid_media: :obj:`list` of :class:`PaidMedia`
 
@@ -10496,11 +10499,13 @@ class TransactionPartnerUser(TransactionPartner):
     :rtype: :class:`TransactionPartnerUser`
     """
 
-    def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, **kwargs):
+    def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
+                    subscription_period=None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.invoice_payload: Optional[str] = invoice_payload
         self.paid_media: Optional[List[PaidMedia]] = paid_media
+        self.subscription_period: Optional[int] = subscription_period
 
     @classmethod
     def de_json(cls, json_string):
