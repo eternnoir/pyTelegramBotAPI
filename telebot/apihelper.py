@@ -1929,6 +1929,17 @@ def get_available_gifts(token):
     return _make_request(token, method_url)
 
 
+def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None):
+    method_url = 'sendGift'
+    payload = {'user_id': user_id, 'gift_id': gift_id}
+    if text:
+        payload['text'] = text
+    if text_parse_mode:
+        payload['text_parse_mode'] = text_parse_mode
+    if text_entities:
+        payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
+    return _make_request(token, method_url, params=payload, method='post')
+
 def set_sticker_emoji_list(token, sticker, emoji_list):
     method_url = 'setStickerEmojiList'
     payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}

@@ -7706,6 +7706,32 @@ class AsyncTeleBot:
         """
 
         return await asyncio_helper.delete_sticker_set(self.token, name)
+
+    async def send_gift(self, user_id: int, gift_id: str, text: Optional[str]=None, text_parse_mode: Optional[str]=None, text_entities: Optional[List[types.MessageEntity]]=None) -> bool:
+        """
+        Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendgift
+
+        :param user_id: Unique identifier of the target user that will receive the gift
+        :type user_id: :obj:`int`
+
+        :param gift_id: Identifier of the gift
+        :type gift_id: :obj:`str`
+
+        :param text: Text that will be shown along with the gift; 0-255 characters
+        :type text: :obj:`str`
+
+        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :type text_parse_mode: :obj:`str`
+
+        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :type text_entities: :obj:`list` of :obj:`types.MessageEntity`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.send_gift(self.token, user_id, gift_id, text, text_parse_mode, text_entities)
     
     async def get_available_gifts(self) -> types.Gifts:
         """
