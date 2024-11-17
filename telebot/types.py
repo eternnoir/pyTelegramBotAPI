@@ -6318,6 +6318,15 @@ class SuccessfulPayment(JsonDeserializable):
     :param invoice_payload: Bot specified invoice payload
     :type invoice_payload: :obj:`str`
 
+    :param subscription_expiration_date: Optional. Expiration date of the subscription, in Unix time; for recurring payments only
+    :type subscription_expiration_date: :obj:`int`
+
+    :param is_recurring: Optional. True, if the payment is a recurring payment, false otherwise
+    :type is_recurring: :obj:`bool`
+
+    :param is_first_recurring: Optional. True, if the payment is the first payment for a subscription
+    :type is_first_recurring: :obj:`bool`
+
     :param shipping_option_id: Optional. Identifier of the shipping option chosen by the user
     :type shipping_option_id: :obj:`str`
 
@@ -6341,7 +6350,8 @@ class SuccessfulPayment(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, currency, total_amount, invoice_payload, shipping_option_id=None, order_info=None,
-                 telegram_payment_charge_id=None, provider_payment_charge_id=None, **kwargs):
+                 telegram_payment_charge_id=None, provider_payment_charge_id=None, 
+                    subscription_expiration_date=None, is_recurring=None, is_first_recurring=None, **kwargs):
         self.currency: str = currency
         self.total_amount: int = total_amount
         self.invoice_payload: str = invoice_payload
@@ -6349,6 +6359,9 @@ class SuccessfulPayment(JsonDeserializable):
         self.order_info: OrderInfo = order_info
         self.telegram_payment_charge_id: str = telegram_payment_charge_id
         self.provider_payment_charge_id: str = provider_payment_charge_id
+        self.subscription_expiration_date: Optional[int] = subscription_expiration_date
+        self.is_recurring: Optional[bool] = is_recurring
+        self.is_first_recurring: Optional[bool] = is_first_recurring
 
 
 # noinspection PyShadowingBuiltins
