@@ -6769,6 +6769,42 @@ class TeleBot:
         """
         return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
 
+    def save_prepared_inline_message(
+            self, user_id: int, result: types.InlineQueryResultBase, allow_user_chats: Optional[bool]=None,
+            allow_bot_chats: Optional[bool]=None, allow_group_chats: Optional[bool]=None,
+            allow_channel_chats: Optional[bool]=None) -> types.PreparedInlineMessage:
+        """
+        Use this method to store a message that can be sent by a user of a Mini App.
+        Returns a PreparedInlineMessage object.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#savepreparedinlinemessage
+
+        :param user_id: Unique identifier of the target user that can use the prepared message
+        :type user_id: :obj:`int`
+
+        :param result: A JSON-serialized object describing the message to be sent
+        :type result: :class:`telebot.types.InlineQueryResultBase`
+
+        :param allow_user_chats: Pass True if the message can be sent to private chats with users
+        :type allow_user_chats: :obj:`bool`
+
+        :param allow_bot_chats: Pass True if the message can be sent to private chats with bots
+        :type allow_bot_chats: :obj:`bool`
+
+        :param allow_group_chats: Pass True if the message can be sent to group and supergroup chats
+        :type allow_group_chats: :obj:`bool`
+
+        :param allow_channel_chats: Pass True if the message can be sent to channel chats
+        :type allow_channel_chats: :obj:`bool`
+
+        :return: On success, a PreparedInlineMessage object is returned.
+        :rtype: :class:`telebot.types.PreparedInlineMessage`
+        """
+        return types.PreparedInlineMessage.de_json(
+            apihelper.save_prepared_inline_message(
+                self.token, user_id, result, allow_user_chats=allow_user_chats, allow_bot_chats=allow_bot_chats,
+                allow_group_chats=allow_group_chats, allow_channel_chats=allow_channel_chats)
+        )
 
     def register_for_reply(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
         """

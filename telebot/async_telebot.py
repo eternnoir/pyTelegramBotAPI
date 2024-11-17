@@ -3148,6 +3148,36 @@ class AsyncTeleBot:
 
         return await asyncio_helper.answer_web_app_query(self.token, web_app_query_id, result)
 
+    async def save_prepared_inline_message(self, user_id: int, result: types.InlineQueryResultBase, allow_user_chats: Optional[bool]=None,
+            allow_bot_chats: Optional[bool]=None, allow_group_chats: Optional[bool]=None, allow_channel_chats: Optional[bool]=None) -> types.PreparedInlineMessage:
+        """
+        Stores a message that can be sent by a user of a Mini App. Returns a PreparedInlineMessage object.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#savepreparedinlinemessage
+
+        :param user_id: Unique identifier of the target user that can use the prepared message
+        :type user_id: :obj:`int`
+
+        :param result: A JSON-serialized object describing the message to be sent
+        :type result: :class:`telebot.types.InlineQueryResultBase`
+
+        :param allow_user_chats: Pass True if the message can be sent to private chats with users
+        :type allow_user_chats: :obj:`bool`, optional
+
+        :param allow_bot_chats: Pass True if the message can be sent to private chats with bots
+        :type allow_bot_chats: :obj:`bool`, optional
+
+        :param allow_group_chats: Pass True if the message can be sent to group and supergroup chats
+        :type allow_group_chats: :obj:`bool`, optional
+
+        :param allow_channel_chats: Pass True if the message can be sent to channel chats
+        :type allow_channel_chats: :obj:`bool`, optional
+
+        :return: :class:`telebot.types.PreparedInlineMessage`
+        """
+        result = await asyncio_helper.save_prepared_inline_message(self.token, user_id, result, allow_user_chats, allow_bot_chats, allow_group_chats, allow_channel_chats)
+        return types.PreparedInlineMessage.de_json(result)
+
     async def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.

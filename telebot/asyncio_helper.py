@@ -406,6 +406,20 @@ async def answer_web_app_query(token, web_app_query_id, result: types.InlineQuer
     return await _process_request(token, method_url, params=payload, method='post')
 
 
+async def save_prepared_inline_message(token, user_id, result: types.InlineQueryResultBase, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None):
+    method_url = r'savePreparedInlineMessage'
+    payload = {'user_id': user_id, 'result': result.to_json()}
+    if allow_user_chats is not None:
+        payload['allow_user_chats'] = allow_user_chats
+    if allow_bot_chats is not None:
+        payload['allow_bot_chats'] = allow_bot_chats
+    if allow_group_chats is not None:
+        payload['allow_group_chats'] = allow_group_chats
+    if allow_channel_chats is not None:
+        payload['allow_channel_chats'] = allow_channel_chats
+    return await _process_request(token, method_url, params=payload)
+
+
 async def get_chat_member(token, chat_id, user_id):
     method_url = r'getChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}

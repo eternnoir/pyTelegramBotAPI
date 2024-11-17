@@ -10997,3 +10997,31 @@ class CopyTextButton(JsonSerializable, JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class PreparedInlineMessage(JsonDeserializable):
+    """
+    Describes an inline message to be sent by a user of a Mini App.
+
+    Telegram documentation: https://core.telegram.org/bots/api#preparedinlinemessage
+
+    :param id: Unique identifier of the prepared message
+    :type id: :obj:`str`
+
+    :param expiration_date: Expiration date of the prepared message, in Unix time. Expired prepared messages can no longer be used
+    :type expiration_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`PreparedInlineMessage`
+    """
+
+    def __init__(self, id, expiration_date, **kwargs):
+        self.id: str = id
+        self.expiration_date: int = expiration_date
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    

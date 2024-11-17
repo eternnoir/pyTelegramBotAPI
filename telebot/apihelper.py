@@ -1981,6 +1981,21 @@ def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResul
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def save_prepared_inline_message(token, user_id, result: types.InlineQueryResultBase, allow_user_chats=None,
+                                    allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None):
+        method_url = 'savePreparedInlineMessage'
+        payload = {'user_id': user_id, 'result': result.to_json()}
+        if allow_user_chats is not None:
+            payload['allow_user_chats'] = allow_user_chats
+        if allow_bot_chats is not None:
+            payload['allow_bot_chats'] = allow_bot_chats
+        if allow_group_chats is not None:
+            payload['allow_group_chats'] = allow_group_chats
+        if allow_channel_chats is not None:
+            payload['allow_channel_chats'] = allow_channel_chats
+        return _make_request(token, method_url, params=payload, method='post')
+
+
 def create_invoice_link(token, title, description, payload, provider_token,
             currency, prices, max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
             photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None, need_phone_number=None,
