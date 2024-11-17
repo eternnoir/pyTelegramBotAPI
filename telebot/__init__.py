@@ -5418,7 +5418,9 @@ class TeleBot:
             need_shipping_address: Optional[bool]=None,
             send_phone_number_to_provider: Optional[bool]=None,
             send_email_to_provider: Optional[bool]=None,
-            is_flexible: Optional[bool]=None) -> str:
+            is_flexible: Optional[bool]=None,
+            subscription_period: Optional[int]=None,
+            business_connection_id: Optional[str]=None) -> str:
             
         """
         Use this method to create a link for an invoice. 
@@ -5426,6 +5428,9 @@ class TeleBot:
 
         Telegram documentation:
         https://core.telegram.org/bots/api#createinvoicelink
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which the link will be created
+        :type business_connection_id: :obj:`str`
 
         :param title: Product name, 1-32 characters
         :type title: :obj:`str`
@@ -5448,6 +5453,11 @@ class TeleBot:
         :param prices: Price breakdown, a list of components
             (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
         :type prices: :obj:`list` of :obj:`types.LabeledPrice`
+
+        :subscription_period: 	The number of seconds the subscription will be active for before the next payment.
+            The currency must be set to “XTR” (Telegram Stars) if the parameter is used. Currently, it must always
+            be 2592000 (30 days) if specified.
+        :type subscription_period: :obj:`int`
 
         :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
         :type max_tip_amount: :obj:`int`
@@ -5505,7 +5515,8 @@ class TeleBot:
             photo_width=photo_width, photo_height=photo_height, need_name=need_name,
             need_phone_number=need_phone_number, need_email=need_email,
             need_shipping_address=need_shipping_address, send_phone_number_to_provider=send_phone_number_to_provider,
-            send_email_to_provider=send_email_to_provider, is_flexible=is_flexible)
+            send_email_to_provider=send_email_to_provider, is_flexible=is_flexible ,subscription_period=subscription_period,
+            business_connection_id=business_connection_id)
 
 
     # noinspection PyShadowingBuiltins

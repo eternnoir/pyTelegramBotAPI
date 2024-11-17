@@ -1970,7 +1970,7 @@ def create_invoice_link(token, title, description, payload, provider_token,
             currency, prices, max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
             photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None, need_phone_number=None,
             need_email=None, need_shipping_address=None, send_phone_number_to_provider=None,
-            send_email_to_provider=None, is_flexible=None):
+            send_email_to_provider=None, is_flexible=None, subscription_period=None, business_connection_id=None):
     method_url = r'createInvoiceLink'
     payload = {'title': title, 'description': description, 'payload': payload,
                 'currency': currency, 'prices': _convert_list_json_serializable(prices)}
@@ -2004,6 +2004,10 @@ def create_invoice_link(token, title, description, payload, provider_token,
         payload['is_flexible'] = is_flexible
     if provider_token is not None:
         payload['provider_token'] = provider_token
+    if subscription_period:
+        payload['subscription_period'] = subscription_period
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
