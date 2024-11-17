@@ -2987,6 +2987,26 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_user_profile_photos(self.token, user_id, offset, limit)
         return types.UserProfilePhotos.de_json(result)
+    
+    async def set_user_emoji_status(self, user_id: int, emoji_status_custom_emoji_id: Optional[str]=None, emoji_status_expiration_date: Optional[int]=None) -> bool:
+        """
+        Use this method to change the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method requestEmojiStatusAccess.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setuseremojistatus
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :param emoji_status_custom_emoji_id: Custom emoji identifier of the emoji status to set. Pass an empty string to remove the status.
+        :type emoji_status_custom_emoji_id: :obj:`str`, optional
+
+        :param emoji_status_expiration_date: Expiration date of the emoji status, if any
+        :type emoji_status_expiration_date: :obj:`int`, optional
+
+        :return: :obj:`bool`
+        """
+        result = await asyncio_helper.set_user_emoji_status(self.token, user_id, emoji_status_custom_emoji_id, emoji_status_expiration_date)
+        return result
 
     async def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """

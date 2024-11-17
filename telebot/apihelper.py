@@ -341,6 +341,16 @@ def get_user_profile_photos(token, user_id, offset=None, limit=None):
         payload['limit'] = limit
     return _make_request(token, method_url, params=payload)
 
+
+def set_user_emoji_status(token, user_id, emoji_status_custom_emoji_id=None, emoji_status_expiration_date=None):
+    method_url = r'setUserEmojiStatus'
+    payload = {'user_id': user_id}
+    if emoji_status_custom_emoji_id:
+        payload['emoji_status_custom_emoji_id'] = emoji_status_custom_emoji_id
+    if emoji_status_expiration_date:
+        payload['emoji_status_expiration_date'] = emoji_status_expiration_date
+    return _make_request(token, method_url, params=payload)
+
 def set_message_reaction(token, chat_id, message_id, reaction=None, is_big=None):
     method_url = r'setMessageReaction'
     payload = {'chat_id': chat_id, 'message_id': message_id}
