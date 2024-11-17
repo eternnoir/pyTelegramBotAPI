@@ -10495,17 +10495,21 @@ class TransactionPartnerUser(TransactionPartner):
     :param paid_media: Optional. Information about the paid media bought by the user
     :type paid_media: :obj:`list` of :class:`PaidMedia`
 
+    :param gift: Optional. The gift sent to the user by the bot
+    :type gift: :class:`Gift`
+
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
     def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
-                    subscription_period=None, **kwargs):
+                    subscription_period=None, gift: Optional[Gift] = None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.invoice_payload: Optional[str] = invoice_payload
         self.paid_media: Optional[List[PaidMedia]] = paid_media
         self.subscription_period: Optional[int] = subscription_period
+        self.gift: Optional[Gift] = gift
 
     @classmethod
     def de_json(cls, json_string):
@@ -10514,6 +10518,8 @@ class TransactionPartnerUser(TransactionPartner):
         obj['user'] = User.de_json(obj['user'])
         if 'paid_media' in obj:
             obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
+        if 'gift' in obj:
+            obj['gift'] = Gift.de_json(obj['gift'])
         return cls(**obj)
 
 
@@ -11025,7 +11031,7 @@ class PreparedInlineMessage(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
     
-    
+
 class Gift(JsonDeserializable):
     """
     This object represents a gift that can be sent by the bot.
