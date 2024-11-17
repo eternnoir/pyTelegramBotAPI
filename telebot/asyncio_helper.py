@@ -1916,6 +1916,10 @@ async def delete_sticker_set(token, name):
     payload = {'name': name}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def get_available_gifts(token):
+    method_url = 'getAvailableGifts'
+    return await _process_request(token, method_url)
+
 async def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
     method_url = 'setCustomEmojiStickerSetThumbnail'
     payload = {'name': name}

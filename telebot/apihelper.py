@@ -1924,6 +1924,11 @@ def delete_sticker_set(token, name):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def get_available_gifts(token):
+    method_url = 'getAvailableGifts'
+    return _make_request(token, method_url)
+
+
 def set_sticker_emoji_list(token, sticker, emoji_list):
     method_url = 'setStickerEmojiList'
     payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}

@@ -6249,7 +6249,19 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.delete_sticker_set(self.token, name)
+    
+    def get_available_gifts(self) -> types.Gifts:
+        """
+        Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a Gifts object.
 
+        Telegram documentation: https://core.telegram.org/bots/api#getavailablegifts
+
+        :return: On success, a Gifts object is returned.
+        :rtype: :class:`telebot.types.Gifts`
+        """
+        return types.Gifts.de_json(
+            apihelper.get_available_gifts(self.token)
+        )
 
     def replace_sticker_in_set(self, user_id: int, name: str, old_sticker: str, sticker: types.InputSticker) -> bool:
         """

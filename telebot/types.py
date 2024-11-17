@@ -11025,3 +11025,66 @@ class PreparedInlineMessage(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
     
+    
+class Gift(JsonDeserializable):
+    """
+    This object represents a gift that can be sent by the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#gift
+
+    :param id: Unique identifier of the gift
+    :type id: :obj:`str`
+
+    :param sticker: The sticker that represents the gift
+    :type sticker: :class:`Sticker`
+
+    :param star_count: The number of Telegram Stars that must be paid to send the sticker
+    :type star_count: :obj:`int`
+
+    :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
+    :type total_count: :obj:`int`
+
+    :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
+    :type remaining_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Gift`
+    """
+
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, **kwargs):
+        self.id: str = id
+        self.sticker: Sticker = sticker
+        self.star_count: int = star_count
+        self.total_count: Optional[int] = total_count
+        self.remaining_count: Optional[int] = remaining_count
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['sticker'] = Sticker.de_json(obj['sticker'])
+        return cls(**obj)
+    
+class Gifts(JsonDeserializable):
+    """
+    This object represent a list of gifts.
+
+    Telegram documentation: https://core.telegram.org/bots/api#gifts
+
+    :param gifts: The list of gifts
+    :type gifts: :obj:`list` of :class:`Gift`
+
+    :return: Instance of the class
+    :rtype: :class:`Gifts`
+    """
+
+    def __init__(self, gifts, **kwargs):
+        self.gifts: List[Gift] = gifts
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gifts'] = [Gift.de_json(gift) for gift in obj['gifts']]
+        return cls(**obj)
+    
