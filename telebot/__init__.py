@@ -1512,6 +1512,26 @@ class TeleBot:
             apihelper.get_user_profile_photos(self.token, user_id, offset=offset, limit=limit)
         )
 
+    def set_user_emoji_status(self, user_id: int, emoji_status_custom_emoji_id: Optional[str]=None, emoji_status_expiration_date: Optional[int]=None) -> bool:
+        """
+        Changes the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method requestEmojiStatusAccess. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setuseremojistatus
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :param emoji_status_custom_emoji_id: Custom emoji identifier of the emoji status to set. Pass an empty string to remove the status.
+        :type emoji_status_custom_emoji_id: :obj:`str`
+
+        :param emoji_status_expiration_date: Expiration date of the emoji status, if any
+        :type emoji_status_expiration_date: :obj:`int`
+
+        :return: :obj:`bool`
+        """
+        return apihelper.set_user_emoji_status(
+            self.token, user_id, emoji_status_custom_emoji_id=emoji_status_custom_emoji_id, emoji_status_expiration_date=emoji_status_expiration_date)
+    
 
     def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """
@@ -5418,7 +5438,9 @@ class TeleBot:
             need_shipping_address: Optional[bool]=None,
             send_phone_number_to_provider: Optional[bool]=None,
             send_email_to_provider: Optional[bool]=None,
-            is_flexible: Optional[bool]=None) -> str:
+            is_flexible: Optional[bool]=None,
+            subscription_period: Optional[int]=None,
+            business_connection_id: Optional[str]=None) -> str:
             
         """
         Use this method to create a link for an invoice. 
@@ -5426,6 +5448,9 @@ class TeleBot:
 
         Telegram documentation:
         https://core.telegram.org/bots/api#createinvoicelink
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which the link will be created
+        :type business_connection_id: :obj:`str`
 
         :param title: Product name, 1-32 characters
         :type title: :obj:`str`
@@ -5448,6 +5473,11 @@ class TeleBot:
         :param prices: Price breakdown, a list of components
             (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
         :type prices: :obj:`list` of :obj:`types.LabeledPrice`
+
+        :subscription_period: 	The number of seconds the subscription will be active for before the next payment.
+            The currency must be set to “XTR” (Telegram Stars) if the parameter is used. Currently, it must always
+            be 2592000 (30 days) if specified.
+        :type subscription_period: :obj:`int`
 
         :param max_tip_amount: The maximum accepted amount for tips in the smallest units of the currency
         :type max_tip_amount: :obj:`int`
@@ -5505,7 +5535,8 @@ class TeleBot:
             photo_width=photo_width, photo_height=photo_height, need_name=need_name,
             need_phone_number=need_phone_number, need_email=need_email,
             need_shipping_address=need_shipping_address, send_phone_number_to_provider=send_phone_number_to_provider,
-            send_email_to_provider=send_email_to_provider, is_flexible=is_flexible)
+            send_email_to_provider=send_email_to_provider, is_flexible=is_flexible ,subscription_period=subscription_period,
+            business_connection_id=business_connection_id)
 
 
     # noinspection PyShadowingBuiltins
@@ -5802,6 +5833,26 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.refund_star_payment(self.token, user_id, telegram_payment_charge_id)
+
+    def edit_user_star_subscription(self, user_id: int, telegram_payment_charge_id: str, is_canceled: bool) -> bool:
+        """
+        Allows the bot to cancel or re-enable extension of a subscription paid in Telegram Stars. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#edituserstarsubscription
+
+        :param user_id: Identifier of the user whose subscription will be edited
+        :type user_id: :obj:`int`
+
+        :param telegram_payment_charge_id: Telegram payment identifier for the subscription
+        :type telegram_payment_charge_id: :obj:`str`
+
+        :param is_canceled: Pass True to cancel extension of the user subscription; the subscription must be active up to the end of the current subscription period. Pass False to allow the user to re-enable a subscription that was previously canceled by the bot.
+        :type is_canceled: :obj:`bool`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.edit_user_star_subscription(self.token, user_id, telegram_payment_charge_id, is_canceled)
 
     def edit_message_caption(
             self, caption: str, chat_id: Optional[Union[int, str]]=None, 
@@ -6199,6 +6250,44 @@ class TeleBot:
         """
         return apihelper.delete_sticker_set(self.token, name)
 
+    def send_gift(self, user_id: int, gift_id: str, text: Optional[str]=None, text_parse_mode: Optional[str]=None, text_entities: Optional[List[types.MessageEntity]]=None) -> bool:
+        """
+        Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendgift
+
+        :param user_id: Unique identifier of the target user that will receive the gift
+        :type user_id: :obj:`int`
+
+        :param gift_id: Identifier of the gift
+        :type gift_id: :obj:`str`
+
+        :param text: Text that will be shown along with the gift; 0-255 characters
+        :type text: :obj:`str`
+
+        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :type text_parse_mode: :obj:`str`
+
+        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :type text_entities: :obj:`list` of :obj:`types.MessageEntity`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.send_gift(self.token, user_id, gift_id, text=text, text_parse_mode=text_parse_mode, text_entities=text_entities)
+    
+    def get_available_gifts(self) -> types.Gifts:
+        """
+        Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a Gifts object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getavailablegifts
+
+        :return: On success, a Gifts object is returned.
+        :rtype: :class:`telebot.types.Gifts`
+        """
+        return types.Gifts.de_json(
+            apihelper.get_available_gifts(self.token)
+        )
 
     def replace_sticker_in_set(self, user_id: int, name: str, old_sticker: str, sticker: types.InputSticker) -> bool:
         """
@@ -6718,6 +6807,42 @@ class TeleBot:
         """
         return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
 
+    def save_prepared_inline_message(
+            self, user_id: int, result: types.InlineQueryResultBase, allow_user_chats: Optional[bool]=None,
+            allow_bot_chats: Optional[bool]=None, allow_group_chats: Optional[bool]=None,
+            allow_channel_chats: Optional[bool]=None) -> types.PreparedInlineMessage:
+        """
+        Use this method to store a message that can be sent by a user of a Mini App.
+        Returns a PreparedInlineMessage object.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#savepreparedinlinemessage
+
+        :param user_id: Unique identifier of the target user that can use the prepared message
+        :type user_id: :obj:`int`
+
+        :param result: A JSON-serialized object describing the message to be sent
+        :type result: :class:`telebot.types.InlineQueryResultBase`
+
+        :param allow_user_chats: Pass True if the message can be sent to private chats with users
+        :type allow_user_chats: :obj:`bool`
+
+        :param allow_bot_chats: Pass True if the message can be sent to private chats with bots
+        :type allow_bot_chats: :obj:`bool`
+
+        :param allow_group_chats: Pass True if the message can be sent to group and supergroup chats
+        :type allow_group_chats: :obj:`bool`
+
+        :param allow_channel_chats: Pass True if the message can be sent to channel chats
+        :type allow_channel_chats: :obj:`bool`
+
+        :return: On success, a PreparedInlineMessage object is returned.
+        :rtype: :class:`telebot.types.PreparedInlineMessage`
+        """
+        return types.PreparedInlineMessage.de_json(
+            apihelper.save_prepared_inline_message(
+                self.token, user_id, result, allow_user_chats=allow_user_chats, allow_bot_chats=allow_bot_chats,
+                allow_group_chats=allow_group_chats, allow_channel_chats=allow_channel_chats)
+        )
 
     def register_for_reply(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
         """

@@ -325,6 +325,16 @@ async def get_user_profile_photos(token, user_id, offset=None, limit=None):
         payload['limit'] = limit
     return await _process_request(token, method_url, params=payload)
 
+
+async def set_user_emoji_status(token, user_id, emoji_status_custom_emoji_id=None, emoji_status_expiration_date=None):
+    method_url = r'setUserEmojiStatus'
+    payload = {'user_id': user_id}
+    if emoji_status_custom_emoji_id:
+        payload['emoji_status_custom_emoji_id'] = emoji_status_custom_emoji_id
+    if emoji_status_expiration_date:
+        payload['emoji_status_expiration_date'] = emoji_status_expiration_date
+    return await _process_request(token, method_url, params=payload)
+
 async def set_message_reaction(token, chat_id, message_id, reaction=None, is_big=None):
     method_url = r'setMessageReaction'
     payload = {'chat_id': chat_id, 'message_id': message_id}
@@ -394,6 +404,20 @@ async def answer_web_app_query(token, web_app_query_id, result: types.InlineQuer
     method_url = 'answerWebAppQuery'
     payload = {'web_app_query_id': web_app_query_id, 'result': result.to_json()}
     return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def save_prepared_inline_message(token, user_id, result: types.InlineQueryResultBase, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None):
+    method_url = r'savePreparedInlineMessage'
+    payload = {'user_id': user_id, 'result': result.to_json()}
+    if allow_user_chats is not None:
+        payload['allow_user_chats'] = allow_user_chats
+    if allow_bot_chats is not None:
+        payload['allow_bot_chats'] = allow_bot_chats
+    if allow_group_chats is not None:
+        payload['allow_group_chats'] = allow_group_chats
+    if allow_channel_chats is not None:
+        payload['allow_channel_chats'] = allow_channel_chats
+    return await _process_request(token, method_url, params=payload)
 
 
 async def get_chat_member(token, chat_id, user_id):
@@ -1793,6 +1817,12 @@ async def refund_star_payment(token, user_id, telegram_payment_charge_id):
     return await _process_request(token, method_url, params=payload)
 
 
+async def edit_user_star_subscription(token, user_id, telegram_payment_charge_id, is_canceled):
+    method_url = 'editUserStarSubscription'
+    payload = {'user_id': user_id, 'telegram_payment_charge_id': telegram_payment_charge_id, 'is_canceled': is_canceled}
+    return await _process_request(token, method_url, params=payload)
+
+
 async def unpin_all_general_forum_topic_messages(token, chat_id):
     method_url = 'unpinAllGeneralForumTopicMessages'
     payload = {'chat_id': chat_id}
@@ -1886,6 +1916,21 @@ async def delete_sticker_set(token, name):
     payload = {'name': name}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None):
+    method_url = 'sendGift'
+    payload = {'user_id': user_id, 'gift_id': gift_id}
+    if text:
+        payload['text'] = text
+    if text_parse_mode:
+        payload['text_parse_mode'] = text_parse_mode
+    if text_entities:
+        payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_available_gifts(token):
+    method_url = 'getAvailableGifts'
+    return await _process_request(token, method_url)
+
 async def set_custom_emoji_sticker_set_thumbnail(token, name, custom_emoji_id=None):
     method_url = 'setCustomEmojiStickerSetThumbnail'
     payload = {'name': name}
@@ -1952,7 +1997,7 @@ async def create_invoice_link(token, title, description, payload, provider_token
             currency, prices, max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
             photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None, need_phone_number=None,
             need_email=None, need_shipping_address=None, send_phone_number_to_provider=None,
-            send_email_to_provider=None, is_flexible=None):
+            send_email_to_provider=None, is_flexible=None, subscription_period=None, business_connection_id=None):
     method_url = r'createInvoiceLink'
     payload = {'title': title, 'description': description, 'payload': payload,
                 'currency': currency, 'prices': await _convert_list_json_serializable(prices)}
@@ -1986,6 +2031,10 @@ async def create_invoice_link(token, title, description, payload, provider_token
         payload['is_flexible'] = is_flexible
     if provider_token is not None:
         payload['provider_token'] = provider_token
+    if subscription_period:
+        payload['subscription_period'] = subscription_period
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
     return await _process_request(token, method_url, params=payload, method='post')
 
 

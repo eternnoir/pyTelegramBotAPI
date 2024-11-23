@@ -6318,6 +6318,15 @@ class SuccessfulPayment(JsonDeserializable):
     :param invoice_payload: Bot specified invoice payload
     :type invoice_payload: :obj:`str`
 
+    :param subscription_expiration_date: Optional. Expiration date of the subscription, in Unix time; for recurring payments only
+    :type subscription_expiration_date: :obj:`int`
+
+    :param is_recurring: Optional. True, if the payment is a recurring payment, false otherwise
+    :type is_recurring: :obj:`bool`
+
+    :param is_first_recurring: Optional. True, if the payment is the first payment for a subscription
+    :type is_first_recurring: :obj:`bool`
+
     :param shipping_option_id: Optional. Identifier of the shipping option chosen by the user
     :type shipping_option_id: :obj:`str`
 
@@ -6341,7 +6350,8 @@ class SuccessfulPayment(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, currency, total_amount, invoice_payload, shipping_option_id=None, order_info=None,
-                 telegram_payment_charge_id=None, provider_payment_charge_id=None, **kwargs):
+                 telegram_payment_charge_id=None, provider_payment_charge_id=None, 
+                    subscription_expiration_date=None, is_recurring=None, is_first_recurring=None, **kwargs):
         self.currency: str = currency
         self.total_amount: int = total_amount
         self.invoice_payload: str = invoice_payload
@@ -6349,6 +6359,9 @@ class SuccessfulPayment(JsonDeserializable):
         self.order_info: OrderInfo = order_info
         self.telegram_payment_charge_id: str = telegram_payment_charge_id
         self.provider_payment_charge_id: str = provider_payment_charge_id
+        self.subscription_expiration_date: Optional[int] = subscription_expiration_date
+        self.is_recurring: Optional[bool] = is_recurring
+        self.is_first_recurring: Optional[bool] = is_first_recurring
 
 
 # noinspection PyShadowingBuiltins
@@ -10476,18 +10489,27 @@ class TransactionPartnerUser(TransactionPartner):
     :param invoice_payload: Optional, Bot-specified invoice payload
     :type invoice_payload: :obj:`str`
 
+    :param subscription_period: Optional. The duration of the paid subscription
+    :type subscription_period: :obj:`int`
+
     :param paid_media: Optional. Information about the paid media bought by the user
     :type paid_media: :obj:`list` of :class:`PaidMedia`
+
+    :param gift: Optional. The gift sent to the user by the bot
+    :type gift: :class:`Gift`
 
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
-    def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, **kwargs):
+    def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
+                    subscription_period=None, gift: Optional[Gift] = None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.invoice_payload: Optional[str] = invoice_payload
         self.paid_media: Optional[List[PaidMedia]] = paid_media
+        self.subscription_period: Optional[int] = subscription_period
+        self.gift: Optional[Gift] = gift
 
     @classmethod
     def de_json(cls, json_string):
@@ -10496,6 +10518,8 @@ class TransactionPartnerUser(TransactionPartner):
         obj['user'] = User.de_json(obj['user'])
         if 'paid_media' in obj:
             obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
+        if 'gift' in obj:
+            obj['gift'] = Gift.de_json(obj['gift'])
         return cls(**obj)
 
 
@@ -10979,3 +11003,94 @@ class CopyTextButton(JsonSerializable, JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class PreparedInlineMessage(JsonDeserializable):
+    """
+    Describes an inline message to be sent by a user of a Mini App.
+
+    Telegram documentation: https://core.telegram.org/bots/api#preparedinlinemessage
+
+    :param id: Unique identifier of the prepared message
+    :type id: :obj:`str`
+
+    :param expiration_date: Expiration date of the prepared message, in Unix time. Expired prepared messages can no longer be used
+    :type expiration_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`PreparedInlineMessage`
+    """
+
+    def __init__(self, id, expiration_date, **kwargs):
+        self.id: str = id
+        self.expiration_date: int = expiration_date
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class Gift(JsonDeserializable):
+    """
+    This object represents a gift that can be sent by the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#gift
+
+    :param id: Unique identifier of the gift
+    :type id: :obj:`str`
+
+    :param sticker: The sticker that represents the gift
+    :type sticker: :class:`Sticker`
+
+    :param star_count: The number of Telegram Stars that must be paid to send the sticker
+    :type star_count: :obj:`int`
+
+    :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
+    :type total_count: :obj:`int`
+
+    :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
+    :type remaining_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`Gift`
+    """
+
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, **kwargs):
+        self.id: str = id
+        self.sticker: Sticker = sticker
+        self.star_count: int = star_count
+        self.total_count: Optional[int] = total_count
+        self.remaining_count: Optional[int] = remaining_count
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['sticker'] = Sticker.de_json(obj['sticker'])
+        return cls(**obj)
+    
+class Gifts(JsonDeserializable):
+    """
+    This object represent a list of gifts.
+
+    Telegram documentation: https://core.telegram.org/bots/api#gifts
+
+    :param gifts: The list of gifts
+    :type gifts: :obj:`list` of :class:`Gift`
+
+    :return: Instance of the class
+    :rtype: :class:`Gifts`
+    """
+
+    def __init__(self, gifts, **kwargs):
+        self.gifts: List[Gift] = gifts
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gifts'] = [Gift.de_json(gift) for gift in obj['gifts']]
+        return cls(**obj)
+    
