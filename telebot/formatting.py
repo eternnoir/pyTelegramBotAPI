@@ -240,7 +240,7 @@ def mlink(content: str, url: str, escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '[{}]({})'.format(escape_markdown(content), escape_markdown(url) if escape else content)
+    return '[{}]({})'.format(escape_markdown(content), escape_markdown(url) if escape else url)
 
 
 def hlink(content: str, url: str, escape: Optional[bool]=True) -> str:
