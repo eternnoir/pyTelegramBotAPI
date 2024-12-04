@@ -10526,6 +10526,8 @@ class TransactionPartnerUser(TransactionPartner):
             obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
         if 'gift' in obj:
             obj['gift'] = Gift.de_json(obj['gift'])
+        if 'affiliate' in obj:
+            obj['affiliate'] = AffiliateInfo.de_json(obj['affiliate'])
         return cls(**obj)
 
 
