@@ -1,4 +1,4 @@
 pytest
 requests==2.32.0
 wheel==0.38.1
-aiohttp==3.10.2
+aiohttp==3.10.11
