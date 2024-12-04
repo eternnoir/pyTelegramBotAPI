@@ -10411,6 +10411,8 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerTelegramAds.de_json(obj)
         elif obj["type"] == "telegram_api":
             return TransactionPartnerTelegramApi.de_json(obj)
+        elif obj["type"] == "affiliate_program":
+            return TransactionPartnerAffiliateProgram.de_json(obj)
         elif obj["type"] == "other":
             return TransactionPartnerOther.de_json(obj)
 
@@ -10486,6 +10488,9 @@ class TransactionPartnerUser(TransactionPartner):
     :param user: Information about the user
     :type user: :class:`User`
 
+    :param affiliate: Optional. Information about the affiliate that received a commission via this transaction
+    :type affiliate: :class:`AffiliateInfo`
+
     :param invoice_payload: Optional, Bot-specified invoice payload
     :type invoice_payload: :obj:`str`
 
@@ -10502,10 +10507,11 @@ class TransactionPartnerUser(TransactionPartner):
     :rtype: :class:`TransactionPartnerUser`
     """
 
-    def __init__(self, type, user, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
+    def __init__(self, type, user, affiliate=None, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
                     subscription_period=None, gift: Optional[Gift] = None, **kwargs):
         self.type: str = type
         self.user: User = user
+        self.affiliate: Optional[AffiliateInfo] = affiliate
         self.invoice_payload: Optional[str] = invoice_payload
         self.paid_media: Optional[List[PaidMedia]] = paid_media
         self.subscription_period: Optional[int] = subscription_period
@@ -10520,6 +10526,8 @@ class TransactionPartnerUser(TransactionPartner):
             obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
         if 'gift' in obj:
             obj['gift'] = Gift.de_json(obj['gift'])
+        if 'affiliate' in obj:
+            obj['affiliate'] = AffiliateInfo.de_json(obj['affiliate'])
         return cls(**obj)
 
 
@@ -10584,6 +10592,9 @@ class StarTransaction(JsonDeserializable):
     :param amount: Number of Telegram Stars transferred by the transaction
     :type amount: :obj:`int`
 
+    :param nanostar_amount: Optional. The number of 1/1000000000 shares of Telegram Stars transferred by the transaction; from 0 to 999999999
+    :type nanostar_amount: :obj:`int`
+
     :param date: Date the transaction was created in Unix time
     :type date: :obj:`int`
 
@@ -10607,12 +10618,13 @@ class StarTransaction(JsonDeserializable):
             obj['receiver'] = TransactionPartner.de_json(obj['receiver'])
         return cls(**obj)
     
-    def __init__(self, id, amount, date, source=None, receiver=None, **kwargs):
+    def __init__(self, id, amount, date, source=None, receiver=None, nanostar_amount=None, **kwargs):
         self.id: str = id
         self.amount: int = amount
         self.date: int = date
         self.source: Optional[TransactionPartner] = source
         self.receiver: Optional[TransactionPartner] = receiver
+        self.nanostar_amount: Optional[int] = nanostar_amount
 
 
 class StarTransactions(JsonDeserializable):
@@ -11094,3 +11106,81 @@ class Gifts(JsonDeserializable):
         obj['gifts'] = [Gift.de_json(gift) for gift in obj['gifts']]
         return cls(**obj)
     
+    
+class TransactionPartnerAffiliateProgram(TransactionPartner):
+    """
+    Describes the affiliate program that issued the affiliate commission received via this transaction.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartneraffiliateprogram
+
+    :param type: Type of the transaction partner, always “affiliate_program”
+    :type type: :obj:`str`
+
+    :param sponsor_user: Optional. Information about the bot that sponsored the affiliate program
+    :type sponsor_user: :class:`User`
+
+    :param commission_per_mille: The number of Telegram Stars received by the bot for each 1000 Telegram Stars received by the affiliate program sponsor from referred users
+    :type commission_per_mille: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerAffiliateProgram`
+    """
+
+    def __init__(self, type, commission_per_mille, sponsor_user=None, **kwargs):
+        self.type: str = type
+        self.sponsor_user: Optional[User] = sponsor_user
+        self.commission_per_mille: int = commission_per_mille
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'sponsor_user' in obj:
+            obj['sponsor_user'] = User.de_json(obj['sponsor_user'])
+
+        return cls(**obj)
+    
+
+class AffiliateInfo(JsonDeserializable):
+    """
+    Contains information about the affiliate that received a commission via this transaction.
+
+    Telegram documentation: https://core.telegram.org/bots/api#affiliateinfo
+
+    :param affiliate_user: Optional. The bot or the user that received an affiliate commission if it was received by a bot or a user
+    :type affiliate_user: :class:`User`
+
+    :param affiliate_chat: Optional. The chat that received an affiliate commission if it was received by a chat
+    :type affiliate_chat: :class:`Chat`
+
+    :param commission_per_mille: The number of Telegram Stars received by the affiliate for each 1000 Telegram Stars received by the bot from referred users
+    :type commission_per_mille: :obj:`int`
+
+    :param amount: Integer amount of Telegram Stars received by the affiliate from the transaction, rounded to 0; can be negative for refunds
+    :type amount: :obj:`int`
+
+    :param nanostar_amount: Optional. The number of 1/1000000000 shares of Telegram Stars received by the affiliate; from -999999999 to 999999999; can be negative for refunds
+    :type nanostar_amount: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`AffiliateInfo`
+    """
+
+    def __init__(self, commission_per_mille, amount, affiliate_user=None, affiliate_chat=None, nanostar_amount=None, **kwargs):
+        self.affiliate_user: Optional[User] = affiliate_user
+        self.affiliate_chat: Optional[Chat] = affiliate_chat
+        self.commission_per_mille: int = commission_per_mille
+        self.amount: int = amount
+        self.nanostar_amount: Optional[int] = nanostar_amount
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'affiliate_user' in obj:
+            obj['affiliate_user'] = User.de_json(obj['affiliate_user'])
+        if 'affiliate_chat' in obj:
+            obj['affiliate_chat'] = Chat.de_json(obj['affiliate_chat'])
+        return cls(**obj)
+    
+
