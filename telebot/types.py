@@ -2985,6 +2985,10 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
 
     def to_dict(self):
         json_dict = {'text': self.text}
+
+        if not hasattr(self, 'copy_text'):
+            self.copy_text = None
+        
         if self.url:
             json_dict['url'] = self.url
         if self.callback_data:
