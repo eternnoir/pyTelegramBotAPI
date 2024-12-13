@@ -44,11 +44,11 @@ class TestTeleBot:
         def listener(messages):
             assert len(messages) == 100
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         tb.set_update_listener(listener)
 
     def test_message_handler(self):
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         msg = self.create_text_message('/help')
 
         @tb.message_handler(commands=['help', 'start'])
@@ -60,7 +60,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_reg(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'https://web.telegram.org/')
 
         # noinspection PyUnusedLocal
@@ -73,7 +73,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'lambda_text')
 
         # noinspection PyUnusedLocal
@@ -86,7 +86,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda_fail(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'text')
 
         # noinspection PyUnusedLocal
@@ -99,7 +99,7 @@ class TestTeleBot:
         assert not msg.text == 'got'
 
     def test_message_handler_reg_fail(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'web.telegram.org/')
 
         # noinspection PyUnusedLocal
@@ -660,7 +660,7 @@ let number = loop {
 
         apihelper.ENABLE_MIDDLEWARE = True
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         update = self.create_message_update('/help')
 
         # noinspection PyUnusedLocal
@@ -681,7 +681,7 @@ let number = loop {
 
         apihelper.ENABLE_MIDDLEWARE = True
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         update = self.create_message_update('/help')
 
         # noinspection PyUnusedLocal
