@@ -4449,6 +4449,10 @@ class InlineQueryResultArticle(InlineQueryResultBase):
         self.thumbnail_width: Optional[int] = thumbnail_width
         self.thumbnail_height: Optional[int] = thumbnail_height
 
+        if hide_url:
+            log_deprecation_warning('The parameter "hide_url" is deprecated. Pass an empty string as url instead.')
+            self.url = ''
+
 
     @property
     def thumb_url(self) -> str:
@@ -11059,6 +11063,9 @@ class Gift(JsonDeserializable):
     :param star_count: The number of Telegram Stars that must be paid to send the sticker
     :type star_count: :obj:`int`
 
+    :param upgrade_star_count: Optional. The number of Telegram Stars that must be paid to upgrade the gift to a unique one
+    :type upgrade_star_count: :obj:`int`
+
     :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
     :type total_count: :obj:`int`
 
@@ -11069,12 +11076,13 @@ class Gift(JsonDeserializable):
     :rtype: :class:`Gift`
     """
 
-    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, **kwargs):
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
         self.total_count: Optional[int] = total_count
         self.remaining_count: Optional[int] = remaining_count
+        self.upgrade_star_count: Optional[int] = upgrade_star_count
 
     @classmethod
     def de_json(cls, json_string):

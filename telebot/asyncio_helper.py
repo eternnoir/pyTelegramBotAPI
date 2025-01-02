@@ -1916,7 +1916,7 @@ async def delete_sticker_set(token, name):
     payload = {'name': name}
     return await _process_request(token, method_url, params=payload, method='post')
 
-async def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None):
+async def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None, pay_for_upgrade=None):
     method_url = 'sendGift'
     payload = {'user_id': user_id, 'gift_id': gift_id}
     if text:
@@ -1925,6 +1925,32 @@ async def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, te
         payload['text_parse_mode'] = text_parse_mode
     if text_entities:
         payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
+    if pay_for_upgrade is not None:
+        payload['pay_for_upgrade'] = pay_for_upgrade
+    return await _process_request(token, method_url, params=payload, method='post')
+    
+async def verify_user(token, user_id, custom_description=None):
+    method_url = 'verifyUser'
+    payload = {'user_id': user_id}
+    if custom_description:
+        payload['custom_description'] = custom_description
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def verify_chat(token, chat_id, custom_description=None):
+    method_url = 'verifyChat'
+    payload = {'chat_id': chat_id}
+    if custom_description:
+        payload['custom_description'] = custom_description
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def remove_user_verification(token, user_id):
+    method_url = 'removeUserVerification'
+    payload = {'user_id': user_id}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def remove_chat_verification(token, chat_id):
+    method_url = 'removeChatVerification'
+    payload = {'chat_id': chat_id}
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def get_available_gifts(token):
@@ -2243,12 +2269,6 @@ async def convert_input_media_array(array):
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
                 files[key] = input_media.media
-            if 'thumbnail' in media_dict:
-                thumbnail = media_dict['thumbnail']
-                if isinstance(thumbnail, types.InputFile):
-                    thumbnail_key = 'thumbnail_' + key  
-                    files[thumbnail_key] = thumbnail    
-                    media_dict['thumbnail'] = 'attach://' + thumbnail_key                    
             media.append(media_dict)
     return json.dumps(media), files
 

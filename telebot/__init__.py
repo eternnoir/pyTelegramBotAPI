@@ -6250,7 +6250,8 @@ class TeleBot:
         """
         return apihelper.delete_sticker_set(self.token, name)
 
-    def send_gift(self, user_id: int, gift_id: str, text: Optional[str]=None, text_parse_mode: Optional[str]=None, text_entities: Optional[List[types.MessageEntity]]=None) -> bool:
+    def send_gift(self, user_id: int, gift_id: str, text: Optional[str]=None, text_parse_mode: Optional[str]=None, 
+                  text_entities: Optional[List[types.MessageEntity]]=None, pay_for_upgrade: Optional[bool]=None) -> bool:
         """
         Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
 
@@ -6261,6 +6262,9 @@ class TeleBot:
 
         :param gift_id: Identifier of the gift
         :type gift_id: :obj:`str`
+
+        :param pay_for_upgrade: Pass True to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver
+        :type pay_for_upgrade: :obj:`bool`
 
         :param text: Text that will be shown along with the gift; 0-255 characters
         :type text: :obj:`str`
@@ -6274,7 +6278,71 @@ class TeleBot:
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.send_gift(self.token, user_id, gift_id, text=text, text_parse_mode=text_parse_mode, text_entities=text_entities)
+        return apihelper.send_gift(self.token, user_id, gift_id, text=text, text_parse_mode=text_parse_mode, text_entities=text_entities,
+                                      pay_for_upgrade=pay_for_upgrade)
+    
+    def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
+        """
+        Verifies a user on behalf of the organization which is represented by the bot. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#verifyuser
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
+        :type custom_description: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.verify_user(self.token, user_id, custom_description=custom_description)
+
+    def verify_chat(self, chat_id: Union[int, str], custom_description: Optional[str]=None) -> bool:
+        """
+        Verifies a chat on behalf of the organization which is represented by the bot. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#verifychat
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
+        :type custom_description: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.verify_chat(self.token, chat_id, custom_description=custom_description)
+
+    def remove_user_verification(self, user_id: int) -> bool:
+        """
+        Removes verification from a user who is currently verified on behalf of the organization represented by the bot. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#removeuserverification
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+
+        return apihelper.remove_user_verification(self.token, user_id)
+
+    def remove_chat_verification(self, chat_id: Union[int, str]) -> bool:
+        """
+        Removes verification from a chat that is currently verified on behalf of the organization represented by the bot. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#removechatverification
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.remove_chat_verification(self.token, chat_id)
     
     def get_available_gifts(self) -> types.Gifts:
         """
