@@ -1929,7 +1929,7 @@ def get_available_gifts(token):
     return _make_request(token, method_url)
 
 
-def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None):
+def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None, pay_for_upgrade=None):
     method_url = 'sendGift'
     payload = {'user_id': user_id, 'gift_id': gift_id}
     if text:
@@ -1938,6 +1938,36 @@ def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_ent
         payload['text_parse_mode'] = text_parse_mode
     if text_entities:
         payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
+    if pay_for_upgrade is not None:
+        payload['pay_for_upgrade'] = pay_for_upgrade
+    return _make_request(token, method_url, params=payload, method='post')
+
+    
+def verify_user(token, user_id, custom_description=None):
+    method_url = 'verifyUser'
+    payload = {'user_id': user_id}
+    if custom_description:
+        payload['custom_description'] = custom_description
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def verify_chat(token, chat_id, custom_description=None):
+    method_url = 'verifyChat'
+    payload = {'chat_id': chat_id}
+    if custom_description:
+        payload['custom_description'] = custom_description
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def remove_user_verification(token, user_id):
+    method_url = 'removeUserVerification'
+    payload = {'user_id': user_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def remove_chat_verification(token, chat_id):
+    method_url = 'removeChatVerification'
+    payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload, method='post')
 
 def set_sticker_emoji_list(token, sticker, emoji_list):
@@ -2276,7 +2306,7 @@ def convert_input_media_array(array):
                 if isinstance(thumbnail, types.InputFile):
                     thumbnail_key = 'thumbnail_' + key  
                     files[thumbnail_key] = thumbnail    
-                    media_dict['thumbnail'] = 'attach://' + thumbnail_key                           
+                    media_dict['thumbnail'] = 'attach://' + thumbnail_key   
             media.append(media_dict)
     return json.dumps(media), files
 
