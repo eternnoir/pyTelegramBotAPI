@@ -7752,7 +7752,7 @@ class AsyncTeleBot:
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.verify_user(self.token, user_id, custom_description)
+        return await asyncio_helper.verify_user(self.token, user_id, custom_description=custom_description)
 
     async def verify_chat(self, chat_id: Union[int, str], custom_description: Optional[str]=None) -> bool:
         """
@@ -7770,7 +7770,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
 
-        return await asyncio_helper.verify_chat(self.token, chat_id, custom_description)
+        return await asyncio_helper.verify_chat(self.token, chat_id, custom_description=custom_description)
 
     async def remove_user_verification(self, user_id: int) -> bool:
         """

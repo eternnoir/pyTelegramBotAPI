@@ -2301,6 +2301,12 @@ def convert_input_media_array(array):
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
                 files[key] = input_media.media
+            if 'thumbnail' in media_dict:
+                thumbnail = media_dict['thumbnail']
+                if isinstance(thumbnail, types.InputFile):
+                    thumbnail_key = 'thumbnail_' + key  
+                    files[thumbnail_key] = thumbnail    
+                    media_dict['thumbnail'] = 'attach://' + thumbnail_key   
             media.append(media_dict)
     return json.dumps(media), files
 
