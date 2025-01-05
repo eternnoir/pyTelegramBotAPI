@@ -1,0 +1,27 @@
+---
+name: Send Release message
+on:
+  release:
+    types:
+    - created
+
+jobs:
+  send-message:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install Requirements
+      run: pip install pyTelegramBotAPI
+    - name: Send Message
+      run: python send_release_message.py
+      env:
+        TOKEN: ${{ secrets.TOKEN }}
+        CHAT_ID: ${{ vars.CHAT_ID }}
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
+        RELEASE_TITLE: ${{ github.event.release.name }}
+        RELEASE_BODY: ${{ github.event.release.body }}
