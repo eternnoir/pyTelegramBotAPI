@@ -1,3 +1,8 @@
+#!/usr/bin/python
+
+# This is a simple script that sends a message to a defined chat_id using GitHub Actions.
+# It was created alongside action_release_message.yml
+
 import telebot
 import os
 

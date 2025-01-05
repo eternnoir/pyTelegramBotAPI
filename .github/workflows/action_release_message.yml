@@ -18,7 +18,7 @@ jobs:
     - name: Install Requirements
       run: pip install pyTelegramBotAPI
     - name: Send Message
-      run: python send_release_message.py
+      run: python examples/send_release_message.py
       env:
         TOKEN: ${{ secrets.TOKEN }}
         CHAT_ID: ${{ vars.CHAT_ID }}
