@@ -1,0 +1,7 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+keyboard = [[InlineKeyboardButton("Earn", callback_data='earn'),
+             InlineKeyboardButton("Join community", callback_data='join')]]
+
+reply_markup = InlineKeyboardMarkup(keyboard)
+update.message.reply_text('Come in and start earning!', reply_markup=reply_markup)
