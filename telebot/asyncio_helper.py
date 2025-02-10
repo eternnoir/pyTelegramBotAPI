@@ -37,7 +37,7 @@ class SessionManager:
     async def create_session(self):
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(
             limit=REQUEST_LIMIT,
-            ssl_context=self.ssl_context
+            ssl=self.ssl_context
         ))
         return self.session
 
