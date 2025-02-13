@@ -6802,6 +6802,14 @@ class InputMediaVideo(InputMedia):
         multipart/form-data under <file_attach_name>. More information on Sending Files »
     :type thumbnail: InputFile or :obj:`str`
 
+    :param cover: Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+        pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under
+        <file_attach_name> name. More information on Sending Files »
+    :type cover: :obj:`str` or :class:`telebot.types.InputFile`
+
+    :param start_timestamp: Start timestamp for the video in the message
+    :type start_timestamp: :obj:`int`
+
     :param caption: Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
     :type caption: :obj:`str`
 
@@ -6839,7 +6847,8 @@ class InputMediaVideo(InputMedia):
                     caption_entities: Optional[List[MessageEntity]] = None, width: Optional[int] = None,
                     height: Optional[int] = None, duration: Optional[int] = None,
                     supports_streaming: Optional[bool] = None, has_spoiler: Optional[bool] = None,
-                    show_caption_above_media: Optional[bool] = None):
+                    show_caption_above_media: Optional[bool] = None, cover: Optional[Union[str, InputFile]] = None,
+                    start_timestamp: Optional[int] = None):
         super(InputMediaVideo, self).__init__(
             type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
         self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
@@ -6849,6 +6858,8 @@ class InputMediaVideo(InputMedia):
         self.supports_streaming: Optional[bool] = supports_streaming
         self.has_spoiler: Optional[bool] = has_spoiler
         self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.cover: Optional[str] = cover
+        self.start_timestamp: Optional[int] = start_timestamp
 
     @property
     def thumb(self) -> Optional[Union[str, Any]]:
@@ -6871,6 +6882,10 @@ class InputMediaVideo(InputMedia):
             ret['has_spoiler'] = self.has_spoiler
         if self.show_caption_above_media is not None:
             ret['show_caption_above_media'] = self.show_caption_above_media
+        if self.cover:
+            ret['cover'] = self.cover
+        if self.start_timestamp:
+            ret['start_timestamp'] = self.start_timestamp
         return ret
 
 
@@ -10899,6 +10914,14 @@ class InputPaidMediaVideo(InputPaidMedia):
         More information on Sending Files »
     :type thumbnail: :class:`InputFile`
 
+    :param cover: Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+        pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under
+        <file_attach_name> name. More information on Sending Files »
+    :type cover: :obj:`str` or :class:`telebot.types.InputFile`
+
+    :param start_timestamp: Start timestamp for the video in the message
+    :type start_timestamp: :obj:`int`
+
     :param width: Optional. Video width
     :type width: :obj:`int`
 
@@ -10917,13 +10940,16 @@ class InputPaidMediaVideo(InputPaidMedia):
     """
     def __init__(self, media: Union[str, InputFile], thumbnail: Optional[InputFile] = None, width: Optional[int] = None,
                  height: Optional[int] = None, duration: Optional[int] = None, supports_streaming: Optional[bool] = None,
-                 **kwargs):
+                 cover: Optional[Union[str,InputFile]] = None, start_timestamp: Optional[int] = None, **kwargs):
         super().__init__(type='video', media=media)
         self.thumbnail: Optional[Union[str,InputFile]] = thumbnail
         self.width: Optional[int] = width
         self.height: Optional[int] = height
         self.duration: Optional[int] = duration
         self.supports_streaming: Optional[bool] = supports_streaming
+        self.cover: Optional[Union[str,InputFile]] = cover
+        self.start_timestamp: Optional[int] = start_timestamp
+
 
 
     def to_dict(self):
@@ -10938,6 +10964,10 @@ class InputPaidMediaVideo(InputPaidMedia):
             data['duration'] = self.duration
         if self.supports_streaming is not None:
             data['supports_streaming'] = self.supports_streaming
+        if self.cover:
+            data['cover'] = self.cover
+        if self.start_timestamp:
+            data['start_timestamp'] = self.start_timestamp
         return data
 
 class RefundedPayment(JsonDeserializable):
