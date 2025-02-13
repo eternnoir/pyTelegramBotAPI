@@ -1810,7 +1810,8 @@ class TeleBot:
             message_id: int, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            video_start_timestamp: Optional[int]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -1824,6 +1825,9 @@ class TeleBot:
 
         :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
         :type from_chat_id: :obj:`int` or :obj:`str`
+
+        :param video_start_timestamp: New start timestamp for the forwarded video in the message
+        :type video_start_timestamp: :obj:`int`
 
         :param message_id: Message identifier in the chat specified in from_chat_id
         :type message_id: :obj:`int`
@@ -1846,7 +1850,8 @@ class TeleBot:
         return types.Message.de_json(
             apihelper.forward_message(
                 self.token, chat_id, from_chat_id, message_id, disable_notification=disable_notification,
-                timeout=timeout, protect_content=protect_content, message_thread_id=message_thread_id))
+                timeout=timeout, protect_content=protect_content, message_thread_id=message_thread_id,
+                video_start_timestamp=video_start_timestamp))
 
 
     def copy_message(
@@ -1865,7 +1870,8 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.MessageID:
+            allow_paid_broadcast: Optional[bool]=None,
+            video_start_timestamp: Optional[int]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
@@ -1882,6 +1888,9 @@ class TeleBot:
 
         :param message_id: Message identifier in the chat specified in from_chat_id
         :type message_id: :obj:`int`
+
+        :param video_start_timestamp: New start timestamp for the copied video in the message
+        :type video_start_timestamp: :obj:`int`
 
         :param caption: New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
         :type caption: :obj:`str`
@@ -1956,7 +1965,8 @@ class TeleBot:
                 parse_mode=parse_mode, caption_entities=caption_entities, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast))
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                video_start_timestamp=video_start_timestamp))
 
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 

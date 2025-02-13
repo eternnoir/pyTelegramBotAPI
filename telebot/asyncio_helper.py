@@ -429,7 +429,7 @@ async def get_chat_member(token, chat_id, user_id):
 async def forward_message(
         token, chat_id, from_chat_id, message_id,
         disable_notification=None, timeout=None, protect_content=None,
-        message_thread_id=None):
+        message_thread_id=None, video_start_timestamp=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if disable_notification is not None:
@@ -440,13 +440,15 @@ async def forward_message(
         payload['protect_content'] = protect_content
     if message_thread_id:
         payload['message_thread_id'] = message_thread_id
+    if video_start_timestamp:
+        payload['video_start_timestamp'] = video_start_timestamp
     return await _process_request(token, method_url, params=payload)
 
 
 async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None,  
                  reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None,
-                 allow_paid_broadcast=None):
+                 allow_paid_broadcast=None, video_start_timestamp=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -471,6 +473,8 @@ async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, p
         payload['show_caption_above_media'] = show_caption_above_media
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if video_start_timestamp:
+        payload['video_start_timestamp'] = video_start_timestamp
     return await _process_request(token, method_url, params=payload)
 
 
