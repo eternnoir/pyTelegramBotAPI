@@ -688,6 +688,13 @@ class ChatFullInfo(JsonDeserializable):
     :param permissions: Optional. Default chat member permissions, for groups and supergroups. Returned only in getChat.
     :type permissions: :class:`telebot.types.ChatPermissions`
 
+    :param can_send_gift: Optional. True, if gifts can be sent to the chat
+    :type can_send_gift: :obj:`bool`
+
+    :param can_send_paid_media: Optional. True, if paid media messages can be sent or forwarded to the channel chat.
+        The field is available only for channel chats.
+    :type can_send_paid_media: :obj:`bool`
+
     :param slow_mode_delay: Optional. For supergroups, the minimum allowed delay between consecutive messages sent by each unpriviledged user; in seconds. Returned only in getChat.
     :type slow_mode_delay: :obj:`int`
 
@@ -727,10 +734,6 @@ class ChatFullInfo(JsonDeserializable):
 
     :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat.
     :type location: :class:`telebot.types.ChatLocation`
-
-    :param can_send_paid_media: Optional. True, if paid media messages can be sent or forwarded to the channel chat.
-        The field is available only for channel chats.
-    :type can_send_paid_media: :obj:`bool`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
@@ -774,7 +777,7 @@ class ChatFullInfo(JsonDeserializable):
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None, 
-                    can_send_paid_media=None, **kwargs):
+                    can_send_paid_media=None, can_send_gift=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -819,6 +822,7 @@ class ChatFullInfo(JsonDeserializable):
         self.personal_chat: Optional[Chat] = personal_chat
         self.birthdate: Optional[Birthdate] = birthdate
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
+        self.can_send_gift: Optional[bool] = can_send_gift
 
 
 class Chat(ChatFullInfo):
