@@ -1916,7 +1916,8 @@ async def delete_sticker_set(token, name):
     payload = {'name': name}
     return await _process_request(token, method_url, params=payload, method='post')
 
-async def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None, pay_for_upgrade=None):
+async def send_gift(token, gift_id, text=None, text_parse_mode=None, text_entities=None, pay_for_upgrade=None,
+                    user_id=None, chat_id=None):
     method_url = 'sendGift'
     payload = {'user_id': user_id, 'gift_id': gift_id}
     if text:
@@ -1927,6 +1928,10 @@ async def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, te
         payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
     if pay_for_upgrade is not None:
         payload['pay_for_upgrade'] = pay_for_upgrade
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if user_id:
+        payload['user_id'] = user_id
     return await _process_request(token, method_url, params=payload, method='post')
     
 async def verify_user(token, user_id, custom_description=None):

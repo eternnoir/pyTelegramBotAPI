@@ -7707,18 +7707,23 @@ class AsyncTeleBot:
 
         return await asyncio_helper.delete_sticker_set(self.token, name)
 
-    async def send_gift(self, user_id: int, gift_id: str, text: Optional[str]=None, text_parse_mode: Optional[str]=None,
-                        text_entities: Optional[List[types.MessageEntity]]=None, pay_for_upgrade: Optional[bool]=None) -> bool:
+    async def send_gift(self, gift_id: str, user_id: Optional[Union[str, int]] = None, chat_id: Optional[Union[str, int]] = None,
+                        text: Optional[str]=None, text_parse_mode: Optional[str]=None, text_entities: Optional[List[types.MessageEntity]]=None,
+                        pay_for_upgrade: Optional[bool]=None) -> bool:
         """
         Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendgift
 
-        :param user_id: Unique identifier of the target user that will receive the gift
-        :type user_id: :obj:`int`
-
         :param gift_id: Identifier of the gift
         :type gift_id: :obj:`str`
+
+        :param user_id: Required if chat_id is not specified. Unique identifier of the target user who will receive the gift.
+        :type user_id::obj:`int` | :obj:`str`
+
+        :param chat_id: Required if user_id is not specified. Unique identifier for the chat or username of the channel
+            (in the format @channelusername) that will receive the gift.
+        :type chat_id: :obj:`int` | :obj:`str`
 
         :param pay_for_upgrade: Pass True to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver
         :type pay_for_upgrade: :obj:`bool`
@@ -7735,7 +7740,11 @@ class AsyncTeleBot:
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.send_gift(self.token, user_id, gift_id, text, text_parse_mode, text_entities, pay_for_upgrade=pay_for_upgrade)
+        if user_id is None and chat_id is None:
+            raise ValueError("Either user_id or chat_id must be specified.")
+        
+        return await asyncio_helper.send_gift(self.token, gift_id, text, text_parse_mode, text_entities, pay_for_upgrade=pay_for_upgrade,
+                                                chat_id=chat_id, user_id=user_id)
     
     async def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
         """

@@ -1929,7 +1929,8 @@ def get_available_gifts(token):
     return _make_request(token, method_url)
 
 
-def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_entities=None, pay_for_upgrade=None):
+def send_gift(token, gift_id, text=None, text_parse_mode=None, text_entities=None, pay_for_upgrade=None,
+              chat_id=None, user_id=None):
     method_url = 'sendGift'
     payload = {'user_id': user_id, 'gift_id': gift_id}
     if text:
@@ -1940,6 +1941,10 @@ def send_gift(token, user_id, gift_id, text=None, text_parse_mode=None, text_ent
         payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
     if pay_for_upgrade is not None:
         payload['pay_for_upgrade'] = pay_for_upgrade
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if user_id:
+        payload['user_id'] = user_id
     return _make_request(token, method_url, params=payload, method='post')
 
     
