@@ -1985,6 +1985,12 @@ class Video(JsonDeserializable):
     :param thumbnail: Optional. Video thumbnail
     :type thumbnail: :class:`telebot.types.PhotoSize`
 
+    :param cover: Optional. Available sizes of the cover of the video in the message
+    :type cover: List[:class:`telebot.types.PhotoSize`]
+
+    :param start_timestamp: Optional. Timestamp in seconds from which the video will play in the message
+    :type start_timestamp: :obj:`int`
+
     :param file_name: Optional. Original filename as defined by sender
     :type file_name: :obj:`str`
 
@@ -2005,9 +2011,12 @@ class Video(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'thumbnail' in obj and 'file_id' in obj['thumbnail']:
             obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
+        if 'cover' in obj:
+            obj['cover'] = [PhotoSize.de_json(c) for c in obj['cover']]
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, width, height, duration, thumbnail=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+    def __init__(self, file_id, file_unique_id, width, height, duration, thumbnail=None, file_name=None, mime_type=None, file_size=None,
+                    cover=None, start_timestamp=None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
@@ -2017,6 +2026,8 @@ class Video(JsonDeserializable):
         self.file_name: Optional[str] = file_name
         self.mime_type: Optional[str] = mime_type
         self.file_size: Optional[int] = file_size
+        self.cover: Optional[List[PhotoSize]] = cover
+        self.start_timestamp: Optional[int] = start_timestamp
 
     @property
     def thumb(self) -> Optional[PhotoSize]:
