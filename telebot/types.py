@@ -10423,6 +10423,8 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerAffiliateProgram.de_json(obj)
         elif obj["type"] == "other":
             return TransactionPartnerOther.de_json(obj)
+        elif obj["type"] == "chat":
+            return TransactionPartnerChat.de_json(obj)
 
 
 # noinspection PyShadowingBuiltins
@@ -11196,3 +11198,36 @@ class AffiliateInfo(JsonDeserializable):
         return cls(**obj)
     
 
+class TransactionPartnerChat(TransactionPartner):
+    """
+    Describes a transaction with a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#transactionpartnerchat
+
+    :param type: Type of the transaction partner, always “chat”
+    :type type: :obj:`str`
+
+    :param chat: Information about the chat
+    :type chat: :class:`Chat`
+
+    :param gift: Optional. The gift sent to the chat by the bot
+    :type gift: :class:`Gift`
+
+    :return: Instance of the class
+    :rtype: :class:`TransactionPartnerChat`
+    """
+
+    def __init__(self, type, chat, gift=None, **kwargs):
+        self.type: str = type
+        self.chat: Chat = chat
+        self.gift: Optional[Gift] = gift
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['chat'] = Chat.de_json(obj['chat'])
+        if 'gift' in obj:
+            obj['gift'] = Gift.de_json(obj['gift'])
+        return cls(**obj)
+    
