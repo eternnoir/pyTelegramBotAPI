@@ -2824,7 +2824,9 @@ class TeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            cover: Optional[Union[Any, str]]=None,
+            start_timestamp: Optional[int]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -2845,8 +2847,18 @@ class TeleBot:
         :param height: Video height
         :type height: :obj:`int`
 
-        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
+        :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size.
+            A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
+            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
         :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param cover: Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+            pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under
+            <file_attach_name> name. More information on Sending Files »
+        :type cover: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param start_timestamp: Start timestamp for the video in the message
+        :type start_timestamp: :obj:`int`
         
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
@@ -2949,7 +2961,8 @@ class TeleBot:
                 thumbnail=thumbnail, height=height, width=width, caption_entities=caption_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id, has_spoiler=has_spoiler,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast)
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                cover=cover, start_timestamp=start_timestamp)
         )
 
 

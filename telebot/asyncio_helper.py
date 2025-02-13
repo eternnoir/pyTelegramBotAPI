@@ -789,7 +789,7 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
                      parse_mode=None, supports_streaming=None, disable_notification=None, timeout=None,
                      thumbnail=None, width=None, height=None, caption_entities=None, 
                      protect_content=None, message_thread_id=None, has_spoiler=None,reply_parameters=None, business_connection_id=None,
-                     message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None):
+                     message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None, cover=None, start_timestamp=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -841,6 +841,16 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
         payload['show_caption_above_media'] = show_caption_above_media
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if cover:
+        if not util.is_string(cover):
+            if files:
+                files['cover'] = cover
+            else:
+                files = {'cover': cover}
+        else:
+            payload['cover'] = cover
+    if start_timestamp:
+        payload['start_timestamp'] = start_timestamp
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
