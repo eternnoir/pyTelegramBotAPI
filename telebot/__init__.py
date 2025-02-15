@@ -6273,8 +6273,9 @@ class TeleBot:
         """
         return apihelper.delete_sticker_set(self.token, name)
 
-    def send_gift(self, gift_id: str, user_id: Optional[Union[str, int]] = None, chat_id: Optional[Union[str, int]] = None, text: Optional[str]=None, text_parse_mode: Optional[str]=None, 
-                  text_entities: Optional[List[types.MessageEntity]]=None, pay_for_upgrade: Optional[bool]=None) -> bool:
+    def send_gift(self, user_id: Optional[Union[str, int]] = None, gift_id: str=None, text: Optional[str]=None, text_parse_mode: Optional[str]=None, 
+                  text_entities: Optional[List[types.MessageEntity]]=None, pay_for_upgrade: Optional[bool]=None,
+                  chat_id: Optional[Union[str, int]] = None) -> bool:
         """
         Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
 
@@ -6307,6 +6308,9 @@ class TeleBot:
         """
         if user_id is None and chat_id is None:
             raise ValueError("Either user_id or chat_id must be specified.")
+        
+        if gift_id is None:
+            raise ValueError("gift_id must be specified.")
         
         return apihelper.send_gift(self.token, gift_id, text=text, text_parse_mode=text_parse_mode, text_entities=text_entities,
                                       pay_for_upgrade=pay_for_upgrade, chat_id=chat_id, user_id=user_id)
