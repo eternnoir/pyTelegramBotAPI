@@ -3337,7 +3337,8 @@ class AsyncTeleBot:
             message_id: int, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None,
-            message_thread_id: Optional[int]=None) -> types.Message:
+            message_thread_id: Optional[int]=None,
+            video_start_timestamp: Optional[int]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -3355,6 +3356,9 @@ class AsyncTeleBot:
         :param message_id: Message identifier in the chat specified in from_chat_id
         :type message_id: :obj:`int`
 
+        :param video_start_timestamp: New start timestamp for the forwarded video in the message
+        :type video_start_timestamp: :obj:`int`
+        
         :param protect_content: Protects the contents of the forwarded message from forwarding and saving
         :type protect_content: :obj:`bool`
 
@@ -3371,8 +3375,9 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
 
         return types.Message.de_json(
-            await asyncio_helper.forward_message(self.token, chat_id, from_chat_id, message_id, disable_notification, timeout, protect_content,
-                                                 message_thread_id))
+            await asyncio_helper.forward_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
+                                                    disable_notification=disable_notification, protect_content=protect_content,
+                                                    timeout=timeout, message_thread_id=message_thread_id, video_start_timestamp=video_start_timestamp))
 
     async def copy_message(
             self, chat_id: Union[int, str], 
@@ -3390,7 +3395,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.MessageID:
+            allow_paid_broadcast: Optional[bool]=None,
+            video_start_timestamp: Optional[bool]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -3405,8 +3411,12 @@ class AsyncTeleBot:
 
         :param from_chat_id: Unique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
         :type from_chat_id: :obj:`int` or :obj:`str`
+
         :param message_id: Message identifier in the chat specified in from_chat_id
         :type message_id: :obj:`int`
+
+        :param video_start_timestamp: New start timestamp for the forwarded video in the message
+        :type video_start_timestamp: :obj:`int`
 
         :param caption: New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
         :type caption: :obj:`str`
@@ -3478,10 +3488,12 @@ class AsyncTeleBot:
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
         return types.MessageID.de_json(
-            await asyncio_helper.copy_message(self.token, chat_id, from_chat_id, message_id, caption, parse_mode, caption_entities,
-                                   disable_notification, reply_markup,
-                                   timeout, protect_content, message_thread_id, reply_parameters, show_caption_above_media=show_caption_above_media,
-                                   allow_paid_broadcast=allow_paid_broadcast))
+            await asyncio_helper.copy_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
+                                                    caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
+                                                    disable_notification=disable_notification, protect_content=protect_content,
+                                                    reply_parameters=reply_parameters, reply_markup=reply_markup, timeout=timeout,
+                                                    message_thread_id=message_thread_id, show_caption_above_media=show_caption_above_media,
+                                                    allow_paid_broadcast=allow_paid_broadcast, video_start_timestamp=video_start_timestamp))
 
     async def delete_message(self, chat_id: Union[int, str], message_id: int, 
             timeout: Optional[int]=None) -> bool:
@@ -4341,7 +4353,9 @@ class AsyncTeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            cover: Optional[Union[Any, str]]=None,
+            start_timestamp: Optional[int]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
         
@@ -4364,6 +4378,14 @@ class AsyncTeleBot:
 
         :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
         :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param cover: Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+            pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under
+            <file_attach_name> name. More information on Sending Files »
+        :type cover: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param start_timestamp: Start timestamp for the video in the message
+        :type start_timestamp: :obj:`int`
         
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
@@ -4467,7 +4489,7 @@ class AsyncTeleBot:
                 self.token, chat_id, video, duration, caption, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumbnail, width, height,
                 caption_entities, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast))
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast, cover=cover, start_timestamp=start_timestamp))
 
     async def send_animation(
             self, chat_id: Union[int, str], animation: Union[Any, str], 
@@ -7707,18 +7729,23 @@ class AsyncTeleBot:
 
         return await asyncio_helper.delete_sticker_set(self.token, name)
 
-    async def send_gift(self, user_id: int, gift_id: str, text: Optional[str]=None, text_parse_mode: Optional[str]=None,
-                        text_entities: Optional[List[types.MessageEntity]]=None, pay_for_upgrade: Optional[bool]=None) -> bool:
+    async def send_gift(self, user_id: Optional[Union[str, int]] = None, gift_id: str=None,
+                        text: Optional[str]=None, text_parse_mode: Optional[str]=None, text_entities: Optional[List[types.MessageEntity]]=None,
+                        pay_for_upgrade: Optional[bool]=None, chat_id: Optional[Union[str, int]] = None) -> bool:
         """
         Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendgift
 
-        :param user_id: Unique identifier of the target user that will receive the gift
-        :type user_id: :obj:`int`
-
         :param gift_id: Identifier of the gift
         :type gift_id: :obj:`str`
+
+        :param user_id: Required if chat_id is not specified. Unique identifier of the target user who will receive the gift.
+        :type user_id::obj:`int` | :obj:`str`
+
+        :param chat_id: Required if user_id is not specified. Unique identifier for the chat or username of the channel
+            (in the format @channelusername) that will receive the gift.
+        :type chat_id: :obj:`int` | :obj:`str`
 
         :param pay_for_upgrade: Pass True to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver
         :type pay_for_upgrade: :obj:`bool`
@@ -7735,7 +7762,14 @@ class AsyncTeleBot:
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.send_gift(self.token, user_id, gift_id, text, text_parse_mode, text_entities, pay_for_upgrade=pay_for_upgrade)
+        if user_id is None and chat_id is None:
+            raise ValueError("Either user_id or chat_id must be specified.")
+        
+        if gift_id is None:
+            raise ValueError("gift_id must be specified.")
+        
+        return await asyncio_helper.send_gift(self.token, gift_id, text, text_parse_mode, text_entities, pay_for_upgrade=pay_for_upgrade,
+                                                chat_id=chat_id, user_id=user_id)
     
     async def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
         """
