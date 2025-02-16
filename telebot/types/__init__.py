@@ -883,7 +883,16 @@ class Message(JsonDeserializable):
         return self.text or self.caption or ""
 
 
+@dataclass
 class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
+    type: str
+    offset: int
+    length: int
+    url: str | None = None  # for type = "text_link"
+    user: User | None = None  # for type = "text_mention"
+    language: str | None = None  # for type = "pre"
+    custom_emoji_id: str | None = None  # for type = "custom_emoji"
+
     @staticmethod
     def to_list_of_dicts(entity_list) -> Union[List[Dict], None]:
         res = []
@@ -900,28 +909,24 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
             obj["user"] = User.de_json(obj["user"])
         return cls(**obj)
 
-    def __init__(self, type, offset, length, url=None, user=None, language=None, custom_emoji_id=None, **kwargs):
-        self.type: str = type
-        self.offset: int = offset
-        self.length: int = length
-        self.url: str = url
-        self.user: User = user
-        self.language: str = language
-        self.custom_emoji_id: str = custom_emoji_id
-
     def to_json(self):
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
-        return {
+    def to_dict(self) -> dict[str, Any]:
+        res = {
             "type": self.type,
             "offset": self.offset,
             "length": self.length,
-            "url": self.url,
-            "user": self.user,
-            "language": self.language,
-            "custom_emoji_id": self.custom_emoji_id,
         }
+        if self.url is not None:
+            res["url"] = self.url
+        if self.user is not None:
+            res["user"] = self.user.to_dict()
+        if self.language is not None:
+            res["language"] = self.language
+        if self.custom_emoji_id is not None:
+            res["custom_emoji_id"] = self.custom_emoji_id
+        return res
 
 
 TiedToChat = Union[ChatMemberUpdated, ChatJoinRequest, Message]

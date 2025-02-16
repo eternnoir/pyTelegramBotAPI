@@ -531,3 +531,41 @@ class TestIntegration(_HasBotAttr):
 
         ret_msg = await self.bot.get_my_commands(scope=scope, language_code=lang)
         assert ret_msg == []
+
+    @respect_rate_limit
+    async def test_send_message_with_entities(self):
+        text = "bold italic underline link"
+        msg = await self.bot.send_message(
+            CHAT_ID,
+            text,
+            entities=[
+                types.MessageEntity(type="bold", offset=0, length=4),
+                types.MessageEntity(type="italic", offset=5, length=6),
+                types.MessageEntity(type="underline", offset=12, length=9),
+                types.MessageEntity(type="text_link", offset=22, length=4, url="https://google.com"),
+            ],
+        )
+        assert msg.message_id
+        assert msg.text == text
+        assert msg.html_text == '<b>bold</b> <i>italic</i> <u>underline</u> <a href="https://google.com/">link</a>'
+
+    @respect_rate_limit
+    async def test_send_photo_with_entities(self):
+        with open(IMAGE, "rb") as image_file:
+            text = "bold italic underline link"
+            msg = await self.bot.send_photo(
+                CHAT_ID,
+                image_file,
+                caption=text,
+                caption_entities=[
+                    types.MessageEntity(type="bold", offset=0, length=4),
+                    types.MessageEntity(type="italic", offset=5, length=6),
+                    types.MessageEntity(type="underline", offset=12, length=9),
+                    types.MessageEntity(type="text_link", offset=22, length=4, url="https://google.com"),
+                ],
+            )
+            assert msg.message_id
+            assert msg.caption == text
+            assert (
+                msg.html_caption == '<b>bold</b> <i>italic</i> <u>underline</u> <a href="https://google.com/">link</a>'
+            )
