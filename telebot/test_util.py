@@ -852,6 +852,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
         chat_id: Union[int, str],
         text: str,
         parse_mode: Optional[str] = None,
+        entities: Optional[list[types.MessageEntity]] = None,
         disable_web_page_preview: Optional[bool] = None,
         disable_notification: Optional[bool] = None,
         protect_content: Optional[bool] = None,
