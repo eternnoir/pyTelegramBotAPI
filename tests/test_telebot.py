@@ -7,6 +7,7 @@ import pytest
 from dotenv import load_dotenv
 
 from telebot import AsyncTeleBot, api, types
+from telebot.flood_control import TelegramBotApiFloodControl
 
 load_dotenv()
 
@@ -32,7 +33,10 @@ AUDIO_OGG = DATA_DIR / "test_audio.ogg"
 
 @pytest.fixture(scope="class")
 def bot_attr(request):
-    bot = AsyncTeleBot(TOKEN)
+    bot = AsyncTeleBot(
+        TOKEN,
+        flood_control=TelegramBotApiFloodControl(),
+    )
     request.cls.bot = bot
     return
 
@@ -53,15 +57,6 @@ class _HasBotAttr:
     bot: AsyncTeleBot
 
 
-def respect_rate_limit(method):
-    async def decorated(self: "TestIntegration"):
-        await asyncio.sleep(1)
-        await method(self)
-        await self.passed()
-
-    return decorated
-
-
 @pytest.mark.skipif(skip_reason_msg is not None, reason=skip_reason_msg or "")
 @pytest.mark.usefixtures("bot_attr", "teardown")
 @pytest.mark.integration
@@ -69,7 +64,6 @@ class TestIntegration(_HasBotAttr):
     async def passed(self):
         await self.bot.send_message(CHAT_ID, "✅")
 
-    @respect_rate_limit
     async def test_send_message_with_markdown(self):
         markdown = """
         *bold text*
@@ -79,7 +73,6 @@ class TestIntegration(_HasBotAttr):
         ret_msg = await self.bot.send_message(CHAT_ID, markdown, parse_mode="Markdown")
         assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_message_with_disable_notification(self):
         markdown = """
         *bold text*
@@ -89,7 +82,6 @@ class TestIntegration(_HasBotAttr):
         ret_msg = await self.bot.send_message(CHAT_ID, markdown, parse_mode="Markdown", disable_notification=True)
         assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_file(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_document(CHAT_ID, image_file)
@@ -97,7 +89,6 @@ class TestIntegration(_HasBotAttr):
         ret_msg = await self.bot.send_document(CHAT_ID, ret_msg.document.file_id)
         assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_file_with_filename(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_document(CHAT_ID, image_file)
@@ -106,7 +97,6 @@ class TestIntegration(_HasBotAttr):
             ret_msg = await self.bot.send_document(CHAT_ID, image_file, visible_file_name="test.jpg")
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_file_dis_noti(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_document(CHAT_ID, image_file, disable_notification=True)
@@ -114,7 +104,6 @@ class TestIntegration(_HasBotAttr):
             ret_msg = await self.bot.send_document(CHAT_ID, ret_msg.document.file_id)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_file_caption(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_document(CHAT_ID, image_file, caption="Test")
@@ -122,36 +111,30 @@ class TestIntegration(_HasBotAttr):
             ret_msg = await self.bot.send_document(CHAT_ID, ret_msg.document.file_id)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_video(self):
         with open(VIDEO, "rb") as video_file:
             ret_msg = await self.bot.send_video(CHAT_ID, video_file)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_video_dis_noti(self):
         with open(VIDEO, "rb") as video_file:
             ret_msg = await self.bot.send_video(CHAT_ID, video_file, disable_notification=True)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_video_more_params(self):
         with open(VIDEO, "rb") as video_file:
             ret_msg = await self.bot.send_video(CHAT_ID, video_file, duration=0.5)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_video_more_params_dis_noti(self):
         with open(VIDEO, "rb") as video_file:
             ret_msg = await self.bot.send_video(CHAT_ID, video_file, 1, disable_notification=True)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_file_exception(self):
         with pytest.raises(Exception):
             await self.bot.send_document(CHAT_ID, None)
 
-    @respect_rate_limit
     async def test_send_photo(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_photo(CHAT_ID, image_file)
@@ -159,7 +142,6 @@ class TestIntegration(_HasBotAttr):
             ret_msg = await self.bot.send_photo(CHAT_ID, ret_msg.photo[0].file_id)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_photo_dis_noti(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_photo(CHAT_ID, image_file)
@@ -167,7 +149,6 @@ class TestIntegration(_HasBotAttr):
             ret_msg = await self.bot.send_photo(CHAT_ID, ret_msg.photo[0].file_id, disable_notification=True)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_audio(self):
         with open(AUDIO_MP3, "rb") as audio_file:
             ret_msg = await self.bot.send_audio(
@@ -177,7 +158,6 @@ class TestIntegration(_HasBotAttr):
             assert ret_msg.audio.performer == "eternnoir"
             assert ret_msg.audio.title == "pyTelegram"
 
-    @respect_rate_limit
     async def test_send_audio_dis_noti(self):
         with open(AUDIO_MP3, "rb") as audio_file:
             ret_msg = await self.bot.send_audio(
@@ -192,19 +172,16 @@ class TestIntegration(_HasBotAttr):
             assert ret_msg.audio.performer == "eternnoir"
             assert ret_msg.audio.title == "pyTelegram"
 
-    @respect_rate_limit
     async def test_send_voice(self):
         with open(AUDIO_OGG, "rb") as audio_file:
             ret_msg = await self.bot.send_voice(CHAT_ID, audio_file)
             assert ret_msg.voice.mime_type == "audio/ogg"
 
-    @respect_rate_limit
     async def test_send_voice_dis_noti(self):
         with open(AUDIO_OGG, "rb") as audio_file:
             ret_msg = await self.bot.send_voice(CHAT_ID, audio_file, disable_notification=True)
             assert ret_msg.voice.mime_type == "audio/ogg"
 
-    @respect_rate_limit
     async def test_get_file(self):
         with open(AUDIO_OGG, "rb") as audio_file:
             ret_msg = await self.bot.send_voice(CHAT_ID, audio_file)
@@ -212,7 +189,6 @@ class TestIntegration(_HasBotAttr):
             file_info = await self.bot.get_file(file_id)
             assert file_info.file_id == file_id
 
-    @respect_rate_limit
     async def test_get_file_dis_noti(self):
         with open(AUDIO_OGG, "rb") as audio_file:
             ret_msg = await self.bot.send_voice(CHAT_ID, audio_file, disable_notification=True)
@@ -221,27 +197,23 @@ class TestIntegration(_HasBotAttr):
             assert file_info.file_id == file_id
             assert file_info.file_size == AUDIO_OGG.stat().st_size
 
-    @respect_rate_limit
     async def test_send_message(self):
         text = "CI Test Message"
         ret_msg = await self.bot.send_message(CHAT_ID, text)
         assert ret_msg.message_id
         assert ret_msg.text == text
 
-    @respect_rate_limit
     async def test_send_dice(self):
         ret_msg = await self.bot.send_dice(CHAT_ID, emoji="🎯")
         assert ret_msg.message_id
         assert ret_msg.content_type == "dice"
 
-    @respect_rate_limit
     async def test_send_message_dis_noti(self):
         text = "CI Test Message"
         ret_msg = await self.bot.send_message(CHAT_ID, text, disable_notification=True)
         assert ret_msg.message_id
         assert ret_msg.text == text
 
-    @respect_rate_limit
     async def test_send_message_with_markup(self):
         text = "CI Test Message"
         markup = types.ReplyKeyboardMarkup()
@@ -252,7 +224,6 @@ class TestIntegration(_HasBotAttr):
         assert ret_msg.text == text
         # assert ret_msg.reply_markup == markup  # reply markup is not returned
 
-    @respect_rate_limit
     async def test_send_message_with_markup_use_string(self):
         text = "CI Test Message"
         markup = types.ReplyKeyboardMarkup()
@@ -265,7 +236,6 @@ class TestIntegration(_HasBotAttr):
         assert ret_msg.text == text
         # assert ret_msg.reply_markup == markup  # reply markup is not returned
 
-    @respect_rate_limit
     async def test_send_message_with_inlinemarkup(self):
         text = "CI Test Message"
         markup = types.InlineKeyboardMarkup()
@@ -278,7 +248,6 @@ class TestIntegration(_HasBotAttr):
         print(ret_msg.reply_markup.to_dict())
         assert ret_msg.reply_markup == markup
 
-    @respect_rate_limit
     async def test_forward_message(self):
         text = "CI forward_message Test Message"
         msg = await self.bot.send_message(CHAT_ID, text)
@@ -290,14 +259,12 @@ class TestIntegration(_HasBotAttr):
             fwd_from_user_dict.pop(get_me_only_field)
         assert fwd_from_user_dict == me_dict
 
-    @respect_rate_limit
     async def test_copy_message(self):
         text = "CI copy_message Test Message"
         msg = await self.bot.send_message(CHAT_ID, text)
         ret_msg = await self.bot.copy_message(CHAT_ID, CHAT_ID, msg.message_id)
         assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_forward_message_dis_noti(self):
         text = "CI forward_message Test Message"
 
@@ -305,7 +272,6 @@ class TestIntegration(_HasBotAttr):
         ret_msg = await self.bot.forward_message(CHAT_ID, CHAT_ID, msg.message_id, disable_notification=True)
         assert ret_msg.forward_from
 
-    @respect_rate_limit
     async def test_reply_to(self):
         text = "CI reply_to Test Message"
 
@@ -313,7 +279,6 @@ class TestIntegration(_HasBotAttr):
         ret_msg = await self.bot.reply_to(msg, text + " REPLY")
         assert ret_msg.reply_to_message.message_id == msg.message_id
 
-    @respect_rate_limit
     async def test_send_location(self):
         lat = 26.3875591
         lon = -161.2901042
@@ -321,7 +286,6 @@ class TestIntegration(_HasBotAttr):
         assert int(ret_msg.location.longitude) == int(lon)
         assert int(ret_msg.location.latitude) == int(lat)
 
-    @respect_rate_limit
     async def test_send_location_dis_noti(self):
         lat = 26.3875591
         lon = -161.2901042
@@ -329,7 +293,6 @@ class TestIntegration(_HasBotAttr):
         assert int(ret_msg.location.longitude) == int(lon)
         assert int(ret_msg.location.latitude) == int(lat)
 
-    @respect_rate_limit
     async def test_send_venue(self):
         lat = 26.3875591
         lon = -161.2901042
@@ -337,7 +300,6 @@ class TestIntegration(_HasBotAttr):
         assert ret_msg.venue.title == "Test Venue"
         assert int(lat) == int(ret_msg.venue.location.latitude)
 
-    @respect_rate_limit
     async def test_send_venue_dis_noti(self):
         lat = 26.3875591
         lon = -161.2901042
@@ -351,27 +313,23 @@ class TestIntegration(_HasBotAttr):
         )
         assert ret_msg.venue.title == "Test Venue"
 
-    @respect_rate_limit
     async def test_chat(self):
         me = await self.bot.get_me()
         msg = await self.bot.send_message(CHAT_ID, "Test")
         assert me.id == msg.from_user.id
         assert msg.chat.id == int(CHAT_ID)
 
-    @respect_rate_limit
     async def test_edit_message_text(self):
         msg = await self.bot.send_message(CHAT_ID, "Test")
         new_msg = await self.bot.edit_message_text("Edit test", chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.text == "Edit test"
 
-    @respect_rate_limit
     async def test_edit_message_caption(self):
         with open(IMAGE, "rb") as image_file:
             msg = await self.bot.send_document(CHAT_ID, image_file, caption="Test")
         new_msg = await self.bot.edit_message_caption(caption="Edit test", chat_id=CHAT_ID, message_id=msg.message_id)
         assert new_msg.caption == "Edit test"
 
-    @respect_rate_limit
     async def test_edit_message_media(self):
         with open(IMAGE, "rb") as image_file_1, open(IMAGE_2, "rb") as image_file_2:
             msg_original = await self.bot.send_photo(CHAT_ID, image_file_1)
@@ -393,27 +351,22 @@ class TestIntegration(_HasBotAttr):
             assert not isinstance(msg_edited_1, bool)
             assert msg_edited_2.caption == "Test editMessageMedia by file id"
 
-    @respect_rate_limit
     async def test_get_chat(self):
         ch = await self.bot.get_chat(GROUP_ID)
         assert str(ch.id) == GROUP_ID
 
-    @respect_rate_limit
     async def test_get_chat_administrators(self):
         cas = await self.bot.get_chat_administrators(GROUP_ID)
         assert len(cas) > 0
 
-    @respect_rate_limit
     async def test_get_chat_members_count(self):
         cn = await self.bot.get_chat_member_count(GROUP_ID)
         assert cn > 1
 
-    @respect_rate_limit
     async def test_export_chat_invite_link(self):
         il = await self.bot.export_chat_invite_link(GROUP_ID)
         assert isinstance(il, str)
 
-    @respect_rate_limit
     async def test_create_revoke_detailed_chat_invite_link(self):
         cil = await self.bot.create_chat_invite_link(
             GROUP_ID, expire_date=datetime.now() + timedelta(minutes=1), member_limit=5
@@ -426,7 +379,6 @@ class TestIntegration(_HasBotAttr):
         rcil = await self.bot.revoke_chat_invite_link(GROUP_ID, cil.invite_link)
         assert rcil.is_revoked
 
-    @respect_rate_limit
     async def test_edit_markup(self):
         text = "CI Test Message"
         markup = types.InlineKeyboardMarkup()
@@ -442,13 +394,11 @@ class TestIntegration(_HasBotAttr):
         assert new_msg.message_id
         assert new_msg.reply_markup == markup
 
-    @respect_rate_limit
     async def test_send_video_note(self):
         with open(VIDEO, "rb") as video_file:
             ret_msg = await self.bot.send_video_note(CHAT_ID, video_file)
             assert ret_msg.message_id
 
-    @respect_rate_limit
     async def test_send_media_group(self):
         img1 = "https://i.imgur.com/CjXjcnU.png"
         img2 = "https://i.imgur.com/CjXjcnU.png"
@@ -461,7 +411,6 @@ class TestIntegration(_HasBotAttr):
         assert result[0].media_group_id is not None
         assert result[0].media_group_id == result[1].media_group_id
 
-    @respect_rate_limit
     async def test_send_media_group_local_files(self):
         with open(IMAGE, "rb") as image_file, open(VIDEO, "rb") as video_file:
             medias = [types.InputMediaPhoto(image_file, "View"), types.InputMediaVideo(video_file)]
@@ -470,32 +419,27 @@ class TestIntegration(_HasBotAttr):
             assert result[0].media_group_id is not None
             assert result[1].media_group_id is not None
 
-    @respect_rate_limit
     async def test_send_photo_formating_caption(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_photo(CHAT_ID, image_file, caption="_italic_", parse_mode="Markdown")
             assert ret_msg.caption_entities[0].type == "italic"
 
-    @respect_rate_limit
     async def test_send_video_formatting_caption(self):
         with open(VIDEO, "rb") as video_file:
             ret_msg = await self.bot.send_video(CHAT_ID, video_file, caption="_italic_", parse_mode="Markdown")
             assert ret_msg.caption_entities[0].type == "italic"
 
-    @respect_rate_limit
     async def test_send_audio_formatting_caption(self):
         with open(AUDIO_MP3, "rb") as audio_file:
             ret_msg = await self.bot.send_audio(CHAT_ID, audio_file, caption="<b>bold</b>", parse_mode="HTML")
             assert ret_msg.caption_entities[0].type == "bold"
 
-    @respect_rate_limit
     async def test_send_voice_formatting_caprion(self):
         with open(AUDIO_OGG, "rb") as audio_file:
             ret_msg = await self.bot.send_voice(CHAT_ID, audio_file, caption="<b>bold</b>", parse_mode="HTML")
             assert ret_msg.caption_entities[0].type == "bold"
             assert ret_msg.voice.mime_type == "audio/ogg"
 
-    @respect_rate_limit
     async def test_send_media_group_formatting_caption(self):
         img1 = "https://i.imgur.com/CjXjcnU.png"
         img2 = "https://i.imgur.com/CjXjcnU.png"
@@ -509,13 +453,11 @@ class TestIntegration(_HasBotAttr):
         assert result[0].caption_entities[0].type == "bold"
         assert result[1].caption_entities[0].type == "italic"
 
-    @respect_rate_limit
     async def test_send_document_formating_caption(self):
         with open(IMAGE, "rb") as image_file:
             ret_msg = await self.bot.send_document(CHAT_ID, image_file, caption="_italic_", parse_mode="Markdown")
             assert ret_msg.caption_entities[0].type == "italic"
 
-    @respect_rate_limit
     async def test_chat_commands(self):
         command, description, lang = "command_1", "description of command 1", "en"
         scope = types.BotCommandScopeChat(CHAT_ID)
@@ -532,7 +474,6 @@ class TestIntegration(_HasBotAttr):
         ret_msg = await self.bot.get_my_commands(scope=scope, language_code=lang)
         assert ret_msg == []
 
-    @respect_rate_limit
     async def test_send_message_with_entities(self):
         text = "bold italic underline link"
         msg = await self.bot.send_message(
@@ -549,7 +490,6 @@ class TestIntegration(_HasBotAttr):
         assert msg.text == text
         assert msg.html_text == '<b>bold</b> <i>italic</i> <u>underline</u> <a href="https://google.com/">link</a>'
 
-    @respect_rate_limit
     async def test_send_photo_with_entities(self):
         with open(IMAGE, "rb") as image_file:
             text = "bold italic underline link"

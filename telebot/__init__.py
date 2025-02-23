@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import functools
 import json
 import logging
@@ -20,6 +21,7 @@ from typing import (
 )
 
 from telebot import api, callback_data, filters, types, util
+from telebot.flood_control import FloodControl, NoFloodControl
 from telebot.metrics import (
     ExceptionInfo,
     TelegramUpdateMetrics,
@@ -63,6 +65,7 @@ class AsyncTeleBot:
         log_marker: Optional[str] = None,
         logger: Optional[logging.Logger] = None,
         update_metrics_handler: Optional[TelegramUpdateMetricsHandler] = None,
+        flood_control: FloodControl = NoFloodControl(),
     ):
         self.token = token
         self.offset = offset
@@ -111,6 +114,7 @@ class AsyncTeleBot:
 
         # updated automatically from added handlers
         self.allowed_updates: set[constants.UpdateType] = set(force_allowed_updates) if force_allowed_updates else set()
+        self.flood_control = flood_control
 
     async def close_session(self):
         """
@@ -1132,6 +1136,7 @@ class AsyncTeleBot:
         :param auto_split_message:
         :return: API reply.
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         if auto_split_message and len(text) > MAX_MESSAGE_LENGTH:
@@ -1202,6 +1207,7 @@ class AsyncTeleBot:
         :param timeout:
         :return: API reply.
         """
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.forward_message(
                 self.token,
@@ -1250,6 +1256,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.MessageID.de_json(
@@ -1311,6 +1318,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: Message
         """
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.send_dice(
                 self.token,
@@ -1360,6 +1368,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
@@ -1423,6 +1432,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: Message
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
@@ -1483,6 +1493,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: Message
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
@@ -1545,6 +1556,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         if data and not (document):
             # function typo miss compatibility
@@ -1601,6 +1613,7 @@ class AsyncTeleBot:
         :return: API reply.
         """
 
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.send_data(
                 self.token,
@@ -1660,6 +1673,7 @@ class AsyncTeleBot:
         :param timeout:
         :param data: deprecated, for backward compatibility
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
@@ -1727,6 +1741,7 @@ class AsyncTeleBot:
         :param allow_sending_without_reply:
         :return:
         """
+        await self.flood_control.respect(chat_id)
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
 
         return types.Message.de_json(
@@ -1786,6 +1801,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.send_video_note(
                 self.token,
@@ -1836,6 +1852,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
+        await self.flood_control.respect(chat_id)
         result = await api.send_media_group(
             self.token,
             chat_id,
@@ -1886,6 +1903,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return: API reply.
         """
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.send_location(
                 self.token,
@@ -1936,6 +1954,7 @@ class AsyncTeleBot:
         :param proximity_alert_radius:
         :return:
         """
+        await self.flood_control.respect(chat_id) if chat_id is not None else contextlib.nullcontext()
         return types.Message.de_json(
             await api.edit_message_live_location(
                 self.token,
@@ -1973,6 +1992,7 @@ class AsyncTeleBot:
         :param timeout:
         :return:
         """
+        await self.flood_control.respect(chat_id) if chat_id is not None else contextlib.nullcontext()
         return types.Message.de_json(
             await api.stop_message_live_location(
                 self.token,
@@ -2026,6 +2046,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.send_venue(
                 self.token,
@@ -2080,6 +2101,7 @@ class AsyncTeleBot:
         :param allow_sending_without_reply:
         :param protect_content:
         """
+        await self.flood_control.respect(chat_id)
         return types.Message.de_json(
             await api.send_contact(
                 self.token,
@@ -2933,6 +2955,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
+        await self.flood_control.respect(chat_id)
         result = await api.send_game(
             self.token,
             chat_id,
@@ -3082,6 +3105,7 @@ class AsyncTeleBot:
         :param protect_content:
         :return:
         """
+        await self.flood_control.respect(chat_id)
         result = await api.send_invoice(
             self.token,
             chat_id,
@@ -3273,6 +3297,7 @@ class AsyncTeleBot:
         if isinstance(question, types.Poll):
             raise RuntimeError("The send_poll signature was changed, please see send_poll function details.")
 
+        await self.flood_control.respect(chat_id)
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
 
         return types.Message.de_json(
