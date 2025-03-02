@@ -340,7 +340,7 @@ async def test_webhook_app_background_tasks(bot_runner: BotRunner):
     try:
         await asyncio.wait_for(
             asyncio.gather(
-                webhook_app.run(port=12345),
+                webhook_app.run(port=12345, graceful_shutdown=False),
                 remove_bot_runner_after_delay(),
             ),
             timeout=1,

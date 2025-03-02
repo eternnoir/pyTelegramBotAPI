@@ -97,14 +97,15 @@ class PreventShutdown(GracefulShutdownCondition):
 
 
 class GracefulShutdownHandler:
-    _singleton: "GracefulShutdownHandler | None" = None
+    _instance: "GracefulShutdownHandler | None" = None
 
     def __new__(cls, *args, **kwargs):
-        if cls._singleton is None:
-            cls._singleton = super().__new__(cls)
-        return cls._singleton
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.manual_init()
+        return cls._instance
 
-    def __init__(self) -> None:
+    def manual_init(self) -> None:
         self._is_shutting_down = False
         self._is_running = False
 
@@ -122,7 +123,7 @@ class GracefulShutdownHandler:
         signal.signal(signal.SIGINT, self._shutdown_signal_handler)
         signal.signal(signal.SIGTERM, self._shutdown_signal_handler)
         while True:
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(1.0)
             if not self._is_shutting_down:
                 continue
 
