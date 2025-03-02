@@ -12,9 +12,10 @@ class AsyncRateLimiter:
     Low-level rate limiter loosely based on https://github.com/RazerM/ratelimiter
     """
 
-    def __init__(self, calls_per_sec: int):
+    def __init__(self, max_calls: int, period: float):
         self._call_times = collections.deque[float]()
-        self._calls_per_sec = calls_per_sec
+        self._max_calls = max_calls
+        self._period = period
         self._lock = asyncio.Lock()
 
     @property
@@ -22,7 +23,7 @@ class AsyncRateLimiter:
         return self._call_times[-1] - self._call_times[0]
 
     def delete_old_calls(self) -> None:
-        oldest_to_keep = time.time() - 1.0
+        oldest_to_keep = time.time() - self._period
         while self._call_times and self._call_times[0] < oldest_to_keep:
             self._call_times.popleft()
 
@@ -34,8 +35,8 @@ class AsyncRateLimiter:
     async def respect_rate_limit(self) -> None:
         async with self._lock:
             self.delete_old_calls()
-            if len(self._call_times) >= self._calls_per_sec:
-                sleep_time = 1.0 - self.timespan
+            if len(self._call_times) >= self._max_calls:
+                sleep_time = self._period - self.timespan
                 if sleep_time > 0:
                     logger.debug(f"Sleeping for {sleep_time:.4f} sec to respect the rate limit...")
                     await asyncio.sleep(sleep_time)
@@ -66,8 +67,11 @@ class TelegramBotApiFloodControl(FloodControl):
     Details: https://core.telegram.org/bots/faq#my-bot-is-hitting-limits-how-do-i-avoid-this
     """
 
-    def __init__(self, total_per_sec: int = 30, per_chat_per_sec: int = 1) -> None:
-        self.bulk_limiter = AsyncRateLimiter(calls_per_sec=total_per_sec)
+    def __init__(self, total_per_sec: int = 30, per_chat_per_sec: float = 1) -> None:
+        self.bulk_limiter = AsyncRateLimiter(
+            max_calls=total_per_sec,
+            period=0.9,  # little less than a second for safety
+        )
         self.per_chat_limiters: dict[str | int, AsyncRateLimiter] = dict()
         self.calls_per_chat_per_sec = per_chat_per_sec
         self._cleanup_task: asyncio.Task[None] | None = None
@@ -80,7 +84,11 @@ class TelegramBotApiFloodControl(FloodControl):
 
     async def respect(self, to_chat: int | str) -> None:
         if to_chat not in self.per_chat_limiters:
-            self.per_chat_limiters[to_chat] = AsyncRateLimiter(calls_per_sec=self.calls_per_chat_per_sec)
+            self.per_chat_limiters[to_chat] = AsyncRateLimiter(
+                # aiming for 4 messages per 5 seconds
+                max_calls=int(4 * self.calls_per_chat_per_sec),
+                period=5.0,
+            )
 
         if len(self.per_chat_limiters) > 100 and (self._cleanup_task is None or self._cleanup_task.done()):
             self._cleanup_task = asyncio.create_task(self._cleanup_limiters_after_delay())
