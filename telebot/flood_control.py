@@ -70,7 +70,7 @@ class TelegramBotApiFloodControl(FloodControl):
     def __init__(self, total_per_sec: int = 30, per_chat_per_sec: float = 1) -> None:
         self.bulk_limiter = AsyncRateLimiter(
             max_calls=total_per_sec,
-            period=0.9,  # little less than a second for safety
+            period=1.1,  # little less than a second for safety
         )
         self.per_chat_limiters: dict[str | int, AsyncRateLimiter] = dict()
         self.calls_per_chat_per_sec = per_chat_per_sec
