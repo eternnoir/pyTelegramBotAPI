@@ -106,6 +106,7 @@ class GracefulShutdownHandler:
 
     def __init__(self) -> None:
         self._is_shutting_down = False
+        self._is_running = False
 
     def _shutdown_signal_handler(self, sig: int, frame: FrameType | None):
         if not self._is_shutting_down:
@@ -115,6 +116,9 @@ class GracefulShutdownHandler:
             logger.info(f"Repeated shutdown signal received: {signal.Signals(sig).name}, ignoring")
 
     async def run(self):
+        if self._is_running:
+            raise RuntimeError("Graceful shutdown handler may be run only once")
+        self._is_running = True
         signal.signal(signal.SIGINT, self._shutdown_signal_handler)
         signal.signal(signal.SIGTERM, self._shutdown_signal_handler)
         while True:
