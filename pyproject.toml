@@ -15,6 +15,7 @@ pytest-asyncio = "^0.18.3"
 python-dotenv = "^0.20.0"
 pre-commit = "^2.19.0"
 mypy = "^0.960"
+ruff = "^0.9.9"
 
 [tool.poetry-dynamic-versioning]
 enable = true
