@@ -509,3 +509,11 @@ class TestIntegration(_HasBotAttr):
             assert (
                 msg.html_caption == '<b>bold</b> <i>italic</i> <u>underline</u> <a href="https://google.com/">link</a>'
             )
+
+    async def test_set_reaction(self) -> None:
+        message = await self.bot.send_message(chat_id=CHAT_ID, text="example text")
+        assert await self.bot.set_message_reaction(
+            chat_id=CHAT_ID,
+            message_id=message.id,
+            reaction=[types.ReactionTypeEmoji(emoji="❤️")],
+        )

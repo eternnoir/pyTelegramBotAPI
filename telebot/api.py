@@ -2290,6 +2290,16 @@ async def stop_poll(token, chat_id, message_id, reply_markup=None):
     return await _request(token, method_url, params=payload)
 
 
+async def set_message_reaction(token, chat_id, message_id, reaction=None, is_big=None):
+    method_url = r"setMessageReaction"
+    payload = {"chat_id": chat_id, "message_id": message_id}
+    if reaction:
+        payload["reaction"] = json.dumps([r.to_dict() for r in reaction])
+    if is_big is not None:
+        payload["is_big"] = is_big
+    return await _request(token, method_url, params=payload)
+
+
 class ApiException(Exception):
     """
     This class represents a base Exception thrown when a call to the Telegram API fails.

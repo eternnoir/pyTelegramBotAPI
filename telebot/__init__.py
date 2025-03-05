@@ -969,6 +969,23 @@ class AsyncTeleBot:
         result = await api.get_webhook_info(self.token, timeout)
         return types.WebhookInfo.de_json(result)
 
+    async def set_message_reaction(
+        self,
+        chat_id: Union[int, str],
+        message_id: int,
+        reaction: Optional[List[types.ReactionType]] = None,
+        is_big: Optional[bool] = None,
+    ) -> bool:
+        """
+        Use this method to change the chosen reactions on a message.
+        Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same
+        available reactions as messages in the channel. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmessagereaction
+        """
+        result = await api.set_message_reaction(self.token, chat_id, message_id, reaction, is_big)
+        return result
+
     async def get_user_profile_photos(
         self, user_id: int, offset: Optional[int] = None, limit: Optional[int] = None
     ) -> types.UserProfilePhotos:
