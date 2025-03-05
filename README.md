@@ -81,6 +81,6 @@ pytest tests -vv
 
 mypy telebot
 
-black .
-isort .
+ruff check --fix
+ruff format
 ```

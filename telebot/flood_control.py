@@ -44,7 +44,6 @@ class AsyncRateLimiter:
 
 
 class FloodControl(abc.ABC):
-
     @abc.abstractmethod
     async def respect(self, to_chat: int | str) -> None:
         """

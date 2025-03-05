@@ -121,7 +121,9 @@ class Update(JsonDeserializable):
 
     @classmethod
     def de_json(
-        cls, json_: Optional[Union[dict, str]], metrics: Optional[TelegramUpdateMetrics] = None
+        cls,
+        json_: Optional[Union[dict, str]],
+        metrics: Optional[TelegramUpdateMetrics] = None,
     ) -> Optional["Update"]:
         if json_ is None:
             return None
@@ -687,7 +689,15 @@ class Message(JsonDeserializable):
                 is_reply=is_reply,
                 content_type=content_type or "<unset>",
             )
-        return cls(message_id, from_user, date, chat, content_type or "<unset>", opts, json_string)
+        return cls(
+            message_id,
+            from_user,
+            date,
+            chat,
+            content_type or "<unset>",
+            opts,
+            json_string,
+        )
 
     @classmethod
     def parse_chat(cls, chat):
@@ -711,7 +721,14 @@ class Message(JsonDeserializable):
         return ret
 
     def __init__(
-        self, message_id: int, from_user: User, date: int, chat: Chat, content_type: str, options, json_string
+        self,
+        message_id: int,
+        from_user: User,
+        date: int,
+        chat: Chat,
+        content_type: str,
+        options,
+        json_string,
     ):
         self.content_type: str = content_type
         self.id: int = message_id  # Lets fix the telegram usability ####up with ID in Message :)
@@ -1011,7 +1028,15 @@ class Voice(JsonDeserializable):
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, duration, mime_type=None, file_size=None, **kwargs):
+    def __init__(
+        self,
+        file_id,
+        file_unique_id,
+        duration,
+        mime_type=None,
+        file_size=None,
+        **kwargs,
+    ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.duration: int = duration
@@ -1031,7 +1056,16 @@ class Document(JsonDeserializable):
             obj["thumb"] = None
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, thumb=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+    def __init__(
+        self,
+        file_id,
+        file_unique_id,
+        thumb=None,
+        file_name=None,
+        mime_type=None,
+        file_size=None,
+        **kwargs,
+    ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.thumb: PhotoSize = thumb
@@ -1084,7 +1118,16 @@ class VideoNote(JsonDeserializable):
             obj["thumb"] = PhotoSize.de_json(obj["thumb"])
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, length, duration, thumb=None, file_size=None, **kwargs):
+    def __init__(
+        self,
+        file_id,
+        file_unique_id,
+        length,
+        duration,
+        thumb=None,
+        file_size=None,
+        **kwargs,
+    ):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.length: int = length
@@ -1101,7 +1144,15 @@ class Contact(JsonDeserializable):
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
-    def __init__(self, phone_number, first_name, last_name=None, user_id=None, vcard=None, **kwargs):
+    def __init__(
+        self,
+        phone_number,
+        first_name,
+        last_name=None,
+        user_id=None,
+        vcard=None,
+        **kwargs,
+    ):
         self.phone_number: str = phone_number
         self.first_name: str = first_name
         self.last_name: str = last_name
@@ -1374,7 +1425,10 @@ class KeyboardButtonRequestUser(Dictionaryable):
     """
 
     def __init__(
-        self, request_id: int, user_is_bot: Optional[bool] = None, user_is_premium: Optional[bool] = None
+        self,
+        request_id: int,
+        user_is_bot: Optional[bool] = None,
+        user_is_premium: Optional[bool] = None,
     ) -> None:
         self.request_id: int = request_id
         self.user_is_bot: Optional[bool] = user_is_bot
@@ -1652,7 +1706,14 @@ class LoginUrl(Dictionaryable, JsonSerializable, JsonDeserializable):
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
-    def __init__(self, url, forward_text=None, bot_username=None, request_write_access=None, **kwargs):
+    def __init__(
+        self,
+        url,
+        forward_text=None,
+        bot_username=None,
+        request_write_access=None,
+        **kwargs,
+    ):
         self.url: str = url
         self.forward_text: str = forward_text
         self.bot_username: str = bot_username
@@ -1717,7 +1778,14 @@ class ChatPhoto(JsonDeserializable):
         obj = cls.ensure_json_dict(json_string, copy_dict=False)
         return cls(**obj)
 
-    def __init__(self, small_file_id, small_file_unique_id, big_file_id, big_file_unique_id, **kwargs):
+    def __init__(
+        self,
+        small_file_id,
+        small_file_unique_id,
+        big_file_id,
+        big_file_unique_id,
+        **kwargs,
+    ):
         self.small_file_id: str = small_file_id
         self.small_file_unique_id: str = small_file_unique_id
         self.big_file_id: str = big_file_id
@@ -2280,7 +2348,15 @@ class ChosenInlineResult(JsonDeserializable):
             obj["location"] = Location.de_json(obj["location"])
         return cls(**obj)
 
-    def __init__(self, result_id, from_user, query, location=None, inline_message_id=None, **kwargs):
+    def __init__(
+        self,
+        result_id,
+        from_user,
+        query,
+        location=None,
+        inline_message_id=None,
+        **kwargs,
+    ):
         """
         This object represents a result of an inline query
         that was chosen by the user and sent to their chat partner.
@@ -2371,7 +2447,11 @@ class InlineQueryResultArticle(InlineQueryResultBase):
         thumb_height=None,
     ):
         super().__init__(
-            "article", id, title=title, input_message_content=input_message_content, reply_markup=reply_markup
+            "article",
+            id,
+            title=title,
+            input_message_content=input_message_content,
+            reply_markup=reply_markup,
         )
         self.url = url
         self.hide_url = hide_url
@@ -3197,7 +3277,16 @@ class Game(JsonDeserializable):
             ret.append(MessageEntity.de_json(me))
         return ret
 
-    def __init__(self, title, description, photo, text=None, text_entities=None, animation=None, **kwargs):
+    def __init__(
+        self,
+        title,
+        description,
+        photo,
+        text=None,
+        text_entities=None,
+        animation=None,
+        **kwargs,
+    ):
         self.title: str = title
         self.description: str = description
         self.photo: List[PhotoSize] = photo
@@ -3402,7 +3491,15 @@ class PreCheckoutQuery(JsonDeserializable):
         return cls(**obj)
 
     def __init__(
-        self, id, from_user, currency, total_amount, invoice_payload, shipping_option_id=None, order_info=None, **kwargs
+        self,
+        id,
+        from_user,
+        currency,
+        total_amount,
+        invoice_payload,
+        shipping_option_id=None,
+        order_info=None,
+        **kwargs,
     ):
         self.id: str = id
         self.from_user: User = from_user
@@ -3432,7 +3529,17 @@ class StickerSet(JsonDeserializable):
             obj["thumb"] = None
         return cls(**obj)
 
-    def __init__(self, name, title, sticker_type, is_animated, is_video, stickers, thumb=None, **kwargs):
+    def __init__(
+        self,
+        name,
+        title,
+        sticker_type,
+        is_animated,
+        is_video,
+        stickers,
+        thumb=None,
+        **kwargs,
+    ):
         self.name: str = name
         self.title: str = title
         self.sticker_type: str = sticker_type
@@ -3565,7 +3672,13 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
 
 class InputMediaPhoto(InputMedia):
-    def __init__(self, media: BytesIO, caption=None, parse_mode=None, has_spoiler: Optional[bool] = None):
+    def __init__(
+        self,
+        media: BytesIO,
+        caption=None,
+        parse_mode=None,
+        has_spoiler: Optional[bool] = None,
+    ):
         super(InputMediaPhoto, self).__init__(type="photo", media=media, caption=caption, parse_mode=parse_mode)
         self.has_spoiler = has_spoiler
 
@@ -3591,7 +3704,11 @@ class InputMediaVideo(InputMedia):
         has_spoiler=None,
     ):
         super(InputMediaVideo, self).__init__(
-            type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+            type="video",
+            media=media,
+            caption=caption,
+            parse_mode=parse_mode,
+            caption_entities=caption_entities,
         )
         self.thumb = thumb
         self.width = width
@@ -3631,7 +3748,11 @@ class InputMediaAnimation(InputMedia):
         has_spoiler=None,
     ):
         super(InputMediaAnimation, self).__init__(
-            type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+            type="animation",
+            media=media,
+            caption=caption,
+            parse_mode=parse_mode,
+            caption_entities=caption_entities,
         )
         self.thumb = thumb
         self.width = width
@@ -3667,7 +3788,11 @@ class InputMediaAudio(InputMedia):
         title=None,
     ):
         super(InputMediaAudio, self).__init__(
-            type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+            type="audio",
+            media=media,
+            caption=caption,
+            parse_mode=parse_mode,
+            caption_entities=caption_entities,
         )
         self.thumb = thumb
         self.duration = duration
@@ -3698,7 +3823,11 @@ class InputMediaDocument(InputMedia):
         disable_content_type_detection=None,
     ):
         super(InputMediaDocument, self).__init__(
-            type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities
+            type="document",
+            media=media,
+            caption=caption,
+            parse_mode=parse_mode,
+            caption_entities=caption_entities,
         )
         self.thumb = thumb
         self.disable_content_type_detection = disable_content_type_detection
@@ -4300,7 +4429,11 @@ class ForumTopic(JsonDeserializable):
         return cls(**obj)
 
     def __init__(
-        self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str] = None
+        self,
+        message_thread_id: int,
+        name: str,
+        icon_color: int,
+        icon_custom_emoji_id: Optional[str] = None,
     ) -> None:
         self.message_thread_id: int = message_thread_id
         self.name: str = name
@@ -4529,7 +4662,12 @@ class SwitchInlineQueryChosenChat(JsonDeserializable, Dictionaryable, JsonSerial
         return cls(**obj)
 
     def __init__(
-        self, query=None, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None
+        self,
+        query=None,
+        allow_user_chats=None,
+        allow_bot_chats=None,
+        allow_group_chats=None,
+        allow_channel_chats=None,
     ):
         self.query: str = query
         self.allow_user_chats: bool = allow_user_chats
@@ -4601,7 +4739,12 @@ class InlineQueryResultsButton(JsonSerializable, Dictionaryable):
     :rtype: :class:`InlineQueryResultsButton`
     """
 
-    def __init__(self, text: str, web_app: Optional[WebAppInfo] = None, start_parameter: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        text: str,
+        web_app: Optional[WebAppInfo] = None,
+        start_parameter: Optional[str] = None,
+    ) -> None:
         self.text: str = text
         self.web_app: Optional[WebAppInfo] = web_app
         self.start_parameter: Optional[str] = start_parameter
@@ -4635,3 +4778,91 @@ class Story(JsonDeserializable):
 
     def __init__(self) -> None:
         pass
+
+
+# noinspection PyShadowingBuiltins
+class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    This object represents a reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontype
+    """
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None:
+            return None
+        obj = cls.check_json(json_string)
+        # remove type
+        if obj["type"] == "emoji":
+            del obj["type"]
+            return ReactionTypeEmoji(**obj)
+        elif obj["type"] == "custom_emoji":
+            del obj["type"]
+            return ReactionTypeCustomEmoji(**obj)
+
+    def __init__(self, type: str) -> None:
+        self.type: str = type
+
+    def to_dict(self) -> dict:
+        json_dict = {"type": self.type}
+        return json_dict
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+
+# noinspection PyUnresolvedReferences
+class ReactionTypeEmoji(ReactionType):
+    """
+    This object represents an emoji reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypeemoji
+    """
+
+    def __init__(self, emoji: str, **kwargs) -> None:
+        super().__init__("emoji")
+        self.emoji: str = emoji
+
+    def to_dict(self) -> dict:
+        json_dict = super().to_dict()
+        json_dict["emoji"] = self.emoji
+        return json_dict
+
+
+# noinspection PyUnresolvedReferences,PyUnusedLocal
+class ReactionTypeCustomEmoji(ReactionType):
+    """
+    This object represents a custom emoji reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypecustomemoji
+    """
+
+    def __init__(self, custom_emoji_id: str, **kwargs) -> None:
+        super().__init__("custom_emoji")
+        self.custom_emoji_id: str = custom_emoji_id
+
+    def to_dict(self) -> dict:
+        json_dict = super().to_dict()
+        json_dict["custom_emoji_id"] = self.custom_emoji_id
+        return json_dict
+
+
+class ReactionTypePaid(ReactionType):
+    """
+    This object represents a paid reaction type.
+
+    Telegram documentation: https://core.telegram.org/bots/api#reactiontypepaid
+
+    :param type: Type of the reaction, must be paid
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`ReactionTypePaid`
+    """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__("paid")
+
+    def to_dict(self) -> dict:
+        return super().to_dict()

@@ -9,15 +9,12 @@ repository = "https://github.com/bots-against-war/telebot"
 packages = [{ include = "telebot" }]
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.4.2"
 pytest = "^7.1.2"
 pytest-aiohttp = "1.0.4"
 pytest-asyncio = "^0.18.3"
 python-dotenv = "^0.20.0"
-isort = "^5.10.1"
 pre-commit = "^2.19.0"
 mypy = "^0.960"
-flake8-pyproject = "^1.2.3"
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -39,20 +36,19 @@ build-backend = "poetry.core.masonry.api"
 
 # dev and testing tools
 
-
-[tool.black]
+[tool.ruff]
 line-length = 120
+indent-width = 4
+target-version = "py312"
 
-[tool.isort]
-profile = 'black'
+[tool.ruff.lint]
+extend-select = ["I"]  # check and fix imports
+
 
 [tool.mypy]
 files = "."
 
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 markers = ['integration: requires a real bot to run']
-
-[tool.flake8]
-extend_ignore = ['E501', 'E203', 'E251', 'E202', 'E701', 'W503']
-max-line-length = 120

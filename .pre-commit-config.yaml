@@ -1,17 +1,10 @@
 repos:
-  - repo: local
-    hooks:
-      - id: black
-        name: black
-        entry: black .
-        language: python
-        language_version: python3
-        require_serial: true
-        types: [python]
-      - id: isort
-        name: isort
-        entry: isort .
-        language: python
-        language_version: python3
-        require_serial: true
-        types: [python]
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.9.9
+  hooks:
+    # Run the linter.
+    - id: ruff
+      args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format

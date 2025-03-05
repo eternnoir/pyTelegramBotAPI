@@ -149,7 +149,7 @@ class IsBotAdminFilter(SimpleCustomFilter[types.Message]):
 
     key = "is_chat_admin"
 
-    def __init__(self, bot: "AsyncTeleBot"):  # type: ignore
+    def __init__(self, bot: "AsyncTeleBot"):  # type: ignore # noqa: F821
         self._bot = bot
 
     async def check(self, update_content: types.Message) -> bool:
