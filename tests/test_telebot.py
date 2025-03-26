@@ -44,11 +44,11 @@ class TestTeleBot:
         def listener(messages):
             assert len(messages) == 100
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         tb.set_update_listener(listener)
 
     def test_message_handler(self):
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         msg = self.create_text_message('/help')
 
         @tb.message_handler(commands=['help', 'start'])
@@ -60,7 +60,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_reg(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'https://web.telegram.org/')
 
         # noinspection PyUnusedLocal
@@ -73,7 +73,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'lambda_text')
 
         # noinspection PyUnusedLocal
@@ -86,7 +86,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda_fail(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'text')
 
         # noinspection PyUnusedLocal
@@ -99,7 +99,7 @@ class TestTeleBot:
         assert not msg.text == 'got'
 
     def test_message_handler_reg_fail(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot('10:need')
         msg = self.create_text_message(r'web.telegram.org/')
 
         # noinspection PyUnusedLocal
@@ -146,6 +146,9 @@ class TestTeleBot:
 
         ret_msg = tb.send_document(CHAT_ID, file_data)
         assert ret_msg.message_id
+
+        # Reset the file
+        file_data.seek(0)
 
         ret_msg = tb.send_document(CHAT_ID, file_data, visible_file_name="test.jpg")
         assert ret_msg.message_id
@@ -550,7 +553,7 @@ let number = loop {
         return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
                             chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                             my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, chat_boost, chat_boost_removed,
-                            purchased_paid_media)
+                            purchased_paid_media, None, None, None, None)
 
     def test_is_string_unicode(self):
         s1 = u'string'
@@ -657,7 +660,7 @@ let number = loop {
 
         apihelper.ENABLE_MIDDLEWARE = True
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         update = self.create_message_update('/help')
 
         # noinspection PyUnusedLocal
@@ -678,7 +681,7 @@ let number = loop {
 
         apihelper.ENABLE_MIDDLEWARE = True
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot('10:need')
         update = self.create_message_update('/help')
 
         # noinspection PyUnusedLocal
