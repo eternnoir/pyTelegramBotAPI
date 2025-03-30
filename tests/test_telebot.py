@@ -517,3 +517,11 @@ class TestIntegration(_HasBotAttr):
             message_id=message.id,
             reaction=[types.ReactionTypeEmoji(emoji="❤️")],
         )
+
+    async def test_disable_web_page_preview(self) -> None:
+        await self.bot.send_message(
+            chat_id=CHAT_ID,
+            text='<a href="https://github.com/bots-against-war/telebot">example link</a>',
+            disable_web_page_preview=True,
+            parse_mode="HTML",
+        )
