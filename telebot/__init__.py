@@ -424,10 +424,7 @@ class TeleBot:
     drop_pending_updates: Optional[bool] = None,
     timeout: Optional[int] = None
 ) -> bool:
-    return apihelper.set_webhook(
-        self.token, url, certificate, max_connections,
-        allowed_updates, ip_address, drop_pending_updates, timeout
-    )
+    
     """
         Use this method to specify a URL and receive incoming updates via an outgoing webhook.
         Whenever there is an update for the bot, we will send an HTTPS POST request to the specified URL,
@@ -477,6 +474,10 @@ class TeleBot:
         :return: True on success.
         :rtype: :obj:`bool` if the request was successful.
         """
+        return apihelper.set_webhook(
+        self.token, url, certificate, max_connections,
+        allowed_updates, ip_address, drop_pending_updates, timeout
+        )
 
     def run_webhooks(self,
                     listen: Optional[str]="127.0.0.1",
