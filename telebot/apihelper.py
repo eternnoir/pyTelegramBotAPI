@@ -274,30 +274,31 @@ def send_message(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     return _make_request(token, method_url, params=payload, method='post')
 
-
-def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
-                drop_pending_updates = None, timeout=None, secret_token=None):
+def set_webhook(
+    token: str,
+    url: Optional[str] = None,
+    certificate: Optional[Union[str, BinaryIO]] = None,
+    max_connections: Optional[int] = None,
+    allowed_updates: Optional[List[str]] = None,
+    ip_address: Optional[str] = None,
+    drop_pending_updates: Optional[bool] = None,
+    timeout: Optional[int] = None
+) -> bool:
     method_url = r'setWebhook'
-    payload = {
-        'url': url if url else "",
-    }
-    files = None
-    if certificate:
-        files = {'certificate': certificate}
-    if max_connections:
-        payload['max_connections'] = max_connections
-    if allowed_updates is not None:       # Empty lists should pass
-        payload['allowed_updates'] = json.dumps(allowed_updates)
-    if ip_address is not None:            # Empty string should pass
-        payload['ip_address'] = ip_address
-    if drop_pending_updates is not None:  # Any bool value should pass
-        payload['drop_pending_updates'] = drop_pending_updates
-    if timeout:
-        payload['timeout'] = timeout
-    if secret_token:
-        payload['secret_token'] = secret_token
-    return _make_request(token, method_url, params=payload, files=files)
+    params: Dict[str, Any] = {'url': url or ''}
+    files = {'certificate': certificate} if certificate else None
 
+    if max_connections is not None:
+        params['max_connections'] = max_connections
+    if allowed_updates:
+        params['allowed_updates'] = json.dumps(allowed_updates)
+    if ip_address:
+        params['ip_address'] = ip_address
+    if drop_pending_updates is not None:
+        params['drop_pending_updates'] = drop_pending_updates
+
+    result = _make_request(token, method_url, params, files=files, method='post', timeout=timeout)
+    return result if isinstance(result, bool) else False
 
 def delete_webhook(token, drop_pending_updates=None, timeout=None):
     method_url = r'deleteWebhook'
