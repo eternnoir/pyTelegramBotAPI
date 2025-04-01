@@ -25,7 +25,6 @@ from telebot import util
 logger = telebot.logger
 
 proxy = None
-session = None
 
 API_URL = None
 FILE_URL = None
@@ -35,7 +34,7 @@ READ_TIMEOUT = 30
 
 LONG_POLLING_TIMEOUT = 10 # Should be positive, short polling should be used for testing purposes only (https://core.telegram.org/bots/api#getupdates)
 
-SESSION_TIME_TO_LIVE = 600  # In seconds. None - live forever, 0 - one-time
+_session = requests.Session() # Global session for connection pooling (created on
 
 RETRY_ON_ERROR = False
 RETRY_TIMEOUT = 2
@@ -169,6 +168,57 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     if json_result:
         return json_result['result']
 
+def send_request(
+    token: str,
+    method_name: str,
+    params: Optional[Dict[str, Any]] = None,
+    files: Optional[Dict[str, Any]] = None,
+    method: str = 'post',
+    timeout: Optional[int] = None
+) -> Any:
+    request_url = _get_request_url(token, method_name)
+    headers = {'User-Agent': 'pyTelegramBotAPI'}
+
+    try:
+        if files:
+            # Use multipart/form-data for file uploads
+            response = _session.post(
+                request_url,
+                data=params,
+                files=files,
+                timeout=timeout,
+                headers=headers
+            )
+        elif method.lower() == 'post':
+            # Use application/json for non-file POST requests
+            response = _session.post(
+                request_url,
+                json=params,
+                timeout=timeout,
+                headers=headers
+            )
+        else:
+            # GET parameters are sent in the URL
+            response = _session.get(
+                request_url,
+                params=params,
+                timeout=timeout,
+                headers=headers
+            )
+        # Handle response (existing logic)
+        # ...
+    except requests.exceptions.RequestException as e:
+        logger.error("Request failed: %s", e)
+        raise NetworkError(f"Network error: {str(e)}") from e
+
+    # Check API response for errors
+    result = _parse(response)
+    if isinstance(result, dict) and not result.get('ok', False):
+        raise TelebotAPIError(
+            description=result.get('description', 'Unknown error'),
+            error_code=result.get('error_code')
+        )
+    return result  # Re-raise for custom exception handling
 
 def _check_result(method_name, result):
     """
