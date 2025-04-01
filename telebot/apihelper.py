@@ -21,6 +21,7 @@ except ImportError:
 import telebot
 from telebot import types
 from telebot import util
+from telebot.exceptions import TelebotAPIError, NetworkError
 
 logger = telebot.logger
 
