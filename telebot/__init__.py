@@ -414,10 +414,21 @@ class TeleBot:
         self.reply_backend.load_handlers(filename, del_file_after_loading)
 
 
-    def set_webhook(self, url: Optional[str]=None, certificate: Optional[Union[str, Any]]=None, max_connections: Optional[int]=None,
-                    allowed_updates: Optional[List[str]]=None, ip_address: Optional[str]=None,
-                    drop_pending_updates: Optional[bool] = None, timeout: Optional[int]=None, secret_token: Optional[str]=None) -> bool:
-        """
+    def set_webhook(
+    self,
+    url: Optional[str] = None,
+    certificate: Optional[Union[str, BinaryIO]] = None,
+    max_connections: Optional[int] = None,
+    allowed_updates: Optional[List[str]] = None,
+    ip_address: Optional[str] = None,
+    drop_pending_updates: Optional[bool] = None,
+    timeout: Optional[int] = None
+) -> bool:
+    return apihelper.set_webhook(
+        self.token, url, certificate, max_connections,
+        allowed_updates, ip_address, drop_pending_updates, timeout
+    )
+    """
         Use this method to specify a URL and receive incoming updates via an outgoing webhook.
         Whenever there is an update for the bot, we will send an HTTPS POST request to the specified URL,
         containing a JSON-serialized Update. In case of an unsuccessful request, we will give up after
@@ -466,12 +477,6 @@ class TeleBot:
         :return: True on success.
         :rtype: :obj:`bool` if the request was successful.
         """
-
-        return apihelper.set_webhook(
-            self.token, url = url, certificate = certificate, max_connections = max_connections,
-            allowed_updates = allowed_updates, ip_address = ip_address, drop_pending_updates = drop_pending_updates,
-            timeout = timeout, secret_token = secret_token)
-
 
     def run_webhooks(self,
                     listen: Optional[str]="127.0.0.1",
