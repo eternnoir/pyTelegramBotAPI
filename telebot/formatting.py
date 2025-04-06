@@ -418,7 +418,7 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
     utf16_text = text.encode("utf-16-le")
     html_text = ""
 
-    def func(upd_text, subst_type=None, url=None, user=None, custom_emoji_id=None):
+    def func(upd_text, subst_type=None, url=None, user=None, custom_emoji_id=None, language=None):
         upd_text = upd_text.decode("utf-16-le")
         if subst_type == "text_mention":
             subst_type = "text_link"
@@ -431,6 +431,8 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         subs = _subs.get(subst_type)
         if subst_type == "custom_emoji":
             return subs.format(text=upd_text, custom_emoji_id=custom_emoji_id)
+        elif (subst_type == "pre") and language:
+            return "<pre><code class=\"language-{0}\">{1}</code></pre>".format(language, upd_text)
         return subs.format(text=upd_text, url=url)
 
     offset = 0
@@ -444,14 +446,16 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
             offset = entity.offset
 
             new_string = func(utf16_text[offset * 2: (offset + entity.length) * 2], subst_type=entity.type,
-                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id)
+                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id,
+                              language=entity.language)
             start_index = len(html_text)
             html_text += new_string
             offset += entity.length
             end_index = len(html_text)
         elif entity.offset == offset:
             new_string = func(utf16_text[offset * 2: (offset + entity.length) * 2], subst_type=entity.type,
-                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id)
+                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id,
+                              language=entity.language)
             start_index = len(html_text)
             html_text += new_string
             end_index = len(html_text)
@@ -463,7 +467,8 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
             # And we don't change it).
             entity_string = html_text[start_index: end_index].encode("utf-16-le")
             formatted_string = func(entity_string, subst_type=entity.type, url=entity.url, user=entity.user,
-                                    custom_emoji_id=entity.custom_emoji_id). \
+                                    custom_emoji_id=entity.custom_emoji_id,
+                                    language=entity.language). \
                 replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
             html_text = html_text[:start_index] + formatted_string + html_text[end_index:]
             end_index = len(html_text)

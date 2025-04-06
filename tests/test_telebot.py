@@ -44,11 +44,11 @@ class TestTeleBot:
         def listener(messages):
             assert len(messages) == 100
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot(TOKEN)
         tb.set_update_listener(listener)
 
     def test_message_handler(self):
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot(TOKEN)
         msg = self.create_text_message('/help')
 
         @tb.message_handler(commands=['help', 'start'])
@@ -60,7 +60,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_reg(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot(TOKEN)
         msg = self.create_text_message(r'https://web.telegram.org/')
 
         # noinspection PyUnusedLocal
@@ -73,7 +73,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot(TOKEN)
         msg = self.create_text_message(r'lambda_text')
 
         # noinspection PyUnusedLocal
@@ -86,7 +86,7 @@ class TestTeleBot:
         assert msg.text == 'got'
 
     def test_message_handler_lambda_fail(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot(TOKEN)
         msg = self.create_text_message(r'text')
 
         # noinspection PyUnusedLocal
@@ -99,7 +99,7 @@ class TestTeleBot:
         assert not msg.text == 'got'
 
     def test_message_handler_reg_fail(self):
-        bot = telebot.TeleBot('')
+        bot = telebot.TeleBot(TOKEN)
         msg = self.create_text_message(r'web.telegram.org/')
 
         # noinspection PyUnusedLocal
@@ -147,6 +147,7 @@ class TestTeleBot:
         ret_msg = tb.send_document(CHAT_ID, file_data)
         assert ret_msg.message_id
 
+        file_data.seek(0)
         ret_msg = tb.send_document(CHAT_ID, file_data, visible_file_name="test.jpg")
         assert ret_msg.message_id
         
@@ -529,28 +530,31 @@ let number = loop {
         params = {'text': text}
         chat = types.User(11, False, 'test')
         message = types.Message(1, None, None, chat, 'text', params, "")
-        edited_message = None
-        channel_post = None
-        edited_channel_post = None
-        inline_query = None
-        chosen_inline_result = None
-        callback_query = None
-        shipping_query = None
-        pre_checkout_query = None
-        poll = None
-        poll_answer = None
-        my_chat_member = None
-        chat_member = None
-        chat_join_request = None
-        message_reaction = None
-        message_reaction_count = None
-        chat_boost = None
-        chat_boost_removed = None
-        purchased_paid_media = None
-        return types.Update(-1001234038283, message, edited_message, channel_post, edited_channel_post, inline_query,
-                            chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
-                            my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count, chat_boost, chat_boost_removed,
-                            purchased_paid_media)
+        return types.Update(
+            update_id=-1001234038283,
+            message=message,
+            edited_message=None,
+            channel_post=None,
+            edited_channel_post=None,
+            inline_query=None,
+            chosen_inline_result=None,
+            callback_query=None,
+            shipping_query=None,
+            pre_checkout_query=None,
+            poll=None,
+            poll_answer=None,
+            my_chat_member=None,
+            chat_member=None,
+            chat_join_request=None,
+            message_reaction=None,
+            message_reaction_count=None,
+            chat_boost=None,
+            removed_chat_boost=None,
+            purchased_paid_media=None,
+            business_message=None,
+            business_connection=None,
+            edited_business_message=None,
+            deleted_business_messages=None, )
 
     def test_is_string_unicode(self):
         s1 = u'string'
@@ -657,7 +661,7 @@ let number = loop {
 
         apihelper.ENABLE_MIDDLEWARE = True
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot(TOKEN)
         update = self.create_message_update('/help')
 
         # noinspection PyUnusedLocal
@@ -678,7 +682,7 @@ let number = loop {
 
         apihelper.ENABLE_MIDDLEWARE = True
 
-        tb = telebot.TeleBot('')
+        tb = telebot.TeleBot(TOKEN)
         update = self.create_message_update('/help')
 
         # noinspection PyUnusedLocal
@@ -703,3 +707,20 @@ let number = loop {
         #tb = telebot.TeleBot(TOKEN)
         #permissions = types.ChatPermissions(can_send_messages=True, can_send_polls=False)
         #msg = tb.set_chat_permissions(CHAT_ID, permissions)
+
+    def test_apply_html_entities(self):
+        text = {
+            "*bold*": "<b>bold</b>",
+            "__italic__": "<u>italic</u>",
+            "~strikethrough~": "<s>strikethrough</s>",
+            "`inline code`": "<code>inline code</code>",
+            "```\ncode block```": "<pre>code block</pre>",
+            "```python\nprint('Hello, world!')\n```": "<pre><code class=\"language-python\">print('Hello, world!')</code></pre>",
+            "```python\nprint(1 < 2)\n```": "<pre><code class=\"language-python\">print(1 &lt; 2)</code></pre>",
+            "[link](http://example.com/)": "<a href=\"http://example.com/\">link</a>",
+            ">blockquote": "<blockquote>blockquote</blockquote>",
+        }
+        tb = telebot.TeleBot(TOKEN)
+        for key, value in text.items():
+            ret_msg = tb.send_message(CHAT_ID, text=key, parse_mode='MarkdownV2')
+            assert telebot.formatting.apply_html_entities(ret_msg.text, ret_msg.entities, None) == value
