@@ -716,6 +716,7 @@ let number = loop {
             "`inline code`": "<code>inline code</code>",
             "```\ncode block```": "<pre>code block</pre>",
             "```python\nprint('Hello, world!')\n```": "<pre><code class=\"language-python\">print('Hello, world!')</code></pre>",
+            "```python\nprint(1 < 2)\n```": "<pre><code class=\"language-python\">print(1 &lt; 2)</code></pre>",
             "[link](http://example.com/)": "<a href=\"http://example.com/\">link</a>",
             ">blockquote": "<blockquote>blockquote</blockquote>",
         }

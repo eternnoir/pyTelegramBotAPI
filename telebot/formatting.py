@@ -425,15 +425,14 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
             url = "tg://user?id={0}".format(user.id)
         elif subst_type == "mention":
             url = "https://t.me/{0}".format(upd_text[1:])
-        elif subst_type == "pre":
-            if language is not None:
-                return '<pre><code class="language-{0}">{1}</code></pre>'.format(language, upd_text)
         upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         if not subst_type or not _subs.get(subst_type):
             return upd_text
         subs = _subs.get(subst_type)
         if subst_type == "custom_emoji":
             return subs.format(text=upd_text, custom_emoji_id=custom_emoji_id)
+        elif (subst_type == "pre") and language:
+            return "<pre><code class=\"language-{0}\">{1}</code></pre>".format(language, upd_text)
         return subs.format(text=upd_text, url=url)
 
     offset = 0
