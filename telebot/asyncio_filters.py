@@ -372,7 +372,7 @@ class IsAdminFilter(SimpleCustomFilter):
         """
         if isinstance(message, types.CallbackQuery):
             result = await self._bot.get_chat_member(message.message.chat.id, message.from_user.id)
-            return result.status ('creator', 'administrator')
+            return result.status in ('creator', 'administrator')
         result = await self._bot.get_chat_member(message.chat.id, message.from_user.id)
         return result.status in ['creator', 'administrator']
 
