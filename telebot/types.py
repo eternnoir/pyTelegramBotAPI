@@ -691,6 +691,9 @@ class ChatFullInfo(JsonDeserializable):
     :param can_send_gift: Optional. True, if gifts can be sent to the chat
     :type can_send_gift: :obj:`bool`
 
+    :param accepted_gift_types: Information about types of gifts that are accepted by the chat or by the corresponding user for private chats
+    :type accepted_gift_types: :class:`telebot.types.AcceptedGiftTypes`
+
     :param can_send_paid_media: Optional. True, if paid media messages can be sent or forwarded to the channel chat.
         The field is available only for channel chats.
     :type can_send_paid_media: :obj:`bool`
@@ -762,6 +765,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['personal_chat'] = Chat.de_json(obj['personal_chat'])
         if 'birthdate' in obj:
             obj['birthdate'] = Birthdate.de_json(obj['birthdate'])
+        if 'accepted_gift_types' in obj:
+            obj['accepted_gift_types'] = AcceptedGiftTypes.de_json(obj['accepted_gift_types'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -777,7 +782,8 @@ class ChatFullInfo(JsonDeserializable):
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None, 
-                    can_send_paid_media=None, can_send_gift=None, **kwargs):
+                    can_send_paid_media=None,
+                    accepted_gift_types=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -822,7 +828,11 @@ class ChatFullInfo(JsonDeserializable):
         self.personal_chat: Optional[Chat] = personal_chat
         self.birthdate: Optional[Birthdate] = birthdate
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
-        self.can_send_gift: Optional[bool] = can_send_gift
+        self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
+        self.can_send_gift: Optional[bool] = None
+        if self.accepted_gift_types is not None: # not optional but still
+            # skip premium subscription?
+            self.can_send_gift: Optional[bool] = any([self.accepted_gift_types.unique_gifts, self.accepted_gift_types.unlimited_gifts, self.accepted_gift_types.limited_gifts])
 
 
 class Chat(ChatFullInfo):
