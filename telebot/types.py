@@ -9736,8 +9736,11 @@ class BusinessConnection(JsonDeserializable):
     :param date: Date the connection was established in Unix time
     :type date: :obj:`int`
 
-    :param can_reply: True, if the bot can act on behalf of the business account in chats that were active in the last 24 hours
+    :param can_reply: Deprecated, use :attr:`can_reply` instead. True, if the bot can reply to messages from the business account
     :type can_reply: :obj:`bool`
+
+    :param rights: Optional. Rights of the business bot
+    :type rights: :class:`BusinessBotRights`
 
     :param is_enabled: True, if the connection is active
     :type is_enabled: :obj:`bool`
@@ -9753,12 +9756,15 @@ class BusinessConnection(JsonDeserializable):
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
     
-    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled, **kwargs):
+    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled,
+                    rights=None, **kwargs):
         self.id: str = id
         self.user: User = user
         self.user_chat_id: int = user_chat_id
         self.date: int = date
-        self.can_reply: bool = can_reply
+        self.rights: Optional[BusinessBotRights] = rights
+        # Deprecated, use self.rights instead
+        self.can_reply: Optional[bool] = can_reply
         self.is_enabled: bool = is_enabled
 
 
@@ -11270,5 +11276,82 @@ class TransactionPartnerChat(TransactionPartner):
         obj['chat'] = Chat.de_json(obj['chat'])
         if 'gift' in obj:
             obj['gift'] = Gift.de_json(obj['gift'])
+        return cls(**obj)
+    
+
+class BusinessBotRights(JsonDeserializable):
+    """
+    Represents the rights of a business bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessbotrights
+
+    :param can_reply: Optional. True, if the bot can send and edit messages in the private chats that had incoming messages in the last 24 hours
+    :type can_reply: :obj:`bool`
+
+    :param can_read_messages: Optional. True, if the bot can mark incoming private messages as read
+    :type can_read_messages: :obj:`bool`
+
+    :param can_delete_outgoing_messages: Optional. True, if the bot can delete messages sent by the bot
+    :type can_delete_outgoing_messages: :obj:`bool`
+
+    :param can_delete_all_messages: Optional. True, if the bot can delete all private messages in managed chats
+    :type can_delete_all_messages: :obj:`bool`
+
+    :param can_edit_name: Optional. True, if the bot can edit the first and last name of the business account
+    :type can_edit_name: :obj:`bool`
+
+    :param can_edit_bio: Optional. True, if the bot can edit the bio of the business account
+    :type can_edit_bio: :obj:`bool`
+
+    :param can_edit_profile_photo: Optional. True, if the bot can edit the profile photo of the business account
+    :type can_edit_profile_photo: :obj:`bool`
+
+    :param can_edit_username: Optional. True, if the bot can edit the username of the business account
+    :type can_edit_username: :obj:`bool`
+
+    :param can_change_gift_settings: Optional. True, if the bot can change the privacy settings pertaining to gifts for the business account
+    :type can_change_gift_settings: :obj:`bool`
+
+    :param can_view_gifts_and_stars: Optional. True, if the bot can view gifts and the amount of Telegram Stars owned by the business account
+    :type can_view_gifts_and_stars: :obj:`bool`
+
+    :param can_convert_gifts_to_stars: Optional. True, if the bot can convert regular gifts owned by the business account to Telegram Stars
+    :type can_convert_gifts_to_stars: :obj:`bool`
+
+    :param can_transfer_and_upgrade_gifts: Optional. True, if the bot can transfer and upgrade gifts owned by the business account
+    :type can_transfer_and_upgrade_gifts: :obj:`bool`
+
+    :param can_transfer_stars: Optional. True, if the bot can transfer Telegram Stars received by the business account to its own account, or use them to upgrade and transfer gifts
+    :type can_transfer_stars: :obj:`bool`
+
+    :param can_manage_stories: Optional. True, if the bot can post, edit and delete stories on behalf of the business account
+    :type can_manage_stories: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessBotRights` 
+    """
+    def __init__(self, can_reply=None, can_read_messages=None, can_delete_outgoing_messages=None, can_delete_all_messages=None,
+                    can_edit_name=None, can_edit_bio=None, can_edit_profile_photo=None, can_edit_username=None, 
+                    can_change_gift_settings=None, can_view_gifts_and_stars=None, can_convert_gifts_to_stars=None,
+                    can_transfer_and_upgrade_gifts=None, can_transfer_stars=None, can_manage_stories=None, **kwargs):
+        self.can_reply: Optional[bool] = can_reply
+        self.can_read_messages: Optional[bool] = can_read_messages
+        self.can_delete_outgoing_messages: Optional[bool] = can_delete_outgoing_messages
+        self.can_delete_all_messages: Optional[bool] = can_delete_all_messages
+        self.can_edit_name: Optional[bool] = can_edit_name
+        self.can_edit_bio: Optional[bool] = can_edit_bio
+        self.can_edit_profile_photo: Optional[bool] = can_edit_profile_photo
+        self.can_edit_username: Optional[bool] = can_edit_username
+        self.can_change_gift_settings: Optional[bool] = can_change_gift_settings
+        self.can_view_gifts_and_stars: Optional[bool] = can_view_gifts_and_stars
+        self.can_convert_gifts_to_stars: Optional[bool] = can_convert_gifts_to_stars
+        self.can_transfer_and_upgrade_gifts: Optional[bool] = can_transfer_and_upgrade_gifts
+        self.can_transfer_stars: Optional[bool] = can_transfer_stars
+        self.can_manage_stories: Optional[bool] = can_manage_stories
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
         return cls(**obj)
     
