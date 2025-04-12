@@ -2090,6 +2090,51 @@ def transfer_gift(token, business_connection_id, owned_gift_id, new_owner_chat_i
         payload['star_count'] = star_count
     return _make_request(token, method_url, params=payload, method='post')
 
+def post_story(token, business_connection_id, content, active_period, caption=None, parse_mode=None,
+             caption_entities=None, areas=None, post_to_chat_page=None, protect_content=None):
+    method_url = 'postStory'
+    payload = {'business_connection_id': business_connection_id, 'active_period': active_period}
+    
+    content_json, files = content.convert_input_story()
+    payload['content'] = content_json
+    
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if areas:
+        payload['areas'] = json.dumps([area.to_json() for area in areas])
+    if post_to_chat_page is not None:
+        payload['post_to_chat_page'] = post_to_chat_page
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+def edit_story(token, business_connection_id, story_id, content, caption=None, parse_mode=None,
+                caption_entities=None, areas=None):
+    method_url = 'editStory'
+    payload = {'business_connection_id': business_connection_id, 'story_id': story_id}
+    
+    content_json, files = content.convert_input_story()
+    payload['content'] = content_json
+    
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if areas:
+        payload['areas'] = json.dumps([area.to_json() for area in areas])
+    return _make_request(token, method_url, params=payload, files=files, method='post')
+
+def delete_story(token, business_connection_id, story_id):
+    method_url = 'deleteStory'
+    payload = {'business_connection_id': business_connection_id, 'story_id': story_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'

@@ -6664,7 +6664,126 @@ class TeleBot:
             new_owner_chat_id=new_owner_chat_id,
             star_count=star_count
         )
+    
+    def post_story(
+            self, business_connection_id: str, content: types.InputStoryContent,
+            active_period: int, caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            areas: Optional[List[types.StoryArea]]=None,
+            post_to_chat_page: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Story:
 
+        """
+        Posts a story on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns Story on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#poststory
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param content: Content of the story
+        :type content: :class:`telebot.types.InputStoryContent`
+
+        :param active_period: Period after which the story is moved to the archive, in seconds; must be one of 6 * 3600, 12 * 3600, 86400, or 2 * 86400
+        :type active_period: :obj:`int`
+
+        :param caption: Caption of the story, 0-2048 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the story caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param areas: A JSON-serialized list of clickable areas to be shown on the story
+        :type areas: :obj:`list` of :class:`telebot.types.StoryArea`
+
+        :param post_to_chat_page: Pass True to keep the story accessible after it expires
+        :type post_to_chat_page: :obj:`bool`
+
+        :param protect_content: Pass True if the content of the story must be protected from forwarding and screenshotting
+        :type protect_content: :obj:`bool`
+
+        :return: On success, a Story object is returned.
+        :rtype: :class:`telebot.types.Story`
+        """
+        return types.Story.de_json(
+            apihelper.post_story(
+                self.token, business_connection_id, content,
+                active_period, caption=caption,
+                parse_mode=parse_mode,
+                caption_entities=caption_entities,
+                areas=areas,
+                post_to_chat_page=post_to_chat_page,
+                protect_content=protect_content
+            )
+        )
+
+    def edit_story(
+            self, business_connection_id: str, story_id: int,
+            content: types.InputStoryContent,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            areas: Optional[List[types.StoryArea]]=None) -> types.Story:
+        """
+        Edits a story previously posted by the bot on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns Story on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editstory
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param story_id: Unique identifier of the story to edit
+        :type story_id: :obj:`int`
+
+        :param content: Content of the story
+        :type content: :class:`telebot.types.InputStoryContent`
+
+        :param caption: Caption of the story, 0-2048 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the story caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param areas: A JSON-serialized list of clickable areas to be shown on the story
+        :type areas: :obj:`list` of :class:`telebot.types.StoryArea`
+
+        :return: On success, a Story object is returned.
+        :rtype: :class:`telebot.types.Story`
+
+        """
+        return types.Story.de_json(
+            apihelper.edit_story(
+                self.token, business_connection_id, story_id,
+                content, caption=caption,
+                parse_mode=parse_mode,
+                caption_entities=caption_entities,
+                areas=areas
+            )
+    )
+
+    def delete_story(self, business_connection_id: str, story_id: int) -> bool:
+        """
+        Deletes a story previously posted by the bot on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns True on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#deletestory
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param story_id: Unique identifier of the story to delete
+        :type story_id: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.delete_story(self.token, business_connection_id, story_id)
 
     def get_available_gifts(self) -> types.Gifts:
         """
