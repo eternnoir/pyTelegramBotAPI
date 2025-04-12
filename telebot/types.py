@@ -11354,4 +11354,53 @@ class BusinessBotRights(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
+    """
+    This object describes the types of gifts that can be gifted to a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#acceptedgifttypes
+
+    :param unlimited_gifts: True, if unlimited regular gifts are accepted
+    :type unlimited_gifts: :obj:`bool`
+
+    :param limited_gifts: True, if limited regular gifts are accepted
+    :type limited_gifts: :obj:`bool`
+
+    :param unique_gifts: True, if unique gifts or gifts that can be upgraded to unique for free are accepted
+    :type unique_gifts: :obj:`bool`
+    
+    :param premium_subscription: True, if a Telegram Premium subscription is accepted
+    :type premium_subscription: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`AcceptedGiftTypes`
+    """
+    def __init__(self, unlimited_gifts: Optional[bool] = None, limited_gifts: Optional[bool] = None,
+                    unique_gifts: Optional[bool] = None, premium_subscription: Optional[bool] = None, **kwargs):
+        self.unlimited_gifts: Optional[bool] = unlimited_gifts
+        self.limited_gifts: Optional[bool] = limited_gifts
+        self.unique_gifts: Optional[bool] = unique_gifts
+        self.premium_subscription: Optional[bool] = premium_subscription
+        
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {}
+        if self.unlimited_gifts is not None:
+            data['unlimited_gifts'] = self.unlimited_gifts
+        if self.limited_gifts is not None:
+            data['limited_gifts'] = self.limited_gifts
+        if self.unique_gifts is not None:
+            data['unique_gifts'] = self.unique_gifts
+        if self.premium_subscription is not None:
+            data['premium_subscription'] = self.premium_subscription
+        return data
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
     

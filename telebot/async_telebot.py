@@ -7927,6 +7927,27 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.set_business_account_bio(self.token, business_connection_id, bio)
     
+    async def set_business_account_gift_settings(
+            self, business_connection_id: str, show_gift_button: bool, accepted_gift_types: types.AcceptedGiftTypes) -> bool:
+        """
+        Changes the privacy settings pertaining to incoming gifts in a managed business account. Requires the can_change_gift_settings business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setbusinessaccountgiftsettings
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param show_gift_button: Pass True, if a button for sending a gift to the user or by the business account must always be shown in the input field
+        :type show_gift_button: :obj:`bool`
+
+        :param accepted_gift_types: Types of gifts accepted by the business account
+        :type accepted_gift_types: :class:`telebot.types.AcceptedGiftTypes`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_business_account_gift_settings(self.token, business_connection_id, show_gift_button, accepted_gift_types)
+    
     async def get_available_gifts(self) -> types.Gifts:
         """
         Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a Gifts object.
@@ -7938,6 +7959,7 @@ class AsyncTeleBot:
         """
 
         return types.Gifts.de_json(await asyncio_helper.get_available_gifts(self.token))
+
     
     async def replace_sticker_in_set(self, user_id: int, name: str, old_sticker: str, sticker: types.InputSticker) -> bool:
         """

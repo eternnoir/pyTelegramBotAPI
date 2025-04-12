@@ -2025,6 +2025,11 @@ def set_business_account_bio(token, business_connection_id, bio):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def set_business_account_gift_settings(token, business_connection_id, show_gift_button, accepted_gift_types):
+    method_url = 'setBusinessAccountGiftSettings'
+    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': json.dumps(accepted_gift_types)}
+    return _make_request(token, method_url, params=payload, method='post')
+
 def set_sticker_emoji_list(token, sticker, emoji_list):
     method_url = 'setStickerEmojiList'
     payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}

@@ -2004,6 +2004,11 @@ async def set_business_account_bio(token, business_connection_id, bio):
     payload = {'business_connection_id': business_connection_id, 'bio': bio}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def set_business_account_gift_settings(token, business_connection_id, show_gift_button, accepted_gift_types):
+    method_url = 'setBusinessAccountGiftSettings'
+    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': json.dumps(accepted_gift_types)}
+    return await _process_request(token, method_url, params=payload, method='post')
+
 
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
