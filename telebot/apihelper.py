@@ -2035,6 +2035,10 @@ def set_sticker_emoji_list(token, sticker, emoji_list):
     payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}
     return _make_request(token, method_url, params=payload, method='post')
 
+def get_business_account_star_balance(token, business_connection_id):
+    method_url = 'getBusinessAccountStarBalance'
+    payload = {'business_connection_id': business_connection_id}
+    return _make_request(token, method_url, params=payload)
 
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):

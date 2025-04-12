@@ -11403,4 +11403,29 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class StarAmount(JsonDeserializable):
+    """
+    Describes an amount of Telegram Stars.
+
+    Telegram documentation: https://core.telegram.org/bots/api#staramount
+
+    :param amount: Integer amount of Telegram Stars, rounded to 0; can be negative
+    :type amount: :obj:`int`
+
+    :param nanostar_amount: Optional. The number of 1/1000000000 shares of Telegram Stars; from -999999999 to 999999999; can be negative if and only if amount is non-positive
+    :type nanostar_amount: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`StarAmount`
+    """
+    def __init__(self, amount, nanostar_amount=None, **kwargs):
+        self.amount: int = amount
+        self.nanostar_amount: Optional[int] = nanostar_amount
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
     

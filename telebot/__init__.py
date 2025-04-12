@@ -6491,7 +6491,23 @@ class TeleBot:
         """
         return apihelper.set_business_account_gift_settings(self.token, business_connection_id, show_gift_button, accepted_gift_types)
     
-    
+
+    def get_business_account_star_balance(self, business_connection_id: str) -> types.StarAmount:
+        """
+        Returns the amount of Telegram Stars owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns StarAmount on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getbusinessaccountstarbalance
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :return: On success, a StarAmount object is returned.
+        :rtype: :class:`telebot.types.StarAmount`
+        """
+        return types.StarAmount.de_json(
+            apihelper.get_business_account_star_balance(self.token, business_connection_id)
+        )
+
     def get_available_gifts(self) -> types.Gifts:
         """
         Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a Gifts object.

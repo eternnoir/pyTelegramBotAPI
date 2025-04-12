@@ -2009,6 +2009,11 @@ async def set_business_account_gift_settings(token, business_connection_id, show
     payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': json.dumps(accepted_gift_types)}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def get_business_account_star_balance(token, business_connection_id):
+    method_url = 'getBusinessAccountStarBalance'
+    payload = {'business_connection_id': business_connection_id}
+    return _process_request(token, method_url, params=payload)
+
 
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
