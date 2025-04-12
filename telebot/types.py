@@ -11773,6 +11773,96 @@ class UniqueGiftBackdrop(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['colors'] = UniqueGiftBackdropColors.de_json(obj['colors'])
         return cls(**obj)
+
+class InputStoryContent(JsonSerializable):
+    """
+    This object describes the content of a story to post. Currently, it can be one of
+    InputStoryContentPhoto
+    InputStoryContentVideo
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputstorycontent
+
+    """
+
+
+class InputStoryContentPhoto(InputStoryContent):
+    """
+    This object describes a photo to post as a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentphoto
+
+    :param photo: The photo to post as a story. The photo must be of the size 1080x1920 and must not exceed 10 MB. The photo can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type photo: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputStoryContentPhoto`
+    """
+    def __init__(self, photo: InputFile, **kwargs):
+        self.type: str = "photo"
+        self.photo: InputFile = photo
+        self._photo_name = service_utils.generate_random_token()
+        self._photo_dic = "attach://{}".format(self._photo_name)
+        
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'photo': self._photo_dic
+        }
+        return data
+    
+    def convert_input_story(self):
+        return self.to_json(), {self._photo_name: self.photo}
     
 
+class InputStoryContentVideo(InputStoryContent):
+    """
+    This object describes a video to post as a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentvideo
+
+    :param video: The video to post as a story. The video must be of the size 720x1280, streamable, encoded with H.265 codec, with key frames added each second in the MPEG4 format, and must not exceed 30 MB. The video can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the video was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type video: :obj:`str`
+
+    :param duration: Optional. Precise duration of the video in seconds; 0-60
+    :type duration: :obj:`float`
+
+    :param cover_frame_timestamp: Optional. Timestamp in seconds of the frame that will be used as the static cover for the story. Defaults to 0.0.
+    :type cover_frame_timestamp: :obj:`float`
+
+    :param is_animation: Optional. Pass True if the video has no sound
+    :type is_animation: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`InputStoryContentVideo`
+    """
+    def __init__(self, video: InputFile, duration: Optional[float] = None, cover_frame_timestamp: Optional[float] = None,
+                    is_animation: Optional[bool] = None, **kwargs):
+        self.type: str = "video"
+        self.video: InputFile = video
+        self._video_name = service_utils.generate_random_token()
+        self._video_dic = "attach://{}".format(self._video_name)
+        self.duration: Optional[float] = duration
+        self.cover_frame_timestamp: Optional[float] = cover_frame_timestamp
+        self.is_animation: Optional[bool] = is_animation
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'video': self._video_dic
+        }
+        if self.duration is not None:
+            data['duration'] = self.duration
+        if self.cover_frame_timestamp is not None:
+            data['cover_frame_timestamp'] = self.cover_frame_timestamp
+        if self.is_animation is not None:
+            data['is_animation'] = self.is_animation
+        return data
+    def convert_input_story(self):
+        return self.to_json(), {self._video_name: self.video}
+    
 

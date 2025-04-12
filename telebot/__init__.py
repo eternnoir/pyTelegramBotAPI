@@ -9651,3 +9651,4 @@ class TeleBot:
                 handlers=handlers,
                 middlewares=middlewares,
                 update_type=update_type)
+
