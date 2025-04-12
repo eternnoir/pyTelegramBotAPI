@@ -1124,6 +1124,12 @@ class Message(JsonDeserializable):
     :param chat_shared: Optional. Service message: a chat was shared with the bot
     :type chat_shared: :class:`telebot.types.ChatShared`
 
+    :param gift: Optional. Service message: a regular gift was sent or received
+    :type gift: :class:`telebot.types.GiftInfo`
+
+    :param unique_gift: Optional. Service message: a unique gift was sent or received
+    :type unique_gift: :class:`telebot.types.UniqueGiftInfo`
+
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
         Telegram Login »
     :type connected_website: :obj:`str`
@@ -1431,6 +1437,12 @@ class Message(JsonDeserializable):
             opts['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
         if 'refunded_payment' in obj:
             opts['refunded_payment'] = RefundedPayment.de_json(obj['refunded_payment'])
+        if 'gift' in obj:
+            opts['gift'] = GiftInfo.de_json(obj['gift'])
+            content_type = 'gift'
+        if 'unique_gift' in obj:
+            opts['unique_gift'] = UniqueGiftInfo.de_json(obj['unique_gift'])
+            content_type = 'unique_gift'
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1549,6 +1561,8 @@ class Message(JsonDeserializable):
         self.video_chat_participants_invited: Optional[VideoChatParticipantsInvited] = None
         self.web_app_data: Optional[WebAppData] = None
         self.message_auto_delete_timer_changed: Optional[MessageAutoDeleteTimerChanged] = None
+        self.gift : Optional[GiftInfo] = None
+        self.unique_gift : Optional[UniqueGiftInfo] = None
         
 
         for key in options:
@@ -12180,4 +12194,91 @@ class StoryArea(JsonSerializable):
         return data
     
 
+class GiftInfo(JsonDeserializable):
+    """
+    This object describes a service message about a regular gift that was sent or received.
 
+    Telegram documentation: https://core.telegram.org/bots/api#giftinfo
+
+    :param gift: Information about the gift
+    :type gift: :class:`Gift`
+
+    :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
+    :type owned_gift_id: :obj:`str`
+
+    :param convert_star_count: Optional. Number of Telegram Stars that can be claimed by the receiver by converting the gift; omitted if conversion to Telegram Stars is impossible
+    :type convert_star_count: :obj:`int`
+
+    :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were prepaid by the sender for the ability to upgrade the gift
+    :type prepaid_upgrade_star_count: :obj:`int`
+
+    :param can_be_upgraded: Optional. True, if the gift can be upgraded to a unique gift
+    :type can_be_upgraded: :obj:`bool`
+
+    :param text: Optional. Text of the message that was added to the gift
+    :type text: :obj:`str`
+
+    :param entities: Optional. Special entities that appear in the text
+    :type entities: :obj:`list` of :class:`MessageEntity`
+
+    :param is_private: Optional. True, if the sender and gift text are shown only to the gift receiver; otherwise, everyone will be able to see them
+    :type is_private: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`GiftInfo`
+    """
+    def __init__(self, gift: Gift, owned_gift_id: Optional[str] = None, convert_star_count: Optional[int] = None,
+                    prepaid_upgrade_star_count: Optional[int] = None, can_be_upgraded: Optional[bool] = None,
+                    text: Optional[str] = None, entities: Optional[List[MessageEntity]] = None,
+                    is_private: Optional[bool] = None, **kwargs):
+        self.gift: Gift = gift
+        self.owned_gift_id: Optional[str] = owned_gift_id
+        self.convert_star_count: Optional[int] = convert_star_count
+        self.prepaid_upgrade_star_count: Optional[int] = prepaid_upgrade_star_count
+        self.can_be_upgraded: Optional[bool] = can_be_upgraded
+        self.text: Optional[str] = text
+        self.entities: Optional[List[MessageEntity]] = entities
+        self.is_private: Optional[bool] = is_private
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = Gift.de_json(obj['gift'])
+        if 'entities' in obj:
+            obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
+        return cls(**obj)
+    
+class UniqueGiftInfo(JsonDeserializable):
+    """
+    This object describes a service message about a unique gift that was sent or received.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftinfo
+
+    :param gift: Information about the gift
+    :type gift: :class:`UniqueGift`
+
+    :param origin: Origin of the gift. Currently, either “upgrade” or “transfer”
+    :type origin: :obj:`str`
+
+    :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
+    :type owned_gift_id: :obj:`str`
+
+    :param transfer_star_count: Optional. Number of Telegram Stars that must be paid to transfer the gift; omitted if the bot cannot transfer the gift
+    :type transfer_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftInfo`
+    """
+    def __init__(self, gift: UniqueGift, origin: str, owned_gift_id: Optional[str] = None,
+                    transfer_star_count: Optional[int] = None, **kwargs): 
+        self.gift: UniqueGift = gift
+        self.origin: str = origin
+        self.owned_gift_id: Optional[str] = owned_gift_id
+        self.transfer_star_count: Optional[int] = transfer_star_count
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = UniqueGift.de_json(obj['gift'])
+        return cls(**obj)
+    
