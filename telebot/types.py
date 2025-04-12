@@ -1181,6 +1181,9 @@ class Message(JsonDeserializable):
     :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
     :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
 
+    :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
+    :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
+
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
 
@@ -1443,6 +1446,9 @@ class Message(JsonDeserializable):
         if 'unique_gift' in obj:
             opts['unique_gift'] = UniqueGiftInfo.de_json(obj['unique_gift'])
             content_type = 'unique_gift'
+        if 'paid_message_price_changed' in obj:
+            opts['paid_message_price_changed'] = PaidMessagePriceChanged.de_json(obj['paid_message_price_changed'])
+            content_type = 'paid_message_price_changed'
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1563,6 +1569,7 @@ class Message(JsonDeserializable):
         self.message_auto_delete_timer_changed: Optional[MessageAutoDeleteTimerChanged] = None
         self.gift : Optional[GiftInfo] = None
         self.unique_gift : Optional[UniqueGiftInfo] = None
+        self.paid_message_price_changed: Optional[PaidMessagePriceChanged] = None
         
 
         for key in options:
@@ -12291,5 +12298,26 @@ class UniqueGiftInfo(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['gift'] = UniqueGift.de_json(obj['gift'])
+        return cls(**obj)
+    
+
+class PaidMessagePriceChanged(JsonDeserializable):
+    """
+    Describes a service message about a change in the price of paid messages within a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmessagepricechanged
+
+    :param paid_message_star_count: The new number of Telegram Stars that must be paid by non-administrator users of the supergroup chat for each sent message
+    :type paid_message_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMessagePriceChanged`
+    """
+    def __init__(self, paid_message_star_count: int, **kwargs):
+        self.paid_message_star_count: int = paid_message_star_count
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
         return cls(**obj)
     
