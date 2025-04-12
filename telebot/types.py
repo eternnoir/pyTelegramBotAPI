@@ -10551,6 +10551,11 @@ class TransactionPartnerUser(TransactionPartner):
     :param type: Type of the transaction partner, always “user”
     :type type: :obj:`str`
 
+    :param transaction_type: Type of the transaction, currently one of “invoice_payment” for payments via invoices,
+        “paid_media_payment” for payments for paid media, “gift_purchase” for gifts sent by the bot, “premium_purchase” for Telegram Premium subscriptions
+        gifted by the bot, “business_account_transfer” for direct transfers from managed business accounts
+    :type transaction_type: :obj:`str`
+
     :param user: Information about the user
     :type user: :class:`User`
 
@@ -10577,7 +10582,8 @@ class TransactionPartnerUser(TransactionPartner):
     """
 
     def __init__(self, type, user, affiliate=None, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
-                    subscription_period=None, gift: Optional[Gift] = None, premium_subscription_duration: Optional[int] = None, **kwargs):
+                    subscription_period=None, gift: Optional[Gift] = None, premium_subscription_duration: Optional[int] = None, 
+                    transaction_type: Optional[str] = None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.affiliate: Optional[AffiliateInfo] = affiliate
@@ -10586,6 +10592,7 @@ class TransactionPartnerUser(TransactionPartner):
         self.subscription_period: Optional[int] = subscription_period
         self.gift: Optional[Gift] = gift
         self.premium_subscription_duration: Optional[int] = premium_subscription_duration
+        self.transaction_type: Optional[str] = transaction_type
 
     @classmethod
     def de_json(cls, json_string):
