@@ -2040,6 +2040,11 @@ def get_business_account_star_balance(token, business_connection_id):
     payload = {'business_connection_id': business_connection_id}
     return _make_request(token, method_url, params=payload)
 
+def transfer_business_account_stars(token, business_connection_id, star_count):
+    method_url = 'transferBusinessAccountStars'
+    payload = {'business_connection_id': business_connection_id, 'star_count': star_count}
+    return _make_request(token, method_url, params=payload, method='post')
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'

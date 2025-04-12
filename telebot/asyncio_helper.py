@@ -2014,6 +2014,10 @@ async def get_business_account_star_balance(token, business_connection_id):
     payload = {'business_connection_id': business_connection_id}
     return _process_request(token, method_url, params=payload)
 
+async def transfer_business_account_stars(token, business_connection_id, star_count):
+    method_url = 'transferBusinessAccountStars'
+    payload = {'business_connection_id': business_connection_id, 'star_count': star_count}
+    return await _process_request(token, method_url, params=payload, method='post')
 
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
