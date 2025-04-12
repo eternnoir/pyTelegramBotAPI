@@ -11866,3 +11866,308 @@ class InputStoryContentVideo(InputStoryContent):
         return self.to_json(), {self._video_name: self.video}
     
 
+class StoryAreaPosition(JsonSerializable):
+    """
+    Describes the position of a clickable area within a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareaposition
+
+    :param x_percentage: The abscissa of the area's center, as a percentage of the media width
+    :type x_percentage: :obj:`float`
+
+    :param y_percentage: The ordinate of the area's center, as a percentage of the media height
+    :type y_percentage: :obj:`float`
+
+    :param width_percentage: The width of the area's rectangle, as a percentage of the media width
+    :type width_percentage: :obj:`float`
+
+    :param height_percentage: The height of the area's rectangle, as a percentage of the media height
+    :type height_percentage: :obj:`float`
+
+    :param rotation_angle: The clockwise rotation angle of the rectangle, in degrees; 0-360
+    :type rotation_angle: :obj:`float`
+
+    :param corner_radius_percentage: The radius of the rectangle corner rounding, as a percentage of the media width
+    :type corner_radius_percentage: :obj:`float`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaPosition`
+    """
+    def __init__(self, x_percentage: float, y_percentage: float, width_percentage: float,
+                    height_percentage: float, rotation_angle: float, corner_radius_percentage: float, **kwargs):
+        self.x_percentage: float = x_percentage
+        self.y_percentage: float = y_percentage
+        self.width_percentage: float = width_percentage
+        self.height_percentage: float = height_percentage
+        self.rotation_angle: float = rotation_angle
+        self.corner_radius_percentage: float = corner_radius_percentage
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'x_percentage': self.x_percentage,
+            'y_percentage': self.y_percentage,
+            'width_percentage': self.width_percentage,
+            'height_percentage': self.height_percentage,
+            'rotation_angle': self.rotation_angle,
+            'corner_radius_percentage': self.corner_radius_percentage
+        }
+        return data
+    
+
+class LocationAddress(JsonSerializable):
+    """
+    Describes the physical address of a location.
+
+    Telegram documentation: https://core.telegram.org/bots/api#locationaddress
+
+    :param country_code: The two-letter ISO 3166-1 alpha-2 country code of the country where the location is located
+    :type country_code: :obj:`str`
+
+    :param state: Optional. State of the location
+    :type state: :obj:`str`
+
+    :param city: Optional. City of the location
+    :type city: :obj:`str`
+
+    :param street: Optional. Street address of the location
+    :type street: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`LocationAddress`
+    """
+    def __init__(self, country_code: str, state: Optional[str] = None, city: Optional[str] = None,
+                    street: Optional[str] = None, **kwargs):
+        self.country_code: str = country_code
+        self.state: Optional[str] = state
+        self.city: Optional[str] = city
+        self.street: Optional[str] = street
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'country_code': self.country_code
+        }
+        if self.state is not None:
+            data['state'] = self.state
+        if self.city is not None:
+            data['city'] = self.city
+        if self.street is not None:
+            data['street'] = self.street
+        return data
+    
+class StoryAreaType(JsonSerializable):
+    """
+    Describes the type of a clickable area on a story. Currently, it can be one of
+    StoryAreaTypeLocation
+    StoryAreaTypeSuggestedReaction
+    StoryAreaTypeLink
+    StoryAreaTypeWeather
+    StoryAreaTypeUniqueGift
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyarea
+
+    :return: Instance of the class
+    :rtype: :class:`StoryArea`
+    """
+
+
+class StoryAreaTypeLocation(StoryAreaType):
+    """
+    Describes a story area pointing to a location. Currently, a story can have up to 10 location areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypelocation
+
+    :param type: Type of the area, always “location”
+    :type type: :obj:`str`
+
+    :param latitude: Location latitude in degrees
+    :type latitude: :obj:`float`
+
+    :param longitude: Location longitude in degrees
+    :type longitude: :obj:`float`
+
+    :param address: Location address
+    :type address: :class:`LocationAddress`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeLocation`
+    """
+    def __init__(self,latitude: float, longitude: float, address: LocationAddress, **kwargs):
+        self.type: str = "location"
+        self.latitude: float = latitude
+        self.longitude: float = longitude
+        self.address: LocationAddress = address
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'address': self.address.to_json()
+        }
+        return data
+    
+
+class StoryAreaTypeSuggestedReaction(StoryAreaType):
+    """
+    Describes a story area pointing to a suggested reaction. Currently, a story can have up to 5 suggested reaction areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypesuggestedreaction
+
+    :param type: Type of the area, always “suggested_reaction”
+    :type type: :obj:`str`
+
+    :param reaction_type: Type of the reaction
+    :type reaction_type: :class:`ReactionType`
+
+    :param is_dark: Optional. Pass True if the reaction area has a dark background
+    :type is_dark: :obj:`bool`
+
+    :param is_flipped: Optional. Pass True if reaction area corner is flipped
+    :type is_flipped: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeSuggestedReaction`
+    """
+    def __init__(self, reaction_type: ReactionType, is_dark: Optional[bool] = None, is_flipped: Optional[bool] = None, **kwargs):
+        self.type: str = "suggested_reaction"
+        self.reaction_type: ReactionType = reaction_type
+        self.is_dark: Optional[bool] = is_dark
+        self.is_flipped: Optional[bool] = is_flipped
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'reaction_type': self.reaction_type.to_json()
+        }
+        if self.is_dark is not None:
+            data['is_dark'] = self.is_dark
+        if self.is_flipped is not None:
+            data['is_flipped'] = self.is_flipped
+        return data
+    
+class StoryAreaTypeLink(StoryAreaType):
+    """
+    Describes a story area pointing to an HTTP or tg:// link. Currently, a story can have up to 3 link areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypelink
+
+    :param type: Type of the area, always “link”
+    :type type: :obj:`str`
+
+    :param url: HTTP or tg:// URL to be opened when the area is clicked
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeLink`
+    """
+    def __init__(self, url: str, **kwargs):
+        self.type: str = "link"
+        self.url: str = url
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'url': self.url
+        }
+        return data
+    
+class StoryAreaTypeWeather(StoryAreaType):
+    """
+    Describes a story area containing weather information. Currently, a story can have up to 3 weather areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypeweather
+
+    :param type: Type of the area, always “weather”
+    :type type: :obj:`str`
+
+    :param temperature: Temperature, in degree Celsius
+    :type temperature: :obj:`float`
+
+    :param emoji: Emoji representing the weather
+    :type emoji: :obj:`str`
+
+    :param background_color: A color of the area background in the ARGB format
+    :type background_color: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeWeather`
+    """
+    def __init__(self, temperature: float, emoji: str, background_color: int, **kwargs):
+        self.type: str = "weather"
+        self.temperature: float = temperature
+        self.emoji: str = emoji
+        self.background_color: int = background_color
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'temperature': self.temperature,
+            'emoji': self.emoji,
+            'background_color': self.background_color
+        }
+        return data
+    
+class StoryAreaTypeUniqueGift(StoryAreaType):
+    """
+    Describes a story area pointing to a unique gift. Currently, a story can have at most 1 unique gift area.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypeuniquegift
+
+    :param type: Type of the area, always “unique_gift”
+    :type type: :obj:`str`
+
+    :param name: Unique name of the gift
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeUniqueGift`
+    """
+    def __init__(self, name: str, **kwargs):
+        self.type: str = "unique_gift"
+        self.name: str = name
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'name': self.name
+        }
+
+        return data
+    
+
+class StoryArea(JsonSerializable):
+    """
+    Describes a clickable area on a story media.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyarea
+
+    :param position: Position of the area
+    :type position: :class:`StoryAreaPosition`
+
+    :param type: Type of the area
+    :type type: :class:`StoryAreaType`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryArea`
+    """
+    def __init__(self, position: StoryAreaPosition, type: StoryAreaType, **kwargs):
+        self.position: StoryAreaPosition = position
+        self.type: StoryAreaType = type
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'position': self.position.to_json(),
+            'type': self.type.to_json()
+        }
+        return data
+    
+
+
