@@ -6785,6 +6785,42 @@ class TeleBot:
         """
         return apihelper.delete_story(self.token, business_connection_id, story_id)
 
+    def gift_premium_subscription(
+            self, user_id: int, month_count: int, star_count: int,
+            text: Optional[str]=None, text_parse_mode: Optional[str]=None,
+            text_entities: Optional[List[types.MessageEntity]]=None) -> bool:
+        """
+        Gifts a Telegram Premium subscription to the given user. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#giftpremiumsubscription
+
+        :param user_id: Unique identifier of the target user who will receive a Telegram Premium subscription
+        :type user_id: :obj:`int`
+
+        :param month_count: Number of months the Telegram Premium subscription will be active for the user; must be one of 3, 6, or 12
+        :type month_count: :obj:`int`
+
+        :param star_count: Number of Telegram Stars to pay for the Telegram Premium subscription; must be 1000 for 3 months, 1500 for 6 months, and 2500 for 12 months
+        :type star_count: :obj:`int`
+
+        :param text: Text that will be shown along with the service message about the subscription; 0-128 characters
+        :type text: :obj:`str`
+
+        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :type text_parse_mode: :obj:`str`
+
+        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.gift_premium_subscription(
+            self.token, user_id, month_count, star_count,
+            text=text, text_parse_mode=text_parse_mode,
+            text_entities=text_entities
+        )
+
     def get_available_gifts(self) -> types.Gifts:
         """
         Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a Gifts object.

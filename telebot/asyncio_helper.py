@@ -2108,6 +2108,19 @@ async def delete_story(token, business_connection_id, story_id):
     payload = {'business_connection_id': business_connection_id, 'story_id': story_id}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def gift_premium_subscription(token, user_id, month_count, star_count, text=None, text_parse_mode=None,
+                            text_entities=None):
+    method_url = 'giftPremiumSubscription'
+    payload = {'user_id': user_id, 'month_count': month_count, 'star_count': star_count}
+    if text:
+        payload['text'] = text
+    if text_parse_mode:
+        payload['text_parse_mode'] = text_parse_mode
+    if text_entities:
+        payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
     return await _process_request(token, method_url)
