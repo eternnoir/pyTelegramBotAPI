@@ -2120,6 +2120,22 @@ async def gift_premium_subscription(token, user_id, month_count, star_count, tex
         payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def set_business_account_profile_photo(token, business_connection_id, photo, is_public=None):
+    method_url = 'setBusinessAccountProfilePhoto'
+    payload = {'business_connection_id': business_connection_id}
+    photo_json, files = photo.convert_input_profile_photo()
+    payload['photo'] = photo_json
+    if is_public is not None:
+        payload['is_public'] = is_public
+    return await _process_request(token, method_url, params=payload, files=files, method='post')
+
+async def remove_business_account_profile_photo(token, business_connection_id, is_public=None):
+    method_url = 'removeBusinessAccountProfilePhoto'
+    payload = {'business_connection_id': business_connection_id}
+    if is_public is not None:
+        payload['is_public'] = is_public
+    return await _process_request(token, method_url, params=payload, method='post')
+
 
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'

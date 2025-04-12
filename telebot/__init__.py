@@ -6820,6 +6820,48 @@ class TeleBot:
             text=text, text_parse_mode=text_parse_mode,
             text_entities=text_entities
         )
+    
+    def set_business_account_profile_photo(
+            self, business_connection_id: str, photo: types.InputProfilePhoto,
+            is_public: Optional[bool]=None) -> bool:
+        """
+        Changes the profile photo of a managed business account. Requires the can_edit_profile_photo business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setbusinessaccountprofilephoto
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param photo: The new profile photo to set
+        :type photo: :class:`telebot.types.InputProfilePhoto`
+
+        :param is_public: Pass True to set the public photo, which will be visible even if the main photo is hidden by the business account's privacy settings. An account can have only one public photo.
+        :type is_public: :obj:`bool`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.set_business_account_profile_photo(self.token, business_connection_id, photo, is_public=is_public)
+
+
+    def remove_business_account_profile_photo(
+            self, business_connection_id: str,
+            is_public: Optional[bool]=None) -> bool:
+        """
+        Removes the current profile photo of a managed business account. Requires the can_edit_profile_photo business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#removebusinessaccountprofilephoto
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param is_public: Pass True to remove the public photo, which is visible even if the main photo is hidden by the business account's privacy settings. After the main photo is removed, the previous profile photo (if present) becomes the main photo.
+        :type is_public: :obj:`bool`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.remove_business_account_profile_photo(self.token, business_connection_id, is_public=is_public)
 
     def get_available_gifts(self) -> types.Gifts:
         """

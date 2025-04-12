@@ -12328,3 +12328,88 @@ class PaidMessagePriceChanged(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
     
+
+class InputProfilePhoto(JsonSerializable):
+    """
+    This object describes a profile photo to set. Currently, it can be one of
+    InputProfilePhotoStatic
+    InputProfilePhotoAnimated
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputprofilephoto
+
+    :return: Instance of the class
+    :rtype: :class:`InputProfilePhoto`
+    """
+
+class InputProfilePhotoStatic(InputProfilePhoto):
+    """
+    This object describes a static profile photo to set.
+    
+    Telegram documentation: https://core.telegram.org/bots/api#inputprofilephotostatic
+
+    :param type: Type of the profile photo, must be static
+    :type type: :obj:`str`
+
+    :param photo: The static profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type photo: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputProfilePhotoStatic`
+
+    """
+    def __init__(self, photo: InputFile, **kwargs):
+        self.type: str = "static"
+        self.photo: InputFile = photo
+
+        self._photo_name = service_utils.generate_random_token()
+        self._photo_dic = "attach://{}".format(self._photo_name)
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'photo': self._photo_dic
+        }
+        return data
+    def convert_input_profile_photo(self):
+        return self.to_json(), {self._photo_name: self.photo}
+
+
+class InputProfilePhotoAnimated(InputProfilePhoto):
+    """
+    This object describes an animated profile photo to set.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputprofilephotoanimated
+
+    :param type: Type of the profile photo, must be animated
+    :type type: :obj:`str`
+
+    :param animation: The animated profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type animation: :obj:`str`
+
+    :param main_frame_timestamp: Optional. Timestamp in seconds of the frame that will be used as the static profile photo. Defaults to 0.0.
+    :type main_frame_timestamp: :obj:`float`
+
+    :return: Instance of the class
+    :rtype: :class:`InputProfilePhotoAnimated`
+
+    """
+    def __init__(self, animation: InputFile, main_frame_timestamp: Optional[float] = None, **kwargs):
+        self.type: str = "animated"
+        self.animation: InputFile = animation
+        self._animation_name = service_utils.generate_random_token()
+        self._animation_dic = "attach://{}".format(self._animation_name)
+        self.main_frame_timestamp: Optional[float] = main_frame_timestamp
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'animation': self._animation_dic
+        }
+        if self.main_frame_timestamp is not None:
+            data['main_frame_timestamp'] = self.main_frame_timestamp
+        return data
+    def convert_input_profile_photo(self):
+        return self.to_json(), {self._animation_name: self.animation}
