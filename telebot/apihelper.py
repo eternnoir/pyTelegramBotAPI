@@ -1992,6 +1992,39 @@ def remove_chat_verification(token, chat_id):
     payload = {'chat_id': chat_id}
     return _make_request(token, method_url, params=payload, method='post')
 
+
+def read_business_message(token, business_connection_id, chat_id, message_id):
+    method_url = 'readBusinessMessage'
+    payload = {'business_connection_id': business_connection_id, 'chat_id': chat_id, 'message_id': message_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def delete_business_messages(token, business_connection_id, message_ids):
+    method_url = 'deleteBusinessMessages'
+    payload = {'business_connection_id': business_connection_id, 'message_ids': json.dumps(message_ids)}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_business_account_name(token, business_connection_id, first_name, last_name=None):
+    method_url = 'setBusinessAccountName'
+    payload = {'business_connection_id': business_connection_id, 'first_name': first_name}
+    if last_name:
+        payload['last_name'] = last_name
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_business_account_username(token, business_connection_id, username):
+    method_url = 'setBusinessAccountUsername'
+    payload = {'business_connection_id': business_connection_id, 'username': username}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_business_account_bio(token, business_connection_id, bio):
+    method_url = 'setBusinessAccountBio'
+    payload = {'business_connection_id': business_connection_id, 'bio': bio}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def set_sticker_emoji_list(token, sticker, emoji_list):
     method_url = 'setStickerEmojiList'
     payload = {'sticker': sticker, 'emoji_list': json.dumps(emoji_list)}

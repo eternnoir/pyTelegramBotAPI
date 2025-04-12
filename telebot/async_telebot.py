@@ -7835,6 +7835,98 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.remove_chat_verification(self.token, chat_id)
     
+    async def read_business_message(self, business_connection_id: str, chat_id: Union[int, str], message_id: int) -> bool:
+        """
+        Marks incoming message as read on behalf of a business account. Requires the can_read_messages business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#readbusinessmessage
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which to read the message
+        :type business_connection_id: :obj:`str`
+
+        :param chat_id: Unique identifier of the chat in which the message was received. The chat must have been active in the last 24 hours.
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param message_id: Unique identifier of the message to mark as read
+        :type message_id: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.read_business_message(self.token, business_connection_id, chat_id, message_id)
+
+    async def delete_business_messages(self, business_connection_id: str, message_ids: List[int]) -> bool:
+        """
+        Delete messages on behalf of a business account. Requires the can_delete_outgoing_messages business bot right to delete messages sent by the bot itself, or the can_delete_all_messages business bot right to delete any message. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletebusinessmessages
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which to delete the messages
+        :type business_connection_id: :obj:`str`
+
+        :param message_ids: A JSON-serialized list of 1-100 identifiers of messages to delete. All messages must be from the same chat. See deleteMessage for limitations on which messages can be deleted
+        :type message_ids: :obj:`list` of :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.delete_business_messages(self.token, business_connection_id, message_ids)
+
+    async def set_business_account_name(self, business_connection_id: str, first_name: str, last_name: Optional[str]=None) -> bool:
+        """
+        Changes the first and last name of a managed business account. Requires the can_change_name business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setbusinessaccountname
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param first_name: The new value of the first name for the business account; 1-64 characters
+        :type first_name: :obj:`str`
+
+        :param last_name: The new value of the last name for the business account; 0-64 characters
+        :type last_name: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_business_account_name(self.token, business_connection_id, first_name, last_name)
+
+    async def set_business_account_username(self, business_connection_id: str, username: Optional[str]=None) -> bool:
+        """
+        Changes the username of a managed business account. Requires the can_change_username business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setbusinessaccountusername
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param username: The new value of the username for the business account; 0-32 characters
+        :type username: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+
+        """
+        return await asyncio_helper.set_business_account_username(self.token, business_connection_id, username)
+
+    async def set_business_account_bio(self, business_connection_id: str, bio: Optional[str]=None) -> bool:
+        """
+        Changes the bio of a managed business account. Requires the can_change_bio business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setbusinessaccountbio
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param bio: The new value of the bio for the business account; 0-140 characters
+        :type bio: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_business_account_bio(self.token, business_connection_id, bio)
+    
     async def get_available_gifts(self) -> types.Gifts:
         """
         Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a Gifts object.
