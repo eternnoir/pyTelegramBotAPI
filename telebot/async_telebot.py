@@ -7980,7 +7980,65 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.transfer_business_account_stars(self.token, business_connection_id, star_count)
+    
+    async def get_business_account_gifts(
+            self, business_connection_id: str,
+            exclude_unsaved: Optional[bool]=None,
+            exclude_saved: Optional[bool]=None,
+            exclude_unlimited: Optional[bool]=None,
+            exclude_limited: Optional[bool]=None,
+            exclude_unique: Optional[bool]=None,
+            sort_by_price: Optional[bool]=None,
+            offset: Optional[str]=None,
+            limit: Optional[int]=None) -> types.OwnedGifts:
+        """
+        Returns the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns OwnedGifts on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getbusinessaccountgifts
 
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param exclude_unsaved: Pass True to exclude gifts that aren't saved to the account's profile page
+        :type exclude_unsaved: :obj:`bool`
+
+        :param exclude_saved: Pass True to exclude gifts that are saved to the account's profile page
+        :type exclude_saved: :obj:`bool`
+
+        :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
+        :type exclude_unlimited: :obj:`bool`
+
+        :param exclude_limited: Pass True to exclude gifts that can be purchased a limited number of times
+        :type exclude_limited: :obj:`bool`
+
+        :param exclude_unique: Pass True to exclude unique gifts
+        :type exclude_unique: :obj:`bool`
+
+        :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
+        :type sort_by_price: :obj:`bool`
+
+        :param offset: Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results
+        :type offset: :obj:`str`
+
+        :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
+        :type limit: :obj:`int`
+
+        :return: On success, a OwnedGifts object is returned.
+        :rtype: :class:`telebot.types.OwnedGifts`
+        """
+        return types.OwnedGifts.de_json(
+            await asyncio_helper.get_business_account_gifts(
+                self.token, business_connection_id,
+                exclude_unsaved=exclude_unsaved,
+                exclude_saved=exclude_saved,
+                exclude_unlimited=exclude_unlimited,
+                exclude_limited=exclude_limited,
+                exclude_unique=exclude_unique,
+                sort_by_price=sort_by_price,
+                offset=offset,
+                limit=limit
+            )
+        )
 
     async def get_available_gifts(self) -> types.Gifts:
         """

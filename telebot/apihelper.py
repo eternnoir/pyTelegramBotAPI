@@ -2045,6 +2045,29 @@ def transfer_business_account_stars(token, business_connection_id, star_count):
     payload = {'business_connection_id': business_connection_id, 'star_count': star_count}
     return _make_request(token, method_url, params=payload, method='post')
 
+def get_business_account_gifts(token, business_connection_id, exclude_unsaved=None, exclude_saved=None,
+                                 exclude_unlimited=None, exclude_limited=None, exclude_unique=None,
+                                 sort_by_price=None, offset=None, limit=None):
+     method_url = 'getBusinessAccountGifts'
+     payload = {'business_connection_id': business_connection_id}
+     if exclude_unsaved is not None:
+          payload['exclude_unsaved'] = exclude_unsaved
+     if exclude_saved is not None:
+          payload['exclude_saved'] = exclude_saved
+     if exclude_unlimited is not None:
+          payload['exclude_unlimited'] = exclude_unlimited
+     if exclude_limited is not None:
+          payload['exclude_limited'] = exclude_limited
+     if exclude_unique is not None:
+          payload['exclude_unique'] = exclude_unique
+     if sort_by_price is not None:
+          payload['sort_by_price'] = sort_by_price
+     if offset is not None:
+          payload['offset'] = offset
+     if limit is not None:
+          payload['limit'] = limit
+     return _make_request(token, method_url, params=payload)
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
