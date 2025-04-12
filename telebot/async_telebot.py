@@ -8039,6 +8039,23 @@ class AsyncTeleBot:
                 limit=limit
             )
         )
+    
+    async def convert_gift_to_stars(self, business_connection_id: str, owned_gift_id: str) -> bool:
+        """
+        Converts a given regular gift to Telegram Stars. Requires the can_convert_gifts_to_stars business bot right. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#convertgifttostars
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param owned_gift_id: Unique identifier of the regular gift that should be converted to Telegram Stars
+        :type owned_gift_id: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.convert_gift_to_stars(self.token, business_connection_id, owned_gift_id)
 
     async def get_available_gifts(self) -> types.Gifts:
         """

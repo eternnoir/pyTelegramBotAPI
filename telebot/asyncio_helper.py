@@ -2042,6 +2042,11 @@ async def get_business_account_gifts(token, business_connection_id, exclude_unsa
           payload['limit'] = limit
      return await _process_request(token, method_url, params=payload)
 
+async def convert_gift_to_stars(token, business_connection_id, owned_gift_id):
+    method_url = 'convertGiftToStars'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id}
+    return await _process_request(token, method_url, params=payload, method='post')
+
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
     return await _process_request(token, method_url)

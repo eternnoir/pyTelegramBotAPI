@@ -2068,6 +2068,12 @@ def get_business_account_gifts(token, business_connection_id, exclude_unsaved=No
           payload['limit'] = limit
      return _make_request(token, method_url, params=payload)
 
+
+def convert_gift_to_stars(token, business_connection_id, owned_gift_id):
+    method_url = 'convertGiftToStars'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id}
+    return _make_request(token, method_url, params=payload, method='post')
+
 def create_new_sticker_set(
         token, user_id, name, title, stickers, sticker_type=None, needs_repainting=None):
     method_url = 'createNewStickerSet'
