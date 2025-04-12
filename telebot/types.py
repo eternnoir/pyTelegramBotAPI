@@ -10569,12 +10569,15 @@ class TransactionPartnerUser(TransactionPartner):
     :param gift: Optional. The gift sent to the user by the bot
     :type gift: :class:`Gift`
 
+    :param premium_subscription_duration: Optional. Number of months the gifted Telegram Premium subscription will be active for; for “premium_purchase” transactions only
+    :type premium_subscription_duration: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
     def __init__(self, type, user, affiliate=None, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
-                    subscription_period=None, gift: Optional[Gift] = None, **kwargs):
+                    subscription_period=None, gift: Optional[Gift] = None, premium_subscription_duration: Optional[int] = None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.affiliate: Optional[AffiliateInfo] = affiliate
@@ -10582,6 +10585,7 @@ class TransactionPartnerUser(TransactionPartner):
         self.paid_media: Optional[List[PaidMedia]] = paid_media
         self.subscription_period: Optional[int] = subscription_period
         self.gift: Optional[Gift] = gift
+        self.premium_subscription_duration: Optional[int] = premium_subscription_duration
 
     @classmethod
     def de_json(cls, json_string):
