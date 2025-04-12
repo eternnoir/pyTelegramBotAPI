@@ -981,6 +981,9 @@ class Message(JsonDeserializable):
         anonymous group administrator
     :type author_signature: :obj:`str`
 
+    :param paid_star_count: Optional. The number of Telegram Stars that were paid by the sender of the message to send it
+    :type paid_star_count: :obj:`int`
+
     :param text: Optional. For text messages, the actual UTF-8 text of the message
     :type text: :obj:`str`
 
@@ -1449,6 +1452,9 @@ class Message(JsonDeserializable):
         if 'paid_message_price_changed' in obj:
             opts['paid_message_price_changed'] = PaidMessagePriceChanged.de_json(obj['paid_message_price_changed'])
             content_type = 'paid_message_price_changed'
+        if 'paid_star_count' in obj:
+            opts['paid_star_count'] = obj['paid_star_count']
+            
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1570,6 +1576,7 @@ class Message(JsonDeserializable):
         self.gift : Optional[GiftInfo] = None
         self.unique_gift : Optional[UniqueGiftInfo] = None
         self.paid_message_price_changed: Optional[PaidMessagePriceChanged] = None
+        self.paid_star_count: Optional[int] = None
         
 
         for key in options:
