@@ -6600,6 +6600,71 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.convert_gift_to_stars(self.token, business_connection_id, owned_gift_id)
+    
+    def upgrade_gift(
+            self, business_connection_id: str, owned_gift_id: str,
+            keep_original_details: Optional[bool]=None,
+            star_count: Optional[int]=None) -> bool:
+        """
+        Upgrades a given regular gift to a unique gift. Requires the can_transfer_and_upgrade_gifts business bot right.
+        Additionally requires the can_transfer_stars business bot right if the upgrade is paid. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#upgradegift
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param owned_gift_id: Unique identifier of the regular gift that should be upgraded to a unique one
+        :type owned_gift_id: :obj:`str`
+
+        :param keep_original_details: Pass True to keep the original gift text, sender and receiver in the upgraded gift
+        :type keep_original_details: :obj:`bool`
+
+        :param star_count: The amount of Telegram Stars that will be paid for the upgrade from the business account balance.
+            If gift.prepaid_upgrade_star_count > 0, then pass 0, otherwise, the can_transfer_stars business bot right is required and gift.upgrade_star_count must be passed.
+        :type star_count: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.upgrade_gift(
+            self.token, business_connection_id, owned_gift_id,
+            keep_original_details=keep_original_details,
+            star_count=star_count
+        )
+
+    def transfer_gift(
+            self, business_connection_id: str, owned_gift_id: str,
+            new_owner_chat_id: Union[int, str],
+            star_count: Optional[int]=None) -> bool:
+        """
+        Transfers an owned unique gift to another user. Requires the can_transfer_and_upgrade_gifts business bot right.
+        Requires can_transfer_stars business bot right if the transfer is paid. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#transfergift
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param owned_gift_id: Unique identifier of the regular gift that should be transferred
+        :type owned_gift_id: :obj:`str`
+
+        :param new_owner_chat_id: Unique identifier of the chat which will own the gift. The chat must be active in the last 24 hours.
+        :type new_owner_chat_id: :obj:`int` | :obj:`str`
+
+        :param star_count: The amount of Telegram Stars that will be paid for the transfer from the business account balance.
+            If positive, then the can_transfer_stars business bot right is required.
+        :type star_count: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.transfer_gift(
+            self.token, business_connection_id, owned_gift_id,
+            new_owner_chat_id=new_owner_chat_id,
+            star_count=star_count
+        )
+
 
     def get_available_gifts(self) -> types.Gifts:
         """

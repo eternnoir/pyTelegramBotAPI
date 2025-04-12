@@ -2047,6 +2047,22 @@ async def convert_gift_to_stars(token, business_connection_id, owned_gift_id):
     payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id}
     return await _process_request(token, method_url, params=payload, method='post')
 
+async def upgrade_gift(token, business_connection_id, owned_gift_id, keep_original_details=None, star_count=None):
+    method_url = 'upgradeGift'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id}
+    if keep_original_details is not None:
+        payload['keep_original_details'] = keep_original_details
+    if star_count is not None:
+        payload['star_count'] = star_count
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def transfer_gift(token, business_connection_id, owned_gift_id, new_owner_chat_id, star_count=None):
+    method_url = 'transferGift'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id, 'new_owner_chat_id': new_owner_chat_id}
+    if star_count is not None:
+        payload['star_count'] = star_count
+    return await _process_request(token, method_url, params=payload, method='post')
+
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
     return await _process_request(token, method_url)
