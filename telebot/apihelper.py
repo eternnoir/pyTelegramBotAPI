@@ -2105,7 +2105,7 @@ def post_story(token, business_connection_id, content, active_period, caption=No
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if areas:
-        payload['areas'] = json.dumps([area.to_json() for area in areas])
+        payload['areas'] = json.dumps([area.to_dict() for area in areas])
     if post_to_chat_page is not None:
         payload['post_to_chat_page'] = post_to_chat_page
     if protect_content is not None:
@@ -2127,7 +2127,7 @@ def edit_story(token, business_connection_id, story_id, content, caption=None, p
     if caption_entities:
         payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
     if areas:
-        payload['areas'] = json.dumps([area.to_json() for area in areas])
+        payload['areas'] = json.dumps([area.to_dict() for area in areas])
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 def delete_story(token, business_connection_id, story_id):

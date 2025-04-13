@@ -12054,7 +12054,7 @@ class StoryAreaTypeLocation(StoryAreaType):
             'type': self.type,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'address': self.address.to_json()
+            'address': self.address.to_dict()
         }
         return data
     
@@ -12090,7 +12090,7 @@ class StoryAreaTypeSuggestedReaction(StoryAreaType):
     def to_dict(self):
         data = {
             'type': self.type,
-            'reaction_type': self.reaction_type.to_json()
+            'reaction_type': self.reaction_type.to_dict()
         }
         if self.is_dark is not None:
             data['is_dark'] = self.is_dark
@@ -12213,8 +12213,8 @@ class StoryArea(JsonSerializable):
         return json.dumps(self.to_dict())
     def to_dict(self):
         data = {
-            'position': self.position.to_json(),
-            'type': self.type.to_json()
+            'position': self.position.to_dict(),
+            'type': self.type.to_dict()
         }
         return data
     
