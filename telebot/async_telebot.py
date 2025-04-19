@@ -7821,7 +7821,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.remove_user_verification(self.token, user_id)
 
-    async def remove_chat_verification(self, chat_id: Union[int, str]) -> bool:
+    async def remove_chat_verification(self, chat_id: int) -> bool:
         """
         Removes verification from a chat that is currently verified on behalf of the organization represented by the bot. Returns True on success.
 
@@ -7890,7 +7890,7 @@ class AsyncTeleBot:
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.set_business_account_name(self.token, business_connection_id, first_name, last_name)
+        return await asyncio_helper.set_business_account_name(self.token, business_connection_id, first_name, last_name=last_name)
 
     async def set_business_account_username(self, business_connection_id: str, username: Optional[str]=None) -> bool:
         """
@@ -7908,7 +7908,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
 
         """
-        return await asyncio_helper.set_business_account_username(self.token, business_connection_id, username)
+        return await asyncio_helper.set_business_account_username(self.token, business_connection_id, username=username)
 
     async def set_business_account_bio(self, business_connection_id: str, bio: Optional[str]=None) -> bool:
         """
@@ -7925,7 +7925,7 @@ class AsyncTeleBot:
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.set_business_account_bio(self.token, business_connection_id, bio)
+        return await asyncio_helper.set_business_account_bio(self.token, business_connection_id, bio=bio)
     
     async def set_business_account_gift_settings(
             self, business_connection_id: str, show_gift_button: bool, accepted_gift_types: types.AcceptedGiftTypes) -> bool:
@@ -8091,7 +8091,7 @@ class AsyncTeleBot:
 
     async def transfer_gift(
             self, business_connection_id: str, owned_gift_id: str,
-            new_owner_chat_id: Union[int, str],
+            new_owner_chat_id: int,
             star_count: Optional[int]=None) -> bool:
         """
         Transfers an owned unique gift to another user. Requires the can_transfer_and_upgrade_gifts business bot right.
@@ -8106,7 +8106,7 @@ class AsyncTeleBot:
         :type owned_gift_id: :obj:`str`
 
         :param new_owner_chat_id: Unique identifier of the chat which will own the gift. The chat must be active in the last 24 hours.
-        :type new_owner_chat_id: :obj:`int` | :obj:`str`
+        :type new_owner_chat_id: :obj:`int`
 
         :param star_count: The amount of Telegram Stars that will be paid for the transfer from the business account balance.
             If positive, then the can_transfer_stars business bot right is required.
@@ -8117,7 +8117,7 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.transfer_gift(
             self.token, business_connection_id, owned_gift_id,
-            new_owner_chat_id=new_owner_chat_id,
+            new_owner_chat_id,
             star_count=star_count
         )
     

@@ -688,7 +688,7 @@ class ChatFullInfo(JsonDeserializable):
     :param permissions: Optional. Default chat member permissions, for groups and supergroups. Returned only in getChat.
     :type permissions: :class:`telebot.types.ChatPermissions`
 
-    :param can_send_gift: Optional. True, if gifts can be sent to the chat
+    :param can_send_gift: deprecated, use accepted_gift_types instead.
     :type can_send_gift: :obj:`bool`
 
     :param accepted_gift_types: Information about types of gifts that are accepted by the chat or by the corresponding user for private chats
@@ -829,10 +829,17 @@ class ChatFullInfo(JsonDeserializable):
         self.birthdate: Optional[Birthdate] = birthdate
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
         self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
-        self.can_send_gift: Optional[bool] = None
-        if self.accepted_gift_types is not None: # not optional but still
-            # skip premium subscription?
-            self.can_send_gift: Optional[bool] = any([self.accepted_gift_types.unique_gifts, self.accepted_gift_types.unlimited_gifts, self.accepted_gift_types.limited_gifts])
+    @property
+    def can_send_gift(self) -> bool:
+        """
+        Deprecated. Use `accepted_gift_types` instead.
+
+        :return: True if the chat can send gifts
+        """
+        log_deprecation_warning("The parameter 'can_send_gift' is deprecated. Use 'accepted_gift_types' instead.")
+        if self.accepted_gift_types is not None: # just in case
+            return any([self.accepted_gift_types.unique_gifts, self.accepted_gift_types.unlimited_gifts, self.accepted_gift_types.limited_gifts])
+        return False
 
 
 class Chat(ChatFullInfo):
@@ -9774,7 +9781,7 @@ class BusinessConnection(JsonDeserializable):
     :param date: Date the connection was established in Unix time
     :type date: :obj:`int`
 
-    :param can_reply: Deprecated, use :attr:`can_reply` instead. True, if the bot can reply to messages from the business account
+    :param can_reply: Deprecated, use :attr:`rights` instead. True, if the bot can reply to messages from the business account
     :type can_reply: :obj:`bool`
 
     :param rights: Optional. Rights of the business bot
@@ -9792,6 +9799,7 @@ class BusinessConnection(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
+        obj['rights'] = BusinessBotRights.de_json(obj.get('rights'))
         return cls(**obj)
     
     def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled,
@@ -9801,9 +9809,15 @@ class BusinessConnection(JsonDeserializable):
         self.user_chat_id: int = user_chat_id
         self.date: int = date
         self.rights: Optional[BusinessBotRights] = rights
-        # Deprecated, use self.rights instead
-        self.can_reply: Optional[bool] = can_reply
         self.is_enabled: bool = is_enabled
+
+    @property
+    def can_reply(self) -> bool:
+        """
+        Deprecated, use :attr:`rights` instead.
+        """
+        log_deprecation_warning('The field "can_reply" is deprecated, use "rights" instead')
+        return self.rights is not None and self.rights.can_reply
 
 
 
@@ -11426,8 +11440,8 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`AcceptedGiftTypes`
     """
-    def __init__(self, unlimited_gifts: Optional[bool] = None, limited_gifts: Optional[bool] = None,
-                    unique_gifts: Optional[bool] = None, premium_subscription: Optional[bool] = None, **kwargs):
+    def __init__(self, unlimited_gifts: Optional[bool], limited_gifts: Optional[bool],
+                    unique_gifts: Optional[bool], premium_subscription: Optional[bool], **kwargs):
         self.unlimited_gifts: Optional[bool] = unlimited_gifts
         self.limited_gifts: Optional[bool] = limited_gifts
         self.unique_gifts: Optional[bool] = unique_gifts
@@ -11437,15 +11451,12 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
         return json.dumps(self.to_dict())
     
     def to_dict(self):
-        data = {}
-        if self.unlimited_gifts is not None:
-            data['unlimited_gifts'] = self.unlimited_gifts
-        if self.limited_gifts is not None:
-            data['limited_gifts'] = self.limited_gifts
-        if self.unique_gifts is not None:
-            data['unique_gifts'] = self.unique_gifts
-        if self.premium_subscription is not None:
-            data['premium_subscription'] = self.premium_subscription
+        data = {
+            'unlimited_gifts': self.unlimited_gifts,
+            'limited_gifts': self.limited_gifts,
+            'unique_gifts': self.unique_gifts,
+            'premium_subscription': self.premium_subscription
+        }
         return data
     @classmethod
     def de_json(cls, json_string):
@@ -11479,7 +11490,7 @@ class StarAmount(JsonDeserializable):
         return cls(**obj)
     
 
-class OwnedGift(JsonDeserializable):
+class OwnedGift(JsonDeserializable, ABC):
     """
     This object describes a gift received and owned by a user or a chat. Currently, it can be one of
         OwnedGiftRegular
@@ -11487,6 +11498,10 @@ class OwnedGift(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#ownedgift
     """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+        self.gift: Union[Gift, UniqueGift] = None
     
     
     @classmethod
@@ -11549,7 +11564,7 @@ class OwnedGiftRegular(OwnedGift):
     def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, text=None, entities=None,
                     is_private=None, is_saved=None, can_be_upgraded=None, was_refunded=None, convert_star_count=None,
                     prepaid_upgrade_star_count=None, **kwargs):
-        self.type: str = type
+        super().__init__(type=type)
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.sender_user: Optional[User] = sender_user
@@ -11608,7 +11623,7 @@ class OwnedGiftUnique(OwnedGift):
     """
     def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, is_saved=None,
                     can_be_transferred=None, transfer_star_count=None, **kwargs):
-        self.type: str = type
+        super().__init__(type=type)
         self.gift: UniqueGift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.sender_user: Optional[User] = sender_user
@@ -11823,7 +11838,7 @@ class UniqueGiftBackdrop(JsonDeserializable):
         obj['colors'] = UniqueGiftBackdropColors.de_json(obj['colors'])
         return cls(**obj)
 
-class InputStoryContent(JsonSerializable):
+class InputStoryContent(JsonSerializable, ABC):
     """
     This object describes the content of a story to post. Currently, it can be one of
     InputStoryContentPhoto
@@ -11832,6 +11847,8 @@ class InputStoryContent(JsonSerializable):
     Telegram documentation: https://core.telegram.org/bots/api#inputstorycontent
 
     """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
 
 
 class InputStoryContentPhoto(InputStoryContent):
@@ -11841,13 +11858,13 @@ class InputStoryContentPhoto(InputStoryContent):
     Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentphoto
 
     :param photo: The photo to post as a story. The photo must be of the size 1080x1920 and must not exceed 10 MB. The photo can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
-    :type photo: :obj:`str`
+    :type photo: :class:`telebot.types.InputFile`
 
     :return: Instance of the class
     :rtype: :class:`InputStoryContentPhoto`
     """
     def __init__(self, photo: InputFile, **kwargs):
-        self.type: str = "photo"
+        super().__init__(type="photo")
         self.photo: InputFile = photo
         self._photo_name = service_utils.generate_random_token()
         self._photo_dic = "attach://{}".format(self._photo_name)
@@ -11873,7 +11890,7 @@ class InputStoryContentVideo(InputStoryContent):
     Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentvideo
 
     :param video: The video to post as a story. The video must be of the size 720x1280, streamable, encoded with H.265 codec, with key frames added each second in the MPEG4 format, and must not exceed 30 MB. The video can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the video was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
-    :type video: :obj:`str`
+    :type video: :class:`telebot.types.InputFile`
 
     :param duration: Optional. Precise duration of the video in seconds; 0-60
     :type duration: :obj:`float`
@@ -11889,7 +11906,7 @@ class InputStoryContentVideo(InputStoryContent):
     """
     def __init__(self, video: InputFile, duration: Optional[float] = None, cover_frame_timestamp: Optional[float] = None,
                     is_animation: Optional[bool] = None, **kwargs):
-        self.type: str = "video"
+        super().__init__(type="video")
         self.video: InputFile = video
         self._video_name = service_utils.generate_random_token()
         self._video_dic = "attach://{}".format(self._video_name)
@@ -11997,7 +12014,7 @@ class LocationAddress(JsonSerializable):
         data = {
             'country_code': self.country_code
         }
-        if self.state is not None:
+        if self.state:
             data['state'] = self.state
         if self.city is not None:
             data['city'] = self.city
@@ -12005,7 +12022,7 @@ class LocationAddress(JsonSerializable):
             data['street'] = self.street
         return data
     
-class StoryAreaType(JsonSerializable):
+class StoryAreaType(JsonSerializable, ABC):
     """
     Describes the type of a clickable area on a story. Currently, it can be one of
     StoryAreaTypeLocation
@@ -12019,6 +12036,8 @@ class StoryAreaType(JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`StoryArea`
     """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
 
 
 class StoryAreaTypeLocation(StoryAreaType):
@@ -12036,17 +12055,17 @@ class StoryAreaTypeLocation(StoryAreaType):
     :param longitude: Location longitude in degrees
     :type longitude: :obj:`float`
 
-    :param address: Location address
+    :param address: Optional, Location address
     :type address: :class:`LocationAddress`
 
     :return: Instance of the class
     :rtype: :class:`StoryAreaTypeLocation`
     """
-    def __init__(self,latitude: float, longitude: float, address: LocationAddress, **kwargs):
-        self.type: str = "location"
+    def __init__(self,latitude: float, longitude: float, address: LocationAddress = None, **kwargs):
+        super().__init__(type="location")
         self.latitude: float = latitude
         self.longitude: float = longitude
-        self.address: LocationAddress = address
+        self.address: Optional[LocationAddress] = address
     def to_json(self):
         return json.dumps(self.to_dict())
     def to_dict(self):
@@ -12054,8 +12073,9 @@ class StoryAreaTypeLocation(StoryAreaType):
             'type': self.type,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'address': self.address.to_dict()
         }
+        if self.address is not None:
+            data['address'] = self.address.to_dict()
         return data
     
 
@@ -12081,7 +12101,7 @@ class StoryAreaTypeSuggestedReaction(StoryAreaType):
     :rtype: :class:`StoryAreaTypeSuggestedReaction`
     """
     def __init__(self, reaction_type: ReactionType, is_dark: Optional[bool] = None, is_flipped: Optional[bool] = None, **kwargs):
-        self.type: str = "suggested_reaction"
+        super().__init__(type="suggested_reaction")
         self.reaction_type: ReactionType = reaction_type
         self.is_dark: Optional[bool] = is_dark
         self.is_flipped: Optional[bool] = is_flipped
@@ -12114,7 +12134,7 @@ class StoryAreaTypeLink(StoryAreaType):
     :rtype: :class:`StoryAreaTypeLink`
     """
     def __init__(self, url: str, **kwargs):
-        self.type: str = "link"
+        super().__init__(type="link")
         self.url: str = url
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -12147,7 +12167,7 @@ class StoryAreaTypeWeather(StoryAreaType):
     :rtype: :class:`StoryAreaTypeWeather`
     """
     def __init__(self, temperature: float, emoji: str, background_color: int, **kwargs):
-        self.type: str = "weather"
+        super().__init__(type="weather")
         self.temperature: float = temperature
         self.emoji: str = emoji
         self.background_color: int = background_color
@@ -12178,7 +12198,7 @@ class StoryAreaTypeUniqueGift(StoryAreaType):
     :rtype: :class:`StoryAreaTypeUniqueGift`
     """
     def __init__(self, name: str, **kwargs):
-        self.type: str = "unique_gift"
+        super().__init__(type="unique_gift")
         self.name: str = name
     def to_json(self):
         return json.dumps(self.to_dict())

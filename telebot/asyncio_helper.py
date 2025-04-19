@@ -1993,20 +1993,24 @@ async def set_business_account_name(token, business_connection_id, first_name, l
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def set_business_account_username(token, business_connection_id, username):
+async def set_business_account_username(token, business_connection_id, username=None):
     method_url = 'setBusinessAccountUsername'
-    payload = {'business_connection_id': business_connection_id, 'username': username}
+    payload = {'business_connection_id': business_connection_id}
+    if username is not None:
+        payload['username'] = username
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def set_business_account_bio(token, business_connection_id, bio):
+async def set_business_account_bio(token, business_connection_id, bio=None):
     method_url = 'setBusinessAccountBio'
-    payload = {'business_connection_id': business_connection_id, 'bio': bio}
+    payload = {'business_connection_id': business_connection_id}
+    if bio:
+        payload['bio'] = bio
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def set_business_account_gift_settings(token, business_connection_id, show_gift_button, accepted_gift_types):
     method_url = 'setBusinessAccountGiftSettings'
-    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': json.dumps(accepted_gift_types)}
+    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': accepted_gift_types.to_json()}
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def get_business_account_star_balance(token, business_connection_id):

@@ -2013,21 +2013,26 @@ def set_business_account_name(token, business_connection_id, first_name, last_na
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_business_account_username(token, business_connection_id, username):
+def set_business_account_username(token, business_connection_id, username=None):
     method_url = 'setBusinessAccountUsername'
-    payload = {'business_connection_id': business_connection_id, 'username': username}
+    payload = {'business_connection_id': business_connection_id}
+    if username:
+        payload['username'] = username
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def set_business_account_bio(token, business_connection_id, bio):
+def set_business_account_bio(token, business_connection_id, bio=None):
     method_url = 'setBusinessAccountBio'
-    payload = {'business_connection_id': business_connection_id, 'bio': bio}
+    payload = {'business_connection_id': business_connection_id}
+    if bio:
+        payload['bio'] = bio
     return _make_request(token, method_url, params=payload, method='post')
 
 
 def set_business_account_gift_settings(token, business_connection_id, show_gift_button, accepted_gift_types):
     method_url = 'setBusinessAccountGiftSettings'
-    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': json.dumps(accepted_gift_types)}
+    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button,
+                'accepted_gift_types': accepted_gift_types.to_json()}
     return _make_request(token, method_url, params=payload, method='post')
 
 def set_sticker_emoji_list(token, sticker, emoji_list):
