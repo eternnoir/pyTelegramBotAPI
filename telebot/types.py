@@ -688,8 +688,11 @@ class ChatFullInfo(JsonDeserializable):
     :param permissions: Optional. Default chat member permissions, for groups and supergroups. Returned only in getChat.
     :type permissions: :class:`telebot.types.ChatPermissions`
 
-    :param can_send_gift: Optional. True, if gifts can be sent to the chat
+    :param can_send_gift: deprecated, use accepted_gift_types instead.
     :type can_send_gift: :obj:`bool`
+
+    :param accepted_gift_types: Information about types of gifts that are accepted by the chat or by the corresponding user for private chats
+    :type accepted_gift_types: :class:`telebot.types.AcceptedGiftTypes`
 
     :param can_send_paid_media: Optional. True, if paid media messages can be sent or forwarded to the channel chat.
         The field is available only for channel chats.
@@ -762,6 +765,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['personal_chat'] = Chat.de_json(obj['personal_chat'])
         if 'birthdate' in obj:
             obj['birthdate'] = Birthdate.de_json(obj['birthdate'])
+        if 'accepted_gift_types' in obj:
+            obj['accepted_gift_types'] = AcceptedGiftTypes.de_json(obj['accepted_gift_types'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -777,7 +782,8 @@ class ChatFullInfo(JsonDeserializable):
                  profile_background_custom_emoji_id=None, has_visible_history=None, 
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None, 
-                    can_send_paid_media=None, can_send_gift=None, **kwargs):
+                    can_send_paid_media=None,
+                    accepted_gift_types=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -822,7 +828,18 @@ class ChatFullInfo(JsonDeserializable):
         self.personal_chat: Optional[Chat] = personal_chat
         self.birthdate: Optional[Birthdate] = birthdate
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
-        self.can_send_gift: Optional[bool] = can_send_gift
+        self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
+    @property
+    def can_send_gift(self) -> bool:
+        """
+        Deprecated. Use `accepted_gift_types` instead.
+
+        :return: True if the chat can send gifts
+        """
+        log_deprecation_warning("The parameter 'can_send_gift' is deprecated. Use 'accepted_gift_types' instead.")
+        if self.accepted_gift_types is not None: # just in case
+            return any([self.accepted_gift_types.unique_gifts, self.accepted_gift_types.unlimited_gifts, self.accepted_gift_types.limited_gifts])
+        return False
 
 
 class Chat(ChatFullInfo):
@@ -971,6 +988,9 @@ class Message(JsonDeserializable):
         anonymous group administrator
     :type author_signature: :obj:`str`
 
+    :param paid_star_count: Optional. The number of Telegram Stars that were paid by the sender of the message to send it
+    :type paid_star_count: :obj:`int`
+
     :param text: Optional. For text messages, the actual UTF-8 text of the message
     :type text: :obj:`str`
 
@@ -1114,6 +1134,12 @@ class Message(JsonDeserializable):
     :param chat_shared: Optional. Service message: a chat was shared with the bot
     :type chat_shared: :class:`telebot.types.ChatShared`
 
+    :param gift: Optional. Service message: a regular gift was sent or received
+    :type gift: :class:`telebot.types.GiftInfo`
+
+    :param unique_gift: Optional. Service message: a unique gift was sent or received
+    :type unique_gift: :class:`telebot.types.UniqueGiftInfo`
+
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
         Telegram Login »
     :type connected_website: :obj:`str`
@@ -1164,6 +1190,9 @@ class Message(JsonDeserializable):
 
     :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
     :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
+
+    :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
+    :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
 
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
@@ -1421,6 +1450,18 @@ class Message(JsonDeserializable):
             opts['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
         if 'refunded_payment' in obj:
             opts['refunded_payment'] = RefundedPayment.de_json(obj['refunded_payment'])
+        if 'gift' in obj:
+            opts['gift'] = GiftInfo.de_json(obj['gift'])
+            content_type = 'gift'
+        if 'unique_gift' in obj:
+            opts['unique_gift'] = UniqueGiftInfo.de_json(obj['unique_gift'])
+            content_type = 'unique_gift'
+        if 'paid_message_price_changed' in obj:
+            opts['paid_message_price_changed'] = PaidMessagePriceChanged.de_json(obj['paid_message_price_changed'])
+            content_type = 'paid_message_price_changed'
+        if 'paid_star_count' in obj:
+            opts['paid_star_count'] = obj['paid_star_count']
+            
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1539,6 +1580,10 @@ class Message(JsonDeserializable):
         self.video_chat_participants_invited: Optional[VideoChatParticipantsInvited] = None
         self.web_app_data: Optional[WebAppData] = None
         self.message_auto_delete_timer_changed: Optional[MessageAutoDeleteTimerChanged] = None
+        self.gift : Optional[GiftInfo] = None
+        self.unique_gift : Optional[UniqueGiftInfo] = None
+        self.paid_message_price_changed: Optional[PaidMessagePriceChanged] = None
+        self.paid_star_count: Optional[int] = None
         
 
         for key in options:
@@ -9736,8 +9781,11 @@ class BusinessConnection(JsonDeserializable):
     :param date: Date the connection was established in Unix time
     :type date: :obj:`int`
 
-    :param can_reply: True, if the bot can act on behalf of the business account in chats that were active in the last 24 hours
+    :param can_reply: Deprecated, use :attr:`rights` instead. True, if the bot can reply to messages from the business account
     :type can_reply: :obj:`bool`
+
+    :param rights: Optional. Rights of the business bot
+    :type rights: :class:`BusinessBotRights`
 
     :param is_enabled: True, if the connection is active
     :type is_enabled: :obj:`bool`
@@ -9751,15 +9799,25 @@ class BusinessConnection(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
+        obj['rights'] = BusinessBotRights.de_json(obj.get('rights'))
         return cls(**obj)
     
-    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled, **kwargs):
+    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled,
+                    rights=None, **kwargs):
         self.id: str = id
         self.user: User = user
         self.user_chat_id: int = user_chat_id
         self.date: int = date
-        self.can_reply: bool = can_reply
+        self.rights: Optional[BusinessBotRights] = rights
         self.is_enabled: bool = is_enabled
+
+    @property
+    def can_reply(self) -> bool:
+        """
+        Deprecated, use :attr:`rights` instead.
+        """
+        log_deprecation_warning('The field "can_reply" is deprecated, use "rights" instead')
+        return self.rights is not None and self.rights.can_reply
 
 
 
@@ -10521,6 +10579,11 @@ class TransactionPartnerUser(TransactionPartner):
     :param type: Type of the transaction partner, always “user”
     :type type: :obj:`str`
 
+    :param transaction_type: Type of the transaction, currently one of “invoice_payment” for payments via invoices,
+        “paid_media_payment” for payments for paid media, “gift_purchase” for gifts sent by the bot, “premium_purchase” for Telegram Premium subscriptions
+        gifted by the bot, “business_account_transfer” for direct transfers from managed business accounts
+    :type transaction_type: :obj:`str`
+
     :param user: Information about the user
     :type user: :class:`User`
 
@@ -10539,12 +10602,16 @@ class TransactionPartnerUser(TransactionPartner):
     :param gift: Optional. The gift sent to the user by the bot
     :type gift: :class:`Gift`
 
+    :param premium_subscription_duration: Optional. Number of months the gifted Telegram Premium subscription will be active for; for “premium_purchase” transactions only
+    :type premium_subscription_duration: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`TransactionPartnerUser`
     """
 
     def __init__(self, type, user, affiliate=None, invoice_payload=None, paid_media: Optional[List[PaidMedia]] = None, 
-                    subscription_period=None, gift: Optional[Gift] = None, **kwargs):
+                    subscription_period=None, gift: Optional[Gift] = None, premium_subscription_duration: Optional[int] = None, 
+                    transaction_type: Optional[str] = None, **kwargs):
         self.type: str = type
         self.user: User = user
         self.affiliate: Optional[AffiliateInfo] = affiliate
@@ -10552,6 +10619,8 @@ class TransactionPartnerUser(TransactionPartner):
         self.paid_media: Optional[List[PaidMedia]] = paid_media
         self.subscription_period: Optional[int] = subscription_period
         self.gift: Optional[Gift] = gift
+        self.premium_subscription_duration: Optional[int] = premium_subscription_duration
+        self.transaction_type: Optional[str] = transaction_type
 
     @classmethod
     def de_json(cls, json_string):
@@ -11272,3 +11341,1095 @@ class TransactionPartnerChat(TransactionPartner):
             obj['gift'] = Gift.de_json(obj['gift'])
         return cls(**obj)
     
+
+class BusinessBotRights(JsonDeserializable):
+    """
+    Represents the rights of a business bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#businessbotrights
+
+    :param can_reply: Optional. True, if the bot can send and edit messages in the private chats that had incoming messages in the last 24 hours
+    :type can_reply: :obj:`bool`
+
+    :param can_read_messages: Optional. True, if the bot can mark incoming private messages as read
+    :type can_read_messages: :obj:`bool`
+
+    :param can_delete_outgoing_messages: Optional. True, if the bot can delete messages sent by the bot
+    :type can_delete_outgoing_messages: :obj:`bool`
+
+    :param can_delete_all_messages: Optional. True, if the bot can delete all private messages in managed chats
+    :type can_delete_all_messages: :obj:`bool`
+
+    :param can_edit_name: Optional. True, if the bot can edit the first and last name of the business account
+    :type can_edit_name: :obj:`bool`
+
+    :param can_edit_bio: Optional. True, if the bot can edit the bio of the business account
+    :type can_edit_bio: :obj:`bool`
+
+    :param can_edit_profile_photo: Optional. True, if the bot can edit the profile photo of the business account
+    :type can_edit_profile_photo: :obj:`bool`
+
+    :param can_edit_username: Optional. True, if the bot can edit the username of the business account
+    :type can_edit_username: :obj:`bool`
+
+    :param can_change_gift_settings: Optional. True, if the bot can change the privacy settings pertaining to gifts for the business account
+    :type can_change_gift_settings: :obj:`bool`
+
+    :param can_view_gifts_and_stars: Optional. True, if the bot can view gifts and the amount of Telegram Stars owned by the business account
+    :type can_view_gifts_and_stars: :obj:`bool`
+
+    :param can_convert_gifts_to_stars: Optional. True, if the bot can convert regular gifts owned by the business account to Telegram Stars
+    :type can_convert_gifts_to_stars: :obj:`bool`
+
+    :param can_transfer_and_upgrade_gifts: Optional. True, if the bot can transfer and upgrade gifts owned by the business account
+    :type can_transfer_and_upgrade_gifts: :obj:`bool`
+
+    :param can_transfer_stars: Optional. True, if the bot can transfer Telegram Stars received by the business account to its own account, or use them to upgrade and transfer gifts
+    :type can_transfer_stars: :obj:`bool`
+
+    :param can_manage_stories: Optional. True, if the bot can post, edit and delete stories on behalf of the business account
+    :type can_manage_stories: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`BusinessBotRights` 
+    """
+    def __init__(self, can_reply=None, can_read_messages=None, can_delete_outgoing_messages=None, can_delete_all_messages=None,
+                    can_edit_name=None, can_edit_bio=None, can_edit_profile_photo=None, can_edit_username=None, 
+                    can_change_gift_settings=None, can_view_gifts_and_stars=None, can_convert_gifts_to_stars=None,
+                    can_transfer_and_upgrade_gifts=None, can_transfer_stars=None, can_manage_stories=None, **kwargs):
+        self.can_reply: Optional[bool] = can_reply
+        self.can_read_messages: Optional[bool] = can_read_messages
+        self.can_delete_outgoing_messages: Optional[bool] = can_delete_outgoing_messages
+        self.can_delete_all_messages: Optional[bool] = can_delete_all_messages
+        self.can_edit_name: Optional[bool] = can_edit_name
+        self.can_edit_bio: Optional[bool] = can_edit_bio
+        self.can_edit_profile_photo: Optional[bool] = can_edit_profile_photo
+        self.can_edit_username: Optional[bool] = can_edit_username
+        self.can_change_gift_settings: Optional[bool] = can_change_gift_settings
+        self.can_view_gifts_and_stars: Optional[bool] = can_view_gifts_and_stars
+        self.can_convert_gifts_to_stars: Optional[bool] = can_convert_gifts_to_stars
+        self.can_transfer_and_upgrade_gifts: Optional[bool] = can_transfer_and_upgrade_gifts
+        self.can_transfer_stars: Optional[bool] = can_transfer_stars
+        self.can_manage_stories: Optional[bool] = can_manage_stories
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
+    """
+    This object describes the types of gifts that can be gifted to a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#acceptedgifttypes
+
+    :param unlimited_gifts: True, if unlimited regular gifts are accepted
+    :type unlimited_gifts: :obj:`bool`
+
+    :param limited_gifts: True, if limited regular gifts are accepted
+    :type limited_gifts: :obj:`bool`
+
+    :param unique_gifts: True, if unique gifts or gifts that can be upgraded to unique for free are accepted
+    :type unique_gifts: :obj:`bool`
+    
+    :param premium_subscription: True, if a Telegram Premium subscription is accepted
+    :type premium_subscription: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`AcceptedGiftTypes`
+    """
+    def __init__(self, unlimited_gifts: bool, limited_gifts: bool,
+                    unique_gifts: bool, premium_subscription: bool, **kwargs):
+        self.unlimited_gifts: bool = unlimited_gifts
+        self.limited_gifts: bool = limited_gifts
+        self.unique_gifts: bool = unique_gifts
+        self.premium_subscription: bool = premium_subscription
+        
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'unlimited_gifts': self.unlimited_gifts,
+            'limited_gifts': self.limited_gifts,
+            'unique_gifts': self.unique_gifts,
+            'premium_subscription': self.premium_subscription
+        }
+        return data
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class StarAmount(JsonDeserializable):
+    """
+    Describes an amount of Telegram Stars.
+
+    Telegram documentation: https://core.telegram.org/bots/api#staramount
+
+    :param amount: Integer amount of Telegram Stars, rounded to 0; can be negative
+    :type amount: :obj:`int`
+
+    :param nanostar_amount: Optional. The number of 1/1000000000 shares of Telegram Stars; from -999999999 to 999999999; can be negative if and only if amount is non-positive
+    :type nanostar_amount: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`StarAmount`
+    """
+    def __init__(self, amount, nanostar_amount=None, **kwargs):
+        self.amount: int = amount
+        self.nanostar_amount: Optional[int] = nanostar_amount
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class OwnedGift(JsonDeserializable, ABC):
+    """
+    This object describes a gift received and owned by a user or a chat. Currently, it can be one of
+        OwnedGiftRegular
+        OwnedGiftUnique
+
+    Telegram documentation: https://core.telegram.org/bots/api#ownedgift
+    """
+
+    def __init__(self, type, **kwargs):
+        self.type: str = type
+        self.gift: Union[Gift, UniqueGift] = None
+    
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj["type"] == "regular":
+            return OwnedGiftRegular.de_json(obj)
+        elif obj["type"] == "unique":
+            return OwnedGiftUnique.de_json(obj)
+        
+class OwnedGiftRegular(OwnedGift):
+    """
+    This object describes a regular gift owned by a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#ownedgiftregular
+
+    :param type: Type of the gift, always “regular”
+    :type type: :obj:`str`
+
+    :param gift: Information about the regular gift
+    :type gift: :class:`Gift`
+
+    :param owned_gift_id: Optional. Unique identifier of the gift for the bot; for gifts received on behalf of business accounts only
+    :type owned_gift_id: :obj:`str`
+
+    :param sender_user: Optional. Sender of the gift if it is a known user
+    :type sender_user: :class:`User`
+
+    :param send_date: Date the gift was sent in Unix time
+    :type send_date: :obj:`int`
+    
+    :param text: Optional. Text of the message that was added to the gift
+    :type text: :obj:`str`
+
+    :param entities: Optional. Special entities that appear in the text
+    :type entities: :obj:`list` of :class:`MessageEntity`
+
+    :param is_private: Optional. True, if the sender and gift text are shown only to the gift receiver; otherwise, everyone will be able to see them
+    :type is_private: :obj:`bool`
+
+    :param is_saved: Optional. True, if the gift is displayed on the account's profile page; for gifts received on behalf of business accounts only
+    :type is_saved: :obj:`bool`
+
+    :param can_be_upgraded: Optional. True, if the gift can be upgraded to a unique gift; for gifts received on behalf of business accounts only
+    :type can_be_upgraded: :obj:`bool`
+
+    :param was_refunded: Optional. True, if the gift was refunded and isn't available anymore
+    :type was_refunded: :obj:`bool`
+
+    :param convert_star_count: Optional. Number of Telegram Stars that can be claimed by the receiver instead of the gift; omitted if the gift cannot be converted to Telegram Stars
+    :type convert_star_count: :obj:`int`
+
+    :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were paid by the sender for the ability to upgrade the gift
+    :type prepaid_upgrade_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`OwnedGiftRegular`
+    """
+    def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, text=None, entities=None,
+                    is_private=None, is_saved=None, can_be_upgraded=None, was_refunded=None, convert_star_count=None,
+                    prepaid_upgrade_star_count=None, **kwargs):
+        super().__init__(type=type)
+        self.gift: Gift = gift
+        self.owned_gift_id: Optional[str] = owned_gift_id
+        self.sender_user: Optional[User] = sender_user
+        self.send_date: Optional[int] = send_date
+        self.text: Optional[str] = text
+        self.entities: Optional[List[MessageEntity]] = entities
+        self.is_private: Optional[bool] = is_private
+        self.is_saved: Optional[bool] = is_saved
+        self.can_be_upgraded: Optional[bool] = can_be_upgraded
+        self.was_refunded: Optional[bool] = was_refunded
+        self.convert_star_count: Optional[int] = convert_star_count
+        self.prepaid_upgrade_star_count: Optional[int] = prepaid_upgrade_star_count
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = Gift.de_json(obj['gift'])
+        if 'sender_user' in obj:
+            obj['sender_user'] = User.de_json(obj['sender_user'])
+        if 'entities' in obj:
+            obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
+        return cls(**obj)
+    
+class OwnedGiftUnique(OwnedGift):
+    """
+    This object describes a unique gift owned by a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#ownedgiftunique
+
+    :param type: Type of the gift, always “unique”
+    :type type: :obj:`str`
+
+    :param gift: Information about the unique gift
+    :type gift: :class:`UniqueGift`
+
+    :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; for gifts received on behalf of business accounts only
+    :type owned_gift_id: :obj:`str`
+
+    :param sender_user: Optional. Sender of the gift if it is a known user
+    :type sender_user: :class:`User`
+
+    :param send_date: Date the gift was sent in Unix time
+    :type send_date: :obj:`int`
+
+    :param is_saved: Optional. True, if the gift is displayed on the account's profile page; for gifts received on behalf of business accounts only
+    :type is_saved: :obj:`bool`
+
+    :param can_be_transferred: Optional. True, if the gift can be transferred to another owner; for gifts received on behalf of business accounts only
+    :type can_be_transferred: :obj:`bool`
+
+    :param transfer_star_count: Optional. Number of Telegram Stars that must be paid to transfer the gift; omitted if the bot cannot transfer the gift
+    :type transfer_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`OwnedGiftUnique`
+    """
+    def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, is_saved=None,
+                    can_be_transferred=None, transfer_star_count=None, **kwargs):
+        super().__init__(type=type)
+        self.gift: UniqueGift = gift
+        self.owned_gift_id: Optional[str] = owned_gift_id
+        self.sender_user: Optional[User] = sender_user
+        self.send_date: Optional[int] = send_date
+        self.is_saved: Optional[bool] = is_saved
+        self.can_be_transferred: Optional[bool] = can_be_transferred
+        self.transfer_star_count: Optional[int] = transfer_star_count
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = UniqueGift.de_json(obj['gift'])
+        if 'sender_user' in obj:
+            obj['sender_user'] = User.de_json(obj['sender_user'])
+        return cls(**obj)
+    
+
+class OwnedGifts(JsonDeserializable):
+    """
+    Contains the list of gifts received and owned by a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#ownedgifts
+
+    :param total_count: The total number of gifts owned by the user or the chat
+    :type total_count: :obj:`int`
+
+    :param gifts: The list of gifts
+    :type gifts: :obj:`list` of :class:`OwnedGift`
+
+    :param next_offset: Optional. Offset for the next request. If empty, then there are no more results
+    :type next_offset: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`OwnedGifts`
+
+    """
+    def __init__(self, total_count, gifts, next_offset=None, **kwargs):
+        self.total_count: int = total_count
+        self.gifts: List[OwnedGift] = gifts
+        self.next_offset: Optional[str] = next_offset
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gifts'] = [OwnedGift.de_json(gift) for gift in obj['gifts']]
+        return cls(**obj)
+
+
+
+class UniqueGift(JsonDeserializable):
+    """
+    This object describes a unique gift that was upgraded from a regular gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegift
+
+    :param base_name: Human-readable name of the regular gift from which this unique gift was upgraded
+    :type base_name: :obj:`str`
+
+    :param name: Unique name of the gift. This name can be used in https://t.me/nft/... links and story areas
+    :type name: :obj:`str`
+
+    :param number: Unique number of the upgraded gift among gifts upgraded from the same regular gift
+    :type number: :obj:`int`
+
+    :param model: Model of the gift
+    :type model: :class:`UniqueGiftModel`
+
+    :param symbol: Symbol of the gift
+    :type symbol: :class:`UniqueGiftSymbol`
+
+    :param backdrop: Backdrop of the gift
+    :type backdrop: :class:`UniqueGiftBackdrop`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGift`
+    """
+    def __init__(self, base_name, name, number, model, symbol, backdrop, **kwargs):
+        self.base_name: str = base_name
+        self.name: str = name
+        self.number: int = number
+        self.model: UniqueGiftModel = model
+        self.symbol: UniqueGiftSymbol = symbol
+        self.backdrop: UniqueGiftBackdrop = backdrop
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['model'] = UniqueGiftModel.de_json(obj['model'])
+        obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
+        obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
+        return cls(**obj)
+    
+    
+class UniqueGiftModel(JsonDeserializable):
+    """
+    This object describes the model of a unique gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftmodel
+
+    :param name: Name of the model
+    :type name: :obj:`str`
+
+    :param sticker: The sticker that represents the unique gift
+    :type sticker: :class:`Sticker`
+
+    :param rarity_per_mille: The number of unique gifts that receive this model for every 1000 gifts upgraded
+    :type rarity_per_mille: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftModel`
+
+    """
+    def __init__(self, name, sticker, rarity_per_mille, **kwargs):
+        self.name: str = name
+        self.sticker: Sticker = sticker
+        self.rarity_per_mille: int = rarity_per_mille
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['sticker'] = Sticker.de_json(obj['sticker'])
+        return cls(**obj)
+    
+class UniqueGiftSymbol(JsonDeserializable):
+    """
+    This object describes the symbol shown on the pattern of a unique gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftsymbol
+
+    :param name: Name of the symbol
+    :type name: :obj:`str`
+
+    :param sticker: The sticker that represents the unique gift
+    :type sticker: :class:`Sticker`
+
+    :param rarity_per_mille: The number of unique gifts that receive this model for every 1000 gifts upgraded
+    :type rarity_per_mille: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftSymbol`
+    """
+
+    def __init__(self, name, sticker, rarity_per_mille, **kwargs):
+        self.name: str = name
+        self.sticker: Sticker = sticker
+        self.rarity_per_mille: int = rarity_per_mille
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['sticker'] = Sticker.de_json(obj['sticker'])
+        return cls(**obj)
+    
+class UniqueGiftBackdropColors(JsonDeserializable):
+    """
+    This object describes the colors of the backdrop of a unique gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftbackdropcolors
+
+    :param center_color: The color in the center of the backdrop in RGB format
+    :type center_color: :obj:`int`
+
+    :param edge_color: The color on the edges of the backdrop in RGB format
+    :type edge_color: :obj:`int`
+
+    :param symbol_color: The color to be applied to the symbol in RGB format
+    :type symbol_color: :obj:`int`
+
+    :param text_color: The color for the text on the backdrop in RGB format
+    :type text_color: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftBackdropColors`
+    """
+    def __init__(self, center_color, edge_color, symbol_color, text_color, **kwargs):
+        self.center_color: int = center_color
+        self.edge_color: int = edge_color
+        self.symbol_color: int = symbol_color
+        self.text_color: int = text_color
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+class UniqueGiftBackdrop(JsonDeserializable):
+    """
+    This object describes the backdrop of a unique gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftbackdrop
+
+    :param name: Name of the backdrop
+    :type name: :obj:`str`
+
+    :param colors: Colors of the backdrop
+    :type colors: :class:`UniqueGiftBackdropColors`
+
+    :param rarity_per_mille: The number of unique gifts that receive this backdrop for every 1000 gifts upgraded
+    :type rarity_per_mille: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftBackdrop`
+    """
+    def __init__(self, name, colors, rarity_per_mille, **kwargs):
+        self.name: str = name
+        self.colors: UniqueGiftBackdropColors = colors
+        self.rarity_per_mille: int = rarity_per_mille
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['colors'] = UniqueGiftBackdropColors.de_json(obj['colors'])
+        return cls(**obj)
+
+class InputStoryContent(JsonSerializable, ABC):
+    """
+    This object describes the content of a story to post. Currently, it can be one of
+    InputStoryContentPhoto
+    InputStoryContentVideo
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputstorycontent
+
+    """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+
+
+class InputStoryContentPhoto(InputStoryContent):
+    """
+    This object describes a photo to post as a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentphoto
+
+    :param photo: The photo to post as a story. The photo must be of the size 1080x1920 and must not exceed 10 MB. The photo can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type photo: :class:`telebot.types.InputFile`
+
+    :return: Instance of the class
+    :rtype: :class:`InputStoryContentPhoto`
+    """
+    def __init__(self, photo: InputFile, **kwargs):
+        super().__init__(type="photo")
+        self.photo: InputFile = photo
+        self._photo_name = service_utils.generate_random_token()
+        self._photo_dic = "attach://{}".format(self._photo_name)
+        
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'photo': self._photo_dic
+        }
+        return data
+    
+    def convert_input_story(self):
+        return self.to_json(), {self._photo_name: self.photo}
+    
+
+class InputStoryContentVideo(InputStoryContent):
+    """
+    This object describes a video to post as a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentvideo
+
+    :param video: The video to post as a story. The video must be of the size 720x1280, streamable, encoded with H.265 codec, with key frames added each second in the MPEG4 format, and must not exceed 30 MB. The video can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the video was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type video: :class:`telebot.types.InputFile`
+
+    :param duration: Optional. Precise duration of the video in seconds; 0-60
+    :type duration: :obj:`float`
+
+    :param cover_frame_timestamp: Optional. Timestamp in seconds of the frame that will be used as the static cover for the story. Defaults to 0.0.
+    :type cover_frame_timestamp: :obj:`float`
+
+    :param is_animation: Optional. Pass True if the video has no sound
+    :type is_animation: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`InputStoryContentVideo`
+    """
+    def __init__(self, video: InputFile, duration: Optional[float] = None, cover_frame_timestamp: Optional[float] = None,
+                    is_animation: Optional[bool] = None, **kwargs):
+        super().__init__(type="video")
+        self.video: InputFile = video
+        self._video_name = service_utils.generate_random_token()
+        self._video_dic = "attach://{}".format(self._video_name)
+        self.duration: Optional[float] = duration
+        self.cover_frame_timestamp: Optional[float] = cover_frame_timestamp
+        self.is_animation: Optional[bool] = is_animation
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'video': self._video_dic
+        }
+        if self.duration is not None:
+            data['duration'] = self.duration
+        if self.cover_frame_timestamp is not None:
+            data['cover_frame_timestamp'] = self.cover_frame_timestamp
+        if self.is_animation is not None:
+            data['is_animation'] = self.is_animation
+        return data
+    def convert_input_story(self):
+        return self.to_json(), {self._video_name: self.video}
+    
+
+class StoryAreaPosition(JsonSerializable):
+    """
+    Describes the position of a clickable area within a story.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareaposition
+
+    :param x_percentage: The abscissa of the area's center, as a percentage of the media width
+    :type x_percentage: :obj:`float`
+
+    :param y_percentage: The ordinate of the area's center, as a percentage of the media height
+    :type y_percentage: :obj:`float`
+
+    :param width_percentage: The width of the area's rectangle, as a percentage of the media width
+    :type width_percentage: :obj:`float`
+
+    :param height_percentage: The height of the area's rectangle, as a percentage of the media height
+    :type height_percentage: :obj:`float`
+
+    :param rotation_angle: The clockwise rotation angle of the rectangle, in degrees; 0-360
+    :type rotation_angle: :obj:`float`
+
+    :param corner_radius_percentage: The radius of the rectangle corner rounding, as a percentage of the media width
+    :type corner_radius_percentage: :obj:`float`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaPosition`
+    """
+    def __init__(self, x_percentage: float, y_percentage: float, width_percentage: float,
+                    height_percentage: float, rotation_angle: float, corner_radius_percentage: float, **kwargs):
+        self.x_percentage: float = x_percentage
+        self.y_percentage: float = y_percentage
+        self.width_percentage: float = width_percentage
+        self.height_percentage: float = height_percentage
+        self.rotation_angle: float = rotation_angle
+        self.corner_radius_percentage: float = corner_radius_percentage
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'x_percentage': self.x_percentage,
+            'y_percentage': self.y_percentage,
+            'width_percentage': self.width_percentage,
+            'height_percentage': self.height_percentage,
+            'rotation_angle': self.rotation_angle,
+            'corner_radius_percentage': self.corner_radius_percentage
+        }
+        return data
+    
+
+class LocationAddress(JsonSerializable):
+    """
+    Describes the physical address of a location.
+
+    Telegram documentation: https://core.telegram.org/bots/api#locationaddress
+
+    :param country_code: The two-letter ISO 3166-1 alpha-2 country code of the country where the location is located
+    :type country_code: :obj:`str`
+
+    :param state: Optional. State of the location
+    :type state: :obj:`str`
+
+    :param city: Optional. City of the location
+    :type city: :obj:`str`
+
+    :param street: Optional. Street address of the location
+    :type street: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`LocationAddress`
+    """
+    def __init__(self, country_code: str, state: Optional[str] = None, city: Optional[str] = None,
+                    street: Optional[str] = None, **kwargs):
+        self.country_code: str = country_code
+        self.state: Optional[str] = state
+        self.city: Optional[str] = city
+        self.street: Optional[str] = street
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'country_code': self.country_code
+        }
+        if self.state:
+            data['state'] = self.state
+        if self.city is not None:
+            data['city'] = self.city
+        if self.street is not None:
+            data['street'] = self.street
+        return data
+    
+class StoryAreaType(JsonSerializable, ABC):
+    """
+    Describes the type of a clickable area on a story. Currently, it can be one of
+    StoryAreaTypeLocation
+    StoryAreaTypeSuggestedReaction
+    StoryAreaTypeLink
+    StoryAreaTypeWeather
+    StoryAreaTypeUniqueGift
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyarea
+
+    :return: Instance of the class
+    :rtype: :class:`StoryArea`
+    """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+
+
+class StoryAreaTypeLocation(StoryAreaType):
+    """
+    Describes a story area pointing to a location. Currently, a story can have up to 10 location areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypelocation
+
+    :param type: Type of the area, always “location”
+    :type type: :obj:`str`
+
+    :param latitude: Location latitude in degrees
+    :type latitude: :obj:`float`
+
+    :param longitude: Location longitude in degrees
+    :type longitude: :obj:`float`
+
+    :param address: Optional, Location address
+    :type address: :class:`LocationAddress`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeLocation`
+    """
+    def __init__(self,latitude: float, longitude: float, address: LocationAddress = None, **kwargs):
+        super().__init__(type="location")
+        self.latitude: float = latitude
+        self.longitude: float = longitude
+        self.address: Optional[LocationAddress] = address
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+        }
+        if self.address is not None:
+            data['address'] = self.address.to_dict()
+        return data
+    
+
+class StoryAreaTypeSuggestedReaction(StoryAreaType):
+    """
+    Describes a story area pointing to a suggested reaction. Currently, a story can have up to 5 suggested reaction areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypesuggestedreaction
+
+    :param type: Type of the area, always “suggested_reaction”
+    :type type: :obj:`str`
+
+    :param reaction_type: Type of the reaction
+    :type reaction_type: :class:`ReactionType`
+
+    :param is_dark: Optional. Pass True if the reaction area has a dark background
+    :type is_dark: :obj:`bool`
+
+    :param is_flipped: Optional. Pass True if reaction area corner is flipped
+    :type is_flipped: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeSuggestedReaction`
+    """
+    def __init__(self, reaction_type: ReactionType, is_dark: Optional[bool] = None, is_flipped: Optional[bool] = None, **kwargs):
+        super().__init__(type="suggested_reaction")
+        self.reaction_type: ReactionType = reaction_type
+        self.is_dark: Optional[bool] = is_dark
+        self.is_flipped: Optional[bool] = is_flipped
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'reaction_type': self.reaction_type.to_dict()
+        }
+        if self.is_dark is not None:
+            data['is_dark'] = self.is_dark
+        if self.is_flipped is not None:
+            data['is_flipped'] = self.is_flipped
+        return data
+    
+class StoryAreaTypeLink(StoryAreaType):
+    """
+    Describes a story area pointing to an HTTP or tg:// link. Currently, a story can have up to 3 link areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypelink
+
+    :param type: Type of the area, always “link”
+    :type type: :obj:`str`
+
+    :param url: HTTP or tg:// URL to be opened when the area is clicked
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeLink`
+    """
+    def __init__(self, url: str, **kwargs):
+        super().__init__(type="link")
+        self.url: str = url
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'url': self.url
+        }
+        return data
+    
+class StoryAreaTypeWeather(StoryAreaType):
+    """
+    Describes a story area containing weather information. Currently, a story can have up to 3 weather areas.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypeweather
+
+    :param type: Type of the area, always “weather”
+    :type type: :obj:`str`
+
+    :param temperature: Temperature, in degree Celsius
+    :type temperature: :obj:`float`
+
+    :param emoji: Emoji representing the weather
+    :type emoji: :obj:`str`
+
+    :param background_color: A color of the area background in the ARGB format
+    :type background_color: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeWeather`
+    """
+    def __init__(self, temperature: float, emoji: str, background_color: int, **kwargs):
+        super().__init__(type="weather")
+        self.temperature: float = temperature
+        self.emoji: str = emoji
+        self.background_color: int = background_color
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'temperature': self.temperature,
+            'emoji': self.emoji,
+            'background_color': self.background_color
+        }
+        return data
+    
+class StoryAreaTypeUniqueGift(StoryAreaType):
+    """
+    Describes a story area pointing to a unique gift. Currently, a story can have at most 1 unique gift area.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyareatypeuniquegift
+
+    :param type: Type of the area, always “unique_gift”
+    :type type: :obj:`str`
+
+    :param name: Unique name of the gift
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryAreaTypeUniqueGift`
+    """
+    def __init__(self, name: str, **kwargs):
+        super().__init__(type="unique_gift")
+        self.name: str = name
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'name': self.name
+        }
+
+        return data
+    
+
+class StoryArea(JsonSerializable):
+    """
+    Describes a clickable area on a story media.
+
+    Telegram documentation: https://core.telegram.org/bots/api#storyarea
+
+    :param position: Position of the area
+    :type position: :class:`StoryAreaPosition`
+
+    :param type: Type of the area
+    :type type: :class:`StoryAreaType`
+
+    :return: Instance of the class
+    :rtype: :class:`StoryArea`
+    """
+    def __init__(self, position: StoryAreaPosition, type: StoryAreaType, **kwargs):
+        self.position: StoryAreaPosition = position
+        self.type: StoryAreaType = type
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'position': self.position.to_dict(),
+            'type': self.type.to_dict()
+        }
+        return data
+    
+
+class GiftInfo(JsonDeserializable):
+    """
+    This object describes a service message about a regular gift that was sent or received.
+
+    Telegram documentation: https://core.telegram.org/bots/api#giftinfo
+
+    :param gift: Information about the gift
+    :type gift: :class:`Gift`
+
+    :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
+    :type owned_gift_id: :obj:`str`
+
+    :param convert_star_count: Optional. Number of Telegram Stars that can be claimed by the receiver by converting the gift; omitted if conversion to Telegram Stars is impossible
+    :type convert_star_count: :obj:`int`
+
+    :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were prepaid by the sender for the ability to upgrade the gift
+    :type prepaid_upgrade_star_count: :obj:`int`
+
+    :param can_be_upgraded: Optional. True, if the gift can be upgraded to a unique gift
+    :type can_be_upgraded: :obj:`bool`
+
+    :param text: Optional. Text of the message that was added to the gift
+    :type text: :obj:`str`
+
+    :param entities: Optional. Special entities that appear in the text
+    :type entities: :obj:`list` of :class:`MessageEntity`
+
+    :param is_private: Optional. True, if the sender and gift text are shown only to the gift receiver; otherwise, everyone will be able to see them
+    :type is_private: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`GiftInfo`
+    """
+    def __init__(self, gift: Gift, owned_gift_id: Optional[str] = None, convert_star_count: Optional[int] = None,
+                    prepaid_upgrade_star_count: Optional[int] = None, can_be_upgraded: Optional[bool] = None,
+                    text: Optional[str] = None, entities: Optional[List[MessageEntity]] = None,
+                    is_private: Optional[bool] = None, **kwargs):
+        self.gift: Gift = gift
+        self.owned_gift_id: Optional[str] = owned_gift_id
+        self.convert_star_count: Optional[int] = convert_star_count
+        self.prepaid_upgrade_star_count: Optional[int] = prepaid_upgrade_star_count
+        self.can_be_upgraded: Optional[bool] = can_be_upgraded
+        self.text: Optional[str] = text
+        self.entities: Optional[List[MessageEntity]] = entities
+        self.is_private: Optional[bool] = is_private
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = Gift.de_json(obj['gift'])
+        if 'entities' in obj:
+            obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
+        return cls(**obj)
+    
+class UniqueGiftInfo(JsonDeserializable):
+    """
+    This object describes a service message about a unique gift that was sent or received.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftinfo
+
+    :param gift: Information about the gift
+    :type gift: :class:`UniqueGift`
+
+    :param origin: Origin of the gift. Currently, either “upgrade” or “transfer”
+    :type origin: :obj:`str`
+
+    :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
+    :type owned_gift_id: :obj:`str`
+
+    :param transfer_star_count: Optional. Number of Telegram Stars that must be paid to transfer the gift; omitted if the bot cannot transfer the gift
+    :type transfer_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftInfo`
+    """
+    def __init__(self, gift: UniqueGift, origin: str, owned_gift_id: Optional[str] = None,
+                    transfer_star_count: Optional[int] = None, **kwargs): 
+        self.gift: UniqueGift = gift
+        self.origin: str = origin
+        self.owned_gift_id: Optional[str] = owned_gift_id
+        self.transfer_star_count: Optional[int] = transfer_star_count
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = UniqueGift.de_json(obj['gift'])
+        return cls(**obj)
+    
+
+class PaidMessagePriceChanged(JsonDeserializable):
+    """
+    Describes a service message about a change in the price of paid messages within a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmessagepricechanged
+
+    :param paid_message_star_count: The new number of Telegram Stars that must be paid by non-administrator users of the supergroup chat for each sent message
+    :type paid_message_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMessagePriceChanged`
+    """
+    def __init__(self, paid_message_star_count: int, **kwargs):
+        self.paid_message_star_count: int = paid_message_star_count
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class InputProfilePhoto(JsonSerializable):
+    """
+    This object describes a profile photo to set. Currently, it can be one of
+    InputProfilePhotoStatic
+    InputProfilePhotoAnimated
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputprofilephoto
+
+    :return: Instance of the class
+    :rtype: :class:`InputProfilePhoto`
+    """
+
+class InputProfilePhotoStatic(InputProfilePhoto):
+    """
+    This object describes a static profile photo to set.
+    
+    Telegram documentation: https://core.telegram.org/bots/api#inputprofilephotostatic
+
+    :param type: Type of the profile photo, must be static
+    :type type: :obj:`str`
+
+    :param photo: The static profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type photo: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputProfilePhotoStatic`
+
+    """
+    def __init__(self, photo: InputFile, **kwargs):
+        self.type: str = "static"
+        self.photo: InputFile = photo
+
+        self._photo_name = service_utils.generate_random_token()
+        self._photo_dic = "attach://{}".format(self._photo_name)
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'photo': self._photo_dic
+        }
+        return data
+    def convert_input_profile_photo(self):
+        return self.to_json(), {self._photo_name: self.photo}
+
+
+class InputProfilePhotoAnimated(InputProfilePhoto):
+    """
+    This object describes an animated profile photo to set.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputprofilephotoanimated
+
+    :param type: Type of the profile photo, must be animated
+    :type type: :obj:`str`
+
+    :param animation: The animated profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :type animation: :obj:`str`
+
+    :param main_frame_timestamp: Optional. Timestamp in seconds of the frame that will be used as the static profile photo. Defaults to 0.0.
+    :type main_frame_timestamp: :obj:`float`
+
+    :return: Instance of the class
+    :rtype: :class:`InputProfilePhotoAnimated`
+
+    """
+    def __init__(self, animation: InputFile, main_frame_timestamp: Optional[float] = None, **kwargs):
+        self.type: str = "animated"
+        self.animation: InputFile = animation
+        self._animation_name = service_utils.generate_random_token()
+        self._animation_dic = "attach://{}".format(self._animation_name)
+        self.main_frame_timestamp: Optional[float] = main_frame_timestamp
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    def to_dict(self):
+        data = {
+            'type': self.type,
+            'animation': self._animation_dic
+        }
+        if self.main_frame_timestamp is not None:
+            data['main_frame_timestamp'] = self.main_frame_timestamp
+        return data
+    def convert_input_profile_photo(self):
+        return self.to_json(), {self._animation_name: self.animation}
