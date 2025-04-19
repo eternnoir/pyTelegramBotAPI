@@ -1972,6 +1972,175 @@ async def remove_chat_verification(token, chat_id):
     payload = {'chat_id': chat_id}
     return await _process_request(token, method_url, params=payload, method='post')
 
+
+async def read_business_message(token, business_connection_id, chat_id, message_id):
+    method_url = 'readBusinessMessage'
+    payload = {'business_connection_id': business_connection_id, 'chat_id': chat_id, 'message_id': message_id}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def delete_business_messages(token, business_connection_id, message_ids):
+    method_url = 'deleteBusinessMessages'
+    payload = {'business_connection_id': business_connection_id, 'message_ids': json.dumps(message_ids)}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def set_business_account_name(token, business_connection_id, first_name, last_name=None):
+    method_url = 'setBusinessAccountName'
+    payload = {'business_connection_id': business_connection_id, 'first_name': first_name}
+    if last_name:
+        payload['last_name'] = last_name
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def set_business_account_username(token, business_connection_id, username=None):
+    method_url = 'setBusinessAccountUsername'
+    payload = {'business_connection_id': business_connection_id}
+    if username is not None:
+        payload['username'] = username
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def set_business_account_bio(token, business_connection_id, bio=None):
+    method_url = 'setBusinessAccountBio'
+    payload = {'business_connection_id': business_connection_id}
+    if bio:
+        payload['bio'] = bio
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def set_business_account_gift_settings(token, business_connection_id, show_gift_button, accepted_gift_types):
+    method_url = 'setBusinessAccountGiftSettings'
+    payload = {'business_connection_id': business_connection_id, 'show_gift_button': show_gift_button, 'accepted_gift_types': accepted_gift_types.to_json()}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_business_account_star_balance(token, business_connection_id):
+    method_url = 'getBusinessAccountStarBalance'
+    payload = {'business_connection_id': business_connection_id}
+    return _process_request(token, method_url, params=payload)
+
+async def transfer_business_account_stars(token, business_connection_id, star_count):
+    method_url = 'transferBusinessAccountStars'
+    payload = {'business_connection_id': business_connection_id, 'star_count': star_count}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def get_business_account_gifts(token, business_connection_id, exclude_unsaved=None, exclude_saved=None,
+                                 exclude_unlimited=None, exclude_limited=None, exclude_unique=None,
+                                 sort_by_price=None, offset=None, limit=None):
+     method_url = 'getBusinessAccountGifts'
+     payload = {'business_connection_id': business_connection_id}
+     if exclude_unsaved is not None:
+          payload['exclude_unsaved'] = exclude_unsaved
+     if exclude_saved is not None:
+          payload['exclude_saved'] = exclude_saved
+     if exclude_unlimited is not None:
+          payload['exclude_unlimited'] = exclude_unlimited
+     if exclude_limited is not None:
+          payload['exclude_limited'] = exclude_limited
+     if exclude_unique is not None:
+          payload['exclude_unique'] = exclude_unique
+     if sort_by_price is not None:
+          payload['sort_by_price'] = sort_by_price
+     if offset is not None:
+          payload['offset'] = offset
+     if limit is not None:
+          payload['limit'] = limit
+     return await _process_request(token, method_url, params=payload)
+
+async def convert_gift_to_stars(token, business_connection_id, owned_gift_id):
+    method_url = 'convertGiftToStars'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def upgrade_gift(token, business_connection_id, owned_gift_id, keep_original_details=None, star_count=None):
+    method_url = 'upgradeGift'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id}
+    if keep_original_details is not None:
+        payload['keep_original_details'] = keep_original_details
+    if star_count is not None:
+        payload['star_count'] = star_count
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def transfer_gift(token, business_connection_id, owned_gift_id, new_owner_chat_id, star_count=None):
+    method_url = 'transferGift'
+    payload = {'business_connection_id': business_connection_id, 'owned_gift_id': owned_gift_id, 'new_owner_chat_id': new_owner_chat_id}
+    if star_count is not None:
+        payload['star_count'] = star_count
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def post_story(token, business_connection_id, content, active_period, caption=None, parse_mode=None,
+             caption_entities=None, areas=None, post_to_chat_page=None, protect_content=None):
+    method_url = 'postStory'
+    payload = {'business_connection_id': business_connection_id, 'active_period': active_period}
+    
+    content_json, files = content.convert_input_story()
+    payload['content'] = content_json
+    
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if areas:
+        payload['areas'] = json.dumps([area.to_dict() for area in areas])
+    if post_to_chat_page is not None:
+        payload['post_to_chat_page'] = post_to_chat_page
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    return await _process_request(token, method_url, params=payload, files=files, method='post')
+
+async def edit_story(token, business_connection_id, story_id, content, caption=None, parse_mode=None,
+                caption_entities=None, areas=None):
+    method_url = 'editStory'
+    payload = {'business_connection_id': business_connection_id, 'story_id': story_id}
+    
+    content_json, files = content.convert_input_story()
+    payload['content'] = content_json
+    
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if areas:
+        payload['areas'] = json.dumps([area.to_dict() for area in areas])
+    return await _process_request(token, method_url, params=payload, files=files, method='post')
+
+async def delete_story(token, business_connection_id, story_id):
+    method_url = 'deleteStory'
+    payload = {'business_connection_id': business_connection_id, 'story_id': story_id}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def gift_premium_subscription(token, user_id, month_count, star_count, text=None, text_parse_mode=None,
+                            text_entities=None):
+    method_url = 'giftPremiumSubscription'
+    payload = {'user_id': user_id, 'month_count': month_count, 'star_count': star_count}
+    if text:
+        payload['text'] = text
+    if text_parse_mode:
+        payload['text_parse_mode'] = text_parse_mode
+    if text_entities:
+        payload['text_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(text_entities))
+    return await _process_request(token, method_url, params=payload, method='post')
+
+async def set_business_account_profile_photo(token, business_connection_id, photo, is_public=None):
+    method_url = 'setBusinessAccountProfilePhoto'
+    payload = {'business_connection_id': business_connection_id}
+    photo_json, files = photo.convert_input_profile_photo()
+    payload['photo'] = photo_json
+    if is_public is not None:
+        payload['is_public'] = is_public
+    return await _process_request(token, method_url, params=payload, files=files, method='post')
+
+async def remove_business_account_profile_photo(token, business_connection_id, is_public=None):
+    method_url = 'removeBusinessAccountProfilePhoto'
+    payload = {'business_connection_id': business_connection_id}
+    if is_public is not None:
+        payload['is_public'] = is_public
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
 async def get_available_gifts(token):
     method_url = 'getAvailableGifts'
     return await _process_request(token, method_url)
