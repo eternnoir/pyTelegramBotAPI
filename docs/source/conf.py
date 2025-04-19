@@ -22,7 +22,7 @@ author = 'coder2020official'
 copyright = f'2022-{datetime.now().year}, {author}'
 
 # The full version, including alpha/beta/rc tags
-release = '4.26.0'
+release = '4.27.0'
 
 
 # -- General configuration ---------------------------------------------------
