@@ -1,4 +1,4 @@
-from telebot.states import State, StatesGroup
+from telebot.states import State
 from telebot.types import CallbackQuery, Message
 from telebot.async_telebot import AsyncTeleBot
 from telebot.states import resolve_context
@@ -21,7 +21,7 @@ class StateContext:
             # also, state_context.data(), .add_data(), .reset_data(), .delete() methods available.
     """
 
-    def __init__(self, message: Union[Message, CallbackQuery], bot: str) -> None:
+    def __init__(self, message: Union[Message, CallbackQuery], bot: AsyncTeleBot) -> None:
         self.message: Union[Message, CallbackQuery] = message
         self.bot: AsyncTeleBot = bot
         self.bot_id = self.bot.bot_id

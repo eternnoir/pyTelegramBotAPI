@@ -5,7 +5,11 @@ class StateStorageBase:
     def __init__(self) -> None:
         pass
 
-    async def set_data(self, chat_id, user_id, key, value):
+    async def set_data(self, chat_id, user_id, key, value,
+        business_connection_id=None,
+        message_thread_id=None,
+        bot_id=None,
+    ):
         """
         Set data for a user in a particular chat.
         """
@@ -17,7 +21,11 @@ class StateStorageBase:
         """
         raise NotImplementedError
 
-    async def set_state(self, chat_id, user_id, state):
+    async def set_state(self, chat_id, user_id, state,
+        business_connection_id=None,
+        message_thread_id=None,
+        bot_id=None,
+    ):
         """
         Set state for a particular user.
 
@@ -28,22 +36,38 @@ class StateStorageBase:
         """
         raise NotImplementedError
 
-    async def delete_state(self, chat_id, user_id):
+    async def delete_state(self, chat_id, user_id,
+        business_connection_id=None,
+        message_thread_id=None,
+        bot_id=None,
+    ):
         """
         Delete state for a particular user.
         """
         raise NotImplementedError
 
-    async def reset_data(self, chat_id, user_id):
+    async def reset_data(self, chat_id, user_id,
+        business_connection_id=None,
+        message_thread_id=None,
+        bot_id=None,
+    ):
         """
         Reset data for a particular user in a chat.
         """
         raise NotImplementedError
 
-    async def get_state(self, chat_id, user_id):
+    async def get_state(self, chat_id, user_id,
+        business_connection_id=None,
+        message_thread_id=None,
+        bot_id=None,
+    ):
         raise NotImplementedError
 
-    def get_interactive_data(self, chat_id, user_id):
+    def get_interactive_data(self, chat_id, user_id,
+        business_connection_id=None,
+        message_thread_id=None,
+        bot_id=None,
+    ):
         """
         Should be sync, but should provide a context manager
         with __aenter__ and __aexit__ methods.

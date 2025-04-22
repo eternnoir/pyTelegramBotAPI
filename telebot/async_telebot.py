@@ -8,6 +8,7 @@ from typing import Any, Awaitable, Callable, List, Optional, Union, Dict
 import sys
 
 # this imports are used to avoid circular import error
+# noinspection PyUnresolvedReferences
 import telebot.util
 import telebot.types
 
@@ -7008,7 +7009,7 @@ class AsyncTeleBot:
 
     # noinspection PyShadowingBuiltins
     async def send_poll(
-            self, chat_id: Union[int, str], question: str, options: List[types.InputPollOption],
+            self, chat_id: Union[int, str], question: str, options: List[Union[str, types.InputPollOption]],
             is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
             allows_multiple_answers: Optional[bool]=None, 
             correct_option_id: Optional[int]=None,
@@ -7044,7 +7045,7 @@ class AsyncTeleBot:
         :type question: :obj:`str`
 
         :param options: A JSON-serialized list of 2-10 answer options
-        :type options: :obj:`list` of :obj:`InputPollOption`
+        :type options: :obj:`list` of :obj:`InputPollOption` | :obj:`list` of :obj:`str`
 
         :param is_anonymous: True, if the poll needs to be anonymous, defaults to True
         :type is_anonymous: :obj:`bool`
@@ -8828,9 +8829,8 @@ class AsyncTeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        return await self.current_states.set_state(
-            chat_id=chat_id, user_id=user_id, state=state, bot_id=bot_id,
-            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
+        return await self.current_states.set_state(chat_id, user_id, state,
+            bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     async def reset_data(self, user_id: int, chat_id: Optional[int]=None, 
@@ -8861,8 +8861,8 @@ class AsyncTeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        return await self.current_states.reset_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
-                                        business_connection_id=business_connection_id, message_thread_id=message_thread_id)
+        return await self.current_states.reset_data(chat_id, user_id,
+            bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     async def delete_state(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
@@ -8876,14 +8876,23 @@ class AsyncTeleBot:
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
+        :param bot_id: Bot's identifier, defaults to current bot id
+        :type bot_id: :obj:`int`
+
+        :param business_connection_id: Business identifier
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: Identifier of the message thread
+        :type message_thread_id: :obj:`int`
+
         :return: None
         """
         if chat_id is None:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        return await self.current_states.delete_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
-                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
+        return await self.current_states.delete_state(chat_id, user_id,
+            bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     def retrieve_data(self, user_id: int, chat_id: Optional[int]=None, business_connection_id: Optional[str]=None,
@@ -8913,9 +8922,8 @@ class AsyncTeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        return self.current_states.get_interactive_data(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
-                                                            business_connection_id=business_connection_id,
-                                                            message_thread_id=message_thread_id)
+        return self.current_states.get_interactive_data(chat_id, user_id,
+            bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     async def get_state(self, user_id: int, chat_id: Optional[int]=None, 
@@ -8952,8 +8960,8 @@ class AsyncTeleBot:
             chat_id = user_id
         if bot_id is None:
             bot_id = self.bot_id
-        return await self.current_states.get_state(chat_id=chat_id, user_id=user_id, bot_id=bot_id,
-                                                business_connection_id=business_connection_id, message_thread_id=message_thread_id)
+        return await self.current_states.get_state(chat_id, user_id,
+            bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
     async def add_data(self, user_id: int, chat_id: Optional[int]=None, 
@@ -8987,5 +8995,5 @@ class AsyncTeleBot:
         if bot_id is None:
             bot_id = self.bot_id
         for key, value in kwargs.items():
-            await self.current_states.set_data(chat_id=chat_id, user_id=user_id, key=key, value=value, bot_id=bot_id,
-                                            business_connection_id=business_connection_id, message_thread_id=message_thread_id)
+            await self.current_states.set_data(chat_id, user_id, key, value,
+                bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
