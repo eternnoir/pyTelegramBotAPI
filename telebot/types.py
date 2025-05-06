@@ -6703,12 +6703,13 @@ class InputMedia(Dictionaryable, JsonSerializable):
         self.caption_entities: Optional[List[MessageEntity]] = caption_entities
         self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
 
-        if isinstance(self.thumbnail, InputFile):
-            self._thumbnail_name = service_utils.generate_random_token()
-            self._thumbnail_dic = 'attach://{0}'.format(self._thumbnail_name)
-        else:
+        if service_utils.is_string(self.thumbnail):
             self._thumbnail_name = ''
             self._thumbnail_dic = self.thumbnail
+
+        else:
+            self._thumbnail_name = service_utils.generate_random_token()
+            self._thumbnail_dic = 'attach://{0}'.format(self._thumbnail_name)
 
         if service_utils.is_string(self.media):
             self._media_name = ''
@@ -6721,7 +6722,9 @@ class InputMedia(Dictionaryable, JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'type': self.type, 'media': self._media_dic, 'thumbnail': self._thumbnail_dic}
+        json_dict = {'type': self.type, 'media': self._media_dic}
+        if self._thumbnail_dic:
+            json_dict['thumbnail'] = self._thumbnail_dic
         if self.caption:
             json_dict['caption'] = self.caption
         if self.parse_mode:
@@ -6736,8 +6739,12 @@ class InputMedia(Dictionaryable, JsonSerializable):
         """
         if service_utils.is_string(self.media):
             return self.to_json(), None
+        
+        media_dict = {self._media_name: self.media}
+        if self._thumbnail_name:
+            media_dict[self._thumbnail_name] = self.thumbnail
 
-        return self.to_json(), {self._media_name: self.media, self._thumbnail_name: self.thumbnail}
+        return self.to_json(), media_dict
 
 
 class InputMediaPhoto(InputMedia):
