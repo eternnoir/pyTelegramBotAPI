@@ -6703,10 +6703,12 @@ class InputMedia(Dictionaryable, JsonSerializable):
         self.caption_entities: Optional[List[MessageEntity]] = caption_entities
         self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
 
-        if service_utils.is_string(self.thumbnail):
+        if thumbnail is None:
+            self._thumbnail_name = ''
+            self._thumbnail_dic = None
+        elif service_utils.is_string(self.thumbnail):
             self._thumbnail_name = ''
             self._thumbnail_dic = self.thumbnail
-
         else:
             self._thumbnail_name = service_utils.generate_random_token()
             self._thumbnail_dic = 'attach://{0}'.format(self._thumbnail_name)
