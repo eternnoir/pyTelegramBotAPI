@@ -255,7 +255,7 @@ def extract_command(text: str) -> Union[str, None]:
     return text.split()[0].split('@')[0][1:] if is_command(text) else None
 
 
-def extract_arguments(text: str) -> str or None:
+def extract_arguments(text: str) -> Union[str, None]:
     """
     Returns the argument after the command.
     
