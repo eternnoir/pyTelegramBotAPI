@@ -6740,12 +6740,23 @@ class InputMedia(Dictionaryable, JsonSerializable):
     * :class:`InputMediaPhoto`
     * :class:`InputMediaVideo`
     """
-    def __init__(self, type, media, caption=None, parse_mode=None, caption_entities=None):
+    def __init__(self, type, media, caption=None, parse_mode=None, caption_entities=None, thumbnail=None):
         self.type: str = type
         self.media: str = media
         self.caption: Optional[str] = caption
         self.parse_mode: Optional[str] = parse_mode
         self.caption_entities: Optional[List[MessageEntity]] = caption_entities
+        self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
+
+        if thumbnail is None:
+            self._thumbnail_name = ''
+            self._thumbnail_dic = None
+        elif service_utils.is_string(self.thumbnail):
+            self._thumbnail_name = ''
+            self._thumbnail_dic = self.thumbnail
+        else:
+            self._thumbnail_name = service_utils.generate_random_token()
+            self._thumbnail_dic = 'attach://{0}'.format(self._thumbnail_name)
 
         if service_utils.is_string(self.media):
             self._media_name = ''
@@ -6759,6 +6770,8 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
     def to_dict(self):
         json_dict = {'type': self.type, 'media': self._media_dic}
+        if self._thumbnail_dic:
+            json_dict['thumbnail'] = self._thumbnail_dic
         if self.caption:
             json_dict['caption'] = self.caption
         if self.parse_mode:
@@ -6773,8 +6786,12 @@ class InputMedia(Dictionaryable, JsonSerializable):
         """
         if service_utils.is_string(self.media):
             return self.to_json(), None
+        
+        media_dict = {self._media_name: self.media}
+        if self._thumbnail_name:
+            media_dict[self._thumbnail_name] = self.thumbnail
 
-        return self.to_json(), {self._media_name: self.media}
+        return self.to_json(), media_dict
 
 
 class InputMediaPhoto(InputMedia):
@@ -6895,8 +6912,7 @@ class InputMediaVideo(InputMedia):
                     show_caption_above_media: Optional[bool] = None, cover: Optional[Union[str, InputFile]] = None,
                     start_timestamp: Optional[int] = None):
         super(InputMediaVideo, self).__init__(
-            type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
+            type="video", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities, thumbnail=thumbnail)
         self.width: Optional[int] = width
         self.height: Optional[int] = height
         self.duration: Optional[int] = duration
@@ -6913,8 +6929,6 @@ class InputMediaVideo(InputMedia):
 
     def to_dict(self):
         ret = super(InputMediaVideo, self).to_dict()
-        if self.thumbnail:
-            ret['thumbnail'] = self.thumbnail
         if self.width:
             ret['width'] = self.width
         if self.height:
@@ -6988,8 +7002,7 @@ class InputMediaAnimation(InputMedia):
                     height: Optional[int] = None, duration: Optional[int] = None,
                     has_spoiler: Optional[bool] = None, show_caption_above_media: Optional[bool] = None):
         super(InputMediaAnimation, self).__init__(
-            type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
+            type="animation", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities, thumbnail=thumbnail)
         self.width: Optional[int] = width
         self.height: Optional[int] = height
         self.duration: Optional[int] = duration
@@ -7004,8 +7017,6 @@ class InputMediaAnimation(InputMedia):
 
     def to_dict(self):
         ret = super(InputMediaAnimation, self).to_dict()
-        if self.thumbnail:
-            ret['thumbnail'] = self.thumbnail
         if self.width:
             ret['width'] = self.width
         if self.height:
@@ -7065,8 +7076,7 @@ class InputMediaAudio(InputMedia):
                     caption_entities: Optional[List[MessageEntity]] = None, duration: Optional[int] = None,
                     performer: Optional[str] = None, title: Optional[str] = None):
         super(InputMediaAudio, self).__init__(
-            type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
+            type="audio", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities, thumbnail=thumbnail)
         self.duration: Optional[int] = duration
         self.performer: Optional[str] = performer
         self.title: Optional[str] = title
@@ -7078,8 +7088,6 @@ class InputMediaAudio(InputMedia):
 
     def to_dict(self):
         ret = super(InputMediaAudio, self).to_dict()
-        if self.thumbnail:
-            ret['thumbnail'] = self.thumbnail
         if self.duration:
             ret['duration'] = self.duration
         if self.performer:
@@ -7130,8 +7138,7 @@ class InputMediaDocument(InputMedia):
                     caption_entities: Optional[List[MessageEntity]] = None,
                     disable_content_type_detection: Optional[bool] = None):
         super(InputMediaDocument, self).__init__(
-            type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
-        self.thumbnail: Optional[Union[str, InputFile]] = thumbnail
+            type="document", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities, thumbnail=thumbnail)
         self.disable_content_type_detection: Optional[bool] = disable_content_type_detection
 
     @property
@@ -7141,8 +7148,6 @@ class InputMediaDocument(InputMedia):
 
     def to_dict(self):
         ret = super(InputMediaDocument, self).to_dict()
-        if self.thumbnail:
-            ret['thumbnail'] = self.thumbnail
         if self.disable_content_type_detection is not None:
             ret['disable_content_type_detection'] = self.disable_content_type_detection
         return ret
