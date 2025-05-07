@@ -3528,7 +3528,7 @@ class TeleBot:
             proximity_alert_radius: Optional[int]=None,
             live_period: Optional[int]=None,
             business_connection_id: Optional[str]=None
-    ) -> types.Message or bool:
+    ) -> Union[types.Message, bool]:
         """
         Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly
             disabled by a call to stopMessageLiveLocation. On success, if the edited message is not an inline message, the edited Message
@@ -3590,7 +3590,7 @@ class TeleBot:
             inline_message_id: Optional[str]=None, 
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None,
-            business_connection_id: Optional[str]=None) -> types.Message or bool:
+            business_connection_id: Optional[str]=None) -> Union[types.Message, bool]:
         """
         Use this method to stop updating a live location message before live_period expires.
         On success, if the message is not an inline message, the edited Message is returned, otherwise True is returned.
