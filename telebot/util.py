@@ -714,8 +714,9 @@ def validate_token(token: str) -> bool:
     if not bot_id.isdigit():
         raise ValueError('First part must contain only numbers')
 
-    if len(alphanumeric_part) != 35:
-        raise ValueError('Second part must be exactly 35 characters long')
+    # Remove this check temporary
+    # if len(alphanumeric_part) != 35:
+    #     raise ValueError('Second part must be exactly 35 characters long')
 
     return True
 
