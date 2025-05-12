@@ -3,11 +3,11 @@
 # This is a simple bot using message reactions (emoji)
 # https://core.telegram.org/bots/api#reactiontype
 # https://core.telegram.org/bots/api#update
-# allowed_updates: Specify an empty list to receive all update types except, chat_member, message_reaction, and message_reaction_count. 
-# If you want to receive message_reaction events, you cannot simply leave the allowed_updates=None default value. 
-# The default list of events does not include chat_member, message_reaction, and message_reaction_count events. 
-# You must explicitly specify all the events you wish to receive and add message_reaction to this list. 
-# It’s also important to note that after using allowed_updates=[...], in the future, using allowed_updates=None will mean 
+# allowed_updates: Specify an empty list to receive all update types except, chat_member, message_reaction, and message_reaction_count.
+# If you want to receive message_reaction events, you cannot simply leave the allowed_updates=None default value.
+# The default list of events does not include chat_member, message_reaction, and message_reaction_count events.
+# You must explicitly specify all the events you wish to receive and add message_reaction to this list.
+# It’s also important to note that after using allowed_updates=[...], in the future, using allowed_updates=None will mean
 # that the list of events you will receive will consist of the events you last explicitly specified.
 
 import random

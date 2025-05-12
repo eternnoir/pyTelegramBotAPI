@@ -271,7 +271,7 @@ async def _check_result(method_name, result: aiohttp.ClientResponse):
             raise ApiHTTPException(method_name, result)
         else:
             raise ApiInvalidJSONException(method_name, result)
-    else:    
+    else:
         if not result_json['ok']:
             raise ApiTelegramException(method_name, result, result_json)
             
@@ -446,7 +446,7 @@ async def forward_message(
 
 
 async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
-                 disable_notification=None,  
+                 disable_notification=None,
                  reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None,
                  allow_paid_broadcast=None, video_start_timestamp=None):
     method_url = r'copyMessage'
@@ -623,8 +623,8 @@ async def send_media_group(
 
 async def send_location(
         token, chat_id, latitude, longitude,
-        live_period=None,  
-        reply_markup=None, disable_notification=None, 
+        live_period=None,
+        reply_markup=None, disable_notification=None,
         timeout=None, horizontal_accuracy=None, heading=None,
         proximity_alert_radius=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
         message_effect_id=None, allow_paid_broadcast=None):
@@ -2258,7 +2258,7 @@ async def send_poll(
         token, chat_id, question, options,
         is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
-        disable_notification=False,  
+        disable_notification=False,
         reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
         reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None,
         allow_paid_broadcast=None):
@@ -2460,9 +2460,9 @@ async def convert_input_media_array(array):
             if 'thumbnail' in media_dict:
                 thumbnail = media_dict['thumbnail']
                 if isinstance(thumbnail, types.InputFile):
-                    thumbnail_key = 'thumbnail_' + key  
-                    files[thumbnail_key] = thumbnail    
-                    media_dict['thumbnail'] = 'attach://' + thumbnail_key     
+                    thumbnail_key = 'thumbnail_' + key
+                    files[thumbnail_key] = thumbnail
+                    media_dict['thumbnail'] = 'attach://' + thumbnail_key
             media.append(media_dict)
     return json.dumps(media), files
 

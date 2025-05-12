@@ -1,6 +1,6 @@
 # Import required libraries
-import telebot 
-from telebot import types  
+import telebot
+from telebot import types
 
 bot = telebot.TeleBot('TOKEN')
 

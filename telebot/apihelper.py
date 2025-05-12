@@ -190,7 +190,7 @@ def _check_result(method_name, result):
             raise ApiHTTPException(method_name, result)
         else:
             raise ApiInvalidJSONException(method_name, result)
-    else:    
+    else:
         if not result_json['ok']:
             raise ApiTelegramException(method_name, result, result_json)
             
@@ -2496,9 +2496,9 @@ def convert_input_media_array(array):
             if 'thumbnail' in media_dict:
                 thumbnail = media_dict['thumbnail']
                 if isinstance(thumbnail, types.InputFile):
-                    thumbnail_key = 'thumbnail_' + key  
-                    files[thumbnail_key] = thumbnail    
-                    media_dict['thumbnail'] = 'attach://' + thumbnail_key   
+                    thumbnail_key = 'thumbnail_' + key
+                    files[thumbnail_key] = thumbnail
+                    media_dict['thumbnail'] = 'attach://' + thumbnail_key
             media.append(media_dict)
     return json.dumps(media), files
 

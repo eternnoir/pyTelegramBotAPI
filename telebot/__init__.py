@@ -168,7 +168,7 @@ class TeleBot:
             next_step_backend: Optional[HandlerBackend]=None, reply_backend: Optional[HandlerBackend]=None,
             exception_handler: Optional[ExceptionHandler]=None, last_update_id: Optional[int]=0,
             suppress_middleware_excepions: Optional[bool]=False, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
-            use_class_middlewares: Optional[bool]=False, 
+            use_class_middlewares: Optional[bool]=False,
             disable_web_page_preview: Optional[bool]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -1571,7 +1571,7 @@ class TeleBot:
         On success, returns an Array of ChatMember objects that contains
         information about all chat administrators except other bots.
 
-        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
 
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
@@ -7051,7 +7051,7 @@ class TeleBot:
     def add_sticker_to_set(
             self, user_id: int, name: str, emojis: Union[List[str], str],
             png_sticker: Optional[Union[Any, str]]=None, 
-            tgs_sticker: Optional[Union[Any, str]]=None,  
+            tgs_sticker: Optional[Union[Any, str]]=None,
             webm_sticker: Optional[Union[Any, str]]=None,
             mask_position: Optional[types.MaskPosition]=None,
             sticker: Optional[types.InputSticker]=None) -> bool:

@@ -2,15 +2,15 @@
 
 from telebot import TeleBot
 from telebot.types import (
-    ReplyKeyboardMarkup, 
-    KeyboardButton, 
+    ReplyKeyboardMarkup,
+    KeyboardButton,
     WebAppInfo,
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
 
-BOT_TOKEN = "" 
-WEB_URL = "https://pytelegrambotminiapp.vercel.app" 
+BOT_TOKEN = ""
+WEB_URL = "https://pytelegrambotminiapp.vercel.app"
 
 bot = TeleBot(BOT_TOKEN)
 

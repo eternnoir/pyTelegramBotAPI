@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# This is a simple bot with schedule timer 
+# This is a simple bot with schedule timer
 # https://github.com/ibrb/python-aioschedule
 # https://schedule.readthedocs.io
 

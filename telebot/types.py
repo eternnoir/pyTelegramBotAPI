@@ -3272,15 +3272,15 @@ class ChatMember(JsonDeserializable):
                  can_send_photos=None, can_send_videos=None, can_send_video_notes=None,
                  can_send_voice_notes=None,
                  can_send_polls=None,
-                 can_send_other_messages=None, can_add_web_page_previews=None,  
-                 can_manage_chat=None, can_manage_video_chats=None, 
-                 until_date=None, can_manage_topics=None, 
+                 can_send_other_messages=None, can_add_web_page_previews=None,
+                 can_manage_chat=None, can_manage_video_chats=None,
+                 until_date=None, can_manage_topics=None,
                  can_post_stories=None, can_edit_stories=None, can_delete_stories=None,
                  **kwargs):
         self.user: User = user
         self.status: str = status
         self.custom_title: str = custom_title
-        self.is_anonymous: bool = is_anonymous 
+        self.is_anonymous: bool = is_anonymous
         self.can_be_edited: bool = can_be_edited
         self.can_post_messages: bool = can_post_messages
         self.can_edit_messages: bool = can_edit_messages
@@ -3597,7 +3597,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
 
     :param can_manage_topics: Optional. True, if the user is allowed to create forum topics. If omitted defaults to the
         value of can_pin_messages
-    :type can_manage_topics: :obj:`bool`    
+    :type can_manage_topics: :obj:`bool`
 
     :param can_send_media_messages: deprecated.
     :type can_send_media_messages: :obj:`bool`
@@ -4310,7 +4310,7 @@ class InputInvoiceMessageContent(Dictionaryable):
         if self.need_shipping_address is not None:
             json_dict['need_shipping_address'] = self.need_shipping_address 
         if self.send_phone_number_to_provider is not None:
-            json_dict['send_phone_number_to_provider'] = self.send_phone_number_to_provider      
+            json_dict['send_phone_number_to_provider'] = self.send_phone_number_to_provider
         if self.send_email_to_provider is not None:
             json_dict['send_email_to_provider'] = self.send_email_to_provider 
         if self.is_flexible is not None:
@@ -7664,7 +7664,7 @@ class MessageAutoDeleteTimerChanged(JsonDeserializable):
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.MessageAutoDeleteTimerChanged`
-    """   
+    """
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -9349,7 +9349,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         obj = cls.check_json(json_string)
         if 'quote_entities' in obj:
             obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
-        return cls(**obj)    
+        return cls(**obj)
 
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
@@ -9442,7 +9442,7 @@ class ChatBoostUpdated(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
-        obj = cls.check_json(json_string)        
+        obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
         obj['boost'] = ChatBoost.de_json(obj['boost'])
         return cls(**obj)
@@ -9479,7 +9479,7 @@ class ChatBoostRemoved(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['chat'] = Chat.de_json(obj['chat'])
-        obj['source'] = ChatBoostSource.de_json(obj['source'])        
+        obj['source'] = ChatBoostSource.de_json(obj['source'])
         return cls(**obj)
 
     def __init__(self, chat, boost_id, remove_date, source, **kwargs):

@@ -237,7 +237,7 @@ class AsyncTeleBot:
 
         :return: An Array of Update objects is returned.
         :rtype: :obj:`list` of :class:`telebot.types.Update`
-        """       
+        """
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
@@ -3045,7 +3045,7 @@ class AsyncTeleBot:
         On success, returns an Array of ChatMember objects that contains
         information about all chat administrators except other bots.
 
-        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
 
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
@@ -8474,8 +8474,8 @@ class AsyncTeleBot:
 
     async def add_sticker_to_set(
             self, user_id: int, name: str, emojis: Union[List[str], str]=None,
-            png_sticker: Optional[Union[Any, str]]=None, 
-            tgs_sticker: Optional[Union[Any, str]]=None,  
+            png_sticker: Optional[Union[Any, str]]=None,
+            tgs_sticker: Optional[Union[Any, str]]=None,
             webm_sticker: Optional[Union[Any, str]]=None,
             mask_position: Optional[types.MaskPosition]=None,
             sticker: Optional[types.InputSticker]=None) -> bool:

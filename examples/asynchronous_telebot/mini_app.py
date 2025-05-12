@@ -1,16 +1,16 @@
 # The source of the "https://pytelegrambotminiapp.vercel.app" can be found in https://github.com/eternnoir/pyTelegramBotAPI/tree/master/examples/mini_app_web
 
 import asyncio
-from telebot.async_telebot import AsyncTeleBot 
+from telebot.async_telebot import AsyncTeleBot
 from telebot.types import (
-    ReplyKeyboardMarkup, 
-    KeyboardButton, 
+    ReplyKeyboardMarkup,
+    KeyboardButton,
     WebAppInfo,
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
 
-BOT_TOKEN = "" 
+BOT_TOKEN = ""
 WEB_URL = "https://pytelegrambotminiapp.vercel.app"
 
 bot = AsyncTeleBot(BOT_TOKEN)

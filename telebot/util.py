@@ -463,7 +463,7 @@ def quick_markup(values: Dict[str, Dict[str, Any]], row_width: int = 2) -> types
     return markup
 
 
-# CREDITS TO http://stackoverflow.com/questions/12317940#answer-12320352
+# CREDITS TO https://stackoverflow.com/questions/12317940#answer-12320352
 def or_set(self):
     """
     :meta private:
@@ -519,7 +519,7 @@ def OrEvent(*events):
     return or_event
 
 
-def per_thread(key, construct_value, reset=False):
+def per_thread(key: str, construct_value, reset=False):
     """
     :meta private:
     """
@@ -660,7 +660,7 @@ def parse_web_app_data(token: str, raw_init_data: str):
     return result
 
 
-def validate_web_app_data(token: str, raw_init_data: str):
+def validate_web_app_data(token: str, raw_init_data: str) -> bool:
     """
     Validates web app data.
 
@@ -670,7 +670,8 @@ def validate_web_app_data(token: str, raw_init_data: str):
     :param raw_init_data: The raw init data
     :type raw_init_data: :obj:`str`
 
-    :return: The parsed init data
+    :return: Whether the web app data is valid or not
+    :rtype: :obj:`bool`
     """
     try:
         parsed_data = dict(parse_qsl(raw_init_data))
@@ -686,19 +687,40 @@ def validate_web_app_data(token: str, raw_init_data: str):
     return hmac.new(secret_key.digest(), data_check_string.encode(), sha256).hexdigest() == init_data_hash
 
 
-def validate_token(token) -> bool:        
+def validate_token(token: str) -> bool:
+    """
+    Validates bot token.
+
+    :param token: The bot token
+    :type token: :obj:`str`
+
+    :return: Whether the bot token is valid or not
+    :rtype: :obj:`bool`
+    """
+
     if any(char.isspace() for char in token):
         raise ValueError('Token must not contain spaces')
-    
+
     if ':' not in token:
         raise ValueError('Token must contain a colon')
-    
-    if len(token.split(':')) != 2:
+
+    parts = tuple(token.split(':'))
+
+    if len(parts) != 2:
         raise ValueError('Token must contain exactly 2 parts separated by a colon')
-    
+
+    bot_id, alphanumeric_part = parts
+
+    if not bot_id.isdigit():
+        raise ValueError('First part must contain only numbers')
+
+    if len(alphanumeric_part) != 35:
+        raise ValueError('Second part must be exactly 35 characters long')
+
     return True
 
-def extract_bot_id(token) -> Union[int, None]:
+
+def extract_bot_id(token: str) -> Union[int, None]:
     try:
         validate_token(token)
     except ValueError:
