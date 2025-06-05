@@ -2892,7 +2892,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         self.row_width: int = row_width
         self.keyboard: List[List[InlineKeyboardButton]] = keyboard or []
 
-    def add(self, *args, row_width=None) -> 'InlineKeyboardMarkup':
+    def add(self, *args: InlineKeyboardButton, row_width: Optional[int] = None) -> 'InlineKeyboardMarkup':
         """
         This method adds buttons to the keyboard without exceeding row_width.
 
