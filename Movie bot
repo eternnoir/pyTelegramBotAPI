@@ -1,0 +1,27 @@
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+# Your Bot Token from BotFather
+BOT_TOKEN = '8083985179:AAH8W4jGuuW-2pxSs-AgMJJXYpQC6hRh69g'
+
+# Start command
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Welcome! Type /sendmovie to get a movie.")
+
+# Send movie command
+async def send_movie(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.message.chat_id
+
+    # Example: Local file path or download path
+    video_path = 'path/to/your/movie.mp4'
+
+    # Telegram max size is 2GB
+    with open(video_path, 'rb') as video:
+        await context.bot.send_video(chat_id=chat_id, video=video, supports_streaming=True)
+
+# Set up bot
+app = ApplicationBuilder().token(BOT_TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("sendmovie", send_movie))
+
+app.run_polling()
