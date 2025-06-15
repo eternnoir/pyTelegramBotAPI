@@ -1,0 +1,32 @@
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext
+
+# تابع /start
+def start(update: Update, context: CallbackContext) -> None:
+    keyboard = [
+        [InlineKeyboardButton("دکمه اول", callback_data='1')],
+        [InlineKeyboardButton("دکمه دوم", callback_data='2')],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('لطفاً دکمه‌ای را انتخاب کنید:', reply_markup=reply_markup)
+
+# تابع برای پاسخ به کلیک دکمه ها
+def button_callback(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    if query.data == '1':
+        query.edit_message_text(text="شما دکمه اول را انتخاب کردید!")
+    elif query.data == '2':
+        query.edit_message_text(text="شما دکمه دوم را انتخاب کردید!")
+
+def main() -> None:
+    updater = Updater("8035897601:AAFVCZATkPH3QKB2PdmmM5FyXZFwWaxad8M")
+
+    updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.dispatcher.add_handler(CallbackQueryHandler(button_callback))
+
+    updater.start_polling()
+    updater.idle()
+
+if name == 'main':
+    main()
