@@ -1,3 +1,4 @@
+import abc
 from dataclasses import dataclass
 from typing import (
     Any,
@@ -7,7 +8,6 @@ from typing import (
     TypedDict,
     TypeVar,
     Union,
-    overload,
 )
 
 from typing_extensions import NotRequired
@@ -31,12 +31,11 @@ UpdateContent = Union[
 ]
 
 
-_UCT = TypeVar("_UCT", bound=UpdateContent, contravariant=True)
+UpdateContentT = TypeVar("UpdateContentT", bound=UpdateContent, contravariant=True)
 
 
-class FilterFunc(Protocol[_UCT]):
-    def __call__(self, update_content: _UCT) -> Union[bool, Coroutine[None, None, bool]]:
-        pass
+class FilterFunc(Protocol[UpdateContentT]):
+    def __call__(self, update_content: UpdateContentT) -> Union[bool, Coroutine[None, None, bool]]: ...
 
 
 FilterValue = Union[
@@ -58,17 +57,23 @@ NoneCoro = Coroutine[None, None, None]
 
 @dataclass
 class HandlerResult:
-    metrics: Optional[dict[str, Any]] = None
+    metrics: dict[str, Any] | None = None
     continue_to_other_handlers: bool = False
 
 
-class HandlerFunction(Protocol[_UCT]):
-    @overload
-    async def __call__(self, update_content: _UCT) -> Optional[HandlerResult]: ...
+class SimpleHandlerFunction(Protocol[UpdateContentT]):
+    async def __call__(self, update_content: UpdateContentT, /) -> HandlerResult | None: ...
 
-    @overload
-    async def __call__(self, update_content: _UCT, bot: "AsyncTeleBot") -> Optional[HandlerResult]:  # type: ignore # noqa: F821
-        ...
+
+class AbstractAsyncTeleBot(abc.ABC):
+    pass
+
+
+class HandlerFunctionWithBot(Protocol[UpdateContentT]):
+    async def __call__(self, update_content: UpdateContentT, bot: AbstractAsyncTeleBot, /) -> HandlerResult | None: ...
+
+
+HandlerFunction = SimpleHandlerFunction | HandlerFunctionWithBot
 
 
 class Handler(TypedDict):

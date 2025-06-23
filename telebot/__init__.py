@@ -38,7 +38,7 @@ global_logger = logging.getLogger("telebot")
 _UpdateContentT = TypeVar("_UpdateContentT", bound=service_types.UpdateContent)
 
 
-class AsyncTeleBot:
+class AsyncTeleBot(service_types.AbstractAsyncTeleBot):
     """
     This is the main asynchronous class for Bot.
 
@@ -546,7 +546,7 @@ class AsyncTeleBot:
         if content_types is None:
             content_types = list(constants.MediaContentType)
 
-        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+        def decorator(decorated: service_types.HandlerFunction):
             self.allowed_updates.add(constants.UpdateType.message)
             self.message_handlers.append(
                 service_types.Handler(
@@ -583,7 +583,7 @@ class AsyncTeleBot:
         if content_types is None:
             content_types = list(constants.MediaContentType)
 
-        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+        def decorator(decorated: service_types.HandlerFunction):
             self.allowed_updates.add(constants.UpdateType.edited_message)
             self.edited_message_handlers.append(
                 service_types.Handler(
@@ -619,7 +619,7 @@ class AsyncTeleBot:
         if content_types is None:
             content_types = list(constants.MediaContentType)
 
-        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+        def decorator(decorated: service_types.HandlerFunction):
             self.allowed_updates.add(constants.UpdateType.channel_post)
             self.channel_post_handlers.append(
                 service_types.Handler(
@@ -655,7 +655,7 @@ class AsyncTeleBot:
         if content_types is None:
             content_types = list(constants.MediaContentType)
 
-        def decorator(decorated: service_types.HandlerFunction[types.Message]):
+        def decorator(decorated: service_types.HandlerFunction):
             self.allowed_updates.add(constants.UpdateType.edited_channel_post)
             self.edited_channel_post_handlers.append(
                 service_types.Handler(
@@ -686,7 +686,7 @@ class AsyncTeleBot:
         auto_answer: bool = False,
         **kwargs,
     ):
-        def decorator(decorated: service_types.HandlerFunction[types.CallbackQuery]):
+        def decorator(decorated: service_types.HandlerFunction):
             decorated = util.ensure_async(decorated)
             if auto_answer:
 
@@ -701,11 +701,11 @@ class AsyncTeleBot:
                             pass
 
             else:
-                handler_func = decorated
+                handler_func = decorated  # type: ignore
             self.allowed_updates.add(constants.UpdateType.callback_query)
             self.callback_query_handlers.append(
                 service_types.Handler(
-                    function=cast(service_types.HandlerFunction[types.CallbackQuery], handler_func),
+                    function=cast(service_types.HandlerFunction, handler_func),
                     filters={
                         "callback_data": callback_data,
                         "func": func,
@@ -728,7 +728,7 @@ class AsyncTeleBot:
         name: Optional[str],
         **kwargs,
     ):
-        def decorator(decorated: service_types.HandlerFunction[_UpdateContentT]):
+        def decorator(decorated: service_types.HandlerFunction):
             handler_list.append(
                 service_types.Handler(
                     function=util.ensure_async(decorated),
@@ -3886,9 +3886,9 @@ async def invoke_handler(
     handler_signature = signature(handler_func)
     arg_count = len(list(handler_signature.parameters.keys()))
     if arg_count == 1:
-        return await handler_func(update_content)
+        return await handler_func(update_content)  # type: ignore
     elif arg_count == 2:
-        return await handler_func(update_content, bot)
+        return await handler_func(update_content, bot)  # type: ignore
     else:
         raise TypeError(
             "Handler function must have one (update content) or two (update content and bot) parameters, "
