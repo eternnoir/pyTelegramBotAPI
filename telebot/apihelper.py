@@ -500,7 +500,7 @@ def edit_message_checklist(
     method_url = r'editMessageChecklist'
     payload = {'chat_id': chat_id, 'message_id': message_id, 'checklist': checklist, 'business_connection_id': business_connection_id}
     if reply_markup is not None:
-        payload['reply_markup'] = await _convert_markup(reply_markup)
+        payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)
 
 
