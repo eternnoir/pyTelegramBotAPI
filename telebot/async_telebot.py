@@ -3619,6 +3619,91 @@ class AsyncTeleBot:
         result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
                                         protect_content, remove_caption)
         return [types.MessageID.de_json(message_id) for message_id in result]
+    
+    async def send_checklist(
+            self, business_connection_id: str, chat_id: Union[int, str],
+            checklist: types.InputChecklist,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            message_effect_id: Optional[str]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> types.Message:
+        """
+        Use this method to send a checklist on behalf of a connected business account. On success,
+        the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendchecklist
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which the message will be sent
+        :type business_connection_id: :obj:`str`
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param checklist: A JSON-serialized object for the checklist to send
+        :type checklist: :class:`telebot.types.InputChecklist`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param reply_parameters: Additional parameters for replies to messages
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        
+        if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
+            reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
+
+        return types.Message.de_json(
+            await asyncio_helper.send_checklist(
+                self.token, business_connection_id, chat_id, checklist, disable_notification=disable_notification,
+                protect_content=protect_content, message_effect_id=message_effect_id,
+                reply_parameters=reply_parameters, reply_markup=reply_markup))
+    
+    async def edit_message_checklist(
+            self, business_connection_id: str, chat_id: Union[int, str],
+            message_id: int, checklist: types.InputChecklist,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> types.Message:
+        """
+        Use this method to edit a checklist on behalf of a connected business account. On success,
+        the edited Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagechecklist
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which the message will be sent
+        :type business_connection_id: :obj:`str`
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Unique identifier for the target message
+        :type message_id: :obj:`int`
+
+        :param checklist: A JSON-serialized object for the new checklist
+        :type checklist: :class:`telebot.types.InputChecklist`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup`
+
+        :return: On success, the edited Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        return types.Message.de_json(
+            await asyncio_helper.edit_message_checklist(
+                self.token, business_connection_id, chat_id, message_id, checklist, reply_markup=reply_markup))
 
     async def send_dice(
             self, chat_id: Union[int, str],
@@ -7256,8 +7341,15 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.answer_pre_checkout_query(self.token, pre_checkout_query_id, ok, error_message)
-    
 
+
+    async def get_my_star_balance(self) -> types.StarAmount:
+        """
+        A method to get the current Telegram Stars balance of the bot. Requires no parameters.
+        On success, returns a StarAmount object.
+        """
+        return types.StarAmount.de_json(await asyncio_helper.get_my_star_balance(self.token))
+    
     async def get_star_transactions(self, offset: Optional[int]=None, limit: Optional[int]=None) -> types.StarTransactions:
         """
         Returns the bot's Telegram Star transactions in chronological order.
