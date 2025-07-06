@@ -40,7 +40,8 @@ content_type_service = [
     'write_access_allowed', 'proximity_alert_triggered', 'forum_topic_created', 'forum_topic_edited',
     'forum_topic_closed', 'forum_topic_reopened', 'general_forum_topic_hidden', 'general_forum_topic_unhidden',
     'giveaway_created', 'giveaway', 'giveaway_winners', 'giveaway_completed', 'video_chat_scheduled',
-    'video_chat_started', 'video_chat_ended', 'video_chat_participants_invited',
+    'video_chat_started', 'video_chat_ended', 'video_chat_participants_invited','checklist_tasks_done',
+    'checklist_tasks_added','direct_message_price_changed'
 ]
 
 #: All update types, should be used for allowed_updates parameter in polling.

@@ -473,6 +473,36 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
         payload['video_start_timestamp'] = video_start_timestamp
     return _make_request(token, method_url, params=payload)
 
+def send_checklist(
+        token, business_connection_id, chat_id, checklist,
+        disable_notification=None, protect_content=None, message_effect_id=None,
+        reply_parameters=None, reply_markup=None
+):
+    method_url = r'sendChecklist'
+    payload = {'chat_id': chat_id, 'checklist': checklist, 'business_connection_id': business_connection_id}
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if reply_parameters:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+
+def edit_message_checklist(
+        token, business_connection_id, chat_id, message_id, checklist,
+        reply_markup=None
+):
+    method_url = r'editMessageChecklist'
+    payload = {'chat_id': chat_id, 'message_id': message_id, 'checklist': checklist, 'business_connection_id': business_connection_id}
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
 
 def send_dice(
         token, chat_id,
@@ -1816,6 +1846,10 @@ def answer_pre_checkout_query(token, pre_checkout_query_id, ok, error_message=No
     if error_message:
         payload['error_message'] = error_message
     return _make_request(token, method_url, params=payload)
+
+def get_my_star_balance(token):
+    method_url = 'getMyStarBalance'
+    return _make_request(token, method_url)
 
 def get_star_transactions(token, offset=None, limit=None):
     method_url = 'getStarTransactions'

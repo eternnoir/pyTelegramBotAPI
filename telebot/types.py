@@ -1049,6 +1049,9 @@ class Message(JsonDeserializable):
     :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
     :type has_media_spoiler: :obj:`bool`
 
+    :param checklist: Optional. Message is a checklist
+    :type checklist: :class:`telebot.types.Checklist`
+
     :param contact: Optional. Message is a shared contact, information about the contact
     :type contact: :class:`telebot.types.Contact`
 
@@ -1160,6 +1163,15 @@ class Message(JsonDeserializable):
 
     :param chat_background_set: Optional. Service message: chat background set
     :type chat_background_set: :class:`telebot.types.ChatBackground`
+
+    :param checklist_tasks_done: Optional. Service message: some tasks in a checklist were marked as done or not done
+    :type checklist_tasks_done: :class:`telebot.types.ChecklistTasksDone`
+
+    :param checklist_tasks_added: Optional. Service message: tasks were added to a checklist
+    :type checklist_tasks_added: :class:`telebot.types.ChecklistTasksAdded`
+
+    :param direct_message_price_changed: Optional. Service message: the price for paid messages in the corresponding direct messages chat of a channel has changed
+    :type direct_message_price_changed: :class:`telebot.types.DirectMessagePriceChanged`
 
     :param forum_topic_created: Optional. Service message: forum topic created
     :type forum_topic_created: :class:`telebot.types.ForumTopicCreated`
@@ -1461,8 +1473,18 @@ class Message(JsonDeserializable):
             content_type = 'paid_message_price_changed'
         if 'paid_star_count' in obj:
             opts['paid_star_count'] = obj['paid_star_count']
+        if 'checklist' in obj:
+            opts['checklist'] = Checklist.de_json(obj['checklist'])
+        if 'checklist_tasks_done' in obj:
+            opts['checklist_tasks_done'] = ChecklistTasksDone.de_json(obj['checklist_tasks_done'])
+            content_type = 'checklist_tasks_done'
+        if 'checklist_tasks_added' in obj:
+            opts['checklist_tasks_added'] = ChecklistTasksAdded.de_json(obj['checklist_tasks_added'])
+            content_type = 'checklist_tasks_added'
+        if 'direct_message_price_changed' in obj:
+            opts['direct_message_price_changed'] = DirectMessagePriceChanged.de_json(obj['direct_message_price_changed'])
+            content_type = 'direct_message_price_changed'
             
-
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1584,7 +1606,10 @@ class Message(JsonDeserializable):
         self.unique_gift : Optional[UniqueGiftInfo] = None
         self.paid_message_price_changed: Optional[PaidMessagePriceChanged] = None
         self.paid_star_count: Optional[int] = None
-        
+        self.checklist: Optional[Checklist] = None
+        self.checklist_tasks_done: Optional[ChecklistTasksDone] = None
+        self.checklist_tasks_added: Optional[List[ChecklistTasksAdded]] = None
+        self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -8786,6 +8811,9 @@ class ExternalReplyInfo(JsonDeserializable):
     :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
     :type has_media_spoiler: :obj:`bool`
 
+    :param checklist: Optional. Message is a checklist
+    :type checklist: :class:`telebot.types.Checklist`
+
     :param contact: Optional. Message is a shared contact, information about the contact
     :type contact: :class:`Contact`
 
@@ -8861,6 +8889,10 @@ class ExternalReplyInfo(JsonDeserializable):
             obj['poll'] = Poll.de_json(obj['poll'])
         if 'venue' in obj:
             obj['venue'] = Venue.de_json(obj['venue'])
+        if 'paid_media' in obj:
+            obj['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
+        if 'checklist' in obj:
+            obj['checklist'] = Checklist.de_json(obj['checklist'])
         return cls(**obj)
 
     def __init__(
@@ -8873,7 +8905,8 @@ class ExternalReplyInfo(JsonDeserializable):
             dice: Optional[Dice]=None, game: Optional[Game]=None, giveaway: Optional[Giveaway]=None,
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
-            venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None, **kwargs) -> None:
+            venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None,
+            checklist: Optional[Checklist]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -8898,6 +8931,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.poll: Optional[Poll] = poll
         self.venue: Optional[Venue] = venue
         self.paid_media: Optional[PaidMediaInfo] = paid_media
+        self.checklist: Optional[Checklist] = checklist
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -11623,11 +11657,14 @@ class OwnedGiftUnique(OwnedGift):
     :param transfer_star_count: Optional. Number of Telegram Stars that must be paid to transfer the gift; omitted if the bot cannot transfer the gift
     :type transfer_star_count: :obj:`int`
 
+    :param next_transfer_date: Optional. Point in time (Unix timestamp) when the gift can be transferred. If it is in the past, then the gift can be transferred now
+    :type next_transfer_date: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`OwnedGiftUnique`
     """
     def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, is_saved=None,
-                    can_be_transferred=None, transfer_star_count=None, **kwargs):
+                    can_be_transferred=None, transfer_star_count=None, next_transfer_date=None, **kwargs):
         super().__init__(type=type)
         self.gift: UniqueGift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
@@ -11636,6 +11673,7 @@ class OwnedGiftUnique(OwnedGift):
         self.is_saved: Optional[bool] = is_saved
         self.can_be_transferred: Optional[bool] = can_be_transferred
         self.transfer_star_count: Optional[int] = transfer_star_count
+        self.next_transfer_date: Optional[int] = next_transfer_date
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -12307,8 +12345,12 @@ class UniqueGiftInfo(JsonDeserializable):
     :param gift: Information about the gift
     :type gift: :class:`UniqueGift`
 
-    :param origin: Origin of the gift. Currently, either “upgrade” or “transfer”
+    :param origin: Origin of the gift. Currently, either “upgrade” for gifts upgraded from regular gifts, “transfer” for gifts transferred from other users or channels,
+        or “resale” for gifts bought from other users
     :type origin: :obj:`str`
+
+    :param last_resale_star_count: Optional. For gifts bought from other users, the price paid for the gift
+    :type last_resale_star_count: :obj:`int`
 
     :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
     :type owned_gift_id: :obj:`str`
@@ -12316,15 +12358,22 @@ class UniqueGiftInfo(JsonDeserializable):
     :param transfer_star_count: Optional. Number of Telegram Stars that must be paid to transfer the gift; omitted if the bot cannot transfer the gift
     :type transfer_star_count: :obj:`int`
 
+    :param next_transfer_date: Optional. Point in time (Unix timestamp) when the gift can be transferred. If it is in the past, then the gift can be transferred now
+    :type next_transfer_date: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`UniqueGiftInfo`
     """
     def __init__(self, gift: UniqueGift, origin: str, owned_gift_id: Optional[str] = None,
-                    transfer_star_count: Optional[int] = None, **kwargs): 
+                    transfer_star_count: Optional[int] = None, next_transfer_date: Optional[int] = None,
+                    last_resale_star_count: Optional[int] = None, **kwargs):
         self.gift: UniqueGift = gift
         self.origin: str = origin
+        self.last_resale_star_count: Optional[int] = last_resale_star_count
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.transfer_star_count: Optional[int] = transfer_star_count
+        self.next_transfer_date: Optional[int] = next_transfer_date
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -12438,3 +12487,275 @@ class InputProfilePhotoAnimated(InputProfilePhoto):
         return data
     def convert_input_profile_photo(self):
         return self.to_json(), {self._animation_name: self.animation}
+
+
+class ChecklistTask(JsonDeserializable):
+    """
+    Describes a task in a checklist.
+
+    Telegram documentation: https://core.telegram.org/bots/api#checklisttask
+
+    :param id: Unique identifier of the task
+    :type id: :obj:`int`
+
+    :param text: Text of the task
+    :type text: :obj:`str`
+
+    :param text_entities: Optional. Special entities that appear in the task text
+    :type text_entities: :obj:`list` of :class:`MessageEntity`
+
+    :param completed_by_user: Optional. User that completed the task; omitted if the task wasn't completed
+    :type completed_by_user: :class:`User`
+
+    :param completion_date: Optional. Point in time (Unix timestamp) when the task was completed; 0 if the task wasn't completed
+    :type completion_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`ChecklistTask`
+    """
+    def __init__(self, id: int, text: str, text_entities: Optional[List[MessageEntity]] = None,
+                    completed_by_user: Optional[User] = None,
+                    completion_date: Optional[int] = None, **kwargs):
+        self.id: int = id
+        self.text: str = text
+        self.text_entities: Optional[List[MessageEntity]] = text_entities
+        self.completed_by_user: Optional[User] = completed_by_user
+        self.completion_date: Optional[int] = completion_date
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'text_entities' in obj:
+            obj['text_entities'] = Message.parse_entities(obj['text_entities'])
+        if 'completed_by_user' in obj:
+            obj['completed_by_user'] = User.de_json(obj['completed_by_user'])
+        return cls(**obj)
+    
+class Checklist(JsonDeserializable):
+    """
+    Describes a checklist.
+
+    Telegram documentation: https://core.telegram.org/bots/api#checklist
+
+    :param title: Title of the checklist
+    :type title: :obj:`str`
+
+    :param title_entities: Optional. Special entities that appear in the checklist title
+    :type title_entities: :obj:`list` of :class:`MessageEntity`
+
+    :param tasks: List of tasks in the checklist
+    :type tasks: :obj:`list` of :class:`ChecklistTask`
+
+    :param others_can_add_tasks: Optional. True, if users other than the creator of the list can add tasks to the list
+    :type others_can_add_tasks: :obj:`bool`
+
+    :param others_can_mark_tasks_as_done: Optional. True, if users other than the creator of the list can mark tasks as done or not done in the list
+    :type others_can_mark_tasks_as_done: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`Checklist`
+    """
+    def __init__(self, title: str, tasks: List[ChecklistTask],
+                    title_entities: Optional[List[MessageEntity]] = None,    
+                    others_can_add_tasks: Optional[bool] = None,
+                    others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
+        self.title: str = title
+        self.tasks: List[ChecklistTask] = tasks
+        self.title_entities: Optional[List[MessageEntity]] = title_entities
+        self.others_can_add_tasks: Optional[bool] = others_can_add_tasks
+        self.others_can_mark_tasks_as_done: Optional[bool] = others_can_mark_tasks_as_done
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'title_entities' in obj:
+            obj['title_entities'] = Message.parse_entities(obj['title_entities'])
+        obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
+        return cls(**obj)
+
+class InputChecklistTask(JsonSerializable):
+    """
+    Describes a task to add to a checklist.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputchecklisttask
+
+    :param id: Unique identifier of the task; must be positive and unique among all task identifiers currently present in the checklist
+    :type id: :obj:`int`
+
+    :param text: Text of the task; 1-100 characters after entities parsing
+    :type text: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the text. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param text_entities: Optional. List of special entities that appear in the text, which can be specified instead of parse_mode. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are allowed.
+    :type text_entities: :obj:`list` of :class:`MessageEntity`
+
+    :return: Instance of the class
+    :rtype: :class:`InputChecklistTask`
+    """
+    def __init__(self, id: int, text: str, parse_mode: Optional[str] = None,
+                    text_entities: Optional[List[MessageEntity]] = None, **kwargs):
+        self.id: int = id
+        self.text: str = text
+        self.parse_mode: Optional[str] = parse_mode
+        self.text_entities: Optional[List[MessageEntity]] = text_entities
+        
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'text': self.text
+        }
+        if self.parse_mode:
+            data['parse_mode'] = self.parse_mode
+        if self.text_entities:
+            data['text_entities'] = [entity.to_dict() for entity in self.text_entities]
+        return data
+    
+class InputChecklist(JsonSerializable):
+    """
+    Describes a checklist to create.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputchecklist
+
+    :param title: Title of the checklist; 1-255 characters after entities parsing
+    :type title: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the title. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param title_entities: Optional. List of special entities that appear in the title, which can be specified instead of parse_mode. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are allowed.
+    :type title_entities: :obj:`list` of :class:`MessageEntity`
+
+    :param tasks: List of 1-30 tasks in the checklist
+    :type tasks: :obj:`list` of :class:`InputChecklistTask`
+
+    :param others_can_add_tasks: Optional. Pass True if other users can add tasks to the checklist
+    :type others_can_add_tasks: :obj:`bool`
+
+    :param others_can_mark_tasks_as_done: Optional. Pass True if other users can mark tasks as done or not done in the checklist
+    :type others_can_mark_tasks_as_done: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`InputChecklist`
+    """
+    def __init__(self, title: str, tasks: List[InputChecklistTask], 
+                    parse_mode: Optional[str] = None,
+                    title_entities: Optional[List[MessageEntity]] = None,
+                    others_can_add_tasks: Optional[bool] = None,
+                    others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
+        self.title: str = title
+        self.tasks: List[InputChecklistTask] = tasks
+        self.parse_mode: Optional[str] = parse_mode
+        self.title_entities: Optional[List[MessageEntity]] = title_entities
+        self.others_can_add_tasks: Optional[bool] = others_can_add_tasks
+        self.others_can_mark_tasks_as_done: Optional[bool] = others_can_mark_tasks_as_done
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'title': self.title,
+            'tasks': [task.to_dict() for task in self.tasks]
+        }
+        if self.parse_mode:
+            data['parse_mode'] = self.parse_mode
+        if self.title_entities:
+            data['title_entities'] = [entity.to_dict() for entity in self.title_entities]
+        if self.others_can_add_tasks is not None:
+            data['others_can_add_tasks'] = self.others_can_add_tasks
+        if self.others_can_mark_tasks_as_done is not None:
+            data['others_can_mark_tasks_as_done'] = self.others_can_mark_tasks_as_done
+
+
+class ChecklistTasksDone(JsonDeserializable):
+    """
+    Describes a service message about checklist tasks marked as done or not done.
+
+    Telegram documentation: https://core.telegram.org/bots/api#checklisttasksdone
+
+    :param checklist_message: Optional. Message containing the checklist whose tasks were marked as done or not done. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type checklist_message: :class:`Message`
+
+    :param marked_as_done_task_ids: Optional. Identifiers of the tasks that were marked as done
+    :type marked_as_done_task_ids: :obj:`list` of :obj:`int
+
+    :param marked_as_not_done_task_ids: Optional. Identifiers of the tasks that were marked as not done
+    :type marked_as_not_done_task_ids: :obj:`list` of :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`ChecklistTasksDone`
+    """
+    def __init__(self, checklist_message: Optional[Message] = None,
+                    marked_as_done_task_ids: Optional[List[int]] = None,
+                    marked_as_not_done_task_ids: Optional[List[int]] = None, **kwargs):
+        self.checklist_message: Optional[Message] = checklist_message
+        self.marked_as_done_task_ids: Optional[List[int]] = marked_as_done_task_ids
+        self.marked_as_not_done_task_ids: Optional[List[int]] = marked_as_not_done_task_ids
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'checklist_message' in obj:
+            obj['checklist_message'] = Message.de_json(obj['checklist_message'])
+        return cls(**obj)
+    
+    
+class ChecklistTasksAdded(JsonDeserializable):
+    """
+    Describes a service message about tasks added to a checklist.
+
+    Telegram documentation: https://core.telegram.org/bots/api#checklisttasksadded
+
+    :param checklist_message: Optional. Message containing the checklist to which the tasks were added. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type checklist_message: :class:`Message`
+
+    :param tasks: List of tasks added to the checklist
+    :type tasks: :obj:`list` of :class:`ChecklistTask`
+
+    :return: Instance of the class
+    :rtype: :class:`ChecklistTasksAdded`
+    """
+    def __init__(self, tasks: List[ChecklistTask], checklist_message: Optional[Message] = None, **kwargs):
+        self.checklist_message: Optional[Message] = checklist_message
+        self.tasks: List[ChecklistTask] = tasks
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'checklist_message' in obj:
+            obj['checklist_message'] = Message.de_json(obj['checklist_message'])
+        obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
+        return cls(**obj)
+
+class DirectMessagePriceChanged(JsonDeserializable):
+    """
+    Describes a service message about a change in the price of direct messages sent to a channel chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#directmessagepricechanged
+
+    :param are_direct_messages_enabled: True, if direct messages are enabled for the channel chat; false otherwise
+    :type are_direct_messages_enabled: :obj:`bool`
+
+    :param direct_message_star_count: Optional. The new number of Telegram Stars that must be paid by users for each direct message sent to the channel. Does not apply to users who have been exempted by administrators. Defaults to 0.
+    :type direct_message_star_count: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`DirectMessagePriceChanged`
+    """
+    def __init__(self, are_direct_messages_enabled: bool, direct_message_star_count: Optional[int] = None, **kwargs):
+        self.are_direct_messages_enabled: bool = are_direct_messages_enabled
+        self.direct_message_star_count: Optional[int] = direct_message_star_count
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
