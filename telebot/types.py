@@ -12556,13 +12556,13 @@ class Checklist(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`Checklist`
     """
-    def __init__(self, title: str,title_entities: Optional[List[MessageEntity]] = None,
-                    tasks: List[ChecklistTask] = None,
+    def __init__(self, title: str, tasks: List[ChecklistTask],
+                    title_entities: Optional[List[MessageEntity]] = None,    
                     others_can_add_tasks: Optional[bool] = None,
                     others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
         self.title: str = title
-        self.title_entities: Optional[List[MessageEntity]] = title_entities
         self.tasks: List[ChecklistTask] = tasks
+        self.title_entities: Optional[List[MessageEntity]] = title_entities
         self.others_can_add_tasks: Optional[bool] = others_can_add_tasks
         self.others_can_mark_tasks_as_done: Optional[bool] = others_can_mark_tasks_as_done
 
@@ -12572,8 +12572,7 @@ class Checklist(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'title_entities' in obj:
             obj['title_entities'] = Message.parse_entities(obj['title_entities'])
-        if 'tasks' in obj:
-            obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
+        obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
         return cls(**obj)
 
 class InputChecklistTask(JsonSerializable):
@@ -12645,14 +12644,15 @@ class InputChecklist(JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`InputChecklist`
     """
-    def __init__(self, title: str,parse_mode: Optional[str] = None,
+    def __init__(self, title: str, tasks: List[InputChecklistTask], 
+                    parse_mode: Optional[str] = None,
                     title_entities: Optional[List[MessageEntity]] = None,
-                    tasks: List[InputChecklistTask]=None, others_can_add_tasks: Optional[bool] = None,
+                    others_can_add_tasks: Optional[bool] = None,
                     others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
         self.title: str = title
+        self.tasks: List[InputChecklistTask] = tasks
         self.parse_mode: Optional[str] = parse_mode
         self.title_entities: Optional[List[MessageEntity]] = title_entities
-        self.tasks: List[InputChecklistTask] = tasks
         self.others_can_add_tasks: Optional[bool] = others_can_add_tasks
         self.others_can_mark_tasks_as_done: Optional[bool] = others_can_mark_tasks_as_done
 
