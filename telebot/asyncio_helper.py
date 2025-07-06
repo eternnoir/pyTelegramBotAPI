@@ -488,11 +488,11 @@ async def send_checklist(
         payload['disable_notification'] = disable_notification
     if protect_content is not None:
         payload['protect_content'] = protect_content
-    if message_effect_id is not None:
+    if message_effect_id:
         payload['message_effect_id'] = message_effect_id
-    if reply_parameters is not None:
+    if reply_parameters:
         payload['reply_parameters'] = reply_parameters.to_json()
-    if reply_markup is not None:
+    if reply_markup:
         payload['reply_markup'] = _convert_markup(reply_markup)
     return await _process_request(token, method_url, params=payload)
 
@@ -503,7 +503,7 @@ async def edit_message_checklist(
 ):
     method_url = r'editMessageChecklist'
     payload = {'chat_id': chat_id, 'message_id': message_id, 'checklist': checklist, 'business_connection_id': business_connection_id}
-    if reply_markup is not None:
+    if reply_markup:
         payload['reply_markup'] = await _convert_markup(reply_markup)
     return await _process_request(token, method_url, params=payload)
 

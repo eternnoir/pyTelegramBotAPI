@@ -8889,6 +8889,10 @@ class ExternalReplyInfo(JsonDeserializable):
             obj['poll'] = Poll.de_json(obj['poll'])
         if 'venue' in obj:
             obj['venue'] = Venue.de_json(obj['venue'])
+        if 'paid_media' in obj:
+            obj['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
+        if 'checklist' in obj:
+            obj['checklist'] = Checklist.de_json(obj['checklist'])
         return cls(**obj)
 
     def __init__(
@@ -12523,7 +12527,7 @@ class ChecklistTask(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'text_entities' in obj:
-            obj['text_entities'] = [MessageEntity.de_json(entity) for entity in obj['text_entities']]
+            obj['text_entities'] = Message.parse_entities(obj['text_entities'])
         if 'completed_by_user' in obj:
             obj['completed_by_user'] = User.de_json(obj['completed_by_user'])
         return cls(**obj)
@@ -12552,8 +12556,8 @@ class Checklist(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`Checklist`
     """
-    def __init__(self, title: str, tasks: List[ChecklistTask], 
-                    title_entities: Optional[List[MessageEntity]] = None,
+    def __init__(self, title: str,title_entities: Optional[List[MessageEntity]] = None,
+                    tasks: List[ChecklistTask] = None,
                     others_can_add_tasks: Optional[bool] = None,
                     others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
         self.title: str = title
@@ -12567,7 +12571,7 @@ class Checklist(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         if 'title_entities' in obj:
-            obj['title_entities'] = [MessageEntity.de_json(entity) for entity in obj['title_entities']]
+            obj['title_entities'] = Message.parse_entities(obj['title_entities'])
         if 'tasks' in obj:
             obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
         return cls(**obj)
@@ -12608,9 +12612,9 @@ class InputChecklistTask(JsonSerializable):
             'id': self.id,
             'text': self.text
         }
-        if self.parse_mode is not None:
+        if self.parse_mode:
             data['parse_mode'] = self.parse_mode
-        if self.text_entities is not None:
+        if self.text_entities:
             data['text_entities'] = [entity.to_dict() for entity in self.text_entities]
         return data
     
@@ -12641,10 +12645,9 @@ class InputChecklist(JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`InputChecklist`
     """
-    def __init__(self, title: str, tasks: List[InputChecklistTask], 
-                    parse_mode: Optional[str] = None,
+    def __init__(self, title: str,parse_mode: Optional[str] = None,
                     title_entities: Optional[List[MessageEntity]] = None,
-                    others_can_add_tasks: Optional[bool] = None,
+                    tasks: List[InputChecklistTask], others_can_add_tasks: Optional[bool] = None,
                     others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
         self.title: str = title
         self.parse_mode: Optional[str] = parse_mode
@@ -12661,9 +12664,9 @@ class InputChecklist(JsonSerializable):
             'title': self.title,
             'tasks': [task.to_dict() for task in self.tasks]
         }
-        if self.parse_mode is not None:
+        if self.parse_mode:
             data['parse_mode'] = self.parse_mode
-        if self.title_entities is not None:
+        if self.title_entities:
             data['title_entities'] = [entity.to_dict() for entity in self.title_entities]
         if self.others_can_add_tasks is not None:
             data['others_can_add_tasks'] = self.others_can_add_tasks
