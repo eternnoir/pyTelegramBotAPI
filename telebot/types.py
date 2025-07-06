@@ -12647,7 +12647,7 @@ class InputChecklist(JsonSerializable):
     """
     def __init__(self, title: str,parse_mode: Optional[str] = None,
                     title_entities: Optional[List[MessageEntity]] = None,
-                    tasks: List[InputChecklistTask], others_can_add_tasks: Optional[bool] = None,
+                    tasks: List[InputChecklistTask]=None, others_can_add_tasks: Optional[bool] = None,
                     others_can_mark_tasks_as_done: Optional[bool] = None, **kwargs):
         self.title: str = title
         self.parse_mode: Optional[str] = parse_mode
