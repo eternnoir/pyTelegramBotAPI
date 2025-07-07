@@ -134,3 +134,56 @@ async def test_callback_query_handler_auto_answer():
     answering_calls = bot.method_calls.get("answer_callback_query")
     assert answering_calls is not None and len(answering_calls) == 1
     assert answering_calls[0].full_kwargs == {"callback_query_id": 2}
+
+
+async def test_callback_query_handler_auto_answer_on_error():
+    bot = MockedAsyncTeleBot("testing")
+
+    cbd = CallbackData("foo", prefix="one")
+
+    @bot.callback_query_handler(callback_data=cbd, auto_answer=True)
+    async def failing_handler(cq: types.CallbackQuery):
+        raise RuntimeError("OOOOPS")
+
+    def inline_button_press_update(cbk_data: str, cbk_id: int) -> types.Update:
+        u = types.Update.de_json(
+            {
+                "update_id": 13,
+                "callback_query": {
+                    "id": cbk_id,
+                    "data": cbk_data,
+                    "chat_instance": "whatever",
+                    "from": {
+                        "id": 100,
+                        "is_bot": False,
+                        "first_name": "John",
+                    },
+                    "message": {
+                        "message_id": 4444,
+                        "from": {
+                            "id": 101,
+                            "is_bot": True,
+                            "first_name": "Myself",
+                        },
+                        "date": 15555555,
+                        "chat": {
+                            "id": "dummy",
+                            "type": "private",
+                        },
+                    },
+                },
+            }
+        )
+        assert u is not None
+        return u
+
+    await bot.process_new_updates(
+        [
+            inline_button_press_update("one:hello", 1),
+        ]
+    )
+
+    assert len(bot.method_calls) == 1
+    answering_calls = bot.method_calls.get("answer_callback_query")
+    assert answering_calls is not None and len(answering_calls) == 1
+    assert answering_calls[0].full_kwargs == {"callback_query_id": 1}
