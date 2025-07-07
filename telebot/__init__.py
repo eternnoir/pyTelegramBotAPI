@@ -692,13 +692,22 @@ class AsyncTeleBot(service_types.AbstractAsyncTeleBot):
 
                 @functools.wraps(decorated)
                 async def handler_func(cq: types.CallbackQuery, *args):
+                    do_auto_answer = True
                     try:
-                        return await invoke_handler(decorated, cq, self)
+                        handler_result = await invoke_handler(decorated, cq, self)
+                        if handler_result is not None and (
+                            # if the handler refused, do not auto answer
+                            handler_result.continue_to_other_handlers or handler_result.callback_query_answered
+                        ):
+                            do_auto_answer = False
+
+                        return handler_result
                     finally:
-                        try:
-                            await self.answer_callback_query(cq.id)
-                        except Exception:
-                            pass
+                        if do_auto_answer:
+                            try:
+                                await self.answer_callback_query(cq.id)
+                            except Exception:
+                                pass
 
             else:
                 handler_func = decorated  # type: ignore

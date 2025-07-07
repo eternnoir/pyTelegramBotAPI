@@ -1,6 +1,7 @@
 from telebot import types
 from telebot.callback_data import CallbackData
 from telebot.test_util import MockedAsyncTeleBot
+from telebot.types.service import HandlerResult
 
 
 async def test_mocked_async_telebot_defaults():
@@ -79,6 +80,10 @@ async def test_callback_query_handler_auto_answer():
     async def cbd1_regular_handler(cq: types.CallbackQuery):
         nonlocal cbd1_handler_run_count
         cbd1_handler_run_count += 1
+
+    @bot.callback_query_handler(callback_data=cbd2, auto_answer=True)
+    async def transparent_auto_answer_handler(cq: types.CallbackQuery) -> HandlerResult:
+        return HandlerResult(continue_to_other_handlers=True)
 
     @bot.callback_query_handler(callback_data=cbd2, auto_answer=True)
     async def cbd2_auto_answering_handler(cq: types.CallbackQuery):

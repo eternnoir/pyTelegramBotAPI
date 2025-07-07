@@ -59,6 +59,7 @@ NoneCoro = Coroutine[None, None, None]
 class HandlerResult:
     metrics: dict[str, Any] | None = None
     continue_to_other_handlers: bool = False
+    callback_query_answered: bool = False
 
 
 class SimpleHandlerFunction(Protocol[UpdateContentT]):
