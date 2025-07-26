@@ -3251,7 +3251,7 @@ class ChatPhoto(JsonDeserializable):
         self.big_file_unique_id: str = big_file_unique_id
 
 
-class ChatMember(JsonDeserializable):
+class ChatMember(JsonDeserializable, ABC):
     """
     This object contains information about one member of a chat.
     Currently, the following 6 types of chat members are supported:
@@ -3266,78 +3266,31 @@ class ChatMember(JsonDeserializable):
     Telegram Documentation: https://core.telegram.org/bots/api#chatmember
     """
 
+    def __init__(self, user, status, **kwargs):
+        self.user: User = user
+        self.status: str = status
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
-        member_type = obj['status']
+        status = obj['status']
         # Ordered according to estimated appearance frequency.
-        if member_type == "member":
+        if status == "member":
             return ChatMemberMember(**obj)
-        elif member_type == "left":
+        elif status == "left":
             return ChatMemberLeft(**obj)
-        elif member_type == "kicked":
+        elif status == "kicked":
             return ChatMemberBanned(**obj)
-        elif member_type == "restricted":
+        elif status == "restricted":
             return ChatMemberRestricted(**obj)
-        elif member_type == "administrator":
+        elif status == "administrator":
             return ChatMemberAdministrator(**obj)
-        elif member_type == "creator":
+        elif status == "creator":
             return ChatMemberOwner(**obj)
         else:
-            # Should not be here. For "if something happen" compatibility
-            return cls(**obj)
-
-    def __init__(self, user, status, custom_title=None, is_anonymous=None, can_be_edited=None,
-                 can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
-                 can_restrict_members=None, can_promote_members=None, can_change_info=None,
-                 can_invite_users=None,  can_pin_messages=None, is_member=None,
-                 can_send_messages=None, can_send_audios=None, can_send_documents=None,
-                 can_send_photos=None, can_send_videos=None, can_send_video_notes=None,
-                 can_send_voice_notes=None,
-                 can_send_polls=None,
-                 can_send_other_messages=None, can_add_web_page_previews=None,  
-                 can_manage_chat=None, can_manage_video_chats=None, 
-                 until_date=None, can_manage_topics=None, 
-                 can_post_stories=None, can_edit_stories=None, can_delete_stories=None,
-                 **kwargs):
-        self.user: User = user
-        self.status: str = status
-        self.custom_title: str = custom_title
-        self.is_anonymous: bool = is_anonymous 
-        self.can_be_edited: bool = can_be_edited
-        self.can_post_messages: bool = can_post_messages
-        self.can_edit_messages: bool = can_edit_messages
-        self.can_delete_messages: bool = can_delete_messages
-        self.can_restrict_members: bool = can_restrict_members
-        self.can_promote_members: bool = can_promote_members
-        self.can_change_info: bool = can_change_info
-        self.can_invite_users: bool = can_invite_users
-        self.can_pin_messages: bool = can_pin_messages
-        self.is_member: bool = is_member
-        self.can_send_messages: bool = can_send_messages
-        self.can_send_polls: bool = can_send_polls
-        self.can_send_other_messages: bool = can_send_other_messages
-        self.can_add_web_page_previews: bool = can_add_web_page_previews
-        self.can_manage_chat: bool = can_manage_chat
-        self.can_manage_video_chats: bool = can_manage_video_chats
-        self.until_date: int = until_date
-        self.can_manage_topics: bool = can_manage_topics
-        self.can_send_audios: bool = can_send_audios
-        self.can_send_documents: bool = can_send_documents
-        self.can_send_photos: bool = can_send_photos
-        self.can_send_videos: bool = can_send_videos
-        self.can_send_video_notes: bool = can_send_video_notes
-        self.can_send_voice_notes: bool = can_send_voice_notes
-        self.can_post_stories: bool = can_post_stories
-        self.can_edit_stories: bool = can_edit_stories
-        self.can_delete_stories: bool = can_delete_stories
-
-    @property
-    def can_manage_voice_chats(self):
-        log_deprecation_warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
-        return self.can_manage_video_chats
+            raise ValueError(f"Unknown chat member type: {status}.")
 
 
 # noinspection PyUnresolvedReferences
@@ -3362,7 +3315,10 @@ class ChatMemberOwner(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberOwner`
     """
-    pass
+    def __init__(self, user, status, is_anonymous, custom_title=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.is_anonymous: bool = is_anonymous
+        self.custom_title: Optional[str] = custom_title
 
 
 # noinspection PyUnresolvedReferences
@@ -3409,36 +3365,60 @@ class ChatMemberAdministrator(ChatMember):
     :param can_invite_users: True, if the user is allowed to invite new users to the chat
     :type can_invite_users: :obj:`bool`
 
+    :param can_post_stories: True, if the administrator can post channel stories
+    :type can_post_stories: :obj:`bool`
+
+    :param can_edit_stories: True, if the administrator can edit stories
+    :type can_edit_stories: :obj:`bool`
+
+    :param can_delete_stories: True, if the administrator can delete stories of other users
+    :type can_delete_stories: :obj:`bool`
+
     :param can_post_messages: Optional. True, if the administrator can post in the channel; channels only
     :type can_post_messages: :obj:`bool`
 
-    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin 
-        messages; channels only
+    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin messages; channels only
     :type can_edit_messages: :obj:`bool`
 
     :param can_pin_messages: Optional. True, if the user is allowed to pin messages; groups and supergroups only
     :type can_pin_messages: :obj:`bool`
 
-    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics;
-        supergroups only
+    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
     :type can_manage_topics: :obj:`bool`
 
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
 
-    :param can_post_stories: Optional. True, if the administrator can post channel stories
-    :type can_post_stories: :obj:`bool`
-
-    :param can_edit_stories: Optional. True, if the administrator can edit stories
-    :type can_edit_stories: :obj:`bool`
-
-    :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
-    :type can_delete_stories: :obj:`bool`
-
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberAdministrator`
     """
-    pass
+    def __init__(self, user, status, can_be_edited, is_anonymous, can_manage_chat, can_delete_messages,
+                 can_manage_video_chats, can_restrict_members, can_promote_members, can_change_info, can_invite_users,
+                 can_post_stories, can_edit_stories, can_delete_stories, can_post_messages=None, can_edit_messages=None,
+                 can_pin_messages=None, can_manage_topics=None, custom_title=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.can_be_edited: bool = can_be_edited
+        self.is_anonymous: bool = is_anonymous
+        self.can_manage_chat: bool = can_manage_chat
+        self.can_delete_messages: bool = can_delete_messages
+        self.can_manage_video_chats: bool = can_manage_video_chats
+        self.can_restrict_members: bool = can_restrict_members
+        self.can_promote_members: bool = can_promote_members
+        self.can_change_info: bool = can_change_info
+        self.can_invite_users: bool = can_invite_users
+        self.can_post_stories: bool = can_post_stories
+        self.can_edit_stories: bool = can_edit_stories
+        self.can_delete_stories: bool = can_delete_stories
+        self.can_post_messages: Optional[bool] = can_post_messages
+        self.can_edit_messages: Optional[bool] = can_edit_messages
+        self.can_pin_messages: Optional[bool] = can_pin_messages
+        self.can_manage_topics: Optional[bool] = can_manage_topics
+        self.custom_title: Optional[str] = custom_title
+
+    @property
+    def can_manage_voice_chats(self):
+        log_deprecation_warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
+        return self.can_manage_video_chats
 
 
 # noinspection PyUnresolvedReferences
@@ -3454,10 +3434,15 @@ class ChatMemberMember(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
+    :param until_date: Optional. Date when the user's subscription will expire; Unix time. If 0, then the user is a member forever
+    :type until_date: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberMember`
     """
-    pass
+    def __init__(self, user, status, until_date=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.until_date: Optional[int] = until_date
 
 
 # noinspection PyUnresolvedReferences
@@ -3475,18 +3460,6 @@ class ChatMemberRestricted(ChatMember):
 
     :param is_member: True, if the user is a member of the chat at the moment of the request
     :type is_member: :obj:`bool`
-
-    :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
-    :type can_change_info: :obj:`bool`
-
-    :param can_invite_users: True, if the user is allowed to invite new users to the chat
-    :type can_invite_users: :obj:`bool`
-
-    :param can_pin_messages: True, if the user is allowed to pin messages
-    :type can_pin_messages: :obj:`bool`
-
-    :param can_manage_topics: True, if the user is allowed to create forum topics
-    :type can_manage_topics: :obj:`bool`
 
     :param can_send_messages: True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
@@ -3512,21 +3485,52 @@ class ChatMemberRestricted(ChatMember):
     :param can_send_polls: True, if the user is allowed to send polls
     :type can_send_polls: :obj:`bool`
 
-    :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers and use inline 
-        bots
+    :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers and use inline bots
     :type can_send_other_messages: :obj:`bool`
 
     :param can_add_web_page_previews: True, if the user is allowed to add web page previews to their messages
     :type can_add_web_page_previews: :obj:`bool`
 
-    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is restricted 
-        forever
+    :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
+    :type can_change_info: :obj:`bool`
+
+    :param can_invite_users: True, if the user is allowed to invite new users to the chat
+    :type can_invite_users: :obj:`bool`
+
+    :param can_pin_messages: True, if the user is allowed to pin messages
+    :type can_pin_messages: :obj:`bool`
+
+    :param can_manage_topics: True, if the user is allowed to create forum topics
+    :type can_manage_topics: :obj:`bool`
+
+    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is restricted forever
     :type until_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberRestricted`
     """
-    pass
+    def __init__(self, user, status, is_member, can_send_messages, can_send_audios, can_send_documents,
+                 can_send_photos, can_send_videos, can_send_video_notes, can_send_voice_notes, can_send_polls,
+                 can_send_other_messages, can_add_web_page_previews,
+                 can_change_info, can_invite_users, can_pin_messages, can_manage_topics,
+                 until_date=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.is_member: bool = is_member
+        self.can_send_messages: bool = can_send_messages
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+        self.can_send_polls: bool = can_send_polls
+        self.can_send_other_messages: bool = can_send_other_messages
+        self.can_add_web_page_previews: bool = can_add_web_page_previews
+        self.can_change_info: bool = can_change_info
+        self.can_invite_users: bool = can_invite_users
+        self.can_pin_messages: bool = can_pin_messages
+        self.can_manage_topics: bool = can_manage_topics
+        self.until_date: Optional[int] = until_date
 
 
 # noinspection PyUnresolvedReferences
@@ -3561,14 +3565,15 @@ class ChatMemberBanned(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
-    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is banned 
-        forever
+    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is banned forever
     :type until_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberBanned`
     """
-    pass
+    def __init__(self, user, status, until_date=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.until_date: Optional[int] = until_date
 
 
 class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
@@ -3577,8 +3582,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
 
     Telegram Documentation: https://core.telegram.org/bots/api#chatpermissions
 
-    :param can_send_messages: Optional. True, if the user is allowed to send text messages, contacts, locations and 
-        venues
+    :param can_send_messages: Optional. True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
 
     :param can_send_audios: Optional. True, if the user is allowed to send audios
