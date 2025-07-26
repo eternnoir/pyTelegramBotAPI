@@ -248,7 +248,7 @@ def test_chat_member_updated():
     assert cm_updated.from_user.id == 133869498
     assert cm_updated.date == 1624119999
     assert cm_updated.old_chat_member.status == "member"
-    assert cm_updated.new_chat_member.status == "administrator"
+    assert cm_updated.new_chat_member.status == "left"
 
 
 def test_webhook_info():
