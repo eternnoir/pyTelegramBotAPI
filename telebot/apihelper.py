@@ -168,6 +168,8 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     json_result = _check_result(method_name, result)
     if json_result:
         return json_result['result']
+    else:
+        return None
 
 
 def _check_result(method_name, result):
@@ -1139,8 +1141,10 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
 def get_method_by_type(data_type):
     if data_type == 'document':
         return r'sendDocument'
-    if data_type == 'sticker':
+    elif data_type == 'sticker':
         return r'sendSticker'
+    else:
+        raise ValueError(f"Unsupported data type: {data_type}.")
 
 
 def ban_chat_member(token, chat_id, user_id, until_date=None, revoke_messages=None):
@@ -2524,6 +2528,7 @@ def convert_input_media_array(array):
     for input_media in array:
         if isinstance(input_media, types.InputMedia) or isinstance(input_media, types.InputPaidMedia):
             media_dict = input_media.to_dict()
+            key = "x" # stub
             if media_dict['media'].startswith('attach://'):
                 key = media_dict['media'].replace('attach://', '')
                 files[key] = input_media.media
