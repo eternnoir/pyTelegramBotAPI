@@ -276,7 +276,6 @@ class Update(JsonDeserializable):
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
 
 
-
 class ChatMemberUpdated(JsonDeserializable):
     """
     This object represents changes in the status of a chat member.
@@ -402,6 +401,7 @@ class ChatJoinRequest(JsonDeserializable):
         self.bio: Optional[str] = bio
         self.invite_link: Optional[ChatInviteLink] = invite_link
         self.user_chat_id: int = user_chat_id
+
 
 class WebhookInfo(JsonDeserializable):
     """
@@ -3251,7 +3251,7 @@ class ChatPhoto(JsonDeserializable):
         self.big_file_unique_id: str = big_file_unique_id
 
 
-class ChatMember(JsonDeserializable):
+class ChatMember(JsonDeserializable, ABC):
     """
     This object contains information about one member of a chat.
     Currently, the following 6 types of chat members are supported:
@@ -3266,78 +3266,31 @@ class ChatMember(JsonDeserializable):
     Telegram Documentation: https://core.telegram.org/bots/api#chatmember
     """
 
+    def __init__(self, user, status, **kwargs):
+        self.user: User = user
+        self.status: str = status
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj['user'])
-        member_type = obj['status']
+        status = obj['status']
         # Ordered according to estimated appearance frequency.
-        if member_type == "member":
+        if status == "member":
             return ChatMemberMember(**obj)
-        elif member_type == "left":
+        elif status == "left":
             return ChatMemberLeft(**obj)
-        elif member_type == "kicked":
+        elif status == "kicked":
             return ChatMemberBanned(**obj)
-        elif member_type == "restricted":
+        elif status == "restricted":
             return ChatMemberRestricted(**obj)
-        elif member_type == "administrator":
+        elif status == "administrator":
             return ChatMemberAdministrator(**obj)
-        elif member_type == "creator":
+        elif status == "creator":
             return ChatMemberOwner(**obj)
         else:
-            # Should not be here. For "if something happen" compatibility
-            return cls(**obj)
-
-    def __init__(self, user, status, custom_title=None, is_anonymous=None, can_be_edited=None,
-                 can_post_messages=None, can_edit_messages=None, can_delete_messages=None,
-                 can_restrict_members=None, can_promote_members=None, can_change_info=None,
-                 can_invite_users=None,  can_pin_messages=None, is_member=None,
-                 can_send_messages=None, can_send_audios=None, can_send_documents=None,
-                 can_send_photos=None, can_send_videos=None, can_send_video_notes=None,
-                 can_send_voice_notes=None,
-                 can_send_polls=None,
-                 can_send_other_messages=None, can_add_web_page_previews=None,  
-                 can_manage_chat=None, can_manage_video_chats=None, 
-                 until_date=None, can_manage_topics=None, 
-                 can_post_stories=None, can_edit_stories=None, can_delete_stories=None,
-                 **kwargs):
-        self.user: User = user
-        self.status: str = status
-        self.custom_title: str = custom_title
-        self.is_anonymous: bool = is_anonymous 
-        self.can_be_edited: bool = can_be_edited
-        self.can_post_messages: bool = can_post_messages
-        self.can_edit_messages: bool = can_edit_messages
-        self.can_delete_messages: bool = can_delete_messages
-        self.can_restrict_members: bool = can_restrict_members
-        self.can_promote_members: bool = can_promote_members
-        self.can_change_info: bool = can_change_info
-        self.can_invite_users: bool = can_invite_users
-        self.can_pin_messages: bool = can_pin_messages
-        self.is_member: bool = is_member
-        self.can_send_messages: bool = can_send_messages
-        self.can_send_polls: bool = can_send_polls
-        self.can_send_other_messages: bool = can_send_other_messages
-        self.can_add_web_page_previews: bool = can_add_web_page_previews
-        self.can_manage_chat: bool = can_manage_chat
-        self.can_manage_video_chats: bool = can_manage_video_chats
-        self.until_date: int = until_date
-        self.can_manage_topics: bool = can_manage_topics
-        self.can_send_audios: bool = can_send_audios
-        self.can_send_documents: bool = can_send_documents
-        self.can_send_photos: bool = can_send_photos
-        self.can_send_videos: bool = can_send_videos
-        self.can_send_video_notes: bool = can_send_video_notes
-        self.can_send_voice_notes: bool = can_send_voice_notes
-        self.can_post_stories: bool = can_post_stories
-        self.can_edit_stories: bool = can_edit_stories
-        self.can_delete_stories: bool = can_delete_stories
-
-    @property
-    def can_manage_voice_chats(self):
-        log_deprecation_warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
-        return self.can_manage_video_chats
+            raise ValueError(f"Unknown chat member type: {status}.")
 
 
 # noinspection PyUnresolvedReferences
@@ -3362,7 +3315,10 @@ class ChatMemberOwner(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberOwner`
     """
-    pass
+    def __init__(self, user, status, is_anonymous, custom_title=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.is_anonymous: bool = is_anonymous
+        self.custom_title: Optional[str] = custom_title
 
 
 # noinspection PyUnresolvedReferences
@@ -3409,36 +3365,60 @@ class ChatMemberAdministrator(ChatMember):
     :param can_invite_users: True, if the user is allowed to invite new users to the chat
     :type can_invite_users: :obj:`bool`
 
+    :param can_post_stories: True, if the administrator can post channel stories
+    :type can_post_stories: :obj:`bool`
+
+    :param can_edit_stories: True, if the administrator can edit stories
+    :type can_edit_stories: :obj:`bool`
+
+    :param can_delete_stories: True, if the administrator can delete stories of other users
+    :type can_delete_stories: :obj:`bool`
+
     :param can_post_messages: Optional. True, if the administrator can post in the channel; channels only
     :type can_post_messages: :obj:`bool`
 
-    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin 
-        messages; channels only
+    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin messages; channels only
     :type can_edit_messages: :obj:`bool`
 
     :param can_pin_messages: Optional. True, if the user is allowed to pin messages; groups and supergroups only
     :type can_pin_messages: :obj:`bool`
 
-    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics;
-        supergroups only
+    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
     :type can_manage_topics: :obj:`bool`
 
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
 
-    :param can_post_stories: Optional. True, if the administrator can post channel stories
-    :type can_post_stories: :obj:`bool`
-
-    :param can_edit_stories: Optional. True, if the administrator can edit stories
-    :type can_edit_stories: :obj:`bool`
-
-    :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
-    :type can_delete_stories: :obj:`bool`
-
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberAdministrator`
     """
-    pass
+    def __init__(self, user, status, can_be_edited, is_anonymous, can_manage_chat, can_delete_messages,
+                 can_manage_video_chats, can_restrict_members, can_promote_members, can_change_info, can_invite_users,
+                 can_post_stories, can_edit_stories, can_delete_stories, can_post_messages=None, can_edit_messages=None,
+                 can_pin_messages=None, can_manage_topics=None, custom_title=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.can_be_edited: bool = can_be_edited
+        self.is_anonymous: bool = is_anonymous
+        self.can_manage_chat: bool = can_manage_chat
+        self.can_delete_messages: bool = can_delete_messages
+        self.can_manage_video_chats: bool = can_manage_video_chats
+        self.can_restrict_members: bool = can_restrict_members
+        self.can_promote_members: bool = can_promote_members
+        self.can_change_info: bool = can_change_info
+        self.can_invite_users: bool = can_invite_users
+        self.can_post_stories: bool = can_post_stories
+        self.can_edit_stories: bool = can_edit_stories
+        self.can_delete_stories: bool = can_delete_stories
+        self.can_post_messages: Optional[bool] = can_post_messages
+        self.can_edit_messages: Optional[bool] = can_edit_messages
+        self.can_pin_messages: Optional[bool] = can_pin_messages
+        self.can_manage_topics: Optional[bool] = can_manage_topics
+        self.custom_title: Optional[str] = custom_title
+
+    @property
+    def can_manage_voice_chats(self):
+        log_deprecation_warning('The parameter "can_manage_voice_chats" is deprecated. Use "can_manage_video_chats" instead.')
+        return self.can_manage_video_chats
 
 
 # noinspection PyUnresolvedReferences
@@ -3454,10 +3434,15 @@ class ChatMemberMember(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
+    :param until_date: Optional. Date when the user's subscription will expire; Unix time. If 0, then the user is a member forever
+    :type until_date: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberMember`
     """
-    pass
+    def __init__(self, user, status, until_date=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.until_date: Optional[int] = until_date
 
 
 # noinspection PyUnresolvedReferences
@@ -3475,18 +3460,6 @@ class ChatMemberRestricted(ChatMember):
 
     :param is_member: True, if the user is a member of the chat at the moment of the request
     :type is_member: :obj:`bool`
-
-    :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
-    :type can_change_info: :obj:`bool`
-
-    :param can_invite_users: True, if the user is allowed to invite new users to the chat
-    :type can_invite_users: :obj:`bool`
-
-    :param can_pin_messages: True, if the user is allowed to pin messages
-    :type can_pin_messages: :obj:`bool`
-
-    :param can_manage_topics: True, if the user is allowed to create forum topics
-    :type can_manage_topics: :obj:`bool`
 
     :param can_send_messages: True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
@@ -3512,21 +3485,52 @@ class ChatMemberRestricted(ChatMember):
     :param can_send_polls: True, if the user is allowed to send polls
     :type can_send_polls: :obj:`bool`
 
-    :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers and use inline 
-        bots
+    :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers and use inline bots
     :type can_send_other_messages: :obj:`bool`
 
     :param can_add_web_page_previews: True, if the user is allowed to add web page previews to their messages
     :type can_add_web_page_previews: :obj:`bool`
 
-    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is restricted 
-        forever
+    :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
+    :type can_change_info: :obj:`bool`
+
+    :param can_invite_users: True, if the user is allowed to invite new users to the chat
+    :type can_invite_users: :obj:`bool`
+
+    :param can_pin_messages: True, if the user is allowed to pin messages
+    :type can_pin_messages: :obj:`bool`
+
+    :param can_manage_topics: True, if the user is allowed to create forum topics
+    :type can_manage_topics: :obj:`bool`
+
+    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is restricted forever
     :type until_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberRestricted`
     """
-    pass
+    def __init__(self, user, status, is_member, can_send_messages, can_send_audios, can_send_documents,
+                 can_send_photos, can_send_videos, can_send_video_notes, can_send_voice_notes, can_send_polls,
+                 can_send_other_messages, can_add_web_page_previews,
+                 can_change_info, can_invite_users, can_pin_messages, can_manage_topics,
+                 until_date=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.is_member: bool = is_member
+        self.can_send_messages: bool = can_send_messages
+        self.can_send_audios: bool = can_send_audios
+        self.can_send_documents: bool = can_send_documents
+        self.can_send_photos: bool = can_send_photos
+        self.can_send_videos: bool = can_send_videos
+        self.can_send_video_notes: bool = can_send_video_notes
+        self.can_send_voice_notes: bool = can_send_voice_notes
+        self.can_send_polls: bool = can_send_polls
+        self.can_send_other_messages: bool = can_send_other_messages
+        self.can_add_web_page_previews: bool = can_add_web_page_previews
+        self.can_change_info: bool = can_change_info
+        self.can_invite_users: bool = can_invite_users
+        self.can_pin_messages: bool = can_pin_messages
+        self.can_manage_topics: bool = can_manage_topics
+        self.until_date: Optional[int] = until_date
 
 
 # noinspection PyUnresolvedReferences
@@ -3561,14 +3565,15 @@ class ChatMemberBanned(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
-    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is banned 
-        forever
+    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is banned forever
     :type until_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberBanned`
     """
-    pass
+    def __init__(self, user, status, until_date=None, **kwargs):
+        super().__init__(user, status, **kwargs)
+        self.until_date: Optional[int] = until_date
 
 
 class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
@@ -3577,8 +3582,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
 
     Telegram Documentation: https://core.telegram.org/bots/api#chatpermissions
 
-    :param can_send_messages: Optional. True, if the user is allowed to send text messages, contacts, locations and 
-        venues
+    :param can_send_messages: Optional. True, if the user is allowed to send text messages, contacts, locations and venues
     :type can_send_messages: :obj:`bool`
 
     :param can_send_audios: Optional. True, if the user is allowed to send audios
@@ -6790,6 +6794,10 @@ class InputMedia(Dictionaryable, JsonSerializable):
             self._media_name = service_utils.generate_random_token()
             self._media_dic = 'attach://{0}'.format(self._media_name)
 
+        if self.__class__ is InputMedia:
+            # Make InputMedia as ABC some time...
+            log_deprecation_warning('The InputMedia class should not be instantiated directly. Use particular InputMediaXXX class instead')
+
     def to_json(self):
         return json.dumps(self.to_dict())
 
@@ -8547,9 +8555,16 @@ class ReactionType(JsonDeserializable, Dictionaryable, JsonSerializable):
         elif obj['type'] == 'custom_emoji':
             del obj['type']
             return ReactionTypeCustomEmoji(**obj)
+        elif obj['type'] == 'paid':
+            del obj['type']
+            return ReactionTypePaid(**obj)
+        else:
+            raise ValueError(f"Unknown reaction type: {obj['type']}.")
 
     def __init__(self, type: str) -> None:
         self.type: str = type
+        if self.__class__ is ReactionType:
+            log_deprecation_warning('The ReactionType class should not be instantiated directly. Use particular ReactionTypeXXX class instead')
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -8935,7 +8950,7 @@ class ExternalReplyInfo(JsonDeserializable):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class MessageOrigin(JsonDeserializable):
+class MessageOrigin(JsonDeserializable, ABC):
     """
     This object describes the origin of a message.
 
@@ -8979,6 +8994,8 @@ class MessageOrigin(JsonDeserializable):
         elif message_type == 'channel':
             chat = Chat.de_json(obj['chat'])
             return MessageOriginChannel(date=obj['date'], chat=chat, message_id=obj['message_id'], author_signature=obj.get('author_signature'))
+        else:
+            raise ValueError(f"Unknown message origin type: {message_type}.")
 
     def __init__(self, type: str, date: int) -> None:
         self.type: str = type
@@ -10513,13 +10530,17 @@ class RevenueWithdrawalStateFailed(RevenueWithdrawalState):
         return cls(**obj)
 
 
-class TransactionPartner(JsonDeserializable):
+class TransactionPartner(JsonDeserializable, ABC):
     # noinspection PyUnresolvedReferences
     """
     This object describes the source of a transaction, or its recipient for outgoing transactions. Currently, it can be one of
         TransactionPartnerFragment
         TransactionPartnerUser
         TransactionPartnerOther
+        TransactionPartnerTelegramAds
+        TransactionPartnerTelegramApi
+        TransactionPartnerAffiliateProgram
+        TransactionPartnerChat
 
     Telegram documentation: https://core.telegram.org/bots/api#transactionpartner
 
@@ -10548,6 +10569,8 @@ class TransactionPartner(JsonDeserializable):
             return TransactionPartnerOther.de_json(obj)
         elif obj["type"] == "chat":
             return TransactionPartnerChat.de_json(obj)
+        else:
+            raise ValueError(f"Unknown transaction partner type: {obj['type']}")
 
 
 # noinspection PyShadowingBuiltins
@@ -10581,6 +10604,7 @@ class TransactionPartnerFragment(TransactionPartner):
         return cls(**obj)
 
 
+# noinspection PyShadowingBuiltins
 class TransactionPartnerTelegramApi(TransactionPartner):
     """
     Describes a transaction with payment for paid broadcasting.
@@ -10796,7 +10820,7 @@ class StarTransactions(JsonDeserializable):
         self.transactions: List[StarTransaction] = transactions
 
 
-class PaidMedia(JsonDeserializable):
+class PaidMedia(JsonDeserializable, ABC):
     """
     This object describes paid media. Currently, it can be one of
 
@@ -10820,6 +10844,8 @@ class PaidMedia(JsonDeserializable):
             return PaidMediaPhoto.de_json(obj)
         elif obj["type"] == "video":
             return PaidMediaVideo.de_json(obj)
+        else:
+            raise ValueError("Unknown type of PaidMedia: {0}".format(obj["type"]))
 
 
 # noinspection PyShadowingBuiltins
@@ -10947,7 +10973,7 @@ class PaidMediaInfo(JsonDeserializable):
 
 
 # noinspection PyShadowingBuiltins
-class InputPaidMedia(JsonSerializable):
+class InputPaidMedia(Dictionaryable, JsonSerializable):
     """
     This object describes the paid media to be sent. Currently, it can be one of
         InputPaidMediaPhoto
@@ -10970,6 +10996,10 @@ class InputPaidMedia(JsonSerializable):
             self._media_name = service_utils.generate_random_token()
             self._media_dic = 'attach://{0}'.format(self._media_name)
 
+        if self.__class__ is InputPaidMedia:
+            # Make InputPaidMedia as ABC some time...
+            log_deprecation_warning('The InputPaidMedia class should not be instantiated directly. Use particular InputPaidMediaXXX class instead')
+
     def to_json(self):
         return json.dumps(self.to_dict())
     
@@ -10979,7 +11009,8 @@ class InputPaidMedia(JsonSerializable):
             'media': self._media_dic
         }
         return data
-    
+
+
 class InputPaidMediaPhoto(InputPaidMedia):
     """
     The paid media to send is a photo.
@@ -11000,7 +11031,8 @@ class InputPaidMediaPhoto(InputPaidMedia):
 
     def __init__(self, media: Union[str, InputFile], **kwargs):
         super().__init__(type='photo', media=media)
-    
+
+
 class InputPaidMediaVideo(InputPaidMedia):
     """
     The paid media to send is a video.
@@ -11058,8 +11090,6 @@ class InputPaidMediaVideo(InputPaidMedia):
         self.cover: Optional[Union[str,InputFile]] = cover
         self.start_timestamp: Optional[int] = start_timestamp
 
-
-
     def to_dict(self):
         data = super().to_dict()
         if self.thumbnail:
@@ -11077,6 +11107,7 @@ class InputPaidMediaVideo(InputPaidMedia):
         if self.start_timestamp:
             data['start_timestamp'] = self.start_timestamp
         return data
+
 
 class RefundedPayment(JsonDeserializable):
     """
@@ -11176,6 +11207,7 @@ class CopyTextButton(JsonSerializable, JsonDeserializable):
         return cls(**obj)
 
 
+# noinspection PyShadowingBuiltins
 class PreparedInlineMessage(JsonDeserializable):
     """
     Describes an inline message to be sent by a user of a Mini App.
@@ -11203,6 +11235,7 @@ class PreparedInlineMessage(JsonDeserializable):
         return cls(**obj)
     
 
+# noinspection PyShadowingBuiltins
 class Gift(JsonDeserializable):
     """
     This object represents a gift that can be sent by the bot.
@@ -11245,7 +11278,8 @@ class Gift(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
         return cls(**obj)
-    
+
+
 class Gifts(JsonDeserializable):
     """
     This object represent a list of gifts.
@@ -11270,6 +11304,7 @@ class Gifts(JsonDeserializable):
         return cls(**obj)
     
     
+# noinspection PyShadowingBuiltins
 class TransactionPartnerAffiliateProgram(TransactionPartner):
     """
     Describes the affiliate program that issued the affiliate commission received via this transaction.
@@ -11347,6 +11382,7 @@ class AffiliateInfo(JsonDeserializable):
         return cls(**obj)
     
 
+# noinspection PyShadowingBuiltins
 class TransactionPartnerChat(TransactionPartner):
     """
     Describes a transaction with a chat.
@@ -11497,6 +11533,7 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
             'premium_subscription': self.premium_subscription
         }
         return data
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -11522,13 +11559,15 @@ class StarAmount(JsonDeserializable):
     def __init__(self, amount, nanostar_amount=None, **kwargs):
         self.amount: int = amount
         self.nanostar_amount: Optional[int] = nanostar_amount
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
 
+
+# noinspection PyShadowingBuiltins
 class OwnedGift(JsonDeserializable, ABC):
     """
     This object describes a gift received and owned by a user or a chat. Currently, it can be one of
@@ -11540,9 +11579,8 @@ class OwnedGift(JsonDeserializable, ABC):
 
     def __init__(self, type, **kwargs):
         self.type: str = type
-        self.gift: Union[Gift, UniqueGift] = None
-    
-    
+        self.gift: Optional[Union[Gift, UniqueGift]] = None
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -11551,7 +11589,11 @@ class OwnedGift(JsonDeserializable, ABC):
             return OwnedGiftRegular.de_json(obj)
         elif obj["type"] == "unique":
             return OwnedGiftUnique.de_json(obj)
-        
+        else:
+            raise ValueError(f"Unknown gift type: {obj['type']}.")
+
+
+# noinspection PyShadowingBuiltins
 class OwnedGiftRegular(OwnedGift):
     """
     This object describes a regular gift owned by a user or a chat.
@@ -11616,6 +11658,7 @@ class OwnedGiftRegular(OwnedGift):
         self.was_refunded: Optional[bool] = was_refunded
         self.convert_star_count: Optional[int] = convert_star_count
         self.prepaid_upgrade_star_count: Optional[int] = prepaid_upgrade_star_count
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -11626,7 +11669,9 @@ class OwnedGiftRegular(OwnedGift):
         if 'entities' in obj:
             obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
         return cls(**obj)
-    
+
+
+# noinspection PyShadowingBuiltins
 class OwnedGiftUnique(OwnedGift):
     """
     This object describes a unique gift owned by a user or a chat.
@@ -11674,6 +11719,7 @@ class OwnedGiftUnique(OwnedGift):
         self.can_be_transferred: Optional[bool] = can_be_transferred
         self.transfer_star_count: Optional[int] = transfer_star_count
         self.next_transfer_date: Optional[int] = next_transfer_date
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -11707,13 +11753,13 @@ class OwnedGifts(JsonDeserializable):
         self.total_count: int = total_count
         self.gifts: List[OwnedGift] = gifts
         self.next_offset: Optional[str] = next_offset
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['gifts'] = [OwnedGift.de_json(gift) for gift in obj['gifts']]
         return cls(**obj)
-
 
 
 class UniqueGift(JsonDeserializable):
@@ -11750,6 +11796,7 @@ class UniqueGift(JsonDeserializable):
         self.model: UniqueGiftModel = model
         self.symbol: UniqueGiftSymbol = symbol
         self.backdrop: UniqueGiftBackdrop = backdrop
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -11783,13 +11830,15 @@ class UniqueGiftModel(JsonDeserializable):
         self.name: str = name
         self.sticker: Sticker = sticker
         self.rarity_per_mille: int = rarity_per_mille
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
         return cls(**obj)
-    
+
+
 class UniqueGiftSymbol(JsonDeserializable):
     """
     This object describes the symbol shown on the pattern of a unique gift.
@@ -11813,13 +11862,15 @@ class UniqueGiftSymbol(JsonDeserializable):
         self.name: str = name
         self.sticker: Sticker = sticker
         self.rarity_per_mille: int = rarity_per_mille
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
         return cls(**obj)
-    
+
+
 class UniqueGiftBackdropColors(JsonDeserializable):
     """
     This object describes the colors of the backdrop of a unique gift.
@@ -11846,12 +11897,14 @@ class UniqueGiftBackdropColors(JsonDeserializable):
         self.edge_color: int = edge_color
         self.symbol_color: int = symbol_color
         self.text_color: int = text_color
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
+
+
 class UniqueGiftBackdrop(JsonDeserializable):
     """
     This object describes the backdrop of a unique gift.
@@ -11874,6 +11927,7 @@ class UniqueGiftBackdrop(JsonDeserializable):
         self.name: str = name
         self.colors: UniqueGiftBackdropColors = colors
         self.rarity_per_mille: int = rarity_per_mille
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -11881,6 +11935,8 @@ class UniqueGiftBackdrop(JsonDeserializable):
         obj['colors'] = UniqueGiftBackdropColors.de_json(obj['colors'])
         return cls(**obj)
 
+
+# noinspection PyShadowingBuiltins
 class InputStoryContent(JsonSerializable, ABC):
     """
     This object describes the content of a story to post. Currently, it can be one of
@@ -11888,7 +11944,6 @@ class InputStoryContent(JsonSerializable, ABC):
     InputStoryContentVideo
 
     Telegram documentation: https://core.telegram.org/bots/api#inputstorycontent
-
     """
     def __init__(self, type: str, **kwargs):
         self.type: str = type
@@ -11956,6 +12011,7 @@ class InputStoryContentVideo(InputStoryContent):
         self.duration: Optional[float] = duration
         self.cover_frame_timestamp: Optional[float] = cover_frame_timestamp
         self.is_animation: Optional[bool] = is_animation
+
     def to_json(self):
         return json.dumps(self.to_dict())
     
@@ -11971,6 +12027,7 @@ class InputStoryContentVideo(InputStoryContent):
         if self.is_animation is not None:
             data['is_animation'] = self.is_animation
         return data
+
     def convert_input_story(self):
         return self.to_json(), {self._video_name: self.video}
     
@@ -12010,8 +12067,10 @@ class StoryAreaPosition(JsonSerializable):
         self.height_percentage: float = height_percentage
         self.rotation_angle: float = rotation_angle
         self.corner_radius_percentage: float = corner_radius_percentage
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'x_percentage': self.x_percentage,
@@ -12051,8 +12110,10 @@ class LocationAddress(JsonSerializable):
         self.state: Optional[str] = state
         self.city: Optional[str] = city
         self.street: Optional[str] = street
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'country_code': self.country_code
@@ -12064,7 +12125,9 @@ class LocationAddress(JsonSerializable):
         if self.street is not None:
             data['street'] = self.street
         return data
+
     
+# noinspection PyShadowingBuiltins
 class StoryAreaType(JsonSerializable, ABC):
     """
     Describes the type of a clickable area on a story. Currently, it can be one of
@@ -12109,8 +12172,10 @@ class StoryAreaTypeLocation(StoryAreaType):
         self.latitude: float = latitude
         self.longitude: float = longitude
         self.address: Optional[LocationAddress] = address
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'type': self.type,
@@ -12148,8 +12213,10 @@ class StoryAreaTypeSuggestedReaction(StoryAreaType):
         self.reaction_type: ReactionType = reaction_type
         self.is_dark: Optional[bool] = is_dark
         self.is_flipped: Optional[bool] = is_flipped
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'type': self.type,
@@ -12160,7 +12227,8 @@ class StoryAreaTypeSuggestedReaction(StoryAreaType):
         if self.is_flipped is not None:
             data['is_flipped'] = self.is_flipped
         return data
-    
+
+
 class StoryAreaTypeLink(StoryAreaType):
     """
     Describes a story area pointing to an HTTP or tg:// link. Currently, a story can have up to 3 link areas.
@@ -12179,15 +12247,18 @@ class StoryAreaTypeLink(StoryAreaType):
     def __init__(self, url: str, **kwargs):
         super().__init__(type="link")
         self.url: str = url
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'type': self.type,
             'url': self.url
         }
         return data
-    
+
+
 class StoryAreaTypeWeather(StoryAreaType):
     """
     Describes a story area containing weather information. Currently, a story can have up to 3 weather areas.
@@ -12214,8 +12285,10 @@ class StoryAreaTypeWeather(StoryAreaType):
         self.temperature: float = temperature
         self.emoji: str = emoji
         self.background_color: int = background_color
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'type': self.type,
@@ -12224,7 +12297,8 @@ class StoryAreaTypeWeather(StoryAreaType):
             'background_color': self.background_color
         }
         return data
-    
+
+
 class StoryAreaTypeUniqueGift(StoryAreaType):
     """
     Describes a story area pointing to a unique gift. Currently, a story can have at most 1 unique gift area.
@@ -12243,8 +12317,10 @@ class StoryAreaTypeUniqueGift(StoryAreaType):
     def __init__(self, name: str, **kwargs):
         super().__init__(type="unique_gift")
         self.name: str = name
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'type': self.type,
@@ -12254,6 +12330,7 @@ class StoryAreaTypeUniqueGift(StoryAreaType):
         return data
     
 
+# noinspection PyShadowingBuiltins
 class StoryArea(JsonSerializable):
     """
     Describes a clickable area on a story media.
@@ -12272,8 +12349,10 @@ class StoryArea(JsonSerializable):
     def __init__(self, position: StoryAreaPosition, type: StoryAreaType, **kwargs):
         self.position: StoryAreaPosition = position
         self.type: StoryAreaType = type
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'position': self.position.to_dict(),
@@ -12327,6 +12406,7 @@ class GiftInfo(JsonDeserializable):
         self.text: Optional[str] = text
         self.entities: Optional[List[MessageEntity]] = entities
         self.is_private: Optional[bool] = is_private
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -12335,7 +12415,8 @@ class GiftInfo(JsonDeserializable):
         if 'entities' in obj:
             obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
         return cls(**obj)
-    
+
+
 class UniqueGiftInfo(JsonDeserializable):
     """
     This object describes a service message about a unique gift that was sent or received.
@@ -12396,6 +12477,7 @@ class PaidMessagePriceChanged(JsonDeserializable):
     """
     def __init__(self, paid_message_star_count: int, **kwargs):
         self.paid_message_star_count: int = paid_message_star_count
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -12403,7 +12485,7 @@ class PaidMessagePriceChanged(JsonDeserializable):
         return cls(**obj)
     
 
-class InputProfilePhoto(JsonSerializable):
+class InputProfilePhoto(JsonSerializable, ABC):
     """
     This object describes a profile photo to set. Currently, it can be one of
     InputProfilePhotoStatic
@@ -12414,6 +12496,7 @@ class InputProfilePhoto(JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`InputProfilePhoto`
     """
+
 
 class InputProfilePhotoStatic(InputProfilePhoto):
     """
@@ -12434,9 +12517,9 @@ class InputProfilePhotoStatic(InputProfilePhoto):
     def __init__(self, photo: InputFile, **kwargs):
         self.type: str = "static"
         self.photo: InputFile = photo
-
         self._photo_name = service_utils.generate_random_token()
         self._photo_dic = "attach://{}".format(self._photo_name)
+
     def to_json(self):
         return json.dumps(self.to_dict())
     
@@ -12446,6 +12529,7 @@ class InputProfilePhotoStatic(InputProfilePhoto):
             'photo': self._photo_dic
         }
         return data
+
     def convert_input_profile_photo(self):
         return self.to_json(), {self._photo_name: self.photo}
 
@@ -12475,8 +12559,10 @@ class InputProfilePhotoAnimated(InputProfilePhoto):
         self._animation_name = service_utils.generate_random_token()
         self._animation_dic = "attach://{}".format(self._animation_name)
         self.main_frame_timestamp: Optional[float] = main_frame_timestamp
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
     def to_dict(self):
         data = {
             'type': self.type,
@@ -12485,10 +12571,12 @@ class InputProfilePhotoAnimated(InputProfilePhoto):
         if self.main_frame_timestamp is not None:
             data['main_frame_timestamp'] = self.main_frame_timestamp
         return data
+
     def convert_input_profile_photo(self):
         return self.to_json(), {self._animation_name: self.animation}
 
 
+# noinspection PyShadowingBuiltins
 class ChecklistTask(JsonDeserializable):
     """
     Describes a task in a checklist.
@@ -12531,6 +12619,7 @@ class ChecklistTask(JsonDeserializable):
         if 'completed_by_user' in obj:
             obj['completed_by_user'] = User.de_json(obj['completed_by_user'])
         return cls(**obj)
+
     
 class Checklist(JsonDeserializable):
     """
@@ -12575,6 +12664,8 @@ class Checklist(JsonDeserializable):
         obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
         return cls(**obj)
 
+
+# noinspection PyShadowingBuiltins
 class InputChecklistTask(JsonSerializable):
     """
     Describes a task to add to a checklist.
@@ -12616,7 +12707,8 @@ class InputChecklistTask(JsonSerializable):
         if self.text_entities:
             data['text_entities'] = [entity.to_dict() for entity in self.text_entities]
         return data
-    
+
+
 class InputChecklist(JsonSerializable):
     """
     Describes a checklist to create.
@@ -12726,6 +12818,7 @@ class ChecklistTasksAdded(JsonDeserializable):
     def __init__(self, tasks: List[ChecklistTask], checklist_message: Optional[Message] = None, **kwargs):
         self.checklist_message: Optional[Message] = checklist_message
         self.tasks: List[ChecklistTask] = tasks
+
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
@@ -12734,6 +12827,7 @@ class ChecklistTasksAdded(JsonDeserializable):
             obj['checklist_message'] = Message.de_json(obj['checklist_message'])
         obj['tasks'] = [ChecklistTask.de_json(task) for task in obj['tasks']]
         return cls(**obj)
+
 
 class DirectMessagePriceChanged(JsonDeserializable):
     """
