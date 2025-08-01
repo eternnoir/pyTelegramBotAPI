@@ -22,7 +22,7 @@ classifiers = [
     "Environment :: Console",
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)"
 ]
-dependencies = ["pytest", "requests", "wheel", "aiohttp"]
+dependencies = ["requests"]
 
 [project.urls]
 Homepage = "https://github.com/eternnoir/pyTelegramBotAPI"
