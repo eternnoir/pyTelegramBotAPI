@@ -642,6 +642,9 @@ class ChatFullInfo(JsonDeserializable):
     :param personal_chat: Optional. For private chats, the personal channel of the user. Returned only in getChat.
     :type personal_chat: :class:`telebot.types.Chat`
 
+    :param parent_chat: Optional. Information about the corresponding channel chat; for direct messages chats only
+    :type parent_chat: :class:`telebot.types.Chat`
+
     :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels. Returned only in getChat.
     :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
 
@@ -770,6 +773,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['birthdate'] = Birthdate.de_json(obj['birthdate'])
         if 'accepted_gift_types' in obj:
             obj['accepted_gift_types'] = AcceptedGiftTypes.de_json(obj['accepted_gift_types'])
+        if 'parent_chat' in obj:
+            obj['parent_chat'] = Chat.de_json(obj['parent_chat'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -786,7 +791,7 @@ class ChatFullInfo(JsonDeserializable):
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None, 
                     can_send_paid_media=None,
-                    accepted_gift_types=None, is_direct_messages=None, **kwargs):
+                    accepted_gift_types=None, is_direct_messages=None, parent_chat=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -833,6 +838,7 @@ class ChatFullInfo(JsonDeserializable):
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
         self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
         self.is_direct_messages: Optional[bool] = is_direct_messages
+        self.parent_chat: Optional[Chat] = parent_chat
     @property
     def can_send_gift(self) -> bool:
         """
