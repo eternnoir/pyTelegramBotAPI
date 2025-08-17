@@ -1686,6 +1686,21 @@ async def edit_message_reply_markup(
         payload['timeout'] = timeout
     return await _process_request(token, method_url, params=payload, method='post')
 
+    
+async def approve_suggested_post(token, chat_id, message_id, send_date=None):
+    method_url = r'approveSuggestedPost'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if send_date is not None:
+        payload['send_date'] = send_date
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def decline_suggested_post(token, chat_id, message_id, comment=None):
+    method_url = r'declineSuggestedPost'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if comment is not None:
+        payload['comment'] = comment
+    return await _process_request(token, method_url, params=payload, method='post')
 
 async def delete_message(token, chat_id, message_id, timeout=None):
     method_url = r'deleteMessage'

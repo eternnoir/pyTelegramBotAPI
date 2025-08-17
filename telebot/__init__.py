@@ -2008,6 +2008,51 @@ class TeleBot:
                 video_start_timestamp=video_start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
                 suggested_post_parameters=suggested_post_parameters
             ))
+    
+    
+    def approve_suggested_post(self, chat_id: Union[int, str], message_id: int, send_date: Optional[int]=None) -> bool:
+        """
+        Use this method to approve a suggested post in a direct messages chat. The bot must have the 'can_post_messages' administrator right in the corresponding channel chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#approvesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of a suggested post message to approve
+        :type message_id: :obj:`int`
+
+        :param send_date: Point in time (Unix timestamp) when the post is expected to be published; omit if the date has already been specified when the suggested post was created.
+            If specified, then the date must be not more than 2678400 seconds (30 days) in the future
+        :type send_date: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.approve_suggested_post(self.token, chat_id, message_id,
+            send_date=send_date)
+
+    def decline_suggested_post(self, chat_id: Union[int, str], message_id: int, comment: Optional[str]=None) -> bool:
+        """
+        Use this method to decline a suggested post in a direct messages chat. The bot must have
+        the 'can_manage_direct_messages' administrator right in the corresponding channel chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#declinesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of a suggested post message to decline
+        :type message_id: :obj:`int`
+
+        :param comment: Comment for the creator of the suggested post; 0-128 characters
+        :type comment: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.decline_suggested_post(self.token, chat_id, message_id,
+            comment=comment)
 
     def delete_message(self, chat_id: Union[int, str], message_id: int, 
             timeout: Optional[int]=None) -> bool:

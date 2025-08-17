@@ -1691,6 +1691,20 @@ def edit_message_reply_markup(
         payload['timeout'] = timeout
     return _make_request(token, method_url, params=payload, method='post')
 
+def approve_suggested_post(token, chat_id, message_id, send_date=None):
+    method_url = r'approveSuggestedPost'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if send_date is not None:
+        payload['send_date'] = send_date
+    return _make_request(token, method_url, params=payload, method='post')
+
+def decline_suggested_post(token, chat_id, message_id, comment=None):
+    method_url = r'declineSuggestedPost'
+    payload = {'chat_id': chat_id, 'message_id': message_id}
+    if comment is not None:
+        payload['comment'] = comment
+    return _make_request(token, method_url, params=payload, method='post')
+
 
 def delete_message(token, chat_id, message_id, timeout=None):
     method_url = r'deleteMessage'
