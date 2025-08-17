@@ -997,6 +997,10 @@ class Message(JsonDeserializable):
         as an away or a greeting business message, or as a scheduled message
     :type is_from_offline: :obj:`bool`
 
+    :param is_paid_post: Optional. True, if the message is a paid post. Note that such posts must not be
+        deleted for 24 hours to receive the payment and can't be edited.
+    :type is_paid_post: :obj:`bool`
+
     :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
     :type media_group_id: :obj:`str`
 
@@ -1504,6 +1508,8 @@ class Message(JsonDeserializable):
             opts['reply_to_checklist_task_id'] = obj['reply_to_checklist_task_id']
         if 'direct_messages_topic' in obj:
             opts['direct_messages_topic'] = DirectMessagesTopic.de_json(obj['direct_messages_topic'])
+        if 'is_paid_post' in obj:
+            opts['is_paid_post'] = obj['is_paid_post']
             
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1632,6 +1638,7 @@ class Message(JsonDeserializable):
         self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
         self.reply_to_checklist_task_id: Optional[int] = None
         self.direct_messages_topic: Optional[DirectMessagesTopic] = None
+        self.is_paid_post: Optional[bool] = None
 
         for key in options:
             setattr(self, key, options[key])
