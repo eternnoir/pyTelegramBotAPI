@@ -968,6 +968,9 @@ class Message(JsonDeserializable):
     :param reply_to_story: Optional. For replies to a story, the original story
     :type reply_to_story: :class:`telebot.types.Story`
 
+    :param reply_to_checklist_task_id: Optional. Identifier of the specific checklist task that is being replied to
+    :type reply_to_checklist_task_id: :obj:`str`
+
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
@@ -1484,6 +1487,8 @@ class Message(JsonDeserializable):
         if 'direct_message_price_changed' in obj:
             opts['direct_message_price_changed'] = DirectMessagePriceChanged.de_json(obj['direct_message_price_changed'])
             content_type = 'direct_message_price_changed'
+        if 'reply_to_checklist_task_id' in obj:
+            opts['reply_to_checklist_task_id'] = obj['reply_to_checklist_task_id']
             
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1610,6 +1615,7 @@ class Message(JsonDeserializable):
         self.checklist_tasks_done: Optional[ChecklistTasksDone] = None
         self.checklist_tasks_added: Optional[List[ChecklistTasksAdded]] = None
         self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
+        self.reply_to_checklist_task_id: Optional[int] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -9390,6 +9396,9 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param quote_position: Optional. Position of the quote in the original message in UTF-16 code units
     :type quote_position: :obj:`int`
 
+    :param checklist_task_id: Optional. Optional. Identifier of the specific checklist task to be replied to
+    :type checklist_task_id: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`ReplyParameters`
     """
@@ -9405,7 +9414,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
-                 quote_position: Optional[int] = None, **kwargs) -> None:
+                 quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -9413,6 +9422,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.quote_parse_mode: Optional[str] = quote_parse_mode
         self.quote_entities: Optional[List[MessageEntity]] = quote_entities
         self.quote_position: Optional[int] = quote_position
+        self.checklist_task_id: Optional[int] = checklist_task_id
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -9430,6 +9440,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['quote_entities'] = [entity.to_dict() for entity in self.quote_entities]
         if self.quote_position is not None:
             json_dict['quote_position'] = self.quote_position
+        if self.checklist_task_id is not None:
+            json_dict['checklist_task_id'] = self.checklist_task_id
         return json_dict
     
     def to_json(self) -> str:
