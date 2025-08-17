@@ -1252,7 +1252,8 @@ async def promote_chat_member(
         can_edit_messages=None, can_delete_messages=None, can_invite_users=None,
         can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
         is_anonymous=None, can_manage_chat=None, can_manage_video_chats=None, can_manage_topics=None,
-        can_post_stories=None, can_edit_stories=None, can_delete_stories=None):
+        can_post_stories=None, can_edit_stories=None, can_delete_stories=None, 
+        can_manage_direct_messages=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -1285,6 +1286,8 @@ async def promote_chat_member(
         payload['can_edit_stories'] = can_edit_stories
     if can_delete_stories is not None:
         payload['can_delete_stories'] = can_delete_stories
+    if can_manage_direct_messages is not None:
+        payload['can_manage_direct_messages'] = can_manage_direct_messages
     return await _process_request(token, method_url, params=payload, method='post')
 
 

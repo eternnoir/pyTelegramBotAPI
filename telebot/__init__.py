@@ -4416,7 +4416,8 @@ class TeleBot:
             can_manage_topics: Optional[bool]=None,
             can_post_stories: Optional[bool]=None,
             can_edit_stories: Optional[bool]=None,
-            can_delete_stories: Optional[bool]=None) -> bool:
+            can_delete_stories: Optional[bool]=None,
+            can_manage_direct_messages: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -4486,6 +4487,10 @@ class TeleBot:
         :param can_delete_stories: Pass True if the administrator can delete the channel's stories
         :type can_delete_stories: :obj:`bool`
 
+        :param can_manage_direct_messages: Pass True if the administrator can manage direct messages
+            within the channel and decline suggested posts; for channels only
+        :type can_manage_direct_messages: :obj:`bool`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
@@ -4502,7 +4507,8 @@ class TeleBot:
             is_anonymous=is_anonymous, can_manage_chat=can_manage_chat,
             can_manage_video_chats=can_manage_video_chats, can_manage_topics=can_manage_topics,
             can_post_stories=can_post_stories, can_edit_stories=can_edit_stories,
-            can_delete_stories=can_delete_stories)
+            can_delete_stories=can_delete_stories, can_manage_direct_messages=can_manage_direct_messages,
+        )
 
 
     def set_chat_administrator_custom_title(
