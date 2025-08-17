@@ -11272,23 +11272,30 @@ class Gift(JsonDeserializable):
     :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
     :type remaining_count: :obj:`int`
 
+    :param publisher_chat: Optional. Information about the chat that published the gift
+    :type publisher_chat: :class:`Chat`
+
     :return: Instance of the class
     :rtype: :class:`Gift`
     """
 
-    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, **kwargs):
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, 
+                    publisher_chat=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
         self.total_count: Optional[int] = total_count
         self.remaining_count: Optional[int] = remaining_count
         self.upgrade_star_count: Optional[int] = upgrade_star_count
+        self.publisher_chat: Optional[Chat] = publisher_chat
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'publisher_chat' in obj:
+            obj['publisher_chat'] = Chat.de_json(obj['publisher_chat'])
         return cls(**obj)
 
 
@@ -11798,16 +11805,20 @@ class UniqueGift(JsonDeserializable):
     :param backdrop: Backdrop of the gift
     :type backdrop: :class:`UniqueGiftBackdrop`
 
+    :param publisher_chat: Optional. Information about the chat that published the gift
+    :type publisher_chat: :class:`Chat`
+
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, publisher_chat=None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
         self.model: UniqueGiftModel = model
         self.symbol: UniqueGiftSymbol = symbol
         self.backdrop: UniqueGiftBackdrop = backdrop
+        self.publisher_chat: Optional[Chat] = publisher_chat
 
     @classmethod
     def de_json(cls, json_string):
@@ -11816,6 +11827,8 @@ class UniqueGift(JsonDeserializable):
         obj['model'] = UniqueGiftModel.de_json(obj['model'])
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
+        if 'publisher_chat' in obj:
+            obj['publisher_chat'] = Chat.de_json(obj['publisher_chat'])
         return cls(**obj)
     
     
