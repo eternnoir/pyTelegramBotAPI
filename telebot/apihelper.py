@@ -247,7 +247,8 @@ def send_message(
         parse_mode=None, disable_notification=None, timeout=None,
         entities=None, protect_content=None,
         message_thread_id=None, reply_parameters=None, link_preview_options=None,
-        business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None):
+        business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None,
+        direct_messages_topic_id=None):
     method_url = r'sendMessage'
     payload = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
@@ -274,6 +275,8 @@ def send_message(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -427,7 +430,7 @@ def get_chat_member(token, chat_id, user_id):
 def forward_message(
         token, chat_id, from_chat_id, message_id,
         disable_notification=None, timeout=None, protect_content=None, message_thread_id=None,
-        video_start_timestamp=None):
+        video_start_timestamp=None, direct_messages_topic_id=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if disable_notification is not None:
@@ -440,13 +443,15 @@ def forward_message(
         payload['message_thread_id'] = message_thread_id
     if video_start_timestamp:
         payload['video_start_timestamp'] = video_start_timestamp
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 
 def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None, reply_markup=None, timeout=None, protect_content=None, message_thread_id=None,
                  reply_parameters=None, show_caption_above_media=None, allow_paid_broadcast=None,
-                 video_start_timestamp=None):
+                 video_start_timestamp=None, direct_messages_topic_id=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -473,6 +478,8 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if video_start_timestamp:
         payload['video_start_timestamp'] = video_start_timestamp
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 def send_checklist(
@@ -510,7 +517,7 @@ def send_dice(
         token, chat_id,
         emoji=None, disable_notification=None,
         reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None,
-        business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None):
+        business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendDice'
     payload = {'chat_id': chat_id}
     if emoji:
@@ -533,6 +540,8 @@ def send_dice(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -542,7 +551,8 @@ def send_photo(
         parse_mode=None, disable_notification=None, timeout=None,
         caption_entities=None, protect_content=None,
         message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None):
+        message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None,
+        direct_messages_topic_id=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -580,13 +590,15 @@ def send_photo(
         payload['show_caption_above_media'] = show_caption_above_media
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
     
 def send_paid_media(
         token, chat_id, star_count, media,
         caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
         disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
-        business_connection_id=None, payload=None, allow_paid_broadcast=None):
+        business_connection_id=None, payload=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendPaidMedia'
     media_json, files = convert_input_media_array(media)
     _payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
@@ -612,6 +624,8 @@ def send_paid_media(
         _payload['payload'] = payload
     if allow_paid_broadcast is not None:
         _payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        _payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(
         token, method_url, params=_payload,
         method='post' if files else 'get',
@@ -622,7 +636,7 @@ def send_media_group(
         token, chat_id, media,
         disable_notification=None,
         timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendMediaGroup'
     media_json, files = convert_input_media_array(media)
     payload = {'chat_id': chat_id, 'media': media_json}
@@ -642,6 +656,8 @@ def send_media_group(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(
         token, method_url, params=payload,
         method='post' if files else 'get',
@@ -655,7 +671,7 @@ def send_location(
         timeout=None, horizontal_accuracy=None, heading=None,
         proximity_alert_radius=None, protect_content=None,
         message_thread_id=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
@@ -684,6 +700,8 @@ def send_location(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -740,7 +758,7 @@ def send_venue(
         foursquare_id=None, foursquare_type=None, disable_notification=None,
         reply_markup=None, timeout=None, google_place_id=None,
         google_place_type=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
@@ -769,6 +787,8 @@ def send_venue(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -776,7 +796,7 @@ def send_contact(
         token, chat_id, phone_number, first_name, last_name=None, vcard=None,
         disable_notification=None, reply_markup=None, timeout=None,
         protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
@@ -801,6 +821,8 @@ def send_contact(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
 
     return _make_request(token, method_url, params=payload)
 
@@ -822,7 +844,7 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
                thumbnail=None, width=None, height=None, caption_entities=None, protect_content=None,
                message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
                message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None,
-               cover=None, start_timestamp=None):
+               cover=None, start_timestamp=None, direct_messages_topic_id=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -884,6 +906,8 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
             payload['cover'] = cover
     if start_timestamp:
         payload['start_timestamp'] = start_timestamp
+    if direct_messages_topic_id:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
@@ -893,7 +917,7 @@ def send_animation(
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
         protect_content=None, width=None, height=None, message_thread_id=None, reply_parameters=None,
         has_spoiler=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None,
-        allow_paid_broadcast=None):
+        allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -943,13 +967,15 @@ def send_animation(
         payload['show_caption_above_media'] = show_caption_above_media
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=None,
                parse_mode=None, disable_notification=None, timeout=None, caption_entities=None,
                  protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-                 message_effect_id=None, allow_paid_broadcast=None):
+                 message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -983,13 +1009,15 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_video_note(token, chat_id, data, duration=None, length=None, reply_markup=None,
                     disable_notification=None, timeout=None, thumbnail=None, protect_content=None,
                     message_thread_id=None, reply_parameters=None,business_connection_id=None, message_effect_id=None,
-                    allow_paid_broadcast=None):
+                    allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -1029,13 +1057,15 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_mark
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None,
                reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
                caption_entities=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-               message_effect_id=None, allow_paid_broadcast=None):
+               message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -1081,6 +1111,8 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1088,7 +1120,7 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
               disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
               disable_content_type_detection=None, visible_file_name=None,
               protect_content = None, message_thread_id=None, emoji=None, reply_parameters=None, business_connection_id=None,
-              message_effect_id=None, allow_paid_broadcast=None):
+              message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -1135,6 +1167,8 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1726,7 +1760,7 @@ def send_invoice(
         disable_notification=None, reply_markup=None, provider_data=None,
         timeout=None, max_tip_amount=None, suggested_tip_amounts=None,
         protect_content=None, message_thread_id=None, reply_parameters=None, message_effect_id=None,
-        allow_paid_broadcast=None):
+        allow_paid_broadcast=None, direct_messages_topic_id=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1814,6 +1848,8 @@ def send_invoice(
         payload['provider_token'] = provider_token
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -2464,7 +2500,7 @@ def delete_messages(token, chat_id, message_ids):
     return _make_request(token, method_url, params=payload)
 
 def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
-                            message_thread_id=None, protect_content=None):
+                            message_thread_id=None, protect_content=None, direct_messages_topic_id=None):
     method_url = 'forwardMessages'
     payload = {
         'chat_id': chat_id,
@@ -2477,10 +2513,13 @@ def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notifica
         payload['message_thread_id'] = message_thread_id
     if protect_content is not None:
         payload['protect_content'] = protect_content
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
-                        message_thread_id=None, protect_content=None, remove_caption=None, show_caption_above_media=None):
+                        message_thread_id=None, protect_content=None, remove_caption=None, show_caption_above_media=None,
+                        direct_messages_topic_id=None):
     method_url = 'copyMessages'
     payload = {
         'chat_id': chat_id,
@@ -2497,6 +2536,8 @@ def copy_messages(token, chat_id, from_chat_id, message_ids, disable_notificatio
         payload['remove_caption'] = remove_caption
     if show_caption_above_media is not None:
         payload['show_caption_above_media'] = show_caption_above_media
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
     return _make_request(token, method_url, params=payload)
 
 
