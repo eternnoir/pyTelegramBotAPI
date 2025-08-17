@@ -929,6 +929,9 @@ class Message(JsonDeserializable):
     :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
     :type message_thread_id: :obj:`int`
 
+    :param direct_messages_topic: Optional. Information about the direct messages chat topic that contains the message
+    :type direct_messages_topic: :class:`telebot.types.DirectMessagesTopic`
+
     :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the
         field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
     :type from_user: :class:`telebot.types.User`
@@ -1499,6 +1502,8 @@ class Message(JsonDeserializable):
             content_type = 'direct_message_price_changed'
         if 'reply_to_checklist_task_id' in obj:
             opts['reply_to_checklist_task_id'] = obj['reply_to_checklist_task_id']
+        if 'direct_messages_topic' in obj:
+            opts['direct_messages_topic'] = DirectMessagesTopic.de_json(obj['direct_messages_topic'])
             
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1626,6 +1631,7 @@ class Message(JsonDeserializable):
         self.checklist_tasks_added: Optional[List[ChecklistTasksAdded]] = None
         self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
         self.reply_to_checklist_task_id: Optional[int] = None
+        self.direct_messages_topic: Optional[DirectMessagesTopic] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -12888,3 +12894,32 @@ class DirectMessagePriceChanged(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class DirectMessagesTopic(JsonDeserializable):
+    """
+    Describes a topic of a direct messages chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#directmessagestopic
+
+    :param topic_id: Unique identifier of the topic
+    :type topic_id: :obj:`int`
+
+    :param user: Optional. Information about the user that created the topic. Currently, it is always present
+    :type user: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`DirectMessagesTopic`
+    """
+    def __init__(self, topic_id: int, user: Optional[User] = None, **kwargs):
+        self.topic_id: int = topic_id
+        self.user: Optional[User] = user # for future compatibility, currently always present
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'user' in obj:
+            obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+    
