@@ -615,6 +615,9 @@ class ChatFullInfo(JsonDeserializable):
     :param is_forum: Optional. True, if the supergroup chat is a forum (has topics enabled)
     :type is_forum: :obj:`bool`
 
+    :param is_direct_messages: Optional. True, if the chat is the direct messages chat of a channel
+    :type is_direct_messages: :obj:`bool`
+
     :param max_reaction_count: Optional. The maximum number of reactions that can be set on a message in the chat
     :type max_reaction_count: :obj:`int`
 
@@ -783,7 +786,7 @@ class ChatFullInfo(JsonDeserializable):
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None, 
                     can_send_paid_media=None,
-                    accepted_gift_types=None, **kwargs):
+                    accepted_gift_types=None, is_direct_messages=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -829,6 +832,7 @@ class ChatFullInfo(JsonDeserializable):
         self.birthdate: Optional[Birthdate] = birthdate
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
         self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
+        self.is_direct_messages: Optional[bool] = is_direct_messages
     @property
     def can_send_gift(self) -> bool:
         """
