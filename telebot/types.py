@@ -3408,6 +3408,9 @@ class ChatMemberAdministrator(ChatMember):
     :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
     :type can_manage_topics: :obj:`bool`
 
+    :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
+    :type can_manage_direct_messages: :obj:`bool`
+
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
 
@@ -3417,7 +3420,7 @@ class ChatMemberAdministrator(ChatMember):
     def __init__(self, user, status, can_be_edited, is_anonymous, can_manage_chat, can_delete_messages,
                  can_manage_video_chats, can_restrict_members, can_promote_members, can_change_info, can_invite_users,
                  can_post_stories, can_edit_stories, can_delete_stories, can_post_messages=None, can_edit_messages=None,
-                 can_pin_messages=None, can_manage_topics=None, custom_title=None, **kwargs):
+                 can_pin_messages=None, can_manage_topics=None, custom_title=None, can_manage_direct_messages=None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.can_be_edited: bool = can_be_edited
         self.is_anonymous: bool = is_anonymous
@@ -3436,6 +3439,7 @@ class ChatMemberAdministrator(ChatMember):
         self.can_pin_messages: Optional[bool] = can_pin_messages
         self.can_manage_topics: Optional[bool] = can_manage_topics
         self.custom_title: Optional[str] = custom_title
+        self.can_manage_direct_messages: Optional[bool] = can_manage_direct_messages
 
     @property
     def can_manage_voice_chats(self):
@@ -7903,6 +7907,9 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
     :type can_delete_stories: :obj:`bool`
 
+    :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
+    :type can_manage_direct_messages: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatAdministratorRights`
     """
@@ -7919,7 +7926,8 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_post_messages: Optional[bool]=None, can_edit_messages: Optional[bool]=None,
         can_pin_messages: Optional[bool]=None, can_manage_topics: Optional[bool]=None,
         can_post_stories: Optional[bool]=None, can_edit_stories: Optional[bool]=None,
-        can_delete_stories: Optional[bool]=None, **kwargs
+        can_delete_stories: Optional[bool]=None, can_manage_direct_messages: Optional[bool]=None,
+        **kwargs
         ) -> None:
         
         self.is_anonymous: bool = is_anonymous
@@ -7937,6 +7945,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         self.can_post_stories: Optional[bool] = can_post_stories
         self.can_edit_stories: Optional[bool] = can_edit_stories
         self.can_delete_stories: Optional[bool] = can_delete_stories
+        self.can_manage_direct_messages: Optional[bool] = can_manage_direct_messages
 
     def to_dict(self):
         json_dict = {
@@ -7963,6 +7972,8 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
             json_dict['can_edit_stories'] = self.can_edit_stories
         if self.can_delete_stories is not None:
             json_dict['can_delete_stories'] = self.can_delete_stories
+        if self.can_manage_direct_messages is not None:
+            json_dict['can_manage_direct_messages'] = self.can_manage_direct_messages
 
         return json_dict
     
