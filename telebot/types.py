@@ -12923,3 +12923,64 @@ class DirectMessagesTopic(JsonDeserializable):
             obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
     
+
+class SuggestedPostPrice(JsonSerializable):
+    """
+    Describes the price of a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostprice
+
+    :param currency: Currency in which the post will be paid. Currently, must be one of “XTR” for Telegram Stars or “TON” for toncoins
+    :type currency: :obj:`str`
+
+    :param amount: The amount of the currency that will be paid for the post in the smallest units of the currency, i.e. Telegram Stars or nanotoncoins. Currently, price in Telegram Stars must be between 5 and 100000, and price in nanotoncoins must be between 10000000 and 10000000000000.
+    :type amount: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostPrice`
+    """
+    def __init__(self, currency: str, amount: int, **kwargs):
+        self.currency: str = currency
+        self.amount: int = amount
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'currency': self.currency,
+            'amount': self.amount
+        }
+        return data
+    
+
+class SuggestedPostParameters(JsonSerializable):
+    """
+    Contains parameters of a post that is being suggested by the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostparameters
+
+    :param price: Optional. Proposed price for the post. If the field is omitted, then the post is unpaid.
+    :type price: :class:`SuggestedPostPrice`
+
+    :param send_date: Optional. Proposed send date of the post. If specified, then the date must be between 300 second and 2678400 seconds (30 days) in the future. If the field is omitted, then the post can be published at any time within 30 days at the sole discretion of the user who approves it.
+    :type send_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostParameters`
+    """
+    def __init__(self, price: Optional[SuggestedPostPrice] = None, send_date: Optional[int] = None, **kwargs):
+        self.price: Optional[SuggestedPostPrice] = price
+        self.send_date: Optional[int] = send_date
+    
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {}
+        if self.price is not None:
+            data['price'] = self.price.to_dict()
+        if self.send_date is not None:
+            data['send_date'] = self.send_date
+        return data
+    

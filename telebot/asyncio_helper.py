@@ -284,7 +284,7 @@ async def send_message(
         parse_mode=None, disable_notification=None, timeout=None,
         entities=None, protect_content=None,
         message_thread_id=None, reply_parameters=None, link_preview_options=None, business_connection_id=None, message_effect_id=None,
-        allow_paid_broadcast=None, direct_messages_topic_id=None):
+        allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_name = 'sendMessage'
     params = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
@@ -313,6 +313,8 @@ async def send_message(
         params['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         params['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        params['suggested_post_parameters'] = suggested_post_parameters.to_json()
     
     return await _process_request(token, method_name, params=params, method='post')
 
@@ -431,7 +433,8 @@ async def get_chat_member(token, chat_id, user_id):
 async def forward_message(
         token, chat_id, from_chat_id, message_id,
         disable_notification=None, timeout=None, protect_content=None,
-        message_thread_id=None, video_start_timestamp=None, direct_messages_topic_id=None):
+        message_thread_id=None, video_start_timestamp=None, direct_messages_topic_id=None,
+        suggested_post_parameters=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if disable_notification is not None:
@@ -446,13 +449,15 @@ async def forward_message(
         payload['video_start_timestamp'] = video_start_timestamp
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 
 async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None,  
                  reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None,
-                 allow_paid_broadcast=None, video_start_timestamp=None, direct_messages_topic_id=None):
+                 allow_paid_broadcast=None, video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -481,6 +486,8 @@ async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, p
         payload['video_start_timestamp'] = video_start_timestamp
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 async def send_checklist(
@@ -518,7 +525,7 @@ async def send_dice(
         emoji=None, disable_notification=None, 
         reply_markup=None, timeout=None,  protect_content=None,
         message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None,
-        direct_messages_topic_id=None):
+        direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendDice'
     payload = {'chat_id': chat_id}
     if emoji:
@@ -541,6 +548,10 @@ async def send_dice(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 
@@ -551,7 +562,7 @@ async def send_photo(
         caption_entities=None,  protect_content=None,
         message_thread_id=None, has_spoiler=None,reply_parameters=None,
         business_connection_id=None, message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None,
-        direct_messages_topic_id=None):
+        direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -591,13 +602,16 @@ async def send_photo(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 async def send_paid_media(
         token, chat_id, star_count, media,
         caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None,
         disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
-        business_connection_id=None, payload=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
+        business_connection_id=None, payload=None, allow_paid_broadcast=None, direct_messages_topic_id=None,
+        suggested_post_parameters=None):
     method_url = r'sendPaidMedia'
     media_json, files = convert_input_media_array(media)
     _payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
@@ -626,6 +640,8 @@ async def send_paid_media(
         _payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         _payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        _payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
         
     return await _process_request(
         token, method_url, params=_payload,
@@ -670,7 +686,7 @@ async def send_location(
         reply_markup=None, disable_notification=None, 
         timeout=None, horizontal_accuracy=None, heading=None,
         proximity_alert_radius=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
@@ -701,6 +717,8 @@ async def send_location(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 
@@ -758,7 +776,7 @@ async def send_venue(
          reply_markup=None, timeout=None,
          google_place_id=None,
         google_place_type=None, protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
@@ -789,6 +807,8 @@ async def send_venue(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 
@@ -796,7 +816,7 @@ async def send_contact(
         token, chat_id, phone_number, first_name, last_name=None, vcard=None,
         disable_notification=None,  reply_markup=None, timeout=None,
          protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None,
-         allow_paid_broadcast=None, direct_messages_topic_id=None):
+         allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
@@ -821,6 +841,10 @@ async def send_contact(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 
@@ -841,7 +865,7 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
                      thumbnail=None, width=None, height=None, caption_entities=None, 
                      protect_content=None, message_thread_id=None, has_spoiler=None,reply_parameters=None, business_connection_id=None,
                      message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None, cover=None, start_timestamp=None,
-                     direct_messages_topic_id=None):
+                     direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -905,6 +929,8 @@ async def send_video(token, chat_id, data, duration=None, caption=None,  reply_m
         payload['start_timestamp'] = start_timestamp
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -913,7 +939,7 @@ async def send_animation(
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
          width=None, height=None, protect_content=None, message_thread_id=None,
         has_spoiler=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None,
-        allow_paid_broadcast=None, direct_messages_topic_id=None):
+        allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -965,13 +991,15 @@ async def send_animation(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_voice(token, chat_id, voice, caption=None, duration=None,  reply_markup=None,
                parse_mode=None, disable_notification=None, timeout=None, caption_entities=None,
                 protect_content=None, message_thread_id=None,reply_parameters=None,business_connection_id=None, message_effect_id=None,
-                allow_paid_broadcast=None, direct_messages_topic_id=None):
+                allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -1007,13 +1035,15 @@ async def send_voice(token, chat_id, voice, caption=None, duration=None,  reply_
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_video_note(token, chat_id, data, duration=None, length=None,  reply_markup=None,
                           disable_notification=None, timeout=None, thumbnail=None,  protect_content=None,
                           message_thread_id=None,reply_parameters=None, business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None,
-                          direct_messages_topic_id=None):
+                          direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -1055,13 +1085,15 @@ async def send_video_note(token, chat_id, data, duration=None, length=None,  rep
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
 async def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None, 
                      reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
                      caption_entities=None,  protect_content=None, message_thread_id=None,reply_parameters=None, business_connection_id=None,
-                     message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None):
+                     message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -1109,6 +1141,8 @@ async def send_audio(token, chat_id, audio, caption=None, duration=None, perform
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1116,7 +1150,7 @@ async def send_data(token, chat_id, data, data_type,  reply_markup=None, parse_m
                     disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
                      disable_content_type_detection=None, visible_file_name=None, protect_content=None,
                     message_thread_id=None, emoji=None,reply_parameters=None, business_connection_id=None, message_effect_id=None,
-                    allow_paid_broadcast=None, direct_messages_topic_id=None):
+                    allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = await get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -1165,6 +1199,8 @@ async def send_data(token, chat_id, data, data_type,  reply_markup=None, parse_m
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1752,7 +1788,7 @@ async def send_invoice(
         disable_notification=None,  reply_markup=None, provider_data=None,
         timeout=None,  max_tip_amount=None, suggested_tip_amounts=None,
         protect_content=None, message_thread_id=None, reply_parameters=None, message_effect_id=None, allow_paid_broadcast=None,
-        direct_messages_topic_id=None):
+        direct_messages_topic_id=None, suggested_post_parameters=None):
     """
     Use this method to send invoices. On success, the sent Message is returned.
     :param token: Bot's token (you don't need to fill this)
@@ -1843,6 +1879,8 @@ async def send_invoice(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
 
