@@ -7401,7 +7401,7 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     def __init__(self, poll_id: str, option_ids: List[int], user: Optional[User] = None, voter_chat: Optional[Chat] = None, **kwargs):
         self.poll_id: str = poll_id
         self.user: Optional[User] = user
-        self.option_ids: [List[int]] = option_ids
+        self.option_ids: List[int] = option_ids
         self.voter_chat: Optional[Chat] = voter_chat
 
 
