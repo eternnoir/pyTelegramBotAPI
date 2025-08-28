@@ -41,7 +41,9 @@ content_type_service = [
     'chat_background_set', 'forum_topic_created', 'forum_topic_closed', 'forum_topic_reopened', 'forum_topic_edited',
     'general_forum_topic_hidden', 'general_forum_topic_unhidden', 'write_access_allowed', 'users_shared', 'chat_shared',
     'giveaway_created', 'giveaway_winners', 'giveaway_completed', 'boost_added', 'paid_message_price_changed',
-    'checklist_tasks_done', 'checklist_tasks_added', 'direct_message_price_changed',
+    'checklist_tasks_done', 'checklist_tasks_added', 'direct_message_price_changed', 'suggested_post_refunded',
+    'suggested_post_info', 'suggested_post_approved', 'suggested_post_approval_failed', 'suggested_post_declined',
+    'suggested_post_paid'
 ]
 
 #: All update types, should be used for allowed_updates parameter in polling.
