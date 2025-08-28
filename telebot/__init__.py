@@ -2010,14 +2010,14 @@ class TeleBot:
             ))
     
     
-    def approve_suggested_post(self, chat_id: Union[int, str], message_id: int, send_date: Optional[int]=None) -> bool:
+    def approve_suggested_post(self, chat_id: int, message_id: int, send_date: Optional[int]=None) -> bool:
         """
         Use this method to approve a suggested post in a direct messages chat. The bot must have the 'can_post_messages' administrator right in the corresponding channel chat. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#approvesuggestedpost
 
         :param chat_id: Unique identifier for the target direct messages chat
-        :type chat_id: :obj:`int` or :obj:`str`
+        :type chat_id: :obj:`int`
 
         :param message_id: Identifier of a suggested post message to approve
         :type message_id: :obj:`int`
@@ -2032,7 +2032,7 @@ class TeleBot:
         return apihelper.approve_suggested_post(self.token, chat_id, message_id,
             send_date=send_date)
 
-    def decline_suggested_post(self, chat_id: Union[int, str], message_id: int, comment: Optional[str]=None) -> bool:
+    def decline_suggested_post(self, chat_id: int, message_id: int, comment: Optional[str]=None) -> bool:
         """
         Use this method to decline a suggested post in a direct messages chat. The bot must have
         the 'can_manage_direct_messages' administrator right in the corresponding channel chat. Returns True on success.
@@ -2040,7 +2040,7 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#declinesuggestedpost
 
         :param chat_id: Unique identifier for the target direct messages chat
-        :type chat_id: :obj:`int` or :obj:`str`
+        :type chat_id: :obj:`int`
 
         :param message_id: Identifier of a suggested post message to decline
         :type message_id: :obj:`int`

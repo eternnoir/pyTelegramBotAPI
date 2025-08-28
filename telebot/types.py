@@ -13097,18 +13097,19 @@ class SuggestedPostApproved(JsonDeserializable):
     :param price: Optional. Amount paid for the post
     :type price: :class:`SuggestedPostPrice`
 
-    :param send_date: Optional. Date when the post will be published
-    :type send_date: int
+    :param send_date: Date when the post will be published
+    :type send_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`SuggestedPostApproved`
     """
-    def __init__(self, suggested_post_message: Optional[Message] = None,
+    def __init__(self, send_date: int,
+                    suggested_post_message: Optional[Message] = None,
                     price: Optional[SuggestedPostPrice] = None,
-                    send_date: Optional[int] = None, **kwargs):
+                    **kwargs):
         self.suggested_post_message: Optional[Message] = suggested_post_message 
         self.price: Optional[SuggestedPostPrice] = price
-        self.send_date: Optional[int] = send_date
+        self.send_date: int = send_date
 
     @classmethod
     def de_json(cls, json_string):
@@ -13130,11 +13131,16 @@ class SuggestedPostApprovalFailed(JsonDeserializable):
     :param suggested_post_message: Optional. Message containing the suggested post whose approval has failed. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
     :type suggested_post_message: :class:`Message`
 
+    :param price: Expected price of the post
+    :type price: :class:`SuggestedPostPrice`
+
     :return: Instance of the class
     :rtype: :class:`SuggestedPostApprovalFailed`
     """
-    def __init__(self, suggested_post_message: Optional[Message] = None, **kwargs):
+    def __init__(self, price: SuggestedPostPrice,
+                 suggested_post_message: Optional[Message] = None, **kwargs):
         self.suggested_post_message: Optional[Message] = suggested_post_message
+        self.price: SuggestedPostPrice = price
 
     @classmethod
     def de_json(cls, json_string):
@@ -13142,6 +13148,7 @@ class SuggestedPostApprovalFailed(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'suggested_post_message' in obj:
             obj['suggested_post_message'] = Message.de_json(obj['suggested_post_message'])
+        obj['price'] = SuggestedPostPrice.de_json(obj['price'])
         return cls(**obj)
     
 class SuggestedPostDeclined(JsonDeserializable):
@@ -13152,6 +13159,9 @@ class SuggestedPostDeclined(JsonDeserializable):
 
     :param suggested_post_message: Optional. Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
     :type suggested_post_message: :class:`Message`
+
+    :param comment: Optional. Comment with which the post was declined
+    :type comment: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`SuggestedPostDeclined`
@@ -13221,9 +13231,9 @@ class SuggestedPostRefunded(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`SuggestedPostRefunded`
     """
-    def __init__(self, suggested_post_message: Optional[Message] = None, reason: Optional[str] = None, **kwargs):
+    def __init__(self, reason: str, suggested_post_message: Optional[Message] = None, **kwargs):
         self.suggested_post_message: Optional[Message] = suggested_post_message
-        self.reason: Optional[str] = reason
+        self.reason: str = reason
 
     @classmethod
     def de_json(cls, json_string):
