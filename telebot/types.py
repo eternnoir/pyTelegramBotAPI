@@ -615,6 +615,9 @@ class ChatFullInfo(JsonDeserializable):
     :param is_forum: Optional. True, if the supergroup chat is a forum (has topics enabled)
     :type is_forum: :obj:`bool`
 
+    :param is_direct_messages: Optional. True, if the chat is the direct messages chat of a channel
+    :type is_direct_messages: :obj:`bool`
+
     :param max_reaction_count: Optional. The maximum number of reactions that can be set on a message in the chat
     :type max_reaction_count: :obj:`int`
 
@@ -638,6 +641,9 @@ class ChatFullInfo(JsonDeserializable):
 
     :param personal_chat: Optional. For private chats, the personal channel of the user. Returned only in getChat.
     :type personal_chat: :class:`telebot.types.Chat`
+
+    :param parent_chat: Optional. Information about the corresponding channel chat; for direct messages chats only
+    :type parent_chat: :class:`telebot.types.Chat`
 
     :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels. Returned only in getChat.
     :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
@@ -767,6 +773,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['birthdate'] = Birthdate.de_json(obj['birthdate'])
         if 'accepted_gift_types' in obj:
             obj['accepted_gift_types'] = AcceptedGiftTypes.de_json(obj['accepted_gift_types'])
+        if 'parent_chat' in obj:
+            obj['parent_chat'] = Chat.de_json(obj['parent_chat'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -783,7 +791,7 @@ class ChatFullInfo(JsonDeserializable):
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None,
                     can_send_paid_media=None,
-                    accepted_gift_types=None, **kwargs):
+                    accepted_gift_types=None, is_direct_messages=None, parent_chat=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -829,6 +837,8 @@ class ChatFullInfo(JsonDeserializable):
         self.birthdate: Optional[Birthdate] = birthdate
         self.can_send_paid_media: Optional[bool] = can_send_paid_media
         self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
+        self.is_direct_messages: Optional[bool] = is_direct_messages
+        self.parent_chat: Optional[Chat] = parent_chat
     @property
     def can_send_gift(self) -> bool:
         """
@@ -919,6 +929,9 @@ class Message(JsonDeserializable):
     :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
     :type message_thread_id: :obj:`int`
 
+    :param direct_messages_topic: Optional. Information about the direct messages chat topic that contains the message
+    :type direct_messages_topic: :class:`telebot.types.DirectMessagesTopic`
+
     :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the
         field contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
     :type from_user: :class:`telebot.types.User`
@@ -968,6 +981,9 @@ class Message(JsonDeserializable):
     :param reply_to_story: Optional. For replies to a story, the original story
     :type reply_to_story: :class:`telebot.types.Story`
 
+    :param reply_to_checklist_task_id: Optional. Identifier of the specific checklist task that is being replied to
+    :type reply_to_checklist_task_id: :obj:`str`
+
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
@@ -980,6 +996,10 @@ class Message(JsonDeserializable):
     :param is_from_offline: Optional. True, if the message was sent by an implicit action, for example,
         as an away or a greeting business message, or as a scheduled message
     :type is_from_offline: :obj:`bool`
+
+    :param is_paid_post: Optional. True, if the message is a paid post. Note that such posts must not be
+        deleted for 24 hours to receive the payment and can't be edited.
+    :type is_paid_post: :obj:`bool`
 
     :param media_group_id: Optional. The unique identifier of a media message group this message belongs to
     :type media_group_id: :obj:`str`
@@ -1001,6 +1021,10 @@ class Message(JsonDeserializable):
     :param link_preview_options: Optional. Options used for link preview generation for the message,
         if it is a text message and link preview options were changed
     :type link_preview_options: :class:`telebot.types.LinkPreviewOptions`
+
+    :param suggested_post_info: Optional. Information about suggested post parameters if the message is a suggested post
+        in a channel direct messages chat. If the message is an approved or declined suggested post, then it can't be edited.
+    :type suggested_post_info: :class:`telebot.types.SuggestedPostInfo`
 
     :param effect_id: Optional. Unique identifier of the message effect added to the message
     :type effect_id: :obj:`str`
@@ -1205,6 +1229,21 @@ class Message(JsonDeserializable):
 
     :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
     :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
+
+    :param suggested_post_approved: Optional. Service message: a suggested post was approved
+    :type suggested_post_approved: :class:`telebot.types.SuggestedPostApproved
+
+    :param suggested_post_approval_failed: Optional. Service message: approval of a suggested post has failed
+    :type suggested_post_approval_failed: :class:`telebot.types.SuggestedPost
+
+    :param suggested_post_declined: Optional. Service message: a suggested post was declined
+    :type suggested_post_declined: :class:`telebot.types.SuggestedPostDecl
+
+    :param suggested_post_paid: Optional. Service message: payment for a suggested post was received
+    :type suggested_post_paid: :class:`telebot.types.SuggestedPostPaid`
+
+    :param suggested_post_refunded: Optional. Service message: payment for a suggested post was refunded
+    :type suggested_post_refunded: :class:`telebot.types.SuggestedPostRefunded`
 
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
@@ -1484,6 +1523,30 @@ class Message(JsonDeserializable):
         if 'direct_message_price_changed' in obj:
             opts['direct_message_price_changed'] = DirectMessagePriceChanged.de_json(obj['direct_message_price_changed'])
             content_type = 'direct_message_price_changed'
+        if 'reply_to_checklist_task_id' in obj:
+            opts['reply_to_checklist_task_id'] = obj['reply_to_checklist_task_id']
+        if 'direct_messages_topic' in obj:
+            opts['direct_messages_topic'] = DirectMessagesTopic.de_json(obj['direct_messages_topic'])
+        if 'is_paid_post' in obj:
+            opts['is_paid_post'] = obj['is_paid_post']
+        if 'suggested_post_info' in obj:
+            opts['suggested_post_info'] = SuggestedPostInfo.de_json(obj['suggested_post_info'])
+            content_type = 'suggested_post_info'
+        if 'suggested_post_approved' in obj:
+            opts['suggested_post_approved'] = SuggestedPostApproved.de_json(obj['suggested_post_approved'])
+            content_type = 'suggested_post_approved'
+        if 'suggested_post_approval_failed' in obj:
+            opts['suggested_post_approval_failed'] = SuggestedPostApprovalFailed.de_json(obj['suggested_post_approval_failed'])
+            content_type = 'suggested_post_approval_failed'
+        if 'suggested_post_declined' in obj:
+            opts['suggested_post_declined'] = SuggestedPostDeclined.de_json(obj['suggested_post_declined'])
+            content_type = 'suggested_post_declined'
+        if 'suggested_post_paid' in obj:
+            opts['suggested_post_paid'] = SuggestedPostPaid.de_json(obj['suggested_post_paid'])
+            content_type = 'suggested_post_paid'
+        if 'suggested_post_refunded' in obj:
+            opts['suggested_post_refunded'] = SuggestedPostRefunded.de_json(obj['suggested_post_refunded'])
+            content_type = 'suggested_post_refunded'
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1610,6 +1673,15 @@ class Message(JsonDeserializable):
         self.checklist_tasks_done: Optional[ChecklistTasksDone] = None
         self.checklist_tasks_added: Optional[List[ChecklistTasksAdded]] = None
         self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
+        self.reply_to_checklist_task_id: Optional[int] = None
+        self.direct_messages_topic: Optional[DirectMessagesTopic] = None
+        self.is_paid_post: Optional[bool] = None
+        self.suggested_post_info: Optional[SuggestedPostInfo] = None
+        self.suggested_post_approved: Optional[SuggestedPostApproved] = None
+        self.suggested_post_approval_failed: Optional[SuggestedPostApprovalFailed] = None
+        self.suggested_post_declined: Optional[SuggestedPostDeclined] = None
+        self.suggested_post_paid: Optional[SuggestedPostPaid] = None
+        self.suggested_post_refunded: Optional[SuggestedPostRefunded] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -3386,6 +3458,9 @@ class ChatMemberAdministrator(ChatMember):
     :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
     :type can_manage_topics: :obj:`bool`
 
+    :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
+    :type can_manage_direct_messages: :obj:`bool`
+
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
 
@@ -3395,7 +3470,7 @@ class ChatMemberAdministrator(ChatMember):
     def __init__(self, user, status, can_be_edited, is_anonymous, can_manage_chat, can_delete_messages,
                  can_manage_video_chats, can_restrict_members, can_promote_members, can_change_info, can_invite_users,
                  can_post_stories, can_edit_stories, can_delete_stories, can_post_messages=None, can_edit_messages=None,
-                 can_pin_messages=None, can_manage_topics=None, custom_title=None, **kwargs):
+                 can_pin_messages=None, can_manage_topics=None, custom_title=None, can_manage_direct_messages=None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.can_be_edited: bool = can_be_edited
         self.is_anonymous: bool = is_anonymous
@@ -3414,6 +3489,7 @@ class ChatMemberAdministrator(ChatMember):
         self.can_pin_messages: Optional[bool] = can_pin_messages
         self.can_manage_topics: Optional[bool] = can_manage_topics
         self.custom_title: Optional[str] = custom_title
+        self.can_manage_direct_messages: Optional[bool] = can_manage_direct_messages
 
     @property
     def can_manage_voice_chats(self):
@@ -7880,6 +7956,9 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
     :type can_delete_stories: :obj:`bool`
 
+    :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
+    :type can_manage_direct_messages: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatAdministratorRights`
     """
@@ -7896,7 +7975,8 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_post_messages: Optional[bool]=None, can_edit_messages: Optional[bool]=None,
         can_pin_messages: Optional[bool]=None, can_manage_topics: Optional[bool]=None,
         can_post_stories: Optional[bool]=None, can_edit_stories: Optional[bool]=None,
-        can_delete_stories: Optional[bool]=None, **kwargs
+        can_delete_stories: Optional[bool]=None, can_manage_direct_messages: Optional[bool]=None,
+        **kwargs
         ) -> None:
 
         self.is_anonymous: bool = is_anonymous
@@ -7914,6 +7994,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         self.can_post_stories: Optional[bool] = can_post_stories
         self.can_edit_stories: Optional[bool] = can_edit_stories
         self.can_delete_stories: Optional[bool] = can_delete_stories
+        self.can_manage_direct_messages: Optional[bool] = can_manage_direct_messages
 
     def to_dict(self):
         json_dict = {
@@ -7940,6 +8021,8 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
             json_dict['can_edit_stories'] = self.can_edit_stories
         if self.can_delete_stories is not None:
             json_dict['can_delete_stories'] = self.can_delete_stories
+        if self.can_manage_direct_messages is not None:
+            json_dict['can_manage_direct_messages'] = self.can_manage_direct_messages
 
         return json_dict
 
@@ -9389,6 +9472,9 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param quote_position: Optional. Position of the quote in the original message in UTF-16 code units
     :type quote_position: :obj:`int`
 
+    :param checklist_task_id: Optional. Optional. Identifier of the specific checklist task to be replied to
+    :type checklist_task_id: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`ReplyParameters`
     """
@@ -9404,7 +9490,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
-                 quote_position: Optional[int] = None, **kwargs) -> None:
+                 quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -9412,6 +9498,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.quote_parse_mode: Optional[str] = quote_parse_mode
         self.quote_entities: Optional[List[MessageEntity]] = quote_entities
         self.quote_position: Optional[int] = quote_position
+        self.checklist_task_id: Optional[int] = checklist_task_id
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -9429,6 +9516,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['quote_entities'] = [entity.to_dict() for entity in self.quote_entities]
         if self.quote_position is not None:
             json_dict['quote_position'] = self.quote_position
+        if self.checklist_task_id is not None:
+            json_dict['checklist_task_id'] = self.checklist_task_id
         return json_dict
 
     def to_json(self) -> str:
@@ -11259,23 +11348,30 @@ class Gift(JsonDeserializable):
     :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
     :type remaining_count: :obj:`int`
 
+    :param publisher_chat: Optional. Information about the chat that published the gift
+    :type publisher_chat: :class:`Chat`
+
     :return: Instance of the class
     :rtype: :class:`Gift`
     """
 
-    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, **kwargs):
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, 
+                    publisher_chat=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
         self.total_count: Optional[int] = total_count
         self.remaining_count: Optional[int] = remaining_count
         self.upgrade_star_count: Optional[int] = upgrade_star_count
+        self.publisher_chat: Optional[Chat] = publisher_chat
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'publisher_chat' in obj:
+            obj['publisher_chat'] = Chat.de_json(obj['publisher_chat'])
         return cls(**obj)
 
 
@@ -11785,16 +11881,20 @@ class UniqueGift(JsonDeserializable):
     :param backdrop: Backdrop of the gift
     :type backdrop: :class:`UniqueGiftBackdrop`
 
+    :param publisher_chat: Optional. Information about the chat that published the gift
+    :type publisher_chat: :class:`Chat`
+
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, publisher_chat=None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
         self.model: UniqueGiftModel = model
         self.symbol: UniqueGiftSymbol = symbol
         self.backdrop: UniqueGiftBackdrop = backdrop
+        self.publisher_chat: Optional[Chat] = publisher_chat
 
     @classmethod
     def de_json(cls, json_string):
@@ -11803,6 +11903,8 @@ class UniqueGift(JsonDeserializable):
         obj['model'] = UniqueGiftModel.de_json(obj['model'])
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
+        if 'publisher_chat' in obj:
+            obj['publisher_chat'] = Chat.de_json(obj['publisher_chat'])
         return cls(**obj)
 
 
@@ -12852,3 +12954,293 @@ class DirectMessagePriceChanged(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class DirectMessagesTopic(JsonDeserializable):
+    """
+    Describes a topic of a direct messages chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#directmessagestopic
+
+    :param topic_id: Unique identifier of the topic
+    :type topic_id: :obj:`int`
+
+    :param user: Optional. Information about the user that created the topic. Currently, it is always present
+    :type user: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`DirectMessagesTopic`
+    """
+    def __init__(self, topic_id: int, user: Optional[User] = None, **kwargs):
+        self.topic_id: int = topic_id
+        self.user: Optional[User] = user # for future compatibility, currently always present
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'user' in obj:
+            obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+    
+
+class SuggestedPostPrice(JsonSerializable, JsonDeserializable):
+    """
+    Describes the price of a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostprice
+
+    :param currency: Currency in which the post will be paid. Currently, must be one of “XTR” for Telegram Stars or “TON” for toncoins
+    :type currency: :obj:`str`
+
+    :param amount: The amount of the currency that will be paid for the post in the smallest units of the currency, i.e. Telegram Stars or nanotoncoins. Currently, price in Telegram Stars must be between 5 and 100000, and price in nanotoncoins must be between 10000000 and 10000000000000.
+    :type amount: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostPrice`
+    """
+    def __init__(self, currency: str, amount: int, **kwargs):
+        self.currency: str = currency
+        self.amount: int = amount
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'currency': self.currency,
+            'amount': self.amount
+        }
+        return data 
+    
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class SuggestedPostParameters(JsonSerializable):
+    """
+    Contains parameters of a post that is being suggested by the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostparameters
+
+    :param price: Optional. Proposed price for the post. If the field is omitted, then the post is unpaid.
+    :type price: :class:`SuggestedPostPrice`
+
+    :param send_date: Optional. Proposed send date of the post. If specified, then the date must be between 300 second and 2678400 seconds (30 days) in the future. If the field is omitted, then the post can be published at any time within 30 days at the sole discretion of the user who approves it.
+    :type send_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostParameters`
+    """
+    def __init__(self, price: Optional[SuggestedPostPrice] = None, send_date: Optional[int] = None, **kwargs):
+        self.price: Optional[SuggestedPostPrice] = price
+        self.send_date: Optional[int] = send_date
+    
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {}
+        if self.price is not None:
+            data['price'] = self.price.to_dict()
+        if self.send_date is not None:
+            data['send_date'] = self.send_date
+        return data
+    
+
+class SuggestedPostInfo(JsonDeserializable):
+    """
+    Contains information about a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostinfo
+
+    :param state: State of the suggested post. Currently, it can be one of “pending”, “approved”, “declined”.
+    :type state: :obj:`str`
+
+    :param price: Optional. Proposed price of the post. If the field is omitted, then the post is unpaid.
+    :type price: :class:`SuggestedPostPrice`
+
+    :param send_date: Optional. Proposed send date of the post. If the field is omitted, then the post can be published at any time within 30 days at the sole discretion of the user or administrator who approves it.
+    :type send_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostInfo`
+    """
+    def __init__(self, state: str, price: Optional[SuggestedPostPrice]
+                    = None, send_date: Optional[int] = None, **kwargs):
+        self.state: str = state
+        self.price: Optional[SuggestedPostPrice] = price
+        self.send_date: Optional[int] = send_date
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'price' in obj:
+            obj['price'] = SuggestedPostPrice.de_json(obj['price'])
+        return cls(**obj)
+    
+
+class SuggestedPostApproved(JsonDeserializable):
+    """
+    Describes a service message about the approval of a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostapproved
+
+    :param suggested_post_message: Optional. Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type suggested_post_message: :class:`Message`
+
+    :param price: Optional. Amount paid for the post
+    :type price: :class:`SuggestedPostPrice`
+
+    :param send_date: Date when the post will be published
+    :type send_date: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostApproved`
+    """
+    def __init__(self, send_date: int,
+                    suggested_post_message: Optional[Message] = None,
+                    price: Optional[SuggestedPostPrice] = None,
+                    **kwargs):
+        self.suggested_post_message: Optional[Message] = suggested_post_message 
+        self.price: Optional[SuggestedPostPrice] = price
+        self.send_date: int = send_date
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'suggested_post_message' in obj:
+            obj['suggested_post_message'] = Message.de_json(obj['suggested_post_message'])
+        if 'price' in obj:
+            obj['price'] = SuggestedPostPrice.de_json(obj['price'])
+        return cls(**obj)
+
+class SuggestedPostApprovalFailed(JsonDeserializable):
+    """
+    Describes a service message about the failed approval of a suggested post.
+    Currently, only caused by insufficient user funds at the time of approval.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostapprovalfailed
+
+    :param suggested_post_message: Optional. Message containing the suggested post whose approval has failed. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type suggested_post_message: :class:`Message`
+
+    :param price: Expected price of the post
+    :type price: :class:`SuggestedPostPrice`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostApprovalFailed`
+    """
+    def __init__(self, price: SuggestedPostPrice,
+                 suggested_post_message: Optional[Message] = None, **kwargs):
+        self.suggested_post_message: Optional[Message] = suggested_post_message
+        self.price: SuggestedPostPrice = price
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'suggested_post_message' in obj:
+            obj['suggested_post_message'] = Message.de_json(obj['suggested_post_message'])
+        obj['price'] = SuggestedPostPrice.de_json(obj['price'])
+        return cls(**obj)
+    
+class SuggestedPostDeclined(JsonDeserializable):
+    """
+    Describes a service message about the rejection of a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostdeclined
+
+    :param suggested_post_message: Optional. Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type suggested_post_message: :class:`Message`
+
+    :param comment: Optional. Comment with which the post was declined
+    :type comment: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostDeclined`
+    """
+    def __init__(self, suggested_post_message: Optional[Message] = None, comment: Optional[str] = None, **kwargs):
+        self.suggested_post_message: Optional[Message] = suggested_post_message
+        self.comment: Optional[str] = comment
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'suggested_post_message' in obj:
+            obj['suggested_post_message'] = Message.de_json(obj['suggested_post_message'])
+        return cls(**obj)
+    
+class SuggestedPostPaid(JsonDeserializable):
+    """
+    Describes a service message about a successful payment for a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostpaid
+
+    :param suggested_post_message: Optional. Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type suggested_post_message: :class:`Message`
+
+    :param currency: Currency in which the payment was made. Currently, one of “XTR” for Telegram Stars or “TON” for toncoins
+    :type currency: :obj:`str`
+
+    :param amount: Optional. The amount of the currency that was received by the channel in nanotoncoins; for payments in toncoins only
+    :type amount: :obj:`int`
+
+    :param star_amount: Optional. The amount of Telegram Stars that was received by the channel; for payments in Telegram Stars only
+    :type star_amount: :class:`StarAmount`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostPaid`
+    """
+    def __init__(self, currency: str,suggested_post_message: Optional[Message] = None,
+                    amount: Optional[int] = None,
+                    star_amount: Optional[StarAmount] = None, **kwargs):
+        self.suggested_post_message: Optional[Message] = suggested_post_message
+        self.currency: str = currency
+        self.amount: Optional[int] = amount
+        self.star_amount: Optional[StarAmount] = star_amount
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'suggested_post_message' in obj:
+            obj['suggested_post_message'] = Message.de_json(obj['suggested_post_message'])
+        if 'star_amount' in obj:
+            obj['star_amount'] = StarAmount.de_json(obj['star_amount'])
+        return cls(**obj)
+    
+class SuggestedPostRefunded(JsonDeserializable):
+    """
+    Describes a service message about a payment refund for a suggested post.
+
+    Telegram documentation: https://core.telegram.org/bots/api#suggestedpostrefunded
+
+    :param suggested_post_message: Optional. Message containing the suggested post. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type suggested_post_message: :class:`Message`
+
+    :param reason: Reason for the refund. Currently, one of “post_deleted” if the post was deleted within 24 hours of being posted or removed from scheduled messages without being posted, or “payment_refunded” if the payer refunded their payment.
+    :type reason: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`SuggestedPostRefunded`
+    """
+    def __init__(self, reason: str, suggested_post_message: Optional[Message] = None, **kwargs):
+        self.suggested_post_message: Optional[Message] = suggested_post_message
+        self.reason: str = reason
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'suggested_post_message' in obj:
+            obj['suggested_post_message'] = Message.de_json(obj['suggested_post_message'])
+        return cls(**obj)
+    
+
+    
