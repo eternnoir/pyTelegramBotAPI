@@ -5148,8 +5148,7 @@ class AsyncTeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
-            direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> List[types.Message]:
+            direct_messages_topic_id: Optional[int]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -5197,11 +5196,6 @@ class AsyncTeleBot:
             required if the message is sent to a direct messages chat
         :type direct_messages_topic_id: :obj:`int`
 
-        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
-            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
-            is automatically declined.
-        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
-
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -5236,8 +5230,7 @@ class AsyncTeleBot:
 
         result = await asyncio_helper.send_media_group(
             self.token, chat_id, media, disable_notification, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-            allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
-            suggested_post_parameters=suggested_post_parameters)
+            allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id)
         return [types.Message.de_json(msg) for msg in result]
 
     async def send_location(
