@@ -1691,7 +1691,9 @@ class TeleBot:
             link_preview_options : Optional[types.LinkPreviewOptions]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -1754,6 +1756,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1802,7 +1813,10 @@ class TeleBot:
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, entities=entities, protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, link_preview_options=link_preview_options, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
 
     def forward_message(
@@ -1811,7 +1825,9 @@ class TeleBot:
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            video_start_timestamp: Optional[int]=None) -> types.Message:
+            video_start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -1841,6 +1857,15 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1851,7 +1876,10 @@ class TeleBot:
             apihelper.forward_message(
                 self.token, chat_id, from_chat_id, message_id, disable_notification=disable_notification,
                 timeout=timeout, protect_content=protect_content, message_thread_id=message_thread_id,
-                video_start_timestamp=video_start_timestamp))
+                video_start_timestamp=video_start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
 
     def copy_message(
@@ -1871,7 +1899,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
-            video_start_timestamp: Optional[int]=None) -> types.MessageID:
+            video_start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
@@ -1934,6 +1964,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
@@ -1966,8 +2005,54 @@ class TeleBot:
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
-                video_start_timestamp=video_start_timestamp))
+                video_start_timestamp=video_start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            ))
+    
+    
+    def approve_suggested_post(self, chat_id: int, message_id: int, send_date: Optional[int]=None) -> bool:
+        """
+        Use this method to approve a suggested post in a direct messages chat. The bot must have the 'can_post_messages' administrator right in the corresponding channel chat. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#approvesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int`
+
+        :param message_id: Identifier of a suggested post message to approve
+        :type message_id: :obj:`int`
+
+        :param send_date: Point in time (Unix timestamp) when the post is expected to be published; omit if the date has already been specified when the suggested post was created.
+            If specified, then the date must be not more than 2678400 seconds (30 days) in the future
+        :type send_date: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.approve_suggested_post(self.token, chat_id, message_id,
+            send_date=send_date)
+
+    def decline_suggested_post(self, chat_id: int, message_id: int, comment: Optional[str]=None) -> bool:
+        """
+        Use this method to decline a suggested post in a direct messages chat. The bot must have
+        the 'can_manage_direct_messages' administrator right in the corresponding channel chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#declinesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int`
+
+        :param message_id: Identifier of a suggested post message to decline
+        :type message_id: :obj:`int`
+
+        :param comment: Comment for the creator of the suggested post; 0-128 characters
+        :type comment: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.decline_suggested_post(self.token, chat_id, message_id,
+            comment=comment)
 
     def delete_message(self, chat_id: Union[int, str], message_id: int,
             timeout: Optional[int]=None) -> bool:
@@ -2019,7 +2104,7 @@ class TeleBot:
 
     def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                          disable_notification: Optional[bool]=None, message_thread_id: Optional[int]=None,
-                         protect_content: Optional[bool]=None) -> List[types.MessageID]:
+                         protect_content: Optional[bool]=None, direct_messages_topic_id: Optional[int]=None) -> List[types.MessageID]:
         """
         Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped.
         Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages.
@@ -2045,6 +2130,10 @@ class TeleBot:
         :param protect_content: Protects the contents of the forwarded message from forwarding and saving
         :type protect_content: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
@@ -2055,13 +2144,14 @@ class TeleBot:
         result = apihelper.forward_messages(
             self.token, chat_id, from_chat_id, message_ids,
             disable_notification=disable_notification, message_thread_id=message_thread_id,
-            protect_content=protect_content)
+            protect_content=protect_content, direct_messages_topic_id=direct_messages_topic_id)
         return [types.MessageID.de_json(message_id) for message_id in result]
 
 
     def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
-                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
+                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None,
+                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageID]:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -2093,6 +2183,10 @@ class TeleBot:
         :param remove_caption: Pass True to copy the messages without their captions
         :type remove_caption: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, an array of MessageId of the sent messages is returned.
         :rtype: :obj:`list` of :class:`telebot.types.MessageID`
         """
@@ -2101,7 +2195,8 @@ class TeleBot:
 
         result = apihelper.copy_messages(
             self.token, chat_id, from_chat_id, message_ids, disable_notification=disable_notification,
-            message_thread_id=message_thread_id, protect_content=protect_content, remove_caption=remove_caption)
+            message_thread_id=message_thread_id, protect_content=protect_content, remove_caption=remove_caption, 
+            direct_messages_topic_id=direct_messages_topic_id)
         return [types.MessageID.de_json(message_id) for message_id in result]
 
     def send_checklist(
@@ -2201,7 +2296,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -2250,6 +2347,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2279,7 +2385,10 @@ class TeleBot:
                 self.token, chat_id, emoji=emoji, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
 
 
@@ -2299,7 +2408,9 @@ class TeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -2364,6 +2475,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2396,8 +2516,10 @@ class TeleBot:
                 caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast))
-
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     def send_audio(
             self, chat_id: Union[int, str], audio: Union[Any, str],
@@ -2417,7 +2539,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2497,6 +2621,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2532,8 +2665,10 @@ class TeleBot:
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
-
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     def send_voice(
             self, chat_id: Union[int, str], voice: Union[Any, str],
@@ -2550,7 +2685,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
@@ -2611,6 +2748,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -2641,7 +2787,9 @@ class TeleBot:
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
         )
 
 
@@ -2664,7 +2812,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -2737,6 +2887,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2781,7 +2940,8 @@ class TeleBot:
                 timeout=timeout, caption=caption, thumbnail=thumbnail, caption_entities=caption_entities,
                 disable_content_type_detection=disable_content_type_detection, visible_file_name=visible_file_name,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
 
@@ -2800,7 +2960,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2856,6 +3018,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2890,7 +3061,8 @@ class TeleBot:
                 reply_markup=reply_markup, disable_notification=disable_notification, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
 
@@ -2920,7 +3092,9 @@ class TeleBot:
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
             cover: Optional[Union[Any, str]]=None,
-            start_timestamp: Optional[int]=None) -> types.Message:
+            start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
 
@@ -3014,6 +3188,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3056,7 +3239,8 @@ class TeleBot:
                 protect_content=protect_content, message_thread_id=message_thread_id, has_spoiler=has_spoiler,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
-                cover=cover, start_timestamp=start_timestamp)
+                cover=cover, start_timestamp=start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
         )
 
 
@@ -3082,7 +3266,9 @@ class TeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -3165,6 +3351,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3201,7 +3396,8 @@ class TeleBot:
                 thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 width=width, height=height, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 has_spoiler=has_spoiler, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast)
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
             )
 
 
@@ -3221,7 +3417,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -3286,6 +3484,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3319,7 +3526,8 @@ class TeleBot:
                 self.token, chat_id, data, duration=duration, length=length, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, thumbnail=thumbnail,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
     def send_paid_media(
@@ -3328,7 +3536,9 @@ class TeleBot:
             show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None,
-            payload: Optional[str]=None, allow_paid_broadcast: Optional[bool]=None
+            payload: Optional[str]=None, allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None
     ) -> types.Message:
         """
         Use this method to send paid media to channel chats. On success, the sent Message is returned.
@@ -3378,6 +3588,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3387,7 +3606,8 @@ class TeleBot:
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
                 reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id,
-                payload=payload, allow_paid_broadcast=allow_paid_broadcast)
+                payload=payload, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
         )
 
 
@@ -3405,7 +3625,8 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> List[types.Message]:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
@@ -3449,6 +3670,10 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -3482,7 +3707,8 @@ class TeleBot:
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification=disable_notification, timeout=timeout,
             protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-            business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+            business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+            direct_messages_topic_id=direct_messages_topic_id)
         return [types.Message.de_json(msg) for msg in result]
 
 
@@ -3503,7 +3729,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -3566,6 +3794,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3596,7 +3833,8 @@ class TeleBot:
                 disable_notification=disable_notification, timeout=timeout, horizontal_accuracy=horizontal_accuracy,
                 heading=heading, proximity_alert_radius=proximity_alert_radius, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
             )
 
 
@@ -3728,7 +3966,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
 
@@ -3798,6 +4038,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3828,7 +4077,8 @@ class TeleBot:
                 foursquare_type=foursquare_type, disable_notification=disable_notification, reply_markup=reply_markup,
                 timeout=timeout, google_place_id=google_place_id, google_place_type=google_place_type,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
             )
 
 
@@ -3845,7 +4095,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -3902,6 +4154,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3931,7 +4192,8 @@ class TeleBot:
                 self.token, chat_id, phone_number, first_name, last_name=last_name, vcard=vcard,
                 disable_notification=disable_notification, reply_markup=reply_markup, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
             )
 
 
@@ -4154,7 +4416,8 @@ class TeleBot:
             can_manage_topics: Optional[bool]=None,
             can_post_stories: Optional[bool]=None,
             can_edit_stories: Optional[bool]=None,
-            can_delete_stories: Optional[bool]=None) -> bool:
+            can_delete_stories: Optional[bool]=None,
+            can_manage_direct_messages: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -4224,6 +4487,10 @@ class TeleBot:
         :param can_delete_stories: Pass True if the administrator can delete the channel's stories
         :type can_delete_stories: :obj:`bool`
 
+        :param can_manage_direct_messages: Pass True if the administrator can manage direct messages
+            within the channel and decline suggested posts; for channels only
+        :type can_manage_direct_messages: :obj:`bool`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
@@ -4240,7 +4507,8 @@ class TeleBot:
             is_anonymous=is_anonymous, can_manage_chat=can_manage_chat,
             can_manage_video_chats=can_manage_video_chats, can_manage_topics=can_manage_topics,
             can_post_stories=can_post_stories, can_edit_stories=can_edit_stories,
-            can_delete_stories=can_delete_stories)
+            can_delete_stories=can_delete_stories, can_manage_direct_messages=can_manage_direct_messages,
+        )
 
 
     def set_chat_administrator_custom_title(
@@ -5374,7 +5642,9 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Sends invoice.
 
@@ -5487,6 +5757,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -5526,7 +5805,8 @@ class TeleBot:
                 provider_data=provider_data, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 max_tip_amount=max_tip_amount, suggested_tip_amounts=suggested_tip_amounts,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
     def create_invoice_link(self,
@@ -8689,7 +8969,7 @@ class TeleBot:
         self.add_message_reaction_count_handler(handler_dict)
 
 
-    def inline_handler(self, func, **kwargs):
+    def inline_handler(self, func=None, **kwargs):
         """
         Handles new incoming inline query.
         As a parameter to the decorator function, it passes :class:`telebot.types.InlineQuery` object.
