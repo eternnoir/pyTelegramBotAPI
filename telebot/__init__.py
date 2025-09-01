@@ -7408,7 +7408,7 @@ class TeleBot:
         if contains_masks is not None:
             logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
             if sticker_type is None:
-               sticker_type = 'mask' if contains_masks else 'regular'
+                sticker_type = 'mask' if contains_masks else 'regular'
 
         if stickers is None:
             stickers = png_sticker or tgs_sticker or webm_sticker
