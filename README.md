@@ -572,7 +572,7 @@ Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra deta
 
 ## Advanced use of the API
 
-### Using local Bot API Sever
+### Using local Bot API Server
 Since version 5.0 of the Bot API, you have the possibility to run your own [Local Bot API Server](https://core.telegram.org/bots/api#using-a-local-bot-api-server).
 pyTelegramBotAPI also supports this feature.
 ```python
