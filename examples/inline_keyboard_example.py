@@ -2,9 +2,9 @@
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-TELEGRAM_TOKEN = '<TOKEN>'
+TELEGRAM_TOKEN = '<8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo>'
 
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 def gen_markup():
     markup = InlineKeyboardMarkup()
