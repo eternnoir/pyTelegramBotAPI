@@ -9,13 +9,13 @@ import telebot
 import json
 import os
 
-API_TOKEN = os.environ['TELEGRAM_TOKEN']
+API_TOKEN = os.environ['8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo']
 
 
 logger = telebot.logger
 telebot.logger.setLevel(logging.INFO)
 
-bot = telebot.TeleBot(API_TOKEN, threaded=False)
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo, threaded=False)
 
 
 def process_event(event):
@@ -39,8 +39,8 @@ def lambda_handler(event, context):
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
     bot.reply_to(message,
-                 ("Hi there, I am EchoBot.\n"
-                  "I am here to echo your kind words back to you."))
+                 ("Hi there, I am BotMereun.\n"
+                  "I am here to your kind words back to you."))
 
 
 # Handle all other messages
