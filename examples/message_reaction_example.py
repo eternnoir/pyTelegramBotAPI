@@ -14,8 +14,8 @@ import random
 import telebot
 from telebot.types import ReactionTypeEmoji
 
-API_TOKEN = '<api_token>'
-bot = telebot.TeleBot(API_TOKEN)
+API_TOKEN = '<8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo>'
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 
 # Send a reactions to all messages with content_type 'text' (content_types defaults to ['text'])
