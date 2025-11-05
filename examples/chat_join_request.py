@@ -1,7 +1,7 @@
 import telebot
 
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot('8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo')
 
 @bot.chat_join_request_handler()
 def make_some(message: telebot.types.ChatJoinRequest):
