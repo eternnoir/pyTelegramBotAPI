@@ -1,9 +1,9 @@
 import telebot
 
-TOKEN = 'YOUR BOT TOKEN'
-CHAT_ID = 'YOUR CHAT ID'
+TOKEN = '8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo'
+CHAT_ID = '30287546'
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 ret_msg = bot.send_voice(CHAT_ID, open('tests/test_data/record.ogg', 'rb'))
 
