@@ -8,8 +8,8 @@
 import telebot
 
 
-API_TOKEN = '<api_token>'
-bot = telebot.TeleBot(API_TOKEN)
+API_TOKEN = '<8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo>'
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 # use in for delete with the necessary scope and language_code if necessary
 bot.delete_my_commands(scope=None, language_code=None)
