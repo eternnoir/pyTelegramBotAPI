@@ -1,8 +1,8 @@
 import telebot
 
-api_token = 'token'
+api_token = '8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo'
 
-bot = telebot.TeleBot(api_token)
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 def start_executor(message):
     bot.send_message(message.chat.id, 'Hello!')
