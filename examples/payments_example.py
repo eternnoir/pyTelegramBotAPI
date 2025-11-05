@@ -1,7 +1,7 @@
 import telebot
 from telebot.types import LabeledPrice, ShippingOption
 
-token = '1234567890:AAAABBBBCCCCDDDDeeeeFFFFgggGHHHH'
+token = '8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo'
 provider_token = '1234567890:TEST:AAAABBBBCCCCDDDD'  # @BotFather -> Bot Settings -> Payments
 bot = telebot.TeleBot(token)
 
@@ -17,7 +17,7 @@ shipping_options = [
 @bot.message_handler(commands=['start'])
 def command_start(message):
     bot.send_message(message.chat.id,
-                     "Hello, I'm the demo merchant bot."
+                     "Hello, I'm the demo bot."
                      " I can sell you a Time Machine."
                      " Use /buy to order one, /terms for Terms and Conditions")
 
@@ -46,7 +46,7 @@ def command_pay(message):
                      provider_token, #provider_token
                      'usd', #currency
                      prices, #prices
-                     photo_url='http://erkelzaar.tsudao.com/models/perrotta/TIME_MACHINE.jpg',
+                     photo_url='https://photos.app.goo.gl/hGkzzwMsLiZCD72G7',
                      photo_height=512,  # !=0/None or picture won't be shown
                      photo_width=512,
                      photo_size=512,
