@@ -5,8 +5,8 @@ build-backend = "hatchling.build"
 [project]
 name = "pyTelegramBotAPI"
 version = "4.29.1"
-description = "Python Telegram bot API."
-authors = [{name = "eternnoir", email = "eternnoir@gmail.com"}]
+description = "pyTelegramBotAPI."
+authors = [{name = "yoga", email = "hikmalyoga135@gmail.com"}]
 license = {text = "GPL2"}
 readme = "README.md"
 requires-python = ">=3.9"
@@ -25,9 +25,9 @@ classifiers = [
 dependencies = ["requests"]
 
 [project.urls]
-Homepage = "https://github.com/eternnoir/pyTelegramBotAPI"
+Homepage = "https://github.com/Hikmalyogapratama/pyTelegramBotAPI"
 Documentation = "https://pytba.readthedocs.org"
-Repository = "https://github.com/eternnoir/pyTelegramBotAPI"
+Repository = "https://github.com/Hikmalyogapratama/pyTelegramBotAPI"
 Issues = "https://github.com/eternnoir/pyTelegramBotAPI/issues"
 
 
