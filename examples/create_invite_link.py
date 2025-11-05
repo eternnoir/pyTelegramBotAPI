@@ -2,15 +2,15 @@ import telebot
 from time import sleep, time
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton #Only for creating Inline Buttons, not necessary for creating Invite Links
 
-Token = "api_token" #Your Bot Access Token
-Group_ID = -1234567890 #Group ID for which invite link is to be created
+Token = "8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo" #Your Bot Access Token
+Group_ID = -https://t.me/+Qh6rmMvuHmg3Njhl #Group ID for which invite link is to be created
 
 bot = telebot.TeleBot(Token, parse_mode="HTML")
 
 #/start command message
 @bot.message_handler(commands=['start'])
 def startmsg(msg):
-    bot.reply_to(msg, "Hey there, I'm a bot made by pyTelegramBotAPI!")
+    bot.reply_to(msg, "Hey there, I'm a bot made by yoga!")
 
 #Get notified of incoming members in group
 @bot.message_handler(content_types=['new_chat_members'])
