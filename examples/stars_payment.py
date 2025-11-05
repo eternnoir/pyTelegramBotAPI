@@ -2,7 +2,7 @@
 import telebot 
 from telebot import types  
 
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot('8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo')
 
 # Product prices in stars
 PRICES = {
