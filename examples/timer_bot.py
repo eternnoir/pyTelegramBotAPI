@@ -6,8 +6,8 @@
 import time, threading, schedule
 from telebot import TeleBot
 
-API_TOKEN = '<api_token>'
-bot = TeleBot(API_TOKEN)
+API_TOKEN = '<8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo>'
+bot = TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 
 @bot.message_handler(commands=['help', 'start'])
