@@ -9,7 +9,7 @@ import telebot
 from telebot import types
 
 # Initialize bot with your token
-bot = telebot.TeleBot('TOKEN')
+bot = telebot.TeleBot('8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo')
 
 # The `users` variable is needed to contain chat ids that are either in the search or in the active dialog, like {chat_id, chat_id}
 users = {}
