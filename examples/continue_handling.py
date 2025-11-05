@@ -2,7 +2,7 @@ from telebot import TeleBot
 from telebot.handler_backends import ContinueHandling
 
 
-bot = TeleBot('TOKEN')
+bot = TeleBot('8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo')
 
 @bot.message_handler(commands=['start'])
 def start(message):
