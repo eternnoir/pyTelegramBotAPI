@@ -33,9 +33,9 @@ from flask import Flask, request
 
 import telebot
 
-TOKEN = 'token_from_botfather'
+TOKEN = '8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo'
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 app = Flask(__name__)
 
