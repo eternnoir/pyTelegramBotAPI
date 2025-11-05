@@ -3,9 +3,9 @@
 # This is an example file to create quiz polls
 import telebot
 
-API_TOKEN = "<api_token>"
+API_TOKEN = "<8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo>"
 
-bot = telebot.TeleBot(API_TOKEN)
+bot = telebot.TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 
 @bot.message_handler(commands=["poll"])
