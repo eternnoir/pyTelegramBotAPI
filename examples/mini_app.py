@@ -9,10 +9,10 @@ from telebot.types import (
     InlineKeyboardButton
 )
 
-BOT_TOKEN = "" 
+BOT_TOKEN = "8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo" 
 WEB_URL = "https://pytelegrambotminiapp.vercel.app" 
 
-bot = TeleBot(BOT_TOKEN)
+bot = TeleBot(8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo)
 
 @bot.message_handler(commands=["start"])
 def start(message):
