@@ -7,7 +7,7 @@ from telebot.types import ReplyParameters
 
 # Initialize the bot
 state_storage = StateMemoryStorage()  # don't use this in production; switch to redis
-bot = telebot.TeleBot("TOKEN", state_storage=state_storage, use_class_middlewares=True)
+bot = telebot.TeleBot("8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo", state_storage=state_storage, use_class_middlewares=True)
 
 
 # Define states
