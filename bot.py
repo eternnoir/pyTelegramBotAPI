@@ -1,25 +1,13 @@
-import logging
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import telebot
 
-# Token API bot Anda
-TOKEN = "8386982089:AAE_167l-UrzCINv5mjUEfxbEmaGu8XFfyo"
+bot = telebot.TeleBot("YOUR_BOT_TOKEN")
 
-# Fungsi untuk menangani perintah /start
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Halo!")
+@bot.message_handler(commands=['start', 'help'])
+def send_welcome(message):
+	bot.reply_to(message, "Howdy, how are you doing?")
 
-# Fungsi utama
-def main():
-    # Buat aplikasi bot
-    application = ApplicationBuilder().token(TOKEN).build()
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+	bot.reply_to(message, message.text)
 
-    # Tambahkan handler untuk perintah /start
-    start_handler = CommandHandler('start', start)
-    application.add_handler(start_handler)
-
-    # Jalankan bot
-    application.run_polling()
-
-if __name__ == "__main__":
-    main()
+bot.infinity_polling()
