@@ -3277,7 +3277,7 @@ class CallbackQuery(JsonDeserializable):
             game_short_name=None, **kwargs):
         self.id: int = id
         self.from_user: User = from_user
-        self.message: Union[Message, InaccessibleMessage] = message
+        self.message: Optional[Union[Message, InaccessibleMessage]] = message
         self.inline_message_id: Optional[str] = inline_message_id
         self.chat_instance: Optional[str] = chat_instance
         self.data: Optional[str] = data
