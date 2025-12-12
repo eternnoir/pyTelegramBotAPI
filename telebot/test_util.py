@@ -5,7 +5,7 @@ from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from types import MethodType
-from typing import Any, Callable, Literal, Optional, TypeVar, Union
+from typing import Any, Callable, Iterable, Literal, Optional, TypeVar, Union
 
 from telebot import AsyncTeleBot, api, types
 
@@ -875,7 +875,7 @@ class MockedAsyncTeleBot(AsyncTeleBot):
     async def send_media_group(
         self,
         chat_id: Union[int, str],
-        media: list[
+        media: Iterable[
             Union[
                 types.InputMediaAudio,
                 types.InputMediaDocument,

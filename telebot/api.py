@@ -473,6 +473,38 @@ async def copy_message(
     return await _request(token, method_url, params=payload)
 
 
+async def copy_messages(
+    token: str,
+    chat_id,
+    from_chat_id,
+    message_ids,
+    disable_notification=None,
+    message_thread_id=None,
+    protect_content=None,
+    remove_caption=None,
+    direct_messages_topic_id=None,
+):
+    method_url = "copyMessages"
+    payload = {
+        "chat_id": chat_id,
+        "from_chat_id": from_chat_id,
+        "message_ids": json.dumps(sorted(message_ids)),
+    }
+    if disable_notification is not None:
+        payload["disable_notification"] = disable_notification
+    if message_thread_id is not None:
+        payload["message_thread_id"] = message_thread_id
+    if protect_content is not None:
+        payload["protect_content"] = protect_content
+    if remove_caption is not None:
+        payload["remove_caption"] = remove_caption
+    if direct_messages_topic_id is not None:
+        payload["direct_messages_topic_id"] = direct_messages_topic_id
+
+    result = await _request(token, method_url, params=payload)
+    return result
+
+
 async def send_dice(
     token,
     chat_id,

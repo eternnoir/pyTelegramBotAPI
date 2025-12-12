@@ -525,3 +525,20 @@ class TestIntegration(_HasBotAttr):
             disable_web_page_preview=True,
             parse_mode="HTML",
         )
+
+    async def test_copy_messages(self) -> None:
+        with open(IMAGE, "rb") as img, open(IMAGE_2, "rb") as img2:
+            medias = [
+                types.InputMediaPhoto(img, "Test media group"),
+                types.InputMediaPhoto(img2),
+            ]
+            messages = await self.bot.send_media_group(CHAT_ID, medias)
+            assert len(messages) == 2
+            for m in messages:
+                assert m.media_group_id is not None
+
+        await self.bot.copy_messages(
+            chat_id=CHAT_ID,
+            from_chat_id=CHAT_ID,
+            message_ids=[m.id for m in messages],
+        )

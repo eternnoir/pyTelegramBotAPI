@@ -3,9 +3,9 @@ import os
 from abc import ABC
 from dataclasses import dataclass
 from hashlib import md5
-from io import BytesIO, IOBase
+from io import IOBase
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union, get_args
+from typing import Any, BinaryIO, Dict, List, Literal, Optional, Union, get_args
 
 import ujson as json  # type: ignore
 
@@ -3674,7 +3674,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
 class InputMediaPhoto(InputMedia):
     def __init__(
         self,
-        media: BytesIO,
+        media: BinaryIO,
         caption=None,
         parse_mode=None,
         has_spoiler: Optional[bool] = None,
