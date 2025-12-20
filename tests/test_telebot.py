@@ -542,3 +542,22 @@ class TestIntegration(_HasBotAttr):
             from_chat_id=CHAT_ID,
             message_ids=[m.id for m in messages],
         )
+
+    async def test_delete_messages(self) -> None:
+        with open(IMAGE, "rb") as img, open(IMAGE_2, "rb") as img2:
+            medias = [
+                types.InputMediaPhoto(img, "This will be deleted soon"),
+                types.InputMediaPhoto(img2),
+            ]
+            messages = await self.bot.send_media_group(CHAT_ID, medias)
+            assert len(messages) == 2
+            for m in messages:
+                assert m.media_group_id is not None
+
+        await asyncio.sleep(3)
+
+        res = await self.bot.delete_messages(
+            chat_id=CHAT_ID,
+            message_ids=[m.id for m in messages],
+        )
+        assert res

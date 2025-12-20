@@ -1365,7 +1365,7 @@ class AsyncTeleBot(service_types.AbstractAsyncTeleBot):
         )
         return [types.MessageID.de_json(message_id) for message_id in result]  # type: ignore
 
-    async def delete_message(self, chat_id: Union[int, str], message_id: int, timeout: Optional[int] = None) -> bool:
+    async def delete_message(self, chat_id: Union[int, str], message_id: int) -> bool:
         """
         Use this method to delete message. Returns True on success.
 
@@ -1373,10 +1373,18 @@ class AsyncTeleBot(service_types.AbstractAsyncTeleBot):
 
         :param chat_id: in which chat to delete
         :param message_id: which message to delete
-        :param timeout:
         :return: API reply.
         """
-        return await api.delete_message(self.token, chat_id, message_id, timeout)
+        return await api.delete_message(self.token, chat_id, message_id)
+
+    async def delete_messages(self, chat_id: Union[int, str], message_ids: list[int]) -> bool:
+        """
+        Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found,
+        they are skipped. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessages
+        """
+        return await api.delete_messages(self.token, chat_id, message_ids)
 
     async def send_dice(
         self,

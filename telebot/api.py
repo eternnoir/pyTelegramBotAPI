@@ -106,6 +106,9 @@ async def _request(
         if last_exception is not None:
             logger.error("Request (%s) didn't succeeded, reraising last exception", request_description)
             raise last_exception
+        else:
+            logger.error("Request (%s) didn't succeeded, and no exception is available", request_description)
+            raise RuntimeError(f"Max number of retries reached: {MAX_RETRIES}")
 
 
 def extract_filename(obj: Any) -> Optional[str]:
@@ -1635,12 +1638,22 @@ async def edit_message_reply_markup(token, chat_id=None, message_id=None, inline
     return await _request(token, method_url, params=payload, method="post")
 
 
-async def delete_message(token, chat_id, message_id, timeout=None):
-    method_url = r"deleteMessage"
-    payload = {"chat_id": chat_id, "message_id": message_id}
-    if timeout:
-        payload["timeout"] = timeout
-    return await _request(token, method_url, params=payload, method="post")
+async def delete_message(token: str, chat_id: str | int, message_id: int) -> bool:
+    return await _request(
+        token,
+        route=r"deleteMessage",
+        params={"chat_id": chat_id, "message_id": message_id},
+        method="post",
+    )
+
+
+async def delete_messages(token: str, chat_id: str | int, message_id: list[int]) -> bool:
+    return await _request(
+        token,
+        route=r"deleteMessages",
+        params={"chat_id": chat_id, "message_ids": json.dumps(sorted(message_id))},
+        method="post",
+    )
 
 
 # Game
