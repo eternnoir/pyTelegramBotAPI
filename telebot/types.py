@@ -11808,10 +11808,13 @@ class UniqueGift(JsonDeserializable):
     :param backdrop: Backdrop of the gift
     :type backdrop: :class:`UniqueGiftBackdrop`
 
+    :param is_from_blockchain: Optional. True, if the gift is assigned from the TON blockchain and can't be resold or transferred in Telegram
+    :type is_from_blockchain: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, is_from_blockchain=None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
@@ -11819,6 +11822,7 @@ class UniqueGift(JsonDeserializable):
         self.symbol: UniqueGiftSymbol = symbol
         self.backdrop: UniqueGiftBackdrop = backdrop
         self.gift_id: str = gift_id
+        self.is_from_blockchain: Optional[bool] = is_from_blockchain
 
     @classmethod
     def de_json(cls, json_string):
@@ -11828,6 +11832,8 @@ class UniqueGift(JsonDeserializable):
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
         obj['gift_id'] = obj['gift_id']
+        if 'is_from_blockchain' in obj:
+            obj['is_from_blockchain'] = obj['is_from_blockchain']
         return cls(**obj)
     
     
