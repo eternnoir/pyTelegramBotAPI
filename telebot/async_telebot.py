@@ -8169,6 +8169,135 @@ class AsyncTeleBot:
             )
         )
     
+    async def get_user_gifts(
+            self, user_id: int,
+            exclude_unlimited: Optional[bool]=None,
+            exclude_limited_upgradable: Optional[bool]=None,
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            exclude_from_blockchain: Optional[bool]=None,
+            exclude_unique: Optional[bool]=None,
+            sort_by_price: Optional[bool]=None,
+            offset: Optional[str]=None,
+            limit: Optional[int]=None) -> types.OwnedGifts:
+        """
+        Returns the gifts owned and hosted by a user. Returns OwnedGifts on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getusergifts
+
+        :param user_id: Unique identifier of the user
+        :type user_id: :obj:`int`
+
+        :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
+        :type exclude_unlimited: :obj:`bool`
+
+        :param exclude_limited_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can be upgraded to unique
+        :type exclude_limited_upgradable: :obj:`bool`
+
+        :param exclude_limited_non_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can't be upgraded to unique
+        :type exclude_limited_non_upgradable: :obj:`bool`
+
+        :param exclude_from_blockchain: Pass True to exclude gifts that were assigned from the TON blockchain and can't be resold or transferred in Telegram
+        :type exclude_from_blockchain: :obj:`bool`
+
+        :param exclude_unique: Pass True to exclude unique gifts
+        :type exclude_unique: :obj:`bool`
+
+        :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
+        :type sort_by_price: :obj:`bool`
+
+        :param offset: Offset of the first entry to return as received from the previous request; use an empty string to get the first chunk of results
+        :type offset: :obj:`str`
+
+        :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
+        :type limit: :obj:`int`
+
+        :return: On success, a OwnedGifts object is returned.
+        :rtype: :class:`telebot.types.OwnedGifts`
+        """
+        return types.OwnedGifts.de_json(
+            await asyncio_helper.get_user_gifts(
+                self.token, user_id,
+                exclude_unlimited=exclude_unlimited,
+                exclude_limited_upgradable=exclude_limited_upgradable,
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable,
+                exclude_from_blockchain=exclude_from_blockchain,
+                exclude_unique=exclude_unique,
+                sort_by_price=sort_by_price,
+                offset=offset,
+                limit=limit
+            )
+        )
+
+
+    async def get_chat_gifts(
+            self, chat_id: Union[int, str],
+            exclude_unsaved: Optional[bool]=None,
+            exclude_saved: Optional[bool]=None,
+            exclude_unlimited: Optional[bool]=None,
+            exclude_limited_upgradable: Optional[bool]=None,
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            exclude_from_blockchain: Optional[bool]=None,
+            exclude_unique: Optional[bool]=None,
+            sort_by_price: Optional[bool]=None,
+            offset: Optional[str]=None,
+            limit: Optional[int]=None) -> types.OwnedGifts:
+        """
+        Returns the gifts owned by a chat. Returns OwnedGifts on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getchatgifts
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param exclude_unsaved: Pass True to exclude gifts that aren't saved to the chat's profile page. Always True, unless the bot has the can_post_messages administrator right in the channel.
+        :type exclude_unsaved: :obj:`bool`
+
+        :param exclude_saved: Pass True to exclude gifts that are saved to the chat's profile page. Always False, unless the bot has the can_post_messages administrator right in the channel.
+        :type exclude_saved: :obj:`bool`
+
+        :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
+        :type exclude_unlimited: :obj:`bool`
+
+        :param exclude_limited_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can be upgraded to unique
+        :type exclude_limited_upgradable: :obj:`bool`
+
+        :param exclude_limited_non_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can't be upgraded to unique
+        :type exclude_limited_non_upgradable: :obj:`bool`
+
+        :param exclude_from_blockchain: Pass True to exclude gifts that were assigned from the TON blockchain and can't be resold or transferred in Telegram
+        :type exclude_from_blockchain: :obj:`bool`
+
+        :param exclude_unique: Pass True to exclude unique gifts
+        :type exclude_unique: :obj:`bool`
+
+        :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
+        :type sort_by_price: :obj:`bool`
+
+        :param offset: Offset of the first entry to return as received from the previous request; use an empty string to get the first chunk of results
+        :type offset: :obj:`str`
+
+        :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
+        :type limit: :obj:`int`
+
+        :return: On success, a OwnedGifts object is returned.
+        :rtype: :class:`telebot.types.OwnedGifts`
+        """
+        return types.OwnedGifts.de_json(
+            await asyncio_helper.get_chat_gifts(
+                self.token, chat_id,
+                exclude_unsaved=exclude_unsaved,
+                exclude_saved=exclude_saved,
+                exclude_unlimited=exclude_unlimited,
+                exclude_limited_upgradable=exclude_limited_upgradable,
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable,
+                exclude_from_blockchain=exclude_from_blockchain,
+                exclude_unique=exclude_unique,
+                sort_by_price=sort_by_price,
+                offset=offset,
+                limit=limit
+            )
+        )
+    
     async def convert_gift_to_stars(self, business_connection_id: str, owned_gift_id: str) -> bool:
         """
         Converts a given regular gift to Telegram Stars. Requires the can_convert_gifts_to_stars business bot right. Returns True on success.
