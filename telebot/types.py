@@ -11276,6 +11276,9 @@ class Gift(JsonDeserializable):
     :param is_premium: Optional. True, if the gift can only be purchased by Telegram Premium subscribers
     :type is_premium: :obj:`bool`
 
+    :param has_colors: Optional. True, if the gift can be used (after being upgraded) to customize a user's appearance
+    :type has_colors: :obj:`bool`
+
     :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
     :type total_count: :obj:`int`
 
@@ -11293,7 +11296,7 @@ class Gift(JsonDeserializable):
     """
 
     def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
-                 personal_total_count=None, personal_remaining_count=None, is_premium=None, **kwargs):
+                 personal_total_count=None, personal_remaining_count=None, is_premium=None, has_colors=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
@@ -11303,18 +11306,13 @@ class Gift(JsonDeserializable):
         self.personal_total_count: Optional[int] = personal_total_count
         self.personal_remaining_count: Optional[int] = personal_remaining_count
         self.is_premium: Optional[bool] = is_premium
+        self.has_colors: Optional[bool] = has_colors
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
-        if 'personal_total_count' in obj:
-            obj['personal_total_count'] = obj['personal_total_count']
-        if 'personal_remaining_count' in obj:
-            obj['personal_remaining_count'] = obj['personal_remaining_count']
-        if 'is_premium' in obj:
-            obj['is_premium'] = obj['is_premium']
 
         return cls(**obj)
 
