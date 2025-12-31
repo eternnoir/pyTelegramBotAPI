@@ -10,7 +10,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#july-3-2025"><img src="https://img.shields.io/badge/Bot%20API-9.1-blue?logo=telegram" alt="Supported Bot API version"></a>
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#august-15-2025"><img src="https://img.shields.io/badge/Bot%20API-9.2-blue?logo=telegram" alt="Supported Bot API version"></a>
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>
@@ -572,7 +572,7 @@ Refer [Bot Api](https://core.telegram.org/bots/api#messageentity) for extra deta
 
 ## Advanced use of the API
 
-### Using local Bot API Sever
+### Using local Bot API Server
 Since version 5.0 of the Bot API, you have the possibility to run your own [Local Bot API Server](https://core.telegram.org/bots/api#using-a-local-bot-api-server).
 pyTelegramBotAPI also supports this feature.
 ```python

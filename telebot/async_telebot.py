@@ -26,7 +26,7 @@ from telebot import asyncio_filters
 logger = logging.getLogger('TeleBot')
 
 REPLY_MARKUP_TYPES = Union[
-    types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
+    types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup,
     types.ReplyKeyboardRemove, types.ForceReply]
 
 
@@ -76,7 +76,7 @@ class AsyncTeleBot:
 
         from telebot.async_telebot import AsyncTeleBot
         bot = AsyncTeleBot('token') # get token from @BotFather
-        # now you can register other handlers/update listeners, 
+        # now you can register other handlers/update listeners,
         # and use bot methods.
         # Remember to use async/await keywords when necessary.
 
@@ -114,7 +114,7 @@ class AsyncTeleBot:
 
     :param allow_sending_without_reply: Deprecated - Use reply_parameters instead. Default value for allow_sending_without_reply, defaults to None
     :type allow_sending_without_reply: :obj:`bool`, optional
-    
+
     :param colorful_logs: Outputs colorful logs
     :type colorful_logs: :obj:`bool`, optional
 
@@ -134,7 +134,7 @@ class AsyncTeleBot:
                 allow_sending_without_reply: Optional[bool]=None,
                 colorful_logs: Optional[bool]=False,
                 validate_token: Optional[bool]=True) -> None:
-        
+
         # update-related
         self.token = token
         self.offset = offset
@@ -148,7 +148,7 @@ class AsyncTeleBot:
                 raise ImportError(
                     'Install coloredlogs module to use colorful_logs option.'
                 )
-                
+
         # properties
         self.parse_mode = parse_mode
         self.disable_web_page_preview = disable_web_page_preview
@@ -194,9 +194,9 @@ class AsyncTeleBot:
 
         if validate_token:
             util.validate_token(self.token)
-        
+
         self.bot_id: Union[int, None] = util.extract_bot_id(self.token) # subject to change, unspecified
-            
+
 
     @property
     def user(self):
@@ -237,7 +237,7 @@ class AsyncTeleBot:
 
         :return: An Array of Update objects is returned.
         :rtype: :obj:`list` of :class:`telebot.types.Update`
-        """       
+        """
         json_updates = await asyncio_helper.get_updates(self.token, offset, limit, timeout, allowed_updates, request_timeout)
         return [types.Update.de_json(ju) for ju in json_updates]
 
@@ -255,7 +255,7 @@ class AsyncTeleBot:
         if path is None:
             # Make it possible to specify --path argument to the script
             path = sys.argv[sys.argv.index('--path') + 1] if '--path' in sys.argv else '.'
-            
+
         self.event_observer = Observer()
         self.event_observer.schedule(self.event_handler, path, recursive=True)
         self.event_observer.start()
@@ -268,7 +268,7 @@ class AsyncTeleBot:
         This allows the bot to retrieve Updates automagically and notify listeners and message handlers accordingly.
 
         Warning: Do not call this function more than once!
-        
+
         Always gets updates.
 
         .. note::
@@ -277,7 +277,7 @@ class AsyncTeleBot:
 
         :param non_stop: Do not stop polling when an ApiException occurs.
         :type non_stop: :obj:`bool`
-        
+
         :param skip_pending: skip old updates
         :type skip_pending: :obj:`bool`
 
@@ -286,17 +286,17 @@ class AsyncTeleBot:
 
         :param timeout: Request connection timeout
         :type timeout: :obj:`int`
-        
+
         :param request_timeout: Timeout in seconds for get_updates(Defaults to None)
         :type request_timeout: :obj:`int`
 
         :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
-            See util.update_types for a complete list of available update types. 
-            Specify an empty list to receive all update types except chat_member (default). 
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
-            
-            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
             so unwanted updates may be received for a short period of time.
         :type allowed_updates: :obj:`list` of :obj:`str`
 
@@ -308,7 +308,7 @@ class AsyncTeleBot:
 
         :param path_to_watch: Path to watch for changes. Defaults to current directory
         :type path_to_watch: :obj:`str`
-        
+
         :return:
         """
         if none_stop is not None:
@@ -346,12 +346,12 @@ class AsyncTeleBot:
         :type logger_level: :obj:`int`
 
         :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
-            See util.update_types for a complete list of available update types. 
-            Specify an empty list to receive all update types except chat_member (default). 
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
-            
-            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
             so unwanted updates may be received for a short period of time.
         :type allowed_updates: :obj:`list` of :obj:`str`
 
@@ -402,7 +402,7 @@ class AsyncTeleBot:
             return message.replace(code, "*" * len(code))
         else:
             return message
-        
+
     async def _handle_error_interval(self, error_interval: float):
         logger.debug('Waiting for %s seconds before retrying', error_interval)
         await asyncio.sleep(error_interval)
@@ -439,7 +439,7 @@ class AsyncTeleBot:
             logger.warning("Setting non_stop to False will stop polling on API and system exceptions.")
 
         self._user = await self.get_me()
-            
+
         logger.info('Starting your bot with username: [@%s]', self.user.username)
 
         self._polling = True
@@ -469,7 +469,7 @@ class AsyncTeleBot:
 
                     if non_stop:
                         error_interval = await self._handle_error_interval(error_interval)
-                        
+
                     if non_stop or handled:
                         continue
                     else:
@@ -837,7 +837,7 @@ class AsyncTeleBot:
         :meta private:
         """
         await self._process_updates(self.poll_answer_handlers, poll_answers, 'poll_answer')
-    
+
     async def process_new_my_chat_member(self, my_chat_members):
         """
         :meta private:
@@ -885,7 +885,7 @@ class AsyncTeleBot:
         :meta private:
         """
         await self._process_updates(self.edited_business_message_handlers, new_edited_business_messages, 'edited_business_message')
-        
+
     async def process_new_deleted_business_messages(self, new_deleted_business_messages):
         """
         :meta private:
@@ -906,7 +906,7 @@ class AsyncTeleBot:
             middlewares = [middleware for middleware in self.middlewares if update_type in middleware.update_types]
             return middlewares
         return None
-    
+
     async def __notify_update(self, new_messages):
         if len(self.update_listener) == 0:
             return
@@ -945,7 +945,7 @@ class AsyncTeleBot:
                     print(message.text) # Prints message text
 
             bot.set_update_listener(update_listener)
-        
+
         :return: None
         """
         self.update_listener.append(func)
@@ -1033,7 +1033,7 @@ class AsyncTeleBot:
 
         :param middleware: Middleware-class.
         :type middleware: :class:`telebot.asyncio_handler_backends.BaseMiddleware`
-    
+
         :return: None
         """
         if not hasattr(middleware, 'update_types'):
@@ -1106,7 +1106,7 @@ class AsyncTeleBot:
 
         :param func: Optional lambda function. The lambda receives the message to test as the first parameter.
             It must return True if the command should handle the message.
-        
+
 
         :param content_types: Supported message content types. Must be a list. Defaults to ['text'].
         :type content_types: :obj:`list` of :obj:`str`
@@ -1147,7 +1147,7 @@ class AsyncTeleBot:
         """
         Adds a message handler.
         Note that you should use register_message_handler to add message_handler.
-        
+
         :meta private:
 
         :param handler_dict:
@@ -1371,7 +1371,7 @@ class AsyncTeleBot:
         :return:
         """
         self.channel_post_handlers.append(handler_dict)
-    
+
     def register_channel_post_handler(self, callback: Callable[[Any], Awaitable], content_types: Optional[List[str]]=None, commands: Optional[List[str]]=None,
             regexp: Optional[str]=None, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
         """
@@ -1535,7 +1535,7 @@ class AsyncTeleBot:
             return handler
 
         return decorator
-    
+
     def add_message_reaction_handler(self, handler_dict):
         """
         Adds message reaction handler.
@@ -1560,7 +1560,7 @@ class AsyncTeleBot:
 
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
-        
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
@@ -1587,7 +1587,7 @@ class AsyncTeleBot:
             return handler
 
         return decorator
-    
+
     def add_message_reaction_count_handler(self, handler_dict):
         """
         Adds message reaction count handler
@@ -1612,7 +1612,7 @@ class AsyncTeleBot:
 
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
-        
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
@@ -1621,7 +1621,7 @@ class AsyncTeleBot:
         self.add_message_reaction_count_handler(handler_dict)
 
 
-    def inline_handler(self, func, **kwargs):
+    def inline_handler(self, func=None, **kwargs):
         """
         Handles new incoming inline query.
         As a parameter to the decorator function, it passes :class:`telebot.types.InlineQuery` object.
@@ -1681,7 +1681,7 @@ class AsyncTeleBot:
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
-        
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
@@ -1735,7 +1735,7 @@ class AsyncTeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
 
@@ -1787,7 +1787,7 @@ class AsyncTeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
 
@@ -1861,7 +1861,7 @@ class AsyncTeleBot:
         :return:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
-    
+
     def register_pre_checkout_query_handler(self, callback: Callable[[Any], Awaitable], func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers pre-checkout request handler.
@@ -1896,9 +1896,9 @@ class AsyncTeleBot:
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_purchased_paid_media_handler(handler_dict)
             return handler
-        
+
         return decorator
-    
+
     def add_purchased_paid_media_handler(self, handler_dict):
         """
         Adds a purchased paid media handler
@@ -1917,7 +1917,7 @@ class AsyncTeleBot:
 
         :param callback: function to be called
         :type callback: :obj:`function`
-        
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
@@ -1992,7 +1992,7 @@ class AsyncTeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
 
@@ -2152,7 +2152,7 @@ class AsyncTeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
 
@@ -2198,7 +2198,7 @@ class AsyncTeleBot:
 
     def chat_boost_handler(self, func=None, **kwargs):
         """
-        Handles new incoming chat boost state. 
+        Handles new incoming chat boost state.
         it passes :class:`telebot.types.ChatBoostUpdated` object.
 
         :param func: Function executed as a filter
@@ -2213,7 +2213,7 @@ class AsyncTeleBot:
             return handler
 
         return decorator
-    
+
     def add_chat_boost_handler(self, handler_dict):
         """
         Adds a chat_boost handler.
@@ -2232,7 +2232,7 @@ class AsyncTeleBot:
 
         :param callback: function to be called
         :type callback: :obj:`function`
-        
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
@@ -2247,7 +2247,7 @@ class AsyncTeleBot:
 
     def removed_chat_boost_handler(self, func=None, **kwargs):
         """
-        Handles new incoming chat boost state. 
+        Handles new incoming chat boost state.
         it passes :class:`telebot.types.ChatBoostRemoved` object.
 
         :param func: Function executed as a filter
@@ -2262,7 +2262,7 @@ class AsyncTeleBot:
             return handler
 
         return decorator
-    
+
     def add_removed_chat_boost_handler(self, handler_dict):
         """
         Adds a removed_chat_boost handler.
@@ -2281,7 +2281,7 @@ class AsyncTeleBot:
 
         :param callback: function to be called
         :type callback: :obj:`function`
-        
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
@@ -2309,9 +2309,9 @@ class AsyncTeleBot:
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_business_connection_handler(handler_dict)
             return handler
-        
+
         return decorator
-    
+
     def add_business_connection_handler(self, handler_dict):
         """
         Adds a business_connection handler.
@@ -2426,7 +2426,7 @@ class AsyncTeleBot:
             return handler
 
         return decorator
-    
+
     def add_business_message_handler(self, handler_dict):
         """
         Adds a business_message handler.
@@ -2476,8 +2476,8 @@ class AsyncTeleBot:
                                                 pass_bot=pass_bot,**kwargs)
         self.add_business_message_handler(handler_dict)
 
-    
-    
+
+
 
     def edited_business_message_handler(self, commands=None, regexp=None, func=None, content_types=None, **kwargs):
         """
@@ -2534,7 +2534,7 @@ class AsyncTeleBot:
         """
         Adds the edit message handler
         Note that you should use register_edited_business_message_handler to add edited_business_message_handler to the bot.
-        
+
         :meta private:
 
         :param handler_dict:
@@ -2594,7 +2594,7 @@ class AsyncTeleBot:
                                                 **kwargs)
         self.add_edited_business_message_handler(handler_dict)
 
-    
+
     def deleted_business_messages_handler(self, func=None, **kwargs):
         """
         Handles new incoming deleted messages state.
@@ -2611,9 +2611,9 @@ class AsyncTeleBot:
 
             self.add_deleted_business_messages_handler(handler_dict)
             return handler
-        
+
         return decorator
-    
+
     def add_deleted_business_messages_handler(self, handler_dict):
         """
         Adds a deleted_business_messages handler.
@@ -2670,7 +2670,7 @@ class AsyncTeleBot:
         return True
 
     # all methods begin here
-    
+
     async def get_me(self) -> types.User:
         """
         Returns basic information about the bot in form of a User object.
@@ -2683,9 +2683,9 @@ class AsyncTeleBot:
     async def get_file(self, file_id: Optional[str]) -> types.File:
         """
         Use this method to get basic info about a file and prepare it for downloading.
-        For the moment, bots can download files of up to 20MB in size. 
-        On success, a File object is returned. 
-        It is guaranteed that the link will be valid for at least 1 hour. 
+        For the moment, bots can download files of up to 20MB in size.
+        On success, a File object is returned.
+        It is guaranteed that the link will be valid for at least 1 hour.
         When the link expires, a new one can be requested by calling get_file again.
 
         Telegram documentation: https://core.telegram.org/bots/api#getfile
@@ -2715,7 +2715,7 @@ class AsyncTeleBot:
 
         :param file_path: Path where the file should be downloaded.
         :type file_path: str
-        
+
         :return: bytes
         :rtype: :obj:`bytes`
         """
@@ -2723,11 +2723,11 @@ class AsyncTeleBot:
 
     async def log_out(self) -> bool:
         """
-        Use this method to log out from the cloud Bot API server before launching the bot locally. 
+        Use this method to log out from the cloud Bot API server before launching the bot locally.
         You MUST log out the bot before running it locally, otherwise there is no guarantee
         that the bot will receive updates.
-        After a successful call, you can immediately log in on a local server, 
-        but will not be able to log in back to the cloud Bot API server for 10 minutes. 
+        After a successful call, you can immediately log in on a local server,
+        but will not be able to log in back to the cloud Bot API server for 10 minutes.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#logout
@@ -2736,13 +2736,13 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.log_out(self.token)
-    
+
     async def close(self) -> bool:
         """
-        Use this method to close the bot instance before moving it from one local server to another. 
+        Use this method to close the bot instance before moving it from one local server to another.
         You need to delete the webhook before calling this method to ensure that the bot isn't launched again
         after server restart.
-        The method will return error 429 in the first 10 minutes after the bot is launched. 
+        The method will return error 429 in the first 10 minutes after the bot is launched.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#close
@@ -2790,15 +2790,15 @@ class AsyncTeleBot:
             Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput,
             defaults to None
         :type max_connections: :obj:`int`, optional
-        
+
         :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example,
             specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update
             for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
-            
+
             Please note that this parameter doesn't affect updates created before the call to the setWebhook, so unwanted updates may be received
             for a short period of time. Defaults to None
-        
+
         :type allowed_updates: :obj:`list`, optional
 
         :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address
@@ -2941,7 +2941,7 @@ class AsyncTeleBot:
 
     async def set_message_reaction(self, chat_id: Union[int, str], message_id: int, reaction: Optional[List[types.ReactionType]]=None, is_big: Optional[bool]=None) -> bool:
         """
-        Use this method to change the chosen reactions on a message. 
+        Use this method to change the chosen reactions on a message.
         Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same
         available reactions as messages in the channel. Returns True on success.
 
@@ -2965,7 +2965,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.set_message_reaction(self.token, chat_id, message_id, reaction, is_big)
         return result
 
-    async def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None, 
+    async def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None,
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Use this method to get a list of profile pictures for a user.
@@ -2988,7 +2988,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_user_profile_photos(self.token, user_id, offset, limit)
         return types.UserProfilePhotos.de_json(result)
-    
+
     async def set_user_emoji_status(self, user_id: int, emoji_status_custom_emoji_id: Optional[str]=None, emoji_status_expiration_date: Optional[int]=None) -> bool:
         """
         Use this method to change the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method requestEmojiStatusAccess.
@@ -3045,7 +3045,7 @@ class AsyncTeleBot:
         On success, returns an Array of ChatMember objects that contains
         information about all chat administrators except other bots.
 
-        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
 
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
@@ -3075,7 +3075,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_chat_member_count(self.token, chat_id)
         return result
-    
+
     async def get_chat_member_count(self, chat_id: Union[int, str]) -> int:
         """
         Use this method to get the number of members in a chat.
@@ -3096,7 +3096,7 @@ class AsyncTeleBot:
         Use this method to set a new group sticker set for a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate administrator rights. Use the field can_set_sticker_set optionally returned
         in getChat requests to check if the bot can use this method. Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
@@ -3116,7 +3116,7 @@ class AsyncTeleBot:
         Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
         optionally returned in getChat requests to check if the bot can use this method. Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
 
         :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
@@ -3132,7 +3132,7 @@ class AsyncTeleBot:
         """
         Use this method to set the result of an interaction with a Web App and
         send a corresponding message on behalf of the user to the chat from which
-        the query originated. 
+        the query originated.
         On success, a SentWebAppMessage object is returned.
 
         Telegram Documentation: https://core.telegram.org/bots/api#answerwebappquery
@@ -3182,7 +3182,7 @@ class AsyncTeleBot:
     async def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getchatmember
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
@@ -3198,13 +3198,13 @@ class AsyncTeleBot:
         return types.ChatMember.de_json(result)
 
     async def send_message(
-            self, chat_id: Union[int, str], text: str, 
-            parse_mode: Optional[str]=None, 
+            self, chat_id: Union[int, str], text: str,
+            parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
-            disable_web_page_preview: Optional[bool]=None, 
-            disable_notification: Optional[bool]=None, 
+            disable_web_page_preview: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
@@ -3213,12 +3213,14 @@ class AsyncTeleBot:
             link_preview_options: Optional[types.LinkPreviewOptions]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send text messages.
 
         Warning: Do not send more than about 4096 characters each message, otherwise you'll risk an HTTP 414 error.
-        If you must send more than 4096 characters, 
+        If you must send more than 4096 characters,
         use the `split_string` or `smart_split` function in util.py.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
@@ -3276,6 +3278,15 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3283,11 +3294,11 @@ class AsyncTeleBot:
         disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -3308,7 +3319,7 @@ class AsyncTeleBot:
         if disable_web_page_preview is not None:
             # show a deprecation warning
             logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
-            
+
             if link_preview_options:
                 # show a conflict warning
                 logger.warning("Both 'link_preview_options' and 'disable_web_page_preview' parameters are set: conflicting, 'disable_web_page_preview' is deprecated")
@@ -3331,15 +3342,20 @@ class AsyncTeleBot:
                 self.token, chat_id, text,
                 reply_markup, parse_mode, disable_notification, timeout,
                 entities, protect_content, message_thread_id, reply_parameters, link_preview_options, business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def forward_message(
-            self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
+            self, chat_id: Union[int, str], from_chat_id: Union[int, str],
             message_id: int, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            video_start_timestamp: Optional[int]=None) -> types.Message:
+            video_start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -3359,7 +3375,7 @@ class AsyncTeleBot:
 
         :param video_start_timestamp: New start timestamp for the forwarded video in the message
         :type video_start_timestamp: :obj:`int`
-        
+
         :param protect_content: Protects the contents of the forwarded message from forwarding and saving
         :type protect_content: :obj:`bool`
 
@@ -3368,6 +3384,15 @@ class AsyncTeleBot:
 
         :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
         :type message_thread_id: :obj:`int`
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -3378,26 +3403,30 @@ class AsyncTeleBot:
         return types.Message.de_json(
             await asyncio_helper.forward_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
                                                     disable_notification=disable_notification, protect_content=protect_content,
-                                                    timeout=timeout, message_thread_id=message_thread_id, video_start_timestamp=video_start_timestamp))
+                                                    timeout=timeout, message_thread_id=message_thread_id, video_start_timestamp=video_start_timestamp,
+                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+        )
 
     async def copy_message(
-            self, chat_id: Union[int, str], 
-            from_chat_id: Union[int, str], 
-            message_id: int, 
-            caption: Optional[str]=None, 
-            parse_mode: Optional[str]=None, 
+            self, chat_id: Union[int, str],
+            from_chat_id: Union[int, str],
+            message_id: int,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
-            video_start_timestamp: Optional[bool]=None) -> types.MessageID:
+            video_start_timestamp: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -3450,7 +3479,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -3460,7 +3489,16 @@ class AsyncTeleBot:
         :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
-        
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
@@ -3470,7 +3508,7 @@ class AsyncTeleBot:
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -3494,9 +3532,56 @@ class AsyncTeleBot:
                                                     disable_notification=disable_notification, protect_content=protect_content,
                                                     reply_parameters=reply_parameters, reply_markup=reply_markup, timeout=timeout,
                                                     message_thread_id=message_thread_id, show_caption_above_media=show_caption_above_media,
-                                                    allow_paid_broadcast=allow_paid_broadcast, video_start_timestamp=video_start_timestamp))
+                                                    allow_paid_broadcast=allow_paid_broadcast, video_start_timestamp=video_start_timestamp,
+                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+                                                )
+        )
+    
+    async def approve_suggested_post(self, chat_id: int, message_id: int, send_date: Optional[int]=None) -> bool:
+        """
+        Use this method to approve a suggested post in a direct messages chat. The bot must have the 'can_post_messages' administrator right in the corresponding channel chat. Returns True on success.
 
-    async def delete_message(self, chat_id: Union[int, str], message_id: int, 
+        Telegram documentation: https://core.telegram.org/bots/api#approvesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int`
+
+        :param message_id: Identifier of a suggested post message to approve
+        :type message_id: :obj:`int`
+
+        :param send_date: Point in time (Unix timestamp) when the post is expected to be published; omit if the date has already been specified when the suggested post was created.
+            If specified, then the date must be not more than 2678400 seconds (30 days) in the future
+        :type send_date: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.approve_suggested_post(self.token, chat_id, message_id,
+            send_date=send_date)
+
+    async def decline_suggested_post(self, chat_id: int, message_id: int, comment: Optional[str]=None) -> bool:
+        """
+        Use this method to decline a suggested post in a direct messages chat. The bot must have
+        the 'can_manage_direct_messages' administrator right in the corresponding channel chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#declinesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int`
+
+        :param message_id: Identifier of a suggested post message to decline
+        :type message_id: :obj:`int`
+
+        :param comment: Comment for the creator of the suggested post; 0-128 characters
+        :type comment: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.decline_suggested_post(self.token, chat_id, message_id,
+            comment=comment)
+
+    async def delete_message(self, chat_id: Union[int, str], message_id: int,
             timeout: Optional[int]=None) -> bool:
         """
         Use this method to delete a message, including service messages, with the following limitations:
@@ -3524,10 +3609,10 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.delete_message(self.token, chat_id, message_id, timeout)
-    
+
     async def delete_messages(self, chat_id: Union[int, str], message_ids: List[int]):
         """
-        Use this method to delete multiple messages simultaneously. 
+        Use this method to delete multiple messages simultaneously.
         If some of the specified messages can't be found, they are skipped. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletemessages
@@ -3542,9 +3627,10 @@ class AsyncTeleBot:
 
         """
         return await asyncio_helper.delete_messages(self.token, chat_id, message_ids)
-    
+
     async def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
-                         message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None) -> List[types.MessageID]:
+                         message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None,
+                         direct_messages_topic_id: Optional[int]=None) -> List[types.MessageID]:
         """
         Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded,
         they are skipped. Service messages and messages with protected content can't be forwarded.
@@ -3570,18 +3656,24 @@ class AsyncTeleBot:
         :param protect_content: Protects the contents of the forwarded message from forwarding and saving
         :type protect_content: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
 
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        result = await asyncio_helper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id, protect_content)
+        result = await asyncio_helper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id, protect_content,
+                                                       direct_messages_topic_id=direct_messages_topic_id)
         return [types.MessageID.de_json(message_id) for message_id in result]
-    
+
     async def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
-                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
+                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None,
+                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageID]:
         """
         Use this method to copy messages of any kind.
         Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
@@ -3611,15 +3703,19 @@ class AsyncTeleBot:
         :param remove_caption: Pass True to copy the messages without their captions
         :type remove_caption: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, an array of MessageId of the sent messages is returned.
         :rtype: :obj:`list` of :class:`telebot.types.MessageID`
         """
         disable_notification = self.disable_notification if disable_notification is None else disable_notification
         protect_content = self.protect_content if protect_content is None else protect_content
         result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
-                                        protect_content, remove_caption)
+                                        protect_content, remove_caption, direct_messages_topic_id)
         return [types.MessageID.de_json(message_id) for message_id in result]
-    
+
     async def send_checklist(
             self, business_connection_id: str, chat_id: Union[int, str],
             checklist: types.InputChecklist,
@@ -3663,7 +3759,7 @@ class AsyncTeleBot:
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
@@ -3672,7 +3768,7 @@ class AsyncTeleBot:
                 self.token, business_connection_id, chat_id, checklist, disable_notification=disable_notification,
                 protect_content=protect_content, message_effect_id=message_effect_id,
                 reply_parameters=reply_parameters, reply_markup=reply_markup))
-    
+
     async def edit_message_checklist(
             self, business_connection_id: str, chat_id: Union[int, str],
             message_id: int, checklist: types.InputChecklist,
@@ -3707,9 +3803,9 @@ class AsyncTeleBot:
 
     async def send_dice(
             self, chat_id: Union[int, str],
-            emoji: Optional[str]=None, disable_notification: Optional[bool]=None, 
+            emoji: Optional[str]=None, disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -3717,7 +3813,9 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -3752,7 +3850,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: The identifier of a message thread, unique within the chat to which the message with the thread identifier belongs
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -3766,16 +3864,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -3797,16 +3904,17 @@ class AsyncTeleBot:
             await asyncio_helper.send_dice(
                 self.token, chat_id, emoji, disable_notification,
                 reply_markup, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                allow_paid_broadcast=allow_paid_broadcast))
-        
+                allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_photo(
-            self, chat_id: Union[int, str], photo: Union[Any, str], 
+            self, chat_id: Union[int, str], photo: Union[Any, str],
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
@@ -3816,12 +3924,14 @@ class AsyncTeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendphoto
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -3864,7 +3974,7 @@ class AsyncTeleBot:
 
         :param has_spoiler: Pass True, if the photo should be sent as a spoiler
         :type has_spoiler: :obj:`bool`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -3880,18 +3990,27 @@ class AsyncTeleBot:
         :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
         
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -3914,17 +4033,20 @@ class AsyncTeleBot:
                 self.token, chat_id, photo, caption, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
                 protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast))
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_audio(
-            self, chat_id: Union[int, str], audio: Union[Any, str], 
-            caption: Optional[str]=None, duration: Optional[int]=None, 
+            self, chat_id: Union[int, str], audio: Union[Any, str],
+            caption: Optional[str]=None, duration: Optional[int]=None,
             performer: Optional[str]=None, title: Optional[str]=None,
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            parse_mode: Optional[str]=None, 
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            parse_mode: Optional[str]=None,
             disable_notification: Optional[bool]=None,
-            timeout: Optional[int]=None, 
+            timeout: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
@@ -3934,7 +4056,9 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -3943,7 +4067,7 @@ class AsyncTeleBot:
         For sending voice messages, use the send_voice method instead.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendaudio
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -4000,7 +4124,7 @@ class AsyncTeleBot:
 
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4014,13 +4138,22 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if thumb is not None and thumbnail is None:
             thumbnail = thumb
@@ -4028,7 +4161,7 @@ class AsyncTeleBot:
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4050,15 +4183,18 @@ class AsyncTeleBot:
             await asyncio_helper.send_audio(
                 self.token, chat_id, audio, caption, duration, performer, title,
                 reply_markup, parse_mode, disable_notification, timeout, thumbnail,
-                caption_entities, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                caption_entities, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_voice(
-            self, chat_id: Union[int, str], voice: Union[Any, str], 
-            caption: Optional[str]=None, duration: Optional[int]=None, 
-            reply_to_message_id: Optional[int]=None, 
+            self, chat_id: Union[int, str], voice: Union[Any, str],
+            caption: Optional[str]=None, duration: Optional[int]=None,
+            reply_to_message_id: Optional[int]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            parse_mode: Optional[str]=None, 
-            disable_notification: Optional[bool]=None, 
+            parse_mode: Optional[str]=None,
+            disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
@@ -4067,12 +4203,14 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -4114,7 +4252,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4128,16 +4266,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4160,16 +4307,18 @@ class AsyncTeleBot:
                 self.token, chat_id, voice, caption, duration, reply_markup,
                 parse_mode, disable_notification, timeout, caption_entities,
                 protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                allow_paid_broadcast=allow_paid_broadcast))
+                allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_document(
             self, chat_id: Union[int, str], document: Union[Any, str],
-            reply_to_message_id: Optional[int]=None, 
-            caption: Optional[str]=None, 
+            reply_to_message_id: Optional[int]=None,
+            caption: Optional[str]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            parse_mode: Optional[str]=None, 
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None, 
+            parse_mode: Optional[str]=None,
+            disable_notification: Optional[bool]=None,
+            timeout: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None,
@@ -4182,12 +4331,14 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send general files.
 
         Telegram documentation: https://core.telegram.org/bots/api#senddocument
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -4241,7 +4392,7 @@ class AsyncTeleBot:
 
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4255,13 +4406,22 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if data and not(document):
             # function typo miss compatibility
@@ -4274,7 +4434,7 @@ class AsyncTeleBot:
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4295,7 +4455,7 @@ class AsyncTeleBot:
         if isinstance(document, types.InputFile) and visible_file_name:
             # inputfile name ignored, warn
             logger.warning('Cannot use both InputFile and visible_file_name. InputFile name will be ignored.')
-            
+
         return types.Message.de_json(
             await asyncio_helper.send_data(
                 self.token, chat_id, document, 'document',
@@ -4303,13 +4463,16 @@ class AsyncTeleBot:
                 disable_notification = disable_notification, timeout = timeout, caption = caption, thumbnail= thumbnail,
                 caption_entities = caption_entities,
                 disable_content_type_detection = disable_content_type_detection, visible_file_name = visible_file_name, protect_content = protect_content,
-                message_thread_id = message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_thread_id = message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_sticker(
-            self, chat_id: Union[int, str], sticker: Union[Any, str], 
-            reply_to_message_id: Optional[int]=None, 
+            self, chat_id: Union[int, str], sticker: Union[Any, str],
+            reply_to_message_id: Optional[int]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -4319,7 +4482,9 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -4361,7 +4526,7 @@ class AsyncTeleBot:
 
         :param emoji: Emoji associated with the sticker; only for just uploaded stickers
         :type emoji: :obj:`str`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4375,12 +4540,21 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if data and not(sticker):
             # function typo miss compatibility
@@ -4389,7 +4563,7 @@ class AsyncTeleBot:
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4411,23 +4585,26 @@ class AsyncTeleBot:
             await asyncio_helper.send_data(
                 self.token, chat_id, sticker, 'sticker',
                 reply_markup=reply_markup,
-                disable_notification=disable_notification, timeout=timeout, 
+                disable_notification=disable_notification, timeout=timeout,
                 protect_content=protect_content,
-                message_thread_id=message_thread_id, emoji=emoji, reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_thread_id=message_thread_id, emoji=emoji, reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                suggested_post_parameters=suggested_post_parameters, direct_messages_topic_id=direct_messages_topic_id
+            )
+        )
 
     async def send_video(
-            self, chat_id: Union[int, str], video: Union[Any, str], 
+            self, chat_id: Union[int, str], video: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
-            thumbnail: Optional[Union[Any, str]]=None, 
-            caption: Optional[str]=None, 
-            parse_mode: Optional[str]=None, 
+            thumbnail: Optional[Union[Any, str]]=None,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            supports_streaming: Optional[bool]=None, 
+            supports_streaming: Optional[bool]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
@@ -4441,10 +4618,12 @@ class AsyncTeleBot:
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
             cover: Optional[Union[Any, str]]=None,
-            start_timestamp: Optional[int]=None) -> types.Message:
+            start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendvideo
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -4472,7 +4651,7 @@ class AsyncTeleBot:
 
         :param start_timestamp: Start timestamp for the video in the message
         :type start_timestamp: :obj:`int`
-        
+
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
 
@@ -4516,7 +4695,7 @@ class AsyncTeleBot:
 
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4533,17 +4712,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of a topic in a forum supergroup or channel, in which the message will be sent
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4575,22 +4762,23 @@ class AsyncTeleBot:
                 self.token, chat_id, video, duration, caption, reply_markup,
                 parse_mode, supports_streaming, disable_notification, timeout, thumbnail, width, height,
                 caption_entities, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast, cover=cover, start_timestamp=start_timestamp))
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast, cover=cover, start_timestamp=start_timestamp,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters))
 
     async def send_animation(
-            self, chat_id: Union[int, str], animation: Union[Any, str], 
+            self, chat_id: Union[int, str], animation: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
-            caption: Optional[str]=None, 
+            caption: Optional[str]=None,
             parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
@@ -4599,11 +4787,13 @@ class AsyncTeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendanimation
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -4621,7 +4811,7 @@ class AsyncTeleBot:
 
         :param height: Animation height
         :type height: :obj:`int`
-        
+
         :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
@@ -4665,7 +4855,7 @@ class AsyncTeleBot:
 
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4682,17 +4872,26 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4719,16 +4918,17 @@ class AsyncTeleBot:
                 self.token, chat_id, animation, duration, caption,
                 reply_markup, parse_mode, disable_notification, timeout, thumbnail,
                 caption_entities, width, height, protect_content, message_thread_id, has_spoiler, reply_parameters, business_connection_id,
-                message_effect_id=message_effect_id, show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast))
+                message_effect_id=message_effect_id, show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters))
 
     async def send_video_note(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
-            duration: Optional[int]=None, 
+            self, chat_id: Union[int, str], data: Union[Any, str],
+            duration: Optional[int]=None,
             length: Optional[int]=None,
-            reply_to_message_id: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None, 
+            disable_notification: Optional[bool]=None,
+            timeout: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -4737,16 +4937,18 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param data: Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended)
             or upload a new video using multipart/form-data. Sending video notes by a URL is currently unsupported
         :type data: :obj:`str` or :class:`telebot.types.InputFile`
@@ -4774,7 +4976,7 @@ class AsyncTeleBot:
         :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
-            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
+            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
         :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param allow_sending_without_reply: Deprecated - Use reply_parameters instead. Pass True, if the message should be sent even if the specified replied-to message is not found
@@ -4788,7 +4990,7 @@ class AsyncTeleBot:
 
         :param thumb: Deprecated. Use thumbnail instead
         :type thumb: :obj:`str` or :class:`telebot.types.InputFile`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4802,16 +5004,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4837,7 +5048,10 @@ class AsyncTeleBot:
             await asyncio_helper.send_video_note(
                 self.token, chat_id, data, duration, length, reply_markup,
                 disable_notification, timeout, thumbnail, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                allow_paid_broadcast=allow_paid_broadcast))
+                allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_paid_media(
             self, chat_id: Union[int, str], star_count: int, media: List[types.InputPaidMedia],
@@ -4845,7 +5059,9 @@ class AsyncTeleBot:
             show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None,
-            payload: Optional[str]=None, allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            payload: Optional[str]=None, allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send paid media to channel chats. On success, the sent Message is returned.
 
@@ -4894,6 +5110,15 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4903,27 +5128,31 @@ class AsyncTeleBot:
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
                 reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id,
-                payload=payload, allow_paid_broadcast=allow_paid_broadcast))
+                payload=payload, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def send_media_group(
-            self, chat_id: Union[int, str], 
+            self, chat_id: Union[int, str],
             media: List[Union[
-                types.InputMediaAudio, types.InputMediaDocument, 
+                types.InputMediaAudio, types.InputMediaDocument,
                 types.InputMediaPhoto, types.InputMediaVideo]],
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None, 
+            reply_to_message_id: Optional[int]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> List[types.Message]:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -4949,7 +5178,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of a message thread, in which the messages will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -4963,6 +5192,10 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -4973,11 +5206,11 @@ class AsyncTeleBot:
                     media_item.parse_mode = self.parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -4997,27 +5230,29 @@ class AsyncTeleBot:
 
         result = await asyncio_helper.send_media_group(
             self.token, chat_id, media, disable_notification, timeout, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-            allow_paid_broadcast=allow_paid_broadcast)
+            allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id)
         return [types.Message.de_json(msg) for msg in result]
 
     async def send_location(
-            self, chat_id: Union[int, str], 
-            latitude: float, longitude: float, 
-            live_period: Optional[int]=None, 
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            disable_notification: Optional[bool]=None, 
+            self, chat_id: Union[int, str],
+            latitude: float, longitude: float,
+            live_period: Optional[int]=None,
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None,
-            horizontal_accuracy: Optional[float]=None, 
-            heading: Optional[int]=None, 
-            proximity_alert_radius: Optional[int]=None, 
+            horizontal_accuracy: Optional[float]=None,
+            heading: Optional[int]=None,
+            proximity_alert_radius: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -5060,13 +5295,13 @@ class AsyncTeleBot:
 
         :param allow_sending_without_reply: Deprecated - Use reply_parameters instead. Pass True, if the message should be sent even if the specified replied-to message is not found
         :type allow_sending_without_reply: :obj:`bool`
-        
+
         :param protect_content: Protects the contents of the sent message from forwarding and saving
         :type protect_content: :obj:`bool`
 
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -5080,16 +5315,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -5112,17 +5356,20 @@ class AsyncTeleBot:
                 self.token, chat_id, latitude, longitude, live_period, 
                 reply_markup, disable_notification, timeout, 
                 horizontal_accuracy, heading, proximity_alert_radius, 
-                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     async def edit_message_live_location(
-            self, latitude: float, longitude: float, 
-            chat_id: Optional[Union[int, str]]=None, 
+            self, latitude: float, longitude: float,
+            chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None,
-            horizontal_accuracy: Optional[float]=None, 
-            heading: Optional[int]=None, 
+            horizontal_accuracy: Optional[float]=None,
+            heading: Optional[int]=None,
             proximity_alert_radius: Optional[int]=None,
             live_period: Optional[int]=None,
             business_connection_id: Optional[str]=None
@@ -5182,9 +5429,9 @@ class AsyncTeleBot:
         )
 
     async def stop_message_live_location(
-            self, chat_id: Optional[Union[int, str]]=None, 
+            self, chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None,
             business_connection_id: Optional[str]=None) -> types.Message:
@@ -5193,7 +5440,7 @@ class AsyncTeleBot:
         On success, if the message is not an inline message, the edited Message is returned, otherwise True is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -5221,14 +5468,14 @@ class AsyncTeleBot:
                 self.token, chat_id, message_id, inline_message_id, reply_markup, timeout, business_connection_id))
 
     async def send_venue(
-            self, chat_id: Union[int, str], 
-            latitude: float, longitude: float, 
-            title: str, address: str, 
-            foursquare_id: Optional[str]=None, 
+            self, chat_id: Union[int, str],
+            latitude: float, longitude: float,
+            title: str, address: str,
+            foursquare_id: Optional[str]=None,
             foursquare_type: Optional[str]=None,
-            disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            disable_notification: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             google_place_id: Optional[str]=None,
@@ -5238,15 +5485,17 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendvenue
 
         :param chat_id: Unique identifier for the target chat or username of the target channel
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param latitude: Latitude of the venue
         :type latitude: :obj:`float`
 
@@ -5295,7 +5544,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: The thread to which the message will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -5304,21 +5553,30 @@ class AsyncTeleBot:
 
         :param message_effect_id: Unique identifier of the message effect
         :type message_effect_id: :obj:`str`
-        
+
         :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
+        
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -5341,16 +5599,16 @@ class AsyncTeleBot:
                 self.token, chat_id, latitude, longitude, title, address, foursquare_id, foursquare_type,
                 disable_notification, reply_markup, timeout,
                 google_place_id, google_place_type, protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id,
-                allow_paid_broadcast=allow_paid_broadcast))
-        
+                allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+        )
 
     async def send_contact(
-            self, chat_id: Union[int, str], phone_number: str, 
-            first_name: str, last_name: Optional[str]=None, 
+            self, chat_id: Union[int, str], phone_number: str,
+            first_name: str, last_name: Optional[str]=None,
             vcard: Optional[str]=None,
-            disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            disable_notification: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -5358,7 +5616,9 @@ class AsyncTeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -5402,7 +5662,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: The thread to which the message will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -5416,16 +5676,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -5501,7 +5770,7 @@ class AsyncTeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target channel
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param action: Type of action to broadcast. Choose one, depending on what the user is about
             to receive: typing for text messages, upload_photo for photos, record_video or upload_video
             for videos, record_voice or upload_voice for voice notes, upload_document for general files,
@@ -5523,8 +5792,8 @@ class AsyncTeleBot:
         return await asyncio_helper.send_chat_action(self.token, chat_id, action, timeout, message_thread_id, business_connection_id)
 
     async def kick_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
-            until_date:Optional[Union[int, datetime]]=None, 
+            self, chat_id: Union[int, str], user_id: int,
+            until_date:Optional[Union[int, datetime]]=None,
             revoke_messages: Optional[bool]=None) -> bool:
         """
         This function is deprecated. Use `ban_chat_member` instead
@@ -5533,13 +5802,13 @@ class AsyncTeleBot:
         return await asyncio_helper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     async def ban_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
-            until_date:Optional[Union[int, datetime]]=None, 
+            self, chat_id: Union[int, str], user_id: int,
+            until_date:Optional[Union[int, datetime]]=None,
             revoke_messages: Optional[bool]=None) -> bool:
         """
-        Use this method to ban a user in a group, a supergroup or a channel. 
-        In the case of supergroups and channels, the user will not be able to return to the chat on their 
-        own using invite links, etc., unless unbanned first. 
+        Use this method to ban a user in a group, a supergroup or a channel.
+        In the case of supergroups and channels, the user will not be able to return to the chat on their
+        own using invite links, etc., unless unbanned first.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#banchatmember
@@ -5556,17 +5825,17 @@ class AsyncTeleBot:
         :type until_date: :obj:`int` or :obj:`datetime`
 
         :param revoke_messages: Bool: Pass True to delete all messages from the chat for the user that is being removed.
-            If False, the user will be able to see messages in the group that were sent before the user was removed. 
+            If False, the user will be able to see messages in the group that were sent before the user was removed.
             Always True for supergroups and channels.
         :type revoke_messages: :obj:`bool`
-        
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.ban_chat_member(self.token, chat_id, user_id, until_date, revoke_messages)
 
     async def unban_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
+            self, chat_id: Union[int, str], user_id: int,
             only_if_banned: Optional[bool]=False) -> bool:
         """
         Use this method to unban a previously kicked user in a supergroup or channel.
@@ -5593,15 +5862,15 @@ class AsyncTeleBot:
         return await asyncio_helper.unban_chat_member(self.token, chat_id, user_id, only_if_banned)
 
     async def restrict_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
+            self, chat_id: Union[int, str], user_id: int,
             until_date: Optional[Union[int, datetime]]=None,
-            can_send_messages: Optional[bool]=None, 
+            can_send_messages: Optional[bool]=None,
             can_send_media_messages: Optional[bool]=None,
-            can_send_polls: Optional[bool]=None, 
+            can_send_polls: Optional[bool]=None,
             can_send_other_messages: Optional[bool]=None,
-            can_add_web_page_previews: Optional[bool]=None, 
+            can_add_web_page_previews: Optional[bool]=None,
             can_change_info: Optional[bool]=None,
-            can_invite_users: Optional[bool]=None, 
+            can_invite_users: Optional[bool]=None,
             can_pin_messages: Optional[bool]=None,
             permissions: Optional[types.ChatPermissions]=None,
             use_independent_chat_permissions: Optional[bool]=None) -> bool:
@@ -5629,10 +5898,10 @@ class AsyncTeleBot:
 
         :param can_send_messages: deprecated
         :type can_send_messages: :obj:`bool`
-        
+
         :param can_send_media_messages: deprecated
         :type can_send_media_messages: :obj:`bool`
-        
+
         :param can_send_polls: deprecated
         :type can_send_polls: :obj:`bool`
 
@@ -5680,23 +5949,24 @@ class AsyncTeleBot:
             self.token, chat_id, user_id, permissions, until_date, use_independent_chat_permissions)
 
     async def promote_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
-            can_change_info: Optional[bool]=None, 
+            self, chat_id: Union[int, str], user_id: int,
+            can_change_info: Optional[bool]=None,
             can_post_messages: Optional[bool]=None,
-            can_edit_messages: Optional[bool]=None, 
-            can_delete_messages: Optional[bool]=None, 
+            can_edit_messages: Optional[bool]=None,
+            can_delete_messages: Optional[bool]=None,
             can_invite_users: Optional[bool]=None,
-            can_restrict_members: Optional[bool]=None, 
-            can_pin_messages: Optional[bool]=None, 
+            can_restrict_members: Optional[bool]=None,
+            can_pin_messages: Optional[bool]=None,
             can_promote_members: Optional[bool]=None,
-            is_anonymous: Optional[bool]=None, 
-            can_manage_chat: Optional[bool]=None, 
+            is_anonymous: Optional[bool]=None,
+            can_manage_chat: Optional[bool]=None,
             can_manage_video_chats: Optional[bool]=None,
             can_manage_voice_chats: Optional[bool]=None,
             can_manage_topics: Optional[bool]=None,
             can_post_stories: Optional[bool]=None,
             can_edit_stories: Optional[bool]=None,
-            can_delete_stories: Optional[bool]=None) -> bool:
+            can_delete_stories: Optional[bool]=None,
+            can_manage_direct_messages: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -5740,9 +6010,9 @@ class AsyncTeleBot:
         :param is_anonymous: Pass True, if the administrator's presence in the chat is hidden
         :type is_anonymous: :obj:`bool`
 
-        :param can_manage_chat: Pass True, if the administrator can access the chat event log, chat statistics, 
-            message statistics in channels, see channel members, 
-            see anonymous administrators in supergroups and ignore slow mode. 
+        :param can_manage_chat: Pass True, if the administrator can access the chat event log, chat statistics,
+            message statistics in channels, see channel members,
+            see anonymous administrators in supergroups and ignore slow mode.
             Implied by any other administrator privilege
         :type can_manage_chat: :obj:`bool`
 
@@ -5766,6 +6036,10 @@ class AsyncTeleBot:
         :param can_delete_stories: Pass True if the administrator can delete the channel's stories
         :type can_delete_stories: :obj:`bool`
 
+        :param can_manage_direct_messages: Pass True if the administrator can manage direct messages
+            within the channel and decline suggested posts; for channels only
+        :type can_manage_direct_messages: :obj:`bool`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
@@ -5780,7 +6054,8 @@ class AsyncTeleBot:
             can_edit_messages, can_delete_messages, can_invite_users,
             can_restrict_members, can_pin_messages, can_promote_members,
             is_anonymous, can_manage_chat, can_manage_video_chats, can_manage_topics,
-            can_post_stories, can_edit_stories, can_delete_stories)
+            can_post_stories, can_edit_stories, can_delete_stories, can_manage_direct_messages=can_manage_direct_messages
+        )
 
     async def set_chat_administrator_custom_title(
             self, chat_id: Union[int, str], user_id: int, custom_title: str) -> bool:
@@ -5810,10 +6085,10 @@ class AsyncTeleBot:
     async def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
         Use this method to ban a channel chat in a supergroup or a channel.
-        The owner of the chat will not be able to send messages and join live 
-        streams on behalf of the chat, unless it is unbanned first. 
-        The bot must be an administrator in the supergroup or channel 
-        for this to work and must have the appropriate administrator rights. 
+        The owner of the chat will not be able to send messages and join live
+        streams on behalf of the chat, unless it is unbanned first.
+        The bot must be an administrator in the supergroup or channel
+        for this to work and must have the appropriate administrator rights.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#banchatsenderchat
@@ -5831,8 +6106,8 @@ class AsyncTeleBot:
 
     async def unban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
-        Use this method to unban a previously banned channel chat in a supergroup or channel. 
-        The bot must be an administrator for this to work and must have the appropriate 
+        Use this method to unban a previously banned channel chat in a supergroup or channel.
+        The bot must be an administrator for this to work and must have the appropriate
         administrator rights.
         Returns True on success.
 
@@ -5880,7 +6155,7 @@ class AsyncTeleBot:
     async def create_chat_invite_link(
             self, chat_id: Union[int, str],
             name: Optional[str]=None,
-            expire_date: Optional[Union[int, datetime]]=None, 
+            expire_date: Optional[Union[int, datetime]]=None,
             member_limit: Optional[int]=None,
             creates_join_request: Optional[bool]=None) -> types.ChatInviteLink:
         """
@@ -5952,7 +6227,7 @@ class AsyncTeleBot:
         return types.ChatInviteLink.de_json(
             await asyncio_helper.edit_chat_invite_link(self.token, chat_id, invite_link, name, expire_date, member_limit, creates_join_request)
         )
-    
+
     async def create_chat_subscription_invite_link(
             self, chat_id: Union[int, str], subscription_period: int, subscription_price: int,
             name: Optional[str]=None) -> types.ChatInviteLink:
@@ -5966,7 +6241,7 @@ class AsyncTeleBot:
         :param chat_id: Unique identifier for the target channel chat or username of the target channel
             (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param name: Invite link name; 0-32 characters
         :type name: :obj:`str`
 
@@ -6014,7 +6289,7 @@ class AsyncTeleBot:
             self, chat_id: Union[int, str], invite_link: str) -> types.ChatInviteLink:
         """
         Use this method to revoke an invite link created by the bot.
-        Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
+        Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
 
         Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
@@ -6052,7 +6327,7 @@ class AsyncTeleBot:
 
     async def approve_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
         """
-        Use this method to approve a chat join request. 
+        Use this method to approve a chat join request.
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
@@ -6072,7 +6347,7 @@ class AsyncTeleBot:
 
     async def decline_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
         """
-        Use this method to decline a chat join request. 
+        Use this method to decline a chat join request.
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
@@ -6128,7 +6403,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.delete_chat_photo(self.token, chat_id)
-    
+
     async def set_my_description(self, description: Optional[str]=None, language_code: Optional[str]=None):
         """
         Use this method to change the bot's description, which is shown in
@@ -6159,11 +6434,11 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_my_description(self.token, language_code)
         return types.BotDescription.de_json(result)
-    
+
     async def set_my_short_description(self, short_description:Optional[str]=None, language_code:Optional[str]=None):
         """
         Use this method to change the bot's short description, which is shown on the bot's profile page and
-        is sent together with the link when users share the bot. 
+        is sent together with the link when users share the bot.
         Returns True on success.
 
         :param short_description: New short description for the bot; 0-120 characters. Pass an empty string to remove the dedicated short description for the given language.
@@ -6177,7 +6452,7 @@ class AsyncTeleBot:
         """
 
         return await asyncio_helper.set_my_short_description(self.token, short_description, language_code)
-    
+
     async def get_my_short_description(self, language_code: Optional[str]=None):
         """
         Use this method to get the current bot short description for the given user language.
@@ -6190,21 +6465,21 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_my_short_description(self.token, language_code)
         return types.BotShortDescription.de_json(result)
-    
-    async def get_my_commands(self, scope: Optional[types.BotCommandScope], 
+
+    async def get_my_commands(self, scope: Optional[types.BotCommandScope],
             language_code: Optional[str]) -> List[types.BotCommand]:
         """
-        Use this method to get the current list of the bot's commands. 
+        Use this method to get the current list of the bot's commands.
         Returns List of BotCommand on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#getmycommands
 
-        :param scope: The scope of users for which the commands are relevant. 
+        :param scope: The scope of users for which the commands are relevant.
             Defaults to BotCommandScopeDefault.
         :type scope: :class:`telebot.types.BotCommandScope`
 
-        :param language_code: A two-letter ISO 639-1 language code. If empty, 
-            commands will be applied to all users from the given scope, 
+        :param language_code: A two-letter ISO 639-1 language code. If empty,
+            commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :type language_code: :obj:`str`
 
@@ -6248,16 +6523,16 @@ class AsyncTeleBot:
         result = await asyncio_helper.get_my_name(self.token, language_code)
         return types.BotName.de_json(result)
 
-    async def set_chat_menu_button(self, chat_id: Union[int, str]=None, 
+    async def set_chat_menu_button(self, chat_id: Union[int, str]=None,
                 menu_button: types.MenuButton=None) -> bool:
         """
-        Use this method to change the bot's menu button in a private chat, 
-        or the default menu button. 
+        Use this method to change the bot's menu button in a private chat,
+        or the default menu button.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatmenubutton
 
-        :param chat_id: Unique identifier for the target private chat. 
+        :param chat_id: Unique identifier for the target private chat.
             If not specified, default bot's menu button will be changed.
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -6288,13 +6563,13 @@ class AsyncTeleBot:
         return types.MenuButton.de_json(await asyncio_helper.get_chat_menu_button(self.token, chat_id))
 
 
-    async def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None, 
+    async def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None,
                                     for_channels: bool=None) -> bool:
         """
         Use this method to change the default administrator rights requested by the bot
         when it's added as an administrator to groups or channels.
         These rights will be suggested to users, but they are are free to modify
-        the list before adding the bot. 
+        the list before adding the bot.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setmydefaultadministratorrights
@@ -6312,7 +6587,7 @@ class AsyncTeleBot:
         """
 
         return await asyncio_helper.set_my_default_administrator_rights(self.token, rights, for_channels)
-        
+
 
     async def get_my_default_administrator_rights(self, for_channels: bool=None) -> types.ChatAdministratorRights:
         """
@@ -6327,9 +6602,9 @@ class AsyncTeleBot:
         :return: Returns ChatAdministratorRights on success.
         :rtype: :class:`telebot.types.ChatAdministratorRights`
         """
-        
+
         return types.ChatAdministratorRights.de_json(await asyncio_helper.get_my_default_administrator_rights(self.token, for_channels))
-    
+
     async def get_business_connection(self, business_connection_id: str) -> types.BusinessConnection:
         """
         Use this method to get information about the connection of the bot with a business account.
@@ -6348,9 +6623,9 @@ class AsyncTeleBot:
         return types.BusinessConnection.de_json(
             result
         )
-    
 
-    async def set_my_commands(self, commands: List[types.BotCommand], 
+
+    async def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[str]=None) -> bool:
         """
@@ -6361,12 +6636,12 @@ class AsyncTeleBot:
         :param commands: List of BotCommand. At most 100 commands can be specified.
         :type commands: :obj:`list` of :class:`telebot.types.BotCommand`
 
-        :param scope: The scope of users for which the commands are relevant. 
+        :param scope: The scope of users for which the commands are relevant.
             Defaults to BotCommandScopeDefault.
         :type scope: :class:`telebot.types.BotCommandScope`
 
-        :param language_code: A two-letter ISO 639-1 language code. If empty, 
-            commands will be applied to all users from the given scope, 
+        :param language_code: A two-letter ISO 639-1 language code. If empty,
+            commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :type language_code: :obj:`str`
 
@@ -6374,22 +6649,22 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_my_commands(self.token, commands, scope, language_code)
-    
-    async def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
+
+    async def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[int]=None) -> bool:
         """
-        Use this method to delete the list of the bot's commands for the given scope and user language. 
-        After deletion, higher level commands will be shown to affected users. 
+        Use this method to delete the list of the bot's commands for the given scope and user language.
+        After deletion, higher level commands will be shown to affected users.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletemycommands
-        
-        :param scope: The scope of users for which the commands are relevant. 
+
+        :param scope: The scope of users for which the commands are relevant.
             Defaults to BotCommandScopeDefault.
         :type scope: :class:`telebot.types.BotCommandScope`
 
-        :param language_code: A two-letter ISO 639-1 language code. If empty, 
-            commands will be applied to all users from the given scope, 
+        :param language_code: A two-letter ISO 639-1 language code. If empty,
+            commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :type language_code: :obj:`str`
 
@@ -6440,7 +6715,7 @@ class AsyncTeleBot:
         return await asyncio_helper.set_chat_description(self.token, chat_id, description)
 
     async def pin_chat_message(
-            self, chat_id: Union[int, str], message_id: int, 
+            self, chat_id: Union[int, str], message_id: int,
             disable_notification: Optional[bool]=False, business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method to pin a message in a supergroup.
@@ -6511,10 +6786,10 @@ class AsyncTeleBot:
         return await asyncio_helper.unpin_all_chat_messages(self.token, chat_id)
 
     async def edit_message_text(
-            self, text: str, 
-            chat_id: Optional[Union[int, str]]=None, 
-            message_id: Optional[int]=None, 
-            inline_message_id: Optional[str]=None, 
+            self, text: str,
+            chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
+            inline_message_id: Optional[str]=None,
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,
@@ -6592,9 +6867,9 @@ class AsyncTeleBot:
         return types.Message.de_json(result)
 
     async def edit_message_media(
-            self, media: Any, chat_id: Optional[Union[int, str]]=None, 
+            self, media: Any, chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             business_connection_id: Optional[str]=None,
             timeout: Optional[int]=None) -> Union[types.Message, bool]:
@@ -6603,7 +6878,7 @@ class AsyncTeleBot:
         If a message is part of a message album, then it can be edited only to an audio for audio albums, only to a document for document albums and to a photo or a video otherwise.
         When an inline message is edited, a new file can't be uploaded; use a previously uploaded file via its file_id or specify a URL.
         On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
-        Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent. 
+        Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent.
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagemedia
 
@@ -6612,7 +6887,7 @@ class AsyncTeleBot:
         :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
-        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message 
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message
         :type message_id: :obj:`int`
 
         :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
@@ -6637,9 +6912,9 @@ class AsyncTeleBot:
         return types.Message.de_json(result)
 
     async def edit_message_reply_markup(
-            self, chat_id: Optional[Union[int, str]]=None, 
+            self, chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             business_connection_id: Optional[str]=None,
             timeout: Optional[int]=None) -> Union[types.Message, bool]:
@@ -6676,10 +6951,10 @@ class AsyncTeleBot:
         return types.Message.de_json(result)
 
     async def send_game(
-            self, chat_id: Union[int, str], game_short_name: str, 
+            self, chat_id: Union[int, str], game_short_name: str,
             disable_notification: Optional[bool]=None,
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -6702,7 +6977,7 @@ class AsyncTeleBot:
         :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
         :type disable_notification: :obj:`bool`
 
-        :param reply_to_message_id: Deprecated - Use reply_parameters instead. If the message is a reply, ID of the original message 
+        :param reply_to_message_id: Deprecated - Use reply_parameters instead. If the message is a reply, ID of the original message
         :type reply_to_message_id: :obj:`int`
 
         :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
@@ -6719,7 +6994,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: Identifier of the thread to which the message will be sent.
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -6738,11 +7013,11 @@ class AsyncTeleBot:
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -6762,15 +7037,15 @@ class AsyncTeleBot:
 
         result = await asyncio_helper.send_game(
             self.token, chat_id, game_short_name, disable_notification,
-            reply_markup, timeout, 
+            reply_markup, timeout,
             protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
         return types.Message.de_json(result)
 
     async def set_game_score(
-            self, user_id: Union[int, str], score: int, 
-            force: Optional[bool]=None, 
-            chat_id: Optional[Union[int, str]]=None, 
-            message_id: Optional[int]=None, 
+            self, user_id: Union[int, str], score: int,
+            force: Optional[bool]=None,
+            chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None,
             disable_edit_message: Optional[bool]=None) -> Union[types.Message, bool]:
         """
@@ -6810,7 +7085,7 @@ class AsyncTeleBot:
 
     async def get_game_high_scores(
             self, user_id: int, chat_id: Optional[Union[int, str]]=None,
-            message_id: Optional[int]=None, 
+            message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None) -> List[types.GameHighScore]:
         """
         Use this method to get data for high score tables. Will return the score of the specified user and several of
@@ -6841,20 +7116,20 @@ class AsyncTeleBot:
         return [types.GameHighScore.de_json(r) for r in result]
 
     async def send_invoice(
-            self, chat_id: Union[int, str], title: str, description: str, 
-            invoice_payload: str, provider_token: Union[str, None], currency: str, 
-            prices: List[types.LabeledPrice], start_parameter: Optional[str]=None, 
-            photo_url: Optional[str]=None, photo_size: Optional[int]=None, 
+            self, chat_id: Union[int, str], title: str, description: str,
+            invoice_payload: str, provider_token: Union[str, None], currency: str,
+            prices: List[types.LabeledPrice], start_parameter: Optional[str]=None,
+            photo_url: Optional[str]=None, photo_size: Optional[int]=None,
             photo_width: Optional[int]=None, photo_height: Optional[int]=None,
-            need_name: Optional[bool]=None, need_phone_number: Optional[bool]=None, 
+            need_name: Optional[bool]=None, need_phone_number: Optional[bool]=None,
             need_email: Optional[bool]=None, need_shipping_address: Optional[bool]=None,
-            send_phone_number_to_provider: Optional[bool]=None, 
-            send_email_to_provider: Optional[bool]=None, 
+            send_phone_number_to_provider: Optional[bool]=None,
+            send_email_to_provider: Optional[bool]=None,
             is_flexible: Optional[bool]=None,
-            disable_notification: Optional[bool]=None, 
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            provider_data: Optional[str]=None, 
+            disable_notification: Optional[bool]=None,
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            provider_data: Optional[str]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None,
             max_tip_amount: Optional[int] = None,
@@ -6863,7 +7138,9 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Sends invoice.
 
@@ -6905,7 +7182,7 @@ class AsyncTeleBot:
         :param photo_size: Photo size in bytes
         :type photo_size: :obj:`int`
 
-        :param photo_width: Photo width 
+        :param photo_width: Photo width
         :type photo_width: :obj:`int`
 
         :param photo_height: Photo height
@@ -6965,7 +7242,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: The identifier of a message thread, in which the invoice message will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -6976,16 +7253,25 @@ class AsyncTeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -7010,14 +7296,16 @@ class AsyncTeleBot:
             send_phone_number_to_provider, send_email_to_provider, is_flexible, disable_notification,
             reply_markup, provider_data, timeout,
             max_tip_amount, suggested_tip_amounts, protect_content, message_thread_id, reply_parameters,
-            message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+            message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+            direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+        )
         return types.Message.de_json(result)
 
 
     async def create_invoice_link(self,
-            title: str, description: str, payload:str, provider_token: Union[str, None], 
+            title: str, description: str, payload:str, provider_token: Union[str, None],
             currency: str, prices: List[types.LabeledPrice],
-            max_tip_amount: Optional[int] = None, 
+            max_tip_amount: Optional[int] = None,
             suggested_tip_amounts: Optional[List[int]]=None,
             provider_data: Optional[str]=None,
             photo_url: Optional[str]=None,
@@ -7033,14 +7321,14 @@ class AsyncTeleBot:
             is_flexible: Optional[bool]=None,
             subscription_period: Optional[int]=None,
             business_connection_id: Optional[str]=None) -> str:
-            
+
         """
-        Use this method to create a link for an invoice. 
+        Use this method to create a link for an invoice.
         Returns the created invoice link as String on success.
 
         Telegram documentation:
         https://core.telegram.org/bots/api#createinvoicelink
-    
+
         :param business_connection_id: Unique identifier of the business connection on behalf of which the link will be created
         :type business_connection_id: :obj:`str`
 
@@ -7131,18 +7419,18 @@ class AsyncTeleBot:
     # noinspection PyShadowingBuiltins
     async def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[Union[str, types.InputPollOption]],
-            is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
-            allows_multiple_answers: Optional[bool]=None, 
+            is_anonymous: Optional[bool]=None, type: Optional[str]=None,
+            allows_multiple_answers: Optional[bool]=None,
             correct_option_id: Optional[int]=None,
-            explanation: Optional[str]=None, 
-            explanation_parse_mode: Optional[str]=None, 
-            open_period: Optional[int]=None, 
-            close_date: Optional[Union[int, datetime]]=None, 
+            explanation: Optional[str]=None,
+            explanation_parse_mode: Optional[str]=None,
+            open_period: Optional[int]=None,
+            close_date: Optional[Union[int, datetime]]=None,
             is_closed: Optional[bool]=None,
             disable_notification: Optional[bool]=False,
-            reply_to_message_id: Optional[int]=None, 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            allow_sending_without_reply: Optional[bool]=None, 
+            reply_to_message_id: Optional[int]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            allow_sending_without_reply: Optional[bool]=None,
             timeout: Optional[int]=None,
             explanation_entities: Optional[List[types.MessageEntity]]=None,
             protect_content: Optional[bool]=None,
@@ -7222,7 +7510,7 @@ class AsyncTeleBot:
 
         :param message_thread_id: The identifier of a message thread, in which the poll will be sent
         :type message_thread_id: :obj:`int`
-        
+
         :param reply_parameters: Reply parameters.
         :type reply_parameters: :class:`telebot.types.ReplyParameters`
 
@@ -7247,13 +7535,13 @@ class AsyncTeleBot:
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
         question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
 
         if allow_sending_without_reply is not None:
             logger.warning("The parameter 'allow_sending_without_reply' is deprecated. Use 'reply_parameters' instead.")
-        
+
         if reply_to_message_id:
             # show a deprecation warning
             logger.warning("The parameter 'reply_to_message_id' is deprecated. Use 'reply_parameters' instead.")
@@ -7297,7 +7585,7 @@ class AsyncTeleBot:
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
 
     async def stop_poll(
-            self, chat_id: Union[int, str], message_id: int, 
+            self, chat_id: Union[int, str], message_id: int,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             business_connection_id: Optional[str]=None) -> types.Poll:
         """
@@ -7323,8 +7611,8 @@ class AsyncTeleBot:
         return types.Poll.de_json(await asyncio_helper.stop_poll(self.token, chat_id, message_id, reply_markup, business_connection_id))
 
     async def answer_shipping_query(
-            self, shipping_query_id: str, ok: bool, 
-            shipping_options: Optional[List[types.ShippingOption]]=None, 
+            self, shipping_query_id: str, ok: bool,
+            shipping_options: Optional[List[types.ShippingOption]]=None,
             error_message: Optional[str]=None) -> bool:
         """
         Asks for an answer to a shipping question.
@@ -7350,7 +7638,7 @@ class AsyncTeleBot:
         return await asyncio_helper.answer_shipping_query(self.token, shipping_query_id, ok, shipping_options, error_message)
 
     async def answer_pre_checkout_query(
-            self, pre_checkout_query_id: str, ok: bool, 
+            self, pre_checkout_query_id: str, ok: bool,
             error_message: Optional[str]=None) -> bool:
         """
         Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the
@@ -7362,7 +7650,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#answerprecheckoutquery
 
-        :param pre_checkout_query_id: Unique identifier for the query to be answered 
+        :param pre_checkout_query_id: Unique identifier for the query to be answered
         :type pre_checkout_query_id: :obj:`int`
 
         :param ok: Specify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
@@ -7385,7 +7673,7 @@ class AsyncTeleBot:
         On success, returns a StarAmount object.
         """
         return types.StarAmount.de_json(await asyncio_helper.get_my_star_balance(self.token))
-    
+
     async def get_star_transactions(self, offset: Optional[int]=None, limit: Optional[int]=None) -> types.StarTransactions:
         """
         Returns the bot's Telegram Star transactions in chronological order.
@@ -7403,7 +7691,7 @@ class AsyncTeleBot:
         """
 
         return types.StarTransactions.de_json(await asyncio_helper.get_star_transactions(self.token, offset, limit))
-    
+
     async def refund_star_payment(self, user_id: int, telegram_payment_charge_id: str) -> bool:
         """
         Refunds a successful payment in Telegram Stars. Returns True on success.
@@ -7442,10 +7730,10 @@ class AsyncTeleBot:
         return await asyncio_helper.edit_user_star_subscription(self.token, user_id, telegram_payment_charge_id, is_canceled)
 
     async def edit_message_caption(
-            self, caption: str, chat_id: Optional[Union[int, str]]=None, 
-            message_id: Optional[int]=None, 
+            self, caption: str, chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None,
-            parse_mode: Optional[str]=None, 
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             show_caption_above_media: Optional[bool]=None,
@@ -7502,7 +7790,7 @@ class AsyncTeleBot:
     async def reply_to(self, message: types.Message, text: str, **kwargs) -> types.Message:
         """
         Convenience function for `send_message(message.chat.id, text, reply_parameters=(message.message_id...), **kwargs)`
-        
+
         :param message: Instance of :class:`telebot.types.Message`
         :type message: :obj:`types.Message`
 
@@ -7533,12 +7821,12 @@ class AsyncTeleBot:
         return await self.send_message(message.chat.id, text, reply_parameters=reply_parameters, **kwargs)
 
     async def answer_inline_query(
-            self, inline_query_id: str, 
-            results: List[Any], 
-            cache_time: Optional[int]=None, 
-            is_personal: Optional[bool]=None, 
+            self, inline_query_id: str,
+            results: List[Any],
+            cache_time: Optional[int]=None,
+            is_personal: Optional[bool]=None,
             next_offset: Optional[str]=None,
-            switch_pm_text: Optional[str]=None, 
+            switch_pm_text: Optional[str]=None,
             switch_pm_parameter: Optional[str]=None,
             button: Optional[types.InlineQueryResultsButton]=None) -> bool:
         """
@@ -7591,7 +7879,7 @@ class AsyncTeleBot:
 
     async def unpin_all_general_forum_topic_messages(self, chat_id: Union[int, str]) -> bool:
         """
-        Use this method to clear the list of pinned messages in a General forum topic. 
+        Use this method to clear the list of pinned messages in a General forum topic.
         The bot must be an administrator in the chat for this to work and must have the
         can_pin_messages administrator right in the supergroup.
         Returns True on success.
@@ -7608,8 +7896,8 @@ class AsyncTeleBot:
         return await asyncio_helper.unpin_all_general_forum_topic_messages(self.token, chat_id)
 
     async def answer_callback_query(
-            self, callback_query_id: int, 
-            text: Optional[str]=None, show_alert: Optional[bool]=None, 
+            self, callback_query_id: int,
+            text: Optional[str]=None, show_alert: Optional[bool]=None,
             url: Optional[str]=None, cache_time: Optional[int]=None) -> bool:
         """
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
@@ -7637,14 +7925,14 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
-    
+
 # getUserChatBoosts
 # Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
 
 # Parameter	Type	Required	Description
 # chat_id	Integer or String	Yes	Unique identifier for the chat or username of the channel (in the format @channelusername)
 # user_id	Integer	Yes	Unique identifier of the target user
-    
+
     async def get_user_chat_boosts(self, chat_id: Union[int, str], user_id: int) -> types.UserChatBoosts:
         """
         Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
@@ -7663,11 +7951,11 @@ class AsyncTeleBot:
 
         result = await asyncio_helper.get_user_chat_boosts(self.token, chat_id, user_id)
         return types.UserChatBoosts.de_json(result)
-    
+
 
     async def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None, format: Optional[str]=None) -> bool:
         """
-        Use this method to set the thumbnail of a sticker set. 
+        Use this method to set the thumbnail of a sticker set.
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumbnail
@@ -7693,11 +7981,11 @@ class AsyncTeleBot:
             logger.warning("Deprecation warning. 'format' parameter is required in set_sticker_set_thumbnail. Setting format to 'static'.")
             format = "static"
         return await asyncio_helper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail, format)
-    
+
     @util.deprecated(deprecation_text="Use set_sticker_set_thumbnail instead")
     async def set_sticker_set_thumb(self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
-        Use this method to set the thumbnail of a sticker set. 
+        Use this method to set the thumbnail of a sticker set.
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
@@ -7720,7 +8008,7 @@ class AsyncTeleBot:
     async def get_sticker_set(self, name: str) -> types.StickerSet:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getstickerset
 
         :param name: Sticker set name
@@ -7731,7 +8019,7 @@ class AsyncTeleBot:
         """
         result = await asyncio_helper.get_sticker_set(self.token, name)
         return types.StickerSet.de_json(result)
-    
+
     async def set_sticker_keywords(self, sticker: str, keywords: List[str]=None) -> bool:
         """
         Use this method to change search keywords assigned to a regular or custom emoji sticker.
@@ -7748,7 +8036,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_sticker_keywords(self.token, sticker, keywords)
-    
+
     async def set_sticker_mask_position(self, sticker: str, mask_position: types.MaskPosition=None) -> bool:
         """
         Use this method to change the mask position of a mask sticker.
@@ -7784,7 +8072,7 @@ class AsyncTeleBot:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
 
         :param user_id: User identifier of sticker set owner
@@ -7798,7 +8086,7 @@ class AsyncTeleBot:
             See https://core.telegram.org/stickers for technical requirements. More information on Sending Files »
         :type sticker: :class:`telebot.types.InputFile`
 
-        :param sticker_format: One of "static", "animated", "video". 
+        :param sticker_format: One of "static", "animated", "video".
         :type sticker_format: :obj:`str`
 
         :return: On success, the sent file is returned.
@@ -7808,10 +8096,10 @@ class AsyncTeleBot:
             logger.warning('The parameter "png_sticker" is deprecated. Use "sticker" instead.')
             sticker = png_sticker
             sticker_format = "static"
-        
+
         result = await asyncio_helper.upload_sticker_file(self.token, user_id, sticker, sticker_format)
         return types.File.de_json(result)
-    
+
     async def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None) -> bool:
         """
         Use this method to set the thumbnail of a custom emoji sticker set.
@@ -7827,7 +8115,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id)
-    
+
     async def set_sticker_set_title(self, name: str, title: str) -> bool:
         """
         Use this method to set the title of a created sticker set.
@@ -7893,13 +8181,13 @@ class AsyncTeleBot:
         """
         if user_id is None and chat_id is None:
             raise ValueError("Either user_id or chat_id must be specified.")
-        
+
         if gift_id is None:
             raise ValueError("gift_id must be specified.")
-        
+
         return await asyncio_helper.send_gift(self.token, gift_id, text, text_parse_mode, text_entities, pay_for_upgrade=pay_for_upgrade,
                                                 chat_id=chat_id, user_id=user_id)
-    
+
     async def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
         """
         Verifies a user on behalf of the organization which is represented by the bot. Returns True on success.
@@ -7963,7 +8251,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.remove_chat_verification(self.token, chat_id)
-    
+
     async def read_business_message(self, business_connection_id: str, chat_id: Union[int, str], message_id: int) -> bool:
         """
         Marks incoming message as read on behalf of a business account. Requires the can_read_messages business bot right. Returns True on success.
@@ -8055,7 +8343,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_business_account_bio(self.token, business_connection_id, bio=bio)
-    
+
     async def set_business_account_gift_settings(
             self, business_connection_id: str, show_gift_button: bool, accepted_gift_types: types.AcceptedGiftTypes) -> bool:
         """
@@ -8076,11 +8364,11 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_business_account_gift_settings(self.token, business_connection_id, show_gift_button, accepted_gift_types)
-    
+
     async def get_business_account_star_balance(self, business_connection_id: str) -> types.StarAmount:
         """
         Returns the amount of Telegram Stars owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns StarAmount on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getbusinessaccountstarbalance
 
         :param business_connection_id: Unique identifier of the business connection
@@ -8092,7 +8380,7 @@ class AsyncTeleBot:
         return types.StarAmount.de_json(
             await asyncio_helper.get_business_account_star_balance(self.token, business_connection_id)
         )
-    
+
     async def transfer_business_account_stars(self, business_connection_id: str, star_count: int) -> bool:
         """
         Transfers Telegram Stars from the business account balance to the bot's balance. Requires the can_transfer_stars business bot right. Returns True on success.
@@ -8109,7 +8397,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.transfer_business_account_stars(self.token, business_connection_id, star_count)
-    
+
     async def get_business_account_gifts(
             self, business_connection_id: str,
             exclude_unsaved: Optional[bool]=None,
@@ -8126,7 +8414,7 @@ class AsyncTeleBot:
             ) -> types.OwnedGifts:
         """
         Returns the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns OwnedGifts on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getbusinessaccountgifts
 
         :param business_connection_id: Unique identifier of the business connection
@@ -8316,7 +8604,7 @@ class AsyncTeleBot:
                 limit=limit
             )
         )
-    
+
     async def convert_gift_to_stars(self, business_connection_id: str, owned_gift_id: str) -> bool:
         """
         Converts a given regular gift to Telegram Stars. Requires the can_convert_gifts_to_stars business bot right. Returns True on success.
@@ -8333,7 +8621,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.convert_gift_to_stars(self.token, business_connection_id, owned_gift_id)
-    
+
     async def upgrade_gift(
             self, business_connection_id: str, owned_gift_id: str,
             keep_original_details: Optional[bool]=None,
@@ -8397,7 +8685,7 @@ class AsyncTeleBot:
             new_owner_chat_id,
             star_count=star_count
         )
-    
+
     async def post_story(
             self, business_connection_id: str, content: types.InputStoryContent,
             active_period: int, caption: Optional[str]=None,
@@ -8504,7 +8792,7 @@ class AsyncTeleBot:
     async def delete_story(self, business_connection_id: str, story_id: int) -> bool:
         """
         Deletes a story previously posted by the bot on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#deletestory
 
         :param business_connection_id: Unique identifier of the business connection
@@ -8517,7 +8805,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.delete_story(self.token, business_connection_id, story_id)
-    
+
     async def set_business_account_profile_photo(
             self, business_connection_id: str, photo: types.InputProfilePhoto,
             is_public: Optional[bool]=None) -> bool:
@@ -8559,7 +8847,7 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.remove_business_account_profile_photo(self.token, business_connection_id, is_public=is_public)
-    
+
     async def gift_premium_subscription(
             self, user_id: int, month_count: int, star_count: int,
             text: Optional[str]=None, text_parse_mode: Optional[str]=None,
@@ -8608,7 +8896,7 @@ class AsyncTeleBot:
 
         return types.Gifts.de_json(await asyncio_helper.get_available_gifts(self.token))
 
-    
+
     async def replace_sticker_in_set(self, user_id: int, name: str, old_sticker: str, sticker: types.InputSticker) -> bool:
         """
         Use this method to replace an existing sticker in a sticker set with a new one. The method is equivalent to calling deleteStickerFromSet, then addStickerToSet,
@@ -8653,10 +8941,10 @@ class AsyncTeleBot:
 
 
     async def create_new_sticker_set(
-            self, user_id: int, name: str, title: str, 
+            self, user_id: int, name: str, title: str,
             emojis: Optional[List[str]]=None,
-            png_sticker: Union[Any, str]=None, 
-            tgs_sticker: Union[Any, str]=None, 
+            png_sticker: Union[Any, str]=None,
+            tgs_sticker: Union[Any, str]=None,
             webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
             sticker_type: Optional[str]=None,
@@ -8665,7 +8953,7 @@ class AsyncTeleBot:
             stickers: List[types.InputSticker]=None,
             sticker_format: Optional[str]=None) -> bool:
         """
-        Use this method to create new sticker set owned by a user. 
+        Use this method to create new sticker set owned by a user.
         The bot will be able to edit the created sticker set.
         Returns True on success.
 
@@ -8729,7 +9017,7 @@ class AsyncTeleBot:
             sticker_format = 'video'
         elif png_sticker:
             sticker_format = 'static'
-        
+
         if contains_masks is not None:
             logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
             if sticker_type is None:
@@ -8740,7 +9028,7 @@ class AsyncTeleBot:
             if stickers is None:
                 raise ValueError('You must pass at least one sticker')
             stickers = [types.InputSticker(sticker=stickers, emoji_list=emojis, mask_position=mask_position)]
-            
+
         if sticker_format:
             logger.warning('The parameter "sticker_format" is deprecated since Bot API 7.2. Stickers can now be mixed')
 
@@ -8750,8 +9038,8 @@ class AsyncTeleBot:
 
     async def add_sticker_to_set(
             self, user_id: int, name: str, emojis: Union[List[str], str]=None,
-            png_sticker: Optional[Union[Any, str]]=None, 
-            tgs_sticker: Optional[Union[Any, str]]=None,  
+            png_sticker: Optional[Union[Any, str]]=None,
+            tgs_sticker: Optional[Union[Any, str]]=None,
             webm_sticker: Optional[Union[Any, str]]=None,
             mask_position: Optional[types.MaskPosition]=None,
             sticker: Optional[types.InputSticker]=None) -> bool:
@@ -8815,7 +9103,7 @@ class AsyncTeleBot:
     async def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """
         Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#setstickerpositioninset
 
         :param sticker: File identifier of the sticker
@@ -8832,7 +9120,7 @@ class AsyncTeleBot:
     async def delete_sticker_from_set(self, sticker: str) -> bool:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on success.
-       
+
         Telegram documentation: https://core.telegram.org/bots/api#deletestickerfromset
 
         :param sticker: File identifier of the sticker
@@ -8983,9 +9271,9 @@ class AsyncTeleBot:
         Use this method to edit the name of the 'General' topic in a forum supergroup chat.
         The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
         Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#editgeneralforumtopic
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -9076,7 +9364,7 @@ class AsyncTeleBot:
 
             Added additional parameters to support topics, business connections, and message threads.
 
-        .. seealso:: 
+        .. seealso::
 
             For more details, visit the `custom_states.py example <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/asynchronous_telebot/custom_states.py>`_.
 
@@ -9109,7 +9397,7 @@ class AsyncTeleBot:
             bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    async def reset_data(self, user_id: int, chat_id: Optional[int]=None, 
+    async def reset_data(self, user_id: int, chat_id: Optional[int]=None,
                      business_connection_id: Optional[str]=None,
                      message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> bool:
         """
@@ -9148,7 +9436,7 @@ class AsyncTeleBot:
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
-        
+
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
@@ -9202,7 +9490,7 @@ class AsyncTeleBot:
             bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    async def get_state(self, user_id: int, chat_id: Optional[int]=None, 
+    async def get_state(self, user_id: int, chat_id: Optional[int]=None,
                     business_connection_id: Optional[str]=None,
                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> str:
         """
@@ -9210,7 +9498,7 @@ class AsyncTeleBot:
         Not recommended to use this method. But it is ok for debugging.
 
         .. warning::
-        
+
             Even if you are using :class:`telebot.types.State`, this method will return a string.
             When comparing(not recommended), you should compare this string with :class:`telebot.types.State`.name
 
@@ -9240,9 +9528,9 @@ class AsyncTeleBot:
             bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    async def add_data(self, user_id: int, chat_id: Optional[int]=None, 
+    async def add_data(self, user_id: int, chat_id: Optional[int]=None,
                     business_connection_id: Optional[str]=None,
-                    message_thread_id: Optional[int]=None, 
+                    message_thread_id: Optional[int]=None,
                     bot_id: Optional[int]=None,
                     **kwargs) -> None:
         """

@@ -46,7 +46,7 @@ from telebot.custom_filters import SimpleCustomFilter, AdvancedCustomFilter
 
 
 REPLY_MARKUP_TYPES = Union[
-    types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup, 
+    types.InlineKeyboardMarkup, types.ReplyKeyboardMarkup,
     types.ReplyKeyboardRemove, types.ForceReply]
 
 
@@ -93,7 +93,7 @@ class TeleBot:
 
         from telebot import TeleBot
         bot = TeleBot('token') # get token from @BotFather
-        # now you can register other handlers/update listeners, 
+        # now you can register other handlers/update listeners,
         # and use bot methods.
 
     See more examples in examples/ directory:
@@ -139,7 +139,7 @@ class TeleBot:
 
     :param use_class_middlewares: Use class middlewares, defaults to False
     :type use_class_middlewares: :obj:`bool`, optional
-    
+
     :param disable_web_page_preview: Default value for disable_web_page_preview, defaults to None
     :type disable_web_page_preview: :obj:`bool`, optional
 
@@ -151,7 +151,7 @@ class TeleBot:
 
     :param allow_sending_without_reply: Default value for allow_sending_without_reply, defaults to None
     :type allow_sending_without_reply: :obj:`bool`, optional
-    
+
     :param colorful_logs: Outputs colorful logs
     :type colorful_logs: :obj:`bool`, optional
 
@@ -168,7 +168,7 @@ class TeleBot:
             next_step_backend: Optional[HandlerBackend]=None, reply_backend: Optional[HandlerBackend]=None,
             exception_handler: Optional[ExceptionHandler]=None, last_update_id: Optional[int]=0,
             suppress_middleware_excepions: Optional[bool]=False, state_storage: Optional[StateStorageBase]=StateMemoryStorage(),
-            use_class_middlewares: Optional[bool]=False, 
+            use_class_middlewares: Optional[bool]=False,
             disable_web_page_preview: Optional[bool]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
@@ -194,7 +194,7 @@ class TeleBot:
 
         if validate_token:
             util.validate_token(self.token)
-        
+
         self.bot_id: Union[int, None] = util.extract_bot_id(self.token) # subject to change in future, unspecified
 
         # logs-related
@@ -292,7 +292,7 @@ class TeleBot:
         self.threaded = threaded
         if self.threaded:
             self.worker_pool = util.ThreadPool(self, num_threads=num_threads)
-        
+
     @property
     def user(self) -> types.User:
         """
@@ -438,15 +438,15 @@ class TeleBot:
             Defaults to 40. Use lower values to limit the load on your bot's server, and higher values to increase your bot's throughput,
             defaults to None
         :type max_connections: :obj:`int`, optional
-        
+
         :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example,
             specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update
             for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
-            
+
             Please note that this parameter doesn't affect updates created before the call to the setWebhook, so unwanted updates may be received
             for a short period of time. Defaults to None
-        
+
         :type allowed_updates: :obj:`list`, optional
 
         :param ip_address: The fixed IP address which will be used to send webhook requests instead of the IP address
@@ -516,7 +516,7 @@ class TeleBot:
         :type max_connections: :obj:`int`, optional
 
         :param allowed_updates: A JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”]
-            to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default). 
+            to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all updates regardless of type (default).
             If not specified, the previous setting will be used. defaults to None
         :type allowed_updates: :obj:`list`, optional
 
@@ -545,7 +545,7 @@ class TeleBot:
         if not url_path:
             url_path = self.token + '/'
         if url_path[-1] != '/': url_path += '/'
-        
+
         protocol = "https" if certificate else "http"
         if not webhook_url:
             webhook_url = "{}://{}:{}/{}".format(protocol, listen, port, url_path)
@@ -627,8 +627,8 @@ class TeleBot:
         return self.set_webhook()  # No params resets webhook
 
 
-    def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None, 
-            timeout: Optional[int]=20, allowed_updates: Optional[List[str]]=None, 
+    def get_updates(self, offset: Optional[int]=None, limit: Optional[int]=None,
+            timeout: Optional[int]=20, allowed_updates: Optional[List[str]]=None,
             long_polling_timeout: int=20) -> List[types.Update]:
         """
         Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
@@ -678,14 +678,14 @@ class TeleBot:
         Registered listeners and applicable message handlers will be notified when a new message arrives.
 
         :meta private:
-        
+
         :raises ApiException when a call has failed.
         """
         if self.skip_pending:
             self.__skip_updates()
             logger.debug('Skipped all pending messages')
             self.skip_pending = False
-        updates = self.get_updates(offset=(self.last_update_id + 1), 
+        updates = self.get_updates(offset=(self.last_update_id + 1),
                                    allowed_updates=allowed_updates,
                                    timeout=timeout, long_polling_timeout=long_polling_timeout)
         self.process_new_updates(updates)
@@ -726,7 +726,7 @@ class TeleBot:
         new_edited_business_messages = None
         new_deleted_business_messages = None
         new_purchased_paid_media = None
-        
+
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
                 try:
@@ -810,7 +810,7 @@ class TeleBot:
             if update.purchased_paid_media:
                 if new_purchased_paid_media is None: new_purchased_paid_media = []
                 new_purchased_paid_media.append(update.purchased_paid_media)
-                
+
         if new_messages:
             self.process_new_messages(new_messages)
         if new_edited_messages:
@@ -890,7 +890,7 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.message_reaction_handlers, new_message_reactions, 'message_reaction')
-    
+
     def process_new_message_reaction_count(self, new_message_reaction_counts):
         """
         :meta private:
@@ -938,7 +938,7 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.poll_answer_handlers, new_poll_answers, 'poll_answer')
-    
+
     def process_new_my_chat_member(self, new_my_chat_members):
         """
         :meta private:
@@ -986,13 +986,13 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.edited_business_message_handlers, new_edited_business_messages, 'edited_business_message')
-        
+
     def process_new_deleted_business_messages(self, new_deleted_business_messages):
         """
         :meta private:
         """
         self._notify_command_handlers(self.deleted_business_messages_handlers, new_deleted_business_messages, 'deleted_business_messages')
-    
+
     def process_new_purchased_paid_media(self, new_purchased_paid_media):
         """
         :meta private:
@@ -1047,7 +1047,7 @@ class TeleBot:
             # Make it possible to specify --path argument to the script
             path = sys.argv[sys.argv.index('--path') + 1] if '--path' in sys.argv else '.'
 
-            
+
         self.event_observer = Observer()
         self.event_observer.schedule(self.event_handler, path, recursive=True)
         self.event_observer.start()
@@ -1066,7 +1066,7 @@ class TeleBot:
         Wrap polling with infinite loop and exception handling to avoid bot stops polling.
 
         .. note::
-        
+
             Install watchdog and psutil before using restart_on_change option.
 
         :param timeout: Request connection timeout.
@@ -1083,11 +1083,11 @@ class TeleBot:
         :type logger_level: :obj:`int`.
 
         :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
-            See util.update_types for a complete list of available update types. 
-            Specify an empty list to receive all update types except chat_member (default). 
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
-            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
             so unwanted updates may be received for a short period of time.
         :type allowed_updates: :obj:`list` of :obj:`str`
 
@@ -1132,14 +1132,14 @@ class TeleBot:
         This allows the bot to retrieve Updates automatically and notify listeners and message handlers accordingly.
 
         Warning: Do not call this function more than once!
-        
+
         Always gets updates.
 
         .. deprecated:: 4.1.1
             Use :meth:`infinity_polling` instead.
 
         .. note::
-        
+
             Install watchdog and psutil before using restart_on_change option.
 
         :param interval: Delay between two update retrivals
@@ -1153,7 +1153,7 @@ class TeleBot:
 
         :param skip_pending: skip old updates
         :type skip_pending: :obj:`bool`
-        
+
         :param long_polling_timeout: Timeout in seconds for long polling (see API docs)
         :type long_polling_timeout: :obj:`int`
 
@@ -1162,12 +1162,12 @@ class TeleBot:
         :type logger_level: :obj:`int`
 
         :param allowed_updates: A list of the update types you want your bot to receive.
-            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. 
-            See util.update_types for a complete list of available update types. 
-            Specify an empty list to receive all update types except chat_member (default). 
+            For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types.
+            See util.update_types for a complete list of available update types.
+            Specify an empty list to receive all update types except chat_member (default).
             If not specified, the previous setting will be used.
-            
-            Please note that this parameter doesn't affect updates created before the call to the get_updates, 
+
+            Please note that this parameter doesn't affect updates created before the call to the get_updates,
             so unwanted updates may be received for a short period of time.
         :type allowed_updates: :obj:`list` of :obj:`str`
 
@@ -1179,7 +1179,7 @@ class TeleBot:
 
         :param path_to_watch: Path to watch for changes. Defaults to None
         :type path_to_watch: :obj:`str`
-        
+
         :return:
         """
         if none_stop is not None:
@@ -1193,7 +1193,7 @@ class TeleBot:
             self._setup_change_detector(path_to_watch)
 
         logger.info('Starting your bot with username: [@%s]', self.user.username)
-            
+
         if self.threaded:
             self.__threaded_polling(non_stop=non_stop, interval=interval, timeout=timeout, long_polling_timeout=long_polling_timeout,
                                     logger_level=logger_level, allowed_updates=allowed_updates)
@@ -1386,9 +1386,9 @@ class TeleBot:
     def get_file(self, file_id: Optional[str]) -> types.File:
         """
         Use this method to get basic info about a file and prepare it for downloading.
-        For the moment, bots can download files of up to 20MB in size. 
-        On success, a File object is returned. 
-        It is guaranteed that the link will be valid for at least 1 hour. 
+        For the moment, bots can download files of up to 20MB in size.
+        On success, a File object is returned.
+        It is guaranteed that the link will be valid for at least 1 hour.
         When the link expires, a new one can be requested by calling get_file again.
 
         Telegram documentation: https://core.telegram.org/bots/api#getfile
@@ -1431,11 +1431,11 @@ class TeleBot:
 
     def log_out(self) -> bool:
         """
-        Use this method to log out from the cloud Bot API server before launching the bot locally. 
+        Use this method to log out from the cloud Bot API server before launching the bot locally.
         You MUST log out the bot before running it locally, otherwise there is no guarantee
         that the bot will receive updates.
-        After a successful call, you can immediately log in on a local server, 
-        but will not be able to log in back to the cloud Bot API server for 10 minutes. 
+        After a successful call, you can immediately log in on a local server,
+        but will not be able to log in back to the cloud Bot API server for 10 minutes.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#logout
@@ -1444,14 +1444,14 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.log_out(self.token)
-    
-    
+
+
     def close(self) -> bool:
         """
-        Use this method to close the bot instance before moving it from one local server to another. 
+        Use this method to close the bot instance before moving it from one local server to another.
         You need to delete the webhook before calling this method to ensure that the bot isn't launched again
         after server restart.
-        The method will return error 429 in the first 10 minutes after the bot is launched. 
+        The method will return error 429 in the first 10 minutes after the bot is launched.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#close
@@ -1459,10 +1459,10 @@ class TeleBot:
         :return: :obj:`bool`
         """
         return apihelper.close(self.token)
-    
+
     def set_message_reaction(self, chat_id: Union[int, str], message_id: int, reaction: Optional[List[types.ReactionType]]=None, is_big: Optional[bool]=None) -> bool:
         """
-        Use this method to change the chosen reactions on a message. 
+        Use this method to change the chosen reactions on a message.
         Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same
         available reactions as messages in the channel. Returns True on success.
 
@@ -1487,7 +1487,7 @@ class TeleBot:
             self.token, chat_id, message_id, reaction = reaction, is_big = is_big)
 
 
-    def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None, 
+    def get_user_profile_photos(self, user_id: int, offset: Optional[int]=None,
             limit: Optional[int]=None) -> types.UserProfilePhotos:
         """
         Use this method to get a list of profile pictures for a user.
@@ -1531,7 +1531,7 @@ class TeleBot:
         """
         return apihelper.set_user_emoji_status(
             self.token, user_id, emoji_status_custom_emoji_id=emoji_status_custom_emoji_id, emoji_status_expiration_date=emoji_status_expiration_date)
-    
+
 
     def get_chat(self, chat_id: Union[int, str]) -> types.ChatFullInfo:
         """
@@ -1571,7 +1571,7 @@ class TeleBot:
         On success, returns an Array of ChatMember objects that contains
         information about all chat administrators except other bots.
 
-        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators    
+        Telegram documentation: https://core.telegram.org/bots/api#getchatadministrators
 
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
@@ -1623,7 +1623,7 @@ class TeleBot:
         Use this method to set a new group sticker set for a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate administrator rights. Use the field can_set_sticker_set optionally returned
         in getChat requests to check if the bot can use this method. Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#setchatstickerset
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
@@ -1643,7 +1643,7 @@ class TeleBot:
         Use this method to delete a group sticker set from a supergroup. The bot must be an administrator in the chat
         for this to work and must have the appropriate admin rights. Use the field can_set_sticker_set
         optionally returned in getChat requests to check if the bot can use this method. Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#deletechatstickerset
 
         :param chat_id:	Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
@@ -1658,7 +1658,7 @@ class TeleBot:
     def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getchatmember
 
         :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
@@ -1676,11 +1676,11 @@ class TeleBot:
 
 
     def send_message(
-            self, chat_id: Union[int, str], text: str, 
-            parse_mode: Optional[str]=None, 
+            self, chat_id: Union[int, str], text: str,
+            parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,    # deprecated, for backward compatibility
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
@@ -1691,12 +1691,14 @@ class TeleBot:
             link_preview_options : Optional[types.LinkPreviewOptions]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send text messages.
 
         Warning: Do not send more than about 4096 characters each message, otherwise you'll risk an HTTP 414 error.
-        If you must send more than 4096 characters, 
+        If you must send more than 4096 characters,
         use the `split_string` or `smart_split` function in util.py.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
@@ -1754,6 +1756,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1802,16 +1813,21 @@ class TeleBot:
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, entities=entities, protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, link_preview_options=link_preview_options, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
 
     def forward_message(
-            self, chat_id: Union[int, str], from_chat_id: Union[int, str], 
+            self, chat_id: Union[int, str], from_chat_id: Union[int, str],
             message_id: int, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
-            video_start_timestamp: Optional[int]=None) -> types.Message:
+            video_start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -1841,6 +1857,15 @@ class TeleBot:
         :param message_thread_id: Identifier of a message thread, in which the message will be sent
         :type message_thread_id: :obj:`int`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -1851,17 +1876,20 @@ class TeleBot:
             apihelper.forward_message(
                 self.token, chat_id, from_chat_id, message_id, disable_notification=disable_notification,
                 timeout=timeout, protect_content=protect_content, message_thread_id=message_thread_id,
-                video_start_timestamp=video_start_timestamp))
+                video_start_timestamp=video_start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
 
     def copy_message(
-            self, chat_id: Union[int, str], 
-            from_chat_id: Union[int, str], 
-            message_id: int, 
-            caption: Optional[str]=None, 
-            parse_mode: Optional[str]=None, 
+            self, chat_id: Union[int, str],
+            from_chat_id: Union[int, str],
+            message_id: int,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
@@ -1871,7 +1899,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
-            video_start_timestamp: Optional[int]=None) -> types.MessageID:
+            video_start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
@@ -1933,11 +1963,20 @@ class TeleBot:
         :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
-        
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
-        
+
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         protect_content = self.protect_content if (protect_content is None) else protect_content
@@ -1966,10 +2005,56 @@ class TeleBot:
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
-                video_start_timestamp=video_start_timestamp))
+                video_start_timestamp=video_start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            ))
+    
+    
+    def approve_suggested_post(self, chat_id: int, message_id: int, send_date: Optional[int]=None) -> bool:
+        """
+        Use this method to approve a suggested post in a direct messages chat. The bot must have the 'can_post_messages' administrator right in the corresponding channel chat. Returns True on success.
 
+        Telegram documentation: https://core.telegram.org/bots/api#approvesuggestedpost
 
-    def delete_message(self, chat_id: Union[int, str], message_id: int, 
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int`
+
+        :param message_id: Identifier of a suggested post message to approve
+        :type message_id: :obj:`int`
+
+        :param send_date: Point in time (Unix timestamp) when the post is expected to be published; omit if the date has already been specified when the suggested post was created.
+            If specified, then the date must be not more than 2678400 seconds (30 days) in the future
+        :type send_date: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.approve_suggested_post(self.token, chat_id, message_id,
+            send_date=send_date)
+
+    def decline_suggested_post(self, chat_id: int, message_id: int, comment: Optional[str]=None) -> bool:
+        """
+        Use this method to decline a suggested post in a direct messages chat. The bot must have
+        the 'can_manage_direct_messages' administrator right in the corresponding channel chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#declinesuggestedpost
+
+        :param chat_id: Unique identifier for the target direct messages chat
+        :type chat_id: :obj:`int`
+
+        :param message_id: Identifier of a suggested post message to decline
+        :type message_id: :obj:`int`
+
+        :param comment: Comment for the creator of the suggested post; 0-128 characters
+        :type comment: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.decline_suggested_post(self.token, chat_id, message_id,
+            comment=comment)
+
+    def delete_message(self, chat_id: Union[int, str], message_id: int,
             timeout: Optional[int]=None) -> bool:
         """
         Use this method to delete a message, including service messages, with the following limitations:
@@ -1998,7 +2083,7 @@ class TeleBot:
         """
         return apihelper.delete_message(self.token, chat_id, message_id, timeout=timeout)
 
-    
+
     def delete_messages(self, chat_id: Union[int, str], message_ids: List[int]):
         """
         Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped.
@@ -2016,10 +2101,10 @@ class TeleBot:
         """
         return apihelper.delete_messages(self.token, chat_id, message_ids)
 
-    
+
     def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                          disable_notification: Optional[bool]=None, message_thread_id: Optional[int]=None,
-                         protect_content: Optional[bool]=None) -> List[types.MessageID]:
+                         protect_content: Optional[bool]=None, direct_messages_topic_id: Optional[int]=None) -> List[types.MessageID]:
         """
         Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped.
         Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages.
@@ -2045,6 +2130,10 @@ class TeleBot:
         :param protect_content: Protects the contents of the forwarded message from forwarding and saving
         :type protect_content: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
@@ -2055,13 +2144,14 @@ class TeleBot:
         result = apihelper.forward_messages(
             self.token, chat_id, from_chat_id, message_ids,
             disable_notification=disable_notification, message_thread_id=message_thread_id,
-            protect_content=protect_content)
+            protect_content=protect_content, direct_messages_topic_id=direct_messages_topic_id)
         return [types.MessageID.de_json(message_id) for message_id in result]
 
-    
+
     def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
-                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None) -> List[types.MessageID]:
+                        protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None,
+                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageID]:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -2093,6 +2183,10 @@ class TeleBot:
         :param remove_caption: Pass True to copy the messages without their captions
         :type remove_caption: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, an array of MessageId of the sent messages is returned.
         :rtype: :obj:`list` of :class:`telebot.types.MessageID`
         """
@@ -2101,9 +2195,10 @@ class TeleBot:
 
         result = apihelper.copy_messages(
             self.token, chat_id, from_chat_id, message_ids, disable_notification=disable_notification,
-            message_thread_id=message_thread_id, protect_content=protect_content, remove_caption=remove_caption)
+            message_thread_id=message_thread_id, protect_content=protect_content, remove_caption=remove_caption, 
+            direct_messages_topic_id=direct_messages_topic_id)
         return [types.MessageID.de_json(message_id) for message_id in result]
-    
+
     def send_checklist(
             self, business_connection_id: str, chat_id: Union[int, str],
             checklist: types.InputChecklist,
@@ -2147,7 +2242,7 @@ class TeleBot:
         """
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
-        
+
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
@@ -2156,7 +2251,7 @@ class TeleBot:
                 self.token, business_connection_id, chat_id, checklist, disable_notification=disable_notification,
                 protect_content=protect_content, message_effect_id=message_effect_id,
                 reply_parameters=reply_parameters, reply_markup=reply_markup))
-    
+
     def edit_message_checklist(
             self, business_connection_id: str, chat_id: Union[int, str],
             message_id: int, checklist: types.InputChecklist,
@@ -2191,9 +2286,9 @@ class TeleBot:
 
     def send_dice(
             self, chat_id: Union[int, str],
-            emoji: Optional[str]=None, disable_notification: Optional[bool]=None, 
+            emoji: Optional[str]=None, disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
@@ -2201,7 +2296,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send an animated emoji that will display a random value. On success, the sent Message is returned.
 
@@ -2250,6 +2347,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2279,12 +2385,15 @@ class TeleBot:
                 self.token, chat_id, emoji=emoji, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
 
 
     def send_photo(
-            self, chat_id: Union[int, str], photo: Union[Any, str], 
+            self, chat_id: Union[int, str], photo: Union[Any, str],
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None,
@@ -2299,12 +2408,14 @@ class TeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendphoto
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -2363,7 +2474,16 @@ class TeleBot:
         :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
-        
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2396,18 +2516,20 @@ class TeleBot:
                 caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast))
-
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     def send_audio(
-            self, chat_id: Union[int, str], audio: Union[Any, str], 
-            caption: Optional[str]=None, duration: Optional[int]=None, 
+            self, chat_id: Union[int, str], audio: Union[Any, str],
+            caption: Optional[str]=None, duration: Optional[int]=None,
             performer: Optional[str]=None, title: Optional[str]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            parse_mode: Optional[str]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            parse_mode: Optional[str]=None,
             disable_notification: Optional[bool]=None,
-            timeout: Optional[int]=None, 
+            timeout: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
@@ -2417,7 +2539,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2426,7 +2550,7 @@ class TeleBot:
         For sending voice messages, use the send_voice method instead.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendaudio
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -2497,6 +2621,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2532,16 +2665,18 @@ class TeleBot:
                 reply_markup=reply_markup, parse_mode=parse_mode, disable_notification=disable_notification,
                 timeout=timeout, thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
-
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+            )
+        )
 
     def send_voice(
-            self, chat_id: Union[int, str], voice: Union[Any, str], 
-            caption: Optional[str]=None, duration: Optional[int]=None, 
+            self, chat_id: Union[int, str], voice: Union[Any, str],
+            caption: Optional[str]=None, duration: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            parse_mode: Optional[str]=None, 
-            disable_notification: Optional[bool]=None, 
+            parse_mode: Optional[str]=None,
+            disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
@@ -2550,12 +2685,14 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -2611,6 +2748,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -2641,18 +2787,20 @@ class TeleBot:
                 parse_mode=parse_mode, disable_notification=disable_notification, timeout=timeout,
                 caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters
+            )
         )
 
 
     def send_document(
             self, chat_id: Union[int, str], document: Union[Any, str],
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            caption: Optional[str]=None, 
+            caption: Optional[str]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            parse_mode: Optional[str]=None, 
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None, 
+            parse_mode: Optional[str]=None,
+            disable_notification: Optional[bool]=None,
+            timeout: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
@@ -2664,12 +2812,14 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send general files.
 
         Telegram documentation: https://core.telegram.org/bots/api#senddocument
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -2737,6 +2887,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2781,7 +2940,8 @@ class TeleBot:
                 timeout=timeout, caption=caption, thumbnail=thumbnail, caption_entities=caption_entities,
                 disable_content_type_detection=disable_content_type_detection, visible_file_name=visible_file_name,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
 
@@ -2800,7 +2960,9 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -2856,6 +3018,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2883,27 +3054,28 @@ class TeleBot:
         if data and (not sticker):
             logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
-            
+
         return types.Message.de_json(
             apihelper.send_data(
                 self.token, chat_id, sticker, 'sticker',
                 reply_markup=reply_markup, disable_notification=disable_notification, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
 
     def send_video(
-            self, chat_id: Union[int, str], video: Union[Any, str], 
+            self, chat_id: Union[int, str], video: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
-            thumbnail: Optional[Union[Any, str]]=None, 
-            caption: Optional[str]=None, 
-            parse_mode: Optional[str]=None, 
+            thumbnail: Optional[Union[Any, str]]=None,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
-            supports_streaming: Optional[bool]=None, 
+            supports_streaming: Optional[bool]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
@@ -2920,10 +3092,12 @@ class TeleBot:
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
             cover: Optional[Union[Any, str]]=None,
-            start_timestamp: Optional[int]=None) -> types.Message:
+            start_timestamp: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendvideo
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -2953,7 +3127,7 @@ class TeleBot:
 
         :param start_timestamp: Start timestamp for the video in the message
         :type start_timestamp: :obj:`int`
-        
+
         :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
         :type caption: :obj:`str`
 
@@ -3014,6 +3188,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3056,24 +3239,25 @@ class TeleBot:
                 protect_content=protect_content, message_thread_id=message_thread_id, has_spoiler=has_spoiler,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
-                cover=cover, start_timestamp=start_timestamp)
+                cover=cover, start_timestamp=start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
         )
 
 
     def send_animation(
-            self, chat_id: Union[int, str], animation: Union[Any, str], 
+            self, chat_id: Union[int, str], animation: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
-            caption: Optional[str]=None, 
+            caption: Optional[str]=None,
             parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             message_thread_id: Optional[int]=None,
             has_spoiler: Optional[bool]=None,
@@ -3082,11 +3266,13 @@ class TeleBot:
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
             show_caption_above_media: Optional[bool]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendanimation
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -3104,7 +3290,7 @@ class TeleBot:
 
         :param height: Animation height
         :type height: :obj:`int`
-        
+
         :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
@@ -3165,6 +3351,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3201,18 +3396,19 @@ class TeleBot:
                 thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 width=width, height=height, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 has_spoiler=has_spoiler, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
-                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast)
+                show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
             )
 
 
     def send_video_note(
-            self, chat_id: Union[int, str], data: Union[Any, str], 
-            duration: Optional[int]=None, 
+            self, chat_id: Union[int, str], data: Union[Any, str],
+            duration: Optional[int]=None,
             length: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
-            disable_notification: Optional[bool]=None, 
-            timeout: Optional[int]=None, 
+            disable_notification: Optional[bool]=None,
+            timeout: Optional[int]=None,
             thumbnail: Optional[Union[Any, str]]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
@@ -3221,16 +3417,18 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param data: Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended)
             or upload a new video using multipart/form-data. Sending video notes by a URL is currently unsupported
         :type data: :obj:`str` or :class:`telebot.types.InputFile`
@@ -3261,7 +3459,7 @@ class TeleBot:
         :param thumbnail: Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side.
             The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320.
             Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file,
-            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. 
+            so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>.
         :type thumbnail: :obj:`str` or :class:`telebot.types.InputFile`
 
         :param protect_content: Protects the contents of the sent message from forwarding and saving
@@ -3285,6 +3483,15 @@ class TeleBot:
         :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
@@ -3319,16 +3526,19 @@ class TeleBot:
                 self.token, chat_id, data, duration=duration, length=length, reply_markup=reply_markup,
                 disable_notification=disable_notification, timeout=timeout, thumbnail=thumbnail,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
-    
+
     def send_paid_media(
             self, chat_id: Union[int, str], star_count: int, media: List[types.InputPaidMedia],
             caption: Optional[str]=None, parse_mode: Optional[str]=None, caption_entities: Optional[List[types.MessageEntity]]=None,
             show_caption_above_media: Optional[bool]=None, disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None, reply_parameters: Optional[types.ReplyParameters]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None, business_connection_id: Optional[str]=None,
-            payload: Optional[str]=None, allow_paid_broadcast: Optional[bool]=None
+            payload: Optional[str]=None, allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None
     ) -> types.Message:
         """
         Use this method to send paid media to channel chats. On success, the sent Message is returned.
@@ -3378,6 +3588,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3387,16 +3606,17 @@ class TeleBot:
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
                 disable_notification=disable_notification, protect_content=protect_content,
                 reply_parameters=reply_parameters, reply_markup=reply_markup, business_connection_id=business_connection_id,
-                payload=payload, allow_paid_broadcast=allow_paid_broadcast)
+                payload=payload, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
         )
 
 
     def send_media_group(
-            self, chat_id: Union[int, str], 
+            self, chat_id: Union[int, str],
             media: List[Union[
-                types.InputMediaAudio, types.InputMediaDocument, 
+                types.InputMediaAudio, types.InputMediaDocument,
                 types.InputMediaPhoto, types.InputMediaVideo]],
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             timeout: Optional[int]=None,
@@ -3405,11 +3625,12 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> List[types.Message]:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None) -> List[types.Message]:
         """
         Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files
         can be only grouped in an album with messages of the same type. On success, an array of Messages that were sent is returned.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendmediagroup
 
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -3449,6 +3670,10 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
         :return: On success, an array of Messages that were sent is returned.
         :rtype: List[types.Message]
         """
@@ -3482,28 +3707,31 @@ class TeleBot:
         result = apihelper.send_media_group(
             self.token, chat_id, media, disable_notification=disable_notification, timeout=timeout,
             protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-            business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+            business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+            direct_messages_topic_id=direct_messages_topic_id)
         return [types.Message.de_json(msg) for msg in result]
 
 
     def send_location(
-            self, chat_id: Union[int, str], 
-            latitude: float, longitude: float, 
+            self, chat_id: Union[int, str],
+            latitude: float, longitude: float,
             live_period: Optional[int]=None,
-            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility 
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            disable_notification: Optional[bool]=None, 
+            reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            disable_notification: Optional[bool]=None,
             timeout: Optional[int]=None,
-            horizontal_accuracy: Optional[float]=None, 
-            heading: Optional[int]=None, 
+            horizontal_accuracy: Optional[float]=None,
+            heading: Optional[int]=None,
             proximity_alert_radius: Optional[int]=None,
-            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility 
+            allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -3566,6 +3794,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3596,19 +3833,20 @@ class TeleBot:
                 disable_notification=disable_notification, timeout=timeout, horizontal_accuracy=horizontal_accuracy,
                 heading=heading, proximity_alert_radius=proximity_alert_radius, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
             )
 
 
     def edit_message_live_location(
-            self, latitude: float, longitude: float, 
-            chat_id: Optional[Union[int, str]]=None, 
+            self, latitude: float, longitude: float,
+            chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None,
-            horizontal_accuracy: Optional[float]=None, 
-            heading: Optional[int]=None, 
+            horizontal_accuracy: Optional[float]=None,
+            heading: Optional[int]=None,
             proximity_alert_radius: Optional[int]=None,
             live_period: Optional[int]=None,
             business_connection_id: Optional[str]=None
@@ -3669,9 +3907,9 @@ class TeleBot:
 
 
     def stop_message_live_location(
-            self, chat_id: Optional[Union[int, str]]=None, 
+            self, chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             timeout: Optional[int]=None,
             business_connection_id: Optional[str]=None) -> Union[types.Message, bool]:
@@ -3680,7 +3918,7 @@ class TeleBot:
         On success, if the message is not an inline message, the edited Message is returned, otherwise True is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#stopmessagelivelocation
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -3711,14 +3949,14 @@ class TeleBot:
 
 
     def send_venue(
-            self, chat_id: Union[int, str], 
-            latitude: Optional[float], longitude: Optional[float], 
-            title: str, address: str, 
-            foursquare_id: Optional[str]=None, 
+            self, chat_id: Union[int, str],
+            latitude: Optional[float], longitude: Optional[float],
+            title: str, address: str,
+            foursquare_id: Optional[str]=None,
             foursquare_type: Optional[str]=None,
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             google_place_id: Optional[str]=None,
@@ -3728,15 +3966,17 @@ class TeleBot:
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#sendvenue
 
         :param chat_id: Unique identifier for the target chat or username of the target channel
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param latitude: Latitude of the venue
         :type latitude: :obj:`float`
 
@@ -3798,6 +4038,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3828,24 +4077,27 @@ class TeleBot:
                 foursquare_type=foursquare_type, disable_notification=disable_notification, reply_markup=reply_markup,
                 timeout=timeout, google_place_id=google_place_id, google_place_type=google_place_type,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
+                suggested_post_parameters=suggested_post_parameters)
             )
 
 
     def send_contact(
-            self, chat_id: Union[int, str], phone_number: str, 
-            first_name: str, last_name: Optional[str]=None, 
+            self, chat_id: Union[int, str], phone_number: str,
+            first_name: str, last_name: Optional[str]=None,
             vcard: Optional[str]=None,
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None, message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             business_connection_id: Optional[str]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -3902,6 +4154,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3931,7 +4192,8 @@ class TeleBot:
                 self.token, chat_id, phone_number, first_name, last_name=last_name, vcard=vcard,
                 disable_notification=disable_notification, reply_markup=reply_markup, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
-                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
             )
     
 
@@ -3989,7 +4251,7 @@ class TeleBot:
 
         :param chat_id: Unique identifier for the target chat or username of the target channel
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param action: Type of action to broadcast. Choose one, depending on what the user is about
             to receive: typing for text messages, upload_photo for photos, record_video or upload_video
             for videos, record_voice or upload_voice for voice notes, upload_document for general files,
@@ -4011,11 +4273,11 @@ class TeleBot:
         return apihelper.send_chat_action(
             self.token, chat_id, action, timeout=timeout, message_thread_id=message_thread_id, business_connection_id=business_connection_id)
 
-    
+
     @util.deprecated(deprecation_text="Use ban_chat_member instead")
     def kick_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
-            until_date:Optional[Union[int, datetime]]=None, 
+            self, chat_id: Union[int, str], user_id: int,
+            until_date:Optional[Union[int, datetime]]=None,
             revoke_messages: Optional[bool]=None) -> bool:
         """
         This function is deprecated. Use `ban_chat_member` instead.
@@ -4025,13 +4287,13 @@ class TeleBot:
 
 
     def ban_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
-            until_date: Optional[Union[int, datetime]]=None, 
+            self, chat_id: Union[int, str], user_id: int,
+            until_date: Optional[Union[int, datetime]]=None,
             revoke_messages: Optional[bool]=None) -> bool:
         """
-        Use this method to ban a user in a group, a supergroup or a channel. 
-        In the case of supergroups and channels, the user will not be able to return to the chat on their 
-        own using invite links, etc., unless unbanned first. 
+        Use this method to ban a user in a group, a supergroup or a channel.
+        In the case of supergroups and channels, the user will not be able to return to the chat on their
+        own using invite links, etc., unless unbanned first.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#banchatmember
@@ -4048,10 +4310,10 @@ class TeleBot:
         :type until_date: :obj:`int` or :obj:`datetime`
 
         :param revoke_messages: Pass True to delete all messages from the chat for the user that is being removed.
-            If False, the user will be able to see messages in the group that were sent before the user was removed. 
+            If False, the user will be able to see messages in the group that were sent before the user was removed.
             Always True for supergroups and channels.
         :type revoke_messages: :obj:`bool`
-        
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
@@ -4060,7 +4322,7 @@ class TeleBot:
 
 
     def unban_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
+            self, chat_id: Union[int, str], user_id: int,
             only_if_banned: Optional[bool]=False) -> bool:
         """
         Use this method to unban a previously kicked user in a supergroup or channel.
@@ -4088,15 +4350,15 @@ class TeleBot:
 
 
     def restrict_chat_member(
-            self, chat_id: Union[int, str], user_id: int, 
+            self, chat_id: Union[int, str], user_id: int,
             until_date: Optional[Union[int, datetime]]=None,
-            can_send_messages: Optional[bool]=None, 
+            can_send_messages: Optional[bool]=None,
             can_send_media_messages: Optional[bool]=None,
-            can_send_polls: Optional[bool]=None, 
+            can_send_polls: Optional[bool]=None,
             can_send_other_messages: Optional[bool]=None,
-            can_add_web_page_previews: Optional[bool]=None, 
+            can_add_web_page_previews: Optional[bool]=None,
             can_change_info: Optional[bool]=None,
-            can_invite_users: Optional[bool]=None, 
+            can_invite_users: Optional[bool]=None,
             can_pin_messages: Optional[bool]=None,
             permissions: Optional[types.ChatPermissions]=None,
             use_independent_chat_permissions: Optional[bool]=None) -> bool:
@@ -4124,10 +4386,10 @@ class TeleBot:
 
         :param can_send_messages: deprecated
         :type can_send_messages: :obj:`bool`
-        
+
         :param can_send_media_messages: deprecated
         :type can_send_media_messages: :obj:`bool`
-        
+
         :param can_send_polls: deprecated
         :type can_send_polls: :obj:`bool`
 
@@ -4178,22 +4440,23 @@ class TeleBot:
 
     def promote_chat_member(
             self, chat_id: Union[int, str], user_id: int,
-            can_change_info: Optional[bool]=None, 
+            can_change_info: Optional[bool]=None,
             can_post_messages: Optional[bool]=None,
-            can_edit_messages: Optional[bool]=None, 
-            can_delete_messages: Optional[bool]=None, 
+            can_edit_messages: Optional[bool]=None,
+            can_delete_messages: Optional[bool]=None,
             can_invite_users: Optional[bool]=None,
-            can_restrict_members: Optional[bool]=None, 
-            can_pin_messages: Optional[bool]=None, 
+            can_restrict_members: Optional[bool]=None,
+            can_pin_messages: Optional[bool]=None,
             can_promote_members: Optional[bool]=None,
-            is_anonymous: Optional[bool]=None, 
-            can_manage_chat: Optional[bool]=None, 
+            is_anonymous: Optional[bool]=None,
+            can_manage_chat: Optional[bool]=None,
             can_manage_video_chats: Optional[bool]=None,
             can_manage_voice_chats: Optional[bool]=None,
             can_manage_topics: Optional[bool]=None,
             can_post_stories: Optional[bool]=None,
             can_edit_stories: Optional[bool]=None,
-            can_delete_stories: Optional[bool]=None) -> bool:
+            can_delete_stories: Optional[bool]=None,
+            can_manage_direct_messages: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -4237,9 +4500,9 @@ class TeleBot:
         :param is_anonymous: Pass True, if the administrator's presence in the chat is hidden
         :type is_anonymous: :obj:`bool`
 
-        :param can_manage_chat: Pass True, if the administrator can access the chat event log, chat statistics, 
-            message statistics in channels, see channel members, 
-            see anonymous administrators in supergroups and ignore slow mode. 
+        :param can_manage_chat: Pass True, if the administrator can access the chat event log, chat statistics,
+            message statistics in channels, see channel members,
+            see anonymous administrators in supergroups and ignore slow mode.
             Implied by any other administrator privilege
         :type can_manage_chat: :obj:`bool`
 
@@ -4263,6 +4526,10 @@ class TeleBot:
         :param can_delete_stories: Pass True if the administrator can delete the channel's stories
         :type can_delete_stories: :obj:`bool`
 
+        :param can_manage_direct_messages: Pass True if the administrator can manage direct messages
+            within the channel and decline suggested posts; for channels only
+        :type can_manage_direct_messages: :obj:`bool`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
@@ -4279,7 +4546,8 @@ class TeleBot:
             is_anonymous=is_anonymous, can_manage_chat=can_manage_chat,
             can_manage_video_chats=can_manage_video_chats, can_manage_topics=can_manage_topics,
             can_post_stories=can_post_stories, can_edit_stories=can_edit_stories,
-            can_delete_stories=can_delete_stories)
+            can_delete_stories=can_delete_stories, can_manage_direct_messages=can_manage_direct_messages,
+        )
 
 
     def set_chat_administrator_custom_title(
@@ -4306,14 +4574,14 @@ class TeleBot:
         """
         return apihelper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
 
-    
+
     def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
         Use this method to ban a channel chat in a supergroup or a channel.
-        The owner of the chat will not be able to send messages and join live 
-        streams on behalf of the chat, unless it is unbanned first. 
-        The bot must be an administrator in the supergroup or channel 
-        for this to work and must have the appropriate administrator rights. 
+        The owner of the chat will not be able to send messages and join live
+        streams on behalf of the chat, unless it is unbanned first.
+        The bot must be an administrator in the supergroup or channel
+        for this to work and must have the appropriate administrator rights.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#banchatsenderchat
@@ -4332,8 +4600,8 @@ class TeleBot:
 
     def unban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
         """
-        Use this method to unban a previously banned channel chat in a supergroup or channel. 
-        The bot must be an administrator for this to work and must have the appropriate 
+        Use this method to unban a previously banned channel chat in a supergroup or channel.
+        The bot must be an administrator for this to work and must have the appropriate
         administrator rights.
         Returns True on success.
 
@@ -4384,7 +4652,7 @@ class TeleBot:
     def create_chat_invite_link(
             self, chat_id: Union[int, str],
             name: Optional[str]=None,
-            expire_date: Optional[Union[int, datetime]]=None, 
+            expire_date: Optional[Union[int, datetime]]=None,
             member_limit: Optional[int]=None,
             creates_join_request: Optional[bool]=None) -> types.ChatInviteLink:
         """
@@ -4471,7 +4739,7 @@ class TeleBot:
         :param chat_id: Unique identifier for the target channel chat or username of the target channel
             (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
-        
+
         :param name: Invite link name; 0-32 characters
         :type name: :obj:`str`
 
@@ -4489,7 +4757,7 @@ class TeleBot:
         return types.ChatInviteLink.de_json(
             apihelper.create_chat_subscription_invite_link(self.token, chat_id, subscription_period, subscription_price, name=name)
         )
-    
+
     def edit_chat_subscription_invite_link(
             self, chat_id: Union[int, str], invite_link: str, name: Optional[str]=None) -> types.ChatInviteLink:
         """
@@ -4519,7 +4787,7 @@ class TeleBot:
             self, chat_id: Union[int, str], invite_link: str) -> types.ChatInviteLink:
         """
         Use this method to revoke an invite link created by the bot.
-        Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator 
+        Note: If the primary link is revoked, a new link is automatically generated The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
 
         Telegram documentation: https://core.telegram.org/bots/api#revokechatinvitelink
@@ -4558,7 +4826,7 @@ class TeleBot:
 
     def approve_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
         """
-        Use this method to approve a chat join request. 
+        Use this method to approve a chat join request.
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
@@ -4579,7 +4847,7 @@ class TeleBot:
 
     def decline_chat_join_request(self, chat_id: Union[str, int], user_id: Union[int, str]) -> bool:
         """
-        Use this method to decline a chat join request. 
+        Use this method to decline a chat join request.
         The bot must be an administrator in the chat for this to work and must have
         the can_invite_users administrator right. Returns True on success.
 
@@ -4638,21 +4906,21 @@ class TeleBot:
         """
         return apihelper.delete_chat_photo(self.token, chat_id)
 
-    
-    def get_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
+
+    def get_my_commands(self, scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[str]=None) -> List[types.BotCommand]:
         """
-        Use this method to get the current list of the bot's commands. 
+        Use this method to get the current list of the bot's commands.
         Returns List of BotCommand on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#getmycommands
 
-        :param scope: The scope of users for which the commands are relevant. 
+        :param scope: The scope of users for which the commands are relevant.
             Defaults to BotCommandScopeDefault.
         :type scope: :class:`telebot.types.BotCommandScope`
 
-        :param language_code: A two-letter ISO 639-1 language code. If empty, 
-            commands will be applied to all users from the given scope, 
+        :param language_code: A two-letter ISO 639-1 language code. If empty,
+            commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :type language_code: :obj:`str`
 
@@ -4680,7 +4948,7 @@ class TeleBot:
         """
         return apihelper.set_my_name(self.token, name=name, language_code=language_code)
 
-    
+
     def get_my_name(self, language_code: Optional[str]=None):
         """
         Use this method to get the current bot name for the given user language.
@@ -4719,7 +4987,7 @@ class TeleBot:
         return apihelper.set_my_description(
             self.token, description=description, language_code=language_code)
 
-    
+
     def get_my_description(self, language_code: Optional[str]=None):
         """
         Use this method to get the current bot description for the given user language.
@@ -4735,11 +5003,11 @@ class TeleBot:
         return types.BotDescription.de_json(
             apihelper.get_my_description(self.token, language_code=language_code))
 
-    
+
     def set_my_short_description(self, short_description:Optional[str]=None, language_code:Optional[str]=None):
         """
         Use this method to change the bot's short description, which is shown on the bot's profile page and
-        is sent together with the link when users share the bot. 
+        is sent together with the link when users share the bot.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setmyshortdescription
@@ -4756,7 +5024,7 @@ class TeleBot:
         return apihelper.set_my_short_description(
             self.token, short_description=short_description, language_code=language_code)
 
-    
+
     def get_my_short_description(self, language_code: Optional[str]=None):
         """
         Use this method to get the current bot short description for the given user language.
@@ -4775,13 +5043,13 @@ class TeleBot:
 
     def set_chat_menu_button(self, chat_id: Union[int, str]=None, menu_button: types.MenuButton=None) -> bool:
         """
-        Use this method to change the bot's menu button in a private chat, 
-        or the default menu button. 
+        Use this method to change the bot's menu button in a private chat,
+        or the default menu button.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setchatmenubutton
 
-        :param chat_id: Unique identifier for the target private chat. 
+        :param chat_id: Unique identifier for the target private chat.
             If not specified, default bot's menu button will be changed.
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -4813,13 +5081,13 @@ class TeleBot:
             apihelper.get_chat_menu_button(self.token, chat_id=chat_id))
 
 
-    def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None, 
+    def set_my_default_administrator_rights(self, rights: types.ChatAdministratorRights=None,
                                     for_channels: Optional[bool]=None) -> bool:
         """
         Use this method to change the default administrator rights requested by the bot
         when it's added as an administrator to groups or channels.
         These rights will be suggested to users, but they are are free to modify
-        the list before adding the bot. 
+        the list before adding the bot.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setmydefaultadministratorrights
@@ -4873,8 +5141,8 @@ class TeleBot:
         return types.BusinessConnection.de_json(
             apihelper.get_business_connection(self.token, business_connection_id)
         )
-    
-        
+
+
     def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[str]=None) -> bool:
@@ -4886,12 +5154,12 @@ class TeleBot:
         :param commands: List of BotCommand. At most 100 commands can be specified.
         :type commands: :obj:`list` of :class:`telebot.types.BotCommand`
 
-        :param scope: The scope of users for which the commands are relevant. 
+        :param scope: The scope of users for which the commands are relevant.
             Defaults to BotCommandScopeDefault.
         :type scope: :class:`telebot.types.BotCommandScope`
 
-        :param language_code: A two-letter ISO 639-1 language code. If empty, 
-            commands will be applied to all users from the given scope, 
+        :param language_code: A two-letter ISO 639-1 language code. If empty,
+            commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :type language_code: :obj:`str`
 
@@ -4900,22 +5168,22 @@ class TeleBot:
         """
         return apihelper.set_my_commands(self.token, commands, scope=scope, language_code=language_code)
 
-    
-    def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None, 
+
+    def delete_my_commands(self, scope: Optional[types.BotCommandScope]=None,
             language_code: Optional[str]=None) -> bool:
         """
-        Use this method to delete the list of the bot's commands for the given scope and user language. 
-        After deletion, higher level commands will be shown to affected users. 
+        Use this method to delete the list of the bot's commands for the given scope and user language.
+        After deletion, higher level commands will be shown to affected users.
         Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#deletemycommands
-        
-        :param scope: The scope of users for which the commands are relevant. 
+
+        :param scope: The scope of users for which the commands are relevant.
             Defaults to BotCommandScopeDefault.
         :type scope: :class:`telebot.types.BotCommandScope`
 
-        :param language_code: A two-letter ISO 639-1 language code. If empty, 
-            commands will be applied to all users from the given scope, 
+        :param language_code: A two-letter ISO 639-1 language code. If empty,
+            commands will be applied to all users from the given scope,
             for whose language there are no dedicated commands
         :type language_code: :obj:`str`
 
@@ -4969,7 +5237,7 @@ class TeleBot:
 
 
     def pin_chat_message(
-            self, chat_id: Union[int, str], message_id: int, 
+            self, chat_id: Union[int, str], message_id: int,
             disable_notification: Optional[bool]=False, business_connection_id: Optional[str]=None) -> bool:
         """
         Use this method to pin a message in a supergroup.
@@ -5044,10 +5312,10 @@ class TeleBot:
 
 
     def edit_message_text(
-            self, text: str, 
-            chat_id: Optional[Union[int, str]]=None, 
-            message_id: Optional[int]=None, 
-            inline_message_id: Optional[str]=None, 
+            self, text: str,
+            chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
+            inline_message_id: Optional[str]=None,
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,        # deprecated, for backward compatibility
@@ -5097,7 +5365,7 @@ class TeleBot:
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
-                
+
         if disable_web_page_preview is not None:
             # show a deprecation warning
             logger.warning("The parameter 'disable_web_page_preview' is deprecated. Use 'link_preview_options' instead.")
@@ -5128,9 +5396,9 @@ class TeleBot:
 
 
     def edit_message_media(
-            self, media: Any, chat_id: Optional[Union[int, str]]=None, 
+            self, media: Any, chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             business_connection_id: Optional[str]=None,
             timeout: Optional[int]=None) -> Union[types.Message, bool]:
@@ -5139,7 +5407,7 @@ class TeleBot:
         If a message is part of a message album, then it can be edited only to an audio for audio albums, only to a document for document albums and to a photo or a video otherwise.
         When an inline message is edited, a new file can't be uploaded; use a previously uploaded file via its file_id or specify a URL.
         On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
-        Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent. 
+        Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent.
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagemedia
 
@@ -5148,7 +5416,7 @@ class TeleBot:
         :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
-        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message 
+        :param message_id: Required if inline_message_id is not specified. Identifier of the sent message
         :type message_id: :obj:`int`
 
         :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message
@@ -5176,9 +5444,9 @@ class TeleBot:
 
 
     def edit_message_reply_markup(
-            self, chat_id: Optional[Union[int, str]]=None, 
+            self, chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
-            inline_message_id: Optional[str]=None, 
+            inline_message_id: Optional[str]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             business_connection_id: Optional[str]=None,
             timeout: Optional[int]=None) -> Union[types.Message, bool]:
@@ -5218,10 +5486,10 @@ class TeleBot:
 
 
     def send_game(
-            self, chat_id: Union[int, str], game_short_name: str, 
+            self, chat_id: Union[int, str], game_short_name: str,
             disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             protect_content: Optional[bool]=None,
@@ -5312,10 +5580,10 @@ class TeleBot:
 
 
     def set_game_score(
-            self, user_id: Union[int, str], score: int, 
-            force: Optional[bool]=None, 
-            chat_id: Optional[Union[int, str]]=None, 
-            message_id: Optional[int]=None, 
+            self, user_id: Union[int, str], score: int,
+            force: Optional[bool]=None,
+            chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None,
             disable_edit_message: Optional[bool]=None) -> Union[types.Message, bool]:
         """
@@ -5358,7 +5626,7 @@ class TeleBot:
 
     def get_game_high_scores(
             self, user_id: int, chat_id: Optional[Union[int, str]]=None,
-            message_id: Optional[int]=None, 
+            message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None) -> List[types.GameHighScore]:
         """
         Use this method to get data for high score tables. Will return the score of the specified user and several of
@@ -5391,20 +5659,20 @@ class TeleBot:
 
 
     def send_invoice(
-            self, chat_id: Union[int, str], title: str, description: str, 
-            invoice_payload: str, provider_token: Union[str, None], currency: str, 
-            prices: List[types.LabeledPrice], start_parameter: Optional[str]=None, 
-            photo_url: Optional[str]=None, photo_size: Optional[int]=None, 
+            self, chat_id: Union[int, str], title: str, description: str,
+            invoice_payload: str, provider_token: Union[str, None], currency: str,
+            prices: List[types.LabeledPrice], start_parameter: Optional[str]=None,
+            photo_url: Optional[str]=None, photo_size: Optional[int]=None,
             photo_width: Optional[int]=None, photo_height: Optional[int]=None,
-            need_name: Optional[bool]=None, need_phone_number: Optional[bool]=None, 
+            need_name: Optional[bool]=None, need_phone_number: Optional[bool]=None,
             need_email: Optional[bool]=None, need_shipping_address: Optional[bool]=None,
-            send_phone_number_to_provider: Optional[bool]=None, 
-            send_email_to_provider: Optional[bool]=None, 
+            send_phone_number_to_provider: Optional[bool]=None,
+            send_email_to_provider: Optional[bool]=None,
             is_flexible: Optional[bool]=None,
-            disable_notification: Optional[bool]=None, 
+            disable_notification: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
-            provider_data: Optional[str]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
+            provider_data: Optional[str]=None,
             timeout: Optional[int]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             max_tip_amount: Optional[int] = None,
@@ -5413,7 +5681,9 @@ class TeleBot:
             message_thread_id: Optional[int]=None,
             reply_parameters: Optional[types.ReplyParameters]=None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
         """
         Sends invoice.
 
@@ -5455,7 +5725,7 @@ class TeleBot:
         :param photo_size: Photo size in bytes
         :type photo_size: :obj:`int`
 
-        :param photo_width: Photo width 
+        :param photo_width: Photo width
         :type photo_width: :obj:`int`
 
         :param photo_height: Photo height
@@ -5526,6 +5796,15 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent;
+            required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
+            is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -5565,13 +5844,14 @@ class TeleBot:
                 provider_data=provider_data, timeout=timeout, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 max_tip_amount=max_tip_amount, suggested_tip_amounts=suggested_tip_amounts,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
         )
 
     def create_invoice_link(self,
-            title: str, description: str, payload:str, provider_token: Union[str, None], 
+            title: str, description: str, payload:str, provider_token: Union[str, None],
             currency: str, prices: List[types.LabeledPrice],
-            max_tip_amount: Optional[int] = None, 
+            max_tip_amount: Optional[int] = None,
             suggested_tip_amounts: Optional[List[int]]=None,
             provider_data: Optional[str]=None,
             photo_url: Optional[str]=None,
@@ -5587,9 +5867,9 @@ class TeleBot:
             is_flexible: Optional[bool]=None,
             subscription_period: Optional[int]=None,
             business_connection_id: Optional[str]=None) -> str:
-            
+
         """
-        Use this method to create a link for an invoice. 
+        Use this method to create a link for an invoice.
         Returns the created invoice link as String on success.
 
         Telegram documentation:
@@ -5688,17 +5968,17 @@ class TeleBot:
     # noinspection PyShadowingBuiltins
     def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[Union[str, types.InputPollOption]],
-            is_anonymous: Optional[bool]=None, type: Optional[str]=None, 
-            allows_multiple_answers: Optional[bool]=None, 
+            is_anonymous: Optional[bool]=None, type: Optional[str]=None,
+            allows_multiple_answers: Optional[bool]=None,
             correct_option_id: Optional[int]=None,
-            explanation: Optional[str]=None, 
-            explanation_parse_mode: Optional[str]=None, 
-            open_period: Optional[int]=None, 
-            close_date: Optional[Union[int, datetime]]=None, 
+            explanation: Optional[str]=None,
+            explanation_parse_mode: Optional[str]=None,
+            open_period: Optional[int]=None,
+            close_date: Optional[Union[int, datetime]]=None,
             is_closed: Optional[bool]=None,
             disable_notification: Optional[bool]=False,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
-            reply_markup: Optional[REPLY_MARKUP_TYPES]=None, 
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             allow_sending_without_reply: Optional[bool]=None, # deprecated, for backward compatibility
             timeout: Optional[int]=None,
             explanation_entities: Optional[List[types.MessageEntity]]=None,
@@ -5855,7 +6135,7 @@ class TeleBot:
 
 
     def stop_poll(
-            self, chat_id: Union[int, str], message_id: int, 
+            self, chat_id: Union[int, str], message_id: int,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             business_connection_id: Optional[str]=None) -> types.Poll:
         """
@@ -5884,8 +6164,8 @@ class TeleBot:
 
 
     def answer_shipping_query(
-            self, shipping_query_id: str, ok: bool, 
-            shipping_options: Optional[List[types.ShippingOption]]=None, 
+            self, shipping_query_id: str, ok: bool,
+            shipping_options: Optional[List[types.ShippingOption]]=None,
             error_message: Optional[str]=None) -> bool:
         """
         Asks for an answer to a shipping question.
@@ -5913,7 +6193,7 @@ class TeleBot:
 
 
     def answer_pre_checkout_query(
-            self, pre_checkout_query_id: str, ok: bool, 
+            self, pre_checkout_query_id: str, ok: bool,
             error_message: Optional[str]=None) -> bool:
         """
         Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the
@@ -5925,7 +6205,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#answerprecheckoutquery
 
-        :param pre_checkout_query_id: Unique identifier for the query to be answered 
+        :param pre_checkout_query_id: Unique identifier for the query to be answered
         :type pre_checkout_query_id: :obj:`int`
 
         :param ok: Specify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
@@ -5941,11 +6221,11 @@ class TeleBot:
         """
         return apihelper.answer_pre_checkout_query(
             self.token, pre_checkout_query_id, ok, error_message=error_message)
-    
+
     def get_my_star_balance(self) -> types.StarAmount:
         """
         Returns the bot's current Telegram Stars balance. On success, returns a StarAmount object.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getmystarbalance
 
         :return: On success, returns a StarAmount object.
@@ -5972,8 +6252,8 @@ class TeleBot:
         return types.StarTransactions.de_json(
             apihelper.get_star_transactions(self.token, offset=offset, limit=limit)
         )
-    
-    
+
+
     def refund_star_payment(self, user_id: int, telegram_payment_charge_id: str) -> bool:
         """
         Refunds a successful payment in Telegram Stars. Returns True on success.
@@ -6012,10 +6292,10 @@ class TeleBot:
         return apihelper.edit_user_star_subscription(self.token, user_id, telegram_payment_charge_id, is_canceled)
 
     def edit_message_caption(
-            self, caption: str, chat_id: Optional[Union[int, str]]=None, 
-            message_id: Optional[int]=None, 
+            self, caption: str, chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None,
-            parse_mode: Optional[str]=None, 
+            parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             show_caption_above_media: Optional[bool]=None,
@@ -6107,12 +6387,12 @@ class TeleBot:
 
 
     def answer_inline_query(
-            self, inline_query_id: str, 
-            results: List[Any], 
-            cache_time: Optional[int]=None, 
-            is_personal: Optional[bool]=None, 
+            self, inline_query_id: str,
+            results: List[Any],
+            cache_time: Optional[int]=None,
+            is_personal: Optional[bool]=None,
             next_offset: Optional[str]=None,
-            switch_pm_text: Optional[str]=None, 
+            switch_pm_text: Optional[str]=None,
             switch_pm_parameter: Optional[str]=None,
             button: Optional[types.InlineQueryResultsButton]=None) -> bool:
         """
@@ -6159,7 +6439,7 @@ class TeleBot:
         if not button and (switch_pm_text or switch_pm_parameter):
             logger.warning("switch_pm_text and switch_pm_parameter are deprecated for answer_inline_query. Use button instead.")
             button = types.InlineQueryResultsButton(text=switch_pm_text, start_parameter=switch_pm_parameter)
-        
+
         return apihelper.answer_inline_query(
             self.token, inline_query_id, results, cache_time=cache_time, is_personal=is_personal,
             next_offset=next_offset, button=button)
@@ -6167,7 +6447,7 @@ class TeleBot:
 
     def unpin_all_general_forum_topic_messages(self, chat_id: Union[int, str]) -> bool:
         """
-        Use this method to clear the list of pinned messages in a General forum topic. 
+        Use this method to clear the list of pinned messages in a General forum topic.
         The bot must be an administrator in the chat for this to work and must have the
         can_pin_messages administrator right in the supergroup.
         Returns True on success.
@@ -6184,8 +6464,8 @@ class TeleBot:
 
 
     def answer_callback_query(
-            self, callback_query_id: int, 
-            text: Optional[str]=None, show_alert: Optional[bool]=None, 
+            self, callback_query_id: int,
+            text: Optional[str]=None, show_alert: Optional[bool]=None,
             url: Optional[str]=None, cache_time: Optional[int]=None) -> bool:
         """
         Use this method to send answers to callback queries sent from inline keyboards. The answer will be displayed to
@@ -6215,7 +6495,7 @@ class TeleBot:
         return apihelper.answer_callback_query(
             self.token, callback_query_id, text=text, show_alert=show_alert, url=url, cache_time=cache_time)
 
-    
+
     def get_user_chat_boosts(self, chat_id: Union[int, str], user_id: int) -> types.UserChatBoosts:
         """
         Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
@@ -6238,7 +6518,7 @@ class TeleBot:
     # noinspection PyShadowingBuiltins
     def set_sticker_set_thumbnail(self, name: str, user_id: int, thumbnail: Union[Any, str]=None, format: Optional[str]=None) -> bool:
         """
-        Use this method to set the thumbnail of a sticker set. 
+        Use this method to set the thumbnail of a sticker set.
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumbnail
@@ -6269,11 +6549,11 @@ class TeleBot:
 
         return apihelper.set_sticker_set_thumbnail(self.token, name, user_id, thumbnail, format)
 
-    
+
     @util.deprecated(deprecation_text="Use set_sticker_set_thumbnail instead")
     def set_sticker_set_thumb(self, name: str, user_id: int, thumb: Union[Any, str]=None):
         """
-        Use this method to set the thumbnail of a sticker set. 
+        Use this method to set the thumbnail of a sticker set.
         Animated thumbnails can be set for animated sticker sets only. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#setstickersetthumb
@@ -6297,7 +6577,7 @@ class TeleBot:
     def get_sticker_set(self, name: str) -> types.StickerSet:
         """
         Use this method to get a sticker set. On success, a StickerSet object is returned.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getstickerset
 
         :param name: Sticker set name
@@ -6324,7 +6604,7 @@ class TeleBot:
         result = apihelper.get_custom_emoji_stickers(self.token, custom_emoji_ids)
         return [types.Sticker.de_json(sticker) for sticker in result]
 
-    
+
     def set_sticker_keywords(self, sticker: str, keywords: List[str]=None) -> bool:
         """
         Use this method to change search keywords assigned to a regular or custom emoji sticker.
@@ -6342,7 +6622,7 @@ class TeleBot:
         """
         return apihelper.set_sticker_keywords(self.token, sticker, keywords=keywords)
 
-    
+
     def set_sticker_mask_position(self, sticker: str, mask_position: types.MaskPosition=None) -> bool:
         """
         Use this method to change the mask position of a mask sticker.
@@ -6359,7 +6639,7 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.set_sticker_mask_position(self.token, sticker, mask_position=mask_position)
-    
+
 
     def set_custom_emoji_sticker_set_thumbnail(self, name: str, custom_emoji_id: Optional[str]=None) -> bool:
         """
@@ -6377,7 +6657,7 @@ class TeleBot:
         """
         return apihelper.set_custom_emoji_sticker_set_thumbnail(self.token, name, custom_emoji_id=custom_emoji_id)
 
-    
+
     def set_sticker_set_title(self, name: str, title: str) -> bool:
         """
         Use this method to set the title of a created sticker set.
@@ -6394,7 +6674,7 @@ class TeleBot:
         """
         return apihelper.set_sticker_set_title(self.token, name, title)
 
-    
+
     def delete_sticker_set(self, name:str) -> bool:
         """
         Use this method to delete a sticker set. Returns True on success.
@@ -6407,7 +6687,7 @@ class TeleBot:
         """
         return apihelper.delete_sticker_set(self.token, name)
 
-    def send_gift(self, user_id: Optional[Union[str, int]] = None, gift_id: str=None, text: Optional[str]=None, text_parse_mode: Optional[str]=None, 
+    def send_gift(self, user_id: Optional[Union[str, int]] = None, gift_id: str=None, text: Optional[str]=None, text_parse_mode: Optional[str]=None,
                   text_entities: Optional[List[types.MessageEntity]]=None, pay_for_upgrade: Optional[bool]=None,
                   chat_id: Optional[Union[str, int]] = None) -> bool:
         """
@@ -6442,13 +6722,13 @@ class TeleBot:
         """
         if user_id is None and chat_id is None:
             raise ValueError("Either user_id or chat_id must be specified.")
-        
+
         if gift_id is None:
             raise ValueError("gift_id must be specified.")
-        
+
         return apihelper.send_gift(self.token, gift_id, text=text, text_parse_mode=text_parse_mode, text_entities=text_entities,
                                       pay_for_upgrade=pay_for_upgrade, chat_id=chat_id, user_id=user_id)
-    
+
     def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
         """
         Verifies a user on behalf of the organization which is represented by the bot. Returns True on success.
@@ -6624,12 +6904,12 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.set_business_account_gift_settings(self.token, business_connection_id, show_gift_button, accepted_gift_types)
-    
+
 
     def get_business_account_star_balance(self, business_connection_id: str) -> types.StarAmount:
         """
         Returns the amount of Telegram Stars owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns StarAmount on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getbusinessaccountstarbalance
 
         :param business_connection_id: Unique identifier of the business connection
@@ -6641,7 +6921,7 @@ class TeleBot:
         return types.StarAmount.de_json(
             apihelper.get_business_account_star_balance(self.token, business_connection_id)
         )
-    
+
     def transfer_business_account_stars(self, business_connection_id: str, star_count: int) -> bool:
         """
         Transfers Telegram Stars from the business account balance to the bot's balance. Requires the can_transfer_stars business bot right. Returns True on success.
@@ -6658,7 +6938,7 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.transfer_business_account_stars(self.token, business_connection_id, star_count)
-    
+
     def get_business_account_gifts(
             self, business_connection_id: str,
             exclude_unsaved: Optional[bool]=None,
@@ -6674,7 +6954,7 @@ class TeleBot:
             exclude_from_blockchain: Optional[bool]=None,) -> types.OwnedGifts:
         """
         Returns the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns OwnedGifts on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#getbusinessaccountgifts
 
         :param business_connection_id: Unique identifier of the business connection
@@ -6882,7 +7162,7 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.convert_gift_to_stars(self.token, business_connection_id, owned_gift_id)
-    
+
     def upgrade_gift(
             self, business_connection_id: str, owned_gift_id: str,
             keep_original_details: Optional[bool]=None,
@@ -6946,7 +7226,7 @@ class TeleBot:
             new_owner_chat_id,
             star_count=star_count
         )
-    
+
     def post_story(
             self, business_connection_id: str, content: types.InputStoryContent,
             active_period: int, caption: Optional[str]=None,
@@ -7053,7 +7333,7 @@ class TeleBot:
     def delete_story(self, business_connection_id: str, story_id: int) -> bool:
         """
         Deletes a story previously posted by the bot on behalf of a managed business account. Requires the can_manage_stories business bot right. Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#deletestory
 
         :param business_connection_id: Unique identifier of the business connection
@@ -7102,7 +7382,7 @@ class TeleBot:
             text=text, text_parse_mode=text_parse_mode,
             text_entities=text_entities
         )
-    
+
     def set_business_account_profile_photo(
             self, business_connection_id: str, photo: types.InputProfilePhoto,
             is_public: Optional[bool]=None) -> bool:
@@ -7181,8 +7461,8 @@ class TeleBot:
         :rtype: :obj:`bool`
         """
         return apihelper.replace_sticker_in_set(self.token, user_id, name, old_sticker, sticker)
-    
-    
+
+
     def set_sticker_emoji_list(self, sticker: str, emoji_list: List[str]) -> bool:
         """
         Use this method to set the emoji list of a custom emoji sticker set.
@@ -7204,7 +7484,7 @@ class TeleBot:
         """
         Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet
         methods (can be used multiple times). Returns the uploaded File on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#uploadstickerfile
 
         :param user_id: User identifier of sticker set owner
@@ -7218,7 +7498,7 @@ class TeleBot:
             See https://core.telegram.org/stickers for technical requirements. More information on Sending Files »
         :type sticker: :class:`telebot.types.InputFile`
 
-        :param sticker_format: One of "static", "animated", "video". 
+        :param sticker_format: One of "static", "animated", "video".
         :type sticker_format: :obj:`str`
 
         :return: On success, the sent file is returned.
@@ -7228,17 +7508,17 @@ class TeleBot:
             logger.warning('The parameter "png_sticker" is deprecated. Use "sticker" instead.')
             sticker = png_sticker
             sticker_format = "static"
-        
+
         return types.File.de_json(
             apihelper.upload_sticker_file(self.token, user_id, sticker, sticker_format)
         )
 
 
     def create_new_sticker_set(
-            self, user_id: int, name: str, title: str, 
-            emojis: Optional[List[str]]=None, 
-            png_sticker: Union[Any, str]=None, 
-            tgs_sticker: Union[Any, str]=None, 
+            self, user_id: int, name: str, title: str,
+            emojis: Optional[List[str]]=None,
+            png_sticker: Union[Any, str]=None,
+            tgs_sticker: Union[Any, str]=None,
             webm_sticker: Union[Any, str]=None,
             contains_masks: Optional[bool]=None,
             sticker_type: Optional[str]=None,
@@ -7247,7 +7527,7 @@ class TeleBot:
             stickers: List[types.InputSticker]=None,
             sticker_format: Optional[str]=None) -> bool:
         """
-        Use this method to create new sticker set owned by a user. 
+        Use this method to create new sticker set owned by a user.
         The bot will be able to edit the created sticker set.
         Returns True on success.
 
@@ -7311,11 +7591,11 @@ class TeleBot:
             sticker_format = 'video'
         elif png_sticker:
             sticker_format = 'static'
-        
+
         if contains_masks is not None:
             logger.warning('The parameter "contains_masks" is deprecated, use "sticker_type" instead')
             if sticker_type is None:
-               sticker_type = 'mask' if contains_masks else 'regular'
+                sticker_type = 'mask' if contains_masks else 'regular'
 
         if stickers is None:
             stickers = png_sticker or tgs_sticker or webm_sticker
@@ -7332,8 +7612,8 @@ class TeleBot:
 
     def add_sticker_to_set(
             self, user_id: int, name: str, emojis: Union[List[str], str],
-            png_sticker: Optional[Union[Any, str]]=None, 
-            tgs_sticker: Optional[Union[Any, str]]=None,  
+            png_sticker: Optional[Union[Any, str]]=None,
+            tgs_sticker: Optional[Union[Any, str]]=None,
             webm_sticker: Optional[Union[Any, str]]=None,
             mask_position: Optional[types.MaskPosition]=None,
             sticker: Optional[types.InputSticker]=None) -> bool:
@@ -7397,7 +7677,7 @@ class TeleBot:
     def set_sticker_position_in_set(self, sticker: str, position: int) -> bool:
         """
         Use this method to move a sticker in a set created by the bot to a specific position . Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#setstickerpositioninset
 
         :param sticker: File identifier of the sticker
@@ -7415,7 +7695,7 @@ class TeleBot:
     def delete_sticker_from_set(self, sticker: str) -> bool:
         """
         Use this method to delete a sticker from a set created by the bot. Returns True on success.
-       
+
         Telegram documentation: https://core.telegram.org/bots/api#deletestickerfromset
 
         :param sticker: File identifier of the sticker
@@ -7575,9 +7855,9 @@ class TeleBot:
         Use this method to edit the name of the 'General' topic in a forum supergroup chat.
         The bot must be an administrator in the chat for this to work and must have can_manage_topics administrator rights.
         Returns True on success.
-        
+
         Telegram documentation: https://core.telegram.org/bots/api#editgeneralforumtopic
-        
+
         :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
         :type chat_id: :obj:`int` or :obj:`str`
 
@@ -7660,7 +7940,7 @@ class TeleBot:
         """
         Use this method to set the result of an interaction with a Web App and
         send a corresponding message on behalf of the user to the chat from which
-        the query originated. 
+        the query originated.
         On success, a SentWebAppMessage object is returned.
 
         Telegram Documentation: https://core.telegram.org/bots/api#answerwebappquery
@@ -7728,7 +8008,7 @@ class TeleBot:
 
         :param args: Optional arguments for the callback function.
         :param kwargs: Optional keyword arguments for the callback function.
-        
+
         :return: None
         """
         self.register_for_reply_by_message_id(message.message_id, callback, *args, **kwargs)
@@ -7831,8 +8111,8 @@ class TeleBot:
 
             Added additional parameters to support topics, business connections, and message threads.
 
-        .. seealso:: 
-        
+        .. seealso::
+
             For more details, visit the `custom_states.py example <https://github.com/eternnoir/pyTelegramBotAPI/blob/master/examples/custom_states.py>`_.
 
         :param user_id: User's identifier
@@ -7864,7 +8144,7 @@ class TeleBot:
             bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def reset_data(self, user_id: int, chat_id: Optional[int]=None, 
+    def reset_data(self, user_id: int, chat_id: Optional[int]=None,
                      business_connection_id: Optional[str]=None,
                      message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> bool:
         """
@@ -7907,7 +8187,7 @@ class TeleBot:
 
         :param user_id: User's identifier
         :type user_id: :obj:`int`
-        
+
         :param chat_id: Chat's identifier
         :type chat_id: :obj:`int`
 
@@ -7962,7 +8242,7 @@ class TeleBot:
             bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def get_state(self, user_id: int, chat_id: Optional[int]=None, 
+    def get_state(self, user_id: int, chat_id: Optional[int]=None,
                     business_connection_id: Optional[str]=None,
                     message_thread_id: Optional[int]=None, bot_id: Optional[int]=None) -> str:
         """
@@ -8000,9 +8280,9 @@ class TeleBot:
             bot_id=bot_id, business_connection_id=business_connection_id, message_thread_id=message_thread_id)
 
 
-    def add_data(self, user_id: int, chat_id: Optional[int]=None, 
+    def add_data(self, user_id: int, chat_id: Optional[int]=None,
                     business_connection_id: Optional[str]=None,
-                    message_thread_id: Optional[int]=None, 
+                    message_thread_id: Optional[int]=None,
                     bot_id: Optional[int]=None,
                     **kwargs) -> None:
         """
@@ -8049,7 +8329,7 @@ class TeleBot:
         :type callback: :obj:`Callable[[telebot.types.Message], None]`
 
         :param args: Args to pass in callback func
-        
+
         :param kwargs: Args to pass in callback func
 
         :return: None
@@ -8219,7 +8499,7 @@ class TeleBot:
         bot = TeleBot('TOKEN')
 
         bot.register_middleware_handler(print_channel_post_text, update_types=['channel_post', 'edited_channel_post'])
- 
+
         :param callback: Function that will be used as a middleware handler.
         :type callback: :obj:`function`
 
@@ -8399,7 +8679,7 @@ class TeleBot:
             logger.warning("register_message_handler: 'content_types' filter should be List of strings (content types), not string.")
             content_types = [content_types]
 
-        
+
 
         handler_dict = self._build_handler_dict(callback,
                                                 chat_types=chat_types,
@@ -8471,7 +8751,7 @@ class TeleBot:
         """
         Adds the edit message handler
         Note that you should use register_edited_message_handler to add edited_message_handler to the bot.
-        
+
         :meta private:
 
         :param handler_dict:
@@ -8593,7 +8873,7 @@ class TeleBot:
         Note that you should use register_channel_post_handler to add channel_post_handler to the bot.
 
         :meta private:
-        
+
         :param handler_dict:
         :return:
         """
@@ -8813,7 +9093,7 @@ class TeleBot:
 
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
-        
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
@@ -8841,7 +9121,7 @@ class TeleBot:
 
         return decorator
 
-    
+
     def add_message_reaction_count_handler(self, handler_dict):
         """
         Adds message reaction count handler
@@ -8867,7 +9147,7 @@ class TeleBot:
 
         :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
         :type pass_bot: :obj:`bool`
-        
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
@@ -8876,7 +9156,7 @@ class TeleBot:
         self.add_message_reaction_count_handler(handler_dict)
 
 
-    def inline_handler(self, func, **kwargs):
+    def inline_handler(self, func=None, **kwargs):
         """
         Handles new incoming inline query.
         As a parameter to the decorator function, it passes :class:`telebot.types.InlineQuery` object.
@@ -8938,7 +9218,7 @@ class TeleBot:
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
-        
+
         :param kwargs: Optional keyword arguments(custom filters)
 
         :return: None
@@ -8994,7 +9274,7 @@ class TeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
         def decorator(handler):
@@ -9048,7 +9328,7 @@ class TeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
         def decorator(handler):
@@ -9125,7 +9405,7 @@ class TeleBot:
         """
         self.pre_checkout_query_handlers.append(handler_dict)
 
-    
+
     def register_pre_checkout_query_handler(self, callback: Callable, func: Callable, pass_bot: Optional[bool]=False, **kwargs):
         """
         Registers pre-checkout request handler.
@@ -9160,9 +9440,9 @@ class TeleBot:
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_purchased_paid_media_handler(handler_dict)
             return handler
-        
+
         return decorator
-    
+
     def add_purchased_paid_media_handler(self, handler_dict):
         """
         Adds a purchased paid media handler
@@ -9181,7 +9461,7 @@ class TeleBot:
 
         :param callback: function to be called
         :type callback: :obj:`function`
-        
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
@@ -9258,7 +9538,7 @@ class TeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
         def decorator(handler):
@@ -9425,7 +9705,7 @@ class TeleBot:
         :type func: :obj:`function`
 
         :param kwargs: Optional keyword arguments(custom filters)
-        
+
         :return: None
         """
         def decorator(handler):
@@ -9473,7 +9753,7 @@ class TeleBot:
 
     def chat_boost_handler(self, func=None, **kwargs):
         """
-        Handles new incoming chat boost state. 
+        Handles new incoming chat boost state.
         it passes :class:`telebot.types.ChatBoostUpdated` object.
 
         :param func: Function executed as a filter
@@ -9510,7 +9790,7 @@ class TeleBot:
 
         :param callback: function to be called
         :type callback: :obj:`function`
-        
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
@@ -9526,7 +9806,7 @@ class TeleBot:
 
     def removed_chat_boost_handler(self, func=None, **kwargs):
         """
-        Handles new incoming chat boost state. 
+        Handles new incoming chat boost state.
         it passes :class:`telebot.types.ChatBoostRemoved` object.
 
         :param func: Function executed as a filter
@@ -9542,7 +9822,7 @@ class TeleBot:
 
         return decorator
 
-    
+
     def add_removed_chat_boost_handler(self, handler_dict):
         """
         Adds a removed_chat_boost handler.
@@ -9563,7 +9843,7 @@ class TeleBot:
 
         :param callback: function to be called
         :type callback: :obj:`function`
-        
+
         :param func: Function executed as a filter
         :type func: :obj:`function`
 
@@ -9591,7 +9871,7 @@ class TeleBot:
             handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
             self.add_business_connection_handler(handler_dict)
             return handler
-        
+
         return decorator
 
 
@@ -9759,7 +10039,7 @@ class TeleBot:
 
         :return: None
         """
-        handler_dict = self._build_handler_dict(callback, content_types=content_types, commands=commands, regexp=regexp, func=func, 
+        handler_dict = self._build_handler_dict(callback, content_types=content_types, commands=commands, regexp=regexp, func=func,
                                                 pass_bot=pass_bot, **kwargs)
         self.add_business_message_handler(handler_dict)
 
@@ -9819,7 +10099,7 @@ class TeleBot:
         """
         Adds the edit message handler
         Note that you should use register_edited_business_message_handler to add edited_business_message_handler to the bot.
-        
+
         :meta private:
 
         :param handler_dict:
@@ -9896,7 +10176,7 @@ class TeleBot:
 
             self.add_deleted_business_messages_handler(handler_dict)
             return handler
-        
+
         return decorator
 
 
@@ -10016,7 +10296,7 @@ class TeleBot:
         :return:
         """
         middlewares = None
-        if self.middlewares: 
+        if self.middlewares:
             middlewares = [i for i in self.middlewares if update_type in i.update_types]
         return middlewares
 
