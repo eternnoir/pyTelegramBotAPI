@@ -11678,12 +11678,18 @@ class OwnedGiftRegular(OwnedGift):
     :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were paid by the sender for the ability to upgrade the gift
     :type prepaid_upgrade_star_count: :obj:`int`
 
+    :param is_upgrade_separate: Optional. True, if the gift's upgrade was purchased after the gift was sent; for gifts received on behalf of business accounts only
+    :type is_upgrade_separate: :obj:`bool`
+
+    :param unique_gift_number: Optional. Unique number reserved for this gift when upgraded. See the number field in UniqueGift
+    :type unique_gift_number: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`OwnedGiftRegular`
     """
     def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, text=None, entities=None,
                     is_private=None, is_saved=None, can_be_upgraded=None, was_refunded=None, convert_star_count=None,
-                    prepaid_upgrade_star_count=None, **kwargs):
+                    prepaid_upgrade_star_count=None, is_upgrade_separate=None, unique_gift_number=None, **kwargs):
         super().__init__(type=type)
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
@@ -11697,6 +11703,8 @@ class OwnedGiftRegular(OwnedGift):
         self.was_refunded: Optional[bool] = was_refunded
         self.convert_star_count: Optional[int] = convert_star_count
         self.prepaid_upgrade_star_count: Optional[int] = prepaid_upgrade_star_count
+        self.is_upgrade_separate: Optional[bool] = is_upgrade_separate
+        self.unique_gift_number: Optional[int] = unique_gift_number
 
     @classmethod
     def de_json(cls, json_string):
@@ -12430,6 +12438,9 @@ class GiftInfo(JsonDeserializable):
     :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were prepaid by the sender for the ability to upgrade the gift
     :type prepaid_upgrade_star_count: :obj:`int`
 
+    :param is_upgrade_separate: Optional. True, if the gift's upgrade was purchased after the gift was sent
+    :type is_upgrade_separate: :obj:`bool`
+
     :param can_be_upgraded: Optional. True, if the gift can be upgraded to a unique gift
     :type can_be_upgraded: :obj:`bool`
 
@@ -12448,7 +12459,7 @@ class GiftInfo(JsonDeserializable):
     def __init__(self, gift: Gift, owned_gift_id: Optional[str] = None, convert_star_count: Optional[int] = None,
                     prepaid_upgrade_star_count: Optional[int] = None, can_be_upgraded: Optional[bool] = None,
                     text: Optional[str] = None, entities: Optional[List[MessageEntity]] = None,
-                    is_private: Optional[bool] = None, **kwargs):
+                    is_private: Optional[bool] = None, is_upgrade_separate: Optional[bool] = None, **kwargs):
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.convert_star_count: Optional[int] = convert_star_count
@@ -12457,6 +12468,7 @@ class GiftInfo(JsonDeserializable):
         self.text: Optional[str] = text
         self.entities: Optional[List[MessageEntity]] = entities
         self.is_private: Optional[bool] = is_private
+        self.is_upgrade_separate: Optional[bool] = is_upgrade_separate
 
     @classmethod
     def de_json(cls, json_string):
