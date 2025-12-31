@@ -3355,7 +3355,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             video_start_timestamp: Optional[int]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -3394,6 +3395,9 @@ class AsyncTeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; only available when forwarding to private chats
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3404,7 +3408,8 @@ class AsyncTeleBot:
             await asyncio_helper.forward_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
                                                     disable_notification=disable_notification, protect_content=protect_content,
                                                     timeout=timeout, message_thread_id=message_thread_id, video_start_timestamp=video_start_timestamp,
-                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                                                    message_effect_id=message_effect_id)
         )
 
     async def copy_message(
@@ -3426,7 +3431,8 @@ class AsyncTeleBot:
             allow_paid_broadcast: Optional[bool]=None,
             video_start_timestamp: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.MessageID:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            message_effect_id: Optional[str]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -3499,6 +3505,9 @@ class AsyncTeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; only available when forwarding to private chats
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
@@ -3533,7 +3542,8 @@ class AsyncTeleBot:
                                                     reply_parameters=reply_parameters, reply_markup=reply_markup, timeout=timeout,
                                                     message_thread_id=message_thread_id, show_caption_above_media=show_caption_above_media,
                                                     allow_paid_broadcast=allow_paid_broadcast, video_start_timestamp=video_start_timestamp,
-                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                                                    message_effect_id=message_effect_id
                                                 )
         )
     

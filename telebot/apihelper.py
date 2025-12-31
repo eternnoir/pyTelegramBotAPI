@@ -432,7 +432,8 @@ def get_chat_member(token, chat_id, user_id):
 def forward_message(
         token, chat_id, from_chat_id, message_id,
         disable_notification=None, timeout=None, protect_content=None, message_thread_id=None,
-        video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+        video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+        message_effect_id=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if disable_notification is not None:
@@ -449,13 +450,16 @@ def forward_message(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 
 def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None, reply_markup=None, timeout=None, protect_content=None, message_thread_id=None,
                  reply_parameters=None, show_caption_above_media=None, allow_paid_broadcast=None,
-                 video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+                 video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+                 message_effect_id=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -486,6 +490,8 @@ def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_m
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return _make_request(token, method_url, params=payload)
 
 def send_checklist(
