@@ -805,6 +805,18 @@ async def send_contact(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     return await _process_request(token, method_url, params=payload)
 
+async def send_message_draft(
+        token, chat_id, draft_id, text,
+        message_thread_id=None, parse_mode=None, entities=None):
+    method_url = r'sendMessageDraft'
+    payload = {'chat_id': chat_id, 'draft_id': draft_id, 'text': text}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
+    return await _process_request(token, method_url, params=payload)
 
 async def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None, business_connection_id=None):
     method_url = r'sendChatAction'

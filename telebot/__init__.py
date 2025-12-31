@@ -3933,6 +3933,45 @@ class TeleBot:
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
             )
+    
+
+    def send_message_draft(
+            self, chat_id: int,
+            draft_id: int,
+            text: str,
+            message_thread_id: Optional[int]=None,
+            parse_mode: Optional[str]=None,
+            entities: Optional[List[types.MessageEntity]]=None):
+        """
+        Use this method to stream a partial message to a user while the message is being generated;
+        supported only for bots with forum topic mode enabled. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendmessagedraft
+
+        :param chat_id: Unique identifier for the target private chat
+        :type chat_id: :obj:`int`
+
+        :param message_thread_id: Unique identifier for the target message thread
+        :type message_thread_id: :obj:`int`
+
+        :param draft_id: Unique identifier of the message draft; must be non-zero. Changes of drafts with the same identifier are animated
+        :type draft_id: :obj:`int`
+
+        :param text: Text of the message to be sent, 1-4096 characters after entities parsing
+        :type text: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message text. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param entities: A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+        :type entities: :obj:`list` of :class:`telebot.types.MessageEntity
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.send_message_draft(
+            self.token, chat_id, draft_id, text, parse_mode=parse_mode, entities=entities, message_thread_id=message_thread_id)
+
 
 
     def send_chat_action(
