@@ -11291,12 +11291,16 @@ class Gift(JsonDeserializable):
     :param personal_remaining_count: Optional. The number of remaining gifts of this type that can be sent by the bot; for limited gifts only
     :type personal_remaining_count: :obj:`int`
 
+    :param background: Optional. Background of the gift
+    :type background: :class:`GiftBackground`
+
     :return: Instance of the class
     :rtype: :class:`Gift`
     """
 
     def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
-                 personal_total_count=None, personal_remaining_count=None, is_premium=None, has_colors=None, **kwargs):
+                 personal_total_count=None, personal_remaining_count=None, is_premium=None, has_colors=None,
+                 background=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
@@ -11307,12 +11311,15 @@ class Gift(JsonDeserializable):
         self.personal_remaining_count: Optional[int] = personal_remaining_count
         self.is_premium: Optional[bool] = is_premium
         self.has_colors: Optional[bool] = has_colors
+        self.background: Optional[GiftBackground] = background
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'background' in obj:
+            obj['background'] = GiftBackground.de_json(obj['background'])
 
         return cls(**obj)
 
@@ -12970,6 +12977,36 @@ class UniqueGiftColors(JsonDeserializable):
         self.light_theme_other_colors: List[int] = light_theme_other_colors
         self.dark_theme_main_color: int = dark_theme_main_color
         self.dark_theme_other_colors: List[int] = dark_theme_other_colors
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class GiftBackground(JsonDeserializable):
+    """
+    This object describes the background of a gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#giftbackground
+
+    :param center_color: Center color of the background in RGB format
+    :type center_color: :obj:`int`
+
+    :param edge_color: Edge color of the background in RGB format
+    :type edge_color: :obj:`int`
+
+    :param text_color: Text color of the background in RGB format
+    :type text_color: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`GiftBackground`
+    """
+    def __init__(self, center_color: int, edge_color: int, text_color: int, **kwargs):
+        self.center_color: int = center_color
+        self.edge_color: int = edge_color
+        self.text_color: int = text_color
 
     @classmethod
     def de_json(cls, json_string):
