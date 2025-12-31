@@ -11382,6 +11382,10 @@ class Gift(JsonDeserializable):
 
     :param background: Optional. Background of the gift
     :type background: :class:`GiftBackground`
+
+    :param unique_gift_variant_count: Optional. The total number of different unique gifts that can be obtained by upgrading the gift
+    :type unique_gift_variant_count: :obj:`int`
+
     :param publisher_chat: Optional. Information about the chat that published the gift
     :type publisher_chat: :class:`Chat`
 
@@ -11391,7 +11395,7 @@ class Gift(JsonDeserializable):
 
     def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
                  personal_total_count=None, personal_remaining_count=None, is_premium=None, has_colors=None,
-                 background=None, publisher_chat=None, **kwargs):
+                 background=None, publisher_chat=None, unique_gift_variant_count=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
@@ -11404,6 +11408,7 @@ class Gift(JsonDeserializable):
         self.has_colors: Optional[bool] = has_colors
         self.background: Optional[GiftBackground] = background
         self.publisher_chat: Optional[Chat] = publisher_chat
+        self.unique_gift_variant_count: Optional[int] = unique_gift_variant_count
 
     @classmethod
     def de_json(cls, json_string):
@@ -11649,26 +11654,35 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
     :param premium_subscription: True, if a Telegram Premium subscription is accepted
     :type premium_subscription: :obj:`bool`
 
+    :param gifts_from_channels: True, if transfers of unique gifts from channels are accepted
+    :type gifts_from_channels: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`AcceptedGiftTypes`
     """
-    def __init__(self, unlimited_gifts: bool, limited_gifts: bool,
-                    unique_gifts: bool, premium_subscription: bool, **kwargs):
-        self.unlimited_gifts: bool = unlimited_gifts
-        self.limited_gifts: bool = limited_gifts
-        self.unique_gifts: bool = unique_gifts
-        self.premium_subscription: bool = premium_subscription
+    def __init__(self, unlimited_gifts: Optional[bool]=None, limited_gifts: Optional[bool]=None,
+                    unique_gifts: Optional[bool]=None, premium_subscription: Optional[bool]=None, gifts_from_channels: Optional[bool]=None, **kwargs):
+        self.unlimited_gifts: Optional[bool] = unlimited_gifts
+        self.limited_gifts: Optional[bool] = limited_gifts
+        self.unique_gifts: Optional[bool] = unique_gifts
+        self.premium_subscription: Optional[bool] = premium_subscription
+        self.gifts_from_channels: Optional[bool] = gifts_from_channels
 
     def to_json(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        data = {
-            'unlimited_gifts': self.unlimited_gifts,
-            'limited_gifts': self.limited_gifts,
-            'unique_gifts': self.unique_gifts,
-            'premium_subscription': self.premium_subscription
-        }
+        data = {}
+        if self.unlimited_gifts is not None:
+            data['unlimited_gifts'] = self.unlimited_gifts
+        if self.limited_gifts is not None:
+            data['limited_gifts'] = self.limited_gifts
+        if self.unique_gifts is not None:
+            data['unique_gifts'] = self.unique_gifts
+        if self.premium_subscription is not None:
+            data['premium_subscription'] = self.premium_subscription
+        if self.gifts_from_channels is not None:
+            data['gifts_from_channels'] = self.gifts_from_channels
         return data
 
     @classmethod
@@ -12562,13 +12576,17 @@ class GiftInfo(JsonDeserializable):
     :param is_private: Optional. True, if the sender and gift text are shown only to the gift receiver; otherwise, everyone will be able to see them
     :type is_private: :obj:`bool`
 
+    :param unique_gift_number: Optional. Unique number reserved for this gift when upgraded. See the number field in UniqueGift
+    :type unique_gift_number: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`GiftInfo`
     """
     def __init__(self, gift: Gift, owned_gift_id: Optional[str] = None, convert_star_count: Optional[int] = None,
                     prepaid_upgrade_star_count: Optional[int] = None, can_be_upgraded: Optional[bool] = None,
                     text: Optional[str] = None, entities: Optional[List[MessageEntity]] = None,
-                    is_private: Optional[bool] = None, is_upgrade_separate: Optional[bool] = None, **kwargs):
+                    is_private: Optional[bool] = None, is_upgrade_separate: Optional[bool] = None, 
+                    unique_gift_number: Optional[int] = None, **kwargs):
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.convert_star_count: Optional[int] = convert_star_count
@@ -12578,6 +12596,7 @@ class GiftInfo(JsonDeserializable):
         self.entities: Optional[List[MessageEntity]] = entities
         self.is_private: Optional[bool] = is_private
         self.is_upgrade_separate: Optional[bool] = is_upgrade_separate
+        self.unique_gift_number: Optional[int] = unique_gift_number
 
     @classmethod
     def de_json(cls, json_string):
