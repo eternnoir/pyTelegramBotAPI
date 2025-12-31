@@ -11840,10 +11840,13 @@ class UniqueGift(JsonDeserializable):
     :param is_premium: Optional. True, if the gift can only be purchased by Telegram Premium subscribers
     :type is_premium: :obj:`bool`
 
+    :param colors: Optional. The color scheme that can be used by the gift's owner for the chat's name, replies to messages and link previews; for business account gifts and gifts that are currently on sale only
+    :type colors: :class:`UniqueGiftColors`
+
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, is_from_blockchain=None, is_premium=None, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, is_from_blockchain=None, is_premium=None, colors=None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
@@ -11853,6 +11856,7 @@ class UniqueGift(JsonDeserializable):
         self.gift_id: str = gift_id
         self.is_from_blockchain: Optional[bool] = is_from_blockchain
         self.is_premium: Optional[bool] = is_premium
+        self.colors: Optional[UniqueGiftColors] = colors
 
     @classmethod
     def de_json(cls, json_string):
@@ -11861,6 +11865,8 @@ class UniqueGift(JsonDeserializable):
         obj['model'] = UniqueGiftModel.de_json(obj['model'])
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
+        if 'colors' in obj:
+            obj['colors'] = UniqueGiftColors.de_json(obj['colors'])
         return cls(**obj)
     
     
