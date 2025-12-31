@@ -12445,6 +12445,12 @@ class UniqueGiftInfo(JsonDeserializable):
     :param last_resale_star_count: Optional. For gifts bought from other users, the price paid for the gift
     :type last_resale_star_count: :obj:`int`
 
+    :param last_resale_currency: Optional. For gifts bought from other users, the currency in which the payment for the gift was done. Currently, one of “XTR” for Telegram Stars or “TON” for toncoins.
+    :type last_resale_currency: :obj:`str`
+
+    :param last_resale_amount: Optional. For gifts bought from other users, the price paid for the gift in either Telegram Stars or nanotoncoins
+    :type last_resale_amount: :obj:`int`
+
     :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
     :type owned_gift_id: :obj:`str`
 
@@ -12459,13 +12465,17 @@ class UniqueGiftInfo(JsonDeserializable):
     """
     def __init__(self, gift: UniqueGift, origin: str, owned_gift_id: Optional[str] = None,
                     transfer_star_count: Optional[int] = None, next_transfer_date: Optional[int] = None,
-                    last_resale_star_count: Optional[int] = None, **kwargs):
+                    last_resale_star_count: Optional[int] = None, last_resale_currency: Optional[str] = None,
+                    last_resale_amount: Optional[int] = None, **kwargs):
         self.gift: UniqueGift = gift
         self.origin: str = origin
         self.last_resale_star_count: Optional[int] = last_resale_star_count
+        self.last_resale_currency: Optional[str] = last_resale_currency
+        self.last_resale_amount: Optional[int] = last_resale_amount
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.transfer_star_count: Optional[int] = transfer_star_count
         self.next_transfer_date: Optional[int] = next_transfer_date
+
 
     @classmethod
     def de_json(cls, json_string):
