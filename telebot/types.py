@@ -12927,3 +12927,49 @@ class DirectMessagePriceChanged(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+
+class UniqueGiftColors(JsonDeserializable):
+    """
+    This object contains information about the color scheme for a user's name, message replies and link previews
+    based on a unique gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftcolors
+
+    :param model_custom_emoji_id: Custom emoji identifier of the unique gift's model
+    :type model_custom_emoji_id: :obj:`str`
+
+    :param symbol_custom_emoji_id: Custom emoji identifier of the unique gift's symbol
+    :type symbol_custom_emoji_id: :obj:`str`
+
+    :param light_theme_main_color: Main color used in light themes; RGB format
+    :type light_theme_main_color: :obj:`int`
+
+    :param light_theme_other_colors: List of 1-3 additional colors used in light themes; RGB format
+    :type light_theme_other_colors: :obj:`list` of :obj:`int`
+
+    :param dark_theme_main_color: Main color used in dark themes; RGB format
+    :type dark_theme_main_color: :obj:`int`
+
+    :param dark_theme_other_colors: List of 1-3 additional colors used in dark themes; RGB format
+    :type dark_theme_other_colors: :obj:`list` of :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftColors`
+    """
+    def __init__(self, model_custom_emoji_id: str, symbol_custom_emoji_id: str,
+                 light_theme_main_color: int, light_theme_other_colors: List[int],
+                 dark_theme_main_color: int, dark_theme_other_colors: List[int], **kwargs):
+        self.model_custom_emoji_id: str = model_custom_emoji_id
+        self.symbol_custom_emoji_id: str = symbol_custom_emoji_id
+        self.light_theme_main_color: int = light_theme_main_color
+        self.light_theme_other_colors: List[int] = light_theme_other_colors
+        self.dark_theme_main_color: int = dark_theme_main_color
+        self.dark_theme_other_colors: List[int] = dark_theme_other_colors
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
