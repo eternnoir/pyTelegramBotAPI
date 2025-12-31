@@ -920,7 +920,7 @@ class Message(JsonDeserializable):
     :param message_id: Unique message identifier inside this chat
     :type message_id: :obj:`int`
 
-    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
+    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups and private chats only
     :type message_thread_id: :obj:`int`
 
     :param from_user: Optional. Sender of the message; empty for messages sent to channels. For backward compatibility, the
@@ -952,7 +952,7 @@ class Message(JsonDeserializable):
     :forward_origin: Optional. For forwarded messages, information about the original message;
     :type forward_origin: :class:`telebot.types.MessageOrigin`
 
-    :param is_topic_message: Optional. True, if the message is sent to a forum topic
+    :param is_topic_message: Optional. True, if the message is sent to a topic in a forum supergroup or a private chat with the bot
     :type is_topic_message: :obj:`bool`
 
     :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically
