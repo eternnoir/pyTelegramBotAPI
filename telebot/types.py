@@ -12438,8 +12438,9 @@ class UniqueGiftInfo(JsonDeserializable):
     :param gift: Information about the gift
     :type gift: :class:`UniqueGift`
 
-    :param origin: Origin of the gift. Currently, either “upgrade” for gifts upgraded from regular gifts, “transfer” for gifts transferred from other users or channels,
-        or “resale” for gifts bought from other users
+    :param origin: 	Origin of the gift. Currently, either “upgrade” for gifts upgraded from regular gifts, “transfer” for gifts
+        transferred from other users or channels, “resale” for gifts bought from other users, “gifted_upgrade” for upgrades purchased
+        after the gift was sent, or “offer” for gifts bought or sold through gift purchase offers
     :type origin: :obj:`str`
 
     :param last_resale_star_count: Optional. For gifts bought from other users, the price paid for the gift
