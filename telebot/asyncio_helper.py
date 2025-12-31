@@ -2282,6 +2282,18 @@ async def post_story(token, business_connection_id, content, active_period, capt
         payload['protect_content'] = protect_content
     return await _process_request(token, method_url, params=payload, files=files, method='post')
 
+async def repost_story(token, business_connection_id, from_chat_id, from_story_id, active_period,
+                post_to_chat_page=None, protect_content=None):
+    method_url = 'repostStory'
+    payload = {'business_connection_id': business_connection_id, 'from_chat_id': from_chat_id,
+               'from_story_id': from_story_id, 'active_period': active_period}
+    
+    if post_to_chat_page is not None:
+        payload['post_to_chat_page'] = post_to_chat_page
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    return await _process_request(token, method_url, params=payload, method='post')
+
 async def edit_story(token, business_connection_id, story_id, content, caption=None, parse_mode=None,
                 caption_entities=None, areas=None):
     method_url = 'editStory'

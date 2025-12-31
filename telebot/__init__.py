@@ -7283,6 +7283,50 @@ class TeleBot:
             )
         )
 
+    def repost_story(
+            self, business_connection_id: str,
+            from_chat_id: int, from_story_id: int,
+            active_period: int,
+            post_to_chat_page: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Story:
+        """
+        Reposts a story on behalf of a business account from another business account. Both business accounts
+        must be managed by the same bot, and the story on the source account must have been posted (or reposted)
+        by the bot. Requires the can_manage_stories business bot right for both business accounts. Returns Story on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#repoststory
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param from_chat_id: Unique identifier of the chat which posted the story that should be reposted
+        :type from_chat_id: :obj:`int`
+
+        :param from_story_id: Unique identifier of the story that should be reposted
+        :type from_story_id: :obj:`int`
+
+        :param active_period: Period after which the story is moved to the archive, in seconds; must be one of 6 * 3600, 12 * 3600, 86400, or 2 * 86400
+        :type active_period: :obj:`int`
+
+        :param post_to_chat_page: Pass True to keep the story accessible after it expires
+        :type post_to_chat_page: :obj:`bool`
+
+        :param protect_content: Pass True if the content of the story must be protected from forwarding and screenshotting
+        :type protect_content: :obj:`bool`
+
+        :return: On success, a Story object is returned.
+        :rtype: :class:`telebot.types.Story`
+        """
+        return types.Story.de_json(
+            apihelper.repost_story(
+                self.token, business_connection_id,
+                from_chat_id, from_story_id,
+                active_period,
+                post_to_chat_page=post_to_chat_page,
+                protect_content=protect_content
+            )
+        )
+
     def edit_story(
             self, business_connection_id: str, story_id: int,
             content: types.InputStoryContent,
