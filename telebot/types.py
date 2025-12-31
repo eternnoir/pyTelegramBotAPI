@@ -1147,6 +1147,9 @@ class Message(JsonDeserializable):
     :param unique_gift: Optional. Service message: a unique gift was sent or received
     :type unique_gift: :class:`telebot.types.UniqueGiftInfo`
 
+    :param gift_upgrade_sent: Optional. Service message: upgrade of a gift was purchased after the gift was sent
+    :type gift_upgrade_sent: :class:`telebot.types.GiftInfo`
+
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
         Telegram Login »
     :type connected_website: :obj:`str`
@@ -1488,6 +1491,9 @@ class Message(JsonDeserializable):
         if 'direct_message_price_changed' in obj:
             opts['direct_message_price_changed'] = DirectMessagePriceChanged.de_json(obj['direct_message_price_changed'])
             content_type = 'direct_message_price_changed'
+        if 'gift_upgrade_sent' in obj:
+            opts['gift_upgrade_sent'] = GiftInfo.de_json(obj['gift_upgrade_sent'])
+            content_type = 'gift_upgrade_sent'
             
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1614,6 +1620,7 @@ class Message(JsonDeserializable):
         self.checklist_tasks_done: Optional[ChecklistTasksDone] = None
         self.checklist_tasks_added: Optional[List[ChecklistTasksAdded]] = None
         self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
+        self.gift_upgrade_sent: Optional[GiftInfo] = None
 
         for key in options:
             setattr(self, key, options[key])
