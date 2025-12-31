@@ -11273,6 +11273,9 @@ class Gift(JsonDeserializable):
     :param upgrade_star_count: Optional. The number of Telegram Stars that must be paid to upgrade the gift to a unique one
     :type upgrade_star_count: :obj:`int`
 
+    :param is_premium: Optional. True, if the gift can only be purchased by Telegram Premium subscribers
+    :type is_premium: :obj:`bool`
+
     :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
     :type total_count: :obj:`int`
 
@@ -11290,7 +11293,7 @@ class Gift(JsonDeserializable):
     """
 
     def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
-                 personal_total_count=None, personal_remaining_count=None, **kwargs):
+                 personal_total_count=None, personal_remaining_count=None, is_premium=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
@@ -11299,6 +11302,7 @@ class Gift(JsonDeserializable):
         self.upgrade_star_count: Optional[int] = upgrade_star_count
         self.personal_total_count: Optional[int] = personal_total_count
         self.personal_remaining_count: Optional[int] = personal_remaining_count
+        self.is_premium: Optional[bool] = is_premium
 
     @classmethod
     def de_json(cls, json_string):
@@ -11309,7 +11313,9 @@ class Gift(JsonDeserializable):
             obj['personal_total_count'] = obj['personal_total_count']
         if 'personal_remaining_count' in obj:
             obj['personal_remaining_count'] = obj['personal_remaining_count']
-            
+        if 'is_premium' in obj:
+            obj['is_premium'] = obj['is_premium']
+
         return cls(**obj)
 
 
@@ -11825,10 +11831,13 @@ class UniqueGift(JsonDeserializable):
     :param is_from_blockchain: Optional. True, if the gift is assigned from the TON blockchain and can't be resold or transferred in Telegram
     :type is_from_blockchain: :obj:`bool`
 
+    :param is_premium: Optional. True, if the gift can only be purchased by Telegram Premium subscribers
+    :type is_premium: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, is_from_blockchain=None, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, is_from_blockchain=None, is_premium=None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
@@ -11837,6 +11846,7 @@ class UniqueGift(JsonDeserializable):
         self.backdrop: UniqueGiftBackdrop = backdrop
         self.gift_id: str = gift_id
         self.is_from_blockchain: Optional[bool] = is_from_blockchain
+        self.is_premium: Optional[bool] = is_premium
 
     @classmethod
     def de_json(cls, json_string):
@@ -11848,6 +11858,8 @@ class UniqueGift(JsonDeserializable):
         obj['gift_id'] = obj['gift_id']
         if 'is_from_blockchain' in obj:
             obj['is_from_blockchain'] = obj['is_from_blockchain']
+        if 'is_premium' in obj:
+            obj['is_premium'] = obj['is_premium']
         return cls(**obj)
     
     
