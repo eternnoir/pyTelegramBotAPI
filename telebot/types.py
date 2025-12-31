@@ -11855,11 +11855,6 @@ class UniqueGift(JsonDeserializable):
         obj['model'] = UniqueGiftModel.de_json(obj['model'])
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
-        obj['gift_id'] = obj['gift_id']
-        if 'is_from_blockchain' in obj:
-            obj['is_from_blockchain'] = obj['is_from_blockchain']
-        if 'is_premium' in obj:
-            obj['is_premium'] = obj['is_premium']
         return cls(**obj)
     
     
