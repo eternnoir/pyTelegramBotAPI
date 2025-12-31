@@ -754,6 +754,9 @@ class ChatFullInfo(JsonDeserializable):
     :param paid_message_star_count: Optional. The number of Telegram Stars a general user have to pay to send a message to the chat
     :type paid_message_star_count: :obj:`int`
 
+    :param unique_gift_colors: Optional. The color scheme based on a unique gift that must be used for the chat's name, message replies and link previews
+    :type unique_gift_colors: :class:`telebot.types.UniqueGiftColors`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -787,6 +790,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['parent_chat'] = Chat.de_json(obj['parent_chat'])
         if 'rating' in obj:
             obj['rating'] = UserRating.de_json(obj['rating'])
+        if 'unique_gift_colors' in obj:
+            obj['unique_gift_colors'] = UniqueGiftColors.de_json(obj['unique_gift_colors'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -804,7 +809,7 @@ class ChatFullInfo(JsonDeserializable):
                 business_opening_hours=None, personal_chat=None, birthdate=None,
                 can_send_paid_media=None,
                 accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
-                **kwargs):
+                unique_gift_colors=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -854,6 +859,9 @@ class ChatFullInfo(JsonDeserializable):
         self.parent_chat: Optional[Chat] = parent_chat
         self.rating: Optional[UserRating] = rating
         self.paid_message_star_count: Optional[int] = paid_message_star_count
+        self.unique_gift_colors: Optional[UniqueGiftColors] = unique_gift_colors
+
+
     @property
     def can_send_gift(self) -> bool:
         """
@@ -12808,6 +12816,9 @@ class ChecklistTask(JsonDeserializable):
     :param completed_by_user: Optional. User that completed the task; omitted if the task wasn't completed
     :type completed_by_user: :class:`User`
 
+    :param completed_by_chat: Optional. Chat that completed the task; omitted if the task wasn't completed by a chat
+    :type completed_by_chat: :class:`Chat`
+
     :param completion_date: Optional. Point in time (Unix timestamp) when the task was completed; 0 if the task wasn't completed
     :type completion_date: :obj:`int`
 
@@ -12816,11 +12827,13 @@ class ChecklistTask(JsonDeserializable):
     """
     def __init__(self, id: int, text: str, text_entities: Optional[List[MessageEntity]] = None,
                     completed_by_user: Optional[User] = None,
+                    completed_by_chat: Optional[Chat] = None,
                     completion_date: Optional[int] = None, **kwargs):
         self.id: int = id
         self.text: str = text
         self.text_entities: Optional[List[MessageEntity]] = text_entities
         self.completed_by_user: Optional[User] = completed_by_user
+        self.completed_by_chat: Optional[Chat] = completed_by_chat
         self.completion_date: Optional[int] = completion_date
 
     @classmethod
@@ -12831,6 +12844,8 @@ class ChecklistTask(JsonDeserializable):
             obj['text_entities'] = Message.parse_entities(obj['text_entities'])
         if 'completed_by_user' in obj:
             obj['completed_by_user'] = User.de_json(obj['completed_by_user'])
+        if 'completed_by_chat' in obj:
+            obj['completed_by_chat'] = Chat.de_json(obj['completed_by_chat'])
         return cls(**obj)
 
 
