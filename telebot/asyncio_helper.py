@@ -2072,7 +2072,7 @@ async def transfer_business_account_stars(token, business_connection_id, star_co
 async def get_business_account_gifts(token, business_connection_id, exclude_unsaved=None, exclude_saved=None,
                                 exclude_unlimited=None, exclude_unique=None,
                                 sort_by_price=None, offset=None, limit=None, exclude_limited_upgradable=None,
-                                exclude_limited_non_upgradable=None):
+                                exclude_limited_non_upgradable=None, exclude_from_blockchain=None):
     method_url = 'getBusinessAccountGifts'
     payload = {'business_connection_id': business_connection_id}
     if exclude_unsaved is not None:
@@ -2093,6 +2093,8 @@ async def get_business_account_gifts(token, business_connection_id, exclude_unsa
         payload['exclude_limited_upgradable'] = exclude_limited_upgradable
     if exclude_limited_non_upgradable is not None:
         payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
+    if exclude_from_blockchain is not None:
+        payload['exclude_from_blockchain'] = exclude_from_blockchain
     return await _process_request(token, method_url, params=payload)
 
 async def get_user_gifts(token, user_id, exclude_unlimited=None, exclude_limited_upgradable=None,

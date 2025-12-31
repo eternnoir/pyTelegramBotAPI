@@ -6670,7 +6670,8 @@ class TeleBot:
             offset: Optional[str]=None,
             limit: Optional[int]=None,
             exclude_limited_upgradable: Optional[bool]=None,
-            exclude_limited_non_upgradable: Optional[bool]=None) -> types.OwnedGifts:
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            exclude_from_blockchain: Optional[bool]=None,) -> types.OwnedGifts:
         """
         Returns the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns OwnedGifts on success.
         
@@ -6693,6 +6694,9 @@ class TeleBot:
 
         :param exclude_unique: Pass True to exclude unique gifts
         :type exclude_unique: :obj:`bool`
+
+        :param exclude_from_blockchain: Pass True to exclude gifts that were assigned from the TON blockchain and can't be resold or transferred in Telegram
+        :type exclude_from_blockchain: :obj:`bool`
 
         :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
         :type sort_by_price: :obj:`bool`
@@ -6728,7 +6732,8 @@ class TeleBot:
                 offset=offset,
                 limit=limit,
                 exclude_limited_upgradable=exclude_limited_upgradable,
-                exclude_limited_non_upgradable=exclude_limited_non_upgradable
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable,
+                exclude_from_blockchain=exclude_from_blockchain
             )
         )
 
