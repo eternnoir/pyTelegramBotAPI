@@ -751,6 +751,9 @@ class ChatFullInfo(JsonDeserializable):
     :param rating: Optional. For private chats, the rating of the user if any
     :type rating: :class:`telebot.types.UserRating`
 
+    :param paid_message_star_count: Optional. The number of Telegram Stars a general user have to pay to send a message to the chat
+    :type paid_message_star_count: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -787,20 +790,21 @@ class ChatFullInfo(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
-                 last_name=None, photo=None, bio=None, has_private_forwards=None,
-                 description=None, invite_link=None, pinned_message=None,
-                 permissions=None, slow_mode_delay=None,
-                 message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
-                 can_set_sticker_set=None, linked_chat_id=None, location=None,
-                 join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None,
-                 is_forum=None, max_reaction_count=None, active_usernames=None, emoji_status_custom_emoji_id=None,
-                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None,
-                 available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-                 profile_background_custom_emoji_id=None, has_visible_history=None,
-                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
-                    business_opening_hours=None, personal_chat=None, birthdate=None,
-                    can_send_paid_media=None,
-                    accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, **kwargs):
+                last_name=None, photo=None, bio=None, has_private_forwards=None,
+                description=None, invite_link=None, pinned_message=None,
+                permissions=None, slow_mode_delay=None,
+                message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
+                can_set_sticker_set=None, linked_chat_id=None, location=None,
+                join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None,
+                is_forum=None, max_reaction_count=None, active_usernames=None, emoji_status_custom_emoji_id=None,
+                has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None,
+                available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
+                profile_background_custom_emoji_id=None, has_visible_history=None,
+                unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
+                business_opening_hours=None, personal_chat=None, birthdate=None,
+                can_send_paid_media=None,
+                accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
+                **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -849,6 +853,7 @@ class ChatFullInfo(JsonDeserializable):
         self.is_direct_messages: Optional[bool] = is_direct_messages
         self.parent_chat: Optional[Chat] = parent_chat
         self.rating: Optional[UserRating] = rating
+        self.paid_message_star_count: Optional[int] = paid_message_star_count
     @property
     def can_send_gift(self) -> bool:
         """
