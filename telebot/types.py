@@ -11787,6 +11787,9 @@ class UniqueGift(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#uniquegift
 
+    :param gift_id: Identifier of the regular gift from which the gift was upgraded
+    :type gift_id: :obj:`str`
+
     :param base_name: Human-readable name of the regular gift from which this unique gift was upgraded
     :type base_name: :obj:`str`
 
@@ -11808,13 +11811,14 @@ class UniqueGift(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
         self.model: UniqueGiftModel = model
         self.symbol: UniqueGiftSymbol = symbol
         self.backdrop: UniqueGiftBackdrop = backdrop
+        self.gift_id: str = gift_id
 
     @classmethod
     def de_json(cls, json_string):
@@ -11823,6 +11827,7 @@ class UniqueGift(JsonDeserializable):
         obj['model'] = UniqueGiftModel.de_json(obj['model'])
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
+        obj['gift_id'] = obj['gift_id']
         return cls(**obj)
     
     
