@@ -748,6 +748,9 @@ class ChatFullInfo(JsonDeserializable):
     :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat.
     :type location: :class:`telebot.types.ChatLocation`
 
+    :param rating: Optional. For private chats, the rating of the user if any
+    :type rating: :class:`telebot.types.UserRating`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -779,6 +782,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['accepted_gift_types'] = AcceptedGiftTypes.de_json(obj['accepted_gift_types'])
         if 'parent_chat' in obj:
             obj['parent_chat'] = Chat.de_json(obj['parent_chat'])
+        if 'rating' in obj:
+            obj['rating'] = UserRating.de_json(obj['rating'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -795,7 +800,7 @@ class ChatFullInfo(JsonDeserializable):
                  unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
                     business_opening_hours=None, personal_chat=None, birthdate=None,
                     can_send_paid_media=None,
-                    accepted_gift_types=None, is_direct_messages=None, parent_chat=None, **kwargs):
+                    accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -843,6 +848,7 @@ class ChatFullInfo(JsonDeserializable):
         self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
         self.is_direct_messages: Optional[bool] = is_direct_messages
         self.parent_chat: Optional[Chat] = parent_chat
+        self.rating: Optional[UserRating] = rating
     @property
     def can_send_gift(self) -> bool:
         """
@@ -13405,4 +13411,38 @@ class SuggestedPostRefunded(JsonDeserializable):
         return cls(**obj)
     
 
+class UserRating(JsonDeserializable):
+    """
+    This object describes the rating of a user based on their Telegram Star spendings.
+
+    Telegram documentation: https://core.telegram.org/bots/api#userrating
+
+    :param level: Current level of the user, indicating their reliability when purchasing digital goods and services. A higher level suggests a more trustworthy customer; a negative level is likely reason for concern.
+    :type level: :obj:`int`
+
+    :param rating: Numerical value of the user's rating; the higher the rating, the better
+    :type rating: :obj:`int`
+
+    :param current_level_rating: The rating value required to get the current level
+    :type current_level_rating: :obj:`int`
+
+    :param next_level_rating: Optional. The rating value required to get to the next level; omitted if the maximum level was reached
+    :type next_level_rating: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UserRating`
+    """
+    def __init__(self, level: int, rating: int, current_level_rating: int,
+                    next_level_rating: Optional[int] = None, **kwargs):
+        self.level: int = level
+        self.rating: int = rating
+        self.current_level_rating: int = current_level_rating
+        self.next_level_rating: Optional[int] = next_level_rating
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
     
