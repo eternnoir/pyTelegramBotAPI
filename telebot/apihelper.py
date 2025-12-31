@@ -2103,51 +2103,55 @@ def transfer_business_account_stars(token, business_connection_id, star_count):
     return _make_request(token, method_url, params=payload, method='post')
 
 def get_business_account_gifts(token, business_connection_id, exclude_unsaved=None, exclude_saved=None,
-                                 exclude_unlimited=None, exclude_limited=None, exclude_unique=None,
-                                 sort_by_price=None, offset=None, limit=None):
-     method_url = 'getBusinessAccountGifts'
-     payload = {'business_connection_id': business_connection_id}
-     if exclude_unsaved is not None:
-          payload['exclude_unsaved'] = exclude_unsaved
-     if exclude_saved is not None:
-          payload['exclude_saved'] = exclude_saved
-     if exclude_unlimited is not None:
-          payload['exclude_unlimited'] = exclude_unlimited
-     if exclude_limited is not None:
-          payload['exclude_limited'] = exclude_limited
-     if exclude_unique is not None:
-          payload['exclude_unique'] = exclude_unique
-     if sort_by_price is not None:
-          payload['sort_by_price'] = sort_by_price
-     if offset is not None:
-          payload['offset'] = offset
-     if limit is not None:
-          payload['limit'] = limit
-     return _make_request(token, method_url, params=payload)
+                                exclude_unlimited=None, exclude_unique=None,
+                                sort_by_price=None, offset=None, limit=None, exclude_limited_upgradable=None,
+                                exclude_limited_non_upgradable=None):
+    method_url = 'getBusinessAccountGifts'
+    payload = {'business_connection_id': business_connection_id}
+    if exclude_unsaved is not None:
+        payload['exclude_unsaved'] = exclude_unsaved
+    if exclude_saved is not None:
+        payload['exclude_saved'] = exclude_saved
+    if exclude_unlimited is not None:
+        payload['exclude_unlimited'] = exclude_unlimited
+    if exclude_unique is not None:
+        payload['exclude_unique'] = exclude_unique
+    if sort_by_price is not None:
+        payload['sort_by_price'] = sort_by_price
+    if offset is not None:
+        payload['offset'] = offset
+    if limit is not None:
+        payload['limit'] = limit
+    if exclude_limited_upgradable is not None:
+        payload['exclude_limited_upgradable'] = exclude_limited_upgradable
+    if exclude_limited_non_upgradable is not None:
+        payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
+
+    return _make_request(token, method_url, params=payload)
 
 
 def get_user_gifts(token, user_id, exclude_unlimited=None, exclude_limited_upgradable=None,
-                     exclude_limited_non_upgradable=None, exclude_from_blockchain=None, exclude_unique=None,
-                     sort_by_price=None, offset=None, limit=None):
-     method_url = 'getUserGifts'
-     payload = {'user_id': user_id}
-     if exclude_unlimited is not None:
-          payload['exclude_unlimited'] = exclude_unlimited
-     if exclude_limited_upgradable is not None:
-          payload['exclude_limited_upgradable'] = exclude_limited_upgradable
-     if exclude_limited_non_upgradable is not None:
-          payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
-     if exclude_from_blockchain is not None:
-          payload['exclude_from_blockchain'] = exclude_from_blockchain
-     if exclude_unique is not None:
-          payload['exclude_unique'] = exclude_unique
-     if sort_by_price is not None:
-          payload['sort_by_price'] = sort_by_price
-     if offset is not None:
-          payload['offset'] = offset
-     if limit is not None:
-          payload['limit'] = limit
-     return _make_request(token, method_url, params=payload)
+                    exclude_limited_non_upgradable=None, exclude_from_blockchain=None, exclude_unique=None,
+                    sort_by_price=None, offset=None, limit=None):
+    method_url = 'getUserGifts'
+    payload = {'user_id': user_id}
+    if exclude_unlimited is not None:
+        payload['exclude_unlimited'] = exclude_unlimited
+    if exclude_limited_upgradable is not None:
+        payload['exclude_limited_upgradable'] = exclude_limited_upgradable
+    if exclude_limited_non_upgradable is not None:
+        payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
+    if exclude_from_blockchain is not None:
+        payload['exclude_from_blockchain'] = exclude_from_blockchain
+    if exclude_unique is not None:
+        payload['exclude_unique'] = exclude_unique
+    if sort_by_price is not None:
+        payload['sort_by_price'] = sort_by_price
+    if offset is not None:
+        payload['offset'] = offset
+    if limit is not None:
+        payload['limit'] = limit
+    return _make_request(token, method_url, params=payload)
 
 def get_chat_gifts(token, chat_id, exclude_unsaved=None, exclude_saved=None,
                         exclude_unlimited=None, exclude_limited_upgradable=None,

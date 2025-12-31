@@ -8119,7 +8119,10 @@ class AsyncTeleBot:
             exclude_unique: Optional[bool]=None,
             sort_by_price: Optional[bool]=None,
             offset: Optional[str]=None,
-            limit: Optional[int]=None) -> types.OwnedGifts:
+            limit: Optional[int]=None,
+            exclude_limited_upgradable: Optional[bool]=None,
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            ) -> types.OwnedGifts:
         """
         Returns the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns OwnedGifts on success.
         
@@ -8152,20 +8155,31 @@ class AsyncTeleBot:
         :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
         :type limit: :obj:`int`
 
+        :param exclude_limited_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can be upgraded to unique
+        :type exclude_limited_upgradable: :obj:`bool`
+
+        :param exclude_limited_non_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can't be upgraded to unique
+        :type exclude_limited_non_upgradable: :obj:`bool`
+
         :return: On success, a OwnedGifts object is returned.
         :rtype: :class:`telebot.types.OwnedGifts`
         """
+        if exclude_limited is not None and exclude_limited_upgradable is None and exclude_limited_non_upgradable is None:
+            exclude_limited_upgradable = exclude_limited
+            exclude_limited_non_upgradable = exclude_limited
+                
         return types.OwnedGifts.de_json(
             await asyncio_helper.get_business_account_gifts(
                 self.token, business_connection_id,
                 exclude_unsaved=exclude_unsaved,
                 exclude_saved=exclude_saved,
                 exclude_unlimited=exclude_unlimited,
-                exclude_limited=exclude_limited,
                 exclude_unique=exclude_unique,
                 sort_by_price=sort_by_price,
                 offset=offset,
-                limit=limit
+                limit=limit,
+                exclude_limited_upgradable=exclude_limited_upgradable,
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable
             )
         )
     
