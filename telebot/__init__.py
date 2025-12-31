@@ -3999,7 +3999,7 @@ class TeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param message_thread_id: The thread identifier of a message from which the reply will be sent(supergroups only)
+        :param message_thread_id: The thread identifier of a message from which the reply will be sent(for supergroups and private chats)
         :type message_thread_id: :obj:`int`
 
         :param business_connection_id: Identifier of a business connection

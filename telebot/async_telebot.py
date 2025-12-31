@@ -5511,7 +5511,7 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param message_thread_id: The thread to which the message will be sent(supergroups only)
+        :param message_thread_id: The thread to which the message will be sent(supergroups and private chats only)
         :type message_thread_id: :obj:`int`
 
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
