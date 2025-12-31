@@ -8039,6 +8039,9 @@ class ForumTopicCreated(JsonDeserializable):
     :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
     :type icon_custom_emoji_id: :obj:`str`
 
+    :param is_name_implicit: Optional. True, if the name of the topic wasn't specified explicitly by its creator and likely needs to be changed by the bot
+    :type is_name_implicit: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ForumTopicCreated`
     """
@@ -8048,11 +8051,12 @@ class ForumTopicCreated(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None, **kwargs) -> None:
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None, 
+                    is_name_implicit: Optional[bool]=None, **kwargs) -> None:
         self.name: str = name
         self.icon_color: int = icon_color
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
-
+        self.is_name_implicit: Optional[bool] = is_name_implicit
 
 class ForumTopicClosed(JsonDeserializable):
     """
@@ -8157,6 +8161,9 @@ class ForumTopic(JsonDeserializable):
     :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
     :type icon_custom_emoji_id: :obj:`str`
 
+    :param is_name_implicit: Optional. True, if the name of the topic wasn't specified explicitly by its creator and likely needs to be changed by the bot
+    :type is_name_implicit: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ForumTopic`
     """
@@ -8168,11 +8175,12 @@ class ForumTopic(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None,
-                 **kwargs) -> None:
+                 is_name_implicit: Optional[bool]=None, **kwargs) -> None:
         self.message_thread_id: int = message_thread_id
         self.name: str = name
         self.icon_color: int = icon_color
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+        self.is_name_implicit: Optional[bool] = is_name_implicit
 
 
 class WriteAccessAllowed(JsonDeserializable):
