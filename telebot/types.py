@@ -11279,23 +11279,37 @@ class Gift(JsonDeserializable):
     :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
     :type remaining_count: :obj:`int`
 
+    :param personal_total_count: Optional. The total number of gifts of this type that can be sent by the bot; for limited gifts only
+    :type personal_total_count: :obj:`int`
+
+    :param personal_remaining_count: Optional. The number of remaining gifts of this type that can be sent by the bot; for limited gifts only
+    :type personal_remaining_count: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`Gift`
     """
 
-    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, **kwargs):
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
+                 personal_total_count=None, personal_remaining_count=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
         self.total_count: Optional[int] = total_count
         self.remaining_count: Optional[int] = remaining_count
         self.upgrade_star_count: Optional[int] = upgrade_star_count
+        self.personal_total_count: Optional[int] = personal_total_count
+        self.personal_remaining_count: Optional[int] = personal_remaining_count
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'personal_total_count' in obj:
+            obj['personal_total_count'] = obj['personal_total_count']
+        if 'personal_remaining_count' in obj:
+            obj['personal_remaining_count'] = obj['personal_remaining_count']
+            
         return cls(**obj)
 
 
