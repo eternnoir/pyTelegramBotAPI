@@ -613,7 +613,8 @@ async def send_paid_media(
         business_connection_id=None, payload=None, allow_paid_broadcast=None, direct_messages_topic_id=None,
         suggested_post_parameters=None):
     method_url = r'sendPaidMedia'
-    media_json, files = convert_input_media_array(media)
+# add await. please check other errors in code 
+    media_json, files = await convert_input_media_array(media)
     _payload = {'chat_id': chat_id, 'star_count': star_count, 'media': media_json}
     # USE _payload for request payload
     if caption:
