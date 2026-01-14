@@ -2245,7 +2245,7 @@ async def get_chat_gifts(token, chat_id, exclude_unsaved=None, exclude_saved=Non
     else:
         payload['offset'] = offset
     if limit is not None:
-            payload['limit'] = limit
+        payload['limit'] = limit
     return await _process_request(token, method_url, params=payload)
 
 async def convert_gift_to_stars(token, business_connection_id, owned_gift_id):

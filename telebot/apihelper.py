@@ -2276,8 +2276,8 @@ def get_chat_gifts(token, chat_id, exclude_unsaved=None, exclude_saved=None,
         payload['offset'] = ""
     else:
         payload['offset'] = offset
-        if limit is not None:
-                payload['limit'] = limit
+    if limit is not None:
+            payload['limit'] = limit
     return _make_request(token, method_url, params=payload)
 
 

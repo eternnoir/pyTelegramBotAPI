@@ -11679,8 +11679,8 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`AcceptedGiftTypes`
     """
-    def __init__(self, unlimited_gifts: Optional[bool], limited_gifts: Optional[bool],
-                    unique_gifts: Optional[bool], premium_subscription: Optional[bool], gifts_from_channels: Optional[bool], **kwargs):
+    def __init__(self, unlimited_gifts: bool, limited_gifts: bool,
+                    unique_gifts: bool, premium_subscription: bool, gifts_from_channels: bool, **kwargs):
         self.unlimited_gifts: bool = unlimited_gifts
         self.limited_gifts: bool = limited_gifts
         self.unique_gifts: bool = unique_gifts
