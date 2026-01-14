@@ -43,7 +43,7 @@ content_type_service = [
     'giveaway_created', 'giveaway_winners', 'giveaway_completed', 'boost_added', 'paid_message_price_changed',
     'checklist_tasks_done', 'checklist_tasks_added', 'direct_message_price_changed', 'suggested_post_refunded',
     'suggested_post_info', 'suggested_post_approved', 'suggested_post_approval_failed', 'suggested_post_declined',
-    'suggested_post_paid'
+    'suggested_post_paid', 'gift_upgrade_sent'
 ]
 
 #: All update types, should be used for allowed_updates parameter in polling.

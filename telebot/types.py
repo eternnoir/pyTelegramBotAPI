@@ -11679,29 +11679,25 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`AcceptedGiftTypes`
     """
-    def __init__(self, unlimited_gifts: Optional[bool]=None, limited_gifts: Optional[bool]=None,
-                    unique_gifts: Optional[bool]=None, premium_subscription: Optional[bool]=None, gifts_from_channels: Optional[bool]=None, **kwargs):
-        self.unlimited_gifts: Optional[bool] = unlimited_gifts
-        self.limited_gifts: Optional[bool] = limited_gifts
-        self.unique_gifts: Optional[bool] = unique_gifts
-        self.premium_subscription: Optional[bool] = premium_subscription
-        self.gifts_from_channels: Optional[bool] = gifts_from_channels
+    def __init__(self, unlimited_gifts: Optional[bool], limited_gifts: Optional[bool],
+                    unique_gifts: Optional[bool], premium_subscription: Optional[bool], gifts_from_channels: Optional[bool], **kwargs):
+        self.unlimited_gifts: bool = unlimited_gifts
+        self.limited_gifts: bool = limited_gifts
+        self.unique_gifts: bool = unique_gifts
+        self.premium_subscription: bool = premium_subscription
+        self.gifts_from_channels: bool = gifts_from_channels
 
     def to_json(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        data = {}
-        if self.unlimited_gifts is not None:
-            data['unlimited_gifts'] = self.unlimited_gifts
-        if self.limited_gifts is not None:
-            data['limited_gifts'] = self.limited_gifts
-        if self.unique_gifts is not None:
-            data['unique_gifts'] = self.unique_gifts
-        if self.premium_subscription is not None:
-            data['premium_subscription'] = self.premium_subscription
-        if self.gifts_from_channels is not None:
-            data['gifts_from_channels'] = self.gifts_from_channels
+        data = {
+            'unlimited_gifts': self.unlimited_gifts,
+            'limited_gifts': self.limited_gifts,
+            'unique_gifts': self.unique_gifts,
+            'premium_subscription': self.premium_subscription,
+            'gifts_from_channels': self.gifts_from_channels
+        }
         return data
 
     @classmethod
@@ -12641,7 +12637,7 @@ class UniqueGiftInfo(JsonDeserializable):
         after the gift was sent, or “offer” for gifts bought or sold through gift purchase offers
     :type origin: :obj:`str`
 
-    :param last_resale_star_count: Optional. For gifts bought from other users, the price paid for the gift
+    :param last_resale_star_count: Deprecated. Use last_resale_currency and last_resale_amount instead. 
     :type last_resale_star_count: :obj:`int`
 
     :param last_resale_currency: Optional. For gifts bought from other users, the currency in which the payment for the gift was done. Currently, one of “XTR” for Telegram Stars or “TON” for toncoins.
@@ -12664,16 +12660,23 @@ class UniqueGiftInfo(JsonDeserializable):
     """
     def __init__(self, gift: UniqueGift, origin: str, owned_gift_id: Optional[str] = None,
                     transfer_star_count: Optional[int] = None, next_transfer_date: Optional[int] = None,
-                    last_resale_star_count: Optional[int] = None, last_resale_currency: Optional[str] = None,
+                    last_resale_currency: Optional[str] = None,
                     last_resale_amount: Optional[int] = None, **kwargs):
         self.gift: UniqueGift = gift
         self.origin: str = origin
-        self.last_resale_star_count: Optional[int] = last_resale_star_count
         self.last_resale_currency: Optional[str] = last_resale_currency
         self.last_resale_amount: Optional[int] = last_resale_amount
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.transfer_star_count: Optional[int] = transfer_star_count
         self.next_transfer_date: Optional[int] = next_transfer_date
+
+    @property 
+    def last_resale_star_count(self) -> Optional[int]:
+        """Deprecated. Use last_resale_currency and last_resale_amount instead."""
+        log_deprecation_warning("last_resale_star_count is deprecated. Use last_resale_currency and last_resale_amount instead.")
+        if self.last_resale_currency == "XTR":
+            return self.last_resale_amount
+        return None
 
 
     @classmethod

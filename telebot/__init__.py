@@ -6977,7 +6977,7 @@ class TeleBot:
         :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
         :type exclude_unlimited: :obj:`bool`
 
-        :param exclude_limited: Pass True to exclude gifts that can be purchased a limited number of times
+        :param exclude_limited: Deprecated, use exclude_limited_upgradable and exclude_limited_non_upgradable instead. 
         :type exclude_limited: :obj:`bool`
 
         :param exclude_unique: Pass True to exclude unique gifts
@@ -7004,10 +7004,16 @@ class TeleBot:
         :return: On success, a OwnedGifts object is returned.
         :rtype: :class:`telebot.types.OwnedGifts`
         """
-        if exclude_limited is not None and exclude_limited_upgradable is None and exclude_limited_non_upgradable is None:
-            exclude_limited_upgradable = exclude_limited
-            exclude_limited_non_upgradable = exclude_limited
 
+        if exclude_limited is not None:
+            logger.warning("Deprecation warning. 'exclude_limited' parameter is deprecated in get_business_account_gifts. Use 'exclude_limited_upgradable' and 'exclude_limited_non_upgradable' instead.")
+
+            if exclude_limited_upgradable is not None or exclude_limited_non_upgradable is not None:
+                logger.warning("Both 'exclude_limited' and 'exclude_limited_upgradable'/'exclude_limited_non_upgradable' parameters are set: conflicting, using 'exclude_limited_upgradable' and 'exclude_limited_non_upgradable' values.")
+            
+            else:
+                exclude_limited_upgradable = exclude_limited
+                exclude_limited_non_upgradable = exclude_limited
 
         return types.OwnedGifts.de_json(
             apihelper.get_business_account_gifts(
