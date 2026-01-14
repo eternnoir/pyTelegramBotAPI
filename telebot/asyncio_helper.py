@@ -434,7 +434,7 @@ async def forward_message(
         token, chat_id, from_chat_id, message_id,
         disable_notification=None, timeout=None, protect_content=None,
         message_thread_id=None, video_start_timestamp=None, direct_messages_topic_id=None,
-        suggested_post_parameters=None):
+        suggested_post_parameters=None, message_effect_id=None):
     method_url = r'forwardMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if disable_notification is not None:
@@ -451,13 +451,16 @@ async def forward_message(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return await _process_request(token, method_url, params=payload)
 
 
 async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, parse_mode=None, caption_entities=None,
                  disable_notification=None,  
                  reply_markup=None, timeout=None, protect_content=None, message_thread_id=None, reply_parameters=None, show_caption_above_media=None,
-                 allow_paid_broadcast=None, video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+                 allow_paid_broadcast=None, video_start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+                 message_effect_id=None):
     method_url = r'copyMessage'
     payload = {'chat_id': chat_id, 'from_chat_id': from_chat_id, 'message_id': message_id}
     if caption is not None:
@@ -488,6 +491,8 @@ async def copy_message(token, chat_id, from_chat_id, message_id, caption=None, p
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
     return await _process_request(token, method_url, params=payload)
 
 async def send_checklist(
@@ -847,6 +852,18 @@ async def send_contact(
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload)
 
+async def send_message_draft(
+        token, chat_id, draft_id, text,
+        message_thread_id=None, parse_mode=None, entities=None):
+    method_url = r'sendMessageDraft'
+    payload = {'chat_id': chat_id, 'draft_id': draft_id, 'text': text}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
+    return await _process_request(token, method_url, params=payload)
 
 async def send_chat_action(token, chat_id, action, timeout=None, message_thread_id=None, business_connection_id=None):
     method_url = r'sendChatAction'
@@ -2149,27 +2166,87 @@ async def transfer_business_account_stars(token, business_connection_id, star_co
     return await _process_request(token, method_url, params=payload, method='post')
 
 async def get_business_account_gifts(token, business_connection_id, exclude_unsaved=None, exclude_saved=None,
-                                 exclude_unlimited=None, exclude_limited=None, exclude_unique=None,
-                                 sort_by_price=None, offset=None, limit=None):
-     method_url = 'getBusinessAccountGifts'
-     payload = {'business_connection_id': business_connection_id}
-     if exclude_unsaved is not None:
-          payload['exclude_unsaved'] = exclude_unsaved
-     if exclude_saved is not None:
-          payload['exclude_saved'] = exclude_saved
-     if exclude_unlimited is not None:
-          payload['exclude_unlimited'] = exclude_unlimited
-     if exclude_limited is not None:
-          payload['exclude_limited'] = exclude_limited
-     if exclude_unique is not None:
-          payload['exclude_unique'] = exclude_unique
-     if sort_by_price is not None:
-          payload['sort_by_price'] = sort_by_price
-     if offset is not None:
-          payload['offset'] = offset
-     if limit is not None:
-          payload['limit'] = limit
-     return await _process_request(token, method_url, params=payload)
+                                exclude_unlimited=None, exclude_unique=None,
+                                sort_by_price=None, offset=None, limit=None, exclude_limited_upgradable=None,
+                                exclude_limited_non_upgradable=None, exclude_from_blockchain=None):
+    method_url = 'getBusinessAccountGifts'
+    payload = {'business_connection_id': business_connection_id}
+    if exclude_unsaved is not None:
+        payload['exclude_unsaved'] = exclude_unsaved
+    if exclude_saved is not None:
+        payload['exclude_saved'] = exclude_saved
+    if exclude_unlimited is not None:
+        payload['exclude_unlimited'] = exclude_unlimited
+    if exclude_unique is not None:
+        payload['exclude_unique'] = exclude_unique
+    if sort_by_price is not None:
+        payload['sort_by_price'] = sort_by_price
+    if offset is not None:
+        payload['offset'] = offset
+    if limit is not None:
+        payload['limit'] = limit
+    if exclude_limited_upgradable is not None:
+        payload['exclude_limited_upgradable'] = exclude_limited_upgradable
+    if exclude_limited_non_upgradable is not None:
+        payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
+    if exclude_from_blockchain is not None:
+        payload['exclude_from_blockchain'] = exclude_from_blockchain
+    return await _process_request(token, method_url, params=payload)
+
+async def get_user_gifts(token, user_id, exclude_unlimited=None, exclude_limited_upgradable=None,
+                    exclude_limited_non_upgradable=None, exclude_from_blockchain=None, exclude_unique=None,
+                    sort_by_price=None, offset=None, limit=None):
+    method_url = 'getUserGifts'
+    payload = {'user_id': user_id}
+    if exclude_unlimited is not None:
+        payload['exclude_unlimited'] = exclude_unlimited
+    if exclude_limited_upgradable is not None:
+        payload['exclude_limited_upgradable'] = exclude_limited_upgradable
+    if exclude_limited_non_upgradable is not None:
+        payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
+    if exclude_from_blockchain is not None:
+        payload['exclude_from_blockchain'] = exclude_from_blockchain
+    if exclude_unique is not None:
+        payload['exclude_unique'] = exclude_unique
+    if sort_by_price is not None:
+        payload['sort_by_price'] = sort_by_price
+    if offset is None:
+        payload['offset'] = ""
+    else:
+        payload['offset'] = offset
+    if limit is not None:
+        payload['limit'] = limit
+    return await _process_request(token, method_url, params=payload)
+
+async def get_chat_gifts(token, chat_id, exclude_unsaved=None, exclude_saved=None,
+                        exclude_unlimited=None, exclude_limited_upgradable=None,
+                        exclude_limited_non_upgradable=None, exclude_from_blockchain=None,
+                        exclude_unique=None, sort_by_price=None, offset=None, limit=None):
+    method_url = 'getChatGifts'
+    payload = {'chat_id': chat_id}
+    if exclude_unsaved is not None:
+            payload['exclude_unsaved'] = exclude_unsaved
+    if exclude_saved is not None:
+            payload['exclude_saved'] = exclude_saved
+    if exclude_unlimited is not None:
+            payload['exclude_unlimited'] = exclude_unlimited
+    if exclude_limited_upgradable is not None:
+            payload['exclude_limited_upgradable'] = exclude_limited_upgradable
+    if exclude_limited_non_upgradable is not None:
+            payload['exclude_limited_non_upgradable'] = exclude_limited_non_upgradable
+    if exclude_from_blockchain is not None:
+            payload['exclude_from_blockchain'] = exclude_from_blockchain
+    if exclude_unique is not None:
+            payload['exclude_unique'] = exclude_unique
+    if sort_by_price is not None:
+            payload['sort_by_price'] = sort_by_price
+    if offset is None:
+        payload['offset'] = ""
+    else:
+        payload['offset'] = offset
+    if limit is not None:
+        payload['limit'] = limit
+    return await _process_request(token, method_url, params=payload)
 
 async def convert_gift_to_stars(token, business_connection_id, owned_gift_id):
     method_url = 'convertGiftToStars'
@@ -2213,6 +2290,18 @@ async def post_story(token, business_connection_id, content, active_period, capt
     if protect_content is not None:
         payload['protect_content'] = protect_content
     return await _process_request(token, method_url, params=payload, files=files, method='post')
+
+async def repost_story(token, business_connection_id, from_chat_id, from_story_id, active_period,
+                post_to_chat_page=None, protect_content=None):
+    method_url = 'repostStory'
+    payload = {'business_connection_id': business_connection_id, 'from_chat_id': from_chat_id,
+               'from_story_id': from_story_id, 'active_period': active_period}
+    
+    if post_to_chat_page is not None:
+        payload['post_to_chat_page'] = post_to_chat_page
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    return await _process_request(token, method_url, params=payload, method='post')
 
 async def edit_story(token, business_connection_id, story_id, content, caption=None, parse_mode=None,
                 caption_entities=None, areas=None):

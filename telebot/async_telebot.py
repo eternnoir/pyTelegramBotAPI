@@ -3355,7 +3355,8 @@ class AsyncTeleBot:
             message_thread_id: Optional[int]=None,
             video_start_timestamp: Optional[int]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            message_effect_id: Optional[str]=None) -> types.Message:
         """
         Use this method to forward messages of any kind.
 
@@ -3394,6 +3395,9 @@ class AsyncTeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; only available when forwarding to private chats
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3404,7 +3408,8 @@ class AsyncTeleBot:
             await asyncio_helper.forward_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
                                                     disable_notification=disable_notification, protect_content=protect_content,
                                                     timeout=timeout, message_thread_id=message_thread_id, video_start_timestamp=video_start_timestamp,
-                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                                                    message_effect_id=message_effect_id)
         )
 
     async def copy_message(
@@ -3426,7 +3431,8 @@ class AsyncTeleBot:
             allow_paid_broadcast: Optional[bool]=None,
             video_start_timestamp: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.MessageID:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            message_effect_id: Optional[str]=None) -> types.MessageID:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -3499,6 +3505,9 @@ class AsyncTeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; only available when forwarding to private chats
+        :type message_effect_id: :obj:`str`
+
         :return: On success, the MessageId of the sent message is returned.
         :rtype: :class:`telebot.types.MessageID`
         """
@@ -3533,7 +3542,8 @@ class AsyncTeleBot:
                                                     reply_parameters=reply_parameters, reply_markup=reply_markup, timeout=timeout,
                                                     message_thread_id=message_thread_id, show_caption_above_media=show_caption_above_media,
                                                     allow_paid_broadcast=allow_paid_broadcast, video_start_timestamp=video_start_timestamp,
-                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+                                                    direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                                                    message_effect_id=message_effect_id
                                                 )
         )
     
@@ -5716,9 +5726,44 @@ class AsyncTeleBot:
             await asyncio_helper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
                 disable_notification, reply_markup, timeout,
-                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
-        )
+                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+        
+    async def send_message_draft(
+            self, chat_id: int,
+            draft_id: int,
+            text: str,
+            message_thread_id: Optional[int]=None,
+            parse_mode: Optional[str]=None,
+            entities: Optional[List[types.MessageEntity]]=None):
+        """
+        Use this method to stream a partial message to a user while the message is being generated;
+        supported only for bots with forum topic mode enabled. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendmessagedraft
+
+        :param chat_id: Unique identifier for the target private chat
+        :type chat_id: :obj:`int`
+
+        :param message_thread_id: Unique identifier for the target message thread
+        :type message_thread_id: :obj:`int`
+
+        :param draft_id: Unique identifier of the message draft; must be non-zero. Changes of drafts with the same identifier are animated
+        :type draft_id: :obj:`int`
+
+        :param text: Text of the message to be sent, 1-4096 characters after entities parsing
+        :type text: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message text. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param entities: A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+        :type entities: :obj:`list` of :class:`telebot.types.MessageEntity
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.send_message_draft(
+            self.token, chat_id, draft_id, text, parse_mode=parse_mode, entities=entities, message_thread_id=message_thread_id)
 
     async def send_chat_action(
             self, chat_id: Union[int, str], action: str, timeout: Optional[int]=None, message_thread_id: Optional[int]=None,
@@ -5745,7 +5790,7 @@ class AsyncTeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
-        :param message_thread_id: The thread to which the message will be sent(supergroups only)
+        :param message_thread_id: The thread to which the message will be sent(supergroups and private chats only)
         :type message_thread_id: :obj:`int`
 
         :param business_connection_id: Identifier of a business connection, in which the message will be sent
@@ -8372,7 +8417,11 @@ class AsyncTeleBot:
             exclude_unique: Optional[bool]=None,
             sort_by_price: Optional[bool]=None,
             offset: Optional[str]=None,
-            limit: Optional[int]=None) -> types.OwnedGifts:
+            limit: Optional[int]=None,
+            exclude_limited_upgradable: Optional[bool]=None,
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            exclude_from_blockchain: Optional[bool]=None
+            ) -> types.OwnedGifts:
         """
         Returns the gifts received and owned by a managed business account. Requires the can_view_gifts_and_stars business bot right. Returns OwnedGifts on success.
 
@@ -8390,11 +8439,14 @@ class AsyncTeleBot:
         :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
         :type exclude_unlimited: :obj:`bool`
 
-        :param exclude_limited: Pass True to exclude gifts that can be purchased a limited number of times
+        :param exclude_limited: Deprecated, use exclude_limited_upgradable and exclude_limited_non_upgradable instead. 
         :type exclude_limited: :obj:`bool`
 
         :param exclude_unique: Pass True to exclude unique gifts
         :type exclude_unique: :obj:`bool`
+
+        :param exclude_from_blockchain: Pass True to exclude gifts that were assigned from the TON blockchain and can't be resold or transferred in Telegram
+        :type exclude_from_blockchain: :obj:`bool`
 
         :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
         :type sort_by_price: :obj:`bool`
@@ -8405,16 +8457,163 @@ class AsyncTeleBot:
         :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
         :type limit: :obj:`int`
 
+        :param exclude_limited_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can be upgraded to unique
+        :type exclude_limited_upgradable: :obj:`bool`
+
+        :param exclude_limited_non_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can't be upgraded to unique
+        :type exclude_limited_non_upgradable: :obj:`bool`
+
         :return: On success, a OwnedGifts object is returned.
         :rtype: :class:`telebot.types.OwnedGifts`
         """
+        if exclude_limited is not None:
+            logger.warning("Deprecation warning. 'exclude_limited' parameter is deprecated in get_business_account_gifts. Use 'exclude_limited_upgradable' and 'exclude_limited_non_upgradable' instead.")
+
+            if exclude_limited_upgradable is not None or exclude_limited_non_upgradable is not None:
+                logger.warning("Both 'exclude_limited' and 'exclude_limited_upgradable'/'exclude_limited_non_upgradable' parameters are set: conflicting, using 'exclude_limited_upgradable' and 'exclude_limited_non_upgradable' values.")
+            
+            else:
+                exclude_limited_upgradable = exclude_limited
+                exclude_limited_non_upgradable = exclude_limited
+                
         return types.OwnedGifts.de_json(
             await asyncio_helper.get_business_account_gifts(
                 self.token, business_connection_id,
                 exclude_unsaved=exclude_unsaved,
                 exclude_saved=exclude_saved,
                 exclude_unlimited=exclude_unlimited,
-                exclude_limited=exclude_limited,
+                exclude_unique=exclude_unique,
+                sort_by_price=sort_by_price,
+                offset=offset,
+                limit=limit,
+                exclude_limited_upgradable=exclude_limited_upgradable,
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable,
+                exclude_from_blockchain=exclude_from_blockchain
+            )
+        )
+    
+    async def get_user_gifts(
+            self, user_id: int,
+            exclude_unlimited: Optional[bool]=None,
+            exclude_limited_upgradable: Optional[bool]=None,
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            exclude_from_blockchain: Optional[bool]=None,
+            exclude_unique: Optional[bool]=None,
+            sort_by_price: Optional[bool]=None,
+            offset: Optional[str]=None,
+            limit: Optional[int]=None) -> types.OwnedGifts:
+        """
+        Returns the gifts owned and hosted by a user. Returns OwnedGifts on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getusergifts
+
+        :param user_id: Unique identifier of the user
+        :type user_id: :obj:`int`
+
+        :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
+        :type exclude_unlimited: :obj:`bool`
+
+        :param exclude_limited_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can be upgraded to unique
+        :type exclude_limited_upgradable: :obj:`bool`
+
+        :param exclude_limited_non_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can't be upgraded to unique
+        :type exclude_limited_non_upgradable: :obj:`bool`
+
+        :param exclude_from_blockchain: Pass True to exclude gifts that were assigned from the TON blockchain and can't be resold or transferred in Telegram
+        :type exclude_from_blockchain: :obj:`bool`
+
+        :param exclude_unique: Pass True to exclude unique gifts
+        :type exclude_unique: :obj:`bool`
+
+        :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
+        :type sort_by_price: :obj:`bool`
+
+        :param offset: Offset of the first entry to return as received from the previous request; use an empty string to get the first chunk of results
+        :type offset: :obj:`str`
+
+        :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
+        :type limit: :obj:`int`
+
+        :return: On success, a OwnedGifts object is returned.
+        :rtype: :class:`telebot.types.OwnedGifts`
+        """
+        return types.OwnedGifts.de_json(
+            await asyncio_helper.get_user_gifts(
+                self.token, user_id,
+                exclude_unlimited=exclude_unlimited,
+                exclude_limited_upgradable=exclude_limited_upgradable,
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable,
+                exclude_from_blockchain=exclude_from_blockchain,
+                exclude_unique=exclude_unique,
+                sort_by_price=sort_by_price,
+                offset=offset,
+                limit=limit
+            )
+        )
+
+
+    async def get_chat_gifts(
+            self, chat_id: Union[int, str],
+            exclude_unsaved: Optional[bool]=None,
+            exclude_saved: Optional[bool]=None,
+            exclude_unlimited: Optional[bool]=None,
+            exclude_limited_upgradable: Optional[bool]=None,
+            exclude_limited_non_upgradable: Optional[bool]=None,
+            exclude_from_blockchain: Optional[bool]=None,
+            exclude_unique: Optional[bool]=None,
+            sort_by_price: Optional[bool]=None,
+            offset: Optional[str]=None,
+            limit: Optional[int]=None) -> types.OwnedGifts:
+        """
+        Returns the gifts owned by a chat. Returns OwnedGifts on success.
+        
+        Telegram documentation: https://core.telegram.org/bots/api#getchatgifts
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param exclude_unsaved: Pass True to exclude gifts that aren't saved to the chat's profile page. Always True, unless the bot has the can_post_messages administrator right in the channel.
+        :type exclude_unsaved: :obj:`bool`
+
+        :param exclude_saved: Pass True to exclude gifts that are saved to the chat's profile page. Always False, unless the bot has the can_post_messages administrator right in the channel.
+        :type exclude_saved: :obj:`bool`
+
+        :param exclude_unlimited: Pass True to exclude gifts that can be purchased an unlimited number of times
+        :type exclude_unlimited: :obj:`bool`
+
+        :param exclude_limited_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can be upgraded to unique
+        :type exclude_limited_upgradable: :obj:`bool`
+
+        :param exclude_limited_non_upgradable: Pass True to exclude gifts that can be purchased a limited number of times and can't be upgraded to unique
+        :type exclude_limited_non_upgradable: :obj:`bool`
+
+        :param exclude_from_blockchain: Pass True to exclude gifts that were assigned from the TON blockchain and can't be resold or transferred in Telegram
+        :type exclude_from_blockchain: :obj:`bool`
+
+        :param exclude_unique: Pass True to exclude unique gifts
+        :type exclude_unique: :obj:`bool`
+
+        :param sort_by_price: Pass True to sort results by gift price instead of send date. Sorting is applied before pagination.
+        :type sort_by_price: :obj:`bool`
+
+        :param offset: Offset of the first entry to return as received from the previous request; use an empty string to get the first chunk of results
+        :type offset: :obj:`str`
+
+        :param limit: The maximum number of gifts to be returned; 1-100. Defaults to 100
+        :type limit: :obj:`int`
+
+        :return: On success, a OwnedGifts object is returned.
+        :rtype: :class:`telebot.types.OwnedGifts`
+        """
+        return types.OwnedGifts.de_json(
+            await asyncio_helper.get_chat_gifts(
+                self.token, chat_id,
+                exclude_unsaved=exclude_unsaved,
+                exclude_saved=exclude_saved,
+                exclude_unlimited=exclude_unlimited,
+                exclude_limited_upgradable=exclude_limited_upgradable,
+                exclude_limited_non_upgradable=exclude_limited_non_upgradable,
+                exclude_from_blockchain=exclude_from_blockchain,
                 exclude_unique=exclude_unique,
                 sort_by_price=sort_by_price,
                 offset=offset,
@@ -8554,6 +8753,50 @@ class AsyncTeleBot:
                 parse_mode=parse_mode,
                 caption_entities=caption_entities,
                 areas=areas,
+                post_to_chat_page=post_to_chat_page,
+                protect_content=protect_content
+            )
+        )
+
+    async def repost_story(
+            self, business_connection_id: str,
+            from_chat_id: int, from_story_id: int,
+            active_period: int,
+            post_to_chat_page: Optional[bool]=None,
+            protect_content: Optional[bool]=None) -> types.Story:
+        """
+        Reposts a story on behalf of a business account from another business account. Both business accounts
+        must be managed by the same bot, and the story on the source account must have been posted (or reposted)
+        by the bot. Requires the can_manage_stories business bot right for both business accounts. Returns Story on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#repoststory
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param from_chat_id: Unique identifier of the chat which posted the story that should be reposted
+        :type from_chat_id: :obj:`int`
+
+        :param from_story_id: Unique identifier of the story that should be reposted
+        :type from_story_id: :obj:`int`
+
+        :param active_period: Period after which the story is moved to the archive, in seconds; must be one of 6 * 3600, 12 * 3600, 86400, or 2 * 86400
+        :type active_period: :obj:`int`
+
+        :param post_to_chat_page: Pass True to keep the story accessible after it expires
+        :type post_to_chat_page: :obj:`bool`
+
+        :param protect_content: Pass True if the content of the story must be protected from forwarding and screenshotting
+        :type protect_content: :obj:`bool`
+
+        :return: On success, a Story object is returned.
+        :rtype: :class:`telebot.types.Story`
+        """
+        return types.Story.de_json(
+            await asyncio_helper.repost_story(
+                self.token, business_connection_id,
+                from_chat_id, from_story_id,
+                active_period,
                 post_to_chat_page=post_to_chat_page,
                 protect_content=protect_content
             )

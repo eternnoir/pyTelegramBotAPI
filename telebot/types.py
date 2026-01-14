@@ -512,6 +512,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param has_main_web_app: Optional. True, if the bot has a main Web App. Returned only in getMe.
     :type has_main_web_app: :obj:`bool`
 
+    :param has_topics_enabled: Optional. True, if the bot has forum topic mode enabled in private chats. Returned only in getMe.
+    :type has_topics_enabled: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.User`
     """
@@ -523,9 +526,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     # noinspection PyShadowingBuiltins
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
-                 can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None,
-                 is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None,
-                 has_main_web_app=None, **kwargs):
+                 can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
+                 is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
+                 has_main_web_app=None, has_topics_enabled=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -539,6 +542,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.added_to_attachment_menu: Optional[bool] = added_to_attachment_menu
         self.can_connect_to_business: Optional[bool] = can_connect_to_business
         self.has_main_web_app: Optional[bool] = has_main_web_app
+        self.has_topics_enabled: Optional[bool] = has_topics_enabled
 
     @property
     def full_name(self) -> str:
@@ -744,6 +748,15 @@ class ChatFullInfo(JsonDeserializable):
     :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat.
     :type location: :class:`telebot.types.ChatLocation`
 
+    :param rating: Optional. For private chats, the rating of the user if any
+    :type rating: :class:`telebot.types.UserRating`
+
+    :param paid_message_star_count: Optional. The number of Telegram Stars a general user have to pay to send a message to the chat
+    :type paid_message_star_count: :obj:`int`
+
+    :param unique_gift_colors: Optional. The color scheme based on a unique gift that must be used for the chat's name, message replies and link previews
+    :type unique_gift_colors: :class:`telebot.types.UniqueGiftColors`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -775,23 +788,28 @@ class ChatFullInfo(JsonDeserializable):
             obj['accepted_gift_types'] = AcceptedGiftTypes.de_json(obj['accepted_gift_types'])
         if 'parent_chat' in obj:
             obj['parent_chat'] = Chat.de_json(obj['parent_chat'])
+        if 'rating' in obj:
+            obj['rating'] = UserRating.de_json(obj['rating'])
+        if 'unique_gift_colors' in obj:
+            obj['unique_gift_colors'] = UniqueGiftColors.de_json(obj['unique_gift_colors'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
-                 last_name=None, photo=None, bio=None, has_private_forwards=None,
-                 description=None, invite_link=None, pinned_message=None,
-                 permissions=None, slow_mode_delay=None,
-                 message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
-                 can_set_sticker_set=None, linked_chat_id=None, location=None,
-                 join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None,
-                 is_forum=None, max_reaction_count=None, active_usernames=None, emoji_status_custom_emoji_id=None,
-                 has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None,
-                 available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-                 profile_background_custom_emoji_id=None, has_visible_history=None,
-                 unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
-                    business_opening_hours=None, personal_chat=None, birthdate=None,
-                    can_send_paid_media=None,
-                    accepted_gift_types=None, is_direct_messages=None, parent_chat=None, **kwargs):
+                last_name=None, photo=None, bio=None, has_private_forwards=None,
+                description=None, invite_link=None, pinned_message=None,
+                permissions=None, slow_mode_delay=None,
+                message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
+                can_set_sticker_set=None, linked_chat_id=None, location=None,
+                join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None,
+                is_forum=None, max_reaction_count=None, active_usernames=None, emoji_status_custom_emoji_id=None,
+                has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None,
+                available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
+                profile_background_custom_emoji_id=None, has_visible_history=None,
+                unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
+                business_opening_hours=None, personal_chat=None, birthdate=None,
+                can_send_paid_media=None,
+                accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
+                unique_gift_colors=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -839,6 +857,11 @@ class ChatFullInfo(JsonDeserializable):
         self.accepted_gift_types: AcceptedGiftTypes = accepted_gift_types
         self.is_direct_messages: Optional[bool] = is_direct_messages
         self.parent_chat: Optional[Chat] = parent_chat
+        self.rating: Optional[UserRating] = rating
+        self.paid_message_star_count: Optional[int] = paid_message_star_count
+        self.unique_gift_colors: Optional[UniqueGiftColors] = unique_gift_colors
+
+
     @property
     def can_send_gift(self) -> bool:
         """
@@ -926,7 +949,7 @@ class Message(JsonDeserializable):
     :param message_id: Unique message identifier inside this chat
     :type message_id: :obj:`int`
 
-    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups only
+    :param message_thread_id: Optional. Unique identifier of a message thread to which the message belongs; for supergroups and private chats only
     :type message_thread_id: :obj:`int`
 
     :param direct_messages_topic: Optional. Information about the direct messages chat topic that contains the message
@@ -961,7 +984,7 @@ class Message(JsonDeserializable):
     :forward_origin: Optional. For forwarded messages, information about the original message;
     :type forward_origin: :class:`telebot.types.MessageOrigin`
 
-    :param is_topic_message: Optional. True, if the message is sent to a forum topic
+    :param is_topic_message: Optional. True, if the message is sent to a topic in a forum supergroup or a private chat with the bot
     :type is_topic_message: :obj:`bool`
 
     :param is_automatic_forward: Optional. :obj:`bool`, if the message is a channel post that was automatically
@@ -1166,6 +1189,9 @@ class Message(JsonDeserializable):
 
     :param unique_gift: Optional. Service message: a unique gift was sent or received
     :type unique_gift: :class:`telebot.types.UniqueGiftInfo`
+
+    :param gift_upgrade_sent: Optional. Service message: upgrade of a gift was purchased after the gift was sent
+    :type gift_upgrade_sent: :class:`telebot.types.GiftInfo`
 
     :param connected_website: Optional. The domain name of the website on which the user has logged in. More about
         Telegram Login »
@@ -1523,6 +1549,10 @@ class Message(JsonDeserializable):
         if 'direct_message_price_changed' in obj:
             opts['direct_message_price_changed'] = DirectMessagePriceChanged.de_json(obj['direct_message_price_changed'])
             content_type = 'direct_message_price_changed'
+        if 'gift_upgrade_sent' in obj:
+            opts['gift_upgrade_sent'] = GiftInfo.de_json(obj['gift_upgrade_sent'])
+            content_type = 'gift_upgrade_sent'
+            
         if 'reply_to_checklist_task_id' in obj:
             opts['reply_to_checklist_task_id'] = obj['reply_to_checklist_task_id']
         if 'direct_messages_topic' in obj:
@@ -1673,6 +1703,7 @@ class Message(JsonDeserializable):
         self.checklist_tasks_done: Optional[ChecklistTasksDone] = None
         self.checklist_tasks_added: Optional[List[ChecklistTasksAdded]] = None
         self.direct_message_price_changed: Optional[DirectMessagePriceChanged] = None
+        self.gift_upgrade_sent: Optional[GiftInfo] = None
         self.reply_to_checklist_task_id: Optional[int] = None
         self.direct_messages_topic: Optional[DirectMessagesTopic] = None
         self.is_paid_post: Optional[bool] = None
@@ -8117,6 +8148,9 @@ class ForumTopicCreated(JsonDeserializable):
     :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
     :type icon_custom_emoji_id: :obj:`str`
 
+    :param is_name_implicit: Optional. True, if the name of the topic wasn't specified explicitly by its creator and likely needs to be changed by the bot
+    :type is_name_implicit: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ForumTopicCreated`
     """
@@ -8126,11 +8160,12 @@ class ForumTopicCreated(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None, **kwargs) -> None:
+    def __init__(self, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None, 
+                    is_name_implicit: Optional[bool]=None, **kwargs) -> None:
         self.name: str = name
         self.icon_color: int = icon_color
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
-
+        self.is_name_implicit: Optional[bool] = is_name_implicit
 
 class ForumTopicClosed(JsonDeserializable):
     """
@@ -8235,6 +8270,9 @@ class ForumTopic(JsonDeserializable):
     :param icon_custom_emoji_id: Optional. Unique identifier of the custom emoji shown as the topic icon
     :type icon_custom_emoji_id: :obj:`str`
 
+    :param is_name_implicit: Optional. True, if the name of the topic wasn't specified explicitly by its creator and likely needs to be changed by the bot
+    :type is_name_implicit: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ForumTopic`
     """
@@ -8246,11 +8284,12 @@ class ForumTopic(JsonDeserializable):
         return cls(**obj)
 
     def __init__(self, message_thread_id: int, name: str, icon_color: int, icon_custom_emoji_id: Optional[str]=None,
-                 **kwargs) -> None:
+                 is_name_implicit: Optional[bool]=None, **kwargs) -> None:
         self.message_thread_id: int = message_thread_id
         self.name: str = name
         self.icon_color: int = icon_color
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+        self.is_name_implicit: Optional[bool] = is_name_implicit
 
 
 class WriteAccessAllowed(JsonDeserializable):
@@ -11342,11 +11381,29 @@ class Gift(JsonDeserializable):
     :param upgrade_star_count: Optional. The number of Telegram Stars that must be paid to upgrade the gift to a unique one
     :type upgrade_star_count: :obj:`int`
 
+    :param is_premium: Optional. True, if the gift can only be purchased by Telegram Premium subscribers
+    :type is_premium: :obj:`bool`
+
+    :param has_colors: Optional. True, if the gift can be used (after being upgraded) to customize a user's appearance
+    :type has_colors: :obj:`bool`
+
     :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
     :type total_count: :obj:`int`
 
     :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
     :type remaining_count: :obj:`int`
+
+    :param personal_total_count: Optional. The total number of gifts of this type that can be sent by the bot; for limited gifts only
+    :type personal_total_count: :obj:`int`
+
+    :param personal_remaining_count: Optional. The number of remaining gifts of this type that can be sent by the bot; for limited gifts only
+    :type personal_remaining_count: :obj:`int`
+
+    :param background: Optional. Background of the gift
+    :type background: :class:`GiftBackground`
+
+    :param unique_gift_variant_count: Optional. The total number of different unique gifts that can be obtained by upgrading the gift
+    :type unique_gift_variant_count: :obj:`int`
 
     :param publisher_chat: Optional. Information about the chat that published the gift
     :type publisher_chat: :class:`Chat`
@@ -11355,21 +11412,30 @@ class Gift(JsonDeserializable):
     :rtype: :class:`Gift`
     """
 
-    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None, 
-                    publisher_chat=None, **kwargs):
+    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
+                 personal_total_count=None, personal_remaining_count=None, is_premium=None, has_colors=None,
+                 background=None, publisher_chat=None, unique_gift_variant_count=None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
         self.total_count: Optional[int] = total_count
         self.remaining_count: Optional[int] = remaining_count
         self.upgrade_star_count: Optional[int] = upgrade_star_count
+        self.personal_total_count: Optional[int] = personal_total_count
+        self.personal_remaining_count: Optional[int] = personal_remaining_count
+        self.is_premium: Optional[bool] = is_premium
+        self.has_colors: Optional[bool] = has_colors
+        self.background: Optional[GiftBackground] = background
         self.publisher_chat: Optional[Chat] = publisher_chat
+        self.unique_gift_variant_count: Optional[int] = unique_gift_variant_count
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'background' in obj:
+            obj['background'] = GiftBackground.de_json(obj['background'])
         if 'publisher_chat' in obj:
             obj['publisher_chat'] = Chat.de_json(obj['publisher_chat'])
         return cls(**obj)
@@ -11607,15 +11673,19 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
     :param premium_subscription: True, if a Telegram Premium subscription is accepted
     :type premium_subscription: :obj:`bool`
 
+    :param gifts_from_channels: True, if transfers of unique gifts from channels are accepted
+    :type gifts_from_channels: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`AcceptedGiftTypes`
     """
     def __init__(self, unlimited_gifts: bool, limited_gifts: bool,
-                    unique_gifts: bool, premium_subscription: bool, **kwargs):
+                    unique_gifts: bool, premium_subscription: bool, gifts_from_channels: bool, **kwargs):
         self.unlimited_gifts: bool = unlimited_gifts
         self.limited_gifts: bool = limited_gifts
         self.unique_gifts: bool = unique_gifts
         self.premium_subscription: bool = premium_subscription
+        self.gifts_from_channels: bool = gifts_from_channels
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -11625,7 +11695,8 @@ class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
             'unlimited_gifts': self.unlimited_gifts,
             'limited_gifts': self.limited_gifts,
             'unique_gifts': self.unique_gifts,
-            'premium_subscription': self.premium_subscription
+            'premium_subscription': self.premium_subscription,
+            'gifts_from_channels': self.gifts_from_channels
         }
         return data
 
@@ -11734,12 +11805,18 @@ class OwnedGiftRegular(OwnedGift):
     :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were paid by the sender for the ability to upgrade the gift
     :type prepaid_upgrade_star_count: :obj:`int`
 
+    :param is_upgrade_separate: Optional. True, if the gift's upgrade was purchased after the gift was sent; for gifts received on behalf of business accounts only
+    :type is_upgrade_separate: :obj:`bool`
+
+    :param unique_gift_number: Optional. Unique number reserved for this gift when upgraded. See the number field in UniqueGift
+    :type unique_gift_number: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`OwnedGiftRegular`
     """
     def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, text=None, entities=None,
                     is_private=None, is_saved=None, can_be_upgraded=None, was_refunded=None, convert_star_count=None,
-                    prepaid_upgrade_star_count=None, **kwargs):
+                    prepaid_upgrade_star_count=None, is_upgrade_separate=None, unique_gift_number=None, **kwargs):
         super().__init__(type=type)
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
@@ -11753,6 +11830,8 @@ class OwnedGiftRegular(OwnedGift):
         self.was_refunded: Optional[bool] = was_refunded
         self.convert_star_count: Optional[int] = convert_star_count
         self.prepaid_upgrade_star_count: Optional[int] = prepaid_upgrade_star_count
+        self.is_upgrade_separate: Optional[bool] = is_upgrade_separate
+        self.unique_gift_number: Optional[int] = unique_gift_number
 
     @classmethod
     def de_json(cls, json_string):
@@ -11863,6 +11942,9 @@ class UniqueGift(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#uniquegift
 
+    :param gift_id: Identifier of the regular gift from which the gift was upgraded
+    :type gift_id: :obj:`str`
+
     :param base_name: Human-readable name of the regular gift from which this unique gift was upgraded
     :type base_name: :obj:`str`
 
@@ -11881,19 +11963,31 @@ class UniqueGift(JsonDeserializable):
     :param backdrop: Backdrop of the gift
     :type backdrop: :class:`UniqueGiftBackdrop`
 
+    :param is_from_blockchain: Optional. True, if the gift is assigned from the TON blockchain and can't be resold or transferred in Telegram
+    :type is_from_blockchain: :obj:`bool`
+
+    :param is_premium: Optional. True, if the gift can only be purchased by Telegram Premium subscribers
+    :type is_premium: :obj:`bool`
+
+    :param colors: Optional. The color scheme that can be used by the gift's owner for the chat's name, replies to messages and link previews; for business account gifts and gifts that are currently on sale only
+    :type colors: :class:`UniqueGiftColors`
     :param publisher_chat: Optional. Information about the chat that published the gift
     :type publisher_chat: :class:`Chat`
 
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, publisher_chat=None, **kwargs):
+    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, publisher_chat=None, is_from_blockchain=None, is_premium=None, colors=None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
         self.model: UniqueGiftModel = model
         self.symbol: UniqueGiftSymbol = symbol
         self.backdrop: UniqueGiftBackdrop = backdrop
+        self.gift_id: str = gift_id
+        self.is_from_blockchain: Optional[bool] = is_from_blockchain
+        self.is_premium: Optional[bool] = is_premium
+        self.colors: Optional[UniqueGiftColors] = colors
         self.publisher_chat: Optional[Chat] = publisher_chat
 
     @classmethod
@@ -11903,6 +11997,8 @@ class UniqueGift(JsonDeserializable):
         obj['model'] = UniqueGiftModel.de_json(obj['model'])
         obj['symbol'] = UniqueGiftSymbol.de_json(obj['symbol'])
         obj['backdrop'] = UniqueGiftBackdrop.de_json(obj['backdrop'])
+        if 'colors' in obj:
+            obj['colors'] = UniqueGiftColors.de_json(obj['colors'])
         if 'publisher_chat' in obj:
             obj['publisher_chat'] = Chat.de_json(obj['publisher_chat'])
         return cls(**obj)
@@ -12480,6 +12576,9 @@ class GiftInfo(JsonDeserializable):
     :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were prepaid by the sender for the ability to upgrade the gift
     :type prepaid_upgrade_star_count: :obj:`int`
 
+    :param is_upgrade_separate: Optional. True, if the gift's upgrade was purchased after the gift was sent
+    :type is_upgrade_separate: :obj:`bool`
+
     :param can_be_upgraded: Optional. True, if the gift can be upgraded to a unique gift
     :type can_be_upgraded: :obj:`bool`
 
@@ -12492,13 +12591,17 @@ class GiftInfo(JsonDeserializable):
     :param is_private: Optional. True, if the sender and gift text are shown only to the gift receiver; otherwise, everyone will be able to see them
     :type is_private: :obj:`bool`
 
+    :param unique_gift_number: Optional. Unique number reserved for this gift when upgraded. See the number field in UniqueGift
+    :type unique_gift_number: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`GiftInfo`
     """
     def __init__(self, gift: Gift, owned_gift_id: Optional[str] = None, convert_star_count: Optional[int] = None,
                     prepaid_upgrade_star_count: Optional[int] = None, can_be_upgraded: Optional[bool] = None,
                     text: Optional[str] = None, entities: Optional[List[MessageEntity]] = None,
-                    is_private: Optional[bool] = None, **kwargs):
+                    is_private: Optional[bool] = None, is_upgrade_separate: Optional[bool] = None, 
+                    unique_gift_number: Optional[int] = None, **kwargs):
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.convert_star_count: Optional[int] = convert_star_count
@@ -12507,6 +12610,8 @@ class GiftInfo(JsonDeserializable):
         self.text: Optional[str] = text
         self.entities: Optional[List[MessageEntity]] = entities
         self.is_private: Optional[bool] = is_private
+        self.is_upgrade_separate: Optional[bool] = is_upgrade_separate
+        self.unique_gift_number: Optional[int] = unique_gift_number
 
     @classmethod
     def de_json(cls, json_string):
@@ -12527,12 +12632,19 @@ class UniqueGiftInfo(JsonDeserializable):
     :param gift: Information about the gift
     :type gift: :class:`UniqueGift`
 
-    :param origin: Origin of the gift. Currently, either “upgrade” for gifts upgraded from regular gifts, “transfer” for gifts transferred from other users or channels,
-        or “resale” for gifts bought from other users
+    :param origin: 	Origin of the gift. Currently, either “upgrade” for gifts upgraded from regular gifts, “transfer” for gifts
+        transferred from other users or channels, “resale” for gifts bought from other users, “gifted_upgrade” for upgrades purchased
+        after the gift was sent, or “offer” for gifts bought or sold through gift purchase offers
     :type origin: :obj:`str`
 
-    :param last_resale_star_count: Optional. For gifts bought from other users, the price paid for the gift
+    :param last_resale_star_count: Deprecated. Use last_resale_currency and last_resale_amount instead. 
     :type last_resale_star_count: :obj:`int`
+
+    :param last_resale_currency: Optional. For gifts bought from other users, the currency in which the payment for the gift was done. Currently, one of “XTR” for Telegram Stars or “TON” for toncoins.
+    :type last_resale_currency: :obj:`str`
+
+    :param last_resale_amount: Optional. For gifts bought from other users, the price paid for the gift in either Telegram Stars or nanotoncoins
+    :type last_resale_amount: :obj:`int`
 
     :param owned_gift_id: Optional. Unique identifier of the received gift for the bot; only present for gifts received on behalf of business accounts
     :type owned_gift_id: :obj:`str`
@@ -12548,13 +12660,24 @@ class UniqueGiftInfo(JsonDeserializable):
     """
     def __init__(self, gift: UniqueGift, origin: str, owned_gift_id: Optional[str] = None,
                     transfer_star_count: Optional[int] = None, next_transfer_date: Optional[int] = None,
-                    last_resale_star_count: Optional[int] = None, **kwargs):
+                    last_resale_currency: Optional[str] = None,
+                    last_resale_amount: Optional[int] = None, **kwargs):
         self.gift: UniqueGift = gift
         self.origin: str = origin
-        self.last_resale_star_count: Optional[int] = last_resale_star_count
+        self.last_resale_currency: Optional[str] = last_resale_currency
+        self.last_resale_amount: Optional[int] = last_resale_amount
         self.owned_gift_id: Optional[str] = owned_gift_id
         self.transfer_star_count: Optional[int] = transfer_star_count
         self.next_transfer_date: Optional[int] = next_transfer_date
+
+    @property 
+    def last_resale_star_count(self) -> Optional[int]:
+        """Deprecated. Use last_resale_currency and last_resale_amount instead."""
+        log_deprecation_warning("last_resale_star_count is deprecated. Use last_resale_currency and last_resale_amount instead.")
+        if self.last_resale_currency == "XTR":
+            return self.last_resale_amount
+        return None
+
 
     @classmethod
     def de_json(cls, json_string):
@@ -12696,6 +12819,9 @@ class ChecklistTask(JsonDeserializable):
     :param completed_by_user: Optional. User that completed the task; omitted if the task wasn't completed
     :type completed_by_user: :class:`User`
 
+    :param completed_by_chat: Optional. Chat that completed the task; omitted if the task wasn't completed by a chat
+    :type completed_by_chat: :class:`Chat`
+
     :param completion_date: Optional. Point in time (Unix timestamp) when the task was completed; 0 if the task wasn't completed
     :type completion_date: :obj:`int`
 
@@ -12704,11 +12830,13 @@ class ChecklistTask(JsonDeserializable):
     """
     def __init__(self, id: int, text: str, text_entities: Optional[List[MessageEntity]] = None,
                     completed_by_user: Optional[User] = None,
+                    completed_by_chat: Optional[Chat] = None,
                     completion_date: Optional[int] = None, **kwargs):
         self.id: int = id
         self.text: str = text
         self.text_entities: Optional[List[MessageEntity]] = text_entities
         self.completed_by_user: Optional[User] = completed_by_user
+        self.completed_by_chat: Optional[Chat] = completed_by_chat
         self.completion_date: Optional[int] = completion_date
 
     @classmethod
@@ -12719,6 +12847,8 @@ class ChecklistTask(JsonDeserializable):
             obj['text_entities'] = Message.parse_entities(obj['text_entities'])
         if 'completed_by_user' in obj:
             obj['completed_by_user'] = User.de_json(obj['completed_by_user'])
+        if 'completed_by_chat' in obj:
+            obj['completed_by_chat'] = Chat.de_json(obj['completed_by_chat'])
         return cls(**obj)
 
 
@@ -12956,6 +13086,43 @@ class DirectMessagePriceChanged(JsonDeserializable):
         return cls(**obj)
 
 
+class UniqueGiftColors(JsonDeserializable):
+    """
+    This object contains information about the color scheme for a user's name, message replies and link previews
+    based on a unique gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#uniquegiftcolors
+
+    :param model_custom_emoji_id: Custom emoji identifier of the unique gift's model
+    :type model_custom_emoji_id: :obj:`str`
+
+    :param symbol_custom_emoji_id: Custom emoji identifier of the unique gift's symbol
+    :type symbol_custom_emoji_id: :obj:`str`
+
+    :param light_theme_main_color: Main color used in light themes; RGB format
+    :type light_theme_main_color: :obj:`int`
+
+    :param light_theme_other_colors: List of 1-3 additional colors used in light themes; RGB format
+    :type light_theme_other_colors: :obj:`list` of :obj:`int`
+
+    :param dark_theme_main_color: Main color used in dark themes; RGB format
+    :type dark_theme_main_color: :obj:`int`
+
+    :param dark_theme_other_colors: List of 1-3 additional colors used in dark themes; RGB format
+    :type dark_theme_other_colors: :obj:`list` of :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UniqueGiftColors`
+    """
+    def __init__(self, model_custom_emoji_id: str, symbol_custom_emoji_id: str,
+                 light_theme_main_color: int, light_theme_other_colors: List[int],
+                 dark_theme_main_color: int, dark_theme_other_colors: List[int], **kwargs):
+        self.model_custom_emoji_id: str = model_custom_emoji_id
+        self.symbol_custom_emoji_id: str = symbol_custom_emoji_id
+        self.light_theme_main_color: int = light_theme_main_color
+        self.light_theme_other_colors: List[int] = light_theme_other_colors
+        self.dark_theme_main_color: int = dark_theme_main_color
+        self.dark_theme_other_colors: List[int] = dark_theme_other_colors
 class DirectMessagesTopic(JsonDeserializable):
     """
     Describes a topic of a direct messages chat.
@@ -13119,6 +13286,30 @@ class SuggestedPostApproved(JsonDeserializable):
         if 'price' in obj:
             obj['price'] = SuggestedPostPrice.de_json(obj['price'])
         return cls(**obj)
+    
+
+class GiftBackground(JsonDeserializable):
+    """
+    This object describes the background of a gift.
+
+    Telegram documentation: https://core.telegram.org/bots/api#giftbackground
+
+    :param center_color: Center color of the background in RGB format
+    :type center_color: :obj:`int`
+
+    :param edge_color: Edge color of the background in RGB format
+    :type edge_color: :obj:`int`
+
+    :param text_color: Text color of the background in RGB format
+    :type text_color: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`GiftBackground`
+    """
+    def __init__(self, center_color: int, edge_color: int, text_color: int, **kwargs):
+        self.center_color: int = center_color
+        self.edge_color: int = edge_color
+        self.text_color: int = text_color
 
 class SuggestedPostApprovalFailed(JsonDeserializable):
     """
@@ -13243,4 +13434,38 @@ class SuggestedPostRefunded(JsonDeserializable):
         return cls(**obj)
     
 
+class UserRating(JsonDeserializable):
+    """
+    This object describes the rating of a user based on their Telegram Star spendings.
+
+    Telegram documentation: https://core.telegram.org/bots/api#userrating
+
+    :param level: Current level of the user, indicating their reliability when purchasing digital goods and services. A higher level suggests a more trustworthy customer; a negative level is likely reason for concern.
+    :type level: :obj:`int`
+
+    :param rating: Numerical value of the user's rating; the higher the rating, the better
+    :type rating: :obj:`int`
+
+    :param current_level_rating: The rating value required to get the current level
+    :type current_level_rating: :obj:`int`
+
+    :param next_level_rating: Optional. The rating value required to get to the next level; omitted if the maximum level was reached
+    :type next_level_rating: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`UserRating`
+    """
+    def __init__(self, level: int, rating: int, current_level_rating: int,
+                    next_level_rating: Optional[int] = None, **kwargs):
+        self.level: int = level
+        self.rating: int = rating
+        self.current_level_rating: int = current_level_rating
+        self.next_level_rating: Optional[int] = next_level_rating
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
     
