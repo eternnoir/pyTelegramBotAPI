@@ -2929,7 +2929,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
     :type request_chat: :class:`telebot.types.KeyboardButtonRequestChat`
     
-    :param icon_custom_emoji_id: Optional. Custom emoji identifier to be shown on the button. 
+    :param icon_custom_emoji_id: Optional. Custom emoji identifier to be shown on the button.
         Can only be used if the bot has a Telegram Premium subscription.
     :type icon_custom_emoji_id: :obj:`str`
 
