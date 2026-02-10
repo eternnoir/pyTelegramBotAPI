@@ -3176,7 +3176,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
     def __init__(self, text: str, url: Optional[str]=None, callback_data: Optional[str]=None, web_app: Optional[WebAppInfo]=None,
             switch_inline_query: Optional[str]=None, switch_inline_query_current_chat: Optional[str]=None,
             switch_inline_query_chosen_chat: Optional[SwitchInlineQueryChosenChat]=None, callback_game=None, pay: Optional[bool]=None,
-            login_url: Optional[LoginUrl]=None, copy_text: Optional[CopyTextButton]=None, icon_custom_emoji_id: Optional[str] = None, style: Optional[str] = None, **kwargs):
+            login_url: Optional[LoginUrl]=None, copy_text: Optional[CopyTextButton]=None, icon_custom_emoji_id: Optional[str]=None, style: Optional[str]=None, **kwargs):
         self.text: str = text
         self.url: Optional[str] = url
         self.callback_data: Optional[str] = callback_data
