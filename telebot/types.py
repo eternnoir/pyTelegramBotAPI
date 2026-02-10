@@ -3219,7 +3219,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         if self.icon_custom_emoji_id is not None:
             json_dict['icon_custom_emoji_id'] = self.icon_custom_emoji_id
         if self.style is not None:
-            json_dict['style'] = self.style    
+            json_dict['style'] = self.style
         return json_dict
 
 
