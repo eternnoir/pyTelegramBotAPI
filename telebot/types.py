@@ -3188,8 +3188,8 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
         self.pay: Optional[bool] = pay
         self.login_url: Optional[LoginUrl] = login_url
         self.copy_text: Optional[CopyTextButton] = copy_text
-        self.icon_custom_emoji_id = icon_custom_emoji_id
-        self.style = style
+        self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
+        self.style: Optional[str] = style
 
     def to_json(self):
         return json.dumps(self.to_dict())
