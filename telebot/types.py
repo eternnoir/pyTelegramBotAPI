@@ -3148,8 +3148,7 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
     :param copy_text: Optional. Description of the button that copies the specified text to the clipboard.
     :type copy_text: :class:`telebot.types.CopyTextButton`
     
-    :param icon_custom_emoji_id: Optional. Custom emoji identifier to be shown on the button. 
-    Can only be used if the bot has a Telegram Premium subscription.
+    :param icon_custom_emoji_id: Optional. Custom emoji identifier to be shown on the button. Can only be used if the bot owner has a Telegram Premium subscription.
     :type icon_custom_emoji_id: :obj:`str`
     
     :param style: Optional. Style of the button. Can be used to change the color of the button.
