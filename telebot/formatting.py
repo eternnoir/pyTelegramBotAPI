@@ -614,7 +614,7 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
     Args:
         text: Plain text message
         entities: List of MessageEntity objects
-        custom_subs: Optional custom substitutions (not used in this implementation)
+        custom_subs: Optional mapping of entity types to custom HTML substitutions/templates.
 
     Returns:
         HTML formatted string
