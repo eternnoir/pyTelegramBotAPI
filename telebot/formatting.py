@@ -4,7 +4,7 @@ Markdown & HTML formatting functions.
 
 import re
 import html
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 
 
 # Alternative message entities parsers. Can be:
@@ -12,7 +12,7 @@ from typing import Optional, List, Dict, Tuple
 # "gemini" - gemini version
 # "chatgpt" - chatgpt version
 # other values - original version
-ENTITY_PASER_MODE = None
+ENTITY_PARSER_MODE = None
 
 
 def format_text(*args, separator="\n"):
@@ -51,6 +51,7 @@ def escape_html(content: str) -> str:
     return html.escape(content)
 
 
+# noinspection RegExpRedundantEscape
 def escape_markdown(content: str) -> str:
     """
     Escapes Markdown characters in a string of Markdown.
@@ -275,6 +276,9 @@ def mcode(content: str, language: str="", escape: Optional[bool]=True) -> str:
     :param content: The string to code.
     :type content: :obj:`str`
 
+    :param language: The programming language of the code. Defaults to an empty string.
+    :type language: :obj:`str`
+
     :param escape: True if you need to escape special characters. Defaults to True.
     :type escape: :obj:`bool`
 
@@ -309,6 +313,9 @@ def hpre(content: str, escape: Optional[bool]=True, language: str="") -> str:
 
     :param escape: True if you need to escape special characters. Defaults to True.
     :type escape: :obj:`bool`
+
+    :param language: The programming language of the code. Defaults to an empty string.
+    :type language: :obj:`str`
 
     :return: The formatted string.
     :rtype: :obj:`str`
@@ -398,11 +405,11 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         )
         >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">text_mention</a> and mention <a href=\"https://t.me/username\">@username</a>"
     """
-    if ENTITY_PASER_MODE == "deepseek":
+    if ENTITY_PARSER_MODE == "deepseek":
         return apply_html_entities_ds(text, entities, custom_subs)
-    elif ENTITY_PASER_MODE == "gemini":
+    elif ENTITY_PARSER_MODE == "gemini":
         return apply_html_entities_gm(text, entities, custom_subs)
-    elif ENTITY_PASER_MODE == "chatgpt":
+    elif ENTITY_PARSER_MODE == "chatgpt":
         return apply_html_entities_cg(text, entities, custom_subs)
 
     if not entities:
@@ -433,8 +440,8 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         if subst_type == "text_mention":
             subst_type = "text_link"
             url = "tg://user?id={0}".format(user.id)
-        elif subst_type == "mention":
-            url = "https://t.me/{0}".format(upd_text[1:])
+        # elif subst_type == "mention":
+        #     url = "https://t.me/{0}".format(upd_text[1:])
         upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
         if not subst_type or not _subs.get(subst_type):
             return upd_text
@@ -512,7 +519,7 @@ class EntityProcessor:
 
     def __init__(self, text: str, custom_subs: Optional[Dict[str, str]] = None):
         self.text = text
-        self.utf16_mapping, self.char_to_units = self.utf16_code_units_to_indices(text)
+        self.utf16_mapping = self.utf16_code_units_to_indices(text)
         self.total_utf16_units = len(self.utf16_mapping)
         self.custom_subs = custom_subs
 
@@ -534,16 +541,14 @@ class EntityProcessor:
             return default
 
     @staticmethod
-    def utf16_code_units_to_indices(text: str) -> Tuple[List[int], List[int]]:
+    def utf16_code_units_to_indices(text: str) -> List[int]:
         """
         Convert UTF-16 code unit positions to Python string indices.
 
         Returns:
-            - code_unit_to_char_idx: Mapping from UTF-16 code unit position to character index
-            - char_idx_to_code_units: Number of UTF-16 code units per character
+            code_unit_to_char_idx: Mapping from UTF-16 code unit position to character index
         """
         code_unit_to_char_idx = []
-        char_idx_to_code_units = []
 
         code_unit_pos = 0
         for char_idx, char in enumerate(text):
@@ -558,10 +563,9 @@ class EntityProcessor:
             for _ in range(code_units):
                 code_unit_to_char_idx.append(char_idx)
 
-            char_idx_to_code_units.append(code_units)
             code_unit_pos += code_units
 
-        return code_unit_to_char_idx, char_idx_to_code_units
+        return code_unit_to_char_idx
 
     def utf16_to_char_index(self, utf16_pos: int) -> int:
         """
@@ -585,23 +589,21 @@ class EntityProcessor:
         """
         entity_type = entity.type
 
-        # if entity_type in self.ENTITY_TEMPLATES:
-        #     template = self.ENTITY_TEMPLATES[entity_type]
-        # elif self.custom_subs and (entity_type in self.custom_subs):
-        #     template = self.custom_subs[entity_type]
-        # else:
-        #     # If no template is defined for this entity type, return the content as is
-        #     return content
         template = self.get_entity_template(entity_type)
         if not template:
             return content
 
         # Prepare format arguments
         format_args = {"text": content}
-        if entity_type == "text_link":
-            format_args["url"] = entity.url or ""
+        if entity_type == "text_mention":
+            template = self.get_entity_template("text_link")
+            format_args["url"] = "tg://user?id={0}".format(entity.user.id)
+        elif entity_type == "text_link":
+            format_args["url"] = escape_html(entity.url or "")
         elif entity_type == "custom_emoji":
             format_args["custom_emoji_id"] = entity.custom_emoji_id or ""
+        elif entity_type == "pre" and entity.language:
+            format_args["text"] = '<code class="language-{}">{}</code></pre>'.format(entity.language, format_args["text"])
 
         return template.format(**format_args)
 
@@ -614,7 +616,7 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
     Args:
         text: Plain text message
         entities: List of MessageEntity objects
-        custom_subs: Optional custom substitutions (not used in this implementation)
+        custom_subs: Optional mapping of entity types to custom HTML substitutions/templates.
 
     Returns:
         HTML formatted string
@@ -624,7 +626,7 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
     elif not entities:
         return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-    processor = EntityProcessor(text)
+    processor = EntityProcessor(text, custom_subs=custom_subs)
 
     # Sort entities by their position in the text
     # For proper nesting handling, we need to process from the end
@@ -634,12 +636,6 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
     # First, convert UTF-16 offsets to character indices for easier processing
     entity_ranges = []
     for entity in sorted_entities:
-        # if entity.type in processor.ENTITY_TEMPLATES:
-        #     pass
-        # elif processor.custom_subs and (entity.type in processor.custom_subs):
-        #     pass
-        # else:
-        #     continue
         if not processor.check_entity_exists(entity.type):
             continue
 
@@ -651,7 +647,6 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
             'start': start_char,
             'end': end_char,
             'type': entity.type,
-            'processed': False
         })
 
     # Sort by start position (ascending) and then by length (descending)
@@ -675,34 +670,34 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
 
         i = 0
         while i < len(entities_in_range):
-            entity = entities_in_range[i]
+            cur_entity = entities_in_range[i]
 
             # Add text before this entity
-            if entity['start'] > current_pos:
-                result_parts.append(text[current_pos:entity['start']])
+            if cur_entity['start'] > current_pos:
+                result_parts.append(text[current_pos:cur_entity['start']])
 
             # Find all entities that start at the same position or are nested within
             nested_entities = []
             j = i
-            while j < len(entities_in_range) and entities_in_range[j]['start'] < entity['end']:
-                if entities_in_range[j]['start'] >= entity['start']:
+            while j < len(entities_in_range) and entities_in_range[j]['start'] < cur_entity['end']:
+                if entities_in_range[j]['start'] >= cur_entity['start']:
                     nested_entities.append(entities_in_range[j])
                 j += 1
 
             # Filter entities that are actually within this entity's range
             nested_entities = [e for e in nested_entities if
-                               e['start'] >= entity['start'] and e['end'] <= entity['end']]
+                               e['start'] >= cur_entity['start'] and e['end'] <= cur_entity['end']]
 
             # Process the content of this entity (including nested entities)
-            content = process_range(entity['start'], entity['end'],
-                                    [e for e in nested_entities if e != entity])
+            content = process_range(cur_entity['start'], cur_entity['end'],
+                                    [e for e in nested_entities if e != cur_entity])
 
             # Apply this entity's HTML tag
-            html_content = processor.create_html_tag(entity['entity'], content)
+            html_content = processor.create_html_tag(cur_entity['entity'], content)
             result_parts.append(html_content)
 
             # Move current position to the end of this entity
-            current_pos = entity['end']
+            current_pos = cur_entity['end']
             i = j
 
         # Add remaining text
@@ -716,11 +711,6 @@ def apply_html_entities_ds(text: str, entities: Optional[List],           # enti
 #endregion
 
 #region Gemini vibecoding here
-# import sys
-# import html
-# from typing import List, Optional, Dict
-
-# 2. Main Function
 def apply_html_entities_gm(
         text: str,
         entities: Optional[List],   # entities: Optional[List[MessageEntity]]
@@ -874,8 +864,6 @@ def get_html_tag(entity, custom_subs: Optional[Dict[str, str]]) -> Optional[Dict
     # Given the complexity of closing tags, we stick to the Prompt's Rules for known types.
 
     t = entity.type
-    text_placeholder = "{text}"  # Not used here directly, we just return tags
-
     if t == "bold":
         return {'open': "<b>", 'close': "</b>"}
     elif t == "italic":
@@ -888,6 +876,8 @@ def get_html_tag(entity, custom_subs: Optional[Dict[str, str]]) -> Optional[Dict
         return {'open': '<span class="tg-spoiler">', 'close': "</span>"}
     elif t == "code":
         return {'open': "<code>", 'close': "</code>"}
+    elif (t == "pre") and entity.language:
+        return {'open': f'<pre><code class="language-{entity.language}">', 'close': "</code></pre>"}
     elif t == "pre":
         return {'open': "<pre>", 'close': "</pre>"}
     elif t == "blockquote":
@@ -896,10 +886,19 @@ def get_html_tag(entity, custom_subs: Optional[Dict[str, str]]) -> Optional[Dict
         return {'open': "<blockquote expandable>", 'close': "</blockquote>"}
     elif t == "text_link":
         return {'open': f'<a href="{entity.url}">', 'close': "</a>"}
+    elif t == "text_mention":
+        return {'open': f'<a href="tg://user?id={entity.user.id}">', 'close': "</a>"}
     elif t == "custom_emoji":
         return {'open': f'<tg-emoji emoji-id="{entity.custom_emoji_id}">', 'close': "</tg-emoji>"}
-    elif t in custom_subs:
-        return None # Custom subs are not handled in this tag-based approach
+    elif custom_subs and (t in custom_subs):
+        # Support custom substitutions by splitting the template around the {text} placeholder
+        template = custom_subs[t]
+        if "{text}" in template:
+            open_part, close_part = template.split("{text}", 1)
+        else:
+            # If no {text} placeholder is present, treat the entire template as the opening part
+            open_part, close_part = template, ""
+        return {'open': open_part, 'close': close_part}
 
     return None
 #endregion
@@ -946,12 +945,16 @@ def apply_template(entity, inner: str, custom_subs: Optional[Dict[str, str]]) ->
 
     if t == "text_link":
         data["url"] = getattr(entity, "url", "")
-    if t == "custom_emoji":
+    elif t == "text_mention":
+        data["url"] = f"tg://user?id={getattr(entity, 'user', {}).id if getattr(entity, 'user', None) else ''}"
+    elif t == "custom_emoji":
         data["custom_emoji_id"] = getattr(entity, "custom_emoji_id", "")
+    elif (t == "pre") and getattr(entity, "language", None):
+        data["text"] = f'<code class="language-{entity.language}">{inner}</code></pre>'
 
     return tpl.format(**data)
 
-def build_tree(text: str, entities: List, mapping: List[int]):
+def build_tree(entities: List, mapping: List[int]):
     nodes = []
 
     for e in entities:
@@ -968,7 +971,7 @@ def build_tree(text: str, entities: List, mapping: List[int]):
             "children": []
         })
 
-    nodes.sort(key=lambda n: (n["start"], -n["end"]))
+    nodes.sort(key=lambda node: (node["start"], -node["end"]))
 
     stack = []
     roots = []
@@ -1029,6 +1032,6 @@ def apply_html_entities_cg(
         return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
     mapping = utf16_index_map(text)
-    tree = build_tree(text, entities, mapping)
+    tree = build_tree(entities, mapping)
     return render(text, tree, custom_subs)
 #endregion
