@@ -599,7 +599,7 @@ class EntityProcessor:
         # Prepare format arguments
         format_args = {"text": content}
         if entity_type == "text_link":
-            format_args["url"] = entity.url or ""
+            format_args["url"] = escape_html(entity.url or "")
         elif entity_type == "custom_emoji":
             format_args["custom_emoji_id"] = entity.custom_emoji_id or ""
 
