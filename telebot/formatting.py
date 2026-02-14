@@ -11,6 +11,7 @@ from typing import Optional, List, Dict
 # "deepseek" - deepseek version
 # "gemini" - gemini version
 # "chatgpt" - chatgpt version
+# "coder" - @coder2020official version
 # other values - original version
 ENTITY_PARSER_MODE = None
 
@@ -411,6 +412,8 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         return apply_html_entities_gm(text, entities, custom_subs)
     elif ENTITY_PARSER_MODE == "chatgpt":
         return apply_html_entities_cg(text, entities, custom_subs)
+    elif ENTITY_PARSER_MODE == "coder":
+        return apply_html_entities_coder(text, entities, custom_subs)
 
     if not entities:
         return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -1035,3 +1038,123 @@ def apply_html_entities_cg(
     tree = build_tree(entities, mapping)
     return render(text, tree, custom_subs)
 #endregion
+
+def apply_html_entities_coder(text: str, entities=None, custom_subs=None) -> str:
+    """
+    Apply HTML formatting to text based on provided entities.
+    Handles nested and overlapping entities correctly.
+    """
+    if not entities:
+        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    _subs = {
+        "bold": "<b>{text}</b>",
+        "italic": "<i>{text}</i>",
+        "pre": "<pre>{text}</pre>",
+        "code": "<code>{text}</code>",
+        "text_link": "<a href=\"{url}\">{text}</a>",
+        "strikethrough": "<s>{text}</s>",
+        "underline": "<u>{text}</u>",
+        "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
+        "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>",
+        "blockquote": "<blockquote>{text}</blockquote>",
+        "expandable_blockquote": "<blockquote expandable>{text}</blockquote>",
+    }
+
+    if custom_subs:
+        for key, value in custom_subs.items():
+            _subs[key] = value
+
+    # Sort entities by offset (starting position), with longer entities first for equal offsets
+    sorted_entities = sorted(entities, key=lambda e: (e.offset, -e.length))
+
+    # Convert text to utf-16 encoding for proper handling
+    utf16_text = text.encode("utf-16-le")
+
+    def escape_html(text_part):
+        """Escape HTML special characters in a text part"""
+        if isinstance(text_part, bytes):
+            text_part = text_part.decode("utf-16-le")
+        return text_part.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+    def format_entity(entity, content):
+        """Apply entity formatting to the content"""
+        entity_type = entity.type
+
+        # Handle different entity types
+        if entity_type == "text_mention" and hasattr(entity, 'user'):
+            return f"<a href=\"tg://user?id={entity.user.id}\">{content}</a>"
+        # elif entity_type == "mention":   # No need to do this, @username works fine
+        #     username = content[1:]  # Remove @ symbol
+        #     return f"<a href=\"https://t.me/{username}\">{content}</a>"
+        elif entity_type == "text_link" and hasattr(entity, 'url'):
+            return f"<a href=\"{entity.url}\">{content}</a>"
+        elif entity_type == "custom_emoji" and hasattr(entity, 'custom_emoji_id'):
+            return f"<tg-emoji emoji-id=\"{entity.custom_emoji_id}\">{content}</tg-emoji>"
+        elif (entity_type == "pre" and hasattr(entity, 'language') and entity.language):
+            return f"<pre><code class=\"language-{entity.language}\">{content}</code></pre>"
+        elif entity_type in _subs:
+            template = _subs[entity_type]
+            return template.format(text=content)
+
+        # If no matching entity type, return text as is
+        return content
+
+    def process_entities(byte_text, entity_list, start_pos=0, end_pos=None):
+        if end_pos is None:
+            end_pos = len(byte_text)
+
+        if not entity_list or start_pos >= end_pos:
+            return escape_html(byte_text[start_pos:end_pos])
+
+        current_entity = entity_list[0]
+        current_start = current_entity.offset * 2
+        current_end = current_start + current_entity.length * 2
+
+        if current_end <= start_pos or current_start >= end_pos:
+            return escape_html(byte_text[start_pos:end_pos])
+
+        result = []
+
+        if current_start > start_pos:
+            result.append(escape_html(byte_text[start_pos:current_start]))
+
+        nested_entities = []
+        remaining_entities = []
+
+        for entity in entity_list[1:]:
+            entity_start = entity.offset * 2
+            # entity_end = entity_start + entity.length * 2
+
+            if entity_start >= current_start and entity_start < current_end:
+                nested_entities.append(entity)
+            else:
+                remaining_entities.append(entity)
+
+        if nested_entities:
+            inner_content = process_entities(
+                byte_text,
+                nested_entities,
+                current_start,
+                current_end
+            )
+        else:
+            inner_content = escape_html(byte_text[current_start:current_end])
+
+        result.append(format_entity(current_entity, inner_content))
+
+        if current_end < end_pos and remaining_entities:
+            result.append(process_entities(
+                byte_text,
+                remaining_entities,
+                current_end,
+                end_pos
+            ))
+        elif current_end < end_pos:
+            result.append(escape_html(byte_text[current_end:end_pos]))
+
+        return "".join(result)
+
+    html_result = process_entities(utf16_text, sorted_entities)
+
+    return html_result
