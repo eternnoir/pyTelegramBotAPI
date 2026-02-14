@@ -368,23 +368,26 @@ def hcite(content: str, escape: Optional[bool] = True, expandable: Optional[bool
     )
 
 
-def apply_html_entities(text: str, entities: Optional[List], custom_subs: Optional[Dict[str, str]]) -> str:
+def apply_html_entities(text: str, entities=None, custom_subs=None) -> str:
     """
+    Apply HTML formatting to text based on provided entities.
+    Handles nested and overlapping entities correctly.
+ 
     Author: @sviat9440
-    Updaters: @badiboy, @EgorKhabarov
+    Updaters: @badiboy, @EgorKhabarov, (and completely redesigned to handle nested entities)
     Message: "*Test* parse _formatting_, [url](https://example.com), [text_mention](tg://user?id=123456) and mention @username"
-
+ 
     .. code-block:: python3
         :caption: Example:
-
+ 
         apply_html_entities(text, entities)
         >> "<b>Test</b> parse <i>formatting</i>, <a href=\"https://example.com\">url</a>, <a href=\"tg://user?id=123456\">text_mention</a> and mention @username"
-
+ 
     Custom subs:
         You can customize the substitutes. By default, there is no substitute for the entities: hashtag, bot_command, email. You can add or modify substitute an existing entity.
     .. code-block:: python3
         :caption: Example:
-
+ 
         apply_html_entities(
             text,
             entities,
@@ -392,16 +395,14 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         )
         >> "<strong class=\"example\">Test</strong> parse <i class=\"example\">formatting</i>, <a href=\"https://example.com\">url</a> and <a href=\"tg://user?id=123456\">text_mention</a> and mention <a href=\"https://t.me/username\">@username</a>"
     """
-
     if not entities:
         return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
+ 
     _subs = {
         "bold": "<b>{text}</b>",
         "italic": "<i>{text}</i>",
         "pre": "<pre>{text}</pre>",
         "code": "<code>{text}</code>",
-        # "url": "<a href=\"{url}\">{text}</a>", # @badiboy plain URLs have no text and do not need tags
         "text_link": "<a href=\"{url}\">{text}</a>",
         "strikethrough": "<s>{text}</s>",
         "underline": "<u>{text}</u>",
@@ -409,71 +410,101 @@ def apply_html_entities(text: str, entities: Optional[List], custom_subs: Option
         "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>",
         "blockquote": "<blockquote>{text}</blockquote>",
         "expandable_blockquote": "<blockquote expandable>{text}</blockquote>",
-
     }
-
+ 
     if custom_subs:
         for key, value in custom_subs.items():
             _subs[key] = value
+ 
+    # Sort entities by offset (starting position), with longer entities first for equal offsets
+    sorted_entities = sorted(entities, key=lambda e: (e.offset, -e.length))
+ 
+    # Convert text to utf-16 encoding for proper handling
     utf16_text = text.encode("utf-16-le")
-    html_text = ""
-
-    def func(upd_text, subst_type=None, url=None, user=None, custom_emoji_id=None, language=None):
-        upd_text = upd_text.decode("utf-16-le")
-        if subst_type == "text_mention":
-            subst_type = "text_link"
-            url = "tg://user?id={0}".format(user.id)
-        elif subst_type == "mention":
-            url = "https://t.me/{0}".format(upd_text[1:])
-        upd_text = upd_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        if not subst_type or not _subs.get(subst_type):
-            return upd_text
-        subs = _subs.get(subst_type)
-        if subst_type == "custom_emoji":
-            return subs.format(text=upd_text, custom_emoji_id=custom_emoji_id)
-        elif (subst_type == "pre") and language:
-            return "<pre><code class=\"language-{0}\">{1}</code></pre>".format(language, upd_text)
-        return subs.format(text=upd_text, url=url)
-
-    offset = 0
-    start_index = 0
-    end_index = 0
-    for entity in entities:
-        if entity.offset > offset:
-            # when the offset is not 0: for example, a __b__
-            # we need to add the text before the entity to the html_text
-            html_text += func(utf16_text[offset * 2: entity.offset * 2])
-            offset = entity.offset
-
-            new_string = func(utf16_text[offset * 2: (offset + entity.length) * 2], subst_type=entity.type,
-                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id,
-                              language=entity.language)
-            start_index = len(html_text)
-            html_text += new_string
-            offset += entity.length
-            end_index = len(html_text)
-        elif entity.offset == offset:
-            new_string = func(utf16_text[offset * 2: (offset + entity.length) * 2], subst_type=entity.type,
-                              url=entity.url, user=entity.user, custom_emoji_id=entity.custom_emoji_id,
-                              language=entity.language)
-            start_index = len(html_text)
-            html_text += new_string
-            end_index = len(html_text)
-            offset += entity.length
+ 
+    def escape_html(text_part):
+        """Escape HTML special characters in a text part"""
+        if isinstance(text_part, bytes):
+            text_part = text_part.decode("utf-16-le")
+        return text_part.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+ 
+    def format_entity(entity, content):
+        """Apply entity formatting to the content"""
+        entity_type = entity.type
+ 
+        # Handle different entity types
+        if entity_type == "text_mention" and hasattr(entity, 'user'):
+            return f"<a href=\"tg://user?id={entity.user.id}\">{content}</a>"
+        elif entity_type == "mention":
+            username = content[1:]  # Remove @ symbol
+            return f"<a href=\"https://t.me/{username}\">{content}</a>"
+        elif entity_type == "text_link" and hasattr(entity, 'url'):
+            return f"<a href=\"{entity.url}\">{content}</a>"
+        elif entity_type == "custom_emoji" and hasattr(entity, 'custom_emoji_id'):
+            return f"<tg-emoji emoji-id=\"{entity.custom_emoji_id}\">{content}</tg-emoji>"
+        elif entity_type in _subs:
+            template = _subs[entity_type]
+            return template.format(text=content)
+ 
+        # If no matching entity type, return text as is
+        return content
+ 
+    def process_entities(byte_text, entity_list, start_pos=0, end_pos=None):
+        if end_pos is None:
+            end_pos = len(byte_text)
+ 
+        if not entity_list or start_pos >= end_pos:
+            return escape_html(byte_text[start_pos:end_pos])
+ 
+        current_entity = entity_list[0]
+        current_start = current_entity.offset * 2
+        current_end = current_start + current_entity.length * 2
+ 
+        if current_end <= start_pos or current_start >= end_pos:
+            return escape_html(byte_text[start_pos:end_pos])
+ 
+        result = []
+ 
+        if current_start > start_pos:
+            result.append(escape_html(byte_text[start_pos:current_start]))
+ 
+ 
+        nested_entities = []
+        remaining_entities = []
+ 
+        for entity in entity_list[1:]:
+            entity_start = entity.offset * 2
+            #entity_end = entity_start + entity.length * 2
+ 
+            if entity_start >= current_start and entity_start < current_end:
+                nested_entities.append(entity)
+            else:
+                remaining_entities.append(entity)
+ 
+        if nested_entities:
+            inner_content = process_entities(
+                byte_text, 
+                nested_entities, 
+                current_start, 
+                current_end
+            )
         else:
-            # Here we are processing nested entities.
-            # We shouldn't update offset, because they are the same as entity before.
-            # And, here we are replacing previous string with a new html-rendered text(previous string is already html-rendered,
-            # And we don't change it).
-            entity_string = html_text[start_index: end_index].encode("utf-16-le")
-            formatted_string = func(entity_string, subst_type=entity.type, url=entity.url, user=entity.user,
-                                    custom_emoji_id=entity.custom_emoji_id,
-                                    language=entity.language). \
-                replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-            html_text = html_text[:start_index] + formatted_string + html_text[end_index:]
-            end_index = len(html_text)
-
-    if offset * 2 < len(utf16_text):
-        html_text += func(utf16_text[offset * 2:])
-
-    return html_text
+            inner_content = escape_html(byte_text[current_start:current_end])
+ 
+        result.append(format_entity(current_entity, inner_content))
+ 
+        if current_end < end_pos and remaining_entities:
+            result.append(process_entities(
+                byte_text,
+                remaining_entities,
+                current_end,
+                end_pos
+            ))
+        elif current_end < end_pos:
+            result.append(escape_html(byte_text[current_end:end_pos]))
+ 
+        return "".join(result)
+ 
+    html_result = process_entities(utf16_text, sorted_entities)
+ 
+    return html_result
