@@ -1,5 +1,6 @@
 import asyncio # for future uses
 import ssl
+import threading
 import aiohttp
 import certifi
 from telebot import types
@@ -30,9 +31,16 @@ REQUEST_LIMIT = 50
 
 class SessionManager:
     def __init__(self) -> None:
-        self.session = None
+        self._local = threading.local()
         self.ssl_context = ssl.create_default_context(cafile=certifi.where())
 
+    @property
+    def session(self):
+        return getattr(self._local, 'session', None)
+
+    @session.setter
+    def session(self, value):
+        self._local.session = value
 
     async def create_session(self):
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(
@@ -45,7 +53,7 @@ class SessionManager:
         if self.session is None:
             self.session = await self.create_session()
             return self.session
-            
+
         if self.session.closed:
             self.session = await self.create_session()
 
