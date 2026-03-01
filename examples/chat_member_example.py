@@ -30,4 +30,16 @@ def my_chat_m(message: types.ChatMemberUpdated):
 @bot.message_handler(content_types=util.content_type_service)
 def delall(message: types.Message):
     bot.delete_message(message.chat.id,message.message_id)
+
+
+@bot.message_handler(commands=['set_tag'])
+def set_tag(message: types.Message):
+    tag = util.extract_arguments(message.text)
+    if tag is None:
+        bot.reply_to(message, "Usage: /set_tag your_tag")
+        return
+    bot.set_chat_member_tag(message.chat.id, message.from_user.id, tag=tag)
+    bot.reply_to(message, f"Tag updated: {tag}")
+
+
 bot.infinity_polling(allowed_updates=util.update_types)
