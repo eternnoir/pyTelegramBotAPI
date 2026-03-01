@@ -35,7 +35,7 @@ async def delall(message: types.Message):
 @bot.message_handler(commands=['set_tag'])
 async def set_tag(message: types.Message):
     tag = util.extract_arguments(message.text)
-    if tag is None:
+    if not tag:
         await bot.reply_to(message, "Usage: /set_tag your_tag")
         return
     await bot.set_chat_member_tag(message.chat.id, message.from_user.id, tag=tag)
