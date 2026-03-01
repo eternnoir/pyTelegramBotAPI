@@ -5757,7 +5757,7 @@ class AsyncTeleBot:
             entities: Optional[List[types.MessageEntity]]=None):
         """
         Use this method to stream a partial message to a user while the message is being generated;
-        supported only for bots with forum topic mode enabled. Returns True on success.
+        available for all bots. Returns True on success.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessagedraft
 
@@ -5996,7 +5996,8 @@ class AsyncTeleBot:
             can_post_stories: Optional[bool]=None,
             can_edit_stories: Optional[bool]=None,
             can_delete_stories: Optional[bool]=None,
-            can_manage_direct_messages: Optional[bool]=None) -> bool:
+            can_manage_direct_messages: Optional[bool]=None,
+            can_manage_tags: Optional[bool]=None) -> bool:
         """
         Use this method to promote or demote a user in a supergroup or a channel. The bot must be an administrator
         in the chat for this to work and must have the appropriate admin rights.
@@ -6070,6 +6071,9 @@ class AsyncTeleBot:
             within the channel and decline suggested posts; for channels only
         :type can_manage_direct_messages: :obj:`bool`
 
+        :param can_manage_tags: Pass True if the administrator can manage tags in the chat
+        :type can_manage_tags: :obj:`bool`
+
         :return: True on success.
         :rtype: :obj:`bool`
         """
@@ -6084,7 +6088,8 @@ class AsyncTeleBot:
             can_edit_messages, can_delete_messages, can_invite_users,
             can_restrict_members, can_pin_messages, can_promote_members,
             is_anonymous, can_manage_chat, can_manage_video_chats, can_manage_topics,
-            can_post_stories, can_edit_stories, can_delete_stories, can_manage_direct_messages=can_manage_direct_messages
+            can_post_stories, can_edit_stories, can_delete_stories,
+            can_manage_direct_messages=can_manage_direct_messages, can_manage_tags=can_manage_tags
         )
 
     async def set_chat_administrator_custom_title(
@@ -6110,6 +6115,30 @@ class AsyncTeleBot:
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.set_chat_administrator_custom_title(self.token, chat_id, user_id, custom_title)
+
+
+    async def set_chat_member_tag(
+            self, chat_id: Union[int, str], user_id: int, tag: Optional[str]=None) -> bool:
+        """
+        Use this method to set a new tag for a member in a chat.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setchatmembertag
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup
+            (in the format @supergroupusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param user_id: Unique identifier of the target user
+        :type user_id: :obj:`int`
+
+        :param tag: New tag for the member; pass an empty string to remove the tag
+        :type tag: :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.set_chat_member_tag(self.token, chat_id, user_id, tag)
 
 
     async def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:

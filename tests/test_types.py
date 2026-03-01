@@ -313,3 +313,65 @@ def test_message_entity():
     sample_string_7 = r'{"update_id":934522167,"message":{"message_id":1374526,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en","is_premium":true},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1682179716,"reply_to_message":{"message_id":1374510,"from":{"id":927266710,"is_bot":false,"first_name":">_run","username":"coder2020","language_code":"en"},"chat":{"id":927266710,"first_name":">_run","username":"coder2020","type":"private"},"date":1712765863,"text":"text @UserName b i s u c p #hashtag https://example.com","entities":[{"offset":5,"length":9,"type":"mention"},{"offset":15,"length":1,"type":"bold"},{"offset":17,"length":1,"type":"italic"},{"offset":19,"length":1,"type":"strikethrough"},{"offset":21,"length":1,"type":"underline"},{"offset":23,"length":1,"type":"code"},{"offset":25,"length":1,"type":"spoiler"},{"offset":27,"length":8,"type":"hashtag"},{"offset":36,"length":19,"type":"url"}],"link_preview_options":{"is_disabled":true}},"quote":{"text":"text @UserName b i s u c p #hashtag https://example.com","entities":[{"offset":15,"length":1,"type":"bold"},{"offset":17,"length":1,"type":"italic"},{"offset":19,"length":1,"type":"strikethrough"},{"offset":21,"length":1,"type":"underline"},{"offset":25,"length":1,"type":"spoiler"}],"position":0,"is_manual":true},"text":"quote reply"}}'
     message_7 = types.Update.de_json(sample_string_7).message
     assert message_7.quote.html_text == 'text @UserName <b>b</b> <i>i</i> <s>s</s> <u>u</u> c <span class="tg-spoiler">p</span> #hashtag https://example.com'
+
+
+def test_message_entity_date_time():
+    entity = types.MessageEntity(
+        type='date_time',
+        offset=0,
+        length=10,
+        unix_time=1740787200,
+        date_time_format='short',
+    )
+    assert entity.type == 'date_time'
+    assert entity.to_dict()['type'] == 'date_time'
+    assert entity.to_dict()['unix_time'] == 1740787200
+    assert entity.to_dict()['date_time_format'] == 'short'
+
+
+def test_message_sender_tag():
+    jsonstring = r'{"message_id":1,"from":{"id":1,"first_name":"A","is_bot":false},"chat":{"id":1,"first_name":"A","type":"private"},"date":1435296025,"text":"hi","sender_tag":"blue"}'
+    msg = types.Message.de_json(jsonstring)
+    assert msg.sender_tag == 'blue'
+
+
+def test_chat_member_member_tag():
+    jsonstring = r'{"status":"member","user":{"id":1,"is_bot":false,"first_name":"A"},"tag":"alpha"}'
+    cm = types.ChatMember.de_json(jsonstring)
+    assert isinstance(cm, types.ChatMemberMember)
+    assert cm.tag == 'alpha'
+
+
+def test_chat_member_restricted_tag_and_can_edit_tag():
+    jsonstring = r'{"status":"restricted","user":{"id":1,"is_bot":false,"first_name":"A"},"is_member":true,"can_send_messages":true,"can_send_audios":true,"can_send_documents":true,"can_send_photos":true,"can_send_videos":true,"can_send_video_notes":true,"can_send_voice_notes":true,"can_send_polls":true,"can_send_other_messages":true,"can_add_web_page_previews":true,"can_change_info":false,"can_invite_users":false,"can_pin_messages":false,"can_manage_topics":false,"until_date":0,"tag":"beta","can_edit_tag":true}'
+    cm = types.ChatMember.de_json(jsonstring)
+    assert isinstance(cm, types.ChatMemberRestricted)
+    assert cm.tag == 'beta'
+    assert cm.can_edit_tag is True
+
+
+def test_chat_member_administrator_can_manage_tags():
+    jsonstring = r'{"status":"administrator","user":{"id":1,"is_bot":false,"first_name":"A"},"can_be_edited":true,"is_anonymous":false,"can_manage_chat":true,"can_delete_messages":true,"can_manage_video_chats":true,"can_restrict_members":true,"can_promote_members":true,"can_change_info":true,"can_invite_users":true,"can_post_stories":true,"can_edit_stories":true,"can_delete_stories":true,"can_manage_tags":true}'
+    cm = types.ChatMember.de_json(jsonstring)
+    assert isinstance(cm, types.ChatMemberAdministrator)
+    assert cm.can_manage_tags is True
+
+
+def test_chat_permissions_can_edit_tag():
+    permissions = types.ChatPermissions(can_send_messages=True, can_edit_tag=True)
+    assert permissions.to_dict()['can_edit_tag'] is True
+
+
+def test_chat_administrator_rights_can_manage_tags():
+    rights = types.ChatAdministratorRights(
+        is_anonymous=False,
+        can_manage_chat=True,
+        can_delete_messages=True,
+        can_manage_video_chats=True,
+        can_restrict_members=True,
+        can_promote_members=True,
+        can_change_info=True,
+        can_invite_users=True,
+        can_manage_tags=True,
+    )
+    assert rights.to_dict()['can_manage_tags'] is True
