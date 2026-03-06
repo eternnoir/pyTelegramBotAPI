@@ -4632,7 +4632,7 @@ class TeleBot:
         :return: True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.set_chat_member_tag(self.token, chat_id, user_id, tag)
+        return apihelper.set_chat_member_tag(self.token, chat_id, user_id, tag=tag)
 
 
     def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:

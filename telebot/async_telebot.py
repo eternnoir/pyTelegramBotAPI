@@ -6138,7 +6138,7 @@ class AsyncTeleBot:
         :return: True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.set_chat_member_tag(self.token, chat_id, user_id, tag)
+        return await asyncio_helper.set_chat_member_tag(self.token, chat_id, user_id, tag=tag)
 
 
     async def ban_chat_sender_chat(self, chat_id: Union[int, str], sender_chat_id: Union[int, str]) -> bool:
