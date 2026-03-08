@@ -13233,21 +13233,39 @@ class UniqueGiftColors(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`UniqueGiftColors`
     """
-    def __init__(self, model_custom_emoji_id: str, symbol_custom_emoji_id: str,
-                 light_theme_main_color: int, light_theme_other_colors: List[int],
-                 dark_theme_main_color: int, dark_theme_other_colors: List[int], **kwargs):
-        self.model_custom_emoji_id: str = model_custom_emoji_id
-        self.symbol_custom_emoji_id: str = symbol_custom_emoji_id
-        self.light_theme_main_color: int = light_theme_main_color
-        self.light_theme_other_colors: List[int] = light_theme_other_colors
-        self.dark_theme_main_color: int = dark_theme_main_color
-        self.dark_theme_other_colors: List[int] = dark_theme_other_colors
+    def __init__(self, model_custom_emoji_id: Optional[str] = None, 
+                 symbol_custom_emoji_id: Optional[str] = None,
+                 light_theme_main_color: Optional[int] = None, 
+                 light_theme_other_colors: Optional[List[int]] = None,
+                 dark_theme_main_color: Optional[int] = None, 
+                 dark_theme_other_colors: Optional[List[int]] = None, **kwargs):
+        self.model_custom_emoji_id: Optional[str] = model_custom_emoji_id
+        self.symbol_custom_emoji_id: Optional[str] = symbol_custom_emoji_id
+        self.light_theme_main_color: Optional[int] = light_theme_main_color
+        self.light_theme_other_colors: Optional[List[int]] = light_theme_other_colors
+        self.dark_theme_main_color: Optional[int] = dark_theme_main_color
+        self.dark_theme_other_colors: Optional[List[int]] = dark_theme_other_colors
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        return cls(**obj)
+        # Handle missing fields - all fields are optional in Telegram API
+        model_custom_emoji_id = obj.get('model_custom_emoji_id')
+        symbol_custom_emoji_id = obj.get('symbol_custom_emoji_id')
+        light_theme_main_color = obj.get('light_theme_main_color')
+        light_theme_other_colors = obj.get('light_theme_other_colors')
+        dark_theme_main_color = obj.get('dark_theme_main_color')
+        dark_theme_other_colors = obj.get('dark_theme_other_colors')
+        
+        return cls(
+            model_custom_emoji_id=model_custom_emoji_id,
+            symbol_custom_emoji_id=symbol_custom_emoji_id,
+            light_theme_main_color=light_theme_main_color,
+            light_theme_other_colors=light_theme_other_colors,
+            dark_theme_main_color=dark_theme_main_color,
+            dark_theme_other_colors=dark_theme_other_colors
+        )
 
 
 class DirectMessagesTopic(JsonDeserializable):
