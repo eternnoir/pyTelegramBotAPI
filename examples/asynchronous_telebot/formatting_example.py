@@ -1,5 +1,5 @@
 from telebot.async_telebot import AsyncTeleBot
-from telebot import formatting
+from telebot import formatting, types
 
 bot = AsyncTeleBot('token')
 
@@ -48,6 +48,23 @@ async def start_message(message):
         message.chat.id,
         formatting.hbold(message.from_user.first_name),
         parse_mode='HTML'
+    )
+
+    # Bot API 9.5: date_time entity example
+    date_text = "2026-03-01 12:00:00"
+    text = f"Local time: {date_text}"
+    await bot.send_message(
+        message.chat.id,
+        text,
+        entities=[
+            types.MessageEntity(
+                type='date_time',
+                offset=len("Local time: "),
+                length=len(date_text),
+                unix_time=1772366400,
+                date_time_format='short'
+            )
+        ]
     )
 
 import asyncio
