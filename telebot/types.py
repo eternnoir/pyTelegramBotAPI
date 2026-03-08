@@ -2909,9 +2909,9 @@ class KeyboardButtonRequestChat(Dictionaryable):
             data['chat_has_username'] = self.chat_has_username
         if self.chat_is_created is not None:
             data['chat_is_created'] = self.chat_is_created
-        if self.user_administrator_rights is not None:
+        if self.user_administrator_rights:
             data['user_administrator_rights'] = self.user_administrator_rights.to_dict()
-        if self.bot_administrator_rights is not None:
+        if self.bot_administrator_rights:
             data['bot_administrator_rights'] = self.bot_administrator_rights.to_dict()
         if self.bot_is_member is not None:
             data['bot_is_member'] = self.bot_is_member
@@ -3003,17 +3003,17 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['request_contact'] = self.request_contact
         if self.request_location is not None:
             json_dict['request_location'] = self.request_location
-        if self.request_poll is not None:
+        if self.request_poll:
             json_dict['request_poll'] = self.request_poll.to_dict()
-        if self.web_app is not None:
+        if self.web_app:
             json_dict['web_app'] = self.web_app.to_dict()
-        if self.request_users is not None:
+        if self.request_users:
             json_dict['request_users'] = self.request_users.to_dict()
-        if self.request_chat is not None:
+        if self.request_chat:
             json_dict['request_chat'] = self.request_chat.to_dict()
-        if self.icon_custom_emoji_id is not None:
+        if self.icon_custom_emoji_id:
             json_dict['icon_custom_emoji_id'] = self.icon_custom_emoji_id
-        if self.style is not None:
+        if self.style:
             json_dict['style'] = self.style
         return json_dict
 
@@ -3238,23 +3238,23 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
             json_dict['callback_data'] = self.callback_data
         if self.web_app:
             json_dict['web_app'] = self.web_app.to_dict()
-        if self.switch_inline_query is not None:
+        if self.switch_inline_query:
             json_dict['switch_inline_query'] = self.switch_inline_query
-        if self.switch_inline_query_current_chat is not None:
+        if self.switch_inline_query_current_chat:
             json_dict['switch_inline_query_current_chat'] = self.switch_inline_query_current_chat
-        if self.callback_game is not None:
+        if self.callback_game:
             json_dict['callback_game'] = self.callback_game
         if self.pay is not None:
             json_dict['pay'] = self.pay
-        if self.login_url is not None:
+        if self.login_url:
             json_dict['login_url'] = self.login_url.to_dict()
-        if self.switch_inline_query_chosen_chat is not None:
+        if self.switch_inline_query_chosen_chat:
             json_dict['switch_inline_query_chosen_chat'] = self.switch_inline_query_chosen_chat.to_dict()
-        if self.copy_text is not None:
+        if self.copy_text:
             json_dict['copy_text'] = self.copy_text.to_dict()
-        if self.icon_custom_emoji_id is not None:
+        if self.icon_custom_emoji_id:
             json_dict['icon_custom_emoji_id'] = self.icon_custom_emoji_id
-        if self.style is not None:
+        if self.style:
             json_dict['style'] = self.style
         return json_dict
 
