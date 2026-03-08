@@ -251,6 +251,62 @@ def test_chat_member_updated():
     assert cm_updated.new_chat_member.status == "left"
 
 
+def test_message_entity_date_time():
+    json_string = r'{"offset":0,"length":5,"type":"date_time","unix_time":1741392000,"date_time_format":"{date} {time}"}'
+    entity = types.MessageEntity.de_json(json_string)
+    assert entity.type == 'date_time'
+    assert entity.unix_time == 1741392000
+    assert entity.date_time_format == '{date} {time}'
+    assert entity.to_dict()['unix_time'] == 1741392000
+    assert entity.to_dict()['date_time_format'] == '{date} {time}'
+
+
+def test_message_sender_tag():
+    json_string = r'{"message_id":11,"from":{"id":108929734,"first_name":"Frank","last_name":"Wang","username":"eternnoir","is_bot":true},"chat":{"id":-1001734,"title":"Test","type":"supergroup"},"date":1741392000,"sender_tag":"Maintainer","text":"HIHI"}'
+    msg = types.Message.de_json(json_string)
+    assert msg.text == 'HIHI'
+    assert msg.sender_tag == 'Maintainer'
+
+
+def test_chat_member_member_tag():
+    json_string = r'{"user":{"id":77777777,"is_bot":false,"first_name":"Pepe"},"status":"member","tag":"alpha","until_date":0}'
+    member = types.ChatMember.de_json(json_string)
+    assert isinstance(member, types.ChatMemberMember)
+    assert member.tag == 'alpha'
+    assert member.until_date == 0
+
+
+def test_chat_member_restricted_tag_permissions():
+    json_string = r'{"user":{"id":77777777,"is_bot":false,"first_name":"Pepe"},"status":"restricted","tag":"beta","is_member":true,"can_send_messages":true,"can_send_audios":true,"can_send_documents":true,"can_send_photos":true,"can_send_videos":true,"can_send_video_notes":true,"can_send_voice_notes":true,"can_send_polls":true,"can_send_other_messages":false,"can_add_web_page_previews":true,"can_edit_tag":true,"can_change_info":false,"can_invite_users":true,"can_pin_messages":false,"can_manage_topics":false,"until_date":1741392000}'
+    member = types.ChatMember.de_json(json_string)
+    assert isinstance(member, types.ChatMemberRestricted)
+    assert member.tag == 'beta'
+    assert member.can_edit_tag is True
+
+
+def test_chat_member_admin_can_manage_tags():
+    json_string = r'{"user":{"id":77777777,"is_bot":false,"first_name":"Pepe"},"status":"administrator","can_be_edited":true,"is_anonymous":false,"can_manage_chat":true,"can_delete_messages":true,"can_manage_video_chats":true,"can_restrict_members":true,"can_promote_members":true,"can_change_info":true,"can_invite_users":true,"can_post_stories":true,"can_edit_stories":true,"can_delete_stories":true,"can_manage_tags":true}'
+    member = types.ChatMember.de_json(json_string)
+    assert isinstance(member, types.ChatMemberAdministrator)
+    assert member.can_manage_tags is True
+
+
+def test_chat_permissions_can_edit_tag():
+    permissions = types.ChatPermissions(can_send_messages=True, can_edit_tag=True)
+    assert permissions.can_edit_tag is True
+    assert permissions.to_dict()['can_edit_tag'] is True
+
+
+def test_chat_administrator_rights_can_manage_tags():
+    rights = types.ChatAdministratorRights(
+        is_anonymous=False, can_manage_chat=True, can_delete_messages=True,
+        can_manage_video_chats=True, can_restrict_members=True, can_promote_members=True,
+        can_change_info=True, can_invite_users=True, can_manage_tags=True
+    )
+    assert rights.can_manage_tags is True
+    assert rights.to_dict()['can_manage_tags'] is True
+
+
 def test_webhook_info():
     json_string = r'{"url": "https://example.com/webhook", "has_custom_certificate": true, "pending_update_count": 1, "last_error_date": 0, "last_error_message": "", "last_synchronization_error_date": 489309, "max_connections": 40, "allowed_updates": ["message"]}'
     webhook_info = types.WebhookInfo.de_json(json_string)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import warnings
+import asyncio
 
 sys.path.append('../')
 
@@ -33,6 +34,90 @@ def deprecated2_new_function():
 @util.deprecated(alternative=deprecated2_new_function)
 def deprecated2_old_function():
     print("deprecated2_old_function")
+
+
+def test_set_chat_member_tag_forwards_to_apihelper(monkeypatch):
+    from telebot import apihelper
+
+    captured = {}
+    bot = telebot.TeleBot('123:TEST')
+
+    def fake_set_chat_member_tag(token, chat_id, user_id, tag=None):
+        captured['token'] = token
+        captured['chat_id'] = chat_id
+        captured['user_id'] = user_id
+        captured['tag'] = tag
+        return True
+
+    monkeypatch.setattr(apihelper, 'set_chat_member_tag', fake_set_chat_member_tag)
+
+    assert bot.set_chat_member_tag(-100123, 777, 'alpha') is True
+    assert captured == {'token': '123:TEST', 'chat_id': -100123, 'user_id': 777, 'tag': 'alpha'}
+
+
+def test_promote_chat_member_forwards_can_manage_tags(monkeypatch):
+    from telebot import apihelper
+
+    captured = {}
+    bot = telebot.TeleBot('123:TEST')
+
+    def fake_promote_chat_member(token, chat_id, user_id, **kwargs):
+        captured['token'] = token
+        captured['chat_id'] = chat_id
+        captured['user_id'] = user_id
+        captured['kwargs'] = kwargs
+        return True
+
+    monkeypatch.setattr(apihelper, 'promote_chat_member', fake_promote_chat_member)
+
+    assert bot.promote_chat_member(-100123, 777, can_manage_tags=True) is True
+    assert captured['token'] == '123:TEST'
+    assert captured['chat_id'] == -100123
+    assert captured['user_id'] == 777
+    assert captured['kwargs']['can_manage_tags'] is True
+
+
+def test_async_set_chat_member_tag_forwards_to_asyncio_helper(monkeypatch):
+    from telebot import asyncio_helper
+    from telebot.async_telebot import AsyncTeleBot
+
+    captured = {}
+    bot = AsyncTeleBot('123:TEST')
+
+    async def fake_set_chat_member_tag(token, chat_id, user_id, tag=None):
+        captured['token'] = token
+        captured['chat_id'] = chat_id
+        captured['user_id'] = user_id
+        captured['tag'] = tag
+        return True
+
+    monkeypatch.setattr(asyncio_helper, 'set_chat_member_tag', fake_set_chat_member_tag)
+
+    assert asyncio.run(bot.set_chat_member_tag(-100123, 777, 'alpha')) is True
+    assert captured == {'token': '123:TEST', 'chat_id': -100123, 'user_id': 777, 'tag': 'alpha'}
+
+
+def test_async_promote_chat_member_forwards_can_manage_tags(monkeypatch):
+    from telebot import asyncio_helper
+    from telebot.async_telebot import AsyncTeleBot
+
+    captured = {}
+    bot = AsyncTeleBot('123:TEST')
+
+    async def fake_promote_chat_member(token, chat_id, user_id, *args, **kwargs):
+        captured['token'] = token
+        captured['chat_id'] = chat_id
+        captured['user_id'] = user_id
+        captured['kwargs'] = kwargs
+        return True
+
+    monkeypatch.setattr(asyncio_helper, 'promote_chat_member', fake_promote_chat_member)
+
+    assert asyncio.run(bot.promote_chat_member(-100123, 777, can_manage_tags=True)) is True
+    assert captured['token'] == '123:TEST'
+    assert captured['chat_id'] == -100123
+    assert captured['user_id'] == 777
+    assert captured['kwargs']['can_manage_tags'] is True
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:

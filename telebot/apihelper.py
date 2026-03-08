@@ -1287,7 +1287,7 @@ def promote_chat_member(
         can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
         is_anonymous=None, can_manage_chat=None, can_manage_video_chats=None,
         can_manage_topics=None, can_post_stories=None, can_edit_stories=None,
-        can_delete_stories=None, can_manage_direct_messages=None):
+        can_delete_stories=None, can_manage_direct_messages=None, can_manage_tags=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -1322,6 +1322,8 @@ def promote_chat_member(
         payload['can_delete_stories'] = can_delete_stories
     if can_manage_direct_messages is not None:
         payload['can_manage_direct_messages'] = can_manage_direct_messages
+    if can_manage_tags is not None:
+        payload['can_manage_tags'] = can_manage_tags
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -1330,6 +1332,14 @@ def set_chat_administrator_custom_title(token, chat_id, user_id, custom_title):
     payload = {
         'chat_id': chat_id, 'user_id': user_id, 'custom_title': custom_title
     }
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def set_chat_member_tag(token, chat_id, user_id, tag=None):
+    method_url = 'setChatMemberTag'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    if tag is not None:
+        payload['tag'] = tag
     return _make_request(token, method_url, params=payload, method='post')
 
 

@@ -984,6 +984,9 @@ class Message(JsonDeserializable):
     :param sender_business_bot info: Optional. Information about the business bot that sent the message
     :type sender_business_bot_info: :class:`telebot.types.User`
 
+    :param sender_tag: Optional. Tag or custom title of the sender of the message; for supergroups only
+    :type sender_tag: :obj:`str`
+
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
 
@@ -1534,6 +1537,8 @@ class Message(JsonDeserializable):
             opts['reply_to_story'] = Story.de_json(obj['reply_to_story'])
         if 'sender_business_bot' in obj:
             opts['sender_business_bot'] = User.de_json(obj['sender_business_bot'])
+        if 'sender_tag' in obj:
+            opts['sender_tag'] = obj['sender_tag']
         if 'business_connection_id' in obj:
             opts['business_connection_id'] = obj['business_connection_id']
         if 'is_from_offline' in obj:
@@ -1707,6 +1712,7 @@ class Message(JsonDeserializable):
         self.sender_boost_count: Optional[int] = None
         self.reply_to_story: Optional[Story] = None
         self.sender_business_bot: Optional[User] = None
+        self.sender_tag: Optional[str] = None
         self.business_connection_id: Optional[str] = None
         self.is_from_offline: Optional[bool] = None
         self.effect_id: Optional[str] = None
@@ -1859,7 +1865,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
         “bot_command” (/start@jobs_bot), “url” (https://telegram.org), “email” (do-not-reply@telegram.org), “phone_number” (+1-212-555-0123), “bold” (bold text),
         “italic” (italic text), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation),
         “expandable_blockquote” (collapsed-by-default block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs),
-        “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers)
+        “text_mention” (for users without usernames), “custom_emoji” (for inline custom emoji stickers), “date_time” (for formatted date and time)
     :type type: :obj:`str`
 
     :param offset: Offset in UTF-16 code units to the start of the entity
@@ -1880,6 +1886,12 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
     :param custom_emoji_id: Optional. For “custom_emoji” only, unique identifier of the custom emoji.
         Use get_custom_emoji_stickers to get full information about the sticker.
     :type custom_emoji_id: :obj:`str`
+
+    :param unix_time: Optional. For “date_time” only, the Unix time associated with the entity
+    :type unix_time: :obj:`int`
+
+    :param date_time_format: Optional. For “date_time” only, the string that defines the formatting of the date and time
+    :type date_time_format: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.MessageEntity`
@@ -1904,7 +1916,8 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
             obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
-    def __init__(self, type, offset, length, url=None, user=None, language=None, custom_emoji_id=None, **kwargs):
+    def __init__(self, type, offset, length, url=None, user=None, language=None, custom_emoji_id=None,
+                 unix_time=None, date_time_format=None, **kwargs):
         self.type: str = type
         self.offset: int = offset
         self.length: int = length
@@ -1912,6 +1925,8 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
         self.user: User = user
         self.language: str = language
         self.custom_emoji_id: Optional[str] = custom_emoji_id
+        self.unix_time: Optional[int] = unix_time
+        self.date_time_format: Optional[str] = date_time_format
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -1923,7 +1938,9 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
                 "url": self.url,
                 "user": self.user.to_dict() if self.user else None,
                 "language": self.language,
-                "custom_emoji_id": self.custom_emoji_id}
+                "custom_emoji_id": self.custom_emoji_id,
+                "unix_time": self.unix_time,
+                "date_time_format": self.date_time_format}
 
 
 class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
@@ -3555,6 +3572,9 @@ class ChatMemberAdministrator(ChatMember):
     :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
     :type can_manage_direct_messages: :obj:`bool`
 
+    :param can_manage_tags: Optional. True, if the administrator can edit the tags of regular members; for groups and supergroups only
+    :type can_manage_tags: :obj:`bool`
+
     :param custom_title: Optional. Custom title for this user
     :type custom_title: :obj:`str`
 
@@ -3564,7 +3584,8 @@ class ChatMemberAdministrator(ChatMember):
     def __init__(self, user, status, can_be_edited, is_anonymous, can_manage_chat, can_delete_messages,
                  can_manage_video_chats, can_restrict_members, can_promote_members, can_change_info, can_invite_users,
                  can_post_stories, can_edit_stories, can_delete_stories, can_post_messages=None, can_edit_messages=None,
-                 can_pin_messages=None, can_manage_topics=None, custom_title=None, can_manage_direct_messages=None, **kwargs):
+                 can_pin_messages=None, can_manage_topics=None, custom_title=None, can_manage_direct_messages=None,
+                 can_manage_tags=None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.can_be_edited: bool = can_be_edited
         self.is_anonymous: bool = is_anonymous
@@ -3584,6 +3605,7 @@ class ChatMemberAdministrator(ChatMember):
         self.can_manage_topics: Optional[bool] = can_manage_topics
         self.custom_title: Optional[str] = custom_title
         self.can_manage_direct_messages: Optional[bool] = can_manage_direct_messages
+        self.can_manage_tags: Optional[bool] = can_manage_tags
 
     @property
     def can_manage_voice_chats(self):
@@ -3604,15 +3626,19 @@ class ChatMemberMember(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
+    :param tag: Optional. Tag of the member
+    :type tag: :obj:`str`
+
     :param until_date: Optional. Date when the user's subscription will expire; Unix time. If 0, then the user is a member forever
     :type until_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberMember`
     """
-    def __init__(self, user, status, until_date=None, **kwargs):
+    def __init__(self, user, status, until_date=None, tag=None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.until_date: Optional[int] = until_date
+        self.tag: Optional[str] = tag
 
 
 # noinspection PyUnresolvedReferences
@@ -3627,6 +3653,9 @@ class ChatMemberRestricted(ChatMember):
 
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
+
+    :param tag: Optional. Tag of the member
+    :type tag: :obj:`str`
 
     :param is_member: True, if the user is a member of the chat at the moment of the request
     :type is_member: :obj:`bool`
@@ -3661,6 +3690,9 @@ class ChatMemberRestricted(ChatMember):
     :param can_add_web_page_previews: True, if the user is allowed to add web page previews to their messages
     :type can_add_web_page_previews: :obj:`bool`
 
+    :param can_edit_tag: True, if the user is allowed to edit their own tag
+    :type can_edit_tag: :obj:`bool`
+
     :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
     :type can_change_info: :obj:`bool`
 
@@ -3683,8 +3715,9 @@ class ChatMemberRestricted(ChatMember):
                  can_send_photos, can_send_videos, can_send_video_notes, can_send_voice_notes, can_send_polls,
                  can_send_other_messages, can_add_web_page_previews,
                  can_change_info, can_invite_users, can_pin_messages, can_manage_topics,
-                 until_date=None, **kwargs):
+                 until_date=None, tag=None, can_edit_tag=None, **kwargs):
         super().__init__(user, status, **kwargs)
+        self.tag: Optional[str] = tag
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
         self.can_send_audios: bool = can_send_audios
@@ -3696,6 +3729,7 @@ class ChatMemberRestricted(ChatMember):
         self.can_send_polls: bool = can_send_polls
         self.can_send_other_messages: bool = can_send_other_messages
         self.can_add_web_page_previews: bool = can_add_web_page_previews
+        self.can_edit_tag: Optional[bool] = can_edit_tag
         self.can_change_info: bool = can_change_info
         self.can_invite_users: bool = can_invite_users
         self.can_pin_messages: bool = can_pin_messages
@@ -3784,6 +3818,9 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         messages
     :type can_add_web_page_previews: :obj:`bool`
 
+    :param can_edit_tag: Optional. True, if the user is allowed to edit their own tag
+    :type can_edit_tag: :obj:`bool`
+
     :param can_change_info: Optional. True, if the user is allowed to change the chat title, photo and other settings.
         Ignored in public supergroups
     :type can_change_info: :obj:`bool`
@@ -3816,11 +3853,12 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
                     can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
                     can_add_web_page_previews=None, can_change_info=None,
                     can_invite_users=None, can_pin_messages=None,
-                    can_manage_topics=None, **kwargs):
+                    can_manage_topics=None, can_edit_tag=None, **kwargs):
         self.can_send_messages: Optional[bool] = can_send_messages
         self.can_send_polls: Optional[bool] = can_send_polls
         self.can_send_other_messages: Optional[bool] = can_send_other_messages
         self.can_add_web_page_previews: Optional[bool] = can_add_web_page_previews
+        self.can_edit_tag: Optional[bool] = can_edit_tag
         self.can_change_info: Optional[bool] = can_change_info
         self.can_invite_users: Optional[bool] = can_invite_users
         self.can_pin_messages: Optional[bool] = can_pin_messages
@@ -3870,6 +3908,8 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             json_dict['can_send_other_messages'] = self.can_send_other_messages
         if self.can_add_web_page_previews is not None:
             json_dict['can_add_web_page_previews'] = self.can_add_web_page_previews
+        if self.can_edit_tag is not None:
+            json_dict['can_edit_tag'] = self.can_edit_tag
         if self.can_change_info is not None:
             json_dict['can_change_info'] = self.can_change_info
         if self.can_invite_users is not None:
@@ -8053,6 +8093,9 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
     :type can_manage_direct_messages: :obj:`bool`
 
+    :param can_manage_tags: Optional. True, if the administrator can edit the tags of regular members; for groups and supergroups only
+    :type can_manage_tags: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatAdministratorRights`
     """
@@ -8070,6 +8113,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         can_pin_messages: Optional[bool]=None, can_manage_topics: Optional[bool]=None,
         can_post_stories: Optional[bool]=None, can_edit_stories: Optional[bool]=None,
         can_delete_stories: Optional[bool]=None, can_manage_direct_messages: Optional[bool]=None,
+        can_manage_tags: Optional[bool]=None,
         **kwargs
         ) -> None:
 
@@ -8089,6 +8133,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
         self.can_edit_stories: Optional[bool] = can_edit_stories
         self.can_delete_stories: Optional[bool] = can_delete_stories
         self.can_manage_direct_messages: Optional[bool] = can_manage_direct_messages
+        self.can_manage_tags: Optional[bool] = can_manage_tags
 
     def to_dict(self):
         json_dict = {
@@ -8117,6 +8162,8 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
             json_dict['can_delete_stories'] = self.can_delete_stories
         if self.can_manage_direct_messages is not None:
             json_dict['can_manage_direct_messages'] = self.can_manage_direct_messages
+        if self.can_manage_tags is not None:
+            json_dict['can_manage_tags'] = self.can_manage_tags
 
         return json_dict
 
