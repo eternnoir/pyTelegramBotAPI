@@ -15,6 +15,7 @@ from telebot import types
 from telebot import util
 
 should_skip = 'TOKEN' and 'CHAT_ID' not in os.environ
+TEST_MEMBER_ID = os.environ.get('TEST_MEMBER_ID')
 
 if not should_skip:
     TOKEN = os.environ['TOKEN']
@@ -356,6 +357,23 @@ class TestTeleBot:
         ret_msg = tb.send_message(CHAT_ID, text)
         assert ret_msg.message_id
 
+    def test_send_message_with_date_time_entity(self):
+        text = 'TIME'
+        unix_time = 1772945068
+        tb = telebot.TeleBot(TOKEN)
+        entity = types.MessageEntity(
+            type='date_time',
+            offset=0,
+            length=len(text),
+            unix_time=unix_time,
+            date_time_format='Dt'
+        )
+        ret_msg = tb.send_message(CHAT_ID, text, entities=[entity])
+        assert ret_msg.message_id
+        assert ret_msg.entities[0].type == 'date_time'
+        assert ret_msg.entities[0].unix_time == unix_time
+        assert ret_msg.entities[0].date_time_format == 'Dt'
+
     def test_send_dice(self):
         tb = telebot.TeleBot(TOKEN)
         ret_msg = tb.send_dice(CHAT_ID, emoji='🎯')
@@ -517,6 +535,27 @@ class TestTeleBot:
         tb = telebot.TeleBot(TOKEN)
         cn = tb.get_chat_members_count(GROUP_ID)
         assert cn > 1
+
+    @pytest.mark.skipif(TEST_MEMBER_ID is None, reason="No TEST_MEMBER_ID configured")
+    def test_set_chat_member_tag(self):
+        tb = telebot.TeleBot(TOKEN)
+        user_id = int(TEST_MEMBER_ID)
+        test_tag = 'ci95check'
+        member = tb.get_chat_member(GROUP_ID, user_id)
+        old_tag = getattr(member, 'tag', None)
+        if old_tag == test_tag:
+            test_tag = 'ci95smoke'
+
+        assert member.status == 'member'
+
+        try:
+            assert tb.set_chat_member_tag(GROUP_ID, user_id, test_tag) is True
+            updated_member = tb.get_chat_member(GROUP_ID, user_id)
+            assert updated_member.tag == test_tag
+        finally:
+            tb.set_chat_member_tag(GROUP_ID, user_id, old_tag)
+            restored_member = tb.get_chat_member(GROUP_ID, user_id)
+            assert getattr(restored_member, 'tag', None) == old_tag
 
     def test_export_chat_invite_link(self):
         tb = telebot.TeleBot(TOKEN)
