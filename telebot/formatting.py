@@ -391,6 +391,7 @@ def apply_html_entities(text: str, entities: Optional[List]=None, custom_subs: O
         "underline": "<u>{text}</u>",
         "spoiler": "<span class=\"tg-spoiler\">{text}</span>",
         "custom_emoji": "<tg-emoji emoji-id=\"{custom_emoji_id}\">{text}</tg-emoji>",
+        "date_time": "<tg-time unix=\"{unix_time}\" format=\"{date_time_format}\">{text}</tg-time>",
         "blockquote": "<blockquote>{text}</blockquote>",
         "expandable_blockquote": "<blockquote expandable>{text}</blockquote>",
     }
@@ -422,9 +423,11 @@ def apply_html_entities(text: str, entities: Optional[List]=None, custom_subs: O
         #     username = content[1:]  # Remove @ symbol
         #     return f"<a href=\"https://t.me/{username}\">{content}</a>"
         elif entity_type == "text_link" and hasattr(entity, 'url'):
-            return f"<a href=\"{entity.url}\">{content}</a>"
+            return _subs["text_link"].format(url=entity.url, text=content)
         elif entity_type == "custom_emoji" and hasattr(entity, 'custom_emoji_id'):
-            return f"<tg-emoji emoji-id=\"{entity.custom_emoji_id}\">{content}</tg-emoji>"
+            return _subs["custom_emoji"].format(custom_emoji_id=entity.custom_emoji_id, text=content)
+        elif entity_type == "date_time" and hasattr(entity, 'unix_time') and hasattr(entity, 'date_time_format'):
+            return _subs["date_time"].format(unix=entity.unix_time, date_time_format=entity.date_time_format, text=content)
         elif entity_type == "pre" and hasattr(entity, 'language') and entity.language:
             return f"<pre><code class=\"language-{entity.language}\">{content}</code></pre>"
         elif entity_type in _subs:
