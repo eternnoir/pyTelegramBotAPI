@@ -191,6 +191,7 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
+        self._background_tasks = set()
 
         if validate_token:
             util.validate_token(self.token)
@@ -453,7 +454,9 @@ class AsyncTeleBot:
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         # noinspection PyAsyncCall
-                        asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
+                        task = asyncio.create_task(self.process_new_updates(updates))
+                        self._background_tasks.add(task)
+                        task.add_done_callback(self._background_tasks.discard)
                     if interval: await asyncio.sleep(interval)
                     error_interval = 0.25 # drop error_interval if no errors
 
