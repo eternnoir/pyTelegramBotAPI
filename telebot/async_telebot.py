@@ -191,6 +191,7 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
+        self._background_tasks: set[asyncio.Task[Any]] = set()
 
         if validate_token:
             util.validate_token(self.token)
@@ -453,7 +454,9 @@ class AsyncTeleBot:
                     if updates:
                         self.offset = updates[-1].update_id + 1
                         # noinspection PyAsyncCall
-                        asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
+                        task = asyncio.create_task(self.process_new_updates(updates))
+                        self._background_tasks.add(task)
+                        task.add_done_callback(self._on_background_task_done)
                     if interval: await asyncio.sleep(interval)
                     error_interval = 0.25 # drop error_interval if no errors
 
@@ -502,8 +505,44 @@ class AsyncTeleBot:
                         break
         finally:
             self._polling = False
+            await self._shutdown_background_tasks()
             await self.close_session()
             logger.warning('Polling is stopped.')
+
+    async def _shutdown_background_tasks(self, timeout: float = 5.0):
+        if not self._background_tasks:
+            return
+
+        tasks = tuple(self._background_tasks)
+        done, pending = await asyncio.wait(tasks, timeout=timeout)
+
+        for task in pending:
+            task.cancel()
+
+        if pending:
+            await asyncio.gather(*pending, return_exceptions=True)
+
+        # Drain done tasks and propagate through normal exception handling flow
+        for task in done:
+            await self._process_background_task_result(task)
+
+    def _on_background_task_done(self, task: asyncio.Task[Any]):
+        self._background_tasks.discard(task)
+        # Avoid "Task exception was never retrieved"; _process_background_task_result
+        # forwards errors to exception_handler/logger.
+        self._loop_create_task(self._process_background_task_result(task))
+
+    async def _process_background_task_result(self, task: asyncio.Task[Any]):
+        if task.cancelled():
+            return
+
+        try:
+            task.result()
+        except Exception as e:
+            handled = await self._handle_exception(e)
+            if not handled:
+                logger.error('Unhandled exception in background update task (full traceback for debug level): %s', str(e))
+                logger.debug(traceback.format_exc())
 
     @staticmethod
     def _loop_create_task(coro):
