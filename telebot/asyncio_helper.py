@@ -1609,6 +1609,16 @@ async def get_business_connection(token, business_connection_id):
     payload = {'business_connection_id': business_connection_id}
     return await _process_request(token, method_url, params=payload , method='post')
 
+async def get_managed_bot_token(token, user_id):
+    method_url = 'getManagedBotToken'
+    payload = {'user_id': user_id}
+    return await _process_request(token, method_url, params=payload , method='post')
+
+async def replace_managed_bot_token(token, user_id):
+    method_url = 'replaceManagedBotToken'
+    payload = {'user_id': user_id}
+    return await _process_request(token, method_url, params=payload , method='post')
+
 async def delete_my_commands(token, scope=None, language_code=None):
     method_url = r'deleteMyCommands'
     payload = {}

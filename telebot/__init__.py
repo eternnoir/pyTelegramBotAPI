@@ -5240,6 +5240,33 @@ class TeleBot:
             apihelper.get_business_connection(self.token, business_connection_id)
         )
 
+    def get_managed_bot_token(self, user_id: int) -> str:
+        """
+        Use this method to get the token of a managed bot. Returns the token as String on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmanagedbottoken
+
+        :param user_id: User identifier of the managed bot whose token will be returned
+        :type user_id: :obj:`int`
+
+        :return: Returns the token as String on success.
+        :rtype: :obj:`str`
+        """
+        return apihelper.get_managed_bot_token(self.token, user_id)
+
+    def replace_managed_bot_token(self, user_id: int) -> str:
+        """
+        Use this method to revoke the current token of a managed bot and generate a new one. Returns the new token as String on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#replacemanagedbottoken
+
+        :param user_id: User identifier of the managed bot whose token will be replaced
+        :type user_id: :obj:`int`
+
+        :return: Returns the new token as String on success.
+        :rtype: :obj:`str`
+        """
+        return apihelper.replace_managed_bot_token(self.token, user_id)
 
     def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
