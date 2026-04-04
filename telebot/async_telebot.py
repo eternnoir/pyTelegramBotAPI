@@ -7675,10 +7675,11 @@ class AsyncTeleBot:
         :param explanation_parse_mode: Mode for parsing entities in the explanation. See formatting options for more details.
         :type explanation_parse_mode: :obj:`str`
 
-        :param open_period: Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
+        :param open_period: Amount of time in seconds the poll will be active after creation, 5-2628000. Can't be used together with close_date.
         :type open_period: :obj:`int`
 
         :param close_date: Point in time (Unix timestamp) when the poll will be automatically closed.
+            Must be at least 5 and no more than 2628000 seconds in the future. Can't be used together with open_period.
         :type close_date: :obj:`int` | :obj:`datetime`
 
         :param is_closed: Pass True, if the poll needs to be immediately closed. This can be useful for poll preview.

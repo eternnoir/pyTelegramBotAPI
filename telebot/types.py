@@ -7545,6 +7545,9 @@ class Poll(JsonDeserializable):
     :param question_entities: Optional. Special entities that appear in the question. Currently, only custom emoji entities are allowed in poll questions
     :type question_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param allows_revoting: True, if the poll allows to change the chosen answer options
+    :type allows_revoting: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Poll`
     """
@@ -7570,7 +7573,7 @@ class Poll(JsonDeserializable):
             type: str = None, allows_multiple_answers: bool = None,
             explanation: str = None, explanation_entities: List[MessageEntity] = None, open_period: int = None,
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
-            correct_option_ids: List[int] = None,
+            correct_option_ids: List[int] = None, allows_revoting: bool = None,
             **kwargs):
         self.id: str = poll_id
         self.question: str = question
@@ -7590,6 +7593,7 @@ class Poll(JsonDeserializable):
         self.open_period: int = open_period
         self.close_date: int = close_date
         self.correct_option_ids: List[int] = correct_option_ids
+        self.allows_revoting: bool = allows_revoting
         
     @property
     def correct_option_id(self) -> Optional[int]:
