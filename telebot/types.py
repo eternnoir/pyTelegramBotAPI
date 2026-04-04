@@ -518,6 +518,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param allows_users_to_create_topics: Optional. True, if the bot allows users to create and delete topics in private chats. Returned only in getMe.
     :type allows_users_to_create_topics: :obj:`bool`
 
+    :param can_manage_bots: Optional. True, if other bots can be created to be controlled by the bot. Returned only in getMe.
+    :type can_manage_bots: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.User`
     """
@@ -531,7 +534,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
-                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, **kwargs):
+                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -547,7 +550,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.has_main_web_app: Optional[bool] = has_main_web_app
         self.has_topics_enabled: Optional[bool] = has_topics_enabled
         self.allows_users_to_create_topics: Optional[bool] = allows_users_to_create_topics
-
+        self.can_manage_bots: Optional[bool] = can_manage_bots
     @property
     def full_name(self) -> str:
         """
@@ -576,7 +579,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'can_connect_to_business': self.can_connect_to_business,
                 'has_main_web_app': self.has_main_web_app,
                 'has_topics_enabled': self.has_topics_enabled,
-                'allows_users_to_create_topics': self.allows_users_to_create_topics
+                'allows_users_to_create_topics': self.allows_users_to_create_topics,
+                'can_manage_bots': self.can_manage_bots
                 }
 
 
@@ -2970,6 +2974,11 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
     :type request_chat: :class:`telebot.types.KeyboardButtonRequestChat`
 
+    :param request_managed_bot: Optional. If specified, pressing the button will ask the user to create and share a bot
+        that will be managed by the current bot. Available for bots that enabled management of other bots in the @BotFather
+        Mini App. Available in private chats only.
+    :type request_managed_bot: :class:`telebot.types.KeyboardButtonRequestManagedBot`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButton`
     """
@@ -2977,7 +2986,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
             web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
             request_chat: Optional[KeyboardButtonRequestChat]=None, request_users: Optional[KeyboardButtonRequestUsers]=None,
-            icon_custom_emoji_id: Optional[str]=None, style: Optional[str]=None, **kwargs):
+            icon_custom_emoji_id: Optional[str]=None, style: Optional[str]=None, request_managed_bot: Optional[KeyboardButtonRequestManagedBot]=None):
         self.text: str = text
         self.request_contact: Optional[bool] = request_contact
         self.request_location: Optional[bool] = request_location
@@ -2987,6 +2996,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         self.request_users: Optional[KeyboardButtonRequestUsers] = request_users
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
         self.style: Optional[str] = style
+        self.request_managed_bot: Optional[KeyboardButtonRequestManagedBot] = request_managed_bot
         if request_user is not None:
             log_deprecation_warning('The parameter "request_user" is deprecated, use "request_users" instead')
             if self.request_users is None:
@@ -3015,6 +3025,8 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['icon_custom_emoji_id'] = self.icon_custom_emoji_id
         if self.style is not None:
             json_dict['style'] = self.style
+        if self.request_managed_bot is not None:
+            json_dict['request_managed_bot'] = self.request_managed_bot.to_dict()
         return json_dict
 
 
@@ -13654,4 +13666,43 @@ class UserProfileAudios(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['audios'] = [Audio.de_json(audio) for audio in obj['audios']]
         return cls(**obj)
+    
+
+class KeyboardButtonRequestManagedBot(JsonSerializable):
+    """
+    This object defines the parameters for the creation of a managed bot.
+    Information about the created bot will be shared with the bot using the update managed_bot and a Message with
+    the field managed_bot_created.
+
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestmanagedbot
+
+    :param request_id: Signed 32-bit identifier of the request. Must be unique within the message
+    :type request_id: :obj:`int`
+
+    :param suggested_name: Optional. Suggested name for the bot
+    :type suggested_name: :obj:`str`
+
+    :param suggested_username: Optional. Suggested username for the bot
+    :type suggested_username: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`KeyboardButtonRequestManagedBot`
+    """
+    def __init__(self, request_id: int, suggested_name: Optional[str] = None, suggested_username: Optional[str] = None, **kwargs):
+        self.request_id: int = request_id
+        self.suggested_name: Optional[str] = suggested_name
+        self.suggested_username: Optional[str] = suggested_username
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'request_id': self.request_id
+        }
+        if self.suggested_name:
+            data['suggested_name'] = self.suggested_name
+        if self.suggested_username:
+            data['suggested_username'] = self.suggested_username
+        return data
     
