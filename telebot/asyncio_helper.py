@@ -1,5 +1,6 @@
 import asyncio # for future uses
 import ssl
+import threading
 import aiohttp
 import certifi
 from telebot import types
@@ -30,9 +31,16 @@ REQUEST_LIMIT = 50
 
 class SessionManager:
     def __init__(self) -> None:
-        self.session = None
+        self._local = threading.local()
         self.ssl_context = ssl.create_default_context(cafile=certifi.where())
 
+    @property
+    def session(self):
+        return getattr(self._local, 'session', None)
+
+    @session.setter
+    def session(self, value):
+        self._local.session = value
 
     async def create_session(self):
         self.session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(
@@ -45,7 +53,7 @@ class SessionManager:
         if self.session is None:
             self.session = await self.create_session()
             return self.session
-            
+
         if self.session.closed:
             self.session = await self.create_session()
 
@@ -1281,7 +1289,7 @@ async def promote_chat_member(
         can_restrict_members=None, can_pin_messages=None, can_promote_members=None,
         is_anonymous=None, can_manage_chat=None, can_manage_video_chats=None, can_manage_topics=None,
         can_post_stories=None, can_edit_stories=None, can_delete_stories=None, 
-        can_manage_direct_messages=None):
+        can_manage_direct_messages=None, can_manage_tags=None):
     method_url = 'promoteChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}
     if can_change_info is not None:
@@ -1316,6 +1324,8 @@ async def promote_chat_member(
         payload['can_delete_stories'] = can_delete_stories
     if can_manage_direct_messages is not None:
         payload['can_manage_direct_messages'] = can_manage_direct_messages
+    if can_manage_tags is not None:
+        payload['can_manage_tags'] = can_manage_tags
     return await _process_request(token, method_url, params=payload, method='post')
 
 
@@ -1324,6 +1334,14 @@ async def set_chat_administrator_custom_title(token, chat_id, user_id, custom_ti
     payload = {
         'chat_id': chat_id, 'user_id': user_id, 'custom_title': custom_title
     }
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def set_chat_member_tag(token, chat_id, user_id, tag=None):
+    method_url = 'setChatMemberTag'
+    payload = {'chat_id': chat_id, 'user_id': user_id}
+    if tag is not None:
+        payload['tag'] = tag
     return await _process_request(token, method_url, params=payload, method='post')
 
 
