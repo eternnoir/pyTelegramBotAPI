@@ -3260,6 +3260,23 @@ class AsyncTeleBot:
         result = await asyncio_helper.save_prepared_inline_message(self.token, user_id, result, allow_user_chats, allow_bot_chats, allow_group_chats, allow_channel_chats)
         return types.PreparedInlineMessage.de_json(result)
 
+    async def save_prepared_keyboard_button(self, user_id: int, button: types.KeyboardButton) -> types.PreparedKeyboardButton:
+        """
+        Stores a keyboard button that can be used by a user within a Mini App. Returns a PreparedKeyboardButton object.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#savepreparedkeyboardbutton
+
+        :param user_id: Unique identifier of the target user that can use the button
+        :type user_id: :obj:`int`
+
+        :param button: A JSON-serialized object describing the button to be saved. The button must be of the type request_users, request_chat, or request_managed_bot
+        :type button: :class:`telebot.types.KeyboardButton`
+
+        :return: :class:`telebot.types.PreparedKeyboardButton`
+        """
+        result = await asyncio_helper.save_prepared_keyboard_button(self.token, user_id, button)
+        return types.PreparedKeyboardButton.de_json(result)
+
     async def get_chat_member(self, chat_id: Union[int, str], user_id: int) -> types.ChatMember:
         """
         Use this method to get information about a member of a chat. Returns a ChatMember object on success.

@@ -8167,6 +8167,25 @@ class TeleBot:
                 self.token, user_id, result, allow_user_chats=allow_user_chats, allow_bot_chats=allow_bot_chats,
                 allow_group_chats=allow_group_chats, allow_channel_chats=allow_channel_chats)
         )
+    
+    def save_prepared_keyboard_button(self, user_id: int, button: types.KeyboardButton) -> types.PreparedKeyboardButton:
+        """
+        Use this method to store a keyboard button that can be used by a user within a Mini App. Returns a PreparedKeyboardButton object.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#savepreparedkeyboardbutton
+
+        :param user_id: Unique identifier of the target user that can use the button
+        :type user_id: :obj:`int`
+
+        :param button: A JSON-serialized object describing the button to be saved. The button must be of the type request_users, request_chat, or request_managed_bot
+        :type button: :class:`telebot.types.KeyboardButton`
+
+        :return: On success, a PreparedKeyboardButton object is returned.
+        :rtype: :class:`telebot.types.PreparedKeyboardButton`
+        """
+        return types.PreparedKeyboardButton.de_json(
+            apihelper.save_prepared_keyboard_button(self.token, user_id, button)
+        )
 
     def register_for_reply(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
         """

@@ -2496,6 +2496,12 @@ def save_prepared_inline_message(token, user_id, result: types.InlineQueryResult
         return _make_request(token, method_url, params=payload, method='post')
 
 
+def save_prepared_keyboard_button(token, user_id, button):
+    method_url = 'savePreparedKeyboardButton'
+    payload = {'user_id': user_id, 'button': button.to_json()}
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def create_invoice_link(token, title, description, payload, provider_token,
             currency, prices, max_tip_amount=None, suggested_tip_amounts=None, provider_data=None,
             photo_url=None, photo_size=None, photo_width=None, photo_height=None, need_name=None, need_phone_number=None,

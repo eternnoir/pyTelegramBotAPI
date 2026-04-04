@@ -442,6 +442,12 @@ async def save_prepared_inline_message(token, user_id, result: types.InlineQuery
     return await _process_request(token, method_url, params=payload)
 
 
+async def save_prepared_keyboard_button(token, user_id, button: types.KeyboardButton):
+    method_url = r'savePreparedKeyboardButton'
+    payload = {'user_id': user_id, 'button': button.to_json()}
+    return await _process_request(token, method_url, params=payload)
+
+
 async def get_chat_member(token, chat_id, user_id):
     method_url = r'getChatMember'
     payload = {'chat_id': chat_id, 'user_id': user_id}

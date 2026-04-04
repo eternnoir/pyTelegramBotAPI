@@ -13825,4 +13825,26 @@ class ManagedBotUpdated(JsonDeserializable):
         return cls(**obj)
     
 
+class PreparedKeyboardButton(JsonSerializable):
+    """
+    Describes a keyboard button to be used by a user of a Mini App.
 
+    Telegram documentation: https://core.telegram.org/bots/api#preparedkeyboardbutton
+
+    :param id: Unique identifier of the keyboard button
+    :type id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`PreparedKeyboardButton`
+    """
+    def __init__(self, id: str, **kwargs):
+        self.id: str = id
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'id': self.id
+        }
+        return data
