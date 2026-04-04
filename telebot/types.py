@@ -7548,6 +7548,12 @@ class Poll(JsonDeserializable):
     :param allows_revoting: True, if the poll allows to change the chosen answer options
     :type allows_revoting: :obj:`bool`
 
+    :param description: Optional. Description of the poll; for polls inside the Message object only
+    :type description: :obj:`str`
+
+    :param description_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the description
+    :type description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Poll`
     """
@@ -7564,6 +7570,8 @@ class Poll(JsonDeserializable):
             obj['explanation_entities'] = Message.parse_entities(obj['explanation_entities'])
         if 'question_entities' in obj:
             obj['question_entities'] = Message.parse_entities(obj['question_entities'])
+        if 'description_entities' in obj:
+            obj['description_entities'] = Message.parse_entities(obj['description_entities'])
         return cls(**obj)
 
     def __init__(
@@ -7574,6 +7582,7 @@ class Poll(JsonDeserializable):
             explanation: str = None, explanation_entities: List[MessageEntity] = None, open_period: int = None,
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
             correct_option_ids: List[int] = None, allows_revoting: bool = None,
+            description: str = None, description_entities: List[MessageEntity] = None,
             **kwargs):
         self.id: str = poll_id
         self.question: str = question
@@ -7594,6 +7603,8 @@ class Poll(JsonDeserializable):
         self.close_date: int = close_date
         self.correct_option_ids: List[int] = correct_option_ids
         self.allows_revoting: bool = allows_revoting
+        self.description: str = description
+        self.description_entities: List[MessageEntity] = description_entities
         
     @property
     def correct_option_id(self) -> Optional[int]:
