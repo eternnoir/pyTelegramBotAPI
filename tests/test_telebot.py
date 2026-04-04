@@ -554,7 +554,8 @@ let number = loop {
             business_message=None,
             business_connection=None,
             edited_business_message=None,
-            deleted_business_messages=None, )
+            deleted_business_messages=None,
+            managed_bot=None)
 
     def test_is_string_unicode(self):
         s1 = u'string'
