@@ -7524,8 +7524,11 @@ class Poll(JsonDeserializable):
     :param allows_multiple_answers: True, if the poll allows multiple answers
     :type allows_multiple_answers: :obj:`bool`
 
-    :param correct_option_id: Optional. 0-based identifier of the correct answer option. Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot.
+    :param correct_option_id: Deprecated. Use correct_option_ids instead. 
     :type correct_option_id: :obj:`int`
+
+    :param correct_option_ids: Optional. Array of 0-based identifiers of the correct answer options. Available only for polls in quiz mode which are closed or were sent (not forwarded) by the bot or to the private chat with the bot.
+    :type correct_option_ids: :obj:`list` of :obj:`int`
 
     :param explanation: Optional. Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters
     :type explanation: :obj:`str`
@@ -7564,9 +7567,10 @@ class Poll(JsonDeserializable):
             self,
             question: str, options: List[PollOption],
             poll_id: str = None, total_voter_count: int = None, is_closed: bool = None, is_anonymous: bool = None,
-            type: str = None, allows_multiple_answers: bool = None, correct_option_id: int = None,
+            type: str = None, allows_multiple_answers: bool = None,
             explanation: str = None, explanation_entities: List[MessageEntity] = None, open_period: int = None,
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
+            correct_option_ids: List[int] = None,
             **kwargs):
         self.id: str = poll_id
         self.question: str = question
@@ -7580,12 +7584,19 @@ class Poll(JsonDeserializable):
             if type is None:
                 self.type: str = poll_type
         self.allows_multiple_answers: bool = allows_multiple_answers
-        self.correct_option_id: int = correct_option_id
         self.explanation: str = explanation
         self.explanation_entities: List[MessageEntity] = explanation_entities
         self.question_entities: List[MessageEntity] = question_entities
         self.open_period: int = open_period
         self.close_date: int = close_date
+        self.correct_option_ids: List[int] = correct_option_ids
+        
+    @property
+    def correct_option_id(self) -> Optional[int]:
+        log_deprecation_warning("Poll: correct_option_id parameter is deprecated. Use correct_option_ids instead.")
+        if self.correct_option_ids and len(self.correct_option_ids) > 0:
+            return self.correct_option_ids[0]
+        return None
 
     def add(self, option):
         """
