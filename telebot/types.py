@@ -206,6 +206,9 @@ class Update(JsonDeserializable):
     :param deleted_business_messages: Optional. Service message: the chat connected to the business account was deleted
     :type deleted_business_messages: :class:`telebot.types.BusinessMessagesDeleted`
 
+    :param managed_bot: Optional. A new bot was created to be managed by the bot or token of a bot was changed
+    :type managed_bot: :class:`telebot.types.ManagedBotUpdated`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -238,18 +241,19 @@ class Update(JsonDeserializable):
         edited_business_message = Message.de_json(obj.get('edited_business_message'))
         deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
         purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
+        managed_bot = ManagedBotUpdated.de_json(obj.get('managed_bot'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages, purchased_paid_media)
+                   deleted_business_messages, purchased_paid_media, managed_bot)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, purchased_paid_media):
+                 deleted_business_messages, purchased_paid_media, managed_bot):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -274,7 +278,7 @@ class Update(JsonDeserializable):
         self.edited_business_message: Optional[Message] = edited_business_message
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
-
+        self.managed_bot: Optional[User] = managed_bot
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -13791,3 +13795,34 @@ class ManagedBotCreated(JsonDeserializable):
         obj['bot'] = User.de_json(obj['bot'])
         return cls(**obj)
     
+
+class ManagedBotUpdated(JsonDeserializable):
+    """
+    This object contains information about the creation or token update of a bot that is managed by the current bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#managedbotupdated
+
+    :param user: User that created the bot
+    :type user: :class:`User`
+
+    :param bot: Information about the bot. Token of the bot can be fetched using the method getManagedBotToken.
+    :type bot: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`ManagedBotUpdated`
+    """
+    def __init__(self, user: User, bot: User, **kwargs):
+        self.user: User = user
+        self.bot: User = bot
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj['user'])
+        obj['bot'] = User.de_json(obj['bot'])
+
+        return cls(**obj)
+    
+
+
