@@ -6089,7 +6089,6 @@ class TeleBot:
             send_email_to_provider=send_email_to_provider, is_flexible=is_flexible ,subscription_period=subscription_period,
             business_connection_id=business_connection_id)
 
-
     # noinspection PyShadowingBuiltins
     def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[Union[str, types.InputPollOption]],
@@ -6114,7 +6113,15 @@ class TeleBot:
             question_parse_mode: Optional[str] = None,
             question_entities: Optional[List[types.MessageEntity]] = None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            allows_revoting: Optional[bool]=None,
+            shuffle_options: Optional[bool]=None,
+            allow_adding_options: Optional[bool]=None,
+            hide_results_until_closes: Optional[bool]=None,
+            correct_option_ids: Optional[List[int]]=None,
+            description: Optional[str]=None,
+            description_parse_mode: Optional[str]=None,
+            description_entities: Optional[List[types.MessageEntity]]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -6136,10 +6143,10 @@ class TeleBot:
         :param type: Poll type, “quiz” or “regular”, defaults to “regular”
         :type type: :obj:`str`
 
-        :param allows_multiple_answers: True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
+        :param allows_multiple_answers: True, if the poll allows multiple answers, defaults to False
         :type allows_multiple_answers: :obj:`bool`
 
-        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode, defaults to None
+        :param correct_option_id: Deprecated, use correct_option_ids instead. 
         :type correct_option_id: :obj:`int`
 
         :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing
@@ -6200,6 +6207,30 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param allows_revoting: Pass True, if the poll allows to change chosen answer options, defaults to False for quizzes and to True for regular polls
+        :type allows_revoting: :obj:`bool`
+
+        :param shuffle_options: Pass True, if the poll options must be shown in random order
+        :type shuffle_options: :obj:`bool`
+
+        :param allow_adding_options: Pass True, if answer options can be added to the poll after creation; not supported for anonymous polls and quizzes
+        :type allow_adding_options: :obj:`bool`
+
+        :param hide_results_until_closes: Pass True, if poll results must be shown only after the poll closes
+        :type hide_results_until_closes: :obj:`bool`
+
+        :param correct_option_ids: A JSON-serialized list of monotonically increasing 0-based identifiers of the correct answer options, required for polls in quiz mode
+        :type correct_option_ids: :obj:`list` of :obj:`int`
+
+        :param description: Description of the poll to be sent, 0-1024 characters after entities parsing
+        :type description: :obj:`str`
+
+        :param description_parse_mode: Mode for parsing entities in the poll description. See formatting options for more details.
+        :type description_parse_mode: :obj:`str`
+
+        :param description_entities: A JSON-serialized list of special entities that appear in the poll description, which can be specified instead of description_parse_mode
+        :type description_entities: :obj:`list` of :obj:`MessageEntity`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6232,6 +6263,7 @@ class TeleBot:
 
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
         question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
+        description_parse_mode = self.parse_mode if (description_parse_mode is None) else description_parse_mode
 
         if options and (not isinstance(options[0], types.InputPollOption)):
             # show a deprecation warning
@@ -6243,19 +6275,33 @@ class TeleBot:
                 options = [types.InputPollOption(option.text, text_entities=option.text_entities) for option in options]
             else:
                 raise RuntimeError("Type of 'options' items is unknown. Options should be List[types.InputPollOption], other types are deprecated.")
+            
+        # handle deprecated correct_option_id parameter
+        if correct_option_id is not None and type=="quiz":
+            if correct_option_ids is not None:
+                # show a conflict warning
+                logger.warning("Both 'correct_option_id' and 'correct_option_ids' parameters are set: use 'correct_option_ids' instead.")
+            else:
+                # convert correct_option_id to correct_option_ids
+                correct_option_ids = [correct_option_id]
+                logger.warning("The parameter 'correct_option_id' is deprecated, use 'correct_option_ids' instead.")
+
 
         return types.Message.de_json(
             apihelper.send_poll(
                 self.token, chat_id, question, options,
                 is_anonymous=is_anonymous, type=type, allows_multiple_answers=allows_multiple_answers,
-                correct_option_id=correct_option_id, explanation=explanation,
+                explanation=explanation,
                 explanation_parse_mode=explanation_parse_mode, open_period=open_period,
                 close_date=close_date, is_closed=is_closed, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, explanation_entities=explanation_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 question_parse_mode=question_parse_mode, question_entities=question_entities,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                allows_revoting=allows_revoting, shuffle_options=shuffle_options,
+                allow_adding_options=allow_adding_options, hide_results_until_closes=hide_results_until_closes, correct_option_ids=correct_option_ids,
+                description=description, description_parse_mode=description_parse_mode, description_entities=description_entities)
             )
 
 
