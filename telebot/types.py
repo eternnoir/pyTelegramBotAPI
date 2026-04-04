@@ -1279,6 +1279,9 @@ class Message(JsonDeserializable):
     :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
     :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
 
+    :param managed_bot_created: Optional. Service message: user created a bot that will be managed by the current bot
+    :type managed_bot_created: :class:`telebot.types.ManagedBotCreated`
+
     :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
     :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
 
@@ -1611,6 +1614,9 @@ class Message(JsonDeserializable):
         if 'chat_owner_left' in obj:
             opts['chat_owner_left'] = ChatOwnerLeft.de_json(obj['chat_owner_left'])
             content_type = 'chat_owner_left'
+        if 'managed_bot_created' in obj:
+            opts['managed_bot_created'] = ManagedBotCreated.de_json(obj['managed_bot_created'])
+            content_type = 'managed_bot_created'
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1750,6 +1756,7 @@ class Message(JsonDeserializable):
         self.suggested_post_refunded: Optional[SuggestedPostRefunded] = None
         self.chat_owner_left: Optional[ChatOwnerLeft] = None
         self.chat_owner_changed: Optional[ChatOwnerChanged] = None
+        self.managed_bot_created: Optional[ManagedBotCreated] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -13760,4 +13767,27 @@ class KeyboardButtonRequestManagedBot(JsonSerializable):
         if self.suggested_username:
             data['suggested_username'] = self.suggested_username
         return data
+
+
+class ManagedBotCreated(JsonDeserializable):
+    """
+    This object contains information about the bot that was created to be managed by the current bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#managedbotcreated
+
+    :param bot: Information about the bot. The bot's token can be fetched using the method getManagedBotToken.
+    :type bot: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`ManagedBotCreated`
+    """
+    def __init__(self, bot: User, **kwargs):
+        self.bot: User = bot
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['bot'] = User.de_json(obj['bot'])
+        return cls(**obj)
     
