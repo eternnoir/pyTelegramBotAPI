@@ -7425,6 +7425,9 @@ class PollOption(JsonDeserializable):
 
     Telegram Documentation: https://core.telegram.org/bots/api#polloption
 
+    :param persistent_id: Unique identifier of the option, persistent on option addition and deletion
+    :type persistent_id: :obj:`str`
+
     :param text: Option text, 1-100 characters
     :type text: :obj:`str`
 
@@ -7445,8 +7448,9 @@ class PollOption(JsonDeserializable):
             obj['text_entities'] = Message.parse_entities(obj['text_entities'])
         return cls(**obj)
 
-    def __init__(self, text, voter_count = 0, text_entities=None, **kwargs):
+    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, **kwargs):
         self.text: str = text
+        self.persistent_id: str = persistent_id
         self.voter_count: int = voter_count
         self.text_entities: Optional[List[MessageEntity]] = text_entities
     # Converted in _convert_poll_options
