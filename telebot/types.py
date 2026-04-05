@@ -1031,6 +1031,9 @@ class Message(JsonDeserializable):
     :param reply_to_checklist_task_id: Optional. Identifier of the specific checklist task that is being replied to
     :type reply_to_checklist_task_id: :obj:`str`
 
+    :param reply_to_poll_option_id: Optional. Persistent identifier of the specific poll option that is being replied to
+    :type reply_to_poll_option_id: :obj:`str`
+
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
@@ -1633,6 +1636,8 @@ class Message(JsonDeserializable):
         if 'poll_option_deleted' in obj:
             opts['poll_option_deleted'] = PollOptionDeleted.de_json(obj['poll_option_deleted'])
             content_type = 'poll_option_deleted'
+        if 'reply_to_poll_option_id' in obj:
+            opts['reply_to_poll_option_id'] = obj['reply_to_poll_option_id']
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1775,6 +1780,7 @@ class Message(JsonDeserializable):
         self.managed_bot_created: Optional[ManagedBotCreated] = None
         self.poll_option_added: Optional[PollOptionAdded] = None
         self.poll_option_deleted: Optional[PollOptionDeleted] = None
+        self.reply_to_poll_option_id: Optional[int] = None
 
         for key in options:
             setattr(self, key, options[key])
