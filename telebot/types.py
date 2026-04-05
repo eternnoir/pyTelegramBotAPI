@@ -9650,7 +9650,7 @@ class TextQuote(JsonDeserializable):
     :param text: Text of the quoted part of a message that is replied to by the given message
     :type text: :obj:`str`
 
-    :param entities: Optional. Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are kept in quotes.
+    :param entities: Optional. Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are kept in quotes.
     :type entities: :obj:`list` of :class:`MessageEntity`
 
     :param position: Approximate quote position in the original message in UTF-16 code units as specified by the sender
@@ -9698,13 +9698,18 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param message_id: Identifier of the message that will be replied to in the current chat, or in the chat chat_id if it is specified
     :type message_id: :obj:`int`
 
-    :param chat_id: Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username of the channel (in the format @channelusername)
+    :param chat_id: Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username
+        of the channel (in the format @channelusername)
     :type chat_id: :obj:`int` or :obj:`str`
 
-    :param allow_sending_without_reply: Optional. Pass True if the message should be sent even if the specified message to be replied to is not found; can be used only for replies in the same chat and forum topic.
+    :param allow_sending_without_reply: Optional. Pass True if the message should be sent even if the specified message to be replied to is not found;
+        can be used only for replies in the same chat and forum topic.
     :type allow_sending_without_reply: :obj:`bool`
 
-    :param quote: Optional. Quoted part of the message to be replied to; 0-1024 characters after entities parsing. The quote must be an exact substring of the message to be replied to, including bold, italic, underline, strikethrough, spoiler, and custom_emoji entities. The message will fail to send if the quote isn't found in the original message.
+    :param quote: Optional. Quoted part of the message to be replied to; 0-1024 characters after entities parsing.
+        The quote must be an exact substring of the message to be replied to, including bold, italic, underline,
+        strikethrough, spoiler, custom_emoji,   and date_time entities. The message will fail to send if the quote
+        isn't found in the original message.
     :type quote: :obj:`str`
 
     :param quote_parse_mode: Optional. Mode for parsing entities in the quote. See formatting options for more details.
@@ -13133,7 +13138,8 @@ class InputChecklistTask(JsonSerializable):
     :param parse_mode: Optional. Mode for parsing entities in the text. See formatting options for more details.
     :type parse_mode: :obj:`str`
 
-    :param text_entities: Optional. List of special entities that appear in the text, which can be specified instead of parse_mode. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are allowed.
+    :param text_entities: Optional. List of special entities that appear in the text, which can be specified instead of parse_mode.
+        Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are allowed.
     :type text_entities: :obj:`list` of :class:`MessageEntity`
 
     :return: Instance of the class
@@ -13173,7 +13179,8 @@ class InputChecklist(JsonSerializable):
     :param parse_mode: Optional. Mode for parsing entities in the title. See formatting options for more details.
     :type parse_mode: :obj:`str`
 
-    :param title_entities: Optional. List of special entities that appear in the title, which can be specified instead of parse_mode. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are allowed.
+    :param title_entities: Optional. List of special entities that appear in the title, which can be specified instead of parse_mode.
+        Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are allowed.
     :type title_entities: :obj:`list` of :class:`MessageEntity`
 
     :param tasks: List of 1-30 tasks in the checklist
