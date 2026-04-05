@@ -9713,6 +9713,9 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param checklist_task_id: Optional. Optional. Identifier of the specific checklist task to be replied to
     :type checklist_task_id: :obj:`int`
 
+    :param poll_option_id: Optional. Persistent identifier of the specific poll option to be replied to
+    :type poll_option_id: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`ReplyParameters`
     """
@@ -9728,7 +9731,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
-                 quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None, **kwargs) -> None:
+                 quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None,
+                    poll_option_id: Optional[str] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -9737,6 +9741,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.quote_entities: Optional[List[MessageEntity]] = quote_entities
         self.quote_position: Optional[int] = quote_position
         self.checklist_task_id: Optional[int] = checklist_task_id
+        self.poll_option_id: Optional[str] = poll_option_id
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -9756,6 +9761,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['quote_position'] = self.quote_position
         if self.checklist_task_id is not None:
             json_dict['checklist_task_id'] = self.checklist_task_id
+        if self.poll_option_id is not None:
+            json_dict['poll_option_id'] = self.poll_option_id
         return json_dict
 
     def to_json(self) -> str:
