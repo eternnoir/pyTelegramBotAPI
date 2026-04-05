@@ -7648,6 +7648,9 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param option_ids: 0-based identifiers of answer options, chosen by the user. May be empty if the user retracted their vote.
     :type option_ids: :obj:`list` of :obj:`int`
 
+    :param option_persistent_ids: Persistent identifiers of the chosen answer options. May be empty if the vote was retracted.
+    :type option_persistent_ids: :obj:`list` of :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollAnswer`
     """
@@ -7661,10 +7664,12 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
             obj['voter_chat'] = Chat.de_json(obj['voter_chat'])
         return cls(**obj)
 
-    def __init__(self, poll_id: str, option_ids: List[int], user: Optional[User] = None, voter_chat: Optional[Chat] = None, **kwargs):
+    def __init__(self, poll_id: str, option_ids: List[int], option_persistent_ids: List[str],
+                 user: Optional[User] = None, voter_chat: Optional[Chat] = None, **kwargs):
         self.poll_id: str = poll_id
         self.user: Optional[User] = user
         self.option_ids: List[int] = option_ids
+        self.option_persistent_ids: List[str] = option_persistent_ids
         self.voter_chat: Optional[Chat] = voter_chat
 
 
@@ -7675,7 +7680,8 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
         # Left for backward compatibility, but with no support for voter_chat
         json_dict = {
             "poll_id": self.poll_id,
-            "option_ids": self.option_ids
+            "option_ids": self.option_ids,
+            "option_persistent_ids": self.option_persistent_ids
         }
         if self.user:
             json_dict["user"] = self.user.to_dict()
