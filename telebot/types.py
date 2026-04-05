@@ -7431,11 +7431,20 @@ class PollOption(JsonDeserializable):
     :param text: Option text, 1-100 characters
     :type text: :obj:`str`
 
+    :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
+    :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
     :param voter_count: Number of users that voted for this option
     :type voter_count: :obj:`int`
 
-    :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
-    :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+    :param added_by_user: Optional. User who added the option; omitted if the option wasn't added by a user after poll creation
+    :type added_by_user: :class:`telebot.types.User`
+
+    :param added_by_chat: Optional. Chat that added the option; omitted if the option wasn't added by a chat after poll creation
+    :type added_by_chat: :class:`telebot.types.Chat`
+
+    :param addition_date: Optional. Point in time (Unix timestamp) when the option was added; omitted if the option existed in the original poll
+    :type addition_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollOption`
@@ -7446,13 +7455,20 @@ class PollOption(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         if 'text_entities' in obj:
             obj['text_entities'] = Message.parse_entities(obj['text_entities'])
+        if 'added_by_user' in obj:
+            obj['added_by_user'] = User.de_json(obj['added_by_user'])
+        if 'added_by_chat' in obj:
+            obj['added_by_chat'] = Chat.de_json(obj['added_by_chat'])
         return cls(**obj)
 
-    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, **kwargs):
+    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, **kwargs):
         self.text: str = text
         self.persistent_id: str = persistent_id
         self.voter_count: int = voter_count
         self.text_entities: Optional[List[MessageEntity]] = text_entities
+        self.added_by_user: Optional[User] = added_by_user
+        self.added_by_chat: Optional[Chat] = added_by_chat
+        self.addition_date: Optional[int] = addition_date
     # Converted in _convert_poll_options
     # def to_json(self):
     #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
