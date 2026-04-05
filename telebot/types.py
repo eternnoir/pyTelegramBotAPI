@@ -5796,7 +5796,6 @@ class InlineQueryResultCachedBase(ABC, JsonSerializable):
         self.input_message_content: Optional[InputMessageContent] = None
         self.parse_mode: Optional[str] = None
         self.caption_entities: Optional[List[MessageEntity]] = None
-        # noinspection PyTypeChecker
         self.payload_dic: Dict[str] = {}
         self.show_caption_above_media: Optional[bool] = None
 
@@ -7653,17 +7652,16 @@ class Poll(JsonDeserializable):
             return self.correct_option_ids[0]
         return None
 
-    def add(self, option):
+    def add(self, option, persistent_id = None):
         """
-        Add an option to the poll.
+        Deprecated
+        """
+        logger.warning("Poll.add is deprecated and will be removed in future versions.")
 
-        :param option: Option to add
-        :type option: :class:`telebot.types.PollOption` or :obj:`str`
-        """
         if type(option) is PollOption:
             self.options.append(option)
         else:
-            self.options.append(PollOption(option))
+            self.options.append(PollOption(option, persistent_id))
 
 
 class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
@@ -10177,8 +10175,7 @@ class BusinessConnection(JsonDeserializable):
     :param date: Date the connection was established in Unix time
     :type date: :obj:`int`
 
-    :param can_reply: Deprecated, use :attr:`rights` instead. True, if the bot can reply to messages from the business account
-    :type can_reply: :obj:`bool`
+    :param can_reply: Deprecated, use :attr:`rights` instead.
 
     :param rights: Optional. Rights of the business bot
     :type rights: :class:`BusinessBotRights`
@@ -10198,7 +10195,7 @@ class BusinessConnection(JsonDeserializable):
         obj['rights'] = BusinessBotRights.de_json(obj.get('rights'))
         return cls(**obj)
 
-    def __init__(self, id, user, user_chat_id, date, can_reply, is_enabled,
+    def __init__(self, id, user, user_chat_id, date, is_enabled,
                     rights=None, **kwargs):
         self.id: str = id
         self.user: User = user
@@ -13219,6 +13216,7 @@ class InputChecklist(JsonSerializable):
             data['others_can_add_tasks'] = self.others_can_add_tasks
         if self.others_can_mark_tasks_as_done is not None:
             data['others_can_mark_tasks_as_done'] = self.others_can_mark_tasks_as_done
+        return data
 
 
 class ChecklistTasksDone(JsonDeserializable):
@@ -13905,8 +13903,9 @@ class ManagedBotUpdated(JsonDeserializable):
         obj['bot'] = User.de_json(obj['bot'])
 
         return cls(**obj)
-    
 
+
+# noinspection PyShadowingBuiltins
 class PreparedKeyboardButton(JsonDeserializable):
     """
     Describes a keyboard button to be used by a user of a Mini App.
@@ -14017,4 +14016,3 @@ class PollOptionDeleted(JsonDeserializable):
         if 'option_text_entities' in obj:
             obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
         return cls(**obj)
-    

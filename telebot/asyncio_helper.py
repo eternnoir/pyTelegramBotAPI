@@ -111,6 +111,7 @@ async def _process_request(token, url, method='get', params=None, files=None, **
             logger.error(f'Unknown error: {e.__class__.__name__}')
         if not got_result:
             raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
+    return None
         
 def _prepare_file(obj):
     """
@@ -119,6 +120,7 @@ def _prepare_file(obj):
     name = getattr(obj, 'name', None)
     if name and isinstance(name, str) and name[0] != '<' and name[-1] != '>':
         return os.path.basename(name)
+    return None
 
 def _prepare_data(params=None, files=None):
     """
@@ -1251,6 +1253,7 @@ async def get_method_by_type(data_type):
         return r'sendDocument'
     if data_type == 'sticker':
         return r'sendSticker'
+    return None
 
 
 async def ban_chat_member(token, chat_id, user_id, until_date=None, revoke_messages=None):
@@ -1914,7 +1917,9 @@ async def send_invoice(
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
     :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
     :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
-    :param allow_paid_broadcast:
+    :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+    :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+    :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
     :return:
     """
     method_url = r'sendInvoice'
@@ -2740,6 +2745,7 @@ async def convert_input_media(media):
 async def convert_input_media_array(array):
     media = []
     files = {}
+    key = ""
     for input_media in array:
         if isinstance(input_media, types.InputMedia) or isinstance(input_media, types.InputPaidMedia):
             media_dict = input_media.to_dict()
@@ -2831,5 +2837,3 @@ class RequestTimeout(Exception):
     This class represents a request timeout.
     """
     pass
-
-

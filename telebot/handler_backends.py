@@ -103,7 +103,7 @@ class FileHandlerBackend(HandlerBackend):
         os.makedirs(dirs, exist_ok=True)
 
         with open(filename + ".tmp", file_mode) as file:
-            if (apihelper.CUSTOM_SERIALIZER is None):
+            if apihelper.CUSTOM_SERIALIZER is None:
                 pickle.dump(handlers, file)
             else:
                 apihelper.CUSTOM_SERIALIZER.dump(handlers, file)
@@ -117,7 +117,7 @@ class FileHandlerBackend(HandlerBackend):
     def return_load_handlers(filename, del_file_after_loading=True):
         if os.path.isfile(filename) and os.path.getsize(filename) > 0:
             with open(filename, "rb") as file:
-                if (apihelper.CUSTOM_SERIALIZER is None):
+                if apihelper.CUSTOM_SERIALIZER is None:
                     handlers = pickle.load(file)
                 else:
                     handlers = apihelper.CUSTOM_SERIALIZER.load(file)
@@ -126,6 +126,7 @@ class FileHandlerBackend(HandlerBackend):
                 os.remove(filename)
 
             return handlers
+        return None
 
 
 class RedisHandlerBackend(HandlerBackend):
