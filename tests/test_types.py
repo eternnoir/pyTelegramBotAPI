@@ -198,19 +198,31 @@ def test_InlineQueryResultCachedPhoto_with_markup():
 
 
 def test_json_poll_1():
-    jsonstring = r'{"message_id": 395020,"from": {"id": 111,"is_bot": false,"first_name": "FN","last_name": "LN","username": "Badiboy","language_code": "ru"},"chat": {"id": 111,"first_name": "FN","last_name": "LN","username": "Badiboy","type": "private"},"date": 1587841239,"poll": {"id": "5272018969396510722","question": "Test poll 1","options": [{"text": "Answer 1","voter_count": 0},{"text": "Answer 2","voter_count": 0}],"total_voter_count": 0,"is_closed": false,"is_anonymous": true,"type": "regular","allows_multiple_answers": true}}'
+    jsonstring = r'{"message_id":2649246,"from":{"id":927266710,"is_bot":false,"first_name":"a","username":"b","language_code":"en"},"chat":{"id":1234,"first_name":"a","username":"b","type":"private"},"date":1775379138,"poll":{"id":"5373272187744556440","question":"Test","options":[{"persistent_id":"0","text":"1","voter_count":0},{"persistent_id":"1","text":"2","voter_count":0}],"total_voter_count":0,"is_closed":false,"is_anonymous":true,"allows_multiple_answers":false,"allows_revoting":false,"type":"quiz","correct_option_id":0,"correct_option_ids":[0]}}'
     msg = types.Message.de_json(jsonstring)
     assert msg.poll is not None
     assert isinstance(msg.poll, types.Poll)
-    assert msg.poll.id == '5272018969396510722'
-    assert msg.poll.question is not None
-    assert msg.poll.options is not None
+    assert msg.poll.id == '5373272187744556440'
+    assert msg.poll.question == 'Test'
     assert len(msg.poll.options) == 2
-    assert msg.poll.allows_multiple_answers is True
+    assert msg.poll.options[0].text == '1'
+    assert msg.poll.options[1].text == '2'
+    assert msg.poll.options[0].voter_count == 0
+    assert msg.poll.options[1].voter_count == 0
+    assert msg.poll.options[0].persistent_id == '0'
+    assert msg.poll.options[1].persistent_id == '1'
+    assert msg.poll.total_voter_count == 0
+    assert msg.poll.is_closed is False
+    assert msg.poll.is_anonymous is True
+    assert msg.poll.allows_multiple_answers is False
+    assert msg.poll.allows_revoting is False
+    assert msg.poll.type == 'quiz'
+    assert msg.poll.correct_option_id == 0
+    assert msg.poll.correct_option_ids == [0]
 
 
 def test_json_poll_answer():
-    jsonstring = r'{"poll_id": "5895675970559410186", "user": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "option_ids": [1]}'
+    jsonstring = r'{"poll_id": "5895675970559410186", "option_persistent_ids": ["0"], "user": {"id": 329343347, "is_bot": false, "first_name": "Test", "username": "test_user", "last_name": "User", "language_code": "en"}, "option_ids": [1]}'
     __import__('pprint').pprint(__import__('json').loads(jsonstring))
     poll_answer = types.PollAnswer.de_json(jsonstring)
     assert poll_answer.poll_id == '5895675970559410186'
