@@ -69,7 +69,7 @@
 
 ## Getting started
 
-This API is tested with Python 3.10-3.14 and Pypy 3.
+This API is tested with Python 3.10-3.14 and PyPy 3.
 There are two ways to install the library:
 
 * Installation using pip (a Python package manager):
