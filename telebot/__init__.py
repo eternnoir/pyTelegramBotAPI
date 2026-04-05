@@ -6278,7 +6278,7 @@ class TeleBot:
                 raise RuntimeError("Type of 'options' items is unknown. Options should be List[types.InputPollOption], other types are deprecated.")
             
         # handle deprecated correct_option_id parameter
-        if correct_option_id is not None and type=="quiz":
+        if correct_option_id is not None:
             if correct_option_ids is not None:
                 # show a conflict warning
                 logger.warning("Both 'correct_option_id' and 'correct_option_ids' parameters are set: use 'correct_option_ids' instead.")

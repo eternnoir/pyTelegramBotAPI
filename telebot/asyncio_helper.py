@@ -439,7 +439,7 @@ async def save_prepared_inline_message(token, user_id, result: types.InlineQuery
         payload['allow_group_chats'] = allow_group_chats
     if allow_channel_chats is not None:
         payload['allow_channel_chats'] = allow_channel_chats
-    return await _process_request(token, method_url, params=payload)
+    return await _process_request(token, method_url, params=payload, method='post')
 
 
 async def save_prepared_keyboard_button(token, user_id, button: types.KeyboardButton):
@@ -2593,7 +2593,7 @@ async def send_poll(
     if hide_results_until_closes is not None:
         payload['hide_results_until_closes'] = hide_results_until_closes
     if correct_option_ids is not None:
-        payload['correct_option_ids'] = correct_option_ids
+        payload['correct_option_ids'] = json.dumps(correct_option_ids)
     if description is not None:
         payload['description'] = description
     if description_parse_mode is not None:

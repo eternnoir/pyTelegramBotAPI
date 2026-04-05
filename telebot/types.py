@@ -278,7 +278,7 @@ class Update(JsonDeserializable):
         self.edited_business_message: Optional[Message] = edited_business_message
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
-        self.managed_bot: Optional[User] = managed_bot
+        self.managed_bot: Optional[ManagedBotUpdated] = managed_bot
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -1780,7 +1780,7 @@ class Message(JsonDeserializable):
         self.managed_bot_created: Optional[ManagedBotCreated] = None
         self.poll_option_added: Optional[PollOptionAdded] = None
         self.poll_option_deleted: Optional[PollOptionDeleted] = None
-        self.reply_to_poll_option_id: Optional[int] = None
+        self.reply_to_poll_option_id: Optional[str] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -7714,15 +7714,11 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
 
     def to_dict(self):
         # Left for backward compatibility, but with no support for voter_chat
+        logger.warning("PollAnswer.to_dict is deprecated and will be removed in future versions.")
         json_dict = {
             "poll_id": self.poll_id,
             "option_ids": self.option_ids,
-            "option_persistent_ids": self.option_persistent_ids
         }
-        if self.user:
-            json_dict["user"] = self.user.to_dict()
-        if self.voter_chat:
-            json_dict["voter_chat"] = self.voter_chat
         return json_dict
 
 
@@ -13911,7 +13907,7 @@ class ManagedBotUpdated(JsonDeserializable):
         return cls(**obj)
     
 
-class PreparedKeyboardButton(JsonSerializable):
+class PreparedKeyboardButton(JsonDeserializable):
     """
     Describes a keyboard button to be used by a user of a Mini App.
 
@@ -13926,14 +13922,11 @@ class PreparedKeyboardButton(JsonSerializable):
     def __init__(self, id: str, **kwargs):
         self.id: str = id
 
-    def to_json(self):
-        return json.dumps(self.to_dict())
-    
-    def to_dict(self):
-        data = {
-            'id': self.id
-        }
-        return data
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
     
 
 class PollOptionAdded(JsonDeserializable):
