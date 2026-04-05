@@ -1903,7 +1903,9 @@ def send_invoice(
     :param message_thread_id: Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
     :param reply_parameters: A JSON-serialized object for an inline keyboard. If empty, one 'Pay total price' button will be shown. If not empty, the first button must be a Pay button.
     :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
-    :param allow_paid_broadcast:
+    :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+    :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+    :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
     :return:
     """
     method_url = r'sendInvoice'

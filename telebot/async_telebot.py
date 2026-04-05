@@ -192,6 +192,8 @@ class AsyncTeleBot:
         self.middlewares = []
 
         self._user = None # set during polling
+        self._polling = None
+        self.webhook_listener = None
 
         if validate_token:
             util.validate_token(self.token)
@@ -203,7 +205,8 @@ class AsyncTeleBot:
     def user(self):
         return self._user
 
-    async def close_session(self):
+    @staticmethod
+    async def close_session():
         """
         Closes existing session of aiohttp.
         Use this function if you stop polling/webhooks.
@@ -554,7 +557,7 @@ class AsyncTeleBot:
                 elif isinstance(middleware_result, SkipHandler):
                     skip_handlers = True
 
-        if handlers and not(skip_handlers):
+        if handlers and (not skip_handlers):
             try:
                 for handler in handlers:
                     params = []
@@ -4531,7 +4534,7 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
 
 
-        if data and not(document):
+        if data and (not document):
             # function typo miss compatibility
             logger.warning('The parameter "data" is deprecated. Use "document" instead.')
             document = data
@@ -4664,7 +4667,7 @@ class AsyncTeleBot:
         protect_content = self.protect_content if (protect_content is None) else protect_content
 
 
-        if data and not(sticker):
+        if data and (not sticker):
             # function typo miss compatibility
             logger.warning('The parameter "data" is deprecated. Use "sticker" instead.')
             sticker = data
@@ -4856,12 +4859,12 @@ class AsyncTeleBot:
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
-        if data and not(video):
+        if data and (not video):
             # function typo miss compatibility
             logger.warning('The parameter "data" is deprecated. Use "video" instead.')
             video = data
 
-        if thumb and not(thumbnail):
+        if thumb and (not thumbnail):
             logger.warning('The parameter "thumb" is deprecated. Use "thumbnail" instead.')
             thumbnail = thumb
 
@@ -5824,7 +5827,9 @@ class AsyncTeleBot:
             await asyncio_helper.send_contact(
                 self.token, chat_id, phone_number, first_name, last_name, vcard,
                 disable_notification, reply_markup, timeout,
-                protect_content, message_thread_id, reply_parameters, business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast))
+                protect_content, message_thread_id, reply_parameters, business_connection_id,
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters))
         
     async def send_message_draft(
             self, chat_id: int,
@@ -8213,6 +8218,9 @@ class AsyncTeleBot:
             the Internet, or upload a new one using multipart/form-data. More information on Sending Files ». Animated and video sticker set thumbnails can't be uploaded via
             HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.
         :type thumbnail: :obj:`filelike object`
+
+        :param format: Format of the thumbnail, must be one of “static” for a .WEBP or .PNG image, “animated” for a .TGS animation, or “video” for a WEBM video
+        :type format: :obj:`str`
 
         :return: On success, True is returned.
         :rtype: :obj:`bool`
