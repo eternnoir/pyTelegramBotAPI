@@ -439,7 +439,13 @@ async def save_prepared_inline_message(token, user_id, result: types.InlineQuery
         payload['allow_group_chats'] = allow_group_chats
     if allow_channel_chats is not None:
         payload['allow_channel_chats'] = allow_channel_chats
-    return await _process_request(token, method_url, params=payload)
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def save_prepared_keyboard_button(token, user_id, button: types.KeyboardButton):
+    method_url = r'savePreparedKeyboardButton'
+    payload = {'user_id': user_id, 'button': button.to_json()}
+    return await _process_request(token, method_url, params=payload, method='post')
 
 
 async def get_chat_member(token, chat_id, user_id):
@@ -529,7 +535,7 @@ async def send_checklist(
     if reply_parameters:
         payload['reply_parameters'] = reply_parameters.to_json()
     if reply_markup:
-        payload['reply_markup'] = _convert_markup(reply_markup)
+        payload['reply_markup'] = await _convert_markup(reply_markup)
     return await _process_request(token, method_url, params=payload)
 
 
@@ -655,7 +661,7 @@ async def send_paid_media(
     if reply_parameters is not None:
         _payload['reply_parameters'] = reply_parameters.to_json()
     if reply_markup:
-        _payload['reply_markup'] = _convert_markup(reply_markup)
+        _payload['reply_markup'] = await _convert_markup(reply_markup)
     if business_connection_id:
         _payload['business_connection_id'] = business_connection_id
     if payload:
@@ -1609,6 +1615,16 @@ async def get_business_connection(token, business_connection_id):
     payload = {'business_connection_id': business_connection_id}
     return await _process_request(token, method_url, params=payload , method='post')
 
+async def get_managed_bot_token(token, user_id):
+    method_url = 'getManagedBotToken'
+    payload = {'user_id': user_id}
+    return await _process_request(token, method_url, params=payload , method='post')
+
+async def replace_managed_bot_token(token, user_id):
+    method_url = 'replaceManagedBotToken'
+    payload = {'user_id': user_id}
+    return await _process_request(token, method_url, params=payload , method='post')
+
 async def delete_my_commands(token, scope=None, language_code=None):
     method_url = r'deleteMyCommands'
     payload = {}
@@ -2507,16 +2523,16 @@ async def create_invoice_link(token, title, description, payload, provider_token
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-
 # noinspection PyShadowingBuiltins
 async def send_poll(
         token, chat_id, question, options,
-        is_anonymous = None, type = None, allows_multiple_answers = None, correct_option_id = None,
+        is_anonymous = None, type = None, allows_multiple_answers = None,
         explanation = None, explanation_parse_mode=None, open_period = None, close_date = None, is_closed = None,
         disable_notification=False,  
         reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
         reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None,
-        allow_paid_broadcast=None):
+        allow_paid_broadcast=None, allows_revoting=None, shuffle_options=None, allow_adding_options=None, hide_results_until_closes=None,
+        correct_option_ids=None, description=None, description_parse_mode=None, description_entities=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -2530,8 +2546,6 @@ async def send_poll(
         payload['type'] = type
     if allows_multiple_answers is not None:
         payload['allows_multiple_answers'] = allows_multiple_answers
-    if correct_option_id is not None:
-        payload['correct_option_id'] = correct_option_id
     if explanation is not None:
         payload['explanation'] = explanation
     if explanation_parse_mode is not None:
@@ -2570,6 +2584,22 @@ async def send_poll(
         payload['message_effect_id'] = message_effect_id
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if allows_revoting is not None:
+        payload['allows_revoting'] = allows_revoting
+    if shuffle_options is not None:
+        payload['shuffle_options'] = shuffle_options
+    if allow_adding_options is not None:
+        payload['allow_adding_options'] = allow_adding_options
+    if hide_results_until_closes is not None:
+        payload['hide_results_until_closes'] = hide_results_until_closes
+    if correct_option_ids is not None:
+        payload['correct_option_ids'] = json.dumps(correct_option_ids)
+    if description is not None:
+        payload['description'] = description
+    if description_parse_mode is not None:
+        payload['description_parse_mode'] = description_parse_mode
+    if description_entities is not None:
+        payload['description_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(description_entities))
     return await _process_request(token, method_url, params=payload)
 
 

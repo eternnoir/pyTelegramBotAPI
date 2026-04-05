@@ -206,6 +206,9 @@ class Update(JsonDeserializable):
     :param deleted_business_messages: Optional. Service message: the chat connected to the business account was deleted
     :type deleted_business_messages: :class:`telebot.types.BusinessMessagesDeleted`
 
+    :param managed_bot: Optional. A new bot was created to be managed by the bot or token of a bot was changed
+    :type managed_bot: :class:`telebot.types.ManagedBotUpdated`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -238,18 +241,19 @@ class Update(JsonDeserializable):
         edited_business_message = Message.de_json(obj.get('edited_business_message'))
         deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
         purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
+        managed_bot = ManagedBotUpdated.de_json(obj.get('managed_bot'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages, purchased_paid_media)
+                   deleted_business_messages, purchased_paid_media, managed_bot)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, purchased_paid_media):
+                 deleted_business_messages, purchased_paid_media, managed_bot):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -274,7 +278,7 @@ class Update(JsonDeserializable):
         self.edited_business_message: Optional[Message] = edited_business_message
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
-
+        self.managed_bot: Optional[ManagedBotUpdated] = managed_bot
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -518,6 +522,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param allows_users_to_create_topics: Optional. True, if the bot allows users to create and delete topics in private chats. Returned only in getMe.
     :type allows_users_to_create_topics: :obj:`bool`
 
+    :param can_manage_bots: Optional. True, if other bots can be created to be controlled by the bot. Returned only in getMe.
+    :type can_manage_bots: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.User`
     """
@@ -531,7 +538,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
-                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, **kwargs):
+                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -547,7 +554,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.has_main_web_app: Optional[bool] = has_main_web_app
         self.has_topics_enabled: Optional[bool] = has_topics_enabled
         self.allows_users_to_create_topics: Optional[bool] = allows_users_to_create_topics
-
+        self.can_manage_bots: Optional[bool] = can_manage_bots
     @property
     def full_name(self) -> str:
         """
@@ -576,7 +583,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'can_connect_to_business': self.can_connect_to_business,
                 'has_main_web_app': self.has_main_web_app,
                 'has_topics_enabled': self.has_topics_enabled,
-                'allows_users_to_create_topics': self.allows_users_to_create_topics
+                'allows_users_to_create_topics': self.allows_users_to_create_topics,
+                'can_manage_bots': self.can_manage_bots
                 }
 
 
@@ -1023,6 +1031,9 @@ class Message(JsonDeserializable):
     :param reply_to_checklist_task_id: Optional. Identifier of the specific checklist task that is being replied to
     :type reply_to_checklist_task_id: :obj:`str`
 
+    :param reply_to_poll_option_id: Optional. Persistent identifier of the specific poll option that is being replied to
+    :type reply_to_poll_option_id: :obj:`str`
+
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
@@ -1275,8 +1286,17 @@ class Message(JsonDeserializable):
     :param giveaway_completed: Optional. Service message: giveaway completed, without public winners
     :type giveaway_completed: :class:`telebot.types.GiveawayCompleted`
 
+    :param managed_bot_created: Optional. Service message: user created a bot that will be managed by the current bot
+    :type managed_bot_created: :class:`telebot.types.ManagedBotCreated`
+
     :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
     :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
+
+    :param poll_option_added: Optional. Service message: answer option was added to a poll
+    :type poll_option_added: :class:`telebot.types.PollOptionAdded`
+
+    :param poll_option_deleted: Optional. Service message: answer option was deleted from a poll
+    :type poll_option_deleted: :class:`telebot.types.PollOptionDeleted`
 
     :param suggested_post_approved: Optional. Service message: a suggested post was approved
     :type suggested_post_approved: :class:`telebot.types.SuggestedPostApproved
@@ -1607,6 +1627,17 @@ class Message(JsonDeserializable):
         if 'chat_owner_left' in obj:
             opts['chat_owner_left'] = ChatOwnerLeft.de_json(obj['chat_owner_left'])
             content_type = 'chat_owner_left'
+        if 'managed_bot_created' in obj:
+            opts['managed_bot_created'] = ManagedBotCreated.de_json(obj['managed_bot_created'])
+            content_type = 'managed_bot_created'
+        if 'poll_option_added' in obj:
+            opts['poll_option_added'] = PollOptionAdded.de_json(obj['poll_option_added'])
+            content_type = 'poll_option_added'
+        if 'poll_option_deleted' in obj:
+            opts['poll_option_deleted'] = PollOptionDeleted.de_json(obj['poll_option_deleted'])
+            content_type = 'poll_option_deleted'
+        if 'reply_to_poll_option_id' in obj:
+            opts['reply_to_poll_option_id'] = obj['reply_to_poll_option_id']
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1746,6 +1777,10 @@ class Message(JsonDeserializable):
         self.suggested_post_refunded: Optional[SuggestedPostRefunded] = None
         self.chat_owner_left: Optional[ChatOwnerLeft] = None
         self.chat_owner_changed: Optional[ChatOwnerChanged] = None
+        self.managed_bot_created: Optional[ManagedBotCreated] = None
+        self.poll_option_added: Optional[PollOptionAdded] = None
+        self.poll_option_deleted: Optional[PollOptionDeleted] = None
+        self.reply_to_poll_option_id: Optional[str] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -2987,6 +3022,11 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
     :type request_chat: :class:`telebot.types.KeyboardButtonRequestChat`
 
+    :param request_managed_bot: Optional. If specified, pressing the button will ask the user to create and share a bot
+        that will be managed by the current bot. Available for bots that enabled management of other bots in the @BotFather
+        Mini App. Available in private chats only.
+    :type request_managed_bot: :class:`telebot.types.KeyboardButtonRequestManagedBot`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButton`
     """
@@ -2994,7 +3034,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             request_location: Optional[bool]=None, request_poll: Optional[KeyboardButtonPollType]=None,
             web_app: Optional[WebAppInfo]=None, request_user: Optional[KeyboardButtonRequestUser]=None,
             request_chat: Optional[KeyboardButtonRequestChat]=None, request_users: Optional[KeyboardButtonRequestUsers]=None,
-            icon_custom_emoji_id: Optional[str]=None, style: Optional[str]=None, **kwargs):
+            icon_custom_emoji_id: Optional[str]=None, style: Optional[str]=None, request_managed_bot: Optional[KeyboardButtonRequestManagedBot]=None):
         self.text: str = text
         self.request_contact: Optional[bool] = request_contact
         self.request_location: Optional[bool] = request_location
@@ -3004,6 +3044,7 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
         self.request_users: Optional[KeyboardButtonRequestUsers] = request_users
         self.icon_custom_emoji_id: Optional[str] = icon_custom_emoji_id
         self.style: Optional[str] = style
+        self.request_managed_bot: Optional[KeyboardButtonRequestManagedBot] = request_managed_bot
         if request_user is not None:
             log_deprecation_warning('The parameter "request_user" is deprecated, use "request_users" instead')
             if self.request_users is None:
@@ -3032,6 +3073,8 @@ class KeyboardButton(Dictionaryable, JsonSerializable):
             json_dict['icon_custom_emoji_id'] = self.icon_custom_emoji_id
         if self.style:
             json_dict['style'] = self.style
+        if self.request_managed_bot is not None:
+            json_dict['request_managed_bot'] = self.request_managed_bot.to_dict()
         return json_dict
 
 
@@ -7402,14 +7445,26 @@ class PollOption(JsonDeserializable):
 
     Telegram Documentation: https://core.telegram.org/bots/api#polloption
 
+    :param persistent_id: Unique identifier of the option, persistent on option addition and deletion
+    :type persistent_id: :obj:`str`
+
     :param text: Option text, 1-100 characters
     :type text: :obj:`str`
+
+    :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
+    :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
     :param voter_count: Number of users that voted for this option
     :type voter_count: :obj:`int`
 
-    :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
-    :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+    :param added_by_user: Optional. User who added the option; omitted if the option wasn't added by a user after poll creation
+    :type added_by_user: :class:`telebot.types.User`
+
+    :param added_by_chat: Optional. Chat that added the option; omitted if the option wasn't added by a chat after poll creation
+    :type added_by_chat: :class:`telebot.types.Chat`
+
+    :param addition_date: Optional. Point in time (Unix timestamp) when the option was added; omitted if the option existed in the original poll
+    :type addition_date: :obj:`int`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollOption`
@@ -7420,12 +7475,20 @@ class PollOption(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         if 'text_entities' in obj:
             obj['text_entities'] = Message.parse_entities(obj['text_entities'])
+        if 'added_by_user' in obj:
+            obj['added_by_user'] = User.de_json(obj['added_by_user'])
+        if 'added_by_chat' in obj:
+            obj['added_by_chat'] = Chat.de_json(obj['added_by_chat'])
         return cls(**obj)
 
-    def __init__(self, text, voter_count = 0, text_entities=None, **kwargs):
+    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, **kwargs):
         self.text: str = text
+        self.persistent_id: str = persistent_id
         self.voter_count: int = voter_count
         self.text_entities: Optional[List[MessageEntity]] = text_entities
+        self.added_by_user: Optional[User] = added_by_user
+        self.added_by_chat: Optional[Chat] = added_by_chat
+        self.addition_date: Optional[int] = addition_date
     # Converted in _convert_poll_options
     # def to_json(self):
     #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
@@ -7501,8 +7564,11 @@ class Poll(JsonDeserializable):
     :param allows_multiple_answers: True, if the poll allows multiple answers
     :type allows_multiple_answers: :obj:`bool`
 
-    :param correct_option_id: Optional. 0-based identifier of the correct answer option. Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot.
+    :param correct_option_id: Deprecated. Use correct_option_ids instead. 
     :type correct_option_id: :obj:`int`
+
+    :param correct_option_ids: Optional. Array of 0-based identifiers of the correct answer options. Available only for polls in quiz mode which are closed or were sent (not forwarded) by the bot or to the private chat with the bot.
+    :type correct_option_ids: :obj:`list` of :obj:`int`
 
     :param explanation: Optional. Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters
     :type explanation: :obj:`str`
@@ -7518,6 +7584,15 @@ class Poll(JsonDeserializable):
 
     :param question_entities: Optional. Special entities that appear in the question. Currently, only custom emoji entities are allowed in poll questions
     :type question_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param allows_revoting: True, if the poll allows to change the chosen answer options
+    :type allows_revoting: :obj:`bool`
+
+    :param description: Optional. Description of the poll; for polls inside the Message object only
+    :type description: :obj:`str`
+
+    :param description_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the description
+    :type description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.Poll`
@@ -7535,15 +7610,19 @@ class Poll(JsonDeserializable):
             obj['explanation_entities'] = Message.parse_entities(obj['explanation_entities'])
         if 'question_entities' in obj:
             obj['question_entities'] = Message.parse_entities(obj['question_entities'])
+        if 'description_entities' in obj:
+            obj['description_entities'] = Message.parse_entities(obj['description_entities'])
         return cls(**obj)
 
     def __init__(
             self,
             question: str, options: List[PollOption],
             poll_id: str = None, total_voter_count: int = None, is_closed: bool = None, is_anonymous: bool = None,
-            type: str = None, allows_multiple_answers: bool = None, correct_option_id: int = None,
+            type: str = None, allows_multiple_answers: bool = None,
             explanation: str = None, explanation_entities: List[MessageEntity] = None, open_period: int = None,
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
+            correct_option_ids: List[int] = None, allows_revoting: bool = None,
+            description: str = None, description_entities: List[MessageEntity] = None,
             **kwargs):
         self.id: str = poll_id
         self.question: str = question
@@ -7557,12 +7636,22 @@ class Poll(JsonDeserializable):
             if type is None:
                 self.type: str = poll_type
         self.allows_multiple_answers: bool = allows_multiple_answers
-        self.correct_option_id: int = correct_option_id
         self.explanation: str = explanation
         self.explanation_entities: List[MessageEntity] = explanation_entities
         self.question_entities: List[MessageEntity] = question_entities
         self.open_period: int = open_period
         self.close_date: int = close_date
+        self.correct_option_ids: List[int] = correct_option_ids
+        self.allows_revoting: bool = allows_revoting
+        self.description: str = description
+        self.description_entities: List[MessageEntity] = description_entities
+        
+    @property
+    def correct_option_id(self) -> Optional[int]:
+        log_deprecation_warning("Poll: correct_option_id parameter is deprecated. Use correct_option_ids instead.")
+        if self.correct_option_ids and len(self.correct_option_ids) > 0:
+            return self.correct_option_ids[0]
+        return None
 
     def add(self, option):
         """
@@ -7595,6 +7684,9 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param option_ids: 0-based identifiers of answer options, chosen by the user. May be empty if the user retracted their vote.
     :type option_ids: :obj:`list` of :obj:`int`
 
+    :param option_persistent_ids: Persistent identifiers of the chosen answer options. May be empty if the vote was retracted.
+    :type option_persistent_ids: :obj:`list` of :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollAnswer`
     """
@@ -7608,10 +7700,12 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
             obj['voter_chat'] = Chat.de_json(obj['voter_chat'])
         return cls(**obj)
 
-    def __init__(self, poll_id: str, option_ids: List[int], user: Optional[User] = None, voter_chat: Optional[Chat] = None, **kwargs):
+    def __init__(self, poll_id: str, option_ids: List[int], option_persistent_ids: List[str],
+                 user: Optional[User] = None, voter_chat: Optional[Chat] = None, **kwargs):
         self.poll_id: str = poll_id
         self.user: Optional[User] = user
         self.option_ids: List[int] = option_ids
+        self.option_persistent_ids: List[str] = option_persistent_ids
         self.voter_chat: Optional[Chat] = voter_chat
 
 
@@ -7620,14 +7714,11 @@ class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
 
     def to_dict(self):
         # Left for backward compatibility, but with no support for voter_chat
+        logger.warning("PollAnswer.to_dict is deprecated and will be removed in future versions.")
         json_dict = {
             "poll_id": self.poll_id,
-            "option_ids": self.option_ids
+            "option_ids": self.option_ids,
         }
-        if self.user:
-            json_dict["user"] = self.user.to_dict()
-        if self.voter_chat:
-            json_dict["voter_chat"] = self.voter_chat
         return json_dict
 
 
@@ -9555,7 +9646,7 @@ class TextQuote(JsonDeserializable):
     :param text: Text of the quoted part of a message that is replied to by the given message
     :type text: :obj:`str`
 
-    :param entities: Optional. Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are kept in quotes.
+    :param entities: Optional. Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are kept in quotes.
     :type entities: :obj:`list` of :class:`MessageEntity`
 
     :param position: Approximate quote position in the original message in UTF-16 code units as specified by the sender
@@ -9603,13 +9694,18 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param message_id: Identifier of the message that will be replied to in the current chat, or in the chat chat_id if it is specified
     :type message_id: :obj:`int`
 
-    :param chat_id: Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username of the channel (in the format @channelusername)
+    :param chat_id: Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username
+        of the channel (in the format @channelusername)
     :type chat_id: :obj:`int` or :obj:`str`
 
-    :param allow_sending_without_reply: Optional. Pass True if the message should be sent even if the specified message to be replied to is not found; can be used only for replies in the same chat and forum topic.
+    :param allow_sending_without_reply: Optional. Pass True if the message should be sent even if the specified message to be replied to is not found;
+        can be used only for replies in the same chat and forum topic.
     :type allow_sending_without_reply: :obj:`bool`
 
-    :param quote: Optional. Quoted part of the message to be replied to; 0-1024 characters after entities parsing. The quote must be an exact substring of the message to be replied to, including bold, italic, underline, strikethrough, spoiler, and custom_emoji entities. The message will fail to send if the quote isn't found in the original message.
+    :param quote: Optional. Quoted part of the message to be replied to; 0-1024 characters after entities parsing.
+        The quote must be an exact substring of the message to be replied to, including bold, italic, underline,
+        strikethrough, spoiler, custom_emoji,   and date_time entities. The message will fail to send if the quote
+        isn't found in the original message.
     :type quote: :obj:`str`
 
     :param quote_parse_mode: Optional. Mode for parsing entities in the quote. See formatting options for more details.
@@ -9623,6 +9719,9 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     :param checklist_task_id: Optional. Optional. Identifier of the specific checklist task to be replied to
     :type checklist_task_id: :obj:`int`
+
+    :param poll_option_id: Optional. Persistent identifier of the specific poll option to be replied to
+    :type poll_option_id: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`ReplyParameters`
@@ -9639,7 +9738,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
-                 quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None, **kwargs) -> None:
+                 quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None,
+                    poll_option_id: Optional[str] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -9648,6 +9748,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.quote_entities: Optional[List[MessageEntity]] = quote_entities
         self.quote_position: Optional[int] = quote_position
         self.checklist_task_id: Optional[int] = checklist_task_id
+        self.poll_option_id: Optional[str] = poll_option_id
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -9667,6 +9768,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['quote_position'] = self.quote_position
         if self.checklist_task_id is not None:
             json_dict['checklist_task_id'] = self.checklist_task_id
+        if self.poll_option_id is not None:
+            json_dict['poll_option_id'] = self.poll_option_id
         return json_dict
 
     def to_json(self) -> str:
@@ -13031,7 +13134,8 @@ class InputChecklistTask(JsonSerializable):
     :param parse_mode: Optional. Mode for parsing entities in the text. See formatting options for more details.
     :type parse_mode: :obj:`str`
 
-    :param text_entities: Optional. List of special entities that appear in the text, which can be specified instead of parse_mode. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are allowed.
+    :param text_entities: Optional. List of special entities that appear in the text, which can be specified instead of parse_mode.
+        Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are allowed.
     :type text_entities: :obj:`list` of :class:`MessageEntity`
 
     :return: Instance of the class
@@ -13071,7 +13175,8 @@ class InputChecklist(JsonSerializable):
     :param parse_mode: Optional. Mode for parsing entities in the title. See formatting options for more details.
     :type parse_mode: :obj:`str`
 
-    :param title_entities: Optional. List of special entities that appear in the title, which can be specified instead of parse_mode. Currently, only bold, italic, underline, strikethrough, spoiler, and custom_emoji entities are allowed.
+    :param title_entities: Optional. List of special entities that appear in the title, which can be specified instead of parse_mode.
+        Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are allowed.
     :type title_entities: :obj:`list` of :class:`MessageEntity`
 
     :param tasks: List of 1-30 tasks in the checklist
@@ -13709,3 +13814,207 @@ class UserProfileAudios(JsonDeserializable):
         obj = cls.check_json(json_string)
         obj['audios'] = [Audio.de_json(audio) for audio in obj['audios']]
         return cls(**obj)
+    
+
+class KeyboardButtonRequestManagedBot(JsonSerializable):
+    """
+    This object defines the parameters for the creation of a managed bot.
+    Information about the created bot will be shared with the bot using the update managed_bot and a Message with
+    the field managed_bot_created.
+
+    Telegram documentation: https://core.telegram.org/bots/api#keyboardbuttonrequestmanagedbot
+
+    :param request_id: Signed 32-bit identifier of the request. Must be unique within the message
+    :type request_id: :obj:`int`
+
+    :param suggested_name: Optional. Suggested name for the bot
+    :type suggested_name: :obj:`str`
+
+    :param suggested_username: Optional. Suggested username for the bot
+    :type suggested_username: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`KeyboardButtonRequestManagedBot`
+    """
+    def __init__(self, request_id: int, suggested_name: Optional[str] = None, suggested_username: Optional[str] = None, **kwargs):
+        self.request_id: int = request_id
+        self.suggested_name: Optional[str] = suggested_name
+        self.suggested_username: Optional[str] = suggested_username
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        data = {
+            'request_id': self.request_id
+        }
+        if self.suggested_name:
+            data['suggested_name'] = self.suggested_name
+        if self.suggested_username:
+            data['suggested_username'] = self.suggested_username
+        return data
+
+
+class ManagedBotCreated(JsonDeserializable):
+    """
+    This object contains information about the bot that was created to be managed by the current bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#managedbotcreated
+
+    :param bot: Information about the bot. The bot's token can be fetched using the method getManagedBotToken.
+    :type bot: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`ManagedBotCreated`
+    """
+    def __init__(self, bot: User, **kwargs):
+        self.bot: User = bot
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['bot'] = User.de_json(obj['bot'])
+        return cls(**obj)
+    
+
+class ManagedBotUpdated(JsonDeserializable):
+    """
+    This object contains information about the creation or token update of a bot that is managed by the current bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#managedbotupdated
+
+    :param user: User that created the bot
+    :type user: :class:`User`
+
+    :param bot: Information about the bot. Token of the bot can be fetched using the method getManagedBotToken.
+    :type bot: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`ManagedBotUpdated`
+    """
+    def __init__(self, user: User, bot: User, **kwargs):
+        self.user: User = user
+        self.bot: User = bot
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj['user'])
+        obj['bot'] = User.de_json(obj['bot'])
+
+        return cls(**obj)
+    
+
+class PreparedKeyboardButton(JsonDeserializable):
+    """
+    Describes a keyboard button to be used by a user of a Mini App.
+
+    Telegram documentation: https://core.telegram.org/bots/api#preparedkeyboardbutton
+
+    :param id: Unique identifier of the keyboard button
+    :type id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`PreparedKeyboardButton`
+    """
+    def __init__(self, id: str, **kwargs):
+        self.id: str = id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class PollOptionAdded(JsonDeserializable):
+    """
+    Describes a service message about an option added to a poll.
+
+    Telegram documentation: https://core.telegram.org/bots/api#polloptionadded
+
+    :param poll_message: Optional. Message containing the poll to which the option was added, if known. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type poll_message: :class:`MaybeInaccessibleMessage`
+
+    :param option_persistent_id: Unique identifier of the added option
+    :type option_persistent_id: :obj:`str`
+
+    :param option_text: Option text
+    :type option_text: :obj:`str`
+
+    :param option_text_entities: Optional. Special entities that appear in the option_text
+    :type option_text_entities: :obj:`list` of :class:`MessageEntity`
+
+    :return: Instance of the class
+    :rtype: :class:`PollOptionAdded`
+    """
+    def __init__(self, option_persistent_id: str, option_text: str,
+                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
+        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.option_persistent_id: str = option_persistent_id
+        self.option_text: str = option_text
+        self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'poll_message' in obj:
+            # if date is 0, then the message is inaccessible, otherwise it is accessible
+            poll_message = obj['poll_message']
+            if poll_message['date'] == 0:
+                obj['poll_message'] = InaccessibleMessage.de_json(poll_message)
+            else:
+                obj['poll_message'] = Message.de_json(poll_message)
+        if 'option_text_entities' in obj:
+            obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
+        return cls(**obj) 
+    
+
+class PollOptionDeleted(JsonDeserializable):
+    """
+    Describes a service message about an option deleted from a poll.
+
+    Telegram documentation: https://core.telegram.org/bots/api#polloptiondeleted
+
+    :param poll_message: Optional. Message containing the poll from which the option was deleted, if known. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type poll_message: :class:`MaybeInaccessibleMessage`
+
+    :param option_persistent_id: Unique identifier of the deleted option
+    :type option_persistent_id: :obj:`str`
+
+    :param option_text: Option text
+    :type option_text: :obj:`str`
+
+    :param option_text_entities: Optional. Special entities that appear in the option_text
+    :type option_text_entities: :obj:`list` of :class:`MessageEntity`
+
+    :return: Instance of the class
+    :rtype: :class:`PollOptionDeleted`
+    """
+    def __init__(self, option_persistent_id: str, option_text: str,
+                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
+        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.option_persistent_id: str = option_persistent_id
+        self.option_text: str = option_text
+        self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'poll_message' in obj:
+            # if date is 0, then the message is inaccessible, otherwise it is accessible
+            poll_message = obj['poll_message']
+            if poll_message['date'] == 0:
+                obj['poll_message'] = InaccessibleMessage.de_json(poll_message)
+            else:
+                obj['poll_message'] = Message.de_json(poll_message)
+        if 'option_text_entities' in obj:
+            obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
+        return cls(**obj)
+    

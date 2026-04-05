@@ -249,6 +249,7 @@ class TeleBot:
         self.edited_business_message_handlers = []
         self.deleted_business_messages_handlers = []
         self.purchased_paid_media_handlers = []
+        self.managed_bot_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -726,6 +727,7 @@ class TeleBot:
         new_edited_business_messages = None
         new_deleted_business_messages = None
         new_purchased_paid_media = None
+        new_managed_bots = None
 
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -810,6 +812,9 @@ class TeleBot:
             if update.purchased_paid_media:
                 if new_purchased_paid_media is None: new_purchased_paid_media = []
                 new_purchased_paid_media.append(update.purchased_paid_media)
+            if update.managed_bot:
+                if new_managed_bots is None: new_managed_bots = []
+                new_managed_bots.append(update.managed_bot)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -857,6 +862,8 @@ class TeleBot:
             self.process_new_deleted_business_messages(new_deleted_business_messages)
         if new_purchased_paid_media:
             self.process_new_purchased_paid_media(new_purchased_paid_media)
+        if new_managed_bots:
+            self.process_new_managed_bot(new_managed_bots)
 
     def process_new_messages(self, new_messages):
         """
@@ -998,6 +1005,12 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.purchased_paid_media_handlers, new_purchased_paid_media, 'purchased_paid_media')
+
+    def process_new_managed_bot(self, new_managed_bots):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.managed_bot_handlers, new_managed_bots, 'managed_bot')
 
     def process_middlewares(self, update):
         """
@@ -5227,6 +5240,33 @@ class TeleBot:
             apihelper.get_business_connection(self.token, business_connection_id)
         )
 
+    def get_managed_bot_token(self, user_id: int) -> str:
+        """
+        Use this method to get the token of a managed bot. Returns the token as String on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmanagedbottoken
+
+        :param user_id: User identifier of the managed bot whose token will be returned
+        :type user_id: :obj:`int`
+
+        :return: Returns the token as String on success.
+        :rtype: :obj:`str`
+        """
+        return apihelper.get_managed_bot_token(self.token, user_id)
+
+    def replace_managed_bot_token(self, user_id: int) -> str:
+        """
+        Use this method to revoke the current token of a managed bot and generate a new one. Returns the new token as String on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#replacemanagedbottoken
+
+        :param user_id: User identifier of the managed bot whose token will be replaced
+        :type user_id: :obj:`int`
+
+        :return: Returns the new token as String on success.
+        :rtype: :obj:`str`
+        """
+        return apihelper.replace_managed_bot_token(self.token, user_id)
 
     def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,
@@ -6049,7 +6089,6 @@ class TeleBot:
             send_email_to_provider=send_email_to_provider, is_flexible=is_flexible ,subscription_period=subscription_period,
             business_connection_id=business_connection_id)
 
-
     # noinspection PyShadowingBuiltins
     def send_poll(
             self, chat_id: Union[int, str], question: str, options: List[Union[str, types.InputPollOption]],
@@ -6074,7 +6113,15 @@ class TeleBot:
             question_parse_mode: Optional[str] = None,
             question_entities: Optional[List[types.MessageEntity]] = None,
             message_effect_id: Optional[str]=None,
-            allow_paid_broadcast: Optional[bool]=None) -> types.Message:
+            allow_paid_broadcast: Optional[bool]=None,
+            allows_revoting: Optional[bool]=None,
+            shuffle_options: Optional[bool]=None,
+            allow_adding_options: Optional[bool]=None,
+            hide_results_until_closes: Optional[bool]=None,
+            correct_option_ids: Optional[List[int]]=None,
+            description: Optional[str]=None,
+            description_parse_mode: Optional[str]=None,
+            description_entities: Optional[List[types.MessageEntity]]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -6096,10 +6143,10 @@ class TeleBot:
         :param type: Poll type, “quiz” or “regular”, defaults to “regular”
         :type type: :obj:`str`
 
-        :param allows_multiple_answers: True, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to False
+        :param allows_multiple_answers: True, if the poll allows multiple answers, defaults to False
         :type allows_multiple_answers: :obj:`bool`
 
-        :param correct_option_id: 0-based identifier of the correct answer option. Available only for polls in quiz mode, defaults to None
+        :param correct_option_id: Deprecated, use correct_option_ids instead. 
         :type correct_option_id: :obj:`int`
 
         :param explanation: Text that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing
@@ -6108,10 +6155,11 @@ class TeleBot:
         :param explanation_parse_mode: Mode for parsing entities in the explanation. See formatting options for more details.
         :type explanation_parse_mode: :obj:`str`
 
-        :param open_period: Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
+        :param open_period: Amount of time in seconds the poll will be active after creation, 5-2628000. Can't be used together with close_date.
         :type open_period: :obj:`int`
 
         :param close_date: Point in time (Unix timestamp) when the poll will be automatically closed.
+            Must be at least 5 and no more than 2628000 seconds in the future. Can't be used together with open_period.
         :type close_date: :obj:`int` | :obj:`datetime`
 
         :param is_closed: Pass True, if the poll needs to be immediately closed. This can be useful for poll preview.
@@ -6160,6 +6208,30 @@ class TeleBot:
             of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
         :type allow_paid_broadcast: :obj:`bool`
 
+        :param allows_revoting: Pass True, if the poll allows to change chosen answer options, defaults to False for quizzes and to True for regular polls
+        :type allows_revoting: :obj:`bool`
+
+        :param shuffle_options: Pass True, if the poll options must be shown in random order
+        :type shuffle_options: :obj:`bool`
+
+        :param allow_adding_options: Pass True, if answer options can be added to the poll after creation; not supported for anonymous polls and quizzes
+        :type allow_adding_options: :obj:`bool`
+
+        :param hide_results_until_closes: Pass True, if poll results must be shown only after the poll closes
+        :type hide_results_until_closes: :obj:`bool`
+
+        :param correct_option_ids: A JSON-serialized list of monotonically increasing 0-based identifiers of the correct answer options, required for polls in quiz mode
+        :type correct_option_ids: :obj:`list` of :obj:`int`
+
+        :param description: Description of the poll to be sent, 0-1024 characters after entities parsing
+        :type description: :obj:`str`
+
+        :param description_parse_mode: Mode for parsing entities in the poll description. See formatting options for more details.
+        :type description_parse_mode: :obj:`str`
+
+        :param description_entities: A JSON-serialized list of special entities that appear in the poll description, which can be specified instead of description_parse_mode
+        :type description_entities: :obj:`list` of :obj:`MessageEntity`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6192,6 +6264,7 @@ class TeleBot:
 
         explanation_parse_mode = self.parse_mode if (explanation_parse_mode is None) else explanation_parse_mode
         question_parse_mode = self.parse_mode if (question_parse_mode is None) else question_parse_mode
+        description_parse_mode = self.parse_mode if (description_parse_mode is None) else description_parse_mode
 
         if options and (not isinstance(options[0], types.InputPollOption)):
             # show a deprecation warning
@@ -6203,19 +6276,33 @@ class TeleBot:
                 options = [types.InputPollOption(option.text, text_entities=option.text_entities) for option in options]
             else:
                 raise RuntimeError("Type of 'options' items is unknown. Options should be List[types.InputPollOption], other types are deprecated.")
+            
+        # handle deprecated correct_option_id parameter
+        if correct_option_id is not None:
+            if correct_option_ids is not None:
+                # show a conflict warning
+                logger.warning("Both 'correct_option_id' and 'correct_option_ids' parameters are set: use 'correct_option_ids' instead.")
+            else:
+                # convert correct_option_id to correct_option_ids
+                correct_option_ids = [correct_option_id]
+                logger.warning("The parameter 'correct_option_id' is deprecated, use 'correct_option_ids' instead.")
+
 
         return types.Message.de_json(
             apihelper.send_poll(
                 self.token, chat_id, question, options,
                 is_anonymous=is_anonymous, type=type, allows_multiple_answers=allows_multiple_answers,
-                correct_option_id=correct_option_id, explanation=explanation,
+                explanation=explanation,
                 explanation_parse_mode=explanation_parse_mode, open_period=open_period,
                 close_date=close_date, is_closed=is_closed, disable_notification=disable_notification,
                 reply_markup=reply_markup, timeout=timeout, explanation_entities=explanation_entities,
                 protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 question_parse_mode=question_parse_mode, question_entities=question_entities,
-                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast)
+                message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
+                allows_revoting=allows_revoting, shuffle_options=shuffle_options,
+                allow_adding_options=allow_adding_options, hide_results_until_closes=hide_results_until_closes, correct_option_ids=correct_option_ids,
+                description=description, description_parse_mode=description_parse_mode, description_entities=description_entities)
             )
 
 
@@ -6796,10 +6883,10 @@ class TeleBot:
         :param text: Text that will be shown along with the gift; 0-255 characters
         :type text: :obj:`str`
 
-        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, “custom_emoji”, and “date_time” are ignored.
         :type text_parse_mode: :obj:`str`
 
-        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, “custom_emoji”, and “date_time” are ignored.
         :type text_entities: :obj:`list` of :obj:`types.MessageEntity`
 
         :return: Returns True on success.
@@ -7503,10 +7590,10 @@ class TeleBot:
         :param text: Text that will be shown along with the service message about the subscription; 0-128 characters
         :type text: :obj:`str`
 
-        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :param text_parse_mode: Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, “custom_emoji”, and “date_time” are ignored.
         :type text_parse_mode: :obj:`str`
 
-        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+        :param text_entities: A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, “custom_emoji”, and “date_time” are ignored.
         :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
         :return: Returns True on success.
@@ -8126,6 +8213,25 @@ class TeleBot:
             apihelper.save_prepared_inline_message(
                 self.token, user_id, result, allow_user_chats=allow_user_chats, allow_bot_chats=allow_bot_chats,
                 allow_group_chats=allow_group_chats, allow_channel_chats=allow_channel_chats)
+        )
+    
+    def save_prepared_keyboard_button(self, user_id: int, button: types.KeyboardButton) -> types.PreparedKeyboardButton:
+        """
+        Use this method to store a keyboard button that can be used by a user within a Mini App. Returns a PreparedKeyboardButton object.
+
+        Telegram Documentation: https://core.telegram.org/bots/api#savepreparedkeyboardbutton
+
+        :param user_id: Unique identifier of the target user that can use the button
+        :type user_id: :obj:`int`
+
+        :param button: A JSON-serialized object describing the button to be saved. The button must be of the type request_users, request_chat, or request_managed_bot
+        :type button: :class:`telebot.types.KeyboardButton`
+
+        :return: On success, a PreparedKeyboardButton object is returned.
+        :rtype: :class:`telebot.types.PreparedKeyboardButton`
+        """
+        return types.PreparedKeyboardButton.de_json(
+            apihelper.save_prepared_keyboard_button(self.token, user_id, button)
         )
 
     def register_for_reply(self, message: types.Message, callback: Callable, *args, **kwargs) -> None:
@@ -10345,6 +10451,53 @@ class TeleBot:
 
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_deleted_business_messages_handler(handler_dict)
+
+    def managed_bot_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming updates about managed bot. As a parameter to the decorator function, it passes :class:`telebot.types.ManagedBotUpdated` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_managed_bot_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_managed_bot_handler(self, handler_dict):
+        """
+        Adds a managed_bot handler.
+        Note that you should use register_managed_bot_handler to add managed_bot_handler to the bot.
+
+        :meta private:
+        :param handler_dict:
+        :return:
+        """
+        self.managed_bot_handlers.append(handler_dict)
+
+    def register_managed_bot_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers managed bot handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_managed_bot_handler(handler_dict)
 
 
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):
