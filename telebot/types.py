@@ -1289,6 +1289,12 @@ class Message(JsonDeserializable):
     :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
     :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
 
+    :param poll_option_added: Optional. Service message: answer option was added to a poll
+    :type poll_option_added: :class:`telebot.types.PollOptionAdded`
+
+    :param poll_option_deleted: Optional. Service message: answer option was deleted from a poll
+    :type poll_option_deleted: :class:`telebot.types.PollOptionDeleted`
+
     :param suggested_post_approved: Optional. Service message: a suggested post was approved
     :type suggested_post_approved: :class:`telebot.types.SuggestedPostApproved
 
@@ -1621,6 +1627,12 @@ class Message(JsonDeserializable):
         if 'managed_bot_created' in obj:
             opts['managed_bot_created'] = ManagedBotCreated.de_json(obj['managed_bot_created'])
             content_type = 'managed_bot_created'
+        if 'poll_option_added' in obj:
+            opts['poll_option_added'] = PollOptionAdded.de_json(obj['poll_option_added'])
+            content_type = 'poll_option_added'
+        if 'poll_option_deleted' in obj:
+            opts['poll_option_deleted'] = PollOptionDeleted.de_json(obj['poll_option_deleted'])
+            content_type = 'poll_option_deleted'
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1761,6 +1773,8 @@ class Message(JsonDeserializable):
         self.chat_owner_left: Optional[ChatOwnerLeft] = None
         self.chat_owner_changed: Optional[ChatOwnerChanged] = None
         self.managed_bot_created: Optional[ManagedBotCreated] = None
+        self.poll_option_added: Optional[PollOptionAdded] = None
+        self.poll_option_deleted: Optional[PollOptionDeleted] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -13900,3 +13914,94 @@ class PreparedKeyboardButton(JsonSerializable):
             'id': self.id
         }
         return data
+    
+
+class PollOptionAdded(JsonDeserializable):
+    """
+    Describes a service message about an option added to a poll.
+
+    Telegram documentation: https://core.telegram.org/bots/api#polloptionadded
+
+    :param poll_message: Optional. Message containing the poll to which the option was added, if known. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type poll_message: :class:`MaybeInaccessibleMessage`
+
+    :param option_persistent_id: Unique identifier of the added option
+    :type option_persistent_id: :obj:`str`
+
+    :param option_text: Option text
+    :type option_text: :obj:`str`
+
+    :param option_text_entities: Optional. Special entities that appear in the option_text
+    :type option_text_entities: :obj:`list` of :class:`MessageEntity`
+
+    :return: Instance of the class
+    :rtype: :class:`PollOptionAdded`
+    """
+    def __init__(self, option_persistent_id: str, option_text: str,
+                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
+        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.option_persistent_id: str = option_persistent_id
+        self.option_text: str = option_text
+        self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'poll_message' in obj:
+            # if date is 0, then the message is inaccessible, otherwise it is accessible
+            poll_message = obj['poll_message']
+            if poll_message['date'] == 0:
+                obj['poll_message'] = InaccessibleMessage.de_json(poll_message)
+            else:
+                obj['poll_message'] = Message.de_json(poll_message)
+        if 'option_text_entities' in obj:
+            obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
+        return cls(**obj) 
+    
+
+class PollOptionDeleted(JsonDeserializable):
+    """
+    Describes a service message about an option deleted from a poll.
+
+    Telegram documentation: https://core.telegram.org/bots/api#polloptiondeleted
+
+    :param poll_message: Optional. Message containing the poll from which the option was deleted, if known. Note that the Message object in this field will not contain the reply_to_message field even if it itself is a reply.
+    :type poll_message: :class:`MaybeInaccessibleMessage`
+
+    :param option_persistent_id: Unique identifier of the deleted option
+    :type option_persistent_id: :obj:`str`
+
+    :param option_text: Option text
+    :type option_text: :obj:`str`
+
+    :param option_text_entities: Optional. Special entities that appear in the option_text
+    :type option_text_entities: :obj:`list` of :class:`MessageEntity`
+
+    :return: Instance of the class
+    :rtype: :class:`PollOptionDeleted`
+    """
+    def __init__(self, option_persistent_id: str, option_text: str,
+                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
+        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.option_persistent_id: str = option_persistent_id
+        self.option_text: str = option_text
+        self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'poll_message' in obj:
+            # if date is 0, then the message is inaccessible, otherwise it is accessible
+            poll_message = obj['poll_message']
+            if poll_message['date'] == 0:
+                obj['poll_message'] = InaccessibleMessage.de_json(poll_message)
+            else:
+                obj['poll_message'] = Message.de_json(poll_message)
+        if 'option_text_entities' in obj:
+            obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
+        return cls(**obj)
+    
