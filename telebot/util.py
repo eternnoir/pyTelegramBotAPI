@@ -53,7 +53,7 @@ update_types = [
     "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer", "my_chat_member", "chat_member",
     "chat_join_request", "message_reaction", "message_reaction_count", "removed_chat_boost", "chat_boost",
     "business_connection", "business_message", "edited_business_message", "deleted_business_messages",
-    "purchased_paid_media",
+    "purchased_paid_media", "managed_bot",
 ]
 
 

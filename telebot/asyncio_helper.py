@@ -445,7 +445,7 @@ async def save_prepared_inline_message(token, user_id, result: types.InlineQuery
 async def save_prepared_keyboard_button(token, user_id, button: types.KeyboardButton):
     method_url = r'savePreparedKeyboardButton'
     payload = {'user_id': user_id, 'button': button.to_json()}
-    return await _process_request(token, method_url, params=payload)
+    return await _process_request(token, method_url, params=payload, method='post')
 
 
 async def get_chat_member(token, chat_id, user_id):
@@ -535,7 +535,7 @@ async def send_checklist(
     if reply_parameters:
         payload['reply_parameters'] = reply_parameters.to_json()
     if reply_markup:
-        payload['reply_markup'] = _convert_markup(reply_markup)
+        payload['reply_markup'] = await _convert_markup(reply_markup)
     return await _process_request(token, method_url, params=payload)
 
 
@@ -661,7 +661,7 @@ async def send_paid_media(
     if reply_parameters is not None:
         _payload['reply_parameters'] = reply_parameters.to_json()
     if reply_markup:
-        _payload['reply_markup'] = _convert_markup(reply_markup)
+        _payload['reply_markup'] = await _convert_markup(reply_markup)
     if business_connection_id:
         _payload['business_connection_id'] = business_connection_id
     if payload:
