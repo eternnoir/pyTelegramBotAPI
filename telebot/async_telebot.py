@@ -196,7 +196,7 @@ class AsyncTeleBot:
         # Strong references to background tasks created via asyncio.create_task().
         # asyncio only keeps weak references, so unreferenced tasks can be GC'd
         # mid-execution; see https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task
-        self._pending_tasks: set = set()
+        self._pending_tasks: set[asyncio.Task[Any]] = set()
         self.webhook_listener = None
 
         if validate_token:

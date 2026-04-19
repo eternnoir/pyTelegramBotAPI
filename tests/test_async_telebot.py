@@ -61,8 +61,9 @@ def test_process_polling_retains_update_processing_tasks():
     async def driver():
         await bot._process_polling(non_stop=True, interval=0, timeout=0)
         # Allow the fire-and-forget task to finish plus one yield for the
-        # add_done_callback discard to run.
-        await process_completed.wait()
+        # add_done_callback discard to run. A timeout guards against the
+        # stub ever being rewired such that the processing task never runs.
+        await asyncio.wait_for(process_completed.wait(), timeout=1)
         await asyncio.sleep(0)
 
     asyncio.run(driver())
