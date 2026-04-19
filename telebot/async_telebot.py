@@ -193,6 +193,10 @@ class AsyncTeleBot:
 
         self._user = None # set during polling
         self._polling = None
+        # Strong references to background tasks created via asyncio.create_task().
+        # asyncio only keeps weak references, so unreferenced tasks can be GC'd
+        # mid-execution; see https://docs.python.org/3/library/asyncio-task.html#asyncio.create_task
+        self._pending_tasks: set[asyncio.Task[Any]] = set()
         self.webhook_listener = None
 
         if validate_token:
@@ -456,8 +460,10 @@ class AsyncTeleBot:
                     updates = await self.get_updates(offset=self.offset, allowed_updates=allowed_updates, timeout=timeout, request_timeout=request_timeout)
                     if updates:
                         self.offset = updates[-1].update_id + 1
-                        # noinspection PyAsyncCall
-                        asyncio.create_task(self.process_new_updates(updates)) # Seperate task for processing updates
+                        # Retain a strong reference so the task isn't GC'd mid-execution.
+                        task = asyncio.create_task(self.process_new_updates(updates))
+                        self._pending_tasks.add(task)
+                        task.add_done_callback(self._pending_tasks.discard)
                     if interval: await asyncio.sleep(interval)
                     error_interval = 0.25 # drop error_interval if no errors
 
