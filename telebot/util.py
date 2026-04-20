@@ -638,6 +638,50 @@ def antiflood(function: Callable, *args, number_retries=5, **kwargs):
         return function(*args, **kwargs)
 
 
+async def async_antiflood(function: Callable, *args, number_retries=5, **kwargs):
+    """
+    Async counterpart to :func:`antiflood`. Awaits ``function(*args, **kwargs)``
+    in a retry loop that honours Telegram's ``retry_after`` parameter on 429
+    responses. Use with :obj:`telebot.async_telebot.AsyncTeleBot` calls.
+
+    Example:
+
+    .. code-block:: python3
+
+        from telebot.util import async_antiflood
+
+        for chat_id in chat_id_list:
+            msg = await async_antiflood(bot.send_message, chat_id, text)
+
+    :param function: The awaitable callable to invoke. Called fresh on each
+        attempt, so pass the function itself (for example ``bot.send_message``),
+        not a pre-awaited coroutine.
+    :type function: :obj:`Callable`
+
+    :param number_retries: Total number of attempts. After ``number_retries - 1``
+        retried 429 responses the final call is issued without the 429 guard,
+        so its exception will propagate.
+    :type number_retries: :obj:`int`
+
+    :param args: Positional arguments forwarded to ``function``.
+    :param kwargs: Keyword arguments forwarded to ``function``.
+
+    :return: Whatever ``function`` returns on the first successful call.
+    """
+    from telebot.asyncio_helper import ApiTelegramException
+    import asyncio
+
+    for _ in range(number_retries - 1):
+        try:
+            return await function(*args, **kwargs)
+        except ApiTelegramException as ex:
+            if ex.error_code == 429:
+                await asyncio.sleep(ex.result_json['parameters']['retry_after'])
+            else:
+                raise
+    return await function(*args, **kwargs)
+
+
 def parse_web_app_data(token: str, raw_init_data: str):
     """
     Parses web app data.
@@ -719,7 +763,7 @@ __all__ = (
     "chunks", "generate_random_token", "pil_image_to_file",
     "is_command", "extract_command", "extract_arguments",
     "split_string", "smart_split", "escape", "user_link", "quick_markup",
-    "antiflood", "parse_web_app_data", "validate_web_app_data",
+    "antiflood", "async_antiflood", "parse_web_app_data", "validate_web_app_data",
     "or_set", "or_clear", "orify", "OrEvent", "per_thread",
     "webhook_google_functions", "validate_token", "extract_bot_id"
 )
