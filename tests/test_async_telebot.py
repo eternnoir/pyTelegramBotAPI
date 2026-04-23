@@ -108,7 +108,6 @@ def test_async_antiflood_returns_result_without_retrying_when_ok():
 
 
 def test_async_antiflood_sleeps_retry_after_then_succeeds():
-    import telebot.util as util
     from telebot.util import async_antiflood
 
     calls = {"n": 0}
