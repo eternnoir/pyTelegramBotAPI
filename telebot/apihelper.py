@@ -15,7 +15,7 @@ from requests.adapters import HTTPAdapter
 try:
     # noinspection PyUnresolvedReferences
     from requests.packages.urllib3 import fields
-    format_header_param = fields.format_header_param
+    format_header_param = fields.format_multipart_header_param
 except ImportError:
     format_header_param = None
 import telebot
@@ -100,7 +100,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
 
     
     if files and format_header_param:
-        fields.format_header_param = _no_encode(format_header_param)
+        fields.format_multipart_header_param = _no_encode(format_header_param)
     if params:
         if 'timeout' in params:
             read_timeout = params.pop('timeout')
