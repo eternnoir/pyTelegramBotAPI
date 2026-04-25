@@ -74,3 +74,123 @@ def test_process_polling_retains_update_processing_tasks():
     assert bot._pending_tasks == set(), (
         "Completed processing tasks must be discarded from _pending_tasks"
     )
+
+
+def _fake_429(retry_after: int):
+    from telebot.asyncio_helper import ApiTelegramException
+
+    class _FakeResponse:
+        status = 429
+        reason = "Too Many Requests"
+
+    result_json = {
+        "ok": False,
+        "error_code": 429,
+        "description": "Too Many Requests",
+        "parameters": {"retry_after": retry_after},
+    }
+    return ApiTelegramException("sendMessage", _FakeResponse(), result_json)
+
+
+def test_async_antiflood_returns_result_without_retrying_when_ok():
+    from telebot.util import async_antiflood
+
+    calls = {"n": 0}
+
+    async def ok(value):
+        calls["n"] += 1
+        return value
+
+    result = asyncio.run(async_antiflood(ok, "hello"))
+
+    assert result == "hello"
+    assert calls["n"] == 1
+
+
+def test_async_antiflood_sleeps_retry_after_then_succeeds():
+    from telebot.util import async_antiflood
+
+    calls = {"n": 0}
+
+    async def flaky():
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise _fake_429(retry_after=7)
+        return "ok"
+
+    sleeps: list[float] = []
+
+    async def fake_sleep(seconds):
+        sleeps.append(seconds)
+
+    original_sleep = asyncio.sleep
+    asyncio.sleep = fake_sleep  # type: ignore[assignment]
+    try:
+        result = asyncio.run(async_antiflood(flaky))
+    finally:
+        asyncio.sleep = original_sleep  # type: ignore[assignment]
+
+    assert result == "ok"
+    assert calls["n"] == 2
+    assert sleeps == [7], "Must sleep exactly retry_after seconds between attempts"
+
+
+def test_async_antiflood_propagates_non_429_immediately():
+    from telebot.asyncio_helper import ApiTelegramException
+    from telebot.util import async_antiflood
+
+    class _FakeResponse:
+        status = 400
+        reason = "Bad Request"
+
+    err = ApiTelegramException(
+        "sendMessage",
+        _FakeResponse(),
+        {"ok": False, "error_code": 400, "description": "Bad Request"},
+    )
+
+    calls = {"n": 0}
+
+    async def boom():
+        calls["n"] += 1
+        raise err
+
+    try:
+        asyncio.run(async_antiflood(boom))
+    except ApiTelegramException as raised:
+        assert raised is err
+    else:
+        raise AssertionError("Non-429 error should propagate")
+
+    assert calls["n"] == 1, "Non-429 errors must not trigger a retry"
+
+
+def test_async_antiflood_final_attempt_propagates_after_budget_exhausted():
+    from telebot.asyncio_helper import ApiTelegramException
+    from telebot.util import async_antiflood
+
+    calls = {"n": 0}
+    budget = 3
+
+    async def always_429():
+        calls["n"] += 1
+        raise _fake_429(retry_after=1)
+
+    async def fake_sleep(_seconds):
+        return None
+
+    original_sleep = asyncio.sleep
+    asyncio.sleep = fake_sleep  # type: ignore[assignment]
+    try:
+        try:
+            asyncio.run(async_antiflood(always_429, number_retries=budget))
+        except ApiTelegramException:
+            pass
+        else:
+            raise AssertionError("Final 429 must surface once retries are exhausted")
+    finally:
+        asyncio.sleep = original_sleep  # type: ignore[assignment]
+
+    assert calls["n"] == budget, (
+        f"Expected {budget} total attempts, got {calls['n']}"
+    )
