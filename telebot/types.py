@@ -7620,6 +7620,9 @@ class PollOption(JsonDeserializable):
     :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
     :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param media: Optional. Media added to the poll option
+    :type media: :class:`telebot.types.PollMedia`
+
     :param voter_count: Number of users that voted for this option
     :type voter_count: :obj:`int`
 
@@ -7645,9 +7648,11 @@ class PollOption(JsonDeserializable):
             obj['added_by_user'] = User.de_json(obj['added_by_user'])
         if 'added_by_chat' in obj:
             obj['added_by_chat'] = Chat.de_json(obj['added_by_chat'])
+        if 'media' in obj:
+            obj['media'] = PollMedia.de_json(obj['media'])
         return cls(**obj)
 
-    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, **kwargs):
+    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, media=None, **kwargs):
         self.text: str = text
         self.persistent_id: str = persistent_id
         self.voter_count: int = voter_count
@@ -7655,6 +7660,7 @@ class PollOption(JsonDeserializable):
         self.added_by_user: Optional[User] = added_by_user
         self.added_by_chat: Optional[Chat] = added_by_chat
         self.addition_date: Optional[int] = addition_date
+        self.media: Optional[PollMedia] = media
     # Converted in _convert_poll_options
     # def to_json(self):
     #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
