@@ -3811,6 +3811,51 @@ class AsyncTeleBot:
 
         """
         return await asyncio_helper.delete_messages(self.token, chat_id, message_ids)
+    
+    async def delete_message_reaction(self, chat_id: Union[int, str], message_id: int, user_id: Optional[int]=None, actor_chat_id: Optional[int]=None) -> bool:
+        """
+        Use this method to remove a reaction from a message in a group or a supergroup chat.
+        The bot must have the 'can_delete_messages' administrator right in the chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletemessagereaction
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @username)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Identifier of the target message
+        :type message_id: :obj:`int`
+
+        :param user_id: Identifier of the user whose reaction will be removed, if the reaction was added by a user
+        :type user_id: :obj:`int`, optional
+
+        :param actor_chat_id: Identifier of the chat whose reaction will be removed, if the reaction was added by a chat
+        :type actor_chat_id: :obj:`int`, optional
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.delete_message_reaction(self.token, chat_id, message_id, user_id, actor_chat_id)
+    
+    async def delete_all_message_reactions(self, chat_id: Union[int, str], user_id: Optional[int]=None, actor_chat_id: Optional[int]=None) -> bool:
+        """
+        Use this method to remove up to 10000 recent reactions in a group or a supergroup chat added by a given user or chat.
+        The bot must have the 'can_delete_messages' administrator right in the chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deleteallmessagereactions
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @username)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param user_id: Identifier of the user whose reactions will be removed, if the reactions were added by a user
+        :type user_id: :obj:`int`, optional
+
+        :param actor_chat_id: Identifier of the chat whose reactions will be removed, if the reactions were added by a chat
+        :type actor_chat_id: :obj:`int`, optional
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.delete_all_message_reactions(self.token, chat_id, user_id, actor_chat_id)
 
     async def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
                          message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None,

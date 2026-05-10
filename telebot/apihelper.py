@@ -2716,6 +2716,29 @@ def delete_messages(token, chat_id, message_ids):
     }
     return _make_request(token, method_url, params=payload)
 
+def delete_message_reaction(token, chat_id, message_id, user_id=None, actor_chat_id=None):
+    method_url = 'deleteMessageReaction'
+    payload = {
+        'chat_id': chat_id,
+        'message_id': message_id
+    }
+    if user_id is not None:
+        payload['user_id'] = user_id
+    if actor_chat_id is not None:
+        payload['actor_chat_id'] = actor_chat_id
+    return _make_request(token, method_url, params=payload, method='post')
+
+def delete_all_message_reactions(token, chat_id, user_id=None, actor_chat_id=None):
+    method_url = 'deleteAllMessageReactions'
+    payload = {
+        'chat_id': chat_id
+    }
+    if user_id is not None:
+        payload['user_id'] = user_id
+    if actor_chat_id is not None:
+        payload['actor_chat_id'] = actor_chat_id
+    return _make_request(token, method_url, params=payload, method='post')
+
 def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
                             message_thread_id=None, protect_content=None, direct_messages_topic_id=None):
     method_url = 'forwardMessages'
