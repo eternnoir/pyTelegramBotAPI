@@ -209,6 +209,9 @@ class Update(JsonDeserializable):
     :param managed_bot: Optional. A new bot was created to be managed by the bot or token of a bot was changed
     :type managed_bot: :class:`telebot.types.ManagedBotUpdated`
 
+    :param guest_message: Optional. New guest message. The bot can use the field Message.guest_query_id and the method answerGuestQuery to send a message in response.
+    :type guest_message: :class:`telebot.types.Message`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -242,18 +245,19 @@ class Update(JsonDeserializable):
         deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
         purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
         managed_bot = ManagedBotUpdated.de_json(obj.get('managed_bot'))
+        guest_message = Message.de_json(obj.get('guest_message'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages, purchased_paid_media, managed_bot)
+                   deleted_business_messages, purchased_paid_media, managed_bot, guest_message)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, purchased_paid_media, managed_bot):
+                 deleted_business_messages, purchased_paid_media, managed_bot, guest_message):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -279,6 +283,7 @@ class Update(JsonDeserializable):
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
         self.managed_bot: Optional[ManagedBotUpdated] = managed_bot
+        self.guest_message: Optional[Message] = guest_message
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -507,6 +512,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         getMe.
     :type can_read_all_group_messages: :obj:`bool`
 
+    :param supports_guest_queries: Optional. True, if the bot supports guest queries from chats it is not a member of. Returned only in getMe.
+    :type supports_guest_queries: :obj:`bool`
+
     :param supports_inline_queries: Optional. True, if the bot supports inline queries. Returned only in getMe.
     :type supports_inline_queries: :obj:`bool`
 
@@ -538,7 +546,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
-                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None, **kwargs):
+                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None,
+                 supports_guest_queries=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -555,6 +564,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.has_topics_enabled: Optional[bool] = has_topics_enabled
         self.allows_users_to_create_topics: Optional[bool] = allows_users_to_create_topics
         self.can_manage_bots: Optional[bool] = can_manage_bots
+        self.supports_guest_queries: Optional[bool] = supports_guest_queries
+
     @property
     def full_name(self) -> str:
         """
@@ -584,7 +595,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'has_main_web_app': self.has_main_web_app,
                 'has_topics_enabled': self.has_topics_enabled,
                 'allows_users_to_create_topics': self.allows_users_to_create_topics,
-                'can_manage_bots': self.can_manage_bots
+                'can_manage_bots': self.can_manage_bots,
+                'supports_guest_queries': self.supports_guest_queries
                 }
 
 
@@ -998,6 +1010,11 @@ class Message(JsonDeserializable):
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
 
+    :param guest_query_id: Optional. The unique identifier for the guest query. Use this identifier with the method answerGuestQuery
+        to send a response message. If non-empty, the message belongs to the chat where the guest bot was summoned, which may not coincide
+        with other existing bot chats sharing the same identifier.
+    :type guest_query_id: :obj:`str`
+
     :param business_connection_id: Optional. Unique identifier of the business connection from which the message was received. If non-empty,
         the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier.
     :type business_connection_id: :obj:`str`
@@ -1036,6 +1053,12 @@ class Message(JsonDeserializable):
 
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
+
+    :param guest_bot_caller_user: Optional. For a message sent by a guest bot, this is the user whose original message triggered the bot's response
+    :type guest_bot_caller_user: :class:`telebot.types.User`
+
+    :param guest_bot_caller_chat: Optional. For a message sent by a guest bot, this is the chat whose original message triggered the bot's response
+    :type guest_bot_caller_chat: :class:`telebot.types.Chat`
 
     :param edit_date: Optional. Date the message was last edited in Unix time
     :type edit_date: :obj:`int`
@@ -1088,6 +1111,10 @@ class Message(JsonDeserializable):
 
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`telebot.types.Document`
+
+    :param live_photo: Optional. Message is a live photo, information about the live photo.
+        For backward compatibility, when this field is set, the photo field will also be set
+    :type live_photo: :class:`telebot.types.LivePhoto`
 
     :param paid_media: Optional. Message contains paid media; information about the paid media
     :type paid_media: :class:`telebot.types.PaidMediaInfo`
@@ -1638,7 +1665,14 @@ class Message(JsonDeserializable):
             content_type = 'poll_option_deleted'
         if 'reply_to_poll_option_id' in obj:
             opts['reply_to_poll_option_id'] = obj['reply_to_poll_option_id']
-
+        if 'guest_bot_caller_user' in obj:
+            opts['guest_bot_caller_user'] = User.de_json(obj['guest_bot_caller_user'])
+        if 'guest_bot_caller_chat' in obj:
+            opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
+        if 'guest_query_id' in obj:
+            opts['guest_query_id'] = obj['guest_query_id']
+        if 'live_photo' in obj:
+            opts['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1781,6 +1815,10 @@ class Message(JsonDeserializable):
         self.poll_option_added: Optional[PollOptionAdded] = None
         self.poll_option_deleted: Optional[PollOptionDeleted] = None
         self.reply_to_poll_option_id: Optional[str] = None
+        self.guest_bot_caller_user: Optional[User] = None
+        self.guest_bot_caller_chat: Optional[Chat] = None
+        self.guest_query_id: Optional[str] = None
+        self.live_photo: Optional[LivePhoto] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -3730,6 +3768,9 @@ class ChatMemberRestricted(ChatMember):
     :param can_add_web_page_previews: True, if the user is allowed to add web page previews to their messages
     :type can_add_web_page_previews: :obj:`bool`
 
+    :param can_react_to_messages: True, if the user is allowed to react to messages
+    :type can_react_to_messages: :obj:`bool`
+
     :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
     :type can_change_info: :obj:`bool`
 
@@ -3758,7 +3799,7 @@ class ChatMemberRestricted(ChatMember):
                  can_send_photos, can_send_videos, can_send_video_notes, can_send_voice_notes, can_send_polls,
                  can_send_other_messages, can_add_web_page_previews,
                  can_change_info, can_invite_users, can_pin_messages, can_manage_topics,
-                 until_date=None, tag=None, can_edit_tag=None, **kwargs):
+                 until_date=None, tag=None, can_edit_tag=None, can_react_to_messages=None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
@@ -3778,6 +3819,7 @@ class ChatMemberRestricted(ChatMember):
         self.until_date: Optional[int] = until_date
         self.tag: Optional[str] = tag
         self.can_edit_tag: Optional[bool] = can_edit_tag
+        self.can_react_to_messages: Optional[bool] = can_react_to_messages
 
 
 # noinspection PyUnresolvedReferences
@@ -3861,6 +3903,9 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         messages
     :type can_add_web_page_previews: :obj:`bool`
 
+    :param can_react_to_messages: Optional. True, if the user is allowed to react to messages. If omitted, defaults to the value of can_send_messages.
+    :type can_react_to_messages: :obj:`bool`
+
     :param can_change_info: Optional. True, if the user is allowed to change the chat title, photo and other settings.
         Ignored in public supergroups
     :type can_change_info: :obj:`bool`
@@ -3896,7 +3941,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
                     can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
                     can_add_web_page_previews=None, can_change_info=None,
                     can_invite_users=None, can_pin_messages=None,
-                    can_manage_topics=None, can_edit_tag=None, **kwargs):
+                    can_manage_topics=None, can_edit_tag=None, can_react_to_messages=None, **kwargs):
         self.can_send_messages: Optional[bool] = can_send_messages
         self.can_send_polls: Optional[bool] = can_send_polls
         self.can_send_other_messages: Optional[bool] = can_send_other_messages
@@ -3912,6 +3957,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_send_videos: Optional[bool] = can_send_videos
         self.can_send_video_notes: Optional[bool] = can_send_video_notes
         self.can_send_voice_notes: Optional[bool] = can_send_voice_notes
+        self.can_react_to_messages: Optional[bool] = can_react_to_messages
 
         if kwargs.get("de_json", False) and can_send_media_messages is not None:
             # Telegram passes can_send_media_messages in Chat.permissions. Temporary created parameter "de_json" allows avoid
@@ -3961,6 +4007,8 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             json_dict['can_manage_topics'] = self.can_manage_topics
         if self.can_edit_tag is not None:
             json_dict['can_edit_tag'] = self.can_edit_tag
+        if self.can_react_to_messages is not None:
+            json_dict['can_react_to_messages'] = self.can_react_to_messages
 
         return json_dict
 
@@ -7438,6 +7486,180 @@ class InputMediaDocument(InputMedia):
         return ret
 
 
+class InputMediaLivePhoto(InputMedia):
+    """
+    Represents a live photo to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmedialivephoto
+
+    :param media: Video of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or pass “attach://<file_attach_name>”
+        to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
+    :type media: :obj:`str`
+
+    :param photo: The static photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or pass “attach://<file_attach_name>” to upload a new one
+        using multipart/form-data under <file_attach_name> name. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
+    :type photo: :obj:`str`
+
+    :param caption: Optional. Caption of the live photo to be sent, 0-1024 characters after entities parsing
+    :type caption: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the live photo caption. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+    :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param show_caption_above_media: Optional. Pass True, if the caption must be shown above the message media
+    :type show_caption_above_media: :obj:`bool`
+
+    :param has_spoiler: Optional. Pass True if the live photo needs to be covered with a spoiler animation
+    :type has_spoiler: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaLivePhoto`
+    """
+    def __init__(self, media: str, photo: str, caption: Optional[str] = None, parse_mode: Optional[str] = None,
+                 caption_entities: Optional[List[MessageEntity]] = None, show_caption_above_media: Optional[bool] = None, has_spoiler: Optional[bool] = None):
+        super(InputMediaLivePhoto, self).__init__(type="live_photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
+        self.photo: str = photo
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.has_spoiler: Optional[bool] = has_spoiler
+
+    def to_dict(self):
+        json_dict = super(InputMediaLivePhoto, self).to_dict()
+        json_dict['photo'] = self.photo
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
+        if self.has_spoiler is not None:
+            json_dict['has_spoiler'] = self.has_spoiler
+        return json_dict
+
+class InputMediaLocation(InputMedia):
+    """
+    Represents a location to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmedialocation
+
+    :param latitude: Latitude of the location
+    :type latitude: :obj:`float`
+
+    :param longitude: Longitude of the location
+    :type longitude: :obj:`float`
+
+    :param horizontal_accuracy: Optional. The radius of uncertainty for the location, measured in meters; 0-1500
+    :type horizontal_accuracy: :obj:`float`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaLocation`
+    """
+    def __init__(self, latitude: float, longitude: float, horizontal_accuracy: Optional[float] = None):
+        super(InputMediaLocation, self).__init__(type="location", media="")
+        self.latitude: float = latitude
+        self.longitude: float = longitude
+        self.horizontal_accuracy: Optional[float] = horizontal_accuracy
+
+    def to_dict(self):
+        json_dict = super(InputMediaLocation, self).to_dict()
+        json_dict['latitude'] = self.latitude
+        json_dict['longitude'] = self.longitude
+        if self.horizontal_accuracy is not None:
+            json_dict['horizontal_accuracy'] = self.horizontal_accuracy
+        # Remove 'media' field as it's not used for location
+        json_dict.pop('media', None)
+        return json_dict
+
+class InputMediaSticker(InputMedia):
+    """
+    Represents a sticker file to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmediasticker
+
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+        pass an HTTP URL for Telegram to get a .WEBP sticker from the Internet, or pass “attach://<file_attach_name>”
+        to upload a new .WEBP, .TGS, or .WEBM sticker using multipart/form-data under <file_attach_name> name. More information
+        on Sending Files »
+    :type media: :obj:`str`
+
+    :param emoji: Optional. Emoji associated with the sticker; only for just uploaded stickers
+    :type emoji: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaSticker`
+    """
+    def __init__(self, media: str, emoji: Optional[str] = None):
+        super(InputMediaSticker, self).__init__(type="sticker", media=media)
+        self.emoji: Optional[str] = emoji
+
+    def to_dict(self):
+        json_dict = super(InputMediaSticker, self).to_dict()
+        if self.emoji:
+            json_dict['emoji'] = self.emoji
+        return json_dict
+
+class InputMediaVenue(InputMedia):
+    """
+    Represents a venue to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmediavenue
+
+    :param latitude: Latitude of the location
+    :type latitude: :obj:`float`
+
+    :param longitude: Longitude of the location
+    :type longitude: :obj:`float`
+
+    :param title: Name of the venue
+    :type title: :obj:`str`
+
+    :param address: Address of the venue
+    :type address: :obj:`str`
+
+    :param foursquare_id: Optional. Foursquare identifier of the venue
+    :type foursquare_id: :obj:`str`
+
+    :param foursquare_type: Optional. Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
+    :type foursquare_type: :obj:`str`
+
+    :param google_place_id: Optional. Google Places identifier of the venue
+    :type google_place_id: :obj:`str`
+
+    :param google_place_type: Optional. Google Places type of the venue. (See supported types.)
+    :type google_place_type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaVenue`
+    """
+    def __init__(self, latitude: float, longitude: float, title: str, address: str, foursquare_id: Optional[str] = None,
+                 foursquare_type: Optional[str] = None, google_place_id: Optional[str] = None, google_place_type: Optional[str] = None):
+        super(InputMediaVenue, self).__init__(type="venue", media="")
+        self.latitude: float = latitude
+        self.longitude: float = longitude
+        self.title: str = title
+        self.address: str = address
+        self.foursquare_id: Optional[str] = foursquare_id
+        self.foursquare_type: Optional[str] = foursquare_type
+        self.google_place_id: Optional[str] = google_place_id
+        self.google_place_type: Optional[str] = google_place_type
+
+    def to_dict(self):
+        json_dict = super(InputMediaVenue, self).to_dict()
+        json_dict['latitude'] = self.latitude
+        json_dict['longitude'] = self.longitude
+        json_dict['title'] = self.title
+        json_dict['address'] = self.address
+        if self.foursquare_id:
+            json_dict['foursquare_id'] = self.foursquare_id
+        if self.foursquare_type:
+            json_dict['foursquare_type'] = self.foursquare_type
+        if self.google_place_id:
+            json_dict['google_place_id'] = self.google_place_id
+        if self.google_place_type:
+            json_dict['google_place_type'] = self.google_place_type
+        # Remove 'media' field as it's not used for venue
+        json_dict.pop('media', None)
+        return json_dict
+    
+
 class PollOption(JsonDeserializable):
     """
     This object contains information about one answer option in a poll.
@@ -7452,6 +7674,9 @@ class PollOption(JsonDeserializable):
 
     :param text_entities: Optional. Special entities that appear in the option text. Currently, only custom emoji entities are allowed in poll option texts
     :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param media: Optional. Media added to the poll option
+    :type media: :class:`telebot.types.PollMedia`
 
     :param voter_count: Number of users that voted for this option
     :type voter_count: :obj:`int`
@@ -7478,9 +7703,11 @@ class PollOption(JsonDeserializable):
             obj['added_by_user'] = User.de_json(obj['added_by_user'])
         if 'added_by_chat' in obj:
             obj['added_by_chat'] = Chat.de_json(obj['added_by_chat'])
+        if 'media' in obj:
+            obj['media'] = PollMedia.de_json(obj['media'])
         return cls(**obj)
 
-    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, **kwargs):
+    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, media=None, **kwargs):
         self.text: str = text
         self.persistent_id: str = persistent_id
         self.voter_count: int = voter_count
@@ -7488,6 +7715,7 @@ class PollOption(JsonDeserializable):
         self.added_by_user: Optional[User] = added_by_user
         self.added_by_chat: Optional[Chat] = added_by_chat
         self.addition_date: Optional[int] = addition_date
+        self.media: Optional[PollMedia] = media
     # Converted in _convert_poll_options
     # def to_json(self):
     #     # send_poll Option is a simple string: https://core.telegram.org/bots/api#sendpoll
@@ -7509,14 +7737,18 @@ class InputPollOption(JsonSerializable):
     :param text_entities: Optional. A JSON-serialized list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode
     :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param media: Optional. Media added to the poll option
+    :type media: :class:`telebot.types.PollMedia`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollOption`
     """
     def __init__(self, text: str, text_parse_mode: Optional[str] = None, text_entities: Optional[List[MessageEntity]] = None,
-                    **kwargs):
+                    media: Optional[PollMedia] = None, **kwargs):
         self.text: str = text
         self.text_parse_mode: Optional[str] = text_parse_mode
         self.text_entities: Optional[List[MessageEntity]] = text_entities
+        self.media: Optional[PollMedia] = media
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -7529,6 +7761,8 @@ class InputPollOption(JsonSerializable):
             json_dict["text_parse_mode"] = self.text_parse_mode
         if self.text_entities:
             json_dict['text_entities'] = [entity.to_dict() for entity in self.text_entities]
+        if self.media:
+            json_dict['media'] = self.media.to_dict()
         return json_dict
 
 
@@ -7545,7 +7779,7 @@ class Poll(JsonDeserializable):
     :param question: Poll question, 1-300 characters
     :type question: :obj:`str`
 
-    :param options: List of poll options
+    :param options: A JSON-serialized list of 1-12 answer options
     :type options: :obj:`list` of :class:`telebot.types.PollOption`
 
     :param total_voter_count: Total number of users that voted in the poll
@@ -7575,6 +7809,9 @@ class Poll(JsonDeserializable):
     :param explanation_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the explanation
     :type explanation_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param explanation_media: Optional. Media added to the quiz explanation
+    :type explanation_media: :class:`telebot.types.PollMedia`
+
     :param open_period: Optional. Amount of time in seconds the poll will be active after creation
     :type open_period: :obj:`int`
 
@@ -7587,11 +7824,20 @@ class Poll(JsonDeserializable):
     :param allows_revoting: True, if the poll allows to change the chosen answer options
     :type allows_revoting: :obj:`bool`
 
+    :param members_only: True if voting is limited to users who have been members of the chat where the poll was originally sent for more than 24 hours
+    :type members_only: :obj:`bool`
+
+    :param country_codes: Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which users can vote in the poll. If omitted, then users from any country can participate in the poll.
+    :type country_codes: :obj:`list` of :obj:`str`
+
     :param description: Optional. Description of the poll; for polls inside the Message object only
     :type description: :obj:`str`
 
     :param description_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the description
     :type description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param media: Optional. Media added to the poll description; for polls inside the Message object only
+    :type media: :class:`telebot.types.PollMedia`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.Poll`
@@ -7611,6 +7857,11 @@ class Poll(JsonDeserializable):
             obj['question_entities'] = Message.parse_entities(obj['question_entities'])
         if 'description_entities' in obj:
             obj['description_entities'] = Message.parse_entities(obj['description_entities'])
+        if 'media' in obj:
+            obj['media'] = PollMedia.de_json(obj['media'])
+        if 'explanation_media' in obj:
+            obj['explanation_media'] = PollMedia.de_json(obj['explanation_media'])
+        
         return cls(**obj)
 
     def __init__(
@@ -7622,7 +7873,7 @@ class Poll(JsonDeserializable):
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
             correct_option_ids: List[int] = None, allows_revoting: bool = None,
             description: str = None, description_entities: List[MessageEntity] = None,
-            **kwargs):
+            media: PollMedia = None, members_only: bool = None, country_codes: List[str] = None, explanation_media: PollMedia = None, **kwargs):
         self.id: str = poll_id
         self.question: str = question
         self.options: List[PollOption] = options
@@ -7644,6 +7895,10 @@ class Poll(JsonDeserializable):
         self.allows_revoting: bool = allows_revoting
         self.description: str = description
         self.description_entities: List[MessageEntity] = description_entities
+        self.media: PollMedia = media
+        self.explanation_media: PollMedia = explanation_media
+        self.members_only: bool = members_only
+        self.country_codes: List[str] = country_codes
         
     @property
     def correct_option_id(self) -> Optional[int]:
@@ -9122,6 +9377,9 @@ class ExternalReplyInfo(JsonDeserializable):
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`Document`
 
+    :param live_photo: Optional. Message is a live photo, information about the live photo
+    :type live_photo: :class:`LivePhoto`
+
     :param paid_media: Optional. Message is a paid media content
     :type paid_media: :class:`PaidMedia`
 
@@ -9228,6 +9486,8 @@ class ExternalReplyInfo(JsonDeserializable):
             obj['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
         if 'checklist' in obj:
             obj['checklist'] = Checklist.de_json(obj['checklist'])
+        if 'live_photo' in obj:
+            obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(**obj)
 
     def __init__(
@@ -9241,7 +9501,7 @@ class ExternalReplyInfo(JsonDeserializable):
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
             venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None,
-            checklist: Optional[Checklist]=None, **kwargs) -> None:
+            live_photo: Optional[LivePhoto]=None, checklist: Optional[Checklist]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -9266,6 +9526,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.poll: Optional[Poll] = poll
         self.venue: Optional[Venue] = venue
         self.paid_media: Optional[PaidMediaInfo] = paid_media
+        self.live_photo: Optional[LivePhoto] = live_photo
         self.checklist: Optional[Checklist] = checklist
 
 
@@ -11164,6 +11425,7 @@ class PaidMedia(JsonDeserializable, ABC):
         PaidMediaPreview
         PaidMediaPhoto
         PaidMediaVideo
+        PaidMediaLivePhoto
 
     Telegram documentation: https://core.telegram.org/bots/api#paidmedia
 
@@ -11218,6 +11480,34 @@ class PaidMediaPreview(PaidMedia):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class PaidMediaLivePhoto(PaidMedia):
+    """
+    The paid media is a live photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmedialivephoto
+
+    :param type: Type of the paid media, always “live_photo”
+    :type type: :obj:`str`
+
+    :param live_photo: The photo
+    :type live_photo: :class:`LivePhoto`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaLivePhoto`
+    """
+
+    def __init__(self, type, live_photo, **kwargs):
+        self.type: str = type
+        self.live_photo: LivePhoto = live_photo
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(**obj)
 
 
@@ -11315,6 +11605,7 @@ class InputPaidMedia(Dictionaryable, JsonSerializable):
     This object describes the paid media to be sent. Currently, it can be one of
         InputPaidMediaPhoto
         InputPaidMediaVideo
+        InputPaidMediaLivePhoto
 
     Telegram documentation: https://core.telegram.org/bots/api#inputpaidmedia
 
@@ -11368,6 +11659,37 @@ class InputPaidMediaPhoto(InputPaidMedia):
 
     def __init__(self, media: Union[str, InputFile], **kwargs):
         super().__init__(type='photo', media=media)
+
+class InputPaidMediaLivePhoto(InputPaidMedia):
+    """
+    The paid media to send is a live photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputpaidmedialivephoto
+
+    :param type: Type of the media, must be live_photo
+    :type type: :obj:`str`
+
+    :param media: Video of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or
+        pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ».
+        Sending live photos by a URL is currently unsupported.
+    :type media: :obj:`str` or :class:`telebot.types.InputFile`
+
+    :param photo: The static photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or
+        pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ».
+        Sending live photos by a URL is currently unsupported.
+    :type photo: :obj:`str` or :class:`telebot.types.InputFile`
+
+    :return: Instance of the class
+    :rtype: :class:`InputPaidMediaLivePhoto`
+    """
+    def __init__(self, media: Union[str, InputFile], photo: Union[str, InputFile], **kwargs):
+        super().__init__(type='live_photo', media=media)
+        self.photo: Union[str, InputFile] = photo
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['photo'] = self.photo if service_utils.is_string(self.photo) else 'attach://{0}'.format(service_utils.generate_random_token())
+        return data
 
 
 class InputPaidMediaVideo(InputPaidMedia):
@@ -14016,3 +14338,187 @@ class PollOptionDeleted(JsonDeserializable):
         if 'option_text_entities' in obj:
             obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
         return cls(**obj)
+
+
+class SentGuestMessage(JsonDeserializable):
+    """
+    Describes an inline message sent by a guest bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#sentguestmessage
+
+    :param inline_message_id: Identifier of the sent inline message
+    :type inline_message_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`SentGuestMessage`
+    """
+    def __init__(self, inline_message_id: str, **kwargs):
+        self.inline_message_id: str = inline_message_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class PollMedia(JsonDeserializable):
+    """
+    This object describes the media attached to a poll option. At most one of the optional fields can be present in any given object.
+
+    Telegram documentation: https://core.telegram.org/bots/api#pollmedia
+
+    :param animation: Optional. Media is an animation, information about the animation
+    :type animation: :class:`Animation`
+
+    :param audio: Optional. Media is an audio file, information about the file; currently, can't be received in a poll option
+    :type audio: :class:`Audio`
+
+    :param document: Optional. Media is a general file, information about the file; currently, can't be received in a poll option
+    :type document: :class:`Document`
+
+    :param live_photo: Optional. Media is a live photo, information about the live photo
+    :type live_photo: :class:`LivePhoto`
+
+    :param location: Optional. Media is a shared location, information about the location
+    :type location: :class:`Location`
+
+    :param photo: Optional. Media is a photo, available sizes of the photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param sticker: Optional. Media is a sticker, information about the sticker; currently, for poll options only
+    :type sticker: :class:`Sticker`
+
+    :param venue: Optional. Media is a venue, information about the venue
+    :type venue: :class:`Venue`
+
+    :param video: Optional. Media is a video, information about the video
+    :type video: :class:`Video`
+
+    :return: Instance of the class
+    :rtype: :class:`PollMedia`
+
+    """
+    def __init__(self, animation: Optional[Animation] = None, audio: Optional[Audio] = None, document: Optional[Document] = None,
+                    live_photo: Optional[LivePhoto] = None, location: Optional[Location] = None, photo: Optional[List[PhotoSize]] = None,
+                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, **kwargs):
+        self.animation: Optional[Animation] = animation
+        self.audio: Optional[Audio] = audio
+        self.document: Optional[Document] = document
+        self.live_photo: Optional[LivePhoto] = live_photo
+        self.location: Optional[Location] = location
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.sticker: Optional[Sticker] = sticker
+        self.venue: Optional[Venue] = venue
+        self.video: Optional[Video] = video
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'animation' in obj:
+            obj['animation'] = Animation.de_json(obj['animation'])
+        if 'audio' in obj:
+            obj['audio'] = Audio.de_json(obj['audio'])
+        if 'document' in obj:
+            obj['document'] = Document.de_json(obj['document'])
+        if 'live_photo' in obj:
+            obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
+        if 'location' in obj:
+            obj['location'] = Location.de_json(obj['location'])
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        if 'sticker' in obj:
+            obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'venue' in obj:
+            obj['venue'] = Venue.de_json(obj['venue'])
+        if 'video' in obj:
+            obj['video'] = Video.de_json(obj['video'])
+        return cls(**obj)
+
+# why not..
+InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
+
+InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo]
+
+    
+class LivePhoto(JsonDeserializable):
+    """
+    This object represents a live photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#livephoto
+
+    :param photo: Optional. Available sizes of the corresponding static photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param file_id: Identifier for the video file which can be used to download or reuse the file
+    :type file_id: :obj:`str`
+
+    :param file_unique_id: Unique identifier for the video file which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
+    :type file_unique_id: :obj:`str`
+
+    :param width: Video width as defined by the sender
+    :type width: :obj:`int`
+
+    :param height: Video height as defined by the sender
+    :type height: :obj:`int`
+
+    :param duration: Duration of the video in seconds as defined by the sender
+    :type duration: :obj:`int`
+
+    :param mime_type: Optional. MIME type of the file as defined by the sender
+    :type mime_type: :obj:`str`
+
+    :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
+    :type file_size: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`LivePhoto`
+    """
+    def __init__(self, file_id: str, file_unique_id: str, width: int, height: int, duration: int, photo: Optional[List[PhotoSize]] = None,
+                    mime_type: Optional[str] = None, file_size: Optional[int] = None, **kwargs):
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.file_id: str = file_id
+        self.file_unique_id: str = file_unique_id
+        self.width: int = width
+        self.height: int = height
+        self.duration: int = duration
+        self.mime_type: Optional[str] = mime_type
+        self.file_size: Optional[int] = file_size
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        return cls(**obj)
+
+
+class BotAccessSettings(JsonDeserializable):
+    """
+    This object describes the access settings of a bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#botaccesssettings
+
+    :param is_access_restricted: True, if only selected users can access the bot. The bot's owner can always access it.
+    :type is_access_restricted: :obj:`bool`
+
+    :param added_users: Optional. The list of other users who have access to the bot if the access is restricted
+    :type added_users: :obj:`list` of :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`BotAccessSettings`
+    """
+    def __init__(self, is_access_restricted: bool, added_users: Optional[List[User]] = None, **kwargs):
+        self.is_access_restricted: bool = is_access_restricted
+        self.added_users: Optional[List[User]] = added_users
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'added_users' in obj:
+            obj['added_users'] = [User.de_json(user) for user in obj['added_users']]
+        return cls(**obj)
+    
