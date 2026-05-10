@@ -4415,7 +4415,7 @@ class TeleBot:
         :param draft_id: Unique identifier of the message draft; must be non-zero. Changes of drafts with the same identifier are animated
         :type draft_id: :obj:`int`
 
-        :param text: Text of the message to be sent, 1-4096 characters after entities parsing
+        :param text: Text of the message to be sent, 0-4096 characters after entities parsing. Pass an empty text to show a “Thinking…” placeholder.
         :type text: :obj:`str`
 
         :param parse_mode: Mode for parsing entities in the message text. See formatting options for more details.
