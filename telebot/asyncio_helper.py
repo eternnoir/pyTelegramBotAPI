@@ -638,6 +638,59 @@ async def send_photo(
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return await _process_request(token, method_url, params=payload, files=files, method='post')
+    
+async def send_live_photo(
+        token, chat_id, live_photo, photo,
+        caption=None,  reply_markup=None,
+        parse_mode=None, disable_notification=None, timeout=None,
+        caption_entities=None,  protect_content=None,
+        message_thread_id=None, has_spoiler=None,reply_parameters=None,
+        business_connection_id=None, message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None,
+        direct_messages_topic_id=None, suggested_post_parameters=None):
+    method_url = r'sendLivePhoto'
+    payload = {'chat_id': chat_id}
+    files = {}
+    if util.is_string(live_photo):
+        payload['live_photo'] = live_photo
+    else:
+        files['live_photo'] = live_photo
+    if util.is_string(photo):
+        payload['photo'] = photo
+    else:
+        files['photo'] = photo
+    if caption:
+        payload['caption'] = caption
+    if reply_markup:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if timeout:
+        payload['timeout'] = timeout
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if reply_parameters is not None:
+        payload['reply_parameters'] = json.dumps(reply_parameters.to_dict())
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if message_thread_id:
+        payload['message_thread_id'] = message_thread_id
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    return await _process_request(token, method_url, params=payload, files=files, method='post')
 
 async def send_paid_media(
         token, chat_id, star_count, media,

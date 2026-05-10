@@ -4267,6 +4267,93 @@ class AsyncTeleBot:
             )
         )
 
+    async def send_live_photo(
+            self, business_connection_id: str, chat_id: Union[int, str],
+            live_photo: Union[Any, str], photo: Union[Any, str],
+            caption: Optional[str]=None, parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            show_caption_above_media: Optional[bool]=None, has_spoiler: Optional[bool]=None,
+            disable_notification: Optional[bool]=None, protect_content: Optional[bool]=None,
+            allow_paid_broadcast: Optional[bool]=None, message_effect_id: Optional[str]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None, reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send live photos. On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendlivephoto
+
+        :param business_connection_id: Unique identifier of the business connection on behalf of which the message will be sent
+        :type business_connection_id: :obj:`str`
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param live_photo: Live photo video to send. The video must be no longer than 10 seconds and must not exceed 10 MB in size.
+            Pass a file_id as String to send a video that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data.
+            More information on Sending Files ». Sending live photos by a URL is currently unsupported.
+        :type live_photo: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param photo: The static photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data.
+            More information on Sending Files ». Sending live photos by a URL is currently unsupported.
+        :type photo: :obj:`str` or :class:`telebot.types.InputFile`
+
+        :param caption: Video caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the video caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.Message
+
+        :param show_caption_above_media: Pass True, if the caption must be shown above the message media
+        :type show_caption_above_media: :obj:`bool`
+
+        :param has_spoiler: Pass True if the video needs to be covered with a spoiler animation
+        :type has_spoiler: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram
+            Stars per message. The relevant Stars will be withdrawn from the bot's balance.
+        :type allow_paid_broadcast: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send; for direct messages chats only.
+            If the message is sent as a reply to another suggested post, then that suggested post is automatically declined
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
+        :param reply_parameters: Additional parameters for replies to messages
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove a reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+        
+        if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
+            reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
+
+        return types.Message.de_json(
+            await asyncio_helper.send_live_photo(
+                self.token, business_connection_id, chat_id, live_photo, photo, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
+                show_caption_above_media=show_caption_above_media, has_spoiler=has_spoiler, disable_notification=disable_notification, protect_content=protect_content,
+                allow_paid_broadcast=allow_paid_broadcast, message_effect_id=message_effect_id, suggested_post_parameters=suggested_post_parameters, reply_parameters=reply_parameters, reply_markup=reply_markup
+            )
+        )
+
     async def send_audio(
             self, chat_id: Union[int, str], audio: Union[Any, str],
             caption: Optional[str]=None, duration: Optional[int]=None,
