@@ -14205,5 +14205,79 @@ class SentGuestMessage(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
 
+
+class PollMedia(JsonDeserializable):
+    """
+    This object describes the media attached to a poll option. At most one of the optional fields can be present in any given object.
+
+    Telegram documentation: https://core.telegram.org/bots/api#pollmedia
+
+    :param animation: Optional. Media is an animation, information about the animation
+    :type animation: :class:`Animation`
+
+    :param audio: Optional. Media is an audio file, information about the file; currently, can't be received in a poll option
+    :type audio: :class:`Audio`
+
+    :param document: Optional. Media is a general file, information about the file; currently, can't be received in a poll option
+    :type document: :class:`Document`
+
+    :param live_photo: Optional. Media is a live photo, information about the live photo
+    :type live_photo: :class:`LivePhoto`
+
+    :param location: Optional. Media is a shared location, information about the location
+    :type location: :class:`Location`
+
+    :param photo: Optional. Media is a photo, available sizes of the photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param sticker: Optional. Media is a sticker, information about the sticker; currently, for poll options only
+    :type sticker: :class:`Sticker`
+
+    :param venue: Optional. Media is a venue, information about the venue
+    :type venue: :class:`Venue`
+
+    :param video: Optional. Media is a video, information about the video
+    :type video: :class:`Video`
+
+    :return: Instance of the class
+    :rtype: :class:`PollMedia`
+
+    """
+    def __init__(self, animation: Optional[Animation] = None, audio: Optional[Audio] = None, document: Optional[Document] = None,
+                    live_photo: Optional[LivePhoto] = None, location: Optional[Location] = None, photo: Optional[List[PhotoSize]] = None,
+                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, **kwargs):
+        self.animation: Optional[Animation] = animation
+        self.audio: Optional[Audio] = audio
+        self.document: Optional[Document] = document
+        self.live_photo: Optional[LivePhoto] = live_photo
+        self.location: Optional[Location] = location
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.sticker: Optional[Sticker] = sticker
+        self.venue: Optional[Venue] = venue
+        self.video: Optional[Video] = video
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'animation' in obj:
+            obj['animation'] = Animation.de_json(obj['animation'])
+        if 'audio' in obj:
+            obj['audio'] = Audio.de_json(obj['audio'])
+        if 'document' in obj:
+            obj['document'] = Document.de_json(obj['document'])
+        if 'live_photo' in obj:
+            obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
+        if 'location' in obj:
+            obj['location'] = Location.de_json(obj['location'])
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        if 'sticker' in obj:
+            obj['sticker'] = Sticker.de_json(obj['sticker'])
+        if 'venue' in obj:
+            obj['venue'] = Venue.de_json(obj['venue'])
+        if 'video' in obj:
+            obj['video'] = Video.de_json(obj['video'])
+        return cls(**obj)
+    
