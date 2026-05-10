@@ -3762,6 +3762,9 @@ class ChatMemberRestricted(ChatMember):
     :param can_add_web_page_previews: True, if the user is allowed to add web page previews to their messages
     :type can_add_web_page_previews: :obj:`bool`
 
+    :param can_react_to_messages: True, if the user is allowed to react to messages
+    :type can_react_to_messages: :obj:`bool`
+
     :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
     :type can_change_info: :obj:`bool`
 
@@ -3790,7 +3793,7 @@ class ChatMemberRestricted(ChatMember):
                  can_send_photos, can_send_videos, can_send_video_notes, can_send_voice_notes, can_send_polls,
                  can_send_other_messages, can_add_web_page_previews,
                  can_change_info, can_invite_users, can_pin_messages, can_manage_topics,
-                 until_date=None, tag=None, can_edit_tag=None, **kwargs):
+                 until_date=None, tag=None, can_edit_tag=None, can_react_to_messages=None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
@@ -3810,6 +3813,7 @@ class ChatMemberRestricted(ChatMember):
         self.until_date: Optional[int] = until_date
         self.tag: Optional[str] = tag
         self.can_edit_tag: Optional[bool] = can_edit_tag
+        self.can_react_to_messages: Optional[bool] = can_react_to_messages
 
 
 # noinspection PyUnresolvedReferences
@@ -3893,6 +3897,9 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         messages
     :type can_add_web_page_previews: :obj:`bool`
 
+    :param can_react_to_messages: Optional. True, if the user is allowed to react to messages. If omitted, defaults to the value of can_send_messages.
+    :type can_react_to_messages: :obj:`bool`
+
     :param can_change_info: Optional. True, if the user is allowed to change the chat title, photo and other settings.
         Ignored in public supergroups
     :type can_change_info: :obj:`bool`
@@ -3928,7 +3935,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
                     can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
                     can_add_web_page_previews=None, can_change_info=None,
                     can_invite_users=None, can_pin_messages=None,
-                    can_manage_topics=None, can_edit_tag=None, **kwargs):
+                    can_manage_topics=None, can_edit_tag=None, can_react_to_messages=None, **kwargs):
         self.can_send_messages: Optional[bool] = can_send_messages
         self.can_send_polls: Optional[bool] = can_send_polls
         self.can_send_other_messages: Optional[bool] = can_send_other_messages
@@ -3944,6 +3951,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         self.can_send_videos: Optional[bool] = can_send_videos
         self.can_send_video_notes: Optional[bool] = can_send_video_notes
         self.can_send_voice_notes: Optional[bool] = can_send_voice_notes
+        self.can_react_to_messages: Optional[bool] = can_react_to_messages
 
         if kwargs.get("de_json", False) and can_send_media_messages is not None:
             # Telegram passes can_send_media_messages in Chat.permissions. Temporary created parameter "de_json" allows avoid
@@ -3993,6 +4001,8 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
             json_dict['can_manage_topics'] = self.can_manage_topics
         if self.can_edit_tag is not None:
             json_dict['can_edit_tag'] = self.can_edit_tag
+        if self.can_react_to_messages is not None:
+            json_dict['can_react_to_messages'] = self.can_react_to_messages
 
         return json_dict
 
