@@ -2058,6 +2058,10 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
         payload['cache_time'] = cache_time
     return _make_request(token, method_url, params=payload, method='post')
 
+def answer_guest_query(token, guest_query_id, result):
+    method_url = 'answerGuestQuery'
+    payload = {'guest_query_id': guest_query_id, 'result': result.to_json()}
+    return _make_request(token, method_url, params=payload, method='post')
 
 def get_user_chat_boosts(token, chat_id, user_id):
     method_url = 'getUserChatBoosts'

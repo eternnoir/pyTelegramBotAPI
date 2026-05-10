@@ -8238,12 +8238,23 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
-# getUserChatBoosts
-# Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a UserChatBoosts object.
 
-# Parameter	Type	Required	Description
-# chat_id	Integer or String	Yes	Unique identifier for the chat or username of the channel (in the format @channelusername)
-# user_id	Integer	Yes	Unique identifier of the target user
+    async def answer_guest_query(self, guest_query_id: str, result: types.InlineQueryResultBase) -> types.SentGuestMessage:
+        """
+        Use this method to reply to a received guest message. On success, a SentGuestMessage object is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerguestquery
+
+        :param guest_query_id: Unique identifier for the query to be answered
+        :type guest_query_id: :obj:`str`
+
+        :param result: A JSON-serialized object describing the message to be sent
+        :type result: :obj:`types.InlineQueryResult`
+
+        :return: On success, a SentGuestMessage object is returned.
+        :rtype: :obj:`types.SentGuestMessage`
+        """
+        return types.SentGuestMessage.de_json(await asyncio_helper.answer_guest_query(self.token, guest_query_id, result))
 
     async def get_user_chat_boosts(self, chat_id: Union[int, str], user_id: int) -> types.UserChatBoosts:
         """

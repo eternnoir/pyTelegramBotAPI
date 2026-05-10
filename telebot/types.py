@@ -14048,3 +14048,27 @@ class PollOptionDeleted(JsonDeserializable):
         if 'option_text_entities' in obj:
             obj['option_text_entities'] = [MessageEntity.de_json(entity) for entity in obj['option_text_entities']]
         return cls(**obj)
+
+
+class SentGuestMessage(JsonDeserializable):
+    """
+    Describes an inline message sent by a guest bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#sentguestmessage
+
+    :param inline_message_id: Identifier of the sent inline message
+    :type inline_message_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`SentGuestMessage`
+    """
+    def __init__(self, inline_message_id: str, **kwargs):
+        self.inline_message_id: str = inline_message_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+

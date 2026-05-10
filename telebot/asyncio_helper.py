@@ -2073,6 +2073,12 @@ async def answer_callback_query(token, callback_query_id, text=None, show_alert=
         payload['cache_time'] = cache_time
     return await _process_request(token, method_url, params=payload, method='post')
 
+
+async def answer_guest_query(token, guest_query_id, result):
+    method_url = 'answerGuestQuery'
+    payload = {'guest_query_id': guest_query_id, 'result': result.to_json()}
+    return await _process_request(token, method_url, params=payload, method='post')
+
 async def get_user_chat_boosts(token, chat_id, user_id):
     method_url = 'getUserChatBoosts'
     payload = {'chat_id': chat_id, 'user_id': user_id}
