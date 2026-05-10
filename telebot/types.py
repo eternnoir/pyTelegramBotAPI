@@ -1044,6 +1044,12 @@ class Message(JsonDeserializable):
     :param via_bot: Optional. Bot through which the message was sent
     :type via_bot: :class:`telebot.types.User`
 
+    :param guest_bot_caller_user: Optional. For a message sent by a guest bot, this is the user whose original message triggered the bot's response
+    :type guest_bot_caller_user: :class:`telebot.types.User`
+
+    :param guest_bot_caller_chat: Optional. For a message sent by a guest bot, this is the chat whose original message triggered the bot's response
+    :type guest_bot_caller_chat: :class:`telebot.types.Chat`
+
     :param edit_date: Optional. Date the message was last edited in Unix time
     :type edit_date: :obj:`int`
 
@@ -1645,6 +1651,10 @@ class Message(JsonDeserializable):
             content_type = 'poll_option_deleted'
         if 'reply_to_poll_option_id' in obj:
             opts['reply_to_poll_option_id'] = obj['reply_to_poll_option_id']
+        if 'guest_bot_caller_user' in obj:
+            opts['guest_bot_caller_user'] = User.de_json(obj['guest_bot_caller_user'])
+        if 'guest_bot_caller_chat' in obj:
+            opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1788,6 +1798,8 @@ class Message(JsonDeserializable):
         self.poll_option_added: Optional[PollOptionAdded] = None
         self.poll_option_deleted: Optional[PollOptionDeleted] = None
         self.reply_to_poll_option_id: Optional[str] = None
+        self.guest_bot_caller_user: Optional[User] = None
+        self.guest_bot_caller_chat: Optional[Chat] = None
 
         for key in options:
             setattr(self, key, options[key])
