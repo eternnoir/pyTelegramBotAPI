@@ -1005,6 +1005,11 @@ class Message(JsonDeserializable):
     :param date: Date the message was sent in Unix time
     :type date: :obj:`int`
 
+    :param guest_query_id: Optional. The unique identifier for the guest query. Use this identifier with the method answerGuestQuery
+        to send a response message. If non-empty, the message belongs to the chat where the guest bot was summoned, which may not coincide
+        with other existing bot chats sharing the same identifier.
+    :type guest_query_id: :obj:`str`
+
     :param business_connection_id: Optional. Unique identifier of the business connection from which the message was received. If non-empty,
         the message belongs to a chat of the corresponding business account that is independent from any potential bot chat which might share the same identifier.
     :type business_connection_id: :obj:`str`
@@ -1655,6 +1660,8 @@ class Message(JsonDeserializable):
             opts['guest_bot_caller_user'] = User.de_json(obj['guest_bot_caller_user'])
         if 'guest_bot_caller_chat' in obj:
             opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
+        if 'guest_query_id' in obj:
+            opts['guest_query_id'] = obj['guest_query_id']
 
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
@@ -1800,6 +1807,7 @@ class Message(JsonDeserializable):
         self.reply_to_poll_option_id: Optional[str] = None
         self.guest_bot_caller_user: Optional[User] = None
         self.guest_bot_caller_chat: Optional[Chat] = None
+        self.guest_query_id: Optional[str] = None
 
         for key in options:
             setattr(self, key, options[key])
