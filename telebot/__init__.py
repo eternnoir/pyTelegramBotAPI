@@ -3810,7 +3810,8 @@ class TeleBot:
             self, chat_id: Union[int, str],
             media: List[Union[
                 types.InputMediaAudio, types.InputMediaDocument,
-                types.InputMediaPhoto, types.InputMediaVideo]],
+                types.InputMediaPhoto, types.InputMediaVideo,
+                types.InputMediaLivePhoto]],
             disable_notification: Optional[bool]=None,
             protect_content: Optional[bool]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
