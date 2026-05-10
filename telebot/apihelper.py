@@ -391,9 +391,11 @@ def leave_chat(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
-def get_chat_administrators(token, chat_id):
+def get_chat_administrators(token, chat_id, return_bots=None):
     method_url = r'getChatAdministrators'
     payload = {'chat_id': chat_id}
+    if return_bots is not None:
+        payload['return_bots'] = return_bots
     return _make_request(token, method_url, params=payload)
 
 

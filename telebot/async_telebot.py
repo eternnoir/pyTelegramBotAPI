@@ -3190,7 +3190,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.leave_chat(self.token, chat_id)
         return result
 
-    async def get_chat_administrators(self, chat_id: Union[int, str]) -> List[types.ChatMember]:
+    async def get_chat_administrators(self, chat_id: Union[int, str], return_bots: Optional[bool]=None) -> List[types.ChatMember]:
         """
         Use this method to get a list of administrators in a chat.
         On success, returns an Array of ChatMember objects that contains
@@ -3200,10 +3200,16 @@ class AsyncTeleBot:
 
         :param chat_id: Unique identifier for the target chat or username
             of the target supergroup or channel (in the format @channelusername)
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param return_bots: Pass True to additionally receive all bots that are administrators of the chat.
+            By default, bots other than the current bot are omitted.
+        :type return_bots: :obj:`bool`
+        
         :return: List made of ChatMember objects.
         :rtype: :obj:`list` of :class:`telebot.types.ChatMember`
         """
-        result = await asyncio_helper.get_chat_administrators(self.token, chat_id)
+        result = await asyncio_helper.get_chat_administrators(self.token, chat_id, return_bots=return_bots)
         return [types.ChatMember.de_json(r) for r in result]
 
     @util.deprecated(deprecation_text="Use get_chat_member_count instead")
