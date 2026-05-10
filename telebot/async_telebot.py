@@ -7762,7 +7762,9 @@ class AsyncTeleBot:
             correct_option_ids: Optional[List[int]]=None,
             description: Optional[str]=None,
             description_parse_mode: Optional[str]=None,
-            description_entities: Optional[List[types.MessageEntity]]=None) -> types.Message:
+            description_entities: Optional[List[types.MessageEntity]]=None,
+            members_only: Optional[bool]=None,
+            country_codes: Optional[List[str]]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -7865,6 +7867,13 @@ class AsyncTeleBot:
         :param hide_results_until_closes: Pass True, if poll results must be shown only after the poll closes
         :type hide_results_until_closes: :obj:`bool`
 
+        :param members_only: Pass True, if voting is limited to users who have been members of the chat where the poll is being sent for more than 24 hours; for channel chats only
+        :type members_only: :obj:`bool`
+
+        :param country_codes: A JSON-serialized list of 0-12 two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which users can vote in the poll;
+        for channel chats only. If omitted or empty, then users from any country can participate in the poll.
+        :type country_codes: :obj:`list` of :obj:`str`
+
         :param correct_option_ids: A JSON-serialized list of monotonically increasing 0-based identifiers of the correct answer options, required for polls in quiz mode
         :type correct_option_ids: :obj:`list` of :obj:`int`
 
@@ -7943,7 +7952,8 @@ class AsyncTeleBot:
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
                 allows_revoting=allows_revoting, shuffle_options=shuffle_options, allow_adding_options=allow_adding_options,
                 hide_results_until_closes=hide_results_until_closes, correct_option_ids=correct_option_ids, description=description,
-                description_parse_mode=description_parse_mode, description_entities=description_entities
+                description_parse_mode=description_parse_mode, description_entities=description_entities,
+                members_only=members_only, country_codes=country_codes
             )
         )
 

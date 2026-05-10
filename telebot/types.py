@@ -7724,7 +7724,7 @@ class Poll(JsonDeserializable):
     :param question: Poll question, 1-300 characters
     :type question: :obj:`str`
 
-    :param options: List of poll options
+    :param options: A JSON-serialized list of 1-12 answer options
     :type options: :obj:`list` of :class:`telebot.types.PollOption`
 
     :param total_voter_count: Total number of users that voted in the poll
