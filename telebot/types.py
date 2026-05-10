@@ -209,6 +209,9 @@ class Update(JsonDeserializable):
     :param managed_bot: Optional. A new bot was created to be managed by the bot or token of a bot was changed
     :type managed_bot: :class:`telebot.types.ManagedBotUpdated`
 
+    :param guest_message: Optional. New guest message. The bot can use the field Message.guest_query_id and the method answerGuestQuery to send a message in response.
+    :type guest_message: :class:`telebot.types.Message`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -242,18 +245,19 @@ class Update(JsonDeserializable):
         deleted_business_messages = BusinessMessagesDeleted.de_json(obj.get('deleted_business_messages'))
         purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
         managed_bot = ManagedBotUpdated.de_json(obj.get('managed_bot'))
+        guest_message = Message.de_json(obj.get('guest_message'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages, purchased_paid_media, managed_bot)
+                   deleted_business_messages, purchased_paid_media, managed_bot, guest_message)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, purchased_paid_media, managed_bot):
+                 deleted_business_messages, purchased_paid_media, managed_bot, guest_message):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -279,6 +283,7 @@ class Update(JsonDeserializable):
         self.deleted_business_messages: Optional[BusinessMessagesDeleted] = deleted_business_messages
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
         self.managed_bot: Optional[ManagedBotUpdated] = managed_bot
+        self.guest_message: Optional[Message] = guest_message
 
 class ChatMemberUpdated(JsonDeserializable):
     """

@@ -250,6 +250,7 @@ class TeleBot:
         self.deleted_business_messages_handlers = []
         self.purchased_paid_media_handlers = []
         self.managed_bot_handlers = []
+        self.guest_message_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -728,6 +729,7 @@ class TeleBot:
         new_deleted_business_messages = None
         new_purchased_paid_media = None
         new_managed_bots = None
+        new_guest_messages = None
 
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -815,6 +817,9 @@ class TeleBot:
             if update.managed_bot:
                 if new_managed_bots is None: new_managed_bots = []
                 new_managed_bots.append(update.managed_bot)
+            if update.guest_message:
+                if new_guest_messages is None: new_guest_messages = []
+                new_guest_messages.append(update.guest_message)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -864,6 +869,8 @@ class TeleBot:
             self.process_new_purchased_paid_media(new_purchased_paid_media)
         if new_managed_bots:
             self.process_new_managed_bot(new_managed_bots)
+        if new_guest_messages:
+            self.process_new_guest_message(new_guest_messages)
 
     def process_new_messages(self, new_messages):
         """
@@ -1011,6 +1018,12 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.managed_bot_handlers, new_managed_bots, 'managed_bot')
+    
+    def process_new_guest_message(self, new_guest_messages):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.guest_message_handlers, new_guest_messages, 'guest_message')
 
     def process_middlewares(self, update):
         """
@@ -10498,6 +10511,54 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_managed_bot_handler(handler_dict)
+
+    def guest_message_handler(self, func=None, **kwargs):
+        """
+        New guest message. The bot can use the field :field:`telebot.types.Message.is_guest` and the method answerGuestQuery to send a message in response.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_guest_message_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_guest_message_handler(self, handler_dict):
+        """
+        Adds a guest_message handler.
+        Note that you should use register_guest_message_handler to add guest_message_handler to the bot.    
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.guest_message_handlers.append(handler_dict)
+
+    def register_guest_message_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers guest message handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_guest_message_handler(handler_dict)
 
 
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):
