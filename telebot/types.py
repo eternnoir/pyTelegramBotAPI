@@ -7742,6 +7742,9 @@ class Poll(JsonDeserializable):
     :param explanation_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the explanation
     :type explanation_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param explanation_media: Optional. Media added to the quiz explanation
+    :type explanation_media: :class:`telebot.types.PollMedia`
+
     :param open_period: Optional. Amount of time in seconds the poll will be active after creation
     :type open_period: :obj:`int`
 
@@ -7753,6 +7756,12 @@ class Poll(JsonDeserializable):
 
     :param allows_revoting: True, if the poll allows to change the chosen answer options
     :type allows_revoting: :obj:`bool`
+
+    :param members_only: True if voting is limited to users who have been members of the chat where the poll was originally sent for more than 24 hours
+    :type members_only: :obj:`bool`
+
+    :param country_codes: Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which users can vote in the poll. If omitted, then users from any country can participate in the poll.
+    :type country_codes: :obj:`list` of :obj:`str`
 
     :param description: Optional. Description of the poll; for polls inside the Message object only
     :type description: :obj:`str`
@@ -7783,6 +7792,9 @@ class Poll(JsonDeserializable):
             obj['description_entities'] = Message.parse_entities(obj['description_entities'])
         if 'media' in obj:
             obj['media'] = PollMedia.de_json(obj['media'])
+        if 'explanation_media' in obj:
+            obj['explanation_media'] = PollMedia.de_json(obj['explanation_media'])
+        
         return cls(**obj)
 
     def __init__(
@@ -7794,7 +7806,7 @@ class Poll(JsonDeserializable):
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
             correct_option_ids: List[int] = None, allows_revoting: bool = None,
             description: str = None, description_entities: List[MessageEntity] = None,
-            media: PollMedia = None, **kwargs):
+            media: PollMedia = None, members_only: bool = None, country_codes: List[str] = None, explanation_media: PollMedia = None, **kwargs):
         self.id: str = poll_id
         self.question: str = question
         self.options: List[PollOption] = options
@@ -7817,6 +7829,9 @@ class Poll(JsonDeserializable):
         self.description: str = description
         self.description_entities: List[MessageEntity] = description_entities
         self.media: PollMedia = media
+        self.explanation_media: PollMedia = explanation_media
+        self.members_only: bool = members_only
+        self.country_codes: List[str] = country_codes
         
     @property
     def correct_option_id(self) -> Optional[int]:
