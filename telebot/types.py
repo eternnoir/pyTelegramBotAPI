@@ -7479,6 +7479,131 @@ class InputMediaDocument(InputMedia):
             ret['disable_content_type_detection'] = self.disable_content_type_detection
         return ret
 
+class InputMediaLocation(InputMedia):
+    """
+    Represents a location to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmedialocation
+
+    :param latitude: Latitude of the location
+    :type latitude: :obj:`float`
+
+    :param longitude: Longitude of the location
+    :type longitude: :obj:`float`
+
+    :param horizontal_accuracy: Optional. The radius of uncertainty for the location, measured in meters; 0-1500
+    :type horizontal_accuracy: :obj:`float`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaLocation`
+    """
+    def __init__(self, latitude: float, longitude: float, horizontal_accuracy: Optional[float] = None):
+        super(InputMediaLocation, self).__init__(type="location", media="")
+        self.latitude: float = latitude
+        self.longitude: float = longitude
+        self.horizontal_accuracy: Optional[float] = horizontal_accuracy
+
+    def to_dict(self):
+        json_dict = super(InputMediaLocation, self).to_dict()
+        json_dict['latitude'] = self.latitude
+        json_dict['longitude'] = self.longitude
+        if self.horizontal_accuracy is not None:
+            json_dict['horizontal_accuracy'] = self.horizontal_accuracy
+        # Remove 'media' field as it's not used for location
+        json_dict.pop('media', None)
+        return json_dict
+
+class InputMediaSticker(InputMedia):
+    """
+    Represents a sticker file to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmediasticker
+
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+        pass an HTTP URL for Telegram to get a .WEBP sticker from the Internet, or pass “attach://<file_attach_name>”
+        to upload a new .WEBP, .TGS, or .WEBM sticker using multipart/form-data under <file_attach_name> name. More information
+        on Sending Files »
+    :type media: :obj:`str`
+
+    :param emoji: Optional. Emoji associated with the sticker; only for just uploaded stickers
+    :type emoji: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaSticker`
+    """
+    def __init__(self, media: str, emoji: Optional[str] = None):
+        super(InputMediaSticker, self).__init__(type="sticker", media=media)
+        self.emoji: Optional[str] = emoji
+
+    def to_dict(self):
+        json_dict = super(InputMediaSticker, self).to_dict()
+        if self.emoji:
+            json_dict['emoji'] = self.emoji
+        return json_dict
+
+class InputMediaVenue(InputMedia):
+    """
+    Represents a venue to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmediavenue
+
+    :param latitude: Latitude of the location
+    :type latitude: :obj:`float`
+
+    :param longitude: Longitude of the location
+    :type longitude: :obj:`float`
+
+    :param title: Name of the venue
+    :type title: :obj:`str`
+
+    :param address: Address of the venue
+    :type address: :obj:`str`
+
+    :param foursquare_id: Optional. Foursquare identifier of the venue
+    :type foursquare_id: :obj:`str`
+
+    :param foursquare_type: Optional. Foursquare type of the venue, if known. (For example, “arts_entertainment/default”, “arts_entertainment/aquarium” or “food/icecream”.)
+    :type foursquare_type: :obj:`str`
+
+    :param google_place_id: Optional. Google Places identifier of the venue
+    :type google_place_id: :obj:`str`
+
+    :param google_place_type: Optional. Google Places type of the venue. (See supported types.)
+    :type google_place_type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaVenue`
+    """
+    def __init__(self, latitude: float, longitude: float, title: str, address: str, foursquare_id: Optional[str] = None,
+                 foursquare_type: Optional[str] = None, google_place_id: Optional[str] = None, google_place_type: Optional[str] = None):
+        super(InputMediaVenue, self).__init__(type="venue", media="")
+        self.latitude: float = latitude
+        self.longitude: float = longitude
+        self.title: str = title
+        self.address: str = address
+        self.foursquare_id: Optional[str] = foursquare_id
+        self.foursquare_type: Optional[str] = foursquare_type
+        self.google_place_id: Optional[str] = google_place_id
+        self.google_place_type: Optional[str] = google_place_type
+
+    def to_dict(self):
+        json_dict = super(InputMediaVenue, self).to_dict()
+        json_dict['latitude'] = self.latitude
+        json_dict['longitude'] = self.longitude
+        json_dict['title'] = self.title
+        json_dict['address'] = self.address
+        if self.foursquare_id:
+            json_dict['foursquare_id'] = self.foursquare_id
+        if self.foursquare_type:
+            json_dict['foursquare_type'] = self.foursquare_type
+        if self.google_place_id:
+            json_dict['google_place_id'] = self.google_place_id
+        if self.google_place_type:
+            json_dict['google_place_type'] = self.google_place_type
+        # Remove 'media' field as it's not used for venue
+        json_dict.pop('media', None)
+        return json_dict
+    
 
 class PollOption(JsonDeserializable):
     """
