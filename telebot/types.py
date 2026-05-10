@@ -7760,6 +7760,9 @@ class Poll(JsonDeserializable):
     :param description_entities: Optional. Special entities like usernames, URLs, bot commands, etc. that appear in the description
     :type description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param media: Optional. Media added to the poll description; for polls inside the Message object only
+    :type media: :class:`telebot.types.PollMedia`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Poll`
     """
@@ -7778,6 +7781,8 @@ class Poll(JsonDeserializable):
             obj['question_entities'] = Message.parse_entities(obj['question_entities'])
         if 'description_entities' in obj:
             obj['description_entities'] = Message.parse_entities(obj['description_entities'])
+        if 'media' in obj:
+            obj['media'] = PollMedia.de_json(obj['media'])
         return cls(**obj)
 
     def __init__(
@@ -7789,7 +7794,7 @@ class Poll(JsonDeserializable):
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
             correct_option_ids: List[int] = None, allows_revoting: bool = None,
             description: str = None, description_entities: List[MessageEntity] = None,
-            **kwargs):
+            media: PollMedia = None, **kwargs):
         self.id: str = poll_id
         self.question: str = question
         self.options: List[PollOption] = options
@@ -7811,6 +7816,7 @@ class Poll(JsonDeserializable):
         self.allows_revoting: bool = allows_revoting
         self.description: str = description
         self.description_entities: List[MessageEntity] = description_entities
+        self.media: PollMedia = media
         
     @property
     def correct_option_id(self) -> Optional[int]:
