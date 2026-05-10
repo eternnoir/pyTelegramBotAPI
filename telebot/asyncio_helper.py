@@ -1678,6 +1678,26 @@ async def get_managed_bot_token(token, user_id):
     payload = {'user_id': user_id}
     return await _process_request(token, method_url, params=payload , method='post')
 
+async def set_managed_bot_access_settings(token, user_id, is_access_restricted, added_user_ids=None):
+    method_url = 'setManagedBotAccessSettings'
+    payload = {
+        'user_id': user_id,
+        'is_access_restricted': is_access_restricted
+    }
+    if added_user_ids is not None:
+        payload['added_user_ids'] = json.dumps(added_user_ids)
+    return await _process_request(token, method_url, params=payload , method='post')
+
+async def get_user_personal_chat_messages(token, user_id, limit):
+    method_url = 'getUserPersonalChatMessages'
+    payload = {'user_id': user_id, 'limit': limit}
+    return await _process_request(token, method_url, params=payload , method='post')
+
+async def get_managed_bot_access_settings(token, user_id):
+    method_url = 'getManagedBotAccessSettings'
+    payload = {'user_id': user_id}
+    return await _process_request(token, method_url, params=payload , method='post')
+
 async def replace_managed_bot_token(token, user_id):
     method_url = 'replaceManagedBotToken'
     payload = {'user_id': user_id}

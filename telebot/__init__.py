@@ -1671,6 +1671,24 @@ class TeleBot:
         :rtype: :obj:`int`
         """
         return apihelper.get_chat_member_count(self.token, chat_id)
+    
+    def get_user_personal_chat_messages(self, user_id: int, limit: int) -> List[types.Message]:
+        """
+        Use this method to get the last messages from the personal chat (i.e., the chat currently added to their profile) of a given user. On success, an array of Message objects is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuserpersonalchatmessages
+
+        :param user_id: Unique identifier for the target user
+        :type user_id: :obj:`int`
+
+        :param limit: The maximum number of messages to return; 1-20
+        :type limit: :obj:`int`
+
+        :return: List of Message objects.
+        :rtype: :obj:`list` of :class:`telebot.types.Message`
+        """
+        result = apihelper.get_user_personal_chat_messages(self.token, user_id, limit)
+        return [types.Message.de_json(r) for r in result]
 
 
     def set_chat_sticker_set(self, chat_id: Union[int, str], sticker_set_name: str) -> types.StickerSet:
@@ -5419,6 +5437,42 @@ class TeleBot:
         :rtype: :obj:`str`
         """
         return apihelper.replace_managed_bot_token(self.token, user_id)
+
+    def get_managed_bot_access_settings(self, user_id: int) -> types.BotAccessSettings:
+        """
+        Use this method to get the access settings of a managed bot. Returns a BotAccessSettings object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getmanagedbotaccesssettings
+
+        :param user_id: User identifier of the managed bot whose access settings will be returned
+        :type user_id: :obj:`int`
+
+        :return: Returns a BotAccessSettings object on success.
+        :rtype: :class:`telebot.types.BotAccessSettings`
+        """
+        return types.BotAccessSettings.de_json(
+            apihelper.get_managed_bot_access_settings(self.token, user_id)
+        )
+
+    def set_managed_bot_access_settings(self, user_id: int, is_access_restricted: bool, added_user_ids: Optional[List[int]]=None) -> bool:
+        """
+        Use this method to change the access settings of a managed bot. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#setmanagedbotaccesssettings
+
+        :param user_id: User identifier of the managed bot whose access settings will be changed
+        :type user_id: :obj:`int`
+
+        :param is_access_restricted: Pass True, if only selected users can access the bot. The bot's owner can always access it.
+        :type is_access_restricted: :obj:`bool`
+
+        :param added_user_ids: A JSON-serialized list of up to 10 identifiers of users who will have access to the bot in addition to its owner. Ignored if is_access_restricted is false.
+        :type added_user_ids: :obj:`list` of :obj:`int`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.set_managed_bot_access_settings(self.token, user_id, is_access_restricted, added_user_ids=added_user_ids)
 
     def set_my_commands(self, commands: List[types.BotCommand],
             scope: Optional[types.BotCommandScope]=None,

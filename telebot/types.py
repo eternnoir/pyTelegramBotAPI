@@ -14494,4 +14494,31 @@ class LivePhoto(JsonDeserializable):
             obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
         return cls(**obj)
 
+
+class BotAccessSettings(JsonDeserializable):
+    """
+    This object describes the access settings of a bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#botaccesssettings
+
+    :param is_access_restricted: True, if only selected users can access the bot. The bot's owner can always access it.
+    :type is_access_restricted: :obj:`bool`
+
+    :param added_users: Optional. The list of other users who have access to the bot if the access is restricted
+    :type added_users: :obj:`list` of :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`BotAccessSettings`
+    """
+    def __init__(self, is_access_restricted: bool, added_users: Optional[List[User]] = None, **kwargs):
+        self.is_access_restricted: bool = is_access_restricted
+        self.added_users: Optional[List[User]] = added_users
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'added_users' in obj:
+            obj['added_users'] = [User.de_json(user) for user in obj['added_users']]
+        return cls(**obj)
     
