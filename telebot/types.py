@@ -11425,6 +11425,7 @@ class PaidMedia(JsonDeserializable, ABC):
         PaidMediaPreview
         PaidMediaPhoto
         PaidMediaVideo
+        PaidMediaLivePhoto
 
     Telegram documentation: https://core.telegram.org/bots/api#paidmedia
 
@@ -11479,6 +11480,34 @@ class PaidMediaPreview(PaidMedia):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class PaidMediaLivePhoto(PaidMedia):
+    """
+    The paid media is a live photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmedialivephoto
+
+    :param type: Type of the paid media, always “live_photo”
+    :type type: :obj:`str`
+
+    :param live_photo: The photo
+    :type live_photo: :class:`LivePhoto`
+
+    :return: Instance of the class
+    :rtype: :class:`PaidMediaLivePhoto`
+    """
+
+    def __init__(self, type, live_photo, **kwargs):
+        self.type: str = type
+        self.live_photo: LivePhoto = live_photo
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(**obj)
 
 
@@ -11576,6 +11605,7 @@ class InputPaidMedia(Dictionaryable, JsonSerializable):
     This object describes the paid media to be sent. Currently, it can be one of
         InputPaidMediaPhoto
         InputPaidMediaVideo
+        InputPaidMediaLivePhoto
 
     Telegram documentation: https://core.telegram.org/bots/api#inputpaidmedia
 
@@ -11629,6 +11659,37 @@ class InputPaidMediaPhoto(InputPaidMedia):
 
     def __init__(self, media: Union[str, InputFile], **kwargs):
         super().__init__(type='photo', media=media)
+
+class InputPaidMediaLivePhoto(InputPaidMedia):
+    """
+    The paid media to send is a live photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputpaidmedialivephoto
+
+    :param type: Type of the media, must be live_photo
+    :type type: :obj:`str`
+
+    :param media: Video of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or
+        pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ».
+        Sending live photos by a URL is currently unsupported.
+    :type media: :obj:`str` or :class:`telebot.types.InputFile`
+
+    :param photo: The static photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or
+        pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ».
+        Sending live photos by a URL is currently unsupported.
+    :type photo: :obj:`str` or :class:`telebot.types.InputFile`
+
+    :return: Instance of the class
+    :rtype: :class:`InputPaidMediaLivePhoto`
+    """
+    def __init__(self, media: Union[str, InputFile], photo: Union[str, InputFile], **kwargs):
+        super().__init__(type='live_photo', media=media)
+        self.photo: Union[str, InputFile] = photo
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['photo'] = self.photo if service_utils.is_string(self.photo) else 'attach://{0}'.format(service_utils.generate_random_token())
+        return data
 
 
 class InputPaidMediaVideo(InputPaidMedia):
