@@ -14307,4 +14307,8 @@ class PollMedia(JsonDeserializable):
         if 'video' in obj:
             obj['video'] = Video.de_json(obj['video'])
         return cls(**obj)
-    
+
+# why not..
+InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
+
+InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo]
