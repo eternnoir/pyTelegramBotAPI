@@ -7682,14 +7682,18 @@ class InputPollOption(JsonSerializable):
     :param text_entities: Optional. A JSON-serialized list of special entities that appear in the poll option text. It can be specified instead of text_parse_mode
     :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
+    :param media: Optional. Media added to the poll option
+    :type media: :class:`telebot.types.PollMedia`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollOption`
     """
     def __init__(self, text: str, text_parse_mode: Optional[str] = None, text_entities: Optional[List[MessageEntity]] = None,
-                    **kwargs):
+                    media: Optional[PollMedia] = None, **kwargs):
         self.text: str = text
         self.text_parse_mode: Optional[str] = text_parse_mode
         self.text_entities: Optional[List[MessageEntity]] = text_entities
+        self.media: Optional[PollMedia] = media
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -7702,6 +7706,8 @@ class InputPollOption(JsonSerializable):
             json_dict["text_parse_mode"] = self.text_parse_mode
         if self.text_entities:
             json_dict['text_entities'] = [entity.to_dict() for entity in self.text_entities]
+        if self.media:
+            json_dict['media'] = self.media.to_dict()
         return json_dict
 
 
