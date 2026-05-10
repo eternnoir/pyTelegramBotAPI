@@ -7479,6 +7479,55 @@ class InputMediaDocument(InputMedia):
             ret['disable_content_type_detection'] = self.disable_content_type_detection
         return ret
 
+
+class InputMediaLivePhoto(InputMedia):
+    """
+    Represents a live photo to be sent.
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inputmedialivephoto
+
+    :param media: Video of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or pass “attach://<file_attach_name>”
+        to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
+    :type media: :obj:`str`
+
+    :param photo: The static photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or pass “attach://<file_attach_name>” to upload a new one
+        using multipart/form-data under <file_attach_name> name. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
+    :type photo: :obj:`str`
+
+    :param caption: Optional. Caption of the live photo to be sent, 0-1024 characters after entities parsing
+    :type caption: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the live photo caption. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+    :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param show_caption_above_media: Optional. Pass True, if the caption must be shown above the message media
+    :type show_caption_above_media: :obj:`bool`
+
+    :param has_spoiler: Optional. Pass True if the live photo needs to be covered with a spoiler animation
+    :type has_spoiler: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputMediaLivePhoto`
+    """
+    def __init__(self, media: str, photo: str, caption: Optional[str] = None, parse_mode: Optional[str] = None,
+                 caption_entities: Optional[List[MessageEntity]] = None, show_caption_above_media: Optional[bool] = None, has_spoiler: Optional[bool] = None):
+        super(InputMediaLivePhoto, self).__init__(type="live_photo", media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
+        self.photo: str = photo
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.has_spoiler: Optional[bool] = has_spoiler
+
+    def to_dict(self):
+        json_dict = super(InputMediaLivePhoto, self).to_dict()
+        json_dict['photo'] = self.photo
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
+        if self.has_spoiler is not None:
+            json_dict['has_spoiler'] = self.has_spoiler
+        return json_dict
+
 class InputMediaLocation(InputMedia):
     """
     Represents a location to be sent.
@@ -14318,3 +14367,58 @@ class PollMedia(JsonDeserializable):
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
 
 InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo]
+
+    
+class LivePhoto(JsonDeserializable):
+    """
+    This object represents a live photo.
+
+    Telegram documentation: https://core.telegram.org/bots/api#livephoto
+
+    :param photo: Optional. Available sizes of the corresponding static photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param file_id: Identifier for the video file which can be used to download or reuse the file
+    :type file_id: :obj:`str`
+
+    :param file_unique_id: Unique identifier for the video file which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
+    :type file_unique_id: :obj:`str`
+
+    :param width: Video width as defined by the sender
+    :type width: :obj:`int`
+
+    :param height: Video height as defined by the sender
+    :type height: :obj:`int`
+
+    :param duration: Duration of the video in seconds as defined by the sender
+    :type duration: :obj:`int`
+
+    :param mime_type: Optional. MIME type of the file as defined by the sender
+    :type mime_type: :obj:`str`
+
+    :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
+    :type file_size: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`LivePhoto`
+    """
+    def __init__(self, file_id: str, file_unique_id: str, width: int, height: int, duration: int, photo: Optional[List[PhotoSize]] = None,
+                    mime_type: Optional[str] = None, file_size: Optional[int] = None, **kwargs):
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.file_id: str = file_id
+        self.file_unique_id: str = file_unique_id
+        self.width: int = width
+        self.height: int = height
+        self.duration: int = duration
+        self.mime_type: Optional[str] = mime_type
+        self.file_size: Optional[int] = file_size
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        return cls(**obj)
+
+    
