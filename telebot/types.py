@@ -507,6 +507,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         getMe.
     :type can_read_all_group_messages: :obj:`bool`
 
+    :param supports_guest_queries: Optional. True, if the bot supports guest queries from chats it is not a member of. Returned only in getMe.
+    :type supports_guest_queries: :obj:`bool`
+
     :param supports_inline_queries: Optional. True, if the bot supports inline queries. Returned only in getMe.
     :type supports_inline_queries: :obj:`bool`
 
@@ -538,7 +541,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
-                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None, **kwargs):
+                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None,
+                 supports_guest_queries=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -555,6 +559,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.has_topics_enabled: Optional[bool] = has_topics_enabled
         self.allows_users_to_create_topics: Optional[bool] = allows_users_to_create_topics
         self.can_manage_bots: Optional[bool] = can_manage_bots
+        self.supports_guest_queries: Optional[bool] = supports_guest_queries
+
     @property
     def full_name(self) -> str:
         """
@@ -584,7 +590,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'has_main_web_app': self.has_main_web_app,
                 'has_topics_enabled': self.has_topics_enabled,
                 'allows_users_to_create_topics': self.allows_users_to_create_topics,
-                'can_manage_bots': self.can_manage_bots
+                'can_manage_bots': self.can_manage_bots,
+                'supports_guest_queries': self.supports_guest_queries
                 }
 
 
