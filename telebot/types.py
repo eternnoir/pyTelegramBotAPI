@@ -1112,6 +1112,10 @@ class Message(JsonDeserializable):
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`telebot.types.Document`
 
+    :param live_photo: Optional. Message is a live photo, information about the live photo.
+        For backward compatibility, when this field is set, the photo field will also be set
+    :type live_photo: :class:`telebot.types.LivePhoto`
+
     :param paid_media: Optional. Message contains paid media; information about the paid media
     :type paid_media: :class:`telebot.types.PaidMediaInfo`
 
@@ -1667,7 +1671,8 @@ class Message(JsonDeserializable):
             opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
         if 'guest_query_id' in obj:
             opts['guest_query_id'] = obj['guest_query_id']
-
+        if 'live_photo' in obj:
+            opts['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1813,6 +1818,7 @@ class Message(JsonDeserializable):
         self.guest_bot_caller_user: Optional[User] = None
         self.guest_bot_caller_chat: Optional[Chat] = None
         self.guest_query_id: Optional[str] = None
+        self.live_photo: Optional[LivePhoto] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -9371,6 +9377,9 @@ class ExternalReplyInfo(JsonDeserializable):
     :param document: Optional. Message is a general file, information about the file
     :type document: :class:`Document`
 
+    :param live_photo: Optional. Message is a live photo, information about the live photo
+    :type live_photo: :class:`LivePhoto`
+
     :param paid_media: Optional. Message is a paid media content
     :type paid_media: :class:`PaidMedia`
 
@@ -9477,6 +9486,8 @@ class ExternalReplyInfo(JsonDeserializable):
             obj['paid_media'] = PaidMediaInfo.de_json(obj['paid_media'])
         if 'checklist' in obj:
             obj['checklist'] = Checklist.de_json(obj['checklist'])
+        if 'live_photo' in obj:
+            obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(**obj)
 
     def __init__(
@@ -9490,7 +9501,7 @@ class ExternalReplyInfo(JsonDeserializable):
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
             venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None,
-            checklist: Optional[Checklist]=None, **kwargs) -> None:
+            live_photo: Optional[LivePhoto]=None, checklist: Optional[Checklist]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -9515,6 +9526,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.poll: Optional[Poll] = poll
         self.venue: Optional[Venue] = venue
         self.paid_media: Optional[PaidMediaInfo] = paid_media
+        self.live_photo: Optional[LivePhoto] = live_photo
         self.checklist: Optional[Checklist] = checklist
 
 
