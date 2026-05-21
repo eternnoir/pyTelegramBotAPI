@@ -2702,11 +2702,20 @@ def send_poll(
         payload['members_only'] = members_only
     if country_codes is not None:
         payload['country_codes'] = json.dumps(country_codes)
+
+    files = {}
     if media is not None:
-        payload['media'] = media.to_json()
+        media_json, media_files = media.convert_input_media()
+        payload['media'] = media_json
+        if media_files:
+            files.update(media_files)
     if explanation_media is not None:
-        payload['explanation_media'] = explanation_media.to_json()
-    return _make_request(token, method_url, params=payload)
+        explanation_media_json, explanation_media_files = explanation_media.convert_input_media()
+        payload['explanation_media'] = explanation_media_json
+        if explanation_media_files:
+            files.update(explanation_media_files)
+
+    return _make_request(token, method_url, params=payload, files=files if files else None, method='post')
 
 def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
     method_url = r'createForumTopic'
