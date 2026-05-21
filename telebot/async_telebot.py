@@ -7908,7 +7908,9 @@ class AsyncTeleBot:
             description_parse_mode: Optional[str]=None,
             description_entities: Optional[List[types.MessageEntity]]=None,
             members_only: Optional[bool]=None,
-            country_codes: Optional[List[str]]=None) -> types.Message:
+            country_codes: Optional[List[str]]=None,
+            media: Optional[types.InputPollMedia]=None,
+            explanation_media: Optional[types.InputPollMedia]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -8030,6 +8032,12 @@ class AsyncTeleBot:
         :param description_entities: A JSON-serialized list of special entities that appear in the poll description, which can be specified instead of description_parse_mode
         :type description_entities: :obj:`list` of :obj:`MessageEntity`
 
+        :param media: Media added to the poll description
+        :type media: :obj:`types.InputPollMedia`
+
+        :param explanation_media: Media added to the quiz explanation
+        :type explanation_media: :obj:`types.InputPollMedia`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -8086,21 +8094,19 @@ class AsyncTeleBot:
 
         return types.Message.de_json(
             await asyncio_helper.send_poll(
-                self.token, chat_id,
-                question, options,
-                is_anonymous, type, allows_multiple_answers,
-                explanation, explanation_parse_mode, open_period, close_date, is_closed,
-                disable_notification,
-                reply_markup, timeout, explanation_entities, protect_content, message_thread_id, reply_parameters,
-                business_connection_id, question_parse_mode=question_parse_mode, question_entities=question_entities,
+                self.token, chat_id, question, options,
+                is_anonymous=is_anonymous, type=type, allows_multiple_answers=allows_multiple_answers,
+                correct_option_ids=correct_option_ids, explanation=explanation, explanation_parse_mode=explanation_parse_mode,
+                open_period=open_period, close_date=close_date, is_closed=is_closed, disable_notification=disable_notification,
+                reply_parameters=reply_parameters, reply_markup=reply_markup,
+                timeout=timeout, explanation_entities=explanation_entities, protect_content=protect_content,
+                message_thread_id=message_thread_id, business_connection_id=business_connection_id,
+                question_parse_mode=question_parse_mode, question_entities=question_entities,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
                 allows_revoting=allows_revoting, shuffle_options=shuffle_options, allow_adding_options=allow_adding_options,
-                hide_results_until_closes=hide_results_until_closes, correct_option_ids=correct_option_ids, description=description,
-                description_parse_mode=description_parse_mode, description_entities=description_entities,
-                members_only=members_only, country_codes=country_codes
-            )
-        )
-
+                hide_results_until_closes=hide_results_until_closes, description=description, description_parse_mode=description_parse_mode, description_entities=description_entities,
+                members_only=members_only, country_codes=country_codes, media=media, explanation_media=explanation_media
+            )        )
     async def stop_poll(
             self, chat_id: Union[int, str], message_id: int,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,

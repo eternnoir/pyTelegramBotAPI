@@ -2618,7 +2618,8 @@ async def send_poll(
         reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
         reply_parameters=None,business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None,
         allow_paid_broadcast=None, allows_revoting=None, shuffle_options=None, allow_adding_options=None, hide_results_until_closes=None,
-        correct_option_ids=None, description=None, description_parse_mode=None, description_entities=None, members_only=None, country_codes=None):
+        correct_option_ids=None, description=None, description_parse_mode=None, description_entities=None, members_only=None, country_codes=None,
+        media=None, explanation_media=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -2690,6 +2691,10 @@ async def send_poll(
         payload['members_only'] = members_only
     if country_codes is not None:
         payload['country_codes'] = json.dumps(country_codes)
+    if media is not None:
+        payload['media'] = media.to_json()
+    if explanation_media is not None:
+        payload['explanation_media'] = explanation_media.to_json()
     return await _process_request(token, method_url, params=payload)
 
 

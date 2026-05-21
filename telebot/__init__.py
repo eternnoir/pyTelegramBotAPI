@@ -6329,7 +6329,9 @@ class TeleBot:
             description_parse_mode: Optional[str]=None,
             description_entities: Optional[List[types.MessageEntity]]=None,
             members_only: Optional[bool]=None,
-            country_codes: Optional[List[str]]=None) -> types.Message:
+            country_codes: Optional[List[str]]=None,
+            media: Optional[types.InputPollMedia]=None,
+            explanation_media: Optional[types.InputPollMedia]=None) -> types.Message:
         """
         Use this method to send a native poll.
         On success, the sent Message is returned.
@@ -6447,6 +6449,12 @@ class TeleBot:
         :param description_entities: A JSON-serialized list of special entities that appear in the poll description, which can be specified instead of description_parse_mode
         :type description_entities: :obj:`list` of :obj:`MessageEntity`
 
+        :param media: Media added to the poll description
+        :type media: :obj:`types.InputPollMedia`
+
+        :param explanation_media: Media added to the quiz explanation
+        :type explanation_media: :obj:`types.InputPollMedia`
+
         :return: On success, the sent Message is returned.
         :rtype: :obj:`types.Message`
         """
@@ -6518,7 +6526,7 @@ class TeleBot:
                 allows_revoting=allows_revoting, shuffle_options=shuffle_options,
                 allow_adding_options=allow_adding_options, hide_results_until_closes=hide_results_until_closes, correct_option_ids=correct_option_ids,
                 description=description, description_parse_mode=description_parse_mode, description_entities=description_entities,
-                members_only=members_only, country_codes=country_codes)
+                members_only=members_only, country_codes=country_codes, media=media, explanation_media=explanation_media)
             )
 
 
