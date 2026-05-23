@@ -2684,7 +2684,7 @@ class TeleBot:
         :type parse_mode: :obj:`str`
 
         :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
-        :type caption_entities: :obj:`list` of :class:`telebot.types.Message
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
         :param show_caption_above_media: Pass True, if the caption must be shown above the message media
         :type show_caption_above_media: :obj:`bool`
@@ -10745,7 +10745,7 @@ class TeleBot:
 
     def guest_message_handler(self, func=None, **kwargs):
         """
-        New guest message. Guest message updates are available in :field:`telebot.types.Update.guest_message`. Use :field:`telebot.types.Message.guest_query_id` from the received message and the method :meth:`answer_guest_query` to send a response.
+        New guest message. Use :field:`telebot.types.Message.guest_query_id` from the received message and the method :meth:`answer_guest_query` to send a response.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`

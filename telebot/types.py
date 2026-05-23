@@ -7524,10 +7524,15 @@ class InputMediaLivePhoto(InputMedia):
         self.photo: str = photo
         self.show_caption_above_media: Optional[bool] = show_caption_above_media
         self.has_spoiler: Optional[bool] = has_spoiler
+        self._photo_name = service_utils.generate_random_token()
+        if not service_utils.is_string(photo):
+            self._photo_dic = 'attach://{0}'.format(self._photo_name)
+        else:
+            self._photo_dic = photo
 
     def to_dict(self):
         json_dict = super(InputMediaLivePhoto, self).to_dict()
-        json_dict['photo'] = self.photo
+        json_dict['photo'] = self._photo_dic
         if self.show_caption_above_media is not None:
             json_dict['show_caption_above_media'] = self.show_caption_above_media
         if self.has_spoiler is not None:
@@ -11443,6 +11448,8 @@ class PaidMedia(JsonDeserializable, ABC):
             return PaidMediaPhoto.de_json(obj)
         elif obj["type"] == "video":
             return PaidMediaVideo.de_json(obj)
+        elif obj["type"] == "live_photo":
+            return PaidMediaLivePhoto.de_json(obj)
         else:
             raise ValueError("Unknown type of PaidMedia: {0}".format(obj["type"]))
 
@@ -11685,12 +11692,18 @@ class InputPaidMediaLivePhoto(InputPaidMedia):
     def __init__(self, media: Union[str, InputFile], photo: Union[str, InputFile], **kwargs):
         super().__init__(type='live_photo', media=media)
         self.photo: Union[str, InputFile] = photo
+        self._photo_name = service_utils.generate_random_token()
+        self._photo_dic = None
+
+        if not service_utils.is_string(self.photo):
+            self._photo_dic = 'attach://{0}'.format(self._photo_name)
+        else:
+            self._photo_dic = self.photo
 
     def to_dict(self):
         data = super().to_dict()
-        data['photo'] = self.photo if service_utils.is_string(self.photo) else 'attach://{0}'.format(service_utils.generate_random_token())
+        data['photo'] = self._photo_dic
         return data
-
 
 class InputPaidMediaVideo(InputPaidMedia):
     """
