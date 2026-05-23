@@ -7539,6 +7539,14 @@ class InputMediaLivePhoto(InputMedia):
             json_dict['has_spoiler'] = self.has_spoiler
         return json_dict
 
+    def convert_input_media(self):
+        media, files = super(InputMediaLivePhoto, self).convert_input_media()
+        if not service_utils.is_string(self.photo):
+            if files is None:
+                files = {}
+            files[self._photo_name] = self.photo
+        return media, files
+
 class InputMediaLocation(InputMedia):
     """
     Represents a location to be sent.
