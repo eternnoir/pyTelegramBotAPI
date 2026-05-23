@@ -7751,17 +7751,17 @@ class InputPollOption(JsonSerializable):
     :type text_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
     :param media: Optional. Media added to the poll option
-    :type media: :class:`telebot.types.PollMedia`
+    :type media: :class:`telebot.types.InputPollOptionMedia`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.PollOption`
     """
     def __init__(self, text: str, text_parse_mode: Optional[str] = None, text_entities: Optional[List[MessageEntity]] = None,
-                    media: Optional[PollMedia] = None, **kwargs):
+                    media: Optional[InputPollOptionMedia] = None, **kwargs):
         self.text: str = text
         self.text_parse_mode: Optional[str] = text_parse_mode
         self.text_entities: Optional[List[MessageEntity]] = text_entities
-        self.media: Optional[PollMedia] = media
+        self.media: Optional[InputPollOptionMedia] = media
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -11712,6 +11712,7 @@ class InputPaidMediaLivePhoto(InputPaidMedia):
         data = super().to_dict()
         data['photo'] = self._photo_dic
         return data
+    
 
 class InputPaidMediaVideo(InputPaidMedia):
     """

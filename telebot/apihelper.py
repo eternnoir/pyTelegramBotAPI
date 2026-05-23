@@ -638,6 +638,8 @@ def send_live_photo(
         files['live_photo'] = live_photo
     if util.is_string(photo):
         payload['photo'] = photo
+    elif util.is_pil_image(photo):
+        files['photo'] = util.pil_image_to_file(photo)
     else:
         files['photo'] = photo
     if caption:

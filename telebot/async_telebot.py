@@ -8106,7 +8106,8 @@ class AsyncTeleBot:
                 allows_revoting=allows_revoting, shuffle_options=shuffle_options, allow_adding_options=allow_adding_options,
                 hide_results_until_closes=hide_results_until_closes, description=description, description_parse_mode=description_parse_mode, description_entities=description_entities,
                 members_only=members_only, country_codes=country_codes, media=media, explanation_media=explanation_media
-            )        )
+            )
+        )
     async def stop_poll(
             self, chat_id: Union[int, str], message_id: int,
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
