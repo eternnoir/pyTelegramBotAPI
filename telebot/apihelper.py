@@ -391,9 +391,11 @@ def leave_chat(token, chat_id):
     return _make_request(token, method_url, params=payload)
 
 
-def get_chat_administrators(token, chat_id):
+def get_chat_administrators(token, chat_id, return_bots=None):
     method_url = r'getChatAdministrators'
     payload = {'chat_id': chat_id}
+    if return_bots is not None:
+        payload['return_bots'] = return_bots
     return _make_request(token, method_url, params=payload)
 
 
@@ -620,6 +622,55 @@ def send_photo(
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
+    
+def send_live_photo(
+        token, chat_id, live_photo, photo,
+        caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None, has_spoiler=None,
+        disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
+        business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None,
+        direct_messages_topic_id=None, suggested_post_parameters=None):
+    method_url = r'sendLivePhoto'
+    files = {}
+    payload = {'chat_id': chat_id}
+    if util.is_string(live_photo):
+        payload['live_photo'] = live_photo
+    else:
+        files['live_photo'] = live_photo
+    if util.is_string(photo):
+        payload['photo'] = photo
+    elif util.is_pil_image(photo):
+        files['photo'] = util.pil_image_to_file(photo)
+    else:
+        files['photo'] = photo
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if has_spoiler is not None:
+        payload['has_spoiler'] = has_spoiler
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if reply_parameters is not None:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    return _make_request(token, method_url, params=payload, files=files or None, method='post')
     
 def send_paid_media(
         token, chat_id, star_count, media,
@@ -1611,6 +1662,26 @@ def get_managed_bot_token(token, user_id):
     payload = {'user_id': user_id}
     return _make_request(token, method_url, params=payload , method='post')
 
+def set_managed_bot_access_settings(token, user_id, is_access_restricted, added_user_ids=None):
+    method_url = 'setManagedBotAccessSettings'
+    payload = {
+        'user_id': user_id,
+        'is_access_restricted': is_access_restricted
+    }
+    if added_user_ids:
+        payload['added_user_ids'] = json.dumps(added_user_ids)
+    return _make_request(token, method_url, params=payload , method='post')
+
+def get_user_personal_chat_messages(token, user_id, limit):
+    method_url = 'getUserPersonalChatMessages'
+    payload = {'user_id': user_id, 'limit': limit}
+    return _make_request(token, method_url, params=payload , method='post')
+
+def get_managed_bot_access_settings(token, user_id):
+    method_url = 'getManagedBotAccessSettings'
+    payload = {'user_id': user_id}
+    return _make_request(token, method_url, params=payload , method='post')
+
 def replace_managed_bot_token(token, user_id):
     method_url = 'replaceManagedBotToken'
     payload = {'user_id': user_id}
@@ -2058,6 +2129,10 @@ def answer_callback_query(token, callback_query_id, text=None, show_alert=None, 
         payload['cache_time'] = cache_time
     return _make_request(token, method_url, params=payload, method='post')
 
+def answer_guest_query(token, guest_query_id, result):
+    method_url = 'answerGuestQuery'
+    payload = {'guest_query_id': guest_query_id, 'result': result.to_json()}
+    return _make_request(token, method_url, params=payload, method='post')
 
 def get_user_chat_boosts(token, chat_id, user_id):
     method_url = 'getUserChatBoosts'
@@ -2557,7 +2632,8 @@ def send_poll(
         reply_markup=None, timeout=None, explanation_entities=None, protect_content=None, message_thread_id=None,
         reply_parameters=None, business_connection_id=None, question_parse_mode=None, question_entities=None, message_effect_id=None,
         allow_paid_broadcast=None, allows_revoting=None, shuffle_options=None, allow_adding_options=None, hide_results_until_closes=None,
-        correct_option_ids=None, description=None, description_parse_mode=None, description_entities=None):
+        correct_option_ids=None, description=None, description_parse_mode=None, description_entities=None, members_only=None, country_codes=None,
+        media=None, explanation_media=None):
     method_url = r'sendPoll'
     payload = {
         'chat_id': str(chat_id),
@@ -2624,7 +2700,24 @@ def send_poll(
         payload['description_parse_mode'] = description_parse_mode
     if description_entities is not None:
         payload['description_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(description_entities))
-    return _make_request(token, method_url, params=payload)
+    if members_only is not None:
+        payload['members_only'] = members_only
+    if country_codes is not None:
+        payload['country_codes'] = json.dumps(country_codes)
+
+    files = {}
+    if media is not None:
+        media_json, media_files = media.convert_input_media()
+        payload['media'] = media_json
+        if media_files:
+            files.update(media_files)
+    if explanation_media is not None:
+        explanation_media_json, explanation_media_files = explanation_media.convert_input_media()
+        payload['explanation_media'] = explanation_media_json
+        if explanation_media_files:
+            files.update(explanation_media_files)
+
+    return _make_request(token, method_url, params=payload, files=files if files else None, method='post')
 
 def create_forum_topic(token, chat_id, name, icon_color=None, icon_custom_emoji_id=None):
     method_url = r'createForumTopic'
@@ -2709,6 +2802,29 @@ def delete_messages(token, chat_id, message_ids):
         'message_ids': json.dumps(message_ids)
     }
     return _make_request(token, method_url, params=payload)
+
+def delete_message_reaction(token, chat_id, message_id, user_id=None, actor_chat_id=None):
+    method_url = 'deleteMessageReaction'
+    payload = {
+        'chat_id': chat_id,
+        'message_id': message_id
+    }
+    if user_id is not None:
+        payload['user_id'] = user_id
+    if actor_chat_id is not None:
+        payload['actor_chat_id'] = actor_chat_id
+    return _make_request(token, method_url, params=payload, method='post')
+
+def delete_all_message_reactions(token, chat_id, user_id=None, actor_chat_id=None):
+    method_url = 'deleteAllMessageReactions'
+    payload = {
+        'chat_id': chat_id
+    }
+    if user_id is not None:
+        payload['user_id'] = user_id
+    if actor_chat_id is not None:
+        payload['actor_chat_id'] = actor_chat_id
+    return _make_request(token, method_url, params=payload, method='post')
 
 def forward_messages(token, chat_id, from_chat_id, message_ids, disable_notification=None,
                             message_thread_id=None, protect_content=None, direct_messages_topic_id=None):
