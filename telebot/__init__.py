@@ -10745,7 +10745,7 @@ class TeleBot:
 
     def guest_message_handler(self, func=None, **kwargs):
         """
-        New guest message. The bot can use the field :field:`telebot.types.Message.is_guest` and the method answerGuestQuery to send a message in response.
+        New guest message. Guest message updates are available in :field:`telebot.types.Update.guest_message`. Use :field:`telebot.types.Message.guest_query_id` from the received message and the method :meth:`answer_guest_query` to send a response.
 
         :param func: Function executed as a filter
         :type func: :obj:`function`
