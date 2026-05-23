@@ -1666,7 +1666,7 @@ def set_managed_bot_access_settings(token, user_id, is_access_restricted, added_
         'user_id': user_id,
         'is_access_restricted': is_access_restricted
     }
-    if added_user_ids is not None:
+    if added_user_ids:
         payload['added_user_ids'] = json.dumps(added_user_ids)
     return _make_request(token, method_url, params=payload , method='post')
 

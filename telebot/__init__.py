@@ -2649,8 +2649,8 @@ class TeleBot:
         )
     
     def send_live_photo(
-            self, business_connection_id: Optional[str], chat_id: Union[int, str],
-            live_photo: Union[Any, str], photo: Union[Any, str],
+            self, chat_id: Union[int, str], live_photo: Union[Any, str], photo: Union[Any, str],
+            business_connection_id: Optional[str]=None,
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None, show_caption_above_media: Optional[bool]=None,
             has_spoiler: Optional[bool]=None, disable_notification: Optional[bool]=None, protect_content: Optional[bool]=None,
@@ -2726,7 +2726,7 @@ class TeleBot:
 
         return types.Message.de_json(
             apihelper.send_live_photo(
-                self.token, business_connection_id, chat_id, live_photo, photo, caption=caption, parse_mode=parse_mode,
+                self.token, chat_id, live_photo, photo, business_connection_id=business_connection_id, caption=caption, parse_mode=parse_mode,
                 caption_entities=caption_entities, show_caption_above_media=show_caption_above_media, has_spoiler=has_spoiler, disable_notification=disable_notification,
                 protect_content=protect_content, allow_paid_broadcast=allow_paid_broadcast, message_effect_id=message_effect_id,
                 suggested_post_parameters=suggested_post_parameters, reply_parameters=reply_parameters, reply_markup=reply_markup
