@@ -625,9 +625,9 @@ def send_photo(
     
 def send_live_photo(
         token, chat_id, live_photo, photo,
-        caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None, has_spoiler=None,
-        disable_notification=None, protect_content=None, reply_parameters=None, reply_markup=None,
-        business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None,
+        message_thread_id=None, business_connection_id=None, caption=None, parse_mode=None, caption_entities=None,
+        show_caption_above_media=None, has_spoiler=None, disable_notification=None, protect_content=None,
+        reply_parameters=None, reply_markup=None, message_effect_id=None, allow_paid_broadcast=None,
         direct_messages_topic_id=None, suggested_post_parameters=None):
     method_url = r'sendLivePhoto'
     files = {}
@@ -642,6 +642,8 @@ def send_live_photo(
         files['photo'] = util.pil_image_to_file(photo)
     else:
         files['photo'] = photo
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
     if caption:
         payload['caption'] = caption
     if parse_mode:

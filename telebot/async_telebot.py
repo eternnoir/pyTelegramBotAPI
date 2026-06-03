@@ -4288,7 +4288,7 @@ class AsyncTeleBot:
 
     async def send_live_photo(
             self, chat_id: Union[int, str], live_photo: Union[Any, str], photo: Union[Any, str],
-            business_connection_id: Optional[str]=None,
+            message_thread_id: Optional[int] = None, business_connection_id: Optional[str]=None,
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             show_caption_above_media: Optional[bool]=None, has_spoiler: Optional[bool]=None,
@@ -4300,6 +4300,9 @@ class AsyncTeleBot:
         Use this method to send live photos. On success, the sent Message is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#sendlivephoto
+
+        :param message_thread_id: Identifier of a message thread, in which the message will be sent
+        :type message_thread_id: :obj:`int`
 
         :param business_connection_id: Unique identifier of the business connection on behalf of which the message will be sent
         :type business_connection_id: :obj:`str`
@@ -4367,9 +4370,13 @@ class AsyncTeleBot:
 
         return types.Message.de_json(
             await asyncio_helper.send_live_photo(
-                self.token, chat_id, live_photo, photo, business_connection_id=business_connection_id, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
-                show_caption_above_media=show_caption_above_media, has_spoiler=has_spoiler, disable_notification=disable_notification, protect_content=protect_content,
-                allow_paid_broadcast=allow_paid_broadcast, message_effect_id=message_effect_id, suggested_post_parameters=suggested_post_parameters, reply_parameters=reply_parameters, reply_markup=reply_markup
+                self.token, chat_id, live_photo, photo, message_thread_id=message_thread_id,
+                business_connection_id=business_connection_id, caption=caption, parse_mode=parse_mode,
+                caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
+                has_spoiler=has_spoiler, disable_notification=disable_notification, protect_content=protect_content,
+                allow_paid_broadcast=allow_paid_broadcast, message_effect_id=message_effect_id,
+                suggested_post_parameters=suggested_post_parameters, reply_parameters=reply_parameters,
+                reply_markup=reply_markup
             )
         )
 
