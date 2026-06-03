@@ -1623,7 +1623,6 @@ class Message(JsonDeserializable):
         if 'gift_upgrade_sent' in obj:
             opts['gift_upgrade_sent'] = GiftInfo.de_json(obj['gift_upgrade_sent'])
             content_type = 'gift_upgrade_sent'
-            
         if 'reply_to_checklist_task_id' in obj:
             opts['reply_to_checklist_task_id'] = obj['reply_to_checklist_task_id']
         if 'direct_messages_topic' in obj:
@@ -1663,6 +1662,9 @@ class Message(JsonDeserializable):
         if 'poll_option_deleted' in obj:
             opts['poll_option_deleted'] = PollOptionDeleted.de_json(obj['poll_option_deleted'])
             content_type = 'poll_option_deleted'
+        if 'live_photo' in obj:
+            opts['live_photo'] = LivePhoto.de_json(obj['live_photo'])
+            content_type = 'live_photo'
         if 'reply_to_poll_option_id' in obj:
             opts['reply_to_poll_option_id'] = obj['reply_to_poll_option_id']
         if 'guest_bot_caller_user' in obj:
@@ -1671,8 +1673,6 @@ class Message(JsonDeserializable):
             opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
         if 'guest_query_id' in obj:
             opts['guest_query_id'] = obj['guest_query_id']
-        if 'live_photo' in obj:
-            opts['live_photo'] = LivePhoto.de_json(obj['live_photo'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -14543,4 +14543,3 @@ class BotAccessSettings(JsonDeserializable):
         if 'added_users' in obj:
             obj['added_users'] = [User.de_json(user) for user in obj['added_users']]
         return cls(**obj)
-    
