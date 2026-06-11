@@ -1,4 +1,4 @@
-import asyncio # for future uses
+import asyncio
 import ssl
 import threading
 import aiohttp
@@ -26,6 +26,11 @@ FILE_URL = None
 
 REQUEST_TIMEOUT = 300
 MAX_RETRIES = 3
+# Retrying on network errors is opt-in, mirroring telebot.apihelper:
+# when RETRY_ON_ERROR is True, requests failing with a network error are
+# repeated up to MAX_RETRIES times with RETRY_TIMEOUT seconds in between.
+RETRY_ON_ERROR = False
+RETRY_TIMEOUT = 2
 
 REQUEST_LIMIT = 50
 
@@ -90,29 +95,30 @@ async def _process_request(token, url, method='get', params=None, files=None, **
     params = _prepare_data(params, files)
 
     timeout = aiohttp.ClientTimeout(total=request_timeout)
-    got_result = False
-    current_try=0
+    current_try = 0
+    max_tries = MAX_RETRIES if RETRY_ON_ERROR else 1
     session = await session_manager.get_session()
-    while not got_result and current_try<MAX_RETRIES-1:
-        current_try +=1
+    while current_try < max_tries:
+        current_try += 1
         try:
             async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
-                got_result = True
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
-                
+
                 json_result = await _check_result(url, resp)
                 if json_result:
                     return json_result['result']
+                return None
         except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
             raise e
         except aiohttp.ClientError as e:
-            logger.error('Aiohttp ClientError: {0}'.format(e.__class__.__name__))
+            logger.error('Aiohttp ClientError: {0} (try #{1})'.format(e.__class__.__name__, current_try))
         except Exception as e:
-            logger.error(f'Unknown error: {e.__class__.__name__}')
-        if not got_result:
-            raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
-    return None
-        
+            logger.error('Unknown error: {0} (try #{1})'.format(e.__class__.__name__, current_try))
+        if current_try < max_tries:
+            await asyncio.sleep(RETRY_TIMEOUT)
+    raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout))
+
+
 def _prepare_file(obj):
     """
     Prepares file for upload.
