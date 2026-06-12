@@ -14474,7 +14474,7 @@ class PollMedia(JsonDeserializable):
 # why not..
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo, 'InputMediaLink']
 
-InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo]
+InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo, 'InputMediaLink']
 
     
 class LivePhoto(JsonDeserializable):
@@ -15264,7 +15264,7 @@ class RichBlockList(RichBlock):
     @classmethod
     def _from_dict(cls, obj: dict):
         if 'items' in obj:
-            obj['items'] = [RichBlockListItem._from_dict(i) if isinstance(i, dict) else i for i in obj['items']]
+            obj['items'] = [RichBlock.de_json(i) if isinstance(i, dict) else i for i in obj['items']]
         return cls(**obj)
 
     def to_dict(self):
@@ -15331,7 +15331,7 @@ class RichBlockCollage(RichBlock):
         if 'page_blocks' in obj:
             obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15354,7 +15354,7 @@ class RichBlockSlideshow(RichBlock):
         if 'page_blocks' in obj:
             obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15380,7 +15380,7 @@ class RichBlockTable(RichBlock):
         if 'caption' in obj and isinstance(obj['caption'], dict):
             obj['caption'] = RichText.de_json(obj['caption'])
         if 'cells' in obj:
-            obj['cells'] = [[RichBlockTableCell._from_dict(c) if isinstance(c, dict) else c
+            obj['cells'] = [[RichBlock.de_json(c) if isinstance(c, dict) else c
                              for c in row] for row in obj['cells']]
         return cls(**obj)
 
@@ -15436,7 +15436,7 @@ class RichBlockMap(RichBlock):
         if 'location' in obj and isinstance(obj['location'], dict):
             obj['location'] = Location.de_json(obj['location'])
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15464,7 +15464,7 @@ class RichBlockAnimation(RichBlock):
         if 'animation' in obj and isinstance(obj['animation'], dict):
             obj['animation'] = Animation.de_json(obj['animation'])
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15488,7 +15488,7 @@ class RichBlockAudio(RichBlock):
         if 'audio' in obj and isinstance(obj['audio'], dict):
             obj['audio'] = Audio.de_json(obj['audio'])
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15514,7 +15514,7 @@ class RichBlockPhoto(RichBlock):
         if 'photo' in obj:
             obj['photo'] = [PhotoSize.de_json(p) if isinstance(p, dict) else p for p in obj['photo']]
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15542,7 +15542,7 @@ class RichBlockVideo(RichBlock):
         if 'video' in obj and isinstance(obj['video'], dict):
             obj['video'] = Video.de_json(obj['video'])
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15567,7 +15567,7 @@ class RichBlockVoiceNote(RichBlock):
         if 'voice_note' in obj and isinstance(obj['voice_note'], dict):
             obj['voice_note'] = Voice.de_json(obj['voice_note'])
         if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+            obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
