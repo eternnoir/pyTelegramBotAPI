@@ -403,13 +403,14 @@ class ChatJoinRequest(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
 
-    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, **kwargs):
+    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, query_id=None, **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
         self.date: str = date
         self.bio: Optional[str] = bio
         self.invite_link: Optional[ChatInviteLink] = invite_link
         self.user_chat_id: int = user_chat_id
+        self.query_id: Optional[str] = query_id
 
 
 class WebhookInfo(JsonDeserializable):
@@ -547,7 +548,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
                  has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None,
-                 supports_guest_queries=None, **kwargs):
+                 supports_guest_queries=None, supports_join_request_queries=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -565,6 +566,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.allows_users_to_create_topics: Optional[bool] = allows_users_to_create_topics
         self.can_manage_bots: Optional[bool] = can_manage_bots
         self.supports_guest_queries: Optional[bool] = supports_guest_queries
+        self.supports_join_request_queries: Optional[bool] = supports_join_request_queries
 
     @property
     def full_name(self) -> str:
@@ -596,7 +598,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'has_topics_enabled': self.has_topics_enabled,
                 'allows_users_to_create_topics': self.allows_users_to_create_topics,
                 'can_manage_bots': self.can_manage_bots,
-                'supports_guest_queries': self.supports_guest_queries
+                'supports_guest_queries': self.supports_guest_queries,
+                'supports_join_request_queries': self.supports_join_request_queries
                 }
 
 
@@ -824,6 +827,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['unique_gift_colors'] = UniqueGiftColors.de_json(obj['unique_gift_colors'])
         if 'first_profile_audio' in obj:
             obj['first_profile_audio'] = Audio.de_json(obj['first_profile_audio'])
+        if 'guard_bot' in obj:
+            obj['guard_bot'] = User.de_json(obj['guard_bot'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -841,7 +846,7 @@ class ChatFullInfo(JsonDeserializable):
                 business_opening_hours=None, personal_chat=None, birthdate=None,
                 can_send_paid_media=None,
                 accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
-                unique_gift_colors=None, first_profile_audio=None, **kwargs):
+                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -893,6 +898,7 @@ class ChatFullInfo(JsonDeserializable):
         self.paid_message_star_count: Optional[int] = paid_message_star_count
         self.unique_gift_colors: Optional[UniqueGiftColors] = unique_gift_colors
         self.first_profile_audio: Optional[Audio] = first_profile_audio
+        self.guard_bot: Optional[User] = guard_bot
 
 
     @property
@@ -1673,6 +1679,8 @@ class Message(JsonDeserializable):
             opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
         if 'guest_query_id' in obj:
             opts['guest_query_id'] = obj['guest_query_id']
+        if 'rich_message' in obj:
+            opts['rich_message'] = RichMessage.de_json(obj['rich_message'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1819,6 +1827,7 @@ class Message(JsonDeserializable):
         self.guest_bot_caller_chat: Optional[Chat] = None
         self.guest_query_id: Optional[str] = None
         self.live_photo: Optional[LivePhoto] = None
+        self.rich_message: Optional['RichMessage'] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -14423,7 +14432,8 @@ class PollMedia(JsonDeserializable):
     """
     def __init__(self, animation: Optional[Animation] = None, audio: Optional[Audio] = None, document: Optional[Document] = None,
                     live_photo: Optional[LivePhoto] = None, location: Optional[Location] = None, photo: Optional[List[PhotoSize]] = None,
-                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, **kwargs):
+                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None,
+                    link: Optional['Link'] = None, **kwargs):
         self.animation: Optional[Animation] = animation
         self.audio: Optional[Audio] = audio
         self.document: Optional[Document] = document
@@ -14433,6 +14443,7 @@ class PollMedia(JsonDeserializable):
         self.sticker: Optional[Sticker] = sticker
         self.venue: Optional[Venue] = venue
         self.video: Optional[Video] = video
+        self.link: Optional['Link'] = link
 
     @classmethod
     def de_json(cls, json_string):
@@ -14456,10 +14467,12 @@ class PollMedia(JsonDeserializable):
             obj['venue'] = Venue.de_json(obj['venue'])
         if 'video' in obj:
             obj['video'] = Video.de_json(obj['video'])
+        if 'link' in obj:
+            obj['link'] = Link.de_json(obj['link'])
         return cls(**obj)
 
 # why not..
-InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
+InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo, 'InputMediaLink']
 
 InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo]
 
@@ -14543,3 +14556,1135 @@ class BotAccessSettings(JsonDeserializable):
         if 'added_users' in obj:
             obj['added_users'] = [User.de_json(user) for user in obj['added_users']]
         return cls(**obj)
+
+
+# Bot API 10.1 types
+
+class Link(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    Represents a hyperlink in poll option media.
+
+    Telegram documentation: https://core.telegram.org/bots/api#link
+
+    :param url: URL of the link
+    :type url: :obj:`str`
+
+    :param title: Optional. Title of the link
+    :type title: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`Link`
+    """
+    def __init__(self, url: str, title: Optional[str] = None, **kwargs):
+        self.url: str = url
+        self.title: Optional[str] = title
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+    def to_dict(self):
+        d = {'url': self.url}
+        if self.title:
+            d['title'] = self.title
+        return d
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class InputMediaLink(Dictionaryable, JsonSerializable):
+    """
+    Describes a link to use as poll option media.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputmedialink
+
+    :param url: URL of the link
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputMediaLink`
+    """
+    def __init__(self, url: str):
+        self.type: str = 'link'
+        self.url: str = url
+
+    def to_dict(self):
+        return {'type': self.type, 'url': self.url}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class RichText(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    Describes formatted inline text for rich messages. This is a base/factory class;
+    concrete instances are one of the RichText* subclasses.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtext
+
+    :param type: Type discriminator for the rich text element
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichText`
+    """
+    _TYPE_MAP: Dict[str, type] = {}  # populated after subclasses are defined
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        type_ = obj.get('type', '')
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        subclass = cls._TYPE_MAP.get(type_)
+        if subclass:
+            obj.pop('type', None)
+            return subclass(**obj)
+        return cls(**obj)
+
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def to_dict(self):
+        return {'type': self.type}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class RichTextBold(RichText):
+    """Bold formatted rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextbold"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('bold')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextItalic(RichText):
+    """Italic formatted rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextitalic"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('italic')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextUnderline(RichText):
+    """Underlined rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextunderline"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('underline')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextStrikethrough(RichText):
+    """Strikethrough rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextstrikethrough"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('strikethrough')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextSpoiler(RichText):
+    """Spoiler rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextspoiler"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('spoiler')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextSubscript(RichText):
+    """Subscript rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextsubscript"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('subscript')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextSuperscript(RichText):
+    """Superscript rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextsuperscript"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('superscript')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextMarked(RichText):
+    """Highlighted rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextmarked"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('marked')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextCode(RichText):
+    """Inline code rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextcode"""
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__('code')
+        self.text: RichText = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextCustomEmoji(RichText):
+    """Custom emoji rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextcustomemoji"""
+    def __init__(self, custom_emoji_id: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('custom_emoji')
+        self.custom_emoji_id: str = custom_emoji_id
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['custom_emoji_id'] = self.custom_emoji_id
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextDateTime(RichText):
+    """Date-time rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextdatetime"""
+    def __init__(self, date_time: int, **kwargs):
+        super().__init__('date_time')
+        self.date_time: int = date_time
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['date_time'] = self.date_time
+        return d
+
+
+class RichTextTextMention(RichText):
+    """Text mention rich text. Telegram documentation: https://core.telegram.org/bots/api#richtexttextmention"""
+    def __init__(self, user_id: int, text: Optional[RichText] = None, **kwargs):
+        super().__init__('text_mention')
+        self.user_id: int = user_id
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['user_id'] = self.user_id
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextMathematicalExpression(RichText):
+    """Mathematical expression rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextmathematicalexpression"""
+    def __init__(self, expression: str, **kwargs):
+        super().__init__('mathematical_expression')
+        self.expression: str = expression
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['expression'] = self.expression
+        return d
+
+
+class RichTextUrl(RichText):
+    """URL link rich text. Telegram documentation: https://core.telegram.org/bots/api#richtexturl"""
+    def __init__(self, url: str, text: Optional[RichText] = None, is_cached: bool = False, **kwargs):
+        super().__init__('url')
+        self.url: str = url
+        self.text: Optional[RichText] = text
+        self.is_cached: bool = is_cached
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['url'] = self.url
+        if self.text: d['text'] = self.text.to_dict()
+        if self.is_cached: d['is_cached'] = self.is_cached
+        return d
+
+
+class RichTextEmailAddress(RichText):
+    """Email address rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextemailaddress"""
+    def __init__(self, email_address: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('email_address')
+        self.email_address: str = email_address
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['email_address'] = self.email_address
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextPhoneNumber(RichText):
+    """Phone number rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextphonenumber"""
+    def __init__(self, phone_number: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('phone_number')
+        self.phone_number: str = phone_number
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['phone_number'] = self.phone_number
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextBankCardNumber(RichText):
+    """Bank card number rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextbankcard_number"""
+    def __init__(self, bank_card_number: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('bank_card_number')
+        self.bank_card_number: str = bank_card_number
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['bank_card_number'] = self.bank_card_number
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextMention(RichText):
+    """@mention rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextmention"""
+    def __init__(self, username: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('mention')
+        self.username: str = username
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['username'] = self.username
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextHashtag(RichText):
+    """#hashtag rich text. Telegram documentation: https://core.telegram.org/bots/api#richtexthashtag"""
+    def __init__(self, hashtag: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('hashtag')
+        self.hashtag: str = hashtag
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['hashtag'] = self.hashtag
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextCashtag(RichText):
+    """$cashtag rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextcashtag"""
+    def __init__(self, cashtag: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('cashtag')
+        self.cashtag: str = cashtag
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['cashtag'] = self.cashtag
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextBotCommand(RichText):
+    """Bot command rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextbotcommand"""
+    def __init__(self, bot_username: str, command: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('bot_command')
+        self.bot_username: str = bot_username
+        self.command: str = command
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['bot_username'] = self.bot_username
+        d['command'] = self.command
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextAnchor(RichText):
+    """Named anchor rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextanchor"""
+    def __init__(self, name: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('anchor')
+        self.name: str = name
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['name'] = self.name
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextAnchorLink(RichText):
+    """Link to named anchor rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextanchorlink"""
+    def __init__(self, anchor_name: str, url: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('anchor_link')
+        self.anchor_name: str = anchor_name
+        self.url: str = url
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['anchor_name'] = self.anchor_name
+        d['url'] = self.url
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextReference(RichText):
+    """Reference rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextreference"""
+    def __init__(self, text: Optional[RichText] = None, **kwargs):
+        super().__init__('reference')
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichTextReferenceLink(RichText):
+    """Link to reference rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextreferencelink"""
+    def __init__(self, reference_name: str, text: Optional[RichText] = None, **kwargs):
+        super().__init__('reference_link')
+        self.reference_name: str = reference_name
+        self.text: Optional[RichText] = text
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['reference_name'] = self.reference_name
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+# Populate the RichText type dispatch map
+RichText._TYPE_MAP = {
+    'bold': RichTextBold,
+    'italic': RichTextItalic,
+    'underline': RichTextUnderline,
+    'strikethrough': RichTextStrikethrough,
+    'spoiler': RichTextSpoiler,
+    'subscript': RichTextSubscript,
+    'superscript': RichTextSuperscript,
+    'marked': RichTextMarked,
+    'code': RichTextCode,
+    'custom_emoji': RichTextCustomEmoji,
+    'date_time': RichTextDateTime,
+    'text_mention': RichTextTextMention,
+    'mathematical_expression': RichTextMathematicalExpression,
+    'url': RichTextUrl,
+    'email_address': RichTextEmailAddress,
+    'phone_number': RichTextPhoneNumber,
+    'bank_card_number': RichTextBankCardNumber,
+    'mention': RichTextMention,
+    'hashtag': RichTextHashtag,
+    'cashtag': RichTextCashtag,
+    'bot_command': RichTextBotCommand,
+    'anchor': RichTextAnchor,
+    'anchor_link': RichTextAnchorLink,
+    'reference': RichTextReference,
+    'reference_link': RichTextReferenceLink,
+}
+
+
+class RichBlock(JsonDeserializable, Dictionaryable, JsonSerializable):
+    """
+    Describes a block element in a rich message. Base/factory class; concrete
+    instances are one of the RichBlock* subclasses.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblock
+
+    :param type: Type discriminator for the block element
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlock`
+    """
+    _TYPE_MAP: Dict[str, type] = {}
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        type_ = obj.get('type', '')
+        subclass = cls._TYPE_MAP.get(type_)
+        if subclass:
+            obj.pop('type', None)
+            return subclass._from_dict(obj)
+        return cls(**obj)
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        return cls(**obj)
+
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def to_dict(self):
+        return {'type': self.type}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class RichBlockCaption(RichBlock):
+    """Caption block with text and optional credit. Telegram documentation: https://core.telegram.org/bots/api#richblockcaption"""
+    def __init__(self, text: Optional[RichText] = None, credit: Optional[RichText] = None, **kwargs):
+        super().__init__('caption')
+        self.text: Optional[RichText] = text
+        self.credit: Optional[RichText] = credit
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        if 'credit' in obj and isinstance(obj['credit'], dict):
+            obj['credit'] = RichText.de_json(obj['credit'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        if self.credit: d['credit'] = self.credit.to_dict()
+        return d
+
+
+class RichBlockTableCell(RichBlock):
+    """Table cell block. Telegram documentation: https://core.telegram.org/bots/api#richblocktablecell"""
+    def __init__(self, text: Optional[RichText] = None, is_header: bool = False,
+                 colspan: int = 1, rowspan: int = 1, align: Optional[str] = None,
+                 valign: Optional[str] = None, **kwargs):
+        super().__init__('table_cell')
+        self.text: Optional[RichText] = text
+        self.is_header: bool = is_header
+        self.colspan: int = colspan
+        self.rowspan: int = rowspan
+        self.align: Optional[str] = align
+        self.valign: Optional[str] = valign
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        d['is_header'] = self.is_header
+        d['colspan'] = self.colspan
+        d['rowspan'] = self.rowspan
+        if self.align: d['align'] = self.align
+        if self.valign: d['valign'] = self.valign
+        return d
+
+
+class RichBlockListItem(RichBlock):
+    """List item block. Telegram documentation: https://core.telegram.org/bots/api#richblocklistitem"""
+    def __init__(self, label: Optional[RichText] = None, page_blocks: Optional[List['RichBlock']] = None, **kwargs):
+        super().__init__('list_item')
+        self.label: Optional[RichText] = label
+        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'label' in obj and isinstance(obj['label'], dict):
+            obj['label'] = RichText.de_json(obj['label'])
+        if 'page_blocks' in obj:
+            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.label: d['label'] = self.label.to_dict()
+        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        return d
+
+
+class RichBlockParagraph(RichBlock):
+    """Paragraph block. Telegram documentation: https://core.telegram.org/bots/api#richblockparagraph"""
+    def __init__(self, text: Optional[RichText] = None, **kwargs):
+        super().__init__('paragraph')
+        self.text: Optional[RichText] = text
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichBlockSectionHeading(RichBlock):
+    """Section heading block. Telegram documentation: https://core.telegram.org/bots/api#richblocksectionheading"""
+    def __init__(self, text: Optional[RichText] = None, level: int = 1, **kwargs):
+        super().__init__('section_heading')
+        self.text: Optional[RichText] = text
+        self.level: int = level
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        d['level'] = self.level
+        return d
+
+
+class RichBlockPreformatted(RichBlock):
+    """Preformatted text block. Telegram documentation: https://core.telegram.org/bots/api#richblockpreformatted"""
+    def __init__(self, text: Optional[RichText] = None, language: Optional[str] = None, **kwargs):
+        super().__init__('preformatted')
+        self.text: Optional[RichText] = text
+        self.language: Optional[str] = language
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        if self.language: d['language'] = self.language
+        return d
+
+
+class RichBlockFooter(RichBlock):
+    """Footer block. Telegram documentation: https://core.telegram.org/bots/api#richblockfooter"""
+    def __init__(self, text: Optional[RichText] = None, **kwargs):
+        super().__init__('footer')
+        self.text: Optional[RichText] = text
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        return d
+
+
+class RichBlockDivider(RichBlock):
+    """Horizontal divider block. Telegram documentation: https://core.telegram.org/bots/api#richblockdivider"""
+    def __init__(self, **kwargs):
+        super().__init__('divider')
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        return cls(**obj)
+
+
+class RichBlockMathematicalExpression(RichBlock):
+    """Mathematical expression block. Telegram documentation: https://core.telegram.org/bots/api#richblockmathematicalexpression"""
+    def __init__(self, expression: str, **kwargs):
+        super().__init__('mathematical_expression')
+        self.expression: str = expression
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['expression'] = self.expression
+        return d
+
+
+class RichBlockAnchor(RichBlock):
+    """Anchor block. Telegram documentation: https://core.telegram.org/bots/api#richblockanchor"""
+    def __init__(self, name: str, **kwargs):
+        super().__init__('anchor')
+        self.name: str = name
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        d['name'] = self.name
+        return d
+
+
+class RichBlockList(RichBlock):
+    """List block. Telegram documentation: https://core.telegram.org/bots/api#richblocklist"""
+    def __init__(self, items: Optional[List[RichBlockListItem]] = None, is_ordered: bool = False, **kwargs):
+        super().__init__('list')
+        self.items: Optional[List[RichBlockListItem]] = items
+        self.is_ordered: bool = is_ordered
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'items' in obj:
+            obj['items'] = [RichBlockListItem._from_dict(i) if isinstance(i, dict) else i for i in obj['items']]
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.items: d['items'] = [i.to_dict() for i in self.items]
+        d['is_ordered'] = self.is_ordered
+        return d
+
+
+class RichBlockBlockQuotation(RichBlock):
+    """Block quotation block. Telegram documentation: https://core.telegram.org/bots/api#richblockblockquotation"""
+    def __init__(self, text: Optional[RichText] = None, caption: Optional[RichText] = None, **kwargs):
+        super().__init__('block_quotation')
+        self.text: Optional[RichText] = text
+        self.caption: Optional[RichText] = caption
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichText.de_json(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        if self.caption: d['caption'] = self.caption.to_dict()
+        return d
+
+
+class RichBlockPullQuotation(RichBlock):
+    """Pull quotation block. Telegram documentation: https://core.telegram.org/bots/api#richblockpullquotation"""
+    def __init__(self, text: Optional[RichText] = None, credit: Optional[RichText] = None, **kwargs):
+        super().__init__('pull_quotation')
+        self.text: Optional[RichText] = text
+        self.credit: Optional[RichText] = credit
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'text' in obj and isinstance(obj['text'], dict):
+            obj['text'] = RichText.de_json(obj['text'])
+        if 'credit' in obj and isinstance(obj['credit'], dict):
+            obj['credit'] = RichText.de_json(obj['credit'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text.to_dict()
+        if self.credit: d['credit'] = self.credit.to_dict()
+        return d
+
+
+class RichBlockCollage(RichBlock):
+    """Collage of media block. Telegram documentation: https://core.telegram.org/bots/api#richblockcollage"""
+    def __init__(self, page_blocks: Optional[List['RichBlock']] = None,
+                 caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__('collage')
+        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'page_blocks' in obj:
+            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        if self.caption: d['caption'] = self.caption.to_dict()
+        return d
+
+
+class RichBlockSlideshow(RichBlock):
+    """Slideshow block. Telegram documentation: https://core.telegram.org/bots/api#richblockslideshow"""
+    def __init__(self, page_blocks: Optional[List['RichBlock']] = None,
+                 caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__('slideshow')
+        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'page_blocks' in obj:
+            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        if self.caption: d['caption'] = self.caption.to_dict()
+        return d
+
+
+class RichBlockTable(RichBlock):
+    """Table block. Telegram documentation: https://core.telegram.org/bots/api#richblocktable"""
+    def __init__(self, caption: Optional[RichText] = None,
+                 cells: Optional[List[List[RichBlockTableCell]]] = None,
+                 is_bordered: bool = False, is_striped: bool = False, **kwargs):
+        super().__init__('table')
+        self.caption: Optional[RichText] = caption
+        self.cells: Optional[List[List[RichBlockTableCell]]] = cells
+        self.is_bordered: bool = is_bordered
+        self.is_striped: bool = is_striped
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichText.de_json(obj['caption'])
+        if 'cells' in obj:
+            obj['cells'] = [[RichBlockTableCell._from_dict(c) if isinstance(c, dict) else c
+                             for c in row] for row in obj['cells']]
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.caption: d['caption'] = self.caption.to_dict()
+        if self.cells: d['cells'] = [[c.to_dict() for c in row] for row in self.cells]
+        d['is_bordered'] = self.is_bordered
+        d['is_striped'] = self.is_striped
+        return d
+
+
+class RichBlockDetails(RichBlock):
+    """Expandable details block. Telegram documentation: https://core.telegram.org/bots/api#richblockdetails"""
+    def __init__(self, header: Optional[RichText] = None,
+                 page_blocks: Optional[List['RichBlock']] = None,
+                 is_open: bool = False, **kwargs):
+        super().__init__('details')
+        self.header: Optional[RichText] = header
+        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+        self.is_open: bool = is_open
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'header' in obj and isinstance(obj['header'], dict):
+            obj['header'] = RichText.de_json(obj['header'])
+        if 'page_blocks' in obj:
+            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.header: d['header'] = self.header.to_dict()
+        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        d['is_open'] = self.is_open
+        return d
+
+
+class RichBlockMap(RichBlock):
+    """Map block. Telegram documentation: https://core.telegram.org/bots/api#richblockmap"""
+    def __init__(self, location: Optional[Location] = None, zoom: int = 15,
+                 width: int = 300, height: int = 200,
+                 caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__('map')
+        self.location: Optional[Location] = location
+        self.zoom: int = zoom
+        self.width: int = width
+        self.height: int = height
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'location' in obj and isinstance(obj['location'], dict):
+            obj['location'] = Location.de_json(obj['location'])
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.location: d['location'] = self.location.to_dict()
+        d['zoom'] = self.zoom
+        d['width'] = self.width
+        d['height'] = self.height
+        if self.caption: d['caption'] = self.caption.to_dict()
+        return d
+
+
+class RichBlockAnimation(RichBlock):
+    """Animation block. Telegram documentation: https://core.telegram.org/bots/api#richblockanimation"""
+    def __init__(self, animation: Optional[Animation] = None,
+                 caption: Optional[RichBlockCaption] = None,
+                 need_autoplay: bool = False, **kwargs):
+        super().__init__('animation')
+        self.animation: Optional[Animation] = animation
+        self.caption: Optional[RichBlockCaption] = caption
+        self.need_autoplay: bool = need_autoplay
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'animation' in obj and isinstance(obj['animation'], dict):
+            obj['animation'] = Animation.de_json(obj['animation'])
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.animation: d['animation'] = self.animation.to_dict()
+        if self.caption: d['caption'] = self.caption.to_dict()
+        d['need_autoplay'] = self.need_autoplay
+        return d
+
+
+class RichBlockAudio(RichBlock):
+    """Audio block. Telegram documentation: https://core.telegram.org/bots/api#richblockaudio"""
+    def __init__(self, audio: Optional[Audio] = None,
+                 caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__('audio')
+        self.audio: Optional[Audio] = audio
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'audio' in obj and isinstance(obj['audio'], dict):
+            obj['audio'] = Audio.de_json(obj['audio'])
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.audio: d['audio'] = self.audio.to_dict()
+        if self.caption: d['caption'] = self.caption.to_dict()
+        return d
+
+
+class RichBlockPhoto(RichBlock):
+    """Photo block. Telegram documentation: https://core.telegram.org/bots/api#richblockphoto"""
+    def __init__(self, photo: Optional[List[PhotoSize]] = None,
+                 caption: Optional[RichBlockCaption] = None,
+                 url: Optional[str] = None, need_check: bool = False, **kwargs):
+        super().__init__('photo')
+        self.photo: Optional[List[PhotoSize]] = photo
+        self.caption: Optional[RichBlockCaption] = caption
+        self.url: Optional[str] = url
+        self.need_check: bool = need_check
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'photo' in obj:
+            obj['photo'] = [PhotoSize.de_json(p) if isinstance(p, dict) else p for p in obj['photo']]
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.photo: d['photo'] = [p.to_dict() for p in self.photo]
+        if self.caption: d['caption'] = self.caption.to_dict()
+        if self.url: d['url'] = self.url
+        d['need_check'] = self.need_check
+        return d
+
+
+class RichBlockVideo(RichBlock):
+    """Video block. Telegram documentation: https://core.telegram.org/bots/api#richblockvideo"""
+    def __init__(self, video: Optional[Video] = None,
+                 caption: Optional[RichBlockCaption] = None,
+                 need_autoplay: bool = False, is_looped: bool = False, **kwargs):
+        super().__init__('video')
+        self.video: Optional[Video] = video
+        self.caption: Optional[RichBlockCaption] = caption
+        self.need_autoplay: bool = need_autoplay
+        self.is_looped: bool = is_looped
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'video' in obj and isinstance(obj['video'], dict):
+            obj['video'] = Video.de_json(obj['video'])
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.video: d['video'] = self.video.to_dict()
+        if self.caption: d['caption'] = self.caption.to_dict()
+        d['need_autoplay'] = self.need_autoplay
+        d['is_looped'] = self.is_looped
+        return d
+
+
+class RichBlockVoiceNote(RichBlock):
+    """Voice note block. Telegram documentation: https://core.telegram.org/bots/api#richblockvoicenote"""
+    def __init__(self, voice_note: Optional[Voice] = None,
+                 caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__('voice_note')
+        self.voice_note: Optional[Voice] = voice_note
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        if 'voice_note' in obj and isinstance(obj['voice_note'], dict):
+            obj['voice_note'] = Voice.de_json(obj['voice_note'])
+        if 'caption' in obj and isinstance(obj['caption'], dict):
+            obj['caption'] = RichBlockCaption._from_dict(obj['caption'])
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.voice_note: d['voice_note'] = self.voice_note.to_dict()
+        if self.caption: d['caption'] = self.caption.to_dict()
+        return d
+
+
+class RichBlockThinking(RichBlock):
+    """Thinking placeholder block. Telegram documentation: https://core.telegram.org/bots/api#richblockthinking"""
+    def __init__(self, text: Optional[str] = None, **kwargs):
+        super().__init__('thinking')
+        self.text: Optional[str] = text
+
+    @classmethod
+    def _from_dict(cls, obj: dict):
+        return cls(**obj)
+
+    def to_dict(self):
+        d = super().to_dict()
+        if self.text: d['text'] = self.text
+        return d
+
+
+# Populate the RichBlock type dispatch map
+RichBlock._TYPE_MAP = {
+    'caption': RichBlockCaption,
+    'table_cell': RichBlockTableCell,
+    'list_item': RichBlockListItem,
+    'paragraph': RichBlockParagraph,
+    'section_heading': RichBlockSectionHeading,
+    'preformatted': RichBlockPreformatted,
+    'footer': RichBlockFooter,
+    'divider': RichBlockDivider,
+    'mathematical_expression': RichBlockMathematicalExpression,
+    'anchor': RichBlockAnchor,
+    'list': RichBlockList,
+    'block_quotation': RichBlockBlockQuotation,
+    'pull_quotation': RichBlockPullQuotation,
+    'collage': RichBlockCollage,
+    'slideshow': RichBlockSlideshow,
+    'table': RichBlockTable,
+    'details': RichBlockDetails,
+    'map': RichBlockMap,
+    'animation': RichBlockAnimation,
+    'audio': RichBlockAudio,
+    'photo': RichBlockPhoto,
+    'video': RichBlockVideo,
+    'voice_note': RichBlockVoiceNote,
+    'thinking': RichBlockThinking,
+}
+
+
+class RichMessage(JsonDeserializable):
+    """
+    Represents a complete rich formatted message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richmessage
+
+    :param page_blocks: List of block elements composing the message
+    :type page_blocks: :obj:`list` of :class:`RichBlock`
+
+    :return: Instance of the class
+    :rtype: :class:`RichMessage`
+    """
+    def __init__(self, page_blocks: Optional[List[RichBlock]] = None, **kwargs):
+        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'page_blocks' in obj:
+            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        return cls(**obj)
+
+
+class InputRichMessage(Dictionaryable, JsonSerializable):
+    """
+    Describes a rich message to transmit via sendRichMessage.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichmessage
+
+    :param page_blocks: List of block elements composing the message
+    :type page_blocks: :obj:`list` of :class:`RichBlock`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichMessage`
+    """
+    def __init__(self, page_blocks: List[RichBlock]):
+        self.page_blocks: List[RichBlock] = page_blocks
+
+    def to_dict(self):
+        return {'page_blocks': [b.to_dict() for b in self.page_blocks]}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
+class InputRichMessageContent(Dictionaryable, JsonSerializable):
+    """
+    Allows rich content in inline query results.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichmessagecontent
+
+    :param rich_message: The rich message content
+    :type rich_message: :class:`InputRichMessage`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichMessageContent`
+    """
+    def __init__(self, rich_message: InputRichMessage):
+        self.rich_message: InputRichMessage = rich_message
+
+    def to_dict(self):
+        return {'rich_message': self.rich_message.to_dict()}
+
+    def to_json(self):
+        return json.dumps(self.to_dict())

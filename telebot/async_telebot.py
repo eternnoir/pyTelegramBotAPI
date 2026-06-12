@@ -7260,7 +7260,8 @@ class AsyncTeleBot:
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             link_preview_options: Optional[types.LinkPreviewOptions]=None,
             business_connection_id: Optional[str]=None,
-            timeout: Optional[int]=None) -> Union[types.Message, bool]:
+            timeout: Optional[int]=None,
+            rich_message: Optional[types.InputRichMessage]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
@@ -7325,7 +7326,7 @@ class AsyncTeleBot:
 
         result = await asyncio_helper.edit_message_text(
             self.token, text, chat_id, message_id, inline_message_id, parse_mode, entities, reply_markup,
-            link_preview_options, business_connection_id, timeout)
+            link_preview_options, business_connection_id, timeout, rich_message)
         if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
         return types.Message.de_json(result)
@@ -8474,6 +8475,108 @@ class AsyncTeleBot:
         :rtype: :obj:`types.SentGuestMessage`
         """
         return types.SentGuestMessage.de_json(await asyncio_helper.answer_guest_query(self.token, guest_query_id, result))
+
+
+    async def send_rich_message(
+            self, chat_id: Union[int, str],
+            rich_message: types.InputRichMessage,
+            message_thread_id: Optional[int]=None,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            business_connection_id: Optional[str]=None) -> types.Message:
+        """
+        Use this method to send a rich formatted message. On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendrichmessage
+
+        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param rich_message: A JSON-serialized object for the rich message content
+        :type rich_message: :class:`telebot.types.InputRichMessage`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        return types.Message.de_json(
+            await asyncio_helper.send_rich_message(
+                self.token, chat_id, rich_message,
+                message_thread_id=message_thread_id,
+                reply_markup=reply_markup,
+                disable_notification=disable_notification,
+                protect_content=protect_content,
+                reply_parameters=reply_parameters,
+                business_connection_id=business_connection_id))
+
+
+    async def send_rich_message_draft(
+            self, chat_id: int,
+            draft_id: int,
+            rich_message: types.InputRichMessage,
+            message_thread_id: Optional[int]=None) -> bool:
+        """
+        Use this method to stream a partial rich message to a user while the message is being generated.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendrichmessagedraft
+
+        :param chat_id: Unique identifier for the target private chat
+        :type chat_id: :obj:`int`
+
+        :param draft_id: Unique identifier of the message draft; must be non-zero
+        :type draft_id: :obj:`int`
+
+        :param rich_message: A JSON-serialized object for the rich message draft content
+        :type rich_message: :class:`telebot.types.InputRichMessage`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.send_rich_message_draft(
+            self.token, chat_id, draft_id, rich_message, message_thread_id=message_thread_id)
+
+
+    async def answer_chat_join_request_query(
+            self, query_id: str,
+            result: types.InlineQueryResultBase) -> bool:
+        """
+        Use this method to handle a join request query with a custom response. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerchatjoinrequestquery
+
+        :param query_id: Unique identifier of the join request query
+        :type query_id: :obj:`str`
+
+        :param result: A JSON-serialized object describing the response to send
+        :type result: :class:`telebot.types.InlineQueryResultBase`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.answer_chat_join_request_query(self.token, query_id, result)
+
+
+    async def send_chat_join_request_web_app(
+            self, query_id: str,
+            web_app_url: str) -> bool:
+        """
+        Use this method to trigger a Web App in response to a join request query. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendchatjoinrequestwebapp
+
+        :param query_id: Unique identifier of the join request query
+        :type query_id: :obj:`str`
+
+        :param web_app_url: URL of the Web App to be opened
+        :type web_app_url: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.send_chat_join_request_web_app(self.token, query_id, web_app_url)
+
 
     async def get_user_chat_boosts(self, chat_id: Union[int, str], user_id: int) -> types.UserChatBoosts:
         """
