@@ -15116,23 +15116,29 @@ class RichBlockTableCell(RichBlock):
 
 class RichBlockListItem(RichBlock):
     """List item block. Telegram documentation: https://core.telegram.org/bots/api#richblocklistitem"""
-    def __init__(self, label: Optional[RichText] = None, page_blocks: Optional[List['RichBlock']] = None, **kwargs):
+    def __init__(self, label: Optional[str] = None, blocks: Optional[List['RichBlock']] = None,
+                 has_checkbox: Optional[bool] = None, is_checked: Optional[bool] = None,
+                 value: Optional[int] = None, **kwargs):
         super().__init__('list_item')
-        self.label: Optional[RichText] = label
-        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+        self.label: Optional[str] = label
+        self.blocks: Optional[List[RichBlock]] = blocks
+        self.has_checkbox: Optional[bool] = has_checkbox
+        self.is_checked: Optional[bool] = is_checked
+        self.value: Optional[int] = value
 
     @classmethod
     def _from_dict(cls, obj: dict):
-        if 'label' in obj and isinstance(obj['label'], dict):
-            obj['label'] = RichText.de_json(obj['label'])
-        if 'page_blocks' in obj:
-            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'blocks' in obj:
+            obj['blocks'] = [RichBlock.de_json(b) for b in obj['blocks']]
         return cls(**obj)
 
     def to_dict(self):
         d = super().to_dict()
-        if self.label: d['label'] = self.label.to_dict()
-        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        if self.label is not None: d['label'] = self.label
+        if self.blocks: d['blocks'] = [b.to_dict() for b in self.blocks]
+        if self.has_checkbox is not None: d['has_checkbox'] = self.has_checkbox
+        if self.is_checked is not None: d['is_checked'] = self.is_checked
+        if self.value is not None: d['value'] = self.value
         return d
 
 
@@ -15156,10 +15162,10 @@ class RichBlockParagraph(RichBlock):
 
 class RichBlockSectionHeading(RichBlock):
     """Section heading block. Telegram documentation: https://core.telegram.org/bots/api#richblocksectionheading"""
-    def __init__(self, text: Optional[RichText] = None, level: int = 1, **kwargs):
-        super().__init__('section_heading')
+    def __init__(self, text: Optional[RichText] = None, size: int = 1, **kwargs):
+        super().__init__('heading')
         self.text: Optional[RichText] = text
-        self.level: int = level
+        self.size: int = size
 
     @classmethod
     def _from_dict(cls, obj: dict):
@@ -15170,14 +15176,14 @@ class RichBlockSectionHeading(RichBlock):
     def to_dict(self):
         d = super().to_dict()
         if self.text: d['text'] = self.text.to_dict()
-        d['level'] = self.level
+        d['size'] = self.size
         return d
 
 
 class RichBlockPreformatted(RichBlock):
     """Preformatted text block. Telegram documentation: https://core.telegram.org/bots/api#richblockpreformatted"""
     def __init__(self, text: Optional[RichText] = None, language: Optional[str] = None, **kwargs):
-        super().__init__('preformatted')
+        super().__init__('pre')
         self.text: Optional[RichText] = text
         self.language: Optional[str] = language
 
@@ -15256,10 +15262,9 @@ class RichBlockAnchor(RichBlock):
 
 class RichBlockList(RichBlock):
     """List block. Telegram documentation: https://core.telegram.org/bots/api#richblocklist"""
-    def __init__(self, items: Optional[List[RichBlockListItem]] = None, is_ordered: bool = False, **kwargs):
+    def __init__(self, items: Optional[List[RichBlockListItem]] = None, **kwargs):
         super().__init__('list')
         self.items: Optional[List[RichBlockListItem]] = items
-        self.is_ordered: bool = is_ordered
 
     @classmethod
     def _from_dict(cls, obj: dict):
@@ -15270,36 +15275,35 @@ class RichBlockList(RichBlock):
     def to_dict(self):
         d = super().to_dict()
         if self.items: d['items'] = [i.to_dict() for i in self.items]
-        d['is_ordered'] = self.is_ordered
         return d
 
 
 class RichBlockBlockQuotation(RichBlock):
     """Block quotation block. Telegram documentation: https://core.telegram.org/bots/api#richblockblockquotation"""
-    def __init__(self, text: Optional[RichText] = None, caption: Optional[RichText] = None, **kwargs):
-        super().__init__('block_quotation')
-        self.text: Optional[RichText] = text
-        self.caption: Optional[RichText] = caption
+    def __init__(self, blocks: Optional[List['RichBlock']] = None, credit: Optional[RichText] = None, **kwargs):
+        super().__init__('blockquote')
+        self.blocks: Optional[List[RichBlock]] = blocks
+        self.credit: Optional[RichText] = credit
 
     @classmethod
     def _from_dict(cls, obj: dict):
-        if 'text' in obj and isinstance(obj['text'], dict):
-            obj['text'] = RichText.de_json(obj['text'])
-        if 'caption' in obj and isinstance(obj['caption'], dict):
-            obj['caption'] = RichText.de_json(obj['caption'])
+        if 'blocks' in obj:
+            obj['blocks'] = [RichBlock.de_json(b) for b in obj['blocks']]
+        if 'credit' in obj and isinstance(obj['credit'], dict):
+            obj['credit'] = RichText.de_json(obj['credit'])
         return cls(**obj)
 
     def to_dict(self):
         d = super().to_dict()
-        if self.text: d['text'] = self.text.to_dict()
-        if self.caption: d['caption'] = self.caption.to_dict()
+        if self.blocks: d['blocks'] = [b.to_dict() for b in self.blocks]
+        if self.credit: d['credit'] = self.credit.to_dict()
         return d
 
 
 class RichBlockPullQuotation(RichBlock):
     """Pull quotation block. Telegram documentation: https://core.telegram.org/bots/api#richblockpullquotation"""
     def __init__(self, text: Optional[RichText] = None, credit: Optional[RichText] = None, **kwargs):
-        super().__init__('pull_quotation')
+        super().__init__('pullquote')
         self.text: Optional[RichText] = text
         self.credit: Optional[RichText] = credit
 
@@ -15320,46 +15324,46 @@ class RichBlockPullQuotation(RichBlock):
 
 class RichBlockCollage(RichBlock):
     """Collage of media block. Telegram documentation: https://core.telegram.org/bots/api#richblockcollage"""
-    def __init__(self, page_blocks: Optional[List['RichBlock']] = None,
+    def __init__(self, blocks: Optional[List['RichBlock']] = None,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__('collage')
-        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+        self.blocks: Optional[List[RichBlock]] = blocks
         self.caption: Optional[RichBlockCaption] = caption
 
     @classmethod
     def _from_dict(cls, obj: dict):
-        if 'page_blocks' in obj:
-            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'blocks' in obj:
+            obj['blocks'] = [RichBlock.de_json(b) for b in obj['blocks']]
         if 'caption' in obj and isinstance(obj['caption'], dict):
             obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
         d = super().to_dict()
-        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        if self.blocks: d['blocks'] = [b.to_dict() for b in self.blocks]
         if self.caption: d['caption'] = self.caption.to_dict()
         return d
 
 
 class RichBlockSlideshow(RichBlock):
     """Slideshow block. Telegram documentation: https://core.telegram.org/bots/api#richblockslideshow"""
-    def __init__(self, page_blocks: Optional[List['RichBlock']] = None,
+    def __init__(self, blocks: Optional[List['RichBlock']] = None,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__('slideshow')
-        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+        self.blocks: Optional[List[RichBlock]] = blocks
         self.caption: Optional[RichBlockCaption] = caption
 
     @classmethod
     def _from_dict(cls, obj: dict):
-        if 'page_blocks' in obj:
-            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'blocks' in obj:
+            obj['blocks'] = [RichBlock.de_json(b) for b in obj['blocks']]
         if 'caption' in obj and isinstance(obj['caption'], dict):
             obj['caption'] = RichBlock.de_json(obj['caption'])
         return cls(**obj)
 
     def to_dict(self):
         d = super().to_dict()
-        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
+        if self.blocks: d['blocks'] = [b.to_dict() for b in self.blocks]
         if self.caption: d['caption'] = self.caption.to_dict()
         return d
 
@@ -15395,27 +15399,27 @@ class RichBlockTable(RichBlock):
 
 class RichBlockDetails(RichBlock):
     """Expandable details block. Telegram documentation: https://core.telegram.org/bots/api#richblockdetails"""
-    def __init__(self, header: Optional[RichText] = None,
-                 page_blocks: Optional[List['RichBlock']] = None,
-                 is_open: bool = False, **kwargs):
+    def __init__(self, summary: Optional[RichText] = None,
+                 blocks: Optional[List['RichBlock']] = None,
+                 is_open: Optional[bool] = None, **kwargs):
         super().__init__('details')
-        self.header: Optional[RichText] = header
-        self.page_blocks: Optional[List[RichBlock]] = page_blocks
-        self.is_open: bool = is_open
+        self.summary: Optional[RichText] = summary
+        self.blocks: Optional[List[RichBlock]] = blocks
+        self.is_open: Optional[bool] = is_open
 
     @classmethod
     def _from_dict(cls, obj: dict):
-        if 'header' in obj and isinstance(obj['header'], dict):
-            obj['header'] = RichText.de_json(obj['header'])
-        if 'page_blocks' in obj:
-            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'summary' in obj and isinstance(obj['summary'], dict):
+            obj['summary'] = RichText.de_json(obj['summary'])
+        if 'blocks' in obj:
+            obj['blocks'] = [RichBlock.de_json(b) for b in obj['blocks']]
         return cls(**obj)
 
     def to_dict(self):
         d = super().to_dict()
-        if self.header: d['header'] = self.header.to_dict()
-        if self.page_blocks: d['page_blocks'] = [b.to_dict() for b in self.page_blocks]
-        d['is_open'] = self.is_open
+        if self.summary: d['summary'] = self.summary.to_dict()
+        if self.blocks: d['blocks'] = [b.to_dict() for b in self.blocks]
+        if self.is_open is not None: d['is_open'] = self.is_open
         return d
 
 
@@ -15599,15 +15603,15 @@ RichBlock._TYPE_MAP = {
     'table_cell': RichBlockTableCell,
     'list_item': RichBlockListItem,
     'paragraph': RichBlockParagraph,
-    'section_heading': RichBlockSectionHeading,
-    'preformatted': RichBlockPreformatted,
+    'heading': RichBlockSectionHeading,
+    'pre': RichBlockPreformatted,
     'footer': RichBlockFooter,
     'divider': RichBlockDivider,
     'mathematical_expression': RichBlockMathematicalExpression,
     'anchor': RichBlockAnchor,
     'list': RichBlockList,
-    'block_quotation': RichBlockBlockQuotation,
-    'pull_quotation': RichBlockPullQuotation,
+    'blockquote': RichBlockBlockQuotation,
+    'pullquote': RichBlockPullQuotation,
     'collage': RichBlockCollage,
     'slideshow': RichBlockSlideshow,
     'table': RichBlockTable,
