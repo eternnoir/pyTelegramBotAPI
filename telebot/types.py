@@ -15628,41 +15628,65 @@ class RichMessage(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#richmessage
 
-    :param page_blocks: List of block elements composing the message
-    :type page_blocks: :obj:`list` of :class:`RichBlock`
+    :param blocks: Content of the message
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param is_rtl: Optional. True, if the rich message must be shown right-to-left
+    :type is_rtl: :obj:`bool`
 
     :return: Instance of the class
     :rtype: :class:`RichMessage`
     """
-    def __init__(self, page_blocks: Optional[List[RichBlock]] = None, **kwargs):
-        self.page_blocks: Optional[List[RichBlock]] = page_blocks
+    def __init__(self, blocks: Optional[List[RichBlock]] = None, is_rtl: Optional[bool] = None, **kwargs):
+        self.blocks: Optional[List[RichBlock]] = blocks
+        self.is_rtl: Optional[bool] = is_rtl
 
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        if 'page_blocks' in obj:
-            obj['page_blocks'] = [RichBlock.de_json(b) for b in obj['page_blocks']]
+        if 'blocks' in obj:
+            obj['blocks'] = [RichBlock.de_json(b) for b in obj['blocks']]
         return cls(**obj)
 
 
 class InputRichMessage(Dictionaryable, JsonSerializable):
     """
-    Describes a rich message to transmit via sendRichMessage.
+    Describes a rich message to be sent. Exactly one of the fields html or markdown must be used.
 
     Telegram documentation: https://core.telegram.org/bots/api#inputrichmessage
 
-    :param page_blocks: List of block elements composing the message
-    :type page_blocks: :obj:`list` of :class:`RichBlock`
+    :param html: Optional. Content of the rich message to send described using HTML formatting
+    :type html: :obj:`str`
+
+    :param markdown: Optional. Content of the rich message to send described using Markdown formatting
+    :type markdown: :obj:`str`
+
+    :param is_rtl: Optional. Pass True if the rich message must be shown right-to-left
+    :type is_rtl: :obj:`bool`
+
+    :param skip_entity_detection: Optional. Pass True to skip automatic detection of entities
+        (e.g., URLs, email addresses, username mentions, hashtags, cashtags, bot commands,
+        or phone numbers) in the text
+    :type skip_entity_detection: :obj:`bool`
 
     :return: Instance of the class
     :rtype: :class:`InputRichMessage`
     """
-    def __init__(self, page_blocks: List[RichBlock]):
-        self.page_blocks: List[RichBlock] = page_blocks
+    def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None,
+                 is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None):
+        self.html: Optional[str] = html
+        self.markdown: Optional[str] = markdown
+        self.is_rtl: Optional[bool] = is_rtl
+        self.skip_entity_detection: Optional[bool] = skip_entity_detection
 
     def to_dict(self):
-        return {'page_blocks': [b.to_dict() for b in self.page_blocks]}
+        d = {}
+        if self.html is not None: d['html'] = self.html
+        if self.markdown is not None: d['markdown'] = self.markdown
+        if self.is_rtl is not None: d['is_rtl'] = self.is_rtl
+        if self.skip_entity_detection is not None: d['skip_entity_detection'] = self.skip_entity_detection
+        return d
 
     def to_json(self):
         return json.dumps(self.to_dict())
