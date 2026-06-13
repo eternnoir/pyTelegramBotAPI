@@ -14659,7 +14659,17 @@ class RichText(JsonDeserializable, Dictionaryable, JsonSerializable):
 
 
 class RichTextBold(RichText):
-    """Bold formatted rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextbold"""
+    """
+    Bold formatted rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextbold
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextBold`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('bold')
         self.text: RichText = text
@@ -14671,7 +14681,17 @@ class RichTextBold(RichText):
 
 
 class RichTextItalic(RichText):
-    """Italic formatted rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextitalic"""
+    """
+    Italic formatted rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextitalic
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextItalic`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('italic')
         self.text: RichText = text
@@ -14683,7 +14703,17 @@ class RichTextItalic(RichText):
 
 
 class RichTextUnderline(RichText):
-    """Underlined rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextunderline"""
+    """
+    Underlined rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextunderline
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextUnderline`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('underline')
         self.text: RichText = text
@@ -14695,7 +14725,17 @@ class RichTextUnderline(RichText):
 
 
 class RichTextStrikethrough(RichText):
-    """Strikethrough rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextstrikethrough"""
+    """
+    Strikethrough rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextstrikethrough
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextStrikethrough`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('strikethrough')
         self.text: RichText = text
@@ -14707,7 +14747,17 @@ class RichTextStrikethrough(RichText):
 
 
 class RichTextSpoiler(RichText):
-    """Spoiler rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextspoiler"""
+    """
+    Spoiler rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextspoiler
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextSpoiler`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('spoiler')
         self.text: RichText = text
@@ -14719,7 +14769,17 @@ class RichTextSpoiler(RichText):
 
 
 class RichTextSubscript(RichText):
-    """Subscript rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextsubscript"""
+    """
+    Subscript rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextsubscript
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextSubscript`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('subscript')
         self.text: RichText = text
@@ -14731,7 +14791,17 @@ class RichTextSubscript(RichText):
 
 
 class RichTextSuperscript(RichText):
-    """Superscript rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextsuperscript"""
+    """
+    Superscript rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextsuperscript
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextSuperscript`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('superscript')
         self.text: RichText = text
@@ -14743,7 +14813,17 @@ class RichTextSuperscript(RichText):
 
 
 class RichTextMarked(RichText):
-    """Highlighted rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextmarked"""
+    """
+    Highlighted (marked) rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextmarked
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextMarked`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('marked')
         self.text: RichText = text
@@ -14755,7 +14835,17 @@ class RichTextMarked(RichText):
 
 
 class RichTextCode(RichText):
-    """Inline code rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextcode"""
+    """
+    Inline code rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextcode
+
+    :param text: The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextCode`
+    """
     def __init__(self, text: RichText, **kwargs):
         super().__init__('code')
         self.text: RichText = text
@@ -14767,7 +14857,20 @@ class RichTextCode(RichText):
 
 
 class RichTextCustomEmoji(RichText):
-    """Custom emoji rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextcustomemoji"""
+    """
+    Custom emoji rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextcustomemoji
+
+    :param custom_emoji_id: Unique identifier of the custom emoji
+    :type custom_emoji_id: :obj:`str`
+
+    :param text: Optional. The text shown instead of the emoji if it can't be displayed
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextCustomEmoji`
+    """
     def __init__(self, custom_emoji_id: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('custom_emoji')
         self.custom_emoji_id: str = custom_emoji_id
@@ -14781,7 +14884,17 @@ class RichTextCustomEmoji(RichText):
 
 
 class RichTextDateTime(RichText):
-    """Date-time rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextdatetime"""
+    """
+    Date-time rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextdatetime
+
+    :param date_time: Point in time (Unix timestamp) to be formatted
+    :type date_time: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextDateTime`
+    """
     def __init__(self, date_time: int, **kwargs):
         super().__init__('date_time')
         self.date_time: int = date_time
@@ -14793,7 +14906,20 @@ class RichTextDateTime(RichText):
 
 
 class RichTextTextMention(RichText):
-    """Text mention rich text. Telegram documentation: https://core.telegram.org/bots/api#richtexttextmention"""
+    """
+    Text mention rich text (mention of a user without a username).
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexttextmention
+
+    :param user_id: Unique identifier of the mentioned user
+    :type user_id: :obj:`int`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextTextMention`
+    """
     def __init__(self, user_id: int, text: Optional[RichText] = None, **kwargs):
         super().__init__('text_mention')
         self.user_id: int = user_id
@@ -14807,7 +14933,17 @@ class RichTextTextMention(RichText):
 
 
 class RichTextMathematicalExpression(RichText):
-    """Mathematical expression rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextmathematicalexpression"""
+    """
+    Mathematical expression rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextmathematicalexpression
+
+    :param expression: The mathematical expression
+    :type expression: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextMathematicalExpression`
+    """
     def __init__(self, expression: str, **kwargs):
         super().__init__('mathematical_expression')
         self.expression: str = expression
@@ -14819,7 +14955,23 @@ class RichTextMathematicalExpression(RichText):
 
 
 class RichTextUrl(RichText):
-    """URL link rich text. Telegram documentation: https://core.telegram.org/bots/api#richtexturl"""
+    """
+    URL link rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexturl
+
+    :param url: The URL to open
+    :type url: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :param is_cached: Optional. True, if the link points to cached content
+    :type is_cached: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextUrl`
+    """
     def __init__(self, url: str, text: Optional[RichText] = None, is_cached: bool = False, **kwargs):
         super().__init__('url')
         self.url: str = url
@@ -14835,7 +14987,20 @@ class RichTextUrl(RichText):
 
 
 class RichTextEmailAddress(RichText):
-    """Email address rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextemailaddress"""
+    """
+    Email address rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextemailaddress
+
+    :param email_address: The email address
+    :type email_address: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextEmailAddress`
+    """
     def __init__(self, email_address: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('email_address')
         self.email_address: str = email_address
@@ -14849,7 +15014,20 @@ class RichTextEmailAddress(RichText):
 
 
 class RichTextPhoneNumber(RichText):
-    """Phone number rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextphonenumber"""
+    """
+    Phone number rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextphonenumber
+
+    :param phone_number: The phone number
+    :type phone_number: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextPhoneNumber`
+    """
     def __init__(self, phone_number: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('phone_number')
         self.phone_number: str = phone_number
@@ -14863,7 +15041,20 @@ class RichTextPhoneNumber(RichText):
 
 
 class RichTextBankCardNumber(RichText):
-    """Bank card number rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextbankcard_number"""
+    """
+    Bank card number rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextbankcardnumber
+
+    :param bank_card_number: The bank card number
+    :type bank_card_number: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextBankCardNumber`
+    """
     def __init__(self, bank_card_number: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('bank_card_number')
         self.bank_card_number: str = bank_card_number
@@ -14877,7 +15068,20 @@ class RichTextBankCardNumber(RichText):
 
 
 class RichTextMention(RichText):
-    """@mention rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextmention"""
+    """
+    Username mention rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextmention
+
+    :param username: The mentioned username (without the leading @)
+    :type username: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextMention`
+    """
     def __init__(self, username: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('mention')
         self.username: str = username
@@ -14891,7 +15095,20 @@ class RichTextMention(RichText):
 
 
 class RichTextHashtag(RichText):
-    """#hashtag rich text. Telegram documentation: https://core.telegram.org/bots/api#richtexthashtag"""
+    """
+    Hashtag rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexthashtag
+
+    :param hashtag: The hashtag (without the leading #)
+    :type hashtag: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextHashtag`
+    """
     def __init__(self, hashtag: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('hashtag')
         self.hashtag: str = hashtag
@@ -14905,7 +15122,20 @@ class RichTextHashtag(RichText):
 
 
 class RichTextCashtag(RichText):
-    """$cashtag rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextcashtag"""
+    """
+    Cashtag rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextcashtag
+
+    :param cashtag: The cashtag (without the leading $)
+    :type cashtag: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextCashtag`
+    """
     def __init__(self, cashtag: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('cashtag')
         self.cashtag: str = cashtag
@@ -14919,7 +15149,23 @@ class RichTextCashtag(RichText):
 
 
 class RichTextBotCommand(RichText):
-    """Bot command rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextbotcommand"""
+    """
+    Bot command rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextbotcommand
+
+    :param bot_username: Username of the bot the command belongs to
+    :type bot_username: :obj:`str`
+
+    :param command: The command (without the leading /)
+    :type command: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextBotCommand`
+    """
     def __init__(self, bot_username: str, command: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('bot_command')
         self.bot_username: str = bot_username
@@ -14935,7 +15181,20 @@ class RichTextBotCommand(RichText):
 
 
 class RichTextAnchor(RichText):
-    """Named anchor rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextanchor"""
+    """
+    Named anchor rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextanchor
+
+    :param name: Name of the anchor
+    :type name: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextAnchor`
+    """
     def __init__(self, name: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('anchor')
         self.name: str = name
@@ -14949,7 +15208,23 @@ class RichTextAnchor(RichText):
 
 
 class RichTextAnchorLink(RichText):
-    """Link to named anchor rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextanchorlink"""
+    """
+    Link to a named anchor rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextanchorlink
+
+    :param anchor_name: Name of the anchor to link to
+    :type anchor_name: :obj:`str`
+
+    :param url: The URL to open
+    :type url: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextAnchorLink`
+    """
     def __init__(self, anchor_name: str, url: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('anchor_link')
         self.anchor_name: str = anchor_name
@@ -14965,7 +15240,17 @@ class RichTextAnchorLink(RichText):
 
 
 class RichTextReference(RichText):
-    """Reference rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextreference"""
+    """
+    Reference rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextreference
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextReference`
+    """
     def __init__(self, text: Optional[RichText] = None, **kwargs):
         super().__init__('reference')
         self.text: Optional[RichText] = text
@@ -14977,7 +15262,20 @@ class RichTextReference(RichText):
 
 
 class RichTextReferenceLink(RichText):
-    """Link to reference rich text. Telegram documentation: https://core.telegram.org/bots/api#richtextreferencelink"""
+    """
+    Link to a reference rich text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextreferencelink
+
+    :param reference_name: Name of the reference to link to
+    :type reference_name: :obj:`str`
+
+    :param text: Optional. The text to format
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextReferenceLink`
+    """
     def __init__(self, reference_name: str, text: Optional[RichText] = None, **kwargs):
         super().__init__('reference_link')
         self.reference_name: str = reference_name
@@ -15063,7 +15361,20 @@ class RichBlock(JsonDeserializable, Dictionaryable, JsonSerializable):
 
 
 class RichBlockCaption(RichBlock):
-    """Caption block with text and optional credit. Telegram documentation: https://core.telegram.org/bots/api#richblockcaption"""
+    """
+    Caption block with text and optional credit.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockcaption
+
+    :param text: Optional. Text of the caption
+    :type text: :class:`RichText`
+
+    :param credit: Optional. Credit shown alongside the caption
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockCaption`
+    """
     def __init__(self, text: Optional[RichText] = None, credit: Optional[RichText] = None, **kwargs):
         super().__init__('caption')
         self.text: Optional[RichText] = text
@@ -15085,7 +15396,32 @@ class RichBlockCaption(RichBlock):
 
 
 class RichBlockTableCell(RichBlock):
-    """Table cell block. Telegram documentation: https://core.telegram.org/bots/api#richblocktablecell"""
+    """
+    Table cell block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocktablecell
+
+    :param text: Optional. Content of the cell
+    :type text: :class:`RichText`
+
+    :param is_header: Optional. True, if the cell is a header cell
+    :type is_header: :obj:`bool`
+
+    :param colspan: Optional. Number of columns the cell spans
+    :type colspan: :obj:`int`
+
+    :param rowspan: Optional. Number of rows the cell spans
+    :type rowspan: :obj:`int`
+
+    :param align: Optional. Horizontal alignment of the cell content
+    :type align: :obj:`str`
+
+    :param valign: Optional. Vertical alignment of the cell content
+    :type valign: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockTableCell`
+    """
     def __init__(self, text: Optional[RichText] = None, is_header: bool = False,
                  colspan: int = 1, rowspan: int = 1, align: Optional[str] = None,
                  valign: Optional[str] = None, **kwargs):
@@ -15115,7 +15451,29 @@ class RichBlockTableCell(RichBlock):
 
 
 class RichBlockListItem(RichBlock):
-    """List item block. Telegram documentation: https://core.telegram.org/bots/api#richblocklistitem"""
+    """
+    List item block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocklistitem
+
+    :param label: Optional. Custom label of the list item
+    :type label: :obj:`str`
+
+    :param blocks: Optional. Content of the list item
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param has_checkbox: Optional. True, if the item has a checkbox
+    :type has_checkbox: :obj:`bool`
+
+    :param is_checked: Optional. True, if the checkbox is checked
+    :type is_checked: :obj:`bool`
+
+    :param value: Optional. Ordinal value of the item in an ordered list
+    :type value: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockListItem`
+    """
     def __init__(self, label: Optional[str] = None, blocks: Optional[List['RichBlock']] = None,
                  has_checkbox: Optional[bool] = None, is_checked: Optional[bool] = None,
                  value: Optional[int] = None, **kwargs):
@@ -15143,7 +15501,17 @@ class RichBlockListItem(RichBlock):
 
 
 class RichBlockParagraph(RichBlock):
-    """Paragraph block. Telegram documentation: https://core.telegram.org/bots/api#richblockparagraph"""
+    """
+    Paragraph block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockparagraph
+
+    :param text: Optional. Content of the paragraph
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockParagraph`
+    """
     def __init__(self, text: Optional[RichText] = None, **kwargs):
         super().__init__('paragraph')
         self.text: Optional[RichText] = text
@@ -15161,7 +15529,20 @@ class RichBlockParagraph(RichBlock):
 
 
 class RichBlockSectionHeading(RichBlock):
-    """Section heading block. Telegram documentation: https://core.telegram.org/bots/api#richblocksectionheading"""
+    """
+    Section heading block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocksectionheading
+
+    :param text: Optional. Content of the heading
+    :type text: :class:`RichText`
+
+    :param size: Optional. Size (level) of the heading
+    :type size: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockSectionHeading`
+    """
     def __init__(self, text: Optional[RichText] = None, size: int = 1, **kwargs):
         super().__init__('heading')
         self.text: Optional[RichText] = text
@@ -15181,7 +15562,20 @@ class RichBlockSectionHeading(RichBlock):
 
 
 class RichBlockPreformatted(RichBlock):
-    """Preformatted text block. Telegram documentation: https://core.telegram.org/bots/api#richblockpreformatted"""
+    """
+    Preformatted text block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockpreformatted
+
+    :param text: Optional. Content of the preformatted block
+    :type text: :class:`RichText`
+
+    :param language: Optional. Programming language of the content
+    :type language: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockPreformatted`
+    """
     def __init__(self, text: Optional[RichText] = None, language: Optional[str] = None, **kwargs):
         super().__init__('pre')
         self.text: Optional[RichText] = text
@@ -15201,7 +15595,17 @@ class RichBlockPreformatted(RichBlock):
 
 
 class RichBlockFooter(RichBlock):
-    """Footer block. Telegram documentation: https://core.telegram.org/bots/api#richblockfooter"""
+    """
+    Footer block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockfooter
+
+    :param text: Optional. Content of the footer
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockFooter`
+    """
     def __init__(self, text: Optional[RichText] = None, **kwargs):
         super().__init__('footer')
         self.text: Optional[RichText] = text
@@ -15219,7 +15623,14 @@ class RichBlockFooter(RichBlock):
 
 
 class RichBlockDivider(RichBlock):
-    """Horizontal divider block. Telegram documentation: https://core.telegram.org/bots/api#richblockdivider"""
+    """
+    Horizontal divider block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockdivider
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockDivider`
+    """
     def __init__(self, **kwargs):
         super().__init__('divider')
 
@@ -15229,7 +15640,17 @@ class RichBlockDivider(RichBlock):
 
 
 class RichBlockMathematicalExpression(RichBlock):
-    """Mathematical expression block. Telegram documentation: https://core.telegram.org/bots/api#richblockmathematicalexpression"""
+    """
+    Mathematical expression block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockmathematicalexpression
+
+    :param expression: The mathematical expression
+    :type expression: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockMathematicalExpression`
+    """
     def __init__(self, expression: str, **kwargs):
         super().__init__('mathematical_expression')
         self.expression: str = expression
@@ -15245,7 +15666,17 @@ class RichBlockMathematicalExpression(RichBlock):
 
 
 class RichBlockAnchor(RichBlock):
-    """Anchor block. Telegram documentation: https://core.telegram.org/bots/api#richblockanchor"""
+    """
+    Anchor block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockanchor
+
+    :param name: Name of the anchor
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockAnchor`
+    """
     def __init__(self, name: str, **kwargs):
         super().__init__('anchor')
         self.name: str = name
@@ -15261,7 +15692,17 @@ class RichBlockAnchor(RichBlock):
 
 
 class RichBlockList(RichBlock):
-    """List block. Telegram documentation: https://core.telegram.org/bots/api#richblocklist"""
+    """
+    List block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocklist
+
+    :param items: Optional. Items of the list
+    :type items: :obj:`list` of :class:`RichBlockListItem`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockList`
+    """
     def __init__(self, items: Optional[List[RichBlockListItem]] = None, **kwargs):
         super().__init__('list')
         self.items: Optional[List[RichBlockListItem]] = items
@@ -15279,7 +15720,20 @@ class RichBlockList(RichBlock):
 
 
 class RichBlockBlockQuotation(RichBlock):
-    """Block quotation block. Telegram documentation: https://core.telegram.org/bots/api#richblockblockquotation"""
+    """
+    Block quotation block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockblockquotation
+
+    :param blocks: Optional. Content of the quotation
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param credit: Optional. Credit (attribution) of the quotation
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockBlockQuotation`
+    """
     def __init__(self, blocks: Optional[List['RichBlock']] = None, credit: Optional[RichText] = None, **kwargs):
         super().__init__('blockquote')
         self.blocks: Optional[List[RichBlock]] = blocks
@@ -15301,7 +15755,20 @@ class RichBlockBlockQuotation(RichBlock):
 
 
 class RichBlockPullQuotation(RichBlock):
-    """Pull quotation block. Telegram documentation: https://core.telegram.org/bots/api#richblockpullquotation"""
+    """
+    Pull quotation block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockpullquotation
+
+    :param text: Optional. Content of the quotation
+    :type text: :class:`RichText`
+
+    :param credit: Optional. Credit (attribution) of the quotation
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockPullQuotation`
+    """
     def __init__(self, text: Optional[RichText] = None, credit: Optional[RichText] = None, **kwargs):
         super().__init__('pullquote')
         self.text: Optional[RichText] = text
@@ -15323,7 +15790,20 @@ class RichBlockPullQuotation(RichBlock):
 
 
 class RichBlockCollage(RichBlock):
-    """Collage of media block. Telegram documentation: https://core.telegram.org/bots/api#richblockcollage"""
+    """
+    Collage of media block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockcollage
+
+    :param blocks: Optional. Media blocks of the collage
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param caption: Optional. Caption of the collage
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockCollage`
+    """
     def __init__(self, blocks: Optional[List['RichBlock']] = None,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__('collage')
@@ -15346,7 +15826,20 @@ class RichBlockCollage(RichBlock):
 
 
 class RichBlockSlideshow(RichBlock):
-    """Slideshow block. Telegram documentation: https://core.telegram.org/bots/api#richblockslideshow"""
+    """
+    Slideshow block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockslideshow
+
+    :param blocks: Optional. Media blocks of the slideshow
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param caption: Optional. Caption of the slideshow
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockSlideshow`
+    """
     def __init__(self, blocks: Optional[List['RichBlock']] = None,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__('slideshow')
@@ -15369,7 +15862,26 @@ class RichBlockSlideshow(RichBlock):
 
 
 class RichBlockTable(RichBlock):
-    """Table block. Telegram documentation: https://core.telegram.org/bots/api#richblocktable"""
+    """
+    Table block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocktable
+
+    :param caption: Optional. Caption of the table
+    :type caption: :class:`RichText`
+
+    :param cells: Optional. Rows of the table, each a list of cells
+    :type cells: :obj:`list` of :obj:`list` of :class:`RichBlockTableCell`
+
+    :param is_bordered: Optional. True, if the table is bordered
+    :type is_bordered: :obj:`bool`
+
+    :param is_striped: Optional. True, if the table rows are striped
+    :type is_striped: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockTable`
+    """
     def __init__(self, caption: Optional[RichText] = None,
                  cells: Optional[List[List[RichBlockTableCell]]] = None,
                  is_bordered: bool = False, is_striped: bool = False, **kwargs):
@@ -15398,7 +15910,23 @@ class RichBlockTable(RichBlock):
 
 
 class RichBlockDetails(RichBlock):
-    """Expandable details block. Telegram documentation: https://core.telegram.org/bots/api#richblockdetails"""
+    """
+    Expandable details block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockdetails
+
+    :param summary: Optional. Summary shown when the block is collapsed
+    :type summary: :class:`RichText`
+
+    :param blocks: Optional. Content revealed when the block is expanded
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param is_open: Optional. True, if the block is expanded by default
+    :type is_open: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockDetails`
+    """
     def __init__(self, summary: Optional[RichText] = None,
                  blocks: Optional[List['RichBlock']] = None,
                  is_open: Optional[bool] = None, **kwargs):
@@ -15424,7 +15952,29 @@ class RichBlockDetails(RichBlock):
 
 
 class RichBlockMap(RichBlock):
-    """Map block. Telegram documentation: https://core.telegram.org/bots/api#richblockmap"""
+    """
+    Map block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockmap
+
+    :param location: Optional. Location shown on the map
+    :type location: :class:`Location`
+
+    :param zoom: Optional. Zoom level of the map
+    :type zoom: :obj:`int`
+
+    :param width: Optional. Width of the map
+    :type width: :obj:`int`
+
+    :param height: Optional. Height of the map
+    :type height: :obj:`int`
+
+    :param caption: Optional. Caption of the map
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockMap`
+    """
     def __init__(self, location: Optional[Location] = None, zoom: int = 15,
                  width: int = 300, height: int = 200,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
@@ -15454,7 +16004,23 @@ class RichBlockMap(RichBlock):
 
 
 class RichBlockAnimation(RichBlock):
-    """Animation block. Telegram documentation: https://core.telegram.org/bots/api#richblockanimation"""
+    """
+    Animation block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockanimation
+
+    :param animation: Optional. Animation of the block
+    :type animation: :class:`Animation`
+
+    :param caption: Optional. Caption of the animation
+    :type caption: :class:`RichBlockCaption`
+
+    :param need_autoplay: Optional. True, if the animation must autoplay
+    :type need_autoplay: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockAnimation`
+    """
     def __init__(self, animation: Optional[Animation] = None,
                  caption: Optional[RichBlockCaption] = None,
                  need_autoplay: bool = False, **kwargs):
@@ -15480,7 +16046,20 @@ class RichBlockAnimation(RichBlock):
 
 
 class RichBlockAudio(RichBlock):
-    """Audio block. Telegram documentation: https://core.telegram.org/bots/api#richblockaudio"""
+    """
+    Audio block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockaudio
+
+    :param audio: Optional. Audio of the block
+    :type audio: :class:`Audio`
+
+    :param caption: Optional. Caption of the audio
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockAudio`
+    """
     def __init__(self, audio: Optional[Audio] = None,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__('audio')
@@ -15503,7 +16082,26 @@ class RichBlockAudio(RichBlock):
 
 
 class RichBlockPhoto(RichBlock):
-    """Photo block. Telegram documentation: https://core.telegram.org/bots/api#richblockphoto"""
+    """
+    Photo block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockphoto
+
+    :param photo: Optional. Available sizes of the photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param caption: Optional. Caption of the photo
+    :type caption: :class:`RichBlockCaption`
+
+    :param url: Optional. URL the photo links to
+    :type url: :obj:`str`
+
+    :param need_check: Optional. True, if the photo must be checked before display
+    :type need_check: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockPhoto`
+    """
     def __init__(self, photo: Optional[List[PhotoSize]] = None,
                  caption: Optional[RichBlockCaption] = None,
                  url: Optional[str] = None, need_check: bool = False, **kwargs):
@@ -15531,7 +16129,26 @@ class RichBlockPhoto(RichBlock):
 
 
 class RichBlockVideo(RichBlock):
-    """Video block. Telegram documentation: https://core.telegram.org/bots/api#richblockvideo"""
+    """
+    Video block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockvideo
+
+    :param video: Optional. Video of the block
+    :type video: :class:`Video`
+
+    :param caption: Optional. Caption of the video
+    :type caption: :class:`RichBlockCaption`
+
+    :param need_autoplay: Optional. True, if the video must autoplay
+    :type need_autoplay: :obj:`bool`
+
+    :param is_looped: Optional. True, if the video must loop
+    :type is_looped: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockVideo`
+    """
     def __init__(self, video: Optional[Video] = None,
                  caption: Optional[RichBlockCaption] = None,
                  need_autoplay: bool = False, is_looped: bool = False, **kwargs):
@@ -15559,7 +16176,20 @@ class RichBlockVideo(RichBlock):
 
 
 class RichBlockVoiceNote(RichBlock):
-    """Voice note block. Telegram documentation: https://core.telegram.org/bots/api#richblockvoicenote"""
+    """
+    Voice note block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockvoicenote
+
+    :param voice_note: Optional. Voice note of the block
+    :type voice_note: :class:`Voice`
+
+    :param caption: Optional. Caption of the voice note
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockVoiceNote`
+    """
     def __init__(self, voice_note: Optional[Voice] = None,
                  caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__('voice_note')
@@ -15582,7 +16212,17 @@ class RichBlockVoiceNote(RichBlock):
 
 
 class RichBlockThinking(RichBlock):
-    """Thinking placeholder block. Telegram documentation: https://core.telegram.org/bots/api#richblockthinking"""
+    """
+    Thinking placeholder block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockthinking
+
+    :param text: Optional. Placeholder text shown while thinking
+    :type text: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockThinking`
+    """
     def __init__(self, text: Optional[str] = None, **kwargs):
         super().__init__('thinking')
         self.text: Optional[str] = text
