@@ -1753,7 +1753,7 @@ async def unpin_all_chat_messages(token, chat_id):
 
 async def edit_message_text(
         token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
-        reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None):
+        reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None, rich_message=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1774,6 +1774,8 @@ async def edit_message_text(
         payload['business_connection_id'] = business_connection_id
     if timeout:
         payload['timeout'] = timeout
+    if rich_message is not None:
+        payload['rich_message'] = rich_message.to_json()
     return await _process_request(token, method_url, params=payload, method='post')
 
 
@@ -2155,6 +2157,47 @@ async def answer_guest_query(token, guest_query_id, result):
     method_url = 'answerGuestQuery'
     payload = {'guest_query_id': guest_query_id, 'result': result.to_json()}
     return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def send_rich_message(token, chat_id, rich_message, message_thread_id=None,
+                            reply_markup=None, disable_notification=None, protect_content=None,
+                            reply_parameters=None, business_connection_id=None):
+    method_url = 'sendRichMessage'
+    payload = {'chat_id': chat_id, 'rich_message': rich_message.to_json()}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if reply_markup:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if reply_parameters is not None:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def send_rich_message_draft(token, chat_id, draft_id, rich_message, message_thread_id=None):
+    method_url = 'sendRichMessageDraft'
+    payload = {'chat_id': chat_id, 'draft_id': draft_id, 'rich_message': rich_message.to_json()}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def answer_chat_join_request_query(token, query_id, result):
+    method_url = 'answerChatJoinRequestQuery'
+    payload = {'query_id': query_id, 'result': result.to_json()}
+    return await _process_request(token, method_url, params=payload, method='post')
+
+
+async def send_chat_join_request_web_app(token, query_id, web_app_url):
+    method_url = 'sendChatJoinRequestWebApp'
+    payload = {'query_id': query_id, 'web_app_url': web_app_url}
+    return await _process_request(token, method_url, params=payload, method='post')
+
 
 async def get_user_chat_boosts(token, chat_id, user_id):
     method_url = 'getUserChatBoosts'
