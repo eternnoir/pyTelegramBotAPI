@@ -14543,3 +14543,1401 @@ class BotAccessSettings(JsonDeserializable):
         if 'added_users' in obj:
             obj['added_users'] = [User.de_json(user) for user in obj['added_users']]
         return cls(**obj)
+
+
+class RichText(JsonDeserializable):
+    """
+    This object represents a rich formatted text. Currently, it can be either a String for plain text,
+    an Array of :class:`RichText`, or any of the following types:
+    - :class:`RichTextBold`
+    - :class:`RichTextItalic`
+    - :class:`RichTextUnderline`
+    - :class:`RichTextStrikethrough`
+    - :class:`RichTextSpoiler`
+    - :class:`RichTextDateTime`
+    - :class:`RichTextTextMention`
+    - :class:`RichTextSubscript`
+    - :class:`RichTextSuperscript`
+    - :class:`RichTextMarked`
+    - :class:`RichTextCode`
+    - :class:`RichTextCustomEmoji`
+    - :class:`RichTextMathematicalExpression`
+    - :class:`RichTextUrl`
+    - :class:`RichTextEmailAddress`
+    - :class:`RichTextPhoneNumber`
+    - :class:`RichTextBankCardNumber`
+    - :class:`RichTextMention`
+    - :class:`RichTextHashtag`
+    - :class:`RichTextCashtag`
+    - :class:`RichTextBotCommand`
+    - :class:`RichTextAnchor`
+    - :class:`RichTextAnchorLink`
+    - :class:`RichTextReference`
+    - :class:`RichTextReferenceLink`
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtext
+
+    :return: Instance of the class
+    :rtype: :class:`RichText`
+    """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        type = obj['type']
+        if type == 'bold':
+            return RichTextBold.de_json(json_string)
+        elif type == 'italic':
+            return RichTextItalic.de_json(json_string)
+        elif type == 'underline':
+            return RichTextUnderline.de_json(json_string)
+        elif type == 'strikethrough':
+            return RichTextStrikethrough.de_json(json_string)
+        elif type == 'spoiler':
+            return RichTextSpoiler.de_json(json_string)
+        elif type == 'date_time':
+            return RichTextDateTime.de_json(json_string)
+        elif type == 'text_mention':
+            return RichTextTextMention.de_json(json_string)
+        elif type == 'subscript':
+            return RichTextSubscript.de_json(json_string)
+        elif type == 'superscript':
+            return RichTextSuperscript.de_json(json_string)
+        elif type == 'marked':
+            return RichTextMarked.de_json(json_string)
+        elif type == 'code':
+            return RichTextCode.de_json(json_string)
+        elif type == 'custom_emoji':
+            return RichTextCustomEmoji.de_json(json_string)
+        elif type == 'mathematical_expression':
+            return RichTextMathematicalExpression.de_json(json_string)
+        elif type == 'url':
+            return RichTextUrl.de_json(json_string)
+        elif type == 'email_address':
+            return RichTextEmailAddress.de_json(json_string)
+        elif type == 'phone_number':
+            return RichTextPhoneNumber.de_json(json_string)
+        elif type == 'bank_card_number':
+            return RichTextBankCardNumber.de_json(json_string)
+        elif type == 'mention':
+            return RichTextMention.de_json(json_string)
+        elif type == 'hashtag':
+            return RichTextHashtag.de_json(json_string)
+        elif type == 'cashtag':
+            return RichTextCashtag.de_json(json_string)
+        elif type == 'bot_command':
+            return RichTextBotCommand.de_json(json_string)
+        elif type == 'anchor':
+            return RichTextAnchor.de_json(json_string)
+        elif type == 'anchor_link':
+            return RichTextAnchorLink.de_json(json_string)
+        elif type == 'reference':
+            return RichTextReference.de_json(json_string)
+        elif type == 'reference_link':
+            return RichTextReferenceLink.de_json(json_string)
+        return None
+    
+class RichTextBold(RichText):
+    """
+    A bold text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextbold
+
+    :param type: Type of the rich text, always “bold”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextBold`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='bold', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextItalic(RichText):
+    """
+    An italicized text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextitalic
+
+    :param type: Type of the rich text, always “italic”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextItalic`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='italic', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextUnderline(RichText):
+    """
+    An underlined text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextunderline
+
+    :param type: Type of the rich text, always “underline”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextUnderline`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='underline', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextStrikethrough(RichText):
+    """
+    A strikethrough text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextstrikethrough
+
+    :param type: Type of the rich text, always “strikethrough”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextStrikethrough`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='strikethrough', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextSpoiler(RichText):
+    """
+    A text covered by a spoiler.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextspoiler
+
+    :param type: Type of the rich text, always “spoiler”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextSpoiler`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='spoiler', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextDateTime(RichText):
+    """
+    Formatted date and time.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextdatetime
+
+    :param type: Type of the rich text, always “date_time”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextDateTime`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='date_time', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextTextMention(RichText):
+    """
+    A mention of a Telegram user by their identifier.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexttextmention
+
+    :param type: Type of the rich text, always “text_mention”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param user: The mentioned user
+    :type user: :class:`User`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextTextMention`
+    """
+    def __init__(self, text: RichText, user: 'User', **kwargs):
+        super().__init__(type='text_mention', **kwargs)
+        self.text: RichText = text
+        self.user: User = user
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        obj['user'] = User.de_json(obj['user'])
+        return cls(**obj)
+
+
+class RichTextSubscript(RichText):
+    """
+    A subscript text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextsubscript
+
+    :param type: Type of the rich text, always “subscript”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextSubscript`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='subscript', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextSuperscript(RichText):
+    """
+    A superscript text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextsuperscript
+
+    :param type: Type of the rich text, always “superscript”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextSuperscript`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='superscript', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextMarked(RichText):
+    """
+    A marked text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextmarked
+
+    :param type: Type of the rich text, always “marked”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextMarked`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='marked', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextCode(RichText):
+    """
+    A monowidth text.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextcode
+
+    :param type: Type of the rich text, always “code”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextCode`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='code', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextCustomEmoji(RichText):
+    """
+    A custom emoji.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextcustomemoji
+
+    :param type: Type of the rich text, always “custom_emoji”
+    :type type: :obj:`str`
+
+    :param custom_emoji_id: Unique identifier of the custom emoji. Use getCustomEmojiStickers to get full information about the sticker.
+    :type custom_emoji_id: :obj:`str`
+
+    :param alternative_text: Alternative emoji for the custom emoji
+    :type alternative_text: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextCustomEmoji`
+    """
+    def __init__(self, custom_emoji_id: str, alternative_text: str, **kwargs):
+        super().__init__(type='custom_emoji', **kwargs)
+        self.custom_emoji_id: str = custom_emoji_id
+        self.alternative_text: str = alternative_text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+class RichTextMathematicalExpression(RichText):
+    """
+    A mathematical expression.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextmathematicalexpression
+
+    :param type: Type of the rich text, always “mathematical_expression”
+    :type type: :obj:`str`
+
+    :param expression: The expression in LaTeX format
+    :type expression: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextMathematicalExpression`
+    """
+    def __init__(self, expression: str, **kwargs):
+        super().__init__(type='mathematical_expression', **kwargs)
+        self.expression: str = expression
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+class RichTextUrl(RichText):
+    """
+    A text with a link.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexturl
+
+    :param type: Type of the rich text, always “url”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param url: URL of the link
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextUrl`
+    """
+    def __init__(self, text: RichText, url: str, **kwargs):
+        super().__init__(type='url', **kwargs)
+        self.text: RichText = text
+        self.url: str = url
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextEmailAddress(RichText):
+    """
+    A text with an email address.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextemailaddress
+
+    :param type: Type of the rich text, always “email_address”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param email_address: The email address
+    :type email_address: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextEmailAddress`
+    """
+    def __init__(self, text: RichText, email_address: str, **kwargs):
+        super().__init__(type='email_address', **kwargs)
+        self.text: RichText = text
+        self.email_address: str = email_address
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextPhoneNumber(RichText):
+    """
+    A text with a phone number.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextphonenumber
+
+    :param type: Type of the rich text, always “phone_number”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param phone_number: The phone number
+    :type phone_number: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextPhoneNumber`
+    """
+    def __init__(self, text: RichText, phone_number: str, **kwargs):
+        super().__init__(type='phone_number', **kwargs)
+        self.text: RichText = text
+        self.phone_number: str = phone_number
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextBankCardNumber(RichText):
+    """
+    A text with a bank card number.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextbankcardnumber
+
+    :param type: Type of the rich text, always “bank_card_number”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param bank_card_number: The bank card number
+    :type bank_card_number: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextBankCardNumber`
+    """
+    def __init__(self, text: RichText, bank_card_number: str, **kwargs):
+        super().__init__(type='bank_card_number', **kwargs)
+        self.text: RichText = text
+        self.bank_card_number: str = bank_card_number
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+class RichTextMention(RichText):
+    """
+    A mention by a username.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextmention
+
+    :param type: Type of the rich text, always “mention”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param username: The username
+    :type username: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextMention`
+    """
+
+    def __init__(self, text: RichText, username: str, **kwargs):
+        super().__init__(type='mention', **kwargs)
+        self.text: RichText = text
+        self.username: str = username
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichTextHashtag(RichText):
+    """
+    A hashtag.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexthashtag
+
+    :param type: Type of the rich text, always “hashtag”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param hashtag: The hashtag
+    :type hashtag: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextHashtag`
+    """
+    def __init__(self, text: RichText, hashtag: str, **kwargs):
+        super().__init__(type='hashtag', **kwargs)
+        self.text: RichText = text
+        self.hashtag: str = hashtag
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichTextCashtag(RichText):
+    """
+    A cashtag.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextcashtag
+
+    :param type: Type of the rich text, always “cashtag”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param cashtag: The cashtag
+    :type cashtag: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextCashtag`
+    """
+    def __init__(self, text: RichText, cashtag: str, **kwargs):
+        super().__init__(type='cashtag', **kwargs)
+        self.text: RichText = text
+        self.cashtag: str = cashtag
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichTextBotCommand(RichText):
+    """
+    A bot command.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextbotcommand
+
+    :param type: Type of the rich text, always “bot_command”
+    :type type: :obj:`str`
+
+    :param text: The text
+    :type text: :class:`RichText`
+
+    :param bot_command: The bot command
+    :type bot_command: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextBotCommand`
+    """
+    def __init__(self, text: RichText, bot_command: str, **kwargs):
+        super().__init__(type='bot_command', **kwargs)
+        self.text: RichText = text
+        self.bot_command: str = bot_command
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichTextAnchor(RichText):
+    """
+    An anchor.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextanchor
+
+    :param type: Type of the rich text, always “anchor”
+    :type type: :obj:`str`
+
+    :param name: The name of the anchor
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextAnchor`
+    """
+    def __init__(self, name: str, **kwargs):
+        super().__init__(type='anchor', **kwargs)
+        self.name: str = name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class RichTextAnchorLink(RichText):
+    """
+    A link to an anchor.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextanchorlink
+
+    :param type: Type of the rich text, always “anchor_link”
+    :type type: :obj:`str`
+
+    :param text: The link text
+    :type text: :class:`RichText`
+
+    :param anchor_name: The name of the anchor. If the name is empty, then the link brings back to the top of the message.
+    :type anchor_name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextAnchorLink`
+    """
+    def __init__(self, text: RichText, anchor_name: str, **kwargs):
+        super().__init__(type='anchor_link', **kwargs)
+        self.text: RichText = text
+        self.anchor_name: str = anchor_name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+    
+    
+class RichTextReference(RichText):
+    """
+    A reference.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextreference
+
+    :param type: Type of the rich text, always “reference”
+    :type type: :obj:`str`
+
+    :param text: Text of the reference
+    :type text: :class:`RichText`
+
+    :param name: The name of the reference
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextReference`
+    """
+
+    def __init__(self, text: RichText, name: str, **kwargs):
+        super().__init__(type='reference', **kwargs)
+        self.text: RichText = text
+        self.name: str = name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+    
+    
+class RichTextReferenceLink(RichText):
+    """
+    A link to a reference.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtextreferencelink
+
+    :param type: Type of the rich text, always “reference_link”
+    :type type: :obj:`str`
+
+    :param text: The link text
+    :type text: :class:`RichText`
+
+    :param reference_name: The name of the reference
+    :type reference_name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextReferenceLink`
+
+    """
+
+    def __init__(self, text: RichText, reference_name: str, **kwargs):
+        super().__init__(type='reference_link', **kwargs)
+        self.text: RichText = text
+        self.reference_name: str = reference_name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichBlockCaption(JsonDeserializable):
+    """
+    This object represents the caption of a rich formatted block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockcaption
+
+    :param text: Block caption
+    :type text: :class:`RichText`
+
+    :param credit: Optional. Block credit which corresponds to the HTML tag <cite>
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockCaption`
+
+    """
+
+    def __init__(self, text: RichText, credit: Optional[RichText] = None, **kwargs):
+        self.text: RichText = text
+        self.credit: Optional[RichText] = credit
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        if 'credit' in obj:
+            obj['credit'] = RichText.de_json(obj['credit'])
+        return cls(**obj)
+
+
+class RichBlockTableCell(JsonDeserializable):
+    """
+    This object represents a cell of a table.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocktablecell
+
+    :param text: Optional. Text in the cell. If omitted, then the cell is invisible.
+    :type text: :class:`RichText`
+
+    :param is_header: Optional. True, if the cell is a header cell
+    :type is_header: :obj:`bool`
+
+    :param colspan: Optional. The number of columns the cell spans if it is bigger than 1
+    :type colspan: :obj:`int`
+
+    :param rowspan: Optional. The number of rows the cell spans if it is bigger than 1
+    :type rowspan: :obj:`int`
+
+    :param align: Horizontal cell content alignment. Currently, must be one of “left”, “center”, or “right”.
+    :type align: :obj:`str`
+
+    :param valign: Vertical cell content alignment. Currently, must be one of “top”, “middle”, or “bottom”.
+    :type valign: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockTableCell`
+    """
+    def __init__(self, text: Optional[RichText] = None, is_header: Optional[bool] = None, colspan: Optional[int] = None, rowspan: Optional[int] = None,
+                    align: Optional[str] = None, valign: Optional[str] = None, **kwargs):
+        self.text: Optional[RichText] = text
+        self.is_header: Optional[bool] = is_header
+        self.colspan: Optional[int] = colspan
+        self.rowspan: Optional[int] = rowspan
+        self.align: Optional[str] = align
+        self.valign: Optional[str] = valign
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'text' in obj:
+            obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+    
+    
+class RichBlockListItem(JsonDeserializable):
+    """
+    This object represents an item of a list.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocklistitem
+
+    :param label: Label of the item
+    :type label: :obj:`str`
+
+    :param blocks: The content of the item
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param has_checkbox: Optional. True, if the item has a checkbox
+    :type has_checkbox: :obj:`bool`
+
+    :param is_checked: Optional. True, if the item has a checked checkbox
+    :type is_checked: :obj:`bool`
+
+    :param value: Optional. For ordered lists, the numeric value of the item label
+    :type value: :obj:`int`
+
+    :param type: Optional. For ordered lists, the type of the item label; must be one of “a” for lowercase letters, “A” for uppercase letters, “i” for lowercase Roman numerals, “I” for uppercase Roman numerals, or “1” for decimal numbers
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockListItem`
+    """
+    def __init__(self, label: str, blocks: List['RichBlock'], has_checkbox: Optional[bool] = None, is_checked: Optional[bool] = None, value: Optional[int] = None, type: Optional[str] = None, **kwargs):
+        self.label: str = label
+        self.blocks: List[RichBlock] = blocks
+        self.has_checkbox: Optional[bool] = has_checkbox
+        self.is_checked: Optional[bool] = is_checked
+        self.value: Optional[int] = value
+        self.type: Optional[str] = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['blocks'] = [RichBlock.de_json(block) for block in obj['blocks']]
+        return cls(**obj)
+
+
+class RichBlock(JsonDeserializable):
+    """
+    This object represents a block in a rich formatted message. Currently, it can be any of the following types:
+
+    - :class:`RichBlockParagraph`
+    - :class:`RichBlockSectionHeading`
+    - :class:`RichBlockPreformatted`
+    - :class:`RichBlockFooter`
+    - :class:`RichBlockDivider`
+    - :class:`RichBlockMathematicalExpression`
+    - :class:`RichBlockAnchor`
+    - :class:`RichBlockList`
+    - :class:`RichBlockBlockQuotation`
+    - :class:`RichBlockPullQuotation`
+    - :class:`RichBlockCollage`
+    - :class:`RichBlockSlideshow`
+    - :class:`RichBlockTable`
+    - :class:`RichBlockDetails`
+    - :class:`RichBlockMap`
+    - :class:`RichBlockAnimation`
+    - :class:`RichBlockAudio`
+    - :class:`RichBlockPhoto`
+    - :class:`RichBlockVideo`
+    - :class:`RichBlockVoiceNote`
+    - :class:`RichBlockThinking`
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblock
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlock`
+    """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        type = obj['type']
+        if type == 'paragraph':
+            return RichBlockParagraph.de_json(json_string)
+        elif type == 'heading':
+            return RichBlockSectionHeading.de_json(json_string)
+        elif type == 'pre':
+            return RichBlockPreformatted.de_json(json_string)
+        elif type == 'footer':
+            return RichBlockFooter.de_json(json_string)
+        elif type == 'divider':
+            return RichBlockDivider.de_json(json_string)
+        elif type == 'mathematical_expression':
+            return RichBlockMathematicalExpression.de_json(json_string)
+        elif type == 'anchor':
+            return RichBlockAnchor.de_json(json_string)
+        elif type == 'list':
+            return RichBlockList.de_json(json_string)
+        elif type == 'blockquote':
+            return RichBlockBlockQuotation.de_json(json_string)
+        elif type == 'pullquote':
+            return RichBlockPullQuotation.de_json(json_string)
+        elif type == 'collage':
+            return RichBlockCollage.de_json(json_string)
+        elif type == 'slideshow':
+            return RichBlockSlideshow.de_json(json_string)
+        elif type == 'table':
+            return RichBlockTable.de_json(json_string)
+        elif type == 'details':
+            return RichBlockDetails.de_json(json_string)
+        elif type == 'map':
+            return RichBlockMap.de_json(json_string)
+        elif type == 'animation':
+            return RichBlockAnimation.de_json(json_string)
+        elif type == 'audio':
+            return RichBlockAudio.de_json(json_string)
+        elif type == 'photo':
+            return RichBlockPhoto.de_json(json_string)
+        elif type == 'video':
+            return RichBlockVideo.de_json(json_string)
+        elif type == 'voice_note':
+            return RichBlockVoiceNote.de_json(json_string)
+        elif type == 'thinking':
+            return RichBlockThinking.de_json(json_string)
+        return None
+    
+    
+class RichBlockParagraph(RichBlock):
+    """
+    A text paragraph, corresponding to the HTML tag <p>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockparagraph
+
+    :param type: Type of the block, always “paragraph”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockParagraph`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='paragraph', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+        
+
+class RichBlockSectionHeading(RichBlock):
+    """
+    A section heading, corresponding to the HTML tags <h1>, <h2>, <h3>, <h4>, <h5>, or <h6>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocksectionheading
+
+    :param type: Type of the block, always “heading”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :param size: Relative size of the text font; 1-6, 1 is the largest, 6 is the smallest
+    :type size: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockSectionHeading`
+    """
+    def __init__(self, text: RichText, size: int, **kwargs):
+        super().__init__(type='heading', **kwargs)
+        self.text: RichText = text
+        self.size: int = size
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+        
+
+class RichBlockPreformatted(RichBlock):
+    """
+    A preformatted text block, corresponding to the nested HTML tags <pre> and <code>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockpreformatted
+
+    :param type: Type of the block, always “pre”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :param language: Optional. The programming language of the text
+    :type language: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockPreformatted`
+    """
+    def __init__(self, text: RichText, language: Optional[str] = None, **kwargs):
+        super().__init__(type='pre', **kwargs)
+        self.text: RichText = text
+        self.language: Optional[str] = language
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichBlockFooter(RichBlock):
+    """
+    A footer, corresponding to the HTML tag <footer>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockfooter
+
+    :param type: Type of the block, always “footer”
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockFooter`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='footer', **kwargs)
+        self.text: RichText = text
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+
+class RichBlockDivider(RichBlock):
+    """
+    A divider, corresponding to the HTML tag <hr/>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockdivider
+
+    :param type: Type of the block, always “divider”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockDivider`
+    """
+    def __init__(self, **kwargs):
+        super().__init__(type='divider', **kwargs)
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class RichBlockMathematicalExpression(RichBlock):
+    """
+    A block with a mathematical expression in LaTeX format, corresponding to the custom HTML tag <tg-math-block>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockmathematicalexpression
+
+    :param type: Type of the block, always “mathematical_expression”
+    :type type: :obj:`str`
+
+    :param expression: The mathematical expression in LaTeX format
+    :type expression: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockMathematicalExpression`
+    """
+    def __init__(self, expression: str, **kwargs):
+        super().__init__(type='mathematical_expression', **kwargs)
+        self.expression: str = expression
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class RichBlockAnchor(RichBlock):
+    """
+    A block with an anchor, corresponding to the HTML tag <a> with the attribute name.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockanchor
+
+    :param type: Type of the block, always “anchor”
+    :type type: :obj:`str`
+
+    :param name: The name of the anchor
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockAnchor`
+    """
+
+    def __init__(self, name: str, **kwargs):
+        super().__init__(type='anchor', **kwargs)
+        self.name: str = name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class RichBlockList(RichBlock):
+    """
+    A list of blocks, corresponding to the HTML tag <ul> or <ol> with multiple nested tags <li>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocklist
+
+    :param type: Type of the block, always “list”
+    :type type: :obj:`str`
+
+    :param items: Items of the list
+    :type items: :obj:`list` of :class:`RichBlockListItem`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockList`
+    """
+
+    def __init__(self, items: List['RichBlockListItem'], **kwargs):
+        super().__init__(type='list', **kwargs)
+        self.items: List[RichBlockListItem] = items
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['items'] = [RichBlockListItem.de_json(item) for item in obj['items']]
+        return cls(**obj)
+
+
+class RichBlockBlockQuotation(RichBlock):
+    """
+    A block quotation, corresponding to the HTML tag <blockquote>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockblockquote
+
+    :param type: Type of the block, always “blockquote”
+    :type type: :obj:`str`
+
+    :param blocks: Content of the block
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param credit: Optional. Credit of the block
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockBlockQuotation`
+    """
+    def __init__(self, blocks: List['RichBlock'], credit: Optional[RichText] = None, **kwargs):
+        super().__init__(type='blockquote', **kwargs)
+        self.blocks: List[RichBlock] = blocks
+        self.credit: Optional[RichText] = credit
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['blocks'] = [RichBlock.de_json(block) for block in obj['blocks']]
+        obj['credit'] = RichText.de_json(obj['credit']) if obj.get('credit') else None
+        return cls(**obj)
+
+
+class RichBlockPullQuotation(RichBlock):
+    """
+    A quotation with centered text, loosely corresponding to the HTML tag <aside>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockpullquotation
+
+    :param type: Type of the block, always “pullquote”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :param credit: Optional. Credit of the block
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockPullQuotation`
+
+    """
+    def __init__(self, text: RichText, credit: Optional[RichText] = None, **kwargs):
+        super().__init__(type='pullquote', **kwargs)
+        self.text: RichText = text
+        self.credit: Optional[RichText] = credit
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        obj['credit'] = RichText.de_json(obj['credit']) if obj.get('credit') else None
+        return cls(**obj)
+    
+class RichBlockCollage(RichBlock):
+    """
+    A collage, corresponding to the custom HTML tag <tg-collage>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockcollage
+
+    :param type: Type of the block, always “collage”
+    :type type: :obj:`str`
+
+    :param blocks: Elements of the collage
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockCollage`
+    """
+    def __init__(self, blocks: List['RichBlock'], caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='collage', **kwargs)
+        self.blocks: List[RichBlock] = blocks
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['blocks'] = [RichBlock.de_json(block) for block in obj['blocks']]
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+    
+
+class RichBlockSlideshow(RichBlock):
+    """
+    A slideshow, corresponding to the custom HTML tag <tg-slideshow>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockslideshow
+
+    :param type: Type of the block, always “slideshow”
+    :type type: :obj:`str`
+
+    :param blocks: Elements of the slideshow
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockSlideshow`
+    """
+    def __init__(self, blocks: List['RichBlock'], caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='slideshow', **kwargs)
+        self.blocks: List[RichBlock] = blocks
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['blocks'] = [RichBlock.de_json(block) for block in obj['blocks']]
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+    
+
+class RichBlockTable(RichBlock):
+    """
+    A table, corresponding to the HTML tag <table>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblocktable
+
+    :param type: Type of the block, always “table”
+    :type type: :obj:`str`
+
+    :param cells: Cells of the table
+    :type cells: :obj:`list` of :obj:`list` of :class:`RichBlockTableCell`
+
+    :param is_bordered: Optional. True, if the table has borders
+    :type is_bordered: :obj:`bool`
+
+    :param is_striped: Optional. True, if the table is striped
+    :type is_striped: :obj:`bool`
+
+    :param caption: Optional. Caption of the table
+    :type caption: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockTable`
+    """
+    def __init__(self, cells: List[List[RichBlockTableCell]], is_bordered: Optional[bool] = None, is_striped: Optional[bool] = None, caption: Optional[RichText] = None, **kwargs):
+        super().__init__(type='table', **kwargs)
+        self.cells: List[List[RichBlockTableCell]] = cells
+        self.is_bordered: Optional[bool] = is_bordered
+        self.is_striped: Optional[bool] = is_striped
+        self.caption: Optional[RichText] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['cells'] = [[RichBlockTableCell.de_json(cell) for cell in row] for row in obj['cells']]
+        obj['caption'] = RichText.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+
