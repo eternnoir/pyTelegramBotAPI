@@ -391,6 +391,10 @@ class ChatJoinRequest(JsonDeserializable):
     :param invite_link: Optional. Chat invite link that was used by the user to send the join request
     :type invite_link: :class:`telebot.types.ChatInviteLink`
 
+    :param query_id: Optional. Identifier of the join request query; for bots assigned to process join request only.
+        If present, then the bot must call sendChatJoinRequestWebApp or directly call answerChatJoinRequestQuery within 10 seconds.
+    :type query_id: :obj:`int`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatJoinRequest`
     """
@@ -403,13 +407,14 @@ class ChatJoinRequest(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
 
-    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, **kwargs):
+    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, query_id=None, **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
         self.date: str = date
         self.bio: Optional[str] = bio
         self.invite_link: Optional[ChatInviteLink] = invite_link
         self.user_chat_id: int = user_chat_id
+        self.query_id: Optional[int] = query_id
 
 
 class WebhookInfo(JsonDeserializable):
@@ -533,6 +538,9 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param can_manage_bots: Optional. True, if other bots can be created to be controlled by the bot. Returned only in getMe.
     :type can_manage_bots: :obj:`bool`
 
+    :param supports_join_request_queries: Optional. True, if the bot supports join request queries and can be assigned to process them. Returned only in getMe.
+    :type supports_join_request_queries: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.User`
     """
@@ -547,7 +555,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                  can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
                  is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
                  has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None,
-                 supports_guest_queries=None, **kwargs):
+                 supports_guest_queries=None, supports_join_request_queries=None, **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -565,6 +573,7 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.allows_users_to_create_topics: Optional[bool] = allows_users_to_create_topics
         self.can_manage_bots: Optional[bool] = can_manage_bots
         self.supports_guest_queries: Optional[bool] = supports_guest_queries
+        self.supports_join_request_queries: Optional[bool] = supports_join_request_queries
 
     @property
     def full_name(self) -> str:
@@ -596,7 +605,8 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
                 'has_topics_enabled': self.has_topics_enabled,
                 'allows_users_to_create_topics': self.allows_users_to_create_topics,
                 'can_manage_bots': self.can_manage_bots,
-                'supports_guest_queries': self.supports_guest_queries
+                'supports_guest_queries': self.supports_guest_queries,
+                'supports_join_request_queries': self.supports_join_request_queries
                 }
 
 
@@ -787,6 +797,9 @@ class ChatFullInfo(JsonDeserializable):
     :param unique_gift_colors: Optional. The color scheme based on a unique gift that must be used for the chat's name, message replies and link previews
     :type unique_gift_colors: :class:`telebot.types.UniqueGiftColors`
 
+    :param guard_bot: Optional. The bot that processes join request queries in the chat. The field is only available to chat administrators.
+    :type guard_bot: :class:`telebot.types.User`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -824,6 +837,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['unique_gift_colors'] = UniqueGiftColors.de_json(obj['unique_gift_colors'])
         if 'first_profile_audio' in obj:
             obj['first_profile_audio'] = Audio.de_json(obj['first_profile_audio'])
+        if 'guard_bot' in obj:
+            obj['guard_bot'] = User.de_json(obj['guard_bot'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -841,7 +856,7 @@ class ChatFullInfo(JsonDeserializable):
                 business_opening_hours=None, personal_chat=None, birthdate=None,
                 can_send_paid_media=None,
                 accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
-                unique_gift_colors=None, first_profile_audio=None, **kwargs):
+                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -893,6 +908,7 @@ class ChatFullInfo(JsonDeserializable):
         self.paid_message_star_count: Optional[int] = paid_message_star_count
         self.unique_gift_colors: Optional[UniqueGiftColors] = unique_gift_colors
         self.first_profile_audio: Optional[Audio] = first_profile_audio
+        self.guard_bot: Optional[User] = guard_bot
 
 
     @property
@@ -14426,6 +14442,9 @@ class PollMedia(JsonDeserializable):
     :param document: Optional. Media is a general file, information about the file; currently, can't be received in a poll option
     :type document: :class:`Document`
 
+    :param link: Optional. The HTTP link attached to the poll option
+    :type link: :class:`Link`
+
     :param live_photo: Optional. Media is a live photo, information about the live photo
     :type live_photo: :class:`LivePhoto`
 
@@ -14450,7 +14469,7 @@ class PollMedia(JsonDeserializable):
     """
     def __init__(self, animation: Optional[Animation] = None, audio: Optional[Audio] = None, document: Optional[Document] = None,
                     live_photo: Optional[LivePhoto] = None, location: Optional[Location] = None, photo: Optional[List[PhotoSize]] = None,
-                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, **kwargs):
+                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, link: Optional[Link] = None):
         self.animation: Optional[Animation] = animation
         self.audio: Optional[Audio] = audio
         self.document: Optional[Document] = document
@@ -14460,6 +14479,7 @@ class PollMedia(JsonDeserializable):
         self.sticker: Optional[Sticker] = sticker
         self.venue: Optional[Venue] = venue
         self.video: Optional[Video] = video
+        self.link: Optional[Link] = link
 
     @classmethod
     def de_json(cls, json_string):
@@ -14483,12 +14503,40 @@ class PollMedia(JsonDeserializable):
             obj['venue'] = Venue.de_json(obj['venue'])
         if 'video' in obj:
             obj['video'] = Video.de_json(obj['video'])
+        if 'link' in obj:
+            obj['link'] = Link.de_json(obj['link'])
         return cls(**obj)
+
+
+class InputMediaLink(JsonDeserializable):
+    """
+    This object represents an HTTP link to be sent.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputmedialink
+
+    :param url: HTTP URL of the link
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputMediaLink`
+    """
+    def __init__(self, url: str, **kwargs):
+        self.url: str = url
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self):
+        return {
+            'type': 'link',
+            'url': self.url
+        }
+    
 
 # why not..
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
 
-InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo]
+InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo, InputMediaLink]
 
     
 class LivePhoto(JsonDeserializable):
@@ -16319,4 +16367,24 @@ class InputRichMessage(Dictionaryable):
         return json.dumps(self.to_dict())
     
 
+class Link(JsonDeserializable):
+    """
+    This object represents an HTTP link.
 
+    Telegram documentation: https://core.telegram.org/bots/api#link
+
+    :param url: URL of the link
+    :type url: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`Link`
+    """
+    def __init__(self, url: str, **kwargs):
+        self.url: str = url
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
