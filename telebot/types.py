@@ -1102,6 +1102,9 @@ class Message(JsonDeserializable):
     :param effect_id: Optional. Unique identifier of the message effect added to the message
     :type effect_id: :obj:`str`
 
+    :param rich_message: Optional. Message is a rich formatted message
+    :type rich_message: :class:`telebot.types.RichMessage`
+
     :param animation: Optional. Message is an animation, information about the animation. For backward
         compatibility, when this field is set, the document field will also be set
     :type animation: :class:`telebot.types.Animation`
@@ -1673,6 +1676,8 @@ class Message(JsonDeserializable):
             opts['guest_bot_caller_chat'] = Chat.de_json(obj['guest_bot_caller_chat'])
         if 'guest_query_id' in obj:
             opts['guest_query_id'] = obj['guest_query_id']
+        if 'rich_message' in obj:
+            opts['rich_message'] = RichMessage.de_json(obj['rich_message'])
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1819,6 +1824,7 @@ class Message(JsonDeserializable):
         self.guest_bot_caller_chat: Optional[Chat] = None
         self.guest_query_id: Optional[str] = None
         self.live_photo: Optional[LivePhoto] = None
+        self.rich_message: Optional[RichMessage] = None
 
         for key in options:
             setattr(self, key, options[key])
@@ -4646,8 +4652,29 @@ class InputInvoiceMessageContent(Dictionaryable):
         if self.is_flexible is not None:
             json_dict['is_flexible'] = self.is_flexible
         return json_dict
+    
+class InputRichMessageContent(Dictionaryable):
+    """
+    This object represents the content of a rich message to be sent as the result of an inline query.
 
-InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent]
+    :param rich_message: The message to be sent
+    :type rich_message: :class:`InputRichMessage`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichMessageContent`
+
+    """
+    def __init__(self, rich_message: InputRichMessage, **kwargs):
+        self.rich_message: InputRichMessage = rich_message
+
+    def to_dict(self) -> dict:
+        return {'rich_message': self.rich_message.to_dict()}
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+
+InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent]
 
 class ChosenInlineResult(JsonDeserializable):
     """
@@ -15940,4 +15967,356 @@ class RichBlockTable(RichBlock):
         obj['cells'] = [[RichBlockTableCell.de_json(cell) for cell in row] for row in obj['cells']]
         obj['caption'] = RichText.de_json(obj['caption']) if obj.get('caption') else None
         return cls(**obj)
+
+
+class RichBlockDetails(RichBlock):
+    """
+    An expandable block for details disclosure, corresponding to the HTML tag <details>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockdetails
+
+    :param type: Type of the block, always “details”
+    :type type: :obj:`str`
+
+    :param summary: Always shown summary of the block
+    :type summary: :class:`RichText`
+
+    :param blocks: Content of the block
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param is_open: Optional. True, if the content of the block is visible by default
+    :type is_open: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockDetails`
+    """
+    def __init__(self, summary: RichText, blocks: List[RichBlock], is_open: Optional[bool] = None, **kwargs):
+        super().__init__(type='details', **kwargs)
+        self.summary: RichText = summary
+        self.blocks: List[RichBlock] = blocks
+        self.is_open: Optional[bool] = is_open
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['summary'] = RichText.de_json(obj['summary'])
+        obj['blocks'] = [RichBlock.de_json(block) for block in obj['blocks']]
+        return cls(**obj)
+    
+    
+class RichBlockMap(RichBlock):
+    """
+    A block with a map, corresponding to the custom HTML tag <tg-map>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockmap
+
+    :param type: Type of the block, always “map”
+    :type type: :obj:`str`
+
+    :param location: Location of the center of the map
+    :type location: :class:`Location`
+
+    :param zoom: Map zoom level; 13-20
+    :type zoom: :obj:`int`
+
+    :param width: Expected width of the map
+    :type width: :obj:`int`
+
+    :param height: Expected height of the map
+    :type height: :obj:`int`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockMap`
+    """
+    def __init__(self, location: Location, zoom: int, width: int, height: int, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='map', **kwargs)
+        self.location: Location = location
+        self.zoom: int = zoom
+        self.width: int = width
+        self.height: int = height
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['location'] = Location.de_json(obj['location'])
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+    
+
+class RichBlockAnimation(RichBlock):
+    """
+    A block with an animation, corresponding to the HTML tag <video>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockanimation
+
+    :param type: Type of the block, always “animation”
+    :type type: :obj:`str`
+
+    :param animation: The animation
+    :type animation: :class:`Animation`
+
+    :param has_spoiler: Optional. True, if the media preview is covered by a spoiler animation
+    :type has_spoiler: :obj:`bool`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockAnimation`
+
+    """
+    def __init__(self, animation: Animation, has_spoiler: Optional[bool] = None, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='animation', **kwargs)
+        self.animation: Animation = animation
+        self.has_spoiler: Optional[bool] = has_spoiler
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['animation'] = Animation.de_json(obj['animation'])
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+    
+
+class RichBlockAudio(RichBlock):
+    """
+    A block with a music file, corresponding to the HTML tag <audio>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockaudio
+
+    :param type: Type of the block, always “audio”
+    :type type: :obj:`str`
+
+    :param audio: The audio
+    :type audio: :class:`Audio`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockAudio`
+    """
+    def __init__(self, audio: Audio, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='audio', **kwargs)
+        self.audio: Audio = audio
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['audio'] = Audio.de_json(obj['audio'])
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+    
+
+class RichBlockPhoto(RichBlock):
+    """
+    A block with a photo, corresponding to the HTML tag <img>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockphoto
+
+    :param type: Type of the block, always “photo”
+    :type type: :obj:`str`
+
+    :param photo: Available sizes of the photo
+    :type photo: :obj:`list` of :class:`PhotoSize`
+
+    :param has_spoiler: Optional. True, if the media preview is covered by a spoiler animation
+    :type has_spoiler: :obj:`bool`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockPhoto`
+    """
+    def __init__(self, photo: List[PhotoSize], has_spoiler: Optional[bool] = None, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='photo', **kwargs)
+        self.photo: List[PhotoSize] = photo
+        self.has_spoiler: Optional[bool] = has_spoiler
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+    
+
+class RichBlockVideo(RichBlock):
+    """
+    A block with a video, corresponding to the HTML tag <video>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockvideo
+
+    :param type: Type of the block, always “video”
+    :type type: :obj:`str`
+
+    :param video: The video
+    :type video: :class:`Video`
+
+    :param has_spoiler: Optional. True, if the media preview is covered by a spoiler animation
+    :type has_spoiler: :obj:`bool`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockVideo`
+    """
+    def __init__(self, video: Video, has_spoiler: Optional[bool] = None, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='video', **kwargs)
+        self.video: Video = video
+        self.has_spoiler: Optional[bool] = has_spoiler
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['video'] = Video.de_json(obj['video'])
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+
+
+class RichBlockVoiceNote(RichBlock):
+    """
+    A block with a voice note, corresponding to the HTML tag <audio>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richblockvoicenote
+
+    :param type: Type of the block, always “voice_note”
+    :type type: :obj:`str`
+
+    :param voice_note: The voice note
+    :type voice_note: :class:`Voice`
+
+    :param has_spoiler: Optional. True, if the media preview is covered by a spoiler animation
+    :type has_spoiler: :obj:`bool`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockVoiceNote`
+
+    """
+    def __init__(self, voice_note: Voice, has_spoiler: Optional[bool] = None, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='voice_note', **kwargs)
+        self.voice_note: Voice = voice_note
+        self.has_spoiler: Optional[bool] = has_spoiler
+        self.caption: Optional[RichBlockCaption] = caption
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['voice_note'] = Voice.de_json(obj['voice_note'])
+        obj['caption'] = RichBlockCaption.de_json(obj['caption']) if obj.get('caption') else None
+        return cls(**obj)
+
+
+class RichBlockThinking(RichBlock):
+    """
+    A block with a “Thinking…” placeholder, corresponding to the custom HTML tag <tg-thinking>.
+    The block may be used only in sendRichMessageDraft, therefore it can't be received in messages
+
+    :param type: Type of the block, always “thinking”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichBlockThinking`
+    """
+    def __init__(self, **kwargs):
+        super().__init__(type='thinking', **kwargs)
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class RichMessage(JsonDeserializable):
+    """
+    This object represents a rich formatted message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richmessage
+
+    :param blocks: Content of the message
+    :type blocks: :obj:`list` of :class:`RichBlock`
+
+    :param is_rtl: Optional. True, if the rich message must be shown right-to-left
+    :type is_rtl: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`RichMessage`
+    """
+    def __init__(self, blocks: List['RichBlock'], is_rtl: Optional[bool] = None, **kwargs):
+        self.blocks: List[RichBlock] = blocks
+        self.is_rtl: Optional[bool] = is_rtl
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['blocks'] = [RichBlock.de_json(block) for block in obj['blocks']]
+        return cls(**obj)
+
+
+class InputRichMessage(Dictionaryable):
+    """
+    This object represents a rich message to be sent. Exactly one of the fields html or markdown must be used.
+
+    :param html: Optional. Content of the rich message to send described using HTML formatting.
+        See rich message formatting options for more details.
+    :type html: :obj:`str`
+
+    :param markdown: Optional. Content of the rich message to send described using Markdown formatting.
+    See rich message formatting options for more details.
+    :type markdown: :obj:`str`
+
+    :param is_rtl: Optional. Pass True if the rich message must be shown right-to-left
+    :type is_rtl: :obj:`bool`
+
+    :param skip_entity_detection: Optional. Pass True to skip automatic detection of entities
+        (e.g., URLs, email addresses, username mentions, hashtags, cashtags, bot commands, or phone numbers) in the text
+    :type skip_entity_detection: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichMessage`
+    """
+    def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None, is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None, **kwargs):
+        self.html: Optional[str] = html
+        self.markdown: Optional[str] = markdown
+        self.is_rtl: Optional[bool] = is_rtl
+        self.skip_entity_detection: Optional[bool] = skip_entity_detection
+
+    def to_dict(self) -> dict:
+        data = {}
+        if self.html is not None:
+            data['html'] = self.html
+        if self.markdown is not None:
+            data['markdown'] = self.markdown
+        if self.is_rtl is not None:
+            data['is_rtl'] = self.is_rtl
+        if self.skip_entity_detection is not None:
+            data['skip_entity_detection'] = self.skip_entity_detection
+        return data
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
+
 

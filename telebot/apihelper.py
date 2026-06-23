@@ -282,6 +282,41 @@ def send_message(
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def send_rich_message(
+        token, chat_id, rich_message,
+        disable_notification=None, protect_content=None, message_effect_id=None,
+        reply_parameters=None, reply_markup=None, business_connection_id=None,
+        direct_messages_topic_id=None, suggested_post_parameters=None, allow_paid_broadcast=None):
+    method_url = r'sendRichMessage'
+    payload = {'chat_id': str(chat_id), 'rich_message': rich_message.to_json()}
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if reply_parameters:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    if business_connection_id:
+        payload['business_connection_id'] = business_connection_id
+    if direct_messages_topic_id is not None:
+        payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if suggested_post_parameters is not None:
+        payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
+    return _make_request(token, method_url, params=payload, method='post') 
+
+def send_rich_message_draft(token, chat_id, draft_id, rich_message, message_thread_id=None):
+    method_url = r'sendRichMessageDraft'
+    payload = {'chat_id': str(chat_id), 'draft_id': draft_id, 'rich_message': rich_message.to_json()}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
                 drop_pending_updates = None, timeout=None, secret_token=None):
     method_url = r'setWebhook'
@@ -1516,6 +1551,24 @@ def decline_chat_join_request(token, chat_id, user_id):
     return _make_request(token, method_url, params=payload, method='post')
 
 
+def answer_chat_join_request_query(token, chat_join_request_query_id, result):
+    method_url = 'answerChatJoinRequestQuery'
+    payload = {
+        'chat_join_request_query_id': chat_join_request_query_id,
+        'result': result
+    }
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def send_chat_join_request_web_app(token, chat_join_request_query_id, web_app_url):
+    method_url = 'sendChatJoinRequestWebApp'
+    payload = {
+        'chat_join_request_query_id': chat_join_request_query_id,
+        'web_app_url': web_app_url
+    }
+    return _make_request(token, method_url, params=payload, method='post')
+
+
 def set_chat_photo(token, chat_id, photo):
     method_url = 'setChatPhoto'
     payload = {'chat_id': chat_id}
@@ -1737,7 +1790,7 @@ def unpin_all_chat_messages(token, chat_id):
 
 def edit_message_text(
         token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
-        reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None):
+        reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None, rich_message=None):
     method_url = r'editMessageText'
     payload = {'text': text}
     if chat_id:
@@ -1758,6 +1811,8 @@ def edit_message_text(
         payload['business_connection_id'] = business_connection_id
     if timeout:
         payload['timeout'] = timeout
+    if rich_message:
+        payload['rich_message'] = rich_message.to_json()
     return _make_request(token, method_url, params=payload, method='post')
 
 
