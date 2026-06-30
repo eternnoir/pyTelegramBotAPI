@@ -14663,6 +14663,8 @@ class RichText(JsonDeserializable):
         if json_string is None: return None
         if isinstance(json_string, str):
             return json_string
+        if isinstance(json_string, list):
+            return [RichText.de_json(item) for item in json_string]
         obj = cls.check_json(json_string)
         type = obj.pop('type')
         if type == 'bold':
