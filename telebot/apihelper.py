@@ -286,7 +286,8 @@ def send_rich_message(
         token, chat_id, rich_message,
         disable_notification=None, protect_content=None, message_effect_id=None,
         reply_parameters=None, reply_markup=None, business_connection_id=None,
-        direct_messages_topic_id=None, suggested_post_parameters=None, allow_paid_broadcast=None):
+        direct_messages_topic_id=None, suggested_post_parameters=None, allow_paid_broadcast=None,
+        message_thread_id=None):
     method_url = r'sendRichMessage'
     payload = {'chat_id': str(chat_id), 'rich_message': rich_message.to_json()}
     if disable_notification is not None:
@@ -307,6 +308,8 @@ def send_rich_message(
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
     return _make_request(token, method_url, params=payload, method='post') 
 
 def send_rich_message_draft(token, chat_id, draft_id, rich_message, message_thread_id=None):

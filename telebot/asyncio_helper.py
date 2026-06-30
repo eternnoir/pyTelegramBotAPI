@@ -332,7 +332,7 @@ async def send_rich_message(
         token, chat_id, rich_message,
         disable_notification=None, protect_content=None, message_effect_id=None,
         reply_parameters=None, reply_markup=None, business_connection_id=None, payload=None, allow_paid_broadcast=None, direct_messages_topic_id=None,
-        suggested_post_parameters=None):
+        suggested_post_parameters=None, message_thread_id=None):
     method_url = r'sendRichMessage'
     payload = {'chat_id': chat_id, 'rich_message': rich_message.to_json()}
     if disable_notification is not None:
@@ -355,6 +355,8 @@ async def send_rich_message(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
     
     return await _process_request(token, method_url, params=payload, method='post')
 

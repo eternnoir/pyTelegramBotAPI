@@ -14661,58 +14661,60 @@ class RichText(JsonDeserializable):
     @classmethod
     def de_json(cls, json_string):
         if json_string is None: return None
+        if isinstance(json_string, str):
+            return json_string
         obj = cls.check_json(json_string)
-        type = obj['type']
+        type = obj.pop('type')
         if type == 'bold':
-            return RichTextBold.de_json(json_string)
+            return RichTextBold.de_json(obj)
         elif type == 'italic':
-            return RichTextItalic.de_json(json_string)
+            return RichTextItalic.de_json(obj)
         elif type == 'underline':
-            return RichTextUnderline.de_json(json_string)
+            return RichTextUnderline.de_json(obj)
         elif type == 'strikethrough':
-            return RichTextStrikethrough.de_json(json_string)
+            return RichTextStrikethrough.de_json(obj)
         elif type == 'spoiler':
-            return RichTextSpoiler.de_json(json_string)
+            return RichTextSpoiler.de_json(obj)
         elif type == 'date_time':
-            return RichTextDateTime.de_json(json_string)
+            return RichTextDateTime.de_json(obj)
         elif type == 'text_mention':
-            return RichTextTextMention.de_json(json_string)
+            return RichTextTextMention.de_json(obj)
         elif type == 'subscript':
-            return RichTextSubscript.de_json(json_string)
+            return RichTextSubscript.de_json(obj)
         elif type == 'superscript':
-            return RichTextSuperscript.de_json(json_string)
+            return RichTextSuperscript.de_json(obj)
         elif type == 'marked':
-            return RichTextMarked.de_json(json_string)
+            return RichTextMarked.de_json(obj)
         elif type == 'code':
-            return RichTextCode.de_json(json_string)
+            return RichTextCode.de_json(obj)
         elif type == 'custom_emoji':
-            return RichTextCustomEmoji.de_json(json_string)
+            return RichTextCustomEmoji.de_json(obj)
         elif type == 'mathematical_expression':
-            return RichTextMathematicalExpression.de_json(json_string)
+            return RichTextMathematicalExpression.de_json(obj)
         elif type == 'url':
-            return RichTextUrl.de_json(json_string)
+            return RichTextUrl.de_json(obj)
         elif type == 'email_address':
-            return RichTextEmailAddress.de_json(json_string)
+            return RichTextEmailAddress.de_json(obj)
         elif type == 'phone_number':
-            return RichTextPhoneNumber.de_json(json_string)
+            return RichTextPhoneNumber.de_json(obj)
         elif type == 'bank_card_number':
-            return RichTextBankCardNumber.de_json(json_string)
+            return RichTextBankCardNumber.de_json(obj)
         elif type == 'mention':
-            return RichTextMention.de_json(json_string)
+            return RichTextMention.de_json(obj)
         elif type == 'hashtag':
-            return RichTextHashtag.de_json(json_string)
+            return RichTextHashtag.de_json(obj)
         elif type == 'cashtag':
-            return RichTextCashtag.de_json(json_string)
+            return RichTextCashtag.de_json(obj)
         elif type == 'bot_command':
-            return RichTextBotCommand.de_json(json_string)
+            return RichTextBotCommand.de_json(obj)
         elif type == 'anchor':
-            return RichTextAnchor.de_json(json_string)
+            return RichTextAnchor.de_json(obj)
         elif type == 'anchor_link':
-            return RichTextAnchorLink.de_json(json_string)
+            return RichTextAnchorLink.de_json(obj)
         elif type == 'reference':
-            return RichTextReference.de_json(json_string)
+            return RichTextReference.de_json(obj)
         elif type == 'reference_link':
-            return RichTextReferenceLink.de_json(json_string)
+            return RichTextReferenceLink.de_json(obj)
         return None
     
 class RichTextBold(RichText):
@@ -15585,49 +15587,49 @@ class RichBlock(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        type = obj['type']
+        type = obj.pop('type', None)
         if type == 'paragraph':
-            return RichBlockParagraph.de_json(json_string)
+            return RichBlockParagraph.de_json(obj)
         elif type == 'heading':
-            return RichBlockSectionHeading.de_json(json_string)
+            return RichBlockSectionHeading.de_json(obj)
         elif type == 'pre':
-            return RichBlockPreformatted.de_json(json_string)
+            return RichBlockPreformatted.de_json(obj)
         elif type == 'footer':
-            return RichBlockFooter.de_json(json_string)
+            return RichBlockFooter.de_json(obj)
         elif type == 'divider':
-            return RichBlockDivider.de_json(json_string)
+            return RichBlockDivider.de_json(obj)
         elif type == 'mathematical_expression':
-            return RichBlockMathematicalExpression.de_json(json_string)
+            return RichBlockMathematicalExpression.de_json(obj)
         elif type == 'anchor':
-            return RichBlockAnchor.de_json(json_string)
+            return RichBlockAnchor.de_json(obj)
         elif type == 'list':
-            return RichBlockList.de_json(json_string)
+            return RichBlockList.de_json(obj)
         elif type == 'blockquote':
-            return RichBlockBlockQuotation.de_json(json_string)
+            return RichBlockBlockQuotation.de_json(obj)
         elif type == 'pullquote':
-            return RichBlockPullQuotation.de_json(json_string)
+            return RichBlockPullQuotation.de_json(obj)
         elif type == 'collage':
-            return RichBlockCollage.de_json(json_string)
+            return RichBlockCollage.de_json(obj)
         elif type == 'slideshow':
-            return RichBlockSlideshow.de_json(json_string)
+            return RichBlockSlideshow.de_json(obj)
         elif type == 'table':
-            return RichBlockTable.de_json(json_string)
+            return RichBlockTable.de_json(obj)
         elif type == 'details':
-            return RichBlockDetails.de_json(json_string)
+            return RichBlockDetails.de_json(obj)
         elif type == 'map':
-            return RichBlockMap.de_json(json_string)
+            return RichBlockMap.de_json(obj)
         elif type == 'animation':
-            return RichBlockAnimation.de_json(json_string)
+            return RichBlockAnimation.de_json(obj)
         elif type == 'audio':
-            return RichBlockAudio.de_json(json_string)
+            return RichBlockAudio.de_json(obj)
         elif type == 'photo':
-            return RichBlockPhoto.de_json(json_string)
+            return RichBlockPhoto.de_json(obj)
         elif type == 'video':
-            return RichBlockVideo.de_json(json_string)
+            return RichBlockVideo.de_json(obj)
         elif type == 'voice_note':
-            return RichBlockVoiceNote.de_json(json_string)
+            return RichBlockVoiceNote.de_json(obj)
         elif type == 'thinking':
-            return RichBlockThinking.de_json(json_string)
+            return RichBlockThinking.de_json(obj)
         return None
     
     
