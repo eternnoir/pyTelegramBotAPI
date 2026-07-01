@@ -6143,8 +6143,7 @@ class AsyncTeleBot:
             self, chat_id: int,
             draft_id: int,
             rich_message: types.InputRichMessage,
-            message_thread_id: Optional[int]=None,
-            business_connection_id: Optional[str]=None) -> bool:
+            message_thread_id: Optional[int]=None) -> bool:
         """
         Use this method to stream a partial rich message to a user while the message is being generated
         Note that the streamed draft is ephemeral and acts as a temporary 30-second preview - once the output is finalized,
@@ -6164,14 +6163,11 @@ class AsyncTeleBot:
         :param message_thread_id: Unique identifier for the target message thread
         :type message_thread_id: :obj:`int`
 
-        :param business_connection_id: Identifier of a business connection, in which the message will be sent
-        :type business_connection_id: :obj:`str`
-
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
         return await asyncio_helper.send_rich_message_draft(
-            self.token, chat_id, draft_id, rich_message, message_thread_id=message_thread_id, business_connection_id=business_connection_id)
+            self.token, chat_id, draft_id, rich_message, message_thread_id=message_thread_id)
         
     async def send_message_draft(
             self, chat_id: int,

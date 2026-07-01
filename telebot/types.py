@@ -1694,6 +1694,7 @@ class Message(JsonDeserializable):
             opts['guest_query_id'] = obj['guest_query_id']
         if 'rich_message' in obj:
             opts['rich_message'] = RichMessage.de_json(obj['rich_message'])
+            content_type = 'rich_message'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
