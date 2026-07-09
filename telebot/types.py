@@ -393,7 +393,7 @@ class ChatJoinRequest(JsonDeserializable):
 
     :param query_id: Optional. Identifier of the join request query; for bots assigned to process join request only.
         If present, then the bot must call sendChatJoinRequestWebApp or directly call answerChatJoinRequestQuery within 10 seconds.
-    :type query_id: :obj:`int`
+    :type query_id: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatJoinRequest`
@@ -414,7 +414,7 @@ class ChatJoinRequest(JsonDeserializable):
         self.bio: Optional[str] = bio
         self.invite_link: Optional[ChatInviteLink] = invite_link
         self.user_chat_id: int = user_chat_id
-        self.query_id: Optional[int] = query_id
+        self.query_id: Optional[str] = query_id
 
 
 class WebhookInfo(JsonDeserializable):
@@ -7113,9 +7113,9 @@ class InputMedia(Dictionaryable, JsonSerializable):
     * :class:`InputMediaPhoto`
     * :class:`InputMediaVideo`
     """
-    def __init__(self, type, media, caption=None, parse_mode=None, caption_entities=None, thumbnail=None):
+    def __init__(self, type, media=None, caption=None, parse_mode=None, caption_entities=None, thumbnail=None):
         self.type: str = type
-        self.media: str = media
+        self.media: Optional[str] = media
         self.caption: Optional[str] = caption
         self.parse_mode: Optional[str] = parse_mode
         self.caption_entities: Optional[List[MessageEntity]] = caption_entities
@@ -7146,7 +7146,9 @@ class InputMedia(Dictionaryable, JsonSerializable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        json_dict = {'type': self.type, 'media': self._media_dic}
+        json_dict = {'type': self.type}
+        if self.media:
+            json_dict['media'] = self._media_dic
         if self._thumbnail_dic:
             json_dict['thumbnail'] = self._thumbnail_dic
         if self.caption:
@@ -14509,7 +14511,7 @@ class PollMedia(JsonDeserializable):
         return cls(**obj)
 
 
-class InputMediaLink(JsonDeserializable):
+class InputMediaLink(InputMedia):
     """
     This object represents an HTTP link to be sent.
 
@@ -14521,18 +14523,19 @@ class InputMediaLink(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`InputMediaLink`
     """
+
     def __init__(self, url: str, **kwargs):
+        super().__init__(type='link', **kwargs)
         self.url: str = url
 
     def to_json(self):
         return json.dumps(self.to_dict())
     
     def to_dict(self):
-        return {
-            'type': 'link',
-            'url': self.url
-        }
-    
+        data = super().to_dict()
+        data['url'] = self.url
+        return data
+
 
 # why not..
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
@@ -14862,12 +14865,20 @@ class RichTextDateTime(RichText):
     :param text: The text
     :type text: :class:`RichText`
 
+    :param unix_time: The Unix time associated with the entity
+    :type unix_time: :obj:`int`
+
+    :param date_time_format: The string that defines the formatting of the date and time. See date-time entity formatting for more details.
+    :type date_time_format: :obj:`str`
+
     :return: Instance of the class
     :rtype: :class:`RichTextDateTime`
     """
-    def __init__(self, text: RichText, **kwargs):
+    def __init__(self, text: RichText, unix_time: int, date_time_format: str, **kwargs):
         super().__init__(type='date_time', **kwargs)
         self.text: RichText = text
+        self.unix_time: int = unix_time
+        self.date_time_format: str = date_time_format
 
     @classmethod
     def de_json(cls, json_string):
@@ -15491,14 +15502,14 @@ class RichBlockTableCell(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`RichBlockTableCell`
     """
-    def __init__(self, text: Optional[RichText] = None, is_header: Optional[bool] = None, colspan: Optional[int] = None, rowspan: Optional[int] = None,
-                    align: Optional[str] = None, valign: Optional[str] = None, **kwargs):
+    def __init__(self, align: str, valign: str, text: Optional[RichText] = None, is_header: Optional[bool] = None,
+                 colspan: Optional[int] = None, rowspan: Optional[int] = None, **kwargs):
         self.text: Optional[RichText] = text
         self.is_header: Optional[bool] = is_header
         self.colspan: Optional[int] = colspan
         self.rowspan: Optional[int] = rowspan
-        self.align: Optional[str] = align
-        self.valign: Optional[str] = valign
+        self.align: str = align
+        self.valign: str = valign
 
     @classmethod
     def de_json(cls, json_string):
@@ -16255,9 +16266,6 @@ class RichBlockVoiceNote(RichBlock):
     :param voice_note: The voice note
     :type voice_note: :class:`Voice`
 
-    :param has_spoiler: Optional. True, if the media preview is covered by a spoiler animation
-    :type has_spoiler: :obj:`bool`
-
     :param caption: Optional. Caption of the block
     :type caption: :class:`RichBlockCaption`
 
@@ -16265,10 +16273,9 @@ class RichBlockVoiceNote(RichBlock):
     :rtype: :class:`RichBlockVoiceNote`
 
     """
-    def __init__(self, voice_note: Voice, has_spoiler: Optional[bool] = None, caption: Optional[RichBlockCaption] = None, **kwargs):
+    def __init__(self, voice_note: Voice, caption: Optional[RichBlockCaption] = None, **kwargs):
         super().__init__(type='voice_note', **kwargs)
         self.voice_note: Voice = voice_note
-        self.has_spoiler: Optional[bool] = has_spoiler
         self.caption: Optional[RichBlockCaption] = caption
 
     @classmethod
@@ -16285,14 +16292,21 @@ class RichBlockThinking(RichBlock):
     A block with a “Thinking…” placeholder, corresponding to the custom HTML tag <tg-thinking>.
     The block may be used only in sendRichMessageDraft, therefore it can't be received in messages
 
+    Telegram documentation: https://core.telegram.org/bots/api#richblockthinking
+
     :param type: Type of the block, always “thinking”
     :type type: :obj:`str`
+
+    :param text: Text of the block. See https://t.me/addemoji/AIActions for examples of custom emoji,
+        which are recommended for usage in the block.
+    :type text: :class:`RichText`
 
     :return: Instance of the class
     :rtype: :class:`RichBlockThinking`
     """
-    def __init__(self, **kwargs):
+    def __init__(self, text: RichText = None, **kwargs):
         super().__init__(type='thinking', **kwargs)
+        self.text: RichText = text
 
     @classmethod
     def de_json(cls, json_string):
