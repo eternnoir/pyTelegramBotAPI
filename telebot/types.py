@@ -14674,7 +14674,7 @@ class RichText(JsonDeserializable):
         if isinstance(json_string, list):
             return [RichText.de_json(item) for item in json_string]
         obj = cls.check_json(json_string)
-        type = obj.pop('type')
+        type = obj.pop('type', None)
         if type == 'bold':
             return RichTextBold.de_json(obj)
         elif type == 'italic':

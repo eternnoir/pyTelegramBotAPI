@@ -334,7 +334,7 @@ async def send_rich_message(
         reply_parameters=None, reply_markup=None, business_connection_id=None,  allow_paid_broadcast=None, direct_messages_topic_id=None,
         suggested_post_parameters=None, message_thread_id=None):
     method_url = r'sendRichMessage'
-    payload = {'chat_id': chat_id, 'rich_message': rich_message.to_json()}
+    payload = {'chat_id': str(chat_id), 'rich_message': rich_message.to_json()}
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if protect_content is not None:

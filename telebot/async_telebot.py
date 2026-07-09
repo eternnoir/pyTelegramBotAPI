@@ -7410,7 +7410,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagetext
 
-        :param text: New text of the message, 1-4096 characters after entities parsing
+        :param text: New text of the message, 1-4096 characters after entity parsing; required if rich_message isn't specified
         :type text: :obj:`str`
 
         :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
