@@ -331,7 +331,7 @@ async def send_message(
 async def send_rich_message(
         token, chat_id, rich_message,
         disable_notification=None, protect_content=None, message_effect_id=None,
-        reply_parameters=None, reply_markup=None, business_connection_id=None, payload=None, allow_paid_broadcast=None, direct_messages_topic_id=None,
+        reply_parameters=None, reply_markup=None, business_connection_id=None,  allow_paid_broadcast=None, direct_messages_topic_id=None,
         suggested_post_parameters=None, message_thread_id=None):
     method_url = r'sendRichMessage'
     payload = {'chat_id': chat_id, 'rich_message': rich_message.to_json()}
@@ -347,8 +347,6 @@ async def send_rich_message(
         payload['reply_markup'] = await _convert_markup(reply_markup)
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
-    if payload:
-        payload['payload'] = payload
     if allow_paid_broadcast is not None:
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
@@ -1806,10 +1804,12 @@ async def unpin_all_chat_messages(token, chat_id):
 # Updating messages
 
 async def edit_message_text(
-        token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
+        token, text=None, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
         reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None, rich_message=None):
     method_url = r'editMessageText'
-    payload = {'text': text}
+    payload = {}
+    if text:
+        payload['text'] = text
     if chat_id:
         payload['chat_id'] = chat_id
     if message_id:

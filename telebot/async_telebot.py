@@ -7393,7 +7393,7 @@ class AsyncTeleBot:
         return await asyncio_helper.unpin_all_chat_messages(self.token, chat_id)
 
     async def edit_message_text(
-            self, text: str,
+            self, text: Optional[str]=None,
             chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None,
@@ -7451,6 +7451,11 @@ class AsyncTeleBot:
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
+
+        if (rich_message is not None) and (text is not None):
+            raise ValueError("Both 'rich_message' and 'text' parameters are provided. Only one of them should be provided.")
+        if (rich_message is None) and (text is None):
+            raise ValueError("Both 'rich_message' and 'text' parameters are None. One of them should be provided.")
 
         if disable_web_page_preview is not None:
             if link_preview_options:

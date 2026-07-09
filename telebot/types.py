@@ -7147,7 +7147,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
 
     def to_dict(self):
         json_dict = {'type': self.type}
-        if self.media:
+        if self.media is not None:
             json_dict['media'] = self._media_dic
         if self._thumbnail_dic:
             json_dict['thumbnail'] = self._thumbnail_dic
@@ -7163,6 +7163,9 @@ class InputMedia(Dictionaryable, JsonSerializable):
         """
         :meta private:
         """
+        if self.media is None:
+            raise ValueError('Invalid method call: media is None')
+        
         if service_utils.is_string(self.media):
             return self.to_json(), None
 
@@ -14472,7 +14475,8 @@ class PollMedia(JsonDeserializable):
     """
     def __init__(self, animation: Optional[Animation] = None, audio: Optional[Audio] = None, document: Optional[Document] = None,
                     live_photo: Optional[LivePhoto] = None, location: Optional[Location] = None, photo: Optional[List[PhotoSize]] = None,
-                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, link: Optional[Link] = None):
+                    sticker: Optional[Sticker] = None, venue: Optional[Venue] = None, video: Optional[Video] = None, link: Optional[Link] = None,
+                    **kwargs):
         self.animation: Optional[Animation] = animation
         self.audio: Optional[Audio] = audio
         self.document: Optional[Document] = document
@@ -16312,6 +16316,7 @@ class RichBlockThinking(RichBlock):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
 

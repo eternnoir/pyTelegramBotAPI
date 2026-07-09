@@ -1792,10 +1792,12 @@ def unpin_all_chat_messages(token, chat_id):
 # Updating messages
 
 def edit_message_text(
-        token, text, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
+        token, text=None, chat_id=None, message_id=None, inline_message_id=None, parse_mode=None, entities = None,
         reply_markup=None, link_preview_options=None, business_connection_id=None, timeout=None, rich_message=None):
     method_url = r'editMessageText'
-    payload = {'text': text}
+    payload = {}
+    if text:
+        payload['text'] = text
     if chat_id:
         payload['chat_id'] = chat_id
     if message_id:
