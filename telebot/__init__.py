@@ -4453,7 +4453,105 @@ class TeleBot:
         """
         return apihelper.send_message_draft(
             self.token, chat_id, draft_id, text, parse_mode=parse_mode, entities=entities, message_thread_id=message_thread_id)
+    
+    def send_rich_message(
+            self, chat_id: Union[int, str],
+            rich_message: types.InputRichMessage,
+            business_connection_id: Optional[str]=None,
+            message_thread_id: Optional[int]=None,
+            direct_messages_topic_id: Optional[int]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_paid_broadcast: Optional[bool]=None,
+            message_effect_id: Optional[str]=None,
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send rich messages. If the message contains a block with a media element,
+        then the bot must have the right to send the media to the chat. On success, the sent Message is returned.
 
+        Telegram documentation: https://core.telegram.org/bots/api#sendrichmessage
+
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param rich_message: The message to be sent
+        :type rich_message: :class:`telebot.types.InputRichMessage`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance.
+        :type allow_paid_broadcast: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
+            for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
+        :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
+
+        :param reply_parameters: Description of the message to reply to
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove a reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove` or :class:`telebot.types.ForceReply`
+
+        :param business_connection_id: Identifier of a business connection
+        :type business_connection_id: :obj:`str`
+
+        :param message_thread_id: The thread identifier of a message from which the reply will be sent
+        :type message_thread_id: :obj:`int`
+
+        :param direct_messages_topic_id: Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+        :type direct_messages_topic_id: :obj:`int`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        return types.Message.de_json(
+            apihelper.send_rich_message(
+                self.token, chat_id, rich_message, disable_notification=disable_notification, protect_content=protect_content,
+                allow_paid_broadcast=allow_paid_broadcast, message_effect_id=message_effect_id, suggested_post_parameters=suggested_post_parameters, reply_parameters=reply_parameters,
+                reply_markup=reply_markup, business_connection_id=business_connection_id, message_thread_id=message_thread_id, direct_messages_topic_id=direct_messages_topic_id)
+            )
+
+    def send_rich_message_draft(
+            self, chat_id: int,
+            draft_id: int,
+            rich_message: types.InputRichMessage,
+            message_thread_id: Optional[int]=None) -> bool:
+        """
+        Use this method to stream a partial rich message to a user while the message is being generated
+        Note that the streamed draft is ephemeral and acts as a temporary 30-second preview - once the output
+        is finalized, you must call sendRichMessage with the complete message to persist it in the user's chat. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendrichmessagedraft
+
+        :param chat_id: Unique identifier for the target private chat
+        :type chat_id: :obj:`int`
+
+        :param draft_id: Unique identifier of the message draft; must be non-zero. Changes to drafts with the same identifier are animated.
+        :type draft_id: :obj:`int`
+
+        :param rich_message: The partial message to be streamed
+        :type rich_message: :class:`telebot.types.InputRichMessage`
+
+        :param message_thread_id: Unique identifier for the target message thread
+        :type message_thread_id: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.send_rich_message_draft(
+            self.token, chat_id, draft_id, rich_message, message_thread_id=message_thread_id)
 
 
     def send_chat_action(
@@ -5114,6 +5212,42 @@ class TeleBot:
         """
         return apihelper.decline_chat_join_request(self.token, chat_id, user_id)
 
+    def answer_chat_join_request_query(self, chat_join_request_query_id: str, result: str) -> bool:
+        """
+        Use this method to process a received chat join request query. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerchatjoinrequestquery
+
+        :param chat_join_request_query_id: Unique identifier of the join request query
+        :type chat_join_request_query_id: :obj:`str`
+
+        :param result: Result of the query. Must be either “approve” to allow the user to join the chat,
+            “decline” to disallow the user to join the chat, or “queue” to leave the decision to other administrators.
+        :type result: :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.answer_chat_join_request_query(self.token, chat_join_request_query_id, result)
+
+    def send_chat_join_request_web_app(self, chat_join_request_query_id: str, web_app_url: str) -> bool:
+        """
+        Use this method to process a received chat join request query by showing a Mini App to the
+        user before deciding the outcome. Call answerChatJoinRequestQuery to resolve the join request query based on the user interaction with the Mini App.
+        Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendchatjoinrequestwebapp
+
+        :param chat_join_request_query_id: Unique identifier of the join request query
+        :type chat_join_request_query_id: :obj:`str`
+
+        :param web_app_url: The URL of the Mini App to be opened
+        :type web_app_url: :obj:`str`
+
+        :return: True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.send_chat_join_request_web_app(self.token, chat_join_request_query_id, web_app_url)
 
     def set_chat_photo(self, chat_id: Union[int, str], photo: Any) -> bool:
         """
@@ -5649,7 +5783,7 @@ class TeleBot:
 
 
     def edit_message_text(
-            self, text: str,
+            self, text: Optional[str]=None,
             chat_id: Optional[Union[int, str]]=None,
             message_id: Optional[int]=None,
             inline_message_id: Optional[str]=None,
@@ -5659,13 +5793,14 @@ class TeleBot:
             reply_markup: Optional[types.InlineKeyboardMarkup]=None,
             link_preview_options : Optional[types.LinkPreviewOptions]=None,
             business_connection_id: Optional[str]=None,
-            timeout: Optional[int]=None) -> Union[types.Message, bool]:
+            timeout: Optional[int]=None,
+            rich_message: Optional[types.InputRichMessage]=None) -> Union[types.Message, bool]:
         """
         Use this method to edit text and game messages.
 
         Telegram documentation: https://core.telegram.org/bots/api#editmessagetext
 
-        :param text: New text of the message, 1-4096 characters after entities parsing
+        :param text: New text of the message, 1-4096 characters after entity parsing; required if rich_message isn't specified
         :type text: :obj:`str`
 
         :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
@@ -5698,10 +5833,19 @@ class TeleBot:
         :param timeout: Timeout in seconds for the request.
         :type timeout: :obj:`int`
 
+        :param rich_message: New rich content of the message; required if text isn't specified
+        :type rich_message: :obj:`types.InputRichMessage`
+
         :return: On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
         :rtype: :obj:`types.Message` or :obj:`bool`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_web_page_preview = self.disable_web_page_preview if (disable_web_page_preview is None) else disable_web_page_preview
+
+        if (rich_message is not None) and (text is not None):
+            raise ValueError("Both 'rich_message' and 'text' parameters are provided. Only one of them should be provided.")
+        if (rich_message is None) and (text is None):
+            raise ValueError("Both 'rich_message' and 'text' parameters are None. One of them should be provided.")
 
         if disable_web_page_preview is not None:
             # show a deprecation warning
@@ -5723,9 +5867,9 @@ class TeleBot:
             link_preview_options = types.LinkPreviewOptions(is_disabled=self.disable_web_page_preview)
 
         result = apihelper.edit_message_text(
-            self.token, text, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
+            self.token, text=text, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
             parse_mode=parse_mode, entities=entities, reply_markup=reply_markup, link_preview_options=link_preview_options,
-            business_connection_id=business_connection_id, timeout=timeout)
+            business_connection_id=business_connection_id, timeout=timeout, rich_message=rich_message)
 
         if isinstance(result, bool):  # if edit inline message return is bool not Message.
             return result
