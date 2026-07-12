@@ -7164,9 +7164,8 @@ class InputMedia(Dictionaryable, JsonSerializable):
         :meta private:
         """
         if self.media is None:
-            return None, None
-        
-        if service_utils.is_string(self.media):
+            return self.to_json(), None
+        elif service_utils.is_string(self.media):
             return self.to_json(), None
 
         media_dict = {self._media_name: self.media}
@@ -16411,4 +16410,3 @@ class Link(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
