@@ -7164,7 +7164,7 @@ class InputMedia(Dictionaryable, JsonSerializable):
         :meta private:
         """
         if self.media is None:
-            raise ValueError('Invalid method call: media is None')
+            return None, None
         
         if service_utils.is_string(self.media):
             return self.to_json(), None
@@ -16308,7 +16308,7 @@ class RichBlockThinking(RichBlock):
     :return: Instance of the class
     :rtype: :class:`RichBlockThinking`
     """
-    def __init__(self, text: RichText = None, **kwargs):
+    def __init__(self, text: RichText, **kwargs):
         super().__init__(type='thinking', **kwargs)
         self.text: RichText = text
 

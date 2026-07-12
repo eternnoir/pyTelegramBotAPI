@@ -5867,7 +5867,7 @@ class TeleBot:
             link_preview_options = types.LinkPreviewOptions(is_disabled=self.disable_web_page_preview)
 
         result = apihelper.edit_message_text(
-            self.token, text, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
+            self.token, text=text, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
             parse_mode=parse_mode, entities=entities, reply_markup=reply_markup, link_preview_options=link_preview_options,
             business_connection_id=business_connection_id, timeout=timeout, rich_message=rich_message)
 
