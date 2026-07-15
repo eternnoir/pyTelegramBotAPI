@@ -3345,7 +3345,8 @@ class TeleBot:
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
                 direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
-                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id,receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id
+                )
         )
 
 
