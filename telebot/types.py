@@ -1020,6 +1020,13 @@ class Message(JsonDeserializable):
     :param sender_tag: Optional. The tag of the message sender in the chat
     :type sender_tag: :obj:`str`
 
+    :param receiver_user: Optional. For ephemeral messages, the user who received the message
+    :type receiver_user: :class:`telebot.types.User`
+
+    :param ephemeral_message_id: Optional. For ephemeral messages, identifier of the ephemeral message inside this chat.
+        The identifier may be reused for another ephemeral message after the message is deleted or expires.
+    :type ephemeral_message_id: :obj:`int`
+
     :param sender_business_bot info: Optional. Information about the business bot that sent the message
     :type sender_business_bot_info: :class:`telebot.types.User`
 
@@ -1695,6 +1702,10 @@ class Message(JsonDeserializable):
         if 'rich_message' in obj:
             opts['rich_message'] = RichMessage.de_json(obj['rich_message'])
             content_type = 'rich_message'
+        if 'receiver_user' in obj:
+            opts['receiver_user'] = User.de_json(obj['receiver_user'])
+        if 'ephemeral_message_id' in obj:
+            opts['ephemeral_message_id'] = obj['ephemeral_message_id']
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -4049,6 +4060,9 @@ class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param description: Description of the command; 1-256 characters.
     :type description: :obj:`str`
 
+    :param is_ephemeral: Optional. True, if the command sends an ephemeral message, which can be seen only by the sender of the message and the bot
+    :type is_ephemeral: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.BotCommand`
     """
@@ -4058,15 +4072,19 @@ class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, command, description, **kwargs):
+    def __init__(self, command: str, description: str, is_ephemeral: Optional[bool] = None, **kwargs):
         self.command: str = command
         self.description: str = description
+        self.is_ephemeral: Optional[bool] = is_ephemeral
 
     def to_json(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        return {'command': self.command, 'description': self.description}
+        data = {'command': self.command, 'description': self.description}
+        if self.is_ephemeral is not None:
+            data['is_ephemeral'] = self.is_ephemeral
+        return data
 
 
 # BotCommandScopes
@@ -16350,6 +16368,9 @@ class InputRichMessage(Dictionaryable):
     """
     This object represents a rich message to be sent. Exactly one of the fields html or markdown must be used.
 
+    :param blocks: Optional. Content of the rich message to send described as a list of blocks
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
     :param html: Optional. Content of the rich message to send described using HTML formatting.
         See rich message formatting options for more details.
     :type html: :obj:`str`
@@ -16373,12 +16394,13 @@ class InputRichMessage(Dictionaryable):
     :rtype: :class:`InputRichMessage`
     """
     def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None, is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None,
-                    media: Optional[List[InputRichMessageMedia]] = None, **kwargs):
+                    media: Optional[List[InputRichMessageMedia]] = None, blocks: Optional[List[InputRichBlock]] = None, **kwargs):
         self.html: Optional[str] = html
         self.markdown: Optional[str] = markdown
         self.is_rtl: Optional[bool] = is_rtl
         self.skip_entity_detection: Optional[bool] = skip_entity_detection
         self.media: Optional[List[InputRichMessageMedia]] = media
+        self.blocks: Optional[List[InputRichBlock]] = blocks
 
     def to_dict(self) -> dict:
         data = {}
@@ -16392,6 +16414,8 @@ class InputRichMessage(Dictionaryable):
             data['skip_entity_detection'] = self.skip_entity_detection
         if self.media is not None:
             data['media'] = [m.to_dict() for m in self.media]
+        if self.blocks is not None:
+            data['blocks'] = [b.to_dict() for b in self.blocks]
         return data
     
     def to_json(self) -> str:
