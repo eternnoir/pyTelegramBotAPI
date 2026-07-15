@@ -10029,12 +10029,18 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#replyparameters
 
-    :param message_id: Identifier of the message that will be replied to in the current chat, or in the chat chat_id if it is specified
+    :param message_id: Optional. Identifier of the message that will be replied to in the current chat,
+        or in the chat chat_id if it is specified. Required if ephemeral_message_id isn't specified.
     :type message_id: :obj:`int`
 
     :param chat_id: Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username
         of the channel (in the format @channelusername)
     :type chat_id: :obj:`int` or :obj:`str`
+
+    :param ephemeral_message_id: Optional. Identifier of the incoming ephemeral message that will be replied to in the current chat.
+        A reply to an ephemeral message must itself be an ephemeral message. An ephemeral message may only be replied to within 15 seconds
+        of being sent. Required if message_id isn't specified.
+    :type ephemeral_message_id: :obj:`int`
 
     :param allow_sending_without_reply: Optional. Pass True if the message should be sent even if the specified message to be replied to is not found;
         can be used only for replies in the same chat and forum topic.
@@ -10073,11 +10079,11 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
         return cls(**obj)
 
-    def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
+    def __init__(self, message_id: Optional[int] = None, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
                  quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None,
-                    poll_option_id: Optional[str] = None, **kwargs) -> None:
+                    poll_option_id: Optional[str] = None, ephemeral_message_id: Optional[int] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -10087,6 +10093,10 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.quote_position: Optional[int] = quote_position
         self.checklist_task_id: Optional[int] = checklist_task_id
         self.poll_option_id: Optional[str] = poll_option_id
+        self.ephemeral_message_id: Optional[int] = ephemeral_message_id
+
+        if self.message_id is None and self.ephemeral_message_id is None:
+            raise ValueError("Either 'message_id' or 'ephemeral_message_id' must be provided.")
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -10108,8 +10118,9 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['checklist_task_id'] = self.checklist_task_id
         if self.poll_option_id is not None:
             json_dict['poll_option_id'] = self.poll_option_id
+        if self.ephemeral_message_id is not None:
+            json_dict['ephemeral_message_id'] = self.ephemeral_message_id
         return json_dict
-
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
 

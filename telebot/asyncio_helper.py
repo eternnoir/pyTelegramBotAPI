@@ -3001,6 +3001,79 @@ async def stop_poll(token, chat_id, message_id, reply_markup=None, business_conn
         payload['business_connection_id'] = business_connection_id
     return await _process_request(token, method_url, params=payload)
 
+async def edit_ephemeral_message_text(token, chat_id, receiver_user_id, ephemeral_message_id, text,
+                                    parse_mode=None, entities=None, link_preview_options=None,
+                                    reply_markup=None):
+    method_url = r'editEphemeralMessageText'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id,
+        'text': text
+    }
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
+    if link_preview_options:
+        payload['link_preview_options'] = json.dumps(link_preview_options.to_dict())
+    if reply_markup:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
+    return await _process_request(token, method_url, params=payload)
+
+
+async def edit_ephemeral_message_media(token, chat_id, receiver_user_id, ephemeral_message_id, media,
+                                    reply_markup=None):
+    method_url = r'editEphemeralMessageMedia'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    media_json, files = await convert_input_media(media)
+    payload['media'] = media_json
+    if reply_markup:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
+    return await _process_request(token, method_url, params=payload, files=files if files else None)
+
+async def delete_ephemeral_message(token, chat_id, receiver_user_id, ephemeral_message_id):
+    method_url = r'deleteEphemeralMessage'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    return await _process_request(token, method_url, params=payload)
+
+async def edit_ephemeral_message_caption(token, chat_id, receiver_user_id, ephemeral_message_id, caption,
+                                    parse_mode=None, caption_entities=None, reply_markup=None):
+    method_url = r'editEphemeralMessageCaption'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if reply_markup:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
+    return await _process_request(token, method_url, params=payload)
+
+async def edit_ephemeral_message_reply_markup(token, chat_id, receiver_user_id, ephemeral_message_id, reply_markup):
+    method_url = r'editEphemeralMessageReplyMarkup'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    if reply_markup:
+        payload['reply_markup'] = await _convert_markup(reply_markup)
+    return await _process_request(token, method_url, params=payload)
+
 # exceptions
 class ApiException(Exception):
     """

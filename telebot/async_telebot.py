@@ -8428,6 +8428,175 @@ class AsyncTeleBot:
         :rtype: :obj:`types.Poll`
         """
         return types.Poll.de_json(await asyncio_helper.stop_poll(self.token, chat_id, message_id, reply_markup, business_connection_id))
+    
+    async def edit_ephemeral_message_text(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int, text: str,
+            parse_mode: Optional[str]=None, entities: Optional[List[types.MessageEntity]]=None,
+            link_preview_options: Optional[types.LinkPreviewOptions]=None, reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit an ephemeral text message. Note that it is not guaranteed that the
+        user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagetext
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param text: New text of the message, 1-4096 characters after entity parsing
+        :type text: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message text. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param entities: A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+        :type entities: :obj:`list` of :obj:`MessageEntity`
+
+        :param link_preview_options: Link preview generation options for the message
+        :type link_preview_options: :obj:`LinkPreviewOptions`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
+        return await asyncio_helper.edit_ephemeral_message_text(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, text,
+            parse_mode=parse_mode, entities=entities,
+            link_preview_options=link_preview_options, reply_markup=reply_markup)
+
+    async def edit_ephemeral_message_media(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int, media: types.InputMedia,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit the media of an ephemeral message. Note that it is not guaranteed
+        that the user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagemedia
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param media: A JSON-serialized object for the new media content of the message. A new file can't be uploaded; use a previously uploaded file via its file_id or specify a URL.
+        :type media: :obj:`InputMedia`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.edit_ephemeral_message_media(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, media,
+            reply_markup=reply_markup)
+
+
+    async def edit_ephemeral_message_caption(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int, caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit the caption of an ephemeral message. Note that it is not guaranteed
+        that the user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagecaption
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param caption: New caption of the message, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :obj:`MessageEntity`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
+        return await asyncio_helper.edit_ephemeral_message_caption(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, caption,
+            parse_mode=parse_mode, caption_entities=caption_entities,
+            reply_markup=reply_markup)
+
+    
+    async def edit_ephemeral_message_reply_markup(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit only the reply markup of an ephemeral message. Note that it is
+        not guaranteed that the user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagereplymarkup
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.edit_ephemeral_message_reply_markup(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, reply_markup=reply_markup)
+
+    async def delete_ephemeral_message(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int) -> bool:
+        """
+        Use this method to delete an ephemeral message. Note that it is not guaranteed that the user
+        will receive the message deletion event, especially if they are offline. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deleteephemeralmessage
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to delete
+        :type ephemeral_message_id: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.delete_ephemeral_message(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id)
 
     async def answer_shipping_query(
             self, shipping_query_id: str, ok: bool,

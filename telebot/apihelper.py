@@ -2884,6 +2884,67 @@ def stop_poll(token, chat_id, message_id, reply_markup=None, business_connection
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
+    
+def edit_ephemeral_message_text(token, chat_id, receiver_user_id, ephemeral_message_id, text, parse_mode=None,
+                                entities=None, link_preview_options=None, reply_markup=None):
+    method_url = r'editEphemeralMessageText'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id,
+        'text': text
+    }
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
+    if link_preview_options:
+        payload['link_preview_options'] = link_preview_options.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+def edit_ephemeral_message_media(token, chat_id, receiver_user_id, ephemeral_message_id, media, reply_markup=None):
+    method_url = r'editEphemeralMessageMedia'
+    media_json, files = convert_input_media(media)
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id,
+        'media': media_json
+    }
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=files)
+
+def edit_ephemeral_message_caption(token, chat_id, receiver_user_id, ephemeral_message_id, caption=None,
+                                   parse_mode=None, caption_entities=None, reply_markup=None):
+    method_url = r'editEphemeralMessageCaption'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+def edit_ephemeral_message_reply_markup(token, chat_id, receiver_user_id, ephemeral_message_id, reply_markup=None):
+    method_url = r'editEphemeralMessageReplyMarkup'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
 
 def edit_general_forum_topic(token, chat_id, name):
     method_url = r'editGeneralForumTopic'
@@ -2915,6 +2976,16 @@ def delete_messages(token, chat_id, message_ids):
     payload = {
         'chat_id': chat_id,
         'message_ids': json.dumps(message_ids)
+    }
+    return _make_request(token, method_url, params=payload)
+
+
+def delete_ephemeral_message(token, chat_id, receiver_user_id, ephemeral_message_id):
+    method_url = 'deleteEphemeralMessage'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
     }
     return _make_request(token, method_url, params=payload)
 
