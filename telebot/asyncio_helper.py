@@ -1136,7 +1136,6 @@ async def send_animation(
     if width:
         payload['width'] = width
     if height:
-    if height:
         payload['height'] = height
     if protect_content is not None:
         payload['protect_content'] = protect_content
