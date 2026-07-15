@@ -800,6 +800,9 @@ class ChatFullInfo(JsonDeserializable):
     :param guard_bot: Optional. The bot that processes join request queries in the chat. The field is only available to chat administrators.
     :type guard_bot: :class:`telebot.types.User`
 
+    :param community: Optional. The Community to which the chat belongs
+    :type community: :class:`telebot.types.Community`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -839,6 +842,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['first_profile_audio'] = Audio.de_json(obj['first_profile_audio'])
         if 'guard_bot' in obj:
             obj['guard_bot'] = User.de_json(obj['guard_bot'])
+        if 'community' in obj:
+            obj['community'] = Community.de_json(obj['community'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -856,7 +861,7 @@ class ChatFullInfo(JsonDeserializable):
                 business_opening_hours=None, personal_chat=None, birthdate=None,
                 can_send_paid_media=None,
                 accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
-                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, **kwargs):
+                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, community=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -909,6 +914,7 @@ class ChatFullInfo(JsonDeserializable):
         self.unique_gift_colors: Optional[UniqueGiftColors] = unique_gift_colors
         self.first_profile_audio: Optional[Audio] = first_profile_audio
         self.guard_bot: Optional[User] = guard_bot
+        self.community: Optional[Community] = community
 
 
     @property
@@ -1305,6 +1311,12 @@ class Message(JsonDeserializable):
 
     :param checklist_tasks_added: Optional. Service message: tasks were added to a checklist
     :type checklist_tasks_added: :class:`telebot.types.ChecklistTasksAdded`
+
+    :param community_chat_added: Optional. Service message: chat added to a Community
+    :type community_chat_added: :class:`telebot.types.CommunityChatAdded`
+
+    :param community_chat_removed: Optional. Service message: chat removed from a Community
+    :type community_chat_removed: :class:`telebot.types.CommunityChatRemoved`
 
     :param direct_message_price_changed: Optional. Service message: the price for paid messages in the corresponding direct messages chat of a channel has changed
     :type direct_message_price_changed: :class:`telebot.types.DirectMessagePriceChanged`
@@ -1706,6 +1718,12 @@ class Message(JsonDeserializable):
             opts['receiver_user'] = User.de_json(obj['receiver_user'])
         if 'ephemeral_message_id' in obj:
             opts['ephemeral_message_id'] = obj['ephemeral_message_id']
+        if 'community_chat_added' in obj:
+            opts['community_chat_added'] = CommunityChatAdded.de_json(obj['community_chat_added'])
+            content_type = 'community_chat_added'
+        if 'community_chat_removed' in obj:
+            opts['community_chat_removed'] = CommunityChatRemoved.de_json(obj['community_chat_removed'])
+            content_type = 'community_chat_removed'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -17273,3 +17291,68 @@ class InputRichBlockThinking(InputRichBlock):
         data = super().to_dict()
         data['text'] = self.text.to_dict()
         return data
+    
+
+class Community(JsonDeserializable):
+    """
+    Represents a community (a group of chats).
+
+    Telegram documentation: https://core.telegram.org/bots/api#community
+
+    :param id: Unique identifier for this community. This number may have more than 32 significant bits and some programming
+    languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit
+    integer or double-precision float type are safe for storing this identifier.
+    :type id: :obj:`int`
+
+    :param name: Name of the community
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`Community`
+    """
+    def __init__(self, id: int, name: str, **kwargs):
+        self.id: int = id
+        self.name: str = name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class CommunityChatAdded(JsonDeserializable):
+    """
+    Describes a service message about a chat being added to a community.
+
+    Telegram documentation: https://core.telegram.org/bots/api#communitychatadded
+
+    :param community: The new community to which the chat belongs
+    :type community: :class:`Community`
+
+    :return: Instance of the class
+    :rtype: :class:`CommunityChatAdded`
+    """
+    def __init__(self, community: Community, **kwargs):
+        self.community: Community = community
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        community = Community.de_json(obj.get('community'))
+        return cls(**obj)
+    
+
+class CommunityChatRemoved(JsonDeserializable):
+    """
+    Describes a service message about a chat being removed from a community. Currently holds no information
+
+    Telegram documentation: https://core.telegram.org/bots/api#communitychatremoved
+
+    :return: Instance of the class
+    :rtype: :class:`CommunityChatRemoved`
+    """
+    def __init__(self, **kwargs):
+        pass
+        
