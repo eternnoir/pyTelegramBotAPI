@@ -16358,6 +16358,10 @@ class InputRichMessage(Dictionaryable):
     See rich message formatting options for more details.
     :type markdown: :obj:`str`
 
+    :param media: Optional. List of media that are specified in the markdown or html fields
+        using tg://photo?id=, tg://video?id=, and tg://audio?id= links
+    :type media: :obj:`list` of :class:`InputRichMessageMedia`
+
     :param is_rtl: Optional. Pass True if the rich message must be shown right-to-left
     :type is_rtl: :obj:`bool`
 
@@ -16368,11 +16372,13 @@ class InputRichMessage(Dictionaryable):
     :return: Instance of the class
     :rtype: :class:`InputRichMessage`
     """
-    def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None, is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None, **kwargs):
+    def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None, is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None,
+                    media: Optional[List[InputRichMessageMedia]] = None, **kwargs):
         self.html: Optional[str] = html
         self.markdown: Optional[str] = markdown
         self.is_rtl: Optional[bool] = is_rtl
         self.skip_entity_detection: Optional[bool] = skip_entity_detection
+        self.media: Optional[List[InputRichMessageMedia]] = media
 
     def to_dict(self) -> dict:
         data = {}
@@ -16384,6 +16390,8 @@ class InputRichMessage(Dictionaryable):
             data['is_rtl'] = self.is_rtl
         if self.skip_entity_detection is not None:
             data['skip_entity_detection'] = self.skip_entity_detection
+        if self.media is not None:
+            data['media'] = [m.to_dict() for m in self.media]
         return data
     
     def to_json(self) -> str:
@@ -16410,3 +16418,127 @@ class Link(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+    
+
+class InputMediaVoiceNote(InputMedia):
+    """
+    Represents a voice message file to be sent.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputmediavoicenote
+
+    :param type: Type of the media, must be voice_note
+    :type type: :obj:`str`
+
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+        pass an HTTP URL for Telegram to get a file from the Internet, or pass "attach://<file_attach_name>"
+        to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
+    :type media: :obj:`str`
+
+    :param caption: Optional. Caption of the voice message to be sent, 0-1024 characters after entities parsing
+    :type caption: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the voice message caption. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+    :type caption_entities: :obj:`list` of :class:`MessageEntity`
+
+    :param duration: Optional. Duration of the voice message in seconds
+    :type duration: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`InputMediaVoiceNote`
+    """
+    def __init__(self, media: str, caption: Optional[str] = None, parse_mode: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
+                    duration: Optional[int] = None, **kwargs):
+        super().__init__(type='voice_note', media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
+        self.duration: Optional[int] = duration
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        if self.duration is not None:
+            data['duration'] = self.duration
+        return data
+    
+
+class InputRichMessageMedia(Dictionaryable):
+    """
+    This object represents a media element embedded in an outgoing rich message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichmessagemedia
+
+    :param id: Unique identifier of the media used in a tg://photo?id=, tg://video?id=, or tg://audio?id= link.
+        1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.
+    :type id: :obj:`str`
+
+    :param media: The media to be sent. Everything except the media itself and its properties is ignored.
+    :type media: :obj:`InputMediaAnimation` or :obj:`InputMediaAudio` or :obj:`InputMediaPhoto` or :obj:`InputMediaVideo` or :obj:`InputMediaVoiceNote`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichMessageMedia`
+    """
+    def __init__(self, id: str, media: Union[InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo, InputMediaVoiceNote], **kwargs):
+        self.id: str = id
+        self.media: Union[InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo, InputMediaVoiceNote] = media
+
+    def to_dict(self) -> dict:
+        data = {
+            'id': self.id,
+            'media': self.media.to_dict()
+        }
+        return data
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
+
+class InputRichBlockListItem(Dictionaryable):
+    """
+    An item of a list to be sent.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblocklistitem
+
+    :param blocks: The content of the item
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
+    :param has_checkbox: Optional. Pass True if the item has a checkbox
+    :type has_checkbox: :obj:`bool`
+
+    :param is_checked: Optional. Pass True if the item has a checked checkbox
+    :type is_checked: :obj:`bool`
+
+    :param value: Optional. For ordered lists, the numeric value of the item label
+    :type value: :obj:`int`
+
+    :param type: Optional. For ordered lists, the type of the item label; must be one of “a” for lowercase letters, “A” for uppercase letters, 
+        “i” for lowercase Roman numerals, “I” for uppercase Roman numerals, or “1” for decimal numbers
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockListItem`
+    """
+    def __init__(self, blocks: List[InputRichBlock], has_checkbox: Optional[bool] = None, is_checked: Optional[bool] = None,
+                    value: Optional[int] = None, type: Optional[str] = None, **kwargs):
+        self.blocks: List[InputRichBlock] = blocks
+        self.has_checkbox: Optional[bool] = has_checkbox
+        self.is_checked: Optional[bool] = is_checked
+        self.value: Optional[int] = value
+        self.type: Optional[str] = type
+
+    def to_dict(self) -> dict:
+        data = {
+            'blocks': [block.to_dict() for block in self.blocks]
+        }
+        if self.has_checkbox is not None:
+            data['has_checkbox'] = self.has_checkbox
+        if self.is_checked is not None:
+            data['is_checked'] = self.is_checked
+        if self.value is not None:
+            data['value'] = self.value
+        if self.type is not None:
+            data['type'] = self.type
+        return data
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
