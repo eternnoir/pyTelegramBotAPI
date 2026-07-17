@@ -17343,7 +17343,7 @@ class CommunityChatAdded(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        community = Community.de_json(obj.get('community'))
+        obj['community'] = Community.de_json(obj.get('community'))
         return cls(**obj)
     
 
