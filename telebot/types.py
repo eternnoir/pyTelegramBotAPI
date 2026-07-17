@@ -212,6 +212,9 @@ class Update(JsonDeserializable):
     :param guest_message: Optional. New guest message. The bot can use the field Message.guest_query_id and the method answerGuestQuery to send a message in response.
     :type guest_message: :class:`telebot.types.Message`
 
+    :param subscription: Optional. User payment subscription has changed
+    :type subscription: :class:`telebot.types.BotSubscriptionUpdated`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -246,18 +249,19 @@ class Update(JsonDeserializable):
         purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
         managed_bot = ManagedBotUpdated.de_json(obj.get('managed_bot'))
         guest_message = Message.de_json(obj.get('guest_message'))
+        subscription = BotSubscriptionUpdated.de_json(obj.get('subscription'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages, purchased_paid_media, managed_bot, guest_message)
+                   deleted_business_messages, purchased_paid_media, managed_bot, guest_message, subscription)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, purchased_paid_media, managed_bot, guest_message):
+                 deleted_business_messages, purchased_paid_media, managed_bot, guest_message, subscription):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -284,6 +288,7 @@ class Update(JsonDeserializable):
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
         self.managed_bot: Optional[ManagedBotUpdated] = managed_bot
         self.guest_message: Optional[Message] = guest_message
+        self.subscription: Optional[BotSubscriptionUpdated] = subscription
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -16764,8 +16769,6 @@ class InputRichBlockDivider(InputRichBlock):
     def __init__(self, **kwargs):
         super().__init__(type='divider', **kwargs)
 
-    def to_dict(self) -> dict:
-        return super().to_dict()
 
 
 class InputRichBlockMathematicalExpression(InputRichBlock):
@@ -17355,4 +17358,41 @@ class CommunityChatRemoved(JsonDeserializable):
     """
     def __init__(self, **kwargs):
         pass
-        
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class BotSubscriptionUpdated(JsonDeserializable):
+    """
+    This object contains information about changes to a user payment subscription toward the current bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#botsubscriptionupdated
+
+    :param user: User who subscribed for payments toward the bot
+    :type user: :class:`User`
+
+    :param invoice_payload: Bot-specified invoice payload
+    :type invoice_payload: :obj:`str`
+
+    :param state: The new state of the subscription. Currently, it can be one of “canceled” if the user canceled the subscription,
+        “active” if the user re-enabled a previously canceled subscription, or “failed” if payment for the subscription failed.
+    :type state: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`BotSubscriptionUpdated`
+    """
+    def __init__(self, user: User, invoice_payload: str, state: str, **kwargs):
+        self.user: User = user
+        self.invoice_payload: str = invoice_payload
+        self.state: str = state
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj.get('user'))
+        return cls(**obj)

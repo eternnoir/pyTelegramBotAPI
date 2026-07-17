@@ -187,6 +187,7 @@ class AsyncTeleBot:
         self.purchased_paid_media_handlers = []
         self.managed_bot_handlers = []
         self.guest_message_handlers = []
+        self.subscription_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -652,6 +653,7 @@ class AsyncTeleBot:
         new_purchased_paid_media = None
         new_managed_bots = None
         new_guest_messages = None
+        new_subscriptions = None
 
 
         for update in updates:
@@ -731,6 +733,9 @@ class AsyncTeleBot:
             if update.guest_message:
                 if new_guest_messages is None: new_guest_messages = []
                 new_guest_messages.append(update.guest_message)
+            if update.subscription:
+                if new_subscriptions is None: new_subscriptions = []
+                new_subscriptions.append(update.subscription)
 
 
         if new_messages:
@@ -781,6 +786,8 @@ class AsyncTeleBot:
             await self.process_new_managed_bots(new_managed_bots)
         if new_guest_messages:
             await self.process_new_guest_message(new_guest_messages)
+        if new_subscriptions:
+            await self.process_new_subscriptions(new_subscriptions)
 
     async def process_new_messages(self, new_messages):
         """
@@ -932,6 +939,12 @@ class AsyncTeleBot:
         :meta private:
         """
         await self._process_updates(self.guest_message_handlers, new_guest_messages, 'guest_message')
+
+    async def process_new_subscriptions(self, new_subscriptions):
+        """
+        :meta private:
+        """
+        await self._process_updates(self.subscription_handlers, new_subscriptions, 'subscription')
 
     async def _get_middlewares(self, update_type):
         """
@@ -2773,6 +2786,54 @@ class AsyncTeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_guest_message_handler(handler_dict)
+
+    def subscription_handler(self, func=None, **kwargs):
+        """
+        User payment subscription has changed.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_subscription_handler(handler_dict)
+            return handler
+        
+        return decorator
+    
+    def add_subscription_handler(self, handler_dict):
+        """
+        Adds a subscription handler.
+        Note that you should use register_subscription_handler to add subscription_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.subscription_handlers.append(handler_dict)
+
+    def register_subscription_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers subscription handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_subscription_handler(handler_dict)
 
 
     @staticmethod
