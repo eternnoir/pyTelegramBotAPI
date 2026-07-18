@@ -212,6 +212,9 @@ class Update(JsonDeserializable):
     :param guest_message: Optional. New guest message. The bot can use the field Message.guest_query_id and the method answerGuestQuery to send a message in response.
     :type guest_message: :class:`telebot.types.Message`
 
+    :param subscription: Optional. User payment subscription has changed
+    :type subscription: :class:`telebot.types.BotSubscriptionUpdated`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.Update`
 
@@ -246,18 +249,19 @@ class Update(JsonDeserializable):
         purchased_paid_media = PaidMediaPurchased.de_json(obj.get('purchased_paid_media'))
         managed_bot = ManagedBotUpdated.de_json(obj.get('managed_bot'))
         guest_message = Message.de_json(obj.get('guest_message'))
+        subscription = BotSubscriptionUpdated.de_json(obj.get('subscription'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                   deleted_business_messages, purchased_paid_media, managed_bot, guest_message)
+                   deleted_business_messages, purchased_paid_media, managed_bot, guest_message, subscription)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
-                 deleted_business_messages, purchased_paid_media, managed_bot, guest_message):
+                 deleted_business_messages, purchased_paid_media, managed_bot, guest_message, subscription):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -284,6 +288,7 @@ class Update(JsonDeserializable):
         self.purchased_paid_media: Optional[PaidMediaPurchased] = purchased_paid_media
         self.managed_bot: Optional[ManagedBotUpdated] = managed_bot
         self.guest_message: Optional[Message] = guest_message
+        self.subscription: Optional[BotSubscriptionUpdated] = subscription
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -800,6 +805,9 @@ class ChatFullInfo(JsonDeserializable):
     :param guard_bot: Optional. The bot that processes join request queries in the chat. The field is only available to chat administrators.
     :type guard_bot: :class:`telebot.types.User`
 
+    :param community: Optional. The Community to which the chat belongs
+    :type community: :class:`telebot.types.Community`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -839,6 +847,8 @@ class ChatFullInfo(JsonDeserializable):
             obj['first_profile_audio'] = Audio.de_json(obj['first_profile_audio'])
         if 'guard_bot' in obj:
             obj['guard_bot'] = User.de_json(obj['guard_bot'])
+        if 'community' in obj:
+            obj['community'] = Community.de_json(obj['community'])
         return cls(**obj)
 
     def __init__(self, id, type, title=None, username=None, first_name=None,
@@ -856,7 +866,7 @@ class ChatFullInfo(JsonDeserializable):
                 business_opening_hours=None, personal_chat=None, birthdate=None,
                 can_send_paid_media=None,
                 accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
-                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, **kwargs):
+                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, community=None, **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -909,6 +919,7 @@ class ChatFullInfo(JsonDeserializable):
         self.unique_gift_colors: Optional[UniqueGiftColors] = unique_gift_colors
         self.first_profile_audio: Optional[Audio] = first_profile_audio
         self.guard_bot: Optional[User] = guard_bot
+        self.community: Optional[Community] = community
 
 
     @property
@@ -1019,6 +1030,13 @@ class Message(JsonDeserializable):
 
     :param sender_tag: Optional. The tag of the message sender in the chat
     :type sender_tag: :obj:`str`
+
+    :param receiver_user: Optional. For ephemeral messages, the user who received the message
+    :type receiver_user: :class:`telebot.types.User`
+
+    :param ephemeral_message_id: Optional. For ephemeral messages, identifier of the ephemeral message inside this chat.
+        The identifier may be reused for another ephemeral message after the message is deleted or expires.
+    :type ephemeral_message_id: :obj:`int`
 
     :param sender_business_bot info: Optional. Information about the business bot that sent the message
     :type sender_business_bot_info: :class:`telebot.types.User`
@@ -1298,6 +1316,12 @@ class Message(JsonDeserializable):
 
     :param checklist_tasks_added: Optional. Service message: tasks were added to a checklist
     :type checklist_tasks_added: :class:`telebot.types.ChecklistTasksAdded`
+
+    :param community_chat_added: Optional. Service message: chat added to a Community
+    :type community_chat_added: :class:`telebot.types.CommunityChatAdded`
+
+    :param community_chat_removed: Optional. Service message: chat removed from a Community
+    :type community_chat_removed: :class:`telebot.types.CommunityChatRemoved`
 
     :param direct_message_price_changed: Optional. Service message: the price for paid messages in the corresponding direct messages chat of a channel has changed
     :type direct_message_price_changed: :class:`telebot.types.DirectMessagePriceChanged`
@@ -1695,6 +1719,16 @@ class Message(JsonDeserializable):
         if 'rich_message' in obj:
             opts['rich_message'] = RichMessage.de_json(obj['rich_message'])
             content_type = 'rich_message'
+        if 'receiver_user' in obj:
+            opts['receiver_user'] = User.de_json(obj['receiver_user'])
+        if 'ephemeral_message_id' in obj:
+            opts['ephemeral_message_id'] = obj['ephemeral_message_id']
+        if 'community_chat_added' in obj:
+            opts['community_chat_added'] = CommunityChatAdded.de_json(obj['community_chat_added'])
+            content_type = 'community_chat_added'
+        if 'community_chat_removed' in obj:
+            opts['community_chat_removed'] = CommunityChatRemoved.de_json(obj['community_chat_removed'])
+            content_type = 'community_chat_removed'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -4049,6 +4083,9 @@ class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
     :param description: Description of the command; 1-256 characters.
     :type description: :obj:`str`
 
+    :param is_ephemeral: Optional. True, if the command sends an ephemeral message, which can be seen only by the sender of the message and the bot
+    :type is_ephemeral: :obj:`bool`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.BotCommand`
     """
@@ -4058,15 +4095,19 @@ class BotCommand(JsonSerializable, JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, command, description, **kwargs):
+    def __init__(self, command: str, description: str, is_ephemeral: Optional[bool] = None, **kwargs):
         self.command: str = command
         self.description: str = description
+        self.is_ephemeral: Optional[bool] = is_ephemeral
 
     def to_json(self):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        return {'command': self.command, 'description': self.description}
+        data = {'command': self.command, 'description': self.description}
+        if self.is_ephemeral is not None:
+            data['is_ephemeral'] = self.is_ephemeral
+        return data
 
 
 # BotCommandScopes
@@ -10011,12 +10052,18 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#replyparameters
 
-    :param message_id: Identifier of the message that will be replied to in the current chat, or in the chat chat_id if it is specified
+    :param message_id: Optional. Identifier of the message that will be replied to in the current chat,
+        or in the chat chat_id if it is specified. Required if ephemeral_message_id isn't specified.
     :type message_id: :obj:`int`
 
     :param chat_id: Optional. If the message to be replied to is from a different chat, unique identifier for the chat or username
         of the channel (in the format @channelusername)
     :type chat_id: :obj:`int` or :obj:`str`
+
+    :param ephemeral_message_id: Optional. Identifier of the incoming ephemeral message that will be replied to in the current chat.
+        A reply to an ephemeral message must itself be an ephemeral message. An ephemeral message may only be replied to within 15 seconds
+        of being sent. Required if message_id isn't specified.
+    :type ephemeral_message_id: :obj:`int`
 
     :param allow_sending_without_reply: Optional. Pass True if the message should be sent even if the specified message to be replied to is not found;
         can be used only for replies in the same chat and forum topic.
@@ -10055,11 +10102,11 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
         return cls(**obj)
 
-    def __init__(self, message_id: int, chat_id: Optional[Union[int, str]] = None,
+    def __init__(self, message_id: Optional[int] = None, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
                  quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None,
-                    poll_option_id: Optional[str] = None, **kwargs) -> None:
+                    poll_option_id: Optional[str] = None, ephemeral_message_id: Optional[int] = None, **kwargs) -> None:
         self.message_id: int = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -10069,6 +10116,10 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.quote_position: Optional[int] = quote_position
         self.checklist_task_id: Optional[int] = checklist_task_id
         self.poll_option_id: Optional[str] = poll_option_id
+        self.ephemeral_message_id: Optional[int] = ephemeral_message_id
+
+        if self.message_id is None and self.ephemeral_message_id is None:
+            raise ValueError("Either 'message_id' or 'ephemeral_message_id' must be provided.")
 
     def to_dict(self) -> dict:
         json_dict = {
@@ -10090,8 +10141,9 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['checklist_task_id'] = self.checklist_task_id
         if self.poll_option_id is not None:
             json_dict['poll_option_id'] = self.poll_option_id
+        if self.ephemeral_message_id is not None:
+            json_dict['ephemeral_message_id'] = self.ephemeral_message_id
         return json_dict
-
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
 
@@ -16350,6 +16402,9 @@ class InputRichMessage(Dictionaryable):
     """
     This object represents a rich message to be sent. Exactly one of the fields html or markdown must be used.
 
+    :param blocks: Optional. Content of the rich message to send described as a list of blocks
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
     :param html: Optional. Content of the rich message to send described using HTML formatting.
         See rich message formatting options for more details.
     :type html: :obj:`str`
@@ -16357,6 +16412,10 @@ class InputRichMessage(Dictionaryable):
     :param markdown: Optional. Content of the rich message to send described using Markdown formatting.
     See rich message formatting options for more details.
     :type markdown: :obj:`str`
+
+    :param media: Optional. List of media that are specified in the markdown or html fields
+        using tg://photo?id=, tg://video?id=, and tg://audio?id= links
+    :type media: :obj:`list` of :class:`InputRichMessageMedia`
 
     :param is_rtl: Optional. Pass True if the rich message must be shown right-to-left
     :type is_rtl: :obj:`bool`
@@ -16368,11 +16427,14 @@ class InputRichMessage(Dictionaryable):
     :return: Instance of the class
     :rtype: :class:`InputRichMessage`
     """
-    def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None, is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None, **kwargs):
+    def __init__(self, html: Optional[str] = None, markdown: Optional[str] = None, is_rtl: Optional[bool] = None, skip_entity_detection: Optional[bool] = None,
+                    media: Optional[List[InputRichMessageMedia]] = None, blocks: Optional[List[InputRichBlock]] = None, **kwargs):
         self.html: Optional[str] = html
         self.markdown: Optional[str] = markdown
         self.is_rtl: Optional[bool] = is_rtl
         self.skip_entity_detection: Optional[bool] = skip_entity_detection
+        self.media: Optional[List[InputRichMessageMedia]] = media
+        self.blocks: Optional[List[InputRichBlock]] = blocks
 
     def to_dict(self) -> dict:
         data = {}
@@ -16384,6 +16446,10 @@ class InputRichMessage(Dictionaryable):
             data['is_rtl'] = self.is_rtl
         if self.skip_entity_detection is not None:
             data['skip_entity_detection'] = self.skip_entity_detection
+        if self.media is not None:
+            data['media'] = [m.to_dict() for m in self.media]
+        if self.blocks is not None:
+            data['blocks'] = [b.to_dict() for b in self.blocks]
         return data
     
     def to_json(self) -> str:
@@ -16409,4 +16475,924 @@ class Link(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class InputMediaVoiceNote(InputMedia):
+    """
+    Represents a voice message file to be sent.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputmediavoicenote
+
+    :param type: Type of the media, must be voice_note
+    :type type: :obj:`str`
+
+    :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended),
+        pass an HTTP URL for Telegram to get a file from the Internet, or pass "attach://<file_attach_name>"
+        to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
+    :type media: :obj:`str`
+
+    :param caption: Optional. Caption of the voice message to be sent, 0-1024 characters after entities parsing
+    :type caption: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the voice message caption. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+    :type caption_entities: :obj:`list` of :class:`MessageEntity`
+
+    :param duration: Optional. Duration of the voice message in seconds
+    :type duration: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`InputMediaVoiceNote`
+    """
+    def __init__(self, media: str, caption: Optional[str] = None, parse_mode: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
+                    duration: Optional[int] = None, **kwargs):
+        super().__init__(type='voice_note', media=media, caption=caption, parse_mode=parse_mode, caption_entities=caption_entities)
+        self.duration: Optional[int] = duration
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        if self.duration is not None:
+            data['duration'] = self.duration
+        return data
+    
+
+class InputRichMessageMedia(Dictionaryable):
+    """
+    This object represents a media element embedded in an outgoing rich message.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichmessagemedia
+
+    :param id: Unique identifier of the media used in a tg://photo?id=, tg://video?id=, or tg://audio?id= link.
+        1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.
+    :type id: :obj:`str`
+
+    :param media: The media to be sent. Everything except the media itself and its properties is ignored.
+    :type media: :obj:`InputMediaAnimation` or :obj:`InputMediaAudio` or :obj:`InputMediaPhoto` or :obj:`InputMediaVideo` or :obj:`InputMediaVoiceNote`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichMessageMedia`
+    """
+    def __init__(self, id: str, media: Union[InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo, InputMediaVoiceNote], **kwargs):
+        self.id: str = id
+        self.media: Union[InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo, InputMediaVoiceNote] = media
+
+    def to_dict(self) -> dict:
+        data = {
+            'id': self.id,
+            'media': self.media.to_dict()
+        }
+        return data
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
+
+class InputRichBlockListItem(Dictionaryable):
+    """
+    An item of a list to be sent.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblocklistitem
+
+    :param blocks: The content of the item
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
+    :param has_checkbox: Optional. Pass True if the item has a checkbox
+    :type has_checkbox: :obj:`bool`
+
+    :param is_checked: Optional. Pass True if the item has a checked checkbox
+    :type is_checked: :obj:`bool`
+
+    :param value: Optional. For ordered lists, the numeric value of the item label
+    :type value: :obj:`int`
+
+    :param type: Optional. For ordered lists, the type of the item label; must be one of “a” for lowercase letters, “A” for uppercase letters, 
+        “i” for lowercase Roman numerals, “I” for uppercase Roman numerals, or “1” for decimal numbers
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockListItem`
+    """
+    def __init__(self, blocks: List[InputRichBlock], has_checkbox: Optional[bool] = None, is_checked: Optional[bool] = None,
+                    value: Optional[int] = None, type: Optional[str] = None, **kwargs):
+        self.blocks: List[InputRichBlock] = blocks
+        self.has_checkbox: Optional[bool] = has_checkbox
+        self.is_checked: Optional[bool] = is_checked
+        self.value: Optional[int] = value
+        self.type: Optional[str] = type
+
+    def to_dict(self) -> dict:
+        data = {
+            'blocks': [block.to_dict() for block in self.blocks]
+        }
+        if self.has_checkbox is not None:
+            data['has_checkbox'] = self.has_checkbox
+        if self.is_checked is not None:
+            data['is_checked'] = self.is_checked
+        if self.value is not None:
+            data['value'] = self.value
+        if self.type is not None:
+            data['type'] = self.type
+        return data
+    
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+
+class InputRichBlock(Dictionaryable, JsonSerializable):
+    """
+    This object represents a block in a rich formatted message to be sent.
+    Currently, it can be any of the following types:
+    - InputRichBlockParagraph
+    - InputRichBlockSectionHeading
+    - InputRichBlockPreformatted
+    - InputRichBlockFooter
+    - InputRichBlockDivider
+    - InputRichBlockMathematicalExpression
+    - InputRichBlockAnchor
+    - InputRichBlockList
+    - InputRichBlockBlockQuotation
+    - InputRichBlockPullQuotation
+    - InputRichBlockCollage
+    - InputRichBlockSlideshow
+    - InputRichBlockTable
+    - InputRichBlockDetails
+    - InputRichBlockMap
+    - InputRichBlockAnimation
+    - InputRichBlockAudio
+    - InputRichBlockPhoto
+    - InputRichBlockVideo
+    - InputRichBlockVoiceNote
+    - InputRichBlockThinking
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblock
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlock`
+    """
+    def __init__(self, type: str, **kwargs):
+        self.type: str = type
+
+    def to_json(self) -> str:
+        return json.dumps(self.to_dict())
+    
+    def to_dict(self) -> dict:
+        return {
+            'type': self.type
+        }
+    
+
+class InputRichBlockParagraph(InputRichBlock):
+    """
+    A text paragraph, corresponding to the HTML tag <p>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockparagraph
+
+    :param type: Type of the block, always “paragraph”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockParagraph`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='paragraph', **kwargs)
+        self.text: RichText = text
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['text'] = self.text.to_dict()
+        return data
+    
+
+class InputRichBlockSectionHeading(InputRichBlock):
+    """
+    A section heading, corresponding to the HTML tags <h1>, <h2>, <h3>, <h4>, <h5>, or <h6>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblocksectionheading
+
+    :param type: Type of the block, always “heading”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :param size: Relative size of the text font; 1-6, 1 is the largest, 6 is the smallest
+    :type size: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockSectionHeading`
+    """
+    def __init__(self, text: RichText, size: int, **kwargs):
+        super().__init__(type='heading', **kwargs)
+        self.text: RichText = text
+        self.size: int = size
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['text'] = self.text.to_dict()
+        data['size'] = self.size
+        return data
+
+    
+class InputRichBlockPreformatted(InputRichBlock):
+    """
+    A preformatted text block, corresponding to the nested HTML tags <pre> and <code>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockpreformatted
+
+    :param type: Type of the block, always “pre”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :param language: Optional. The programming language of the text
+    :type language: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockPreformatted`
+    """
+    def __init__(self, text: RichText, language: Optional[str] = None, **kwargs):
+        super().__init__(type='pre', **kwargs)
+        self.text: RichText = text
+        self.language: Optional[str] = language
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['text'] = self.text.to_dict()
+        if self.language is not None:
+            data['language'] = self.language
+        return data
+
+
+class InputRichBlockFooter(InputRichBlock):
+    """
+    A footer, corresponding to the HTML tag <footer>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockfooter
+
+    :param type: Type of the block, always “footer”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockFooter`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='footer', **kwargs)
+        self.text: RichText = text
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['text'] = self.text.to_dict()
+        return data
+
+
+class InputRichBlockDivider(InputRichBlock):
+    """
+    A divider, corresponding to the HTML tag <hr/>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockdivider
+
+    :param type: Type of the block, always “divider”
+    :type type: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockDivider`
+    """
+    def __init__(self, **kwargs):
+        super().__init__(type='divider', **kwargs)
+
+
+
+class InputRichBlockMathematicalExpression(InputRichBlock):
+    """
+    A block with a mathematical expression in LaTeX format, corresponding to the custom HTML tag <tg-math-block>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockmathematicalexpression
+
+    :param type: Type of the block, always “mathematical_expression”
+    :type type: :obj:`str`
+
+    :param expression: The mathematical expression in LaTeX format
+    :type expression: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockMathematicalExpression`
+    """
+    def __init__(self, expression: str, **kwargs):
+        super().__init__(type='mathematical_expression', **kwargs)
+        self.expression: str = expression
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['expression'] = self.expression
+        return data
+
+
+class InputRichBlockAnchor(InputRichBlock):
+    """
+    A block with an anchor, corresponding to the HTML tag <a> with the attribute name.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockanchor
+
+    :param type: Type of the block, always “anchor”
+    :type type: :obj:`str`
+
+    :param name: The name of the anchor
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockAnchor`
+    """
+    def __init__(self, name: str, **kwargs):
+        super().__init__(type='anchor', **kwargs)
+        self.name: str = name
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['name'] = self.name
+        return data
+
+
+class InputRichBlockList(InputRichBlock):
+    """
+    A list of blocks, corresponding to the HTML tag <ul> or <ol> with multiple nested tags <li>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblocklist
+
+    :param type: Type of the block, always “list”
+    :type type: :obj:`str`
+
+    :param items: Items of the list
+    :type items: :obj:`list` of :class:`InputRichBlockListItem`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockList`
+    """
+    def __init__(self, items: List[InputRichBlockListItem], **kwargs):
+        super().__init__(type='list', **kwargs)
+        self.items: List[InputRichBlockListItem] = items
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['items'] = [item.to_dict() for item in self.items]
+        return data
+
+
+class InputRichBlockBlockQuotation(InputRichBlock):
+    """
+    A block quotation, corresponding to the HTML tag <blockquote>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockblockquotation
+
+    :param type: Type of the block, always “blockquote”
+    :type type: :obj:`str`
+
+    :param blocks: Content of the block
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
+    :param credit: Optional. Credit of the block
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockBlockQuotation`
+    """
+    def __init__(self, blocks: List[InputRichBlock], credit: Optional[RichText] = None, **kwargs):
+        super().__init__(type='blockquote', **kwargs)
+        self.blocks: List[InputRichBlock] = blocks
+        self.credit: Optional[RichText] = credit
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['blocks'] = [block.to_dict() for block in self.blocks]
+        if self.credit is not None:
+            data['credit'] = self.credit.to_dict()
+        return data
+
+
+class InputRichBlockPullQuotation(InputRichBlock):
+    """
+    A quotation with centered text, loosely corresponding to the HTML tag <aside>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockpullquotation
+
+    :param type: Type of the block, always “pullquote”
+    :type type: :obj:`str`
+
+    :param text: Text of the block
+    :type text: :class:`RichText`
+
+    :param credit: Optional. Credit of the block
+    :type credit: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockPullQuotation`
+    """
+    def __init__(self, text: RichText, credit: Optional[RichText] = None, **kwargs):
+        super().__init__(type='pullquote', **kwargs)
+        self.text: RichText = text
+        self.credit: Optional[RichText] = credit
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['text'] = self.text.to_dict()
+        if self.credit is not None:
+            data['credit'] = self.credit.to_dict()
+        return data
+
+
+class InputRichBlockCollage(InputRichBlock):
+    """
+    A collage, corresponding to the custom HTML tag <tg-collage>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockcollage
+
+    :param type: Type of the block, always “collage”
+    :type type: :obj:`str`
+
+    :param blocks: Elements of the collage
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockCollage`
+    """
+    def __init__(self, blocks: List[InputRichBlock], caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='collage', **kwargs)
+        self.blocks: List[InputRichBlock] = blocks
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['blocks'] = [block.to_dict() for block in self.blocks]
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockSlideshow(InputRichBlock):
+    """
+    A slideshow, corresponding to the custom HTML tag <tg-slideshow>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockslideshow
+
+    :param type: Type of the block, always “slideshow”
+    :type type: :obj:`str`
+
+    :param blocks: Elements of the slideshow
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockSlideshow`
+    """
+    def __init__(self, blocks: List[InputRichBlock], caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='slideshow', **kwargs)
+        self.blocks: List[InputRichBlock] = blocks
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['blocks'] = [block.to_dict() for block in self.blocks]
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockTable(InputRichBlock):
+    """
+    A table, corresponding to the HTML tag <table>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblocktable
+
+    :param type: Type of the block, always “table”
+    :type type: :obj:`str`
+
+    :param cells: Cells of the table
+    :type cells: :obj:`list` of :obj:`list` of :class:`RichBlockTableCell`
+
+    :param is_bordered: Optional. Pass True if the table has borders
+    :type is_bordered: :obj:`bool`
+
+    :param is_striped: Optional. Pass True if the table is striped
+    :type is_striped: :obj:`bool`
+
+    :param caption: Optional. Caption of the table
+    :type caption: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockTable`
+    """
+    def __init__(
+        self,
+        cells: List[List[RichBlockTableCell]],
+        is_bordered: Optional[bool] = None,
+        is_striped: Optional[bool] = None,
+        caption: Optional[RichText] = None,
+        **kwargs
+    ):
+        super().__init__(type='table', **kwargs)
+        self.cells: List[List[RichBlockTableCell]] = cells
+        self.is_bordered: Optional[bool] = is_bordered
+        self.is_striped: Optional[bool] = is_striped
+        self.caption: Optional[RichText] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['cells'] = [[cell.to_dict() for cell in row] for row in self.cells]
+        if self.is_bordered is not None:
+            data['is_bordered'] = self.is_bordered
+        if self.is_striped is not None:
+            data['is_striped'] = self.is_striped
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockDetails(InputRichBlock):
+    """
+    An expandable block for details disclosure, corresponding to the HTML tag <details>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockdetails
+
+    :param type: Type of the block, always “details”
+    :type type: :obj:`str`
+
+    :param summary: Always shown summary of the block
+    :type summary: :class:`RichText`
+
+    :param blocks: Content of the block
+    :type blocks: :obj:`list` of :class:`InputRichBlock`
+
+    :param is_open: Optional. Pass True if the content of the block is visible by default
+    :type is_open: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockDetails`
+    """
+    def __init__(
+        self,
+        summary: RichText,
+        blocks: List[InputRichBlock],
+        is_open: Optional[bool] = None,
+        **kwargs
+    ):
+        super().__init__(type='details', **kwargs)
+        self.summary: RichText = summary
+        self.blocks: List[InputRichBlock] = blocks
+        self.is_open: Optional[bool] = is_open
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['summary'] = self.summary.to_dict()
+        data['blocks'] = [block.to_dict() for block in self.blocks]
+        if self.is_open is not None:
+            data['is_open'] = self.is_open
+        return data
+
+
+class InputRichBlockMap(InputRichBlock):
+    """
+    A block with a map, corresponding to the custom HTML tag <tg-map>. The map's width and height must not exceed 10000 in total. The width and height ratio must be at most 20.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockmap
+
+    :param type: Type of the block, always “map”
+    :type type: :obj:`str`
+
+    :param location: Location of the center of the map
+    :type location: :class:`Location`
+
+    :param zoom: Map zoom level; 0-24
+    :type zoom: :obj:`int`
+
+    :param width: Map width; 0-10000
+    :type width: :obj:`int`
+
+    :param height: Map height; 0-10000
+    :type height: :obj:`int`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockMap`
+    """
+    def __init__(
+        self,
+        location: Location,
+        zoom: int,
+        width: int,
+        height: int,
+        caption: Optional[RichBlockCaption] = None,
+        **kwargs
+    ):
+        super().__init__(type='map', **kwargs)
+        self.location: Location = location
+        self.zoom: int = zoom
+        self.width: int = width
+        self.height: int = height
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['location'] = self.location.to_dict()
+        data['zoom'] = self.zoom
+        data['width'] = self.width
+        data['height'] = self.height
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockAnimation(InputRichBlock):
+    """
+    A block with an animation, corresponding to the HTML tag <video>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockanimation
+
+    :param type: Type of the block, always “animation”
+    :type type: :obj:`str`
+
+    :param animation: The animation. Caption is ignored.
+    :type animation: :class:`InputMediaAnimation`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockAnimation`
+    """
+    def __init__(self, animation: InputMediaAnimation, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='animation', **kwargs)
+        self.animation: InputMediaAnimation = animation
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['animation'] = self.animation.to_dict()
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockAudio(InputRichBlock):
+    """
+    A block with a music file, corresponding to the HTML tag <audio>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockaudio
+
+    :param type: Type of the block, always “audio”
+    :type type: :obj:`str`
+
+    :param audio: The audio. Caption is ignored.
+    :type audio: :class:`InputMediaAudio`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockAudio`
+    """
+    def __init__(self, audio: InputMediaAudio, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='audio', **kwargs)
+        self.audio: InputMediaAudio = audio
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['audio'] = self.audio.to_dict()
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockPhoto(InputRichBlock):
+    """
+    A block with a photo, corresponding to the HTML tag <img>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockphoto
+
+    :param type: Type of the block, always “photo”
+    :type type: :obj:`str`
+
+    :param photo: The photo. Caption is ignored.
+    :type photo: :class:`InputMediaPhoto`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockPhoto`
+    """
+    def __init__(self, photo: InputMediaPhoto, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='photo', **kwargs)
+        self.photo: InputMediaPhoto = photo
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['photo'] = self.photo.to_dict()
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockVideo(InputRichBlock):
+    """
+    A block with a video, corresponding to the HTML tag <video>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockvideo
+
+    :param type: Type of the block, always “video”
+    :type type: :obj:`str`
+
+    :param video: The video. Caption is ignored.
+    :type video: :class:`InputMediaVideo`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockVideo`
+    """
+    def __init__(self, video: InputMediaVideo, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='video', **kwargs)
+        self.video: InputMediaVideo = video
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['video'] = self.video.to_dict()
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockVoiceNote(InputRichBlock):
+    """
+    A block with a voice note, corresponding to the HTML tag <audio>.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockvoicenote
+
+    :param type: Type of the block, always “voice_note”
+    :type type: :obj:`str`
+
+    :param voice_note: The voice note. Caption is ignored.
+    :type voice_note: :class:`InputMediaVoiceNote`
+
+    :param caption: Optional. Caption of the block
+    :type caption: :class:`RichBlockCaption`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockVoiceNote`
+    """
+    def __init__(self, voice_note: InputMediaVoiceNote, caption: Optional[RichBlockCaption] = None, **kwargs):
+        super().__init__(type='voice_note', **kwargs)
+        self.voice_note: InputMediaVoiceNote = voice_note
+        self.caption: Optional[RichBlockCaption] = caption
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['voice_note'] = self.voice_note.to_dict()
+        if self.caption is not None:
+            data['caption'] = self.caption.to_dict()
+        return data
+
+
+class InputRichBlockThinking(InputRichBlock):
+    """
+    A block with a "Thinking…" placeholder, corresponding to the custom HTML tag <tg-thinking>. The block may be used only in sendRichMessageDraft, therefore it can't be received in messages. See https://t.me/addemoji/AIActions for examples of custom emoji that are recommended for usage in the block.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputrichblockthinking
+
+    :param type: Type of the block, always “thinking”
+    :type type: :obj:`str`
+
+    :param text: Text of the block. See https://t.me/addemoji/AIActions for examples of custom emoji that are recommended for usage in the block.
+    :type text: :class:`RichText`
+
+    :return: Instance of the class
+    :rtype: :class:`InputRichBlockThinking`
+    """
+    def __init__(self, text: RichText, **kwargs):
+        super().__init__(type='thinking', **kwargs)
+        self.text: RichText = text
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['text'] = self.text.to_dict()
+        return data
+    
+
+class Community(JsonDeserializable):
+    """
+    Represents a community (a group of chats).
+
+    Telegram documentation: https://core.telegram.org/bots/api#community
+
+    :param id: Unique identifier for this community. This number may have more than 32 significant bits and some programming
+    languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit
+    integer or double-precision float type are safe for storing this identifier.
+    :type id: :obj:`int`
+
+    :param name: Name of the community
+    :type name: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`Community`
+    """
+    def __init__(self, id: int, name: str, **kwargs):
+        self.id: int = id
+        self.name: str = name
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class CommunityChatAdded(JsonDeserializable):
+    """
+    Describes a service message about a chat being added to a community.
+
+    Telegram documentation: https://core.telegram.org/bots/api#communitychatadded
+
+    :param community: The new community to which the chat belongs
+    :type community: :class:`Community`
+
+    :return: Instance of the class
+    :rtype: :class:`CommunityChatAdded`
+    """
+    def __init__(self, community: Community, **kwargs):
+        self.community: Community = community
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['community'] = Community.de_json(obj.get('community'))
+        return cls(**obj)
+    
+
+class CommunityChatRemoved(JsonDeserializable):
+    """
+    Describes a service message about a chat being removed from a community. Currently holds no information
+
+    Telegram documentation: https://core.telegram.org/bots/api#communitychatremoved
+
+    :return: Instance of the class
+    :rtype: :class:`CommunityChatRemoved`
+    """
+    def __init__(self, **kwargs):
+        pass
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
+class BotSubscriptionUpdated(JsonDeserializable):
+    """
+    This object contains information about changes to a user payment subscription toward the current bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#botsubscriptionupdated
+
+    :param user: User who subscribed for payments toward the bot
+    :type user: :class:`User`
+
+    :param invoice_payload: Bot-specified invoice payload
+    :type invoice_payload: :obj:`str`
+
+    :param state: The new state of the subscription. Currently, it can be one of “canceled” if the user canceled the subscription,
+        “active” if the user re-enabled a previously canceled subscription, or “failed” if payment for the subscription failed.
+    :type state: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`BotSubscriptionUpdated`
+    """
+    def __init__(self, user: User, invoice_payload: str, state: str, **kwargs):
+        self.user: User = user
+        self.invoice_payload: str = invoice_payload
+        self.state: str = state
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['user'] = User.de_json(obj.get('user'))
         return cls(**obj)

@@ -248,7 +248,8 @@ def send_message(
         entities=None, protect_content=None,
         message_thread_id=None, reply_parameters=None, link_preview_options=None,
         business_connection_id=None, message_effect_id=None, allow_paid_broadcast=None,
-        direct_messages_topic_id=None, suggested_post_parameters=None):
+        direct_messages_topic_id=None, suggested_post_parameters=None,
+        receiver_user_id=None, callback_query_id=None):
     method_url = r'sendMessage'
     payload = {'chat_id': str(chat_id), 'text': text}
     if link_preview_options is not None:
@@ -279,6 +280,10 @@ def send_message(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload, method='post')
 
 
@@ -617,7 +622,7 @@ def send_photo(
         caption_entities=None, protect_content=None,
         message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
         message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None,
-        direct_messages_topic_id=None, suggested_post_parameters=None):
+        direct_messages_topic_id=None, suggested_post_parameters=None,receiver_user_id=None, callback_query_id=None):
     method_url = r'sendPhoto'
     payload = {'chat_id': chat_id}
     files = None
@@ -659,6 +664,10 @@ def send_photo(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
     
 def send_live_photo(
@@ -793,7 +802,7 @@ def send_location(
         proximity_alert_radius=None, protect_content=None,
         message_thread_id=None, reply_parameters=None, business_connection_id=None,
         message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None,
-        suggested_post_parameters=None):
+        suggested_post_parameters=None, receiver_user_id=None, callback_query_id=None):
     method_url = r'sendLocation'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude}
     if live_period:
@@ -826,6 +835,10 @@ def send_location(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -882,7 +895,8 @@ def send_venue(
         foursquare_id=None, foursquare_type=None, disable_notification=None,
         reply_markup=None, timeout=None, google_place_id=None,
         google_place_type=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+        receiver_user_id=None, callback_query_id=None):
     method_url = r'sendVenue'
     payload = {'chat_id': chat_id, 'latitude': latitude, 'longitude': longitude, 'title': title, 'address': address}
     if foursquare_id:
@@ -915,6 +929,10 @@ def send_venue(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload)
 
 
@@ -922,7 +940,8 @@ def send_contact(
         token, chat_id, phone_number, first_name, last_name=None, vcard=None,
         disable_notification=None, reply_markup=None, timeout=None,
         protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+        message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+        receiver_user_id=None, callback_query_id=None):
     method_url = r'sendContact'
     payload = {'chat_id': chat_id, 'phone_number': phone_number, 'first_name': first_name}
     if last_name:
@@ -951,6 +970,10 @@ def send_contact(
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
 
     return _make_request(token, method_url, params=payload)
 
@@ -986,7 +1009,8 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
                thumbnail=None, width=None, height=None, caption_entities=None, protect_content=None,
                message_thread_id=None, has_spoiler=None, reply_parameters=None, business_connection_id=None,
                message_effect_id=None, show_caption_above_media=None, allow_paid_broadcast=None,
-               cover=None, start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+               cover=None, start_timestamp=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+               receiver_user_id=None, callback_query_id=None):
     method_url = r'sendVideo'
     payload = {'chat_id': chat_id}
     files = None
@@ -1028,6 +1052,10 @@ def send_video(token, chat_id, data, duration=None, caption=None, reply_markup=N
         payload['message_thread_id'] = message_thread_id
     if has_spoiler is not None:
         payload['has_spoiler'] = has_spoiler
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     if reply_parameters is not None:
         payload['reply_parameters'] = reply_parameters.to_json()
     if business_connection_id:
@@ -1061,7 +1089,8 @@ def send_animation(
         parse_mode=None, disable_notification=None, timeout=None, thumbnail=None, caption_entities=None,
         protect_content=None, width=None, height=None, message_thread_id=None, reply_parameters=None,
         has_spoiler=None, business_connection_id=None, message_effect_id=None, show_caption_above_media=None,
-        allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+        allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+        receiver_user_id=None, callback_query_id=None):
     method_url = r'sendAnimation'
     payload = {'chat_id': chat_id}
     files = None
@@ -1113,6 +1142,10 @@ def send_animation(
         payload['allow_paid_broadcast'] = allow_paid_broadcast
     if direct_messages_topic_id is not None:
         payload['direct_messages_topic_id'] = direct_messages_topic_id
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
     return _make_request(token, method_url, params=payload, files=files, method='post')
@@ -1121,7 +1154,8 @@ def send_animation(
 def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=None,
                parse_mode=None, disable_notification=None, timeout=None, caption_entities=None,
                  protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-                 message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+                 message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+                 receiver_user_id=None, callback_query_id=None):
     method_url = r'sendVoice'
     payload = {'chat_id': chat_id}
     files = None
@@ -1159,13 +1193,18 @@ def send_voice(token, chat_id, voice, caption=None, duration=None, reply_markup=
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_video_note(token, chat_id, data, duration=None, length=None, reply_markup=None,
                     disable_notification=None, timeout=None, thumbnail=None, protect_content=None,
                     message_thread_id=None, reply_parameters=None,business_connection_id=None, message_effect_id=None,
-                    allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+                    allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+                    receiver_user_id=None, callback_query_id=None):
     method_url = r'sendVideoNote'
     payload = {'chat_id': chat_id}
     files = None
@@ -1209,13 +1248,18 @@ def send_video_note(token, chat_id, data, duration=None, length=None, reply_mark
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def send_audio(token, chat_id, audio, caption=None, duration=None, performer=None, title=None,
                reply_markup=None, parse_mode=None, disable_notification=None, timeout=None, thumbnail=None,
                caption_entities=None, protect_content=None, message_thread_id=None, reply_parameters=None, business_connection_id=None,
-               message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+               message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+               receiver_user_id=None, callback_query_id=None):
     method_url = r'sendAudio'
     payload = {'chat_id': chat_id}
     files = None
@@ -1265,6 +1309,10 @@ def send_audio(token, chat_id, audio, caption=None, duration=None, performer=Non
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -1272,7 +1320,8 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
               disable_notification=None, timeout=None, caption=None, thumbnail=None, caption_entities=None,
               disable_content_type_detection=None, visible_file_name=None,
               protect_content = None, message_thread_id=None, emoji=None, reply_parameters=None, business_connection_id=None,
-              message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None):
+              message_effect_id=None, allow_paid_broadcast=None, direct_messages_topic_id=None, suggested_post_parameters=None,
+              receiver_user_id=None, callback_query_id=None):
     method_url = get_method_by_type(data_type)
     payload = {'chat_id': chat_id}
     files = None
@@ -1323,6 +1372,10 @@ def send_data(token, chat_id, data, data_type, reply_markup=None, parse_mode=Non
         payload['direct_messages_topic_id'] = direct_messages_topic_id
     if suggested_post_parameters is not None:
         payload['suggested_post_parameters'] = suggested_post_parameters.to_json()
+    if receiver_user_id is not None:
+        payload['receiver_user_id'] = receiver_user_id
+    if callback_query_id is not None:
+        payload['callback_query_id'] = callback_query_id
     return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
@@ -2831,6 +2884,67 @@ def stop_poll(token, chat_id, message_id, reply_markup=None, business_connection
     if business_connection_id:
         payload['business_connection_id'] = business_connection_id
     return _make_request(token, method_url, params=payload)
+    
+def edit_ephemeral_message_text(token, chat_id, receiver_user_id, ephemeral_message_id, text, parse_mode=None,
+                                entities=None, link_preview_options=None, reply_markup=None):
+    method_url = r'editEphemeralMessageText'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id,
+        'text': text
+    }
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if entities:
+        payload['entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(entities))
+    if link_preview_options:
+        payload['link_preview_options'] = link_preview_options.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+def edit_ephemeral_message_media(token, chat_id, receiver_user_id, ephemeral_message_id, media, reply_markup=None):
+    method_url = r'editEphemeralMessageMedia'
+    media_json, files = convert_input_media(media)
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id,
+        'media': media_json
+    }
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, files=files)
+
+def edit_ephemeral_message_caption(token, chat_id, receiver_user_id, ephemeral_message_id, caption=None,
+                                   parse_mode=None, caption_entities=None, reply_markup=None):
+    method_url = r'editEphemeralMessageCaption'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
+
+def edit_ephemeral_message_reply_markup(token, chat_id, receiver_user_id, ephemeral_message_id, reply_markup=None):
+    method_url = r'editEphemeralMessageReplyMarkup'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
+    }
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload)
 
 def edit_general_forum_topic(token, chat_id, name):
     method_url = r'editGeneralForumTopic'
@@ -2862,6 +2976,16 @@ def delete_messages(token, chat_id, message_ids):
     payload = {
         'chat_id': chat_id,
         'message_ids': json.dumps(message_ids)
+    }
+    return _make_request(token, method_url, params=payload)
+
+
+def delete_ephemeral_message(token, chat_id, receiver_user_id, ephemeral_message_id):
+    method_url = 'deleteEphemeralMessage'
+    payload = {
+        'chat_id': chat_id,
+        'receiver_user_id': receiver_user_id,
+        'ephemeral_message_id': ephemeral_message_id
     }
     return _make_request(token, method_url, params=payload)
 

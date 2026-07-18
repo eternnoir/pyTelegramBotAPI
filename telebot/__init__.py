@@ -251,6 +251,7 @@ class TeleBot:
         self.purchased_paid_media_handlers = []
         self.managed_bot_handlers = []
         self.guest_message_handlers = []
+        self.subscription_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -730,6 +731,7 @@ class TeleBot:
         new_purchased_paid_media = None
         new_managed_bots = None
         new_guest_messages = None
+        new_subscriptions = None
 
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -820,6 +822,9 @@ class TeleBot:
             if update.guest_message:
                 if new_guest_messages is None: new_guest_messages = []
                 new_guest_messages.append(update.guest_message)
+            if update.subscription:
+                if new_subscriptions is None: new_subscriptions = []
+                new_subscriptions.append(update.subscription)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -847,6 +852,8 @@ class TeleBot:
             self.process_new_my_chat_member(new_my_chat_members)
         if new_chat_members:
             self.process_new_chat_member(new_chat_members)
+        if new_subscriptions:
+            self.process_new_subscription(new_subscriptions)
         if new_chat_join_request:
             self.process_new_chat_join_request(new_chat_join_request)
         if new_message_reactions:
@@ -1024,6 +1031,12 @@ class TeleBot:
         :meta private:
         """
         self._notify_command_handlers(self.guest_message_handlers, new_guest_messages, 'guest_message')
+
+    def process_new_subscription(self, new_subscriptions):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.subscription_handlers, new_subscriptions, 'subscription')
 
     def process_middlewares(self, update):
         """
@@ -1766,7 +1779,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send text messages.
 
@@ -1833,6 +1848,14 @@ class TeleBot:
             required if the message is sent to a direct messages chat
         :type direct_messages_topic_id: :obj:`int`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :param suggested_post_parameters: A JSON-serialized object containing the parameters of the suggested post to send;
             for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post
             is automatically declined.
@@ -1887,7 +1910,7 @@ class TeleBot:
                 timeout=timeout, entities=entities, protect_content=protect_content, message_thread_id=message_thread_id,
                 reply_parameters=reply_parameters, link_preview_options=link_preview_options, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
-                suggested_post_parameters=suggested_post_parameters
+                suggested_post_parameters=suggested_post_parameters, receiver_user_id=receiver_user_id, callback_query_id=callback_query_id
             )
         )
 
@@ -2537,7 +2560,9 @@ class TeleBot:
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send photos. On success, the sent Message is returned.
 
@@ -2611,6 +2636,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2644,7 +2677,8 @@ class TeleBot:
                 message_thread_id=message_thread_id, has_spoiler=has_spoiler, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id
             )
         )
     
@@ -2760,7 +2794,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display them in the music player.
         Your audio must be in the .MP3 or .M4A format. On success, the sent Message is returned. Bots can currently send audio files of up to 50 MB in size,
@@ -2849,6 +2885,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -2885,7 +2929,8 @@ class TeleBot:
                 timeout=timeout, thumbnail=thumbnail, caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id
             )
         )
 
@@ -2906,7 +2951,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as Audio or Document). On success, the sent Message is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
 
@@ -2976,6 +3023,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
@@ -3007,7 +3062,7 @@ class TeleBot:
                 caption_entities=caption_entities, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
-                suggested_post_parameters=suggested_post_parameters
+                suggested_post_parameters=suggested_post_parameters, receiver_user_id=receiver_user_id, callback_query_id=callback_query_id
             )
         )
 
@@ -3033,7 +3088,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send general files.
 
@@ -3115,6 +3172,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3160,7 +3225,8 @@ class TeleBot:
                 disable_content_type_detection=disable_content_type_detection, visible_file_name=visible_file_name,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
         )
 
 
@@ -3181,7 +3247,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers.
         On success, the sent Message is returned.
@@ -3246,6 +3314,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3281,7 +3357,9 @@ class TeleBot:
                 protect_content=protect_content, message_thread_id=message_thread_id, emoji=emoji,
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id
+                )
         )
 
 
@@ -3313,7 +3391,9 @@ class TeleBot:
             cover: Optional[Union[Any, str]]=None,
             start_timestamp: Optional[int]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as Document).
 
@@ -3416,6 +3496,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3459,7 +3547,7 @@ class TeleBot:
                 reply_parameters=reply_parameters, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
                 cover=cover, start_timestamp=start_timestamp, direct_messages_topic_id=direct_messages_topic_id,
-                suggested_post_parameters=suggested_post_parameters)
+                suggested_post_parameters=suggested_post_parameters, receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
         )
 
 
@@ -3487,7 +3575,9 @@ class TeleBot:
             show_caption_above_media: Optional[bool]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound).
         On success, the sent Message is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
@@ -3579,6 +3669,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3616,7 +3714,8 @@ class TeleBot:
                 width=width, height=height, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 has_spoiler=has_spoiler, business_connection_id=business_connection_id, message_effect_id=message_effect_id,
                 show_caption_above_media=show_caption_above_media, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
             )
 
 
@@ -3638,7 +3737,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         As of v.4.0, Telegram clients support rounded square MPEG4 videos of up to 1 minute long.
         Use this method to send video messages. On success, the sent Message is returned.
@@ -3712,6 +3813,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -3746,7 +3855,8 @@ class TeleBot:
                 disable_notification=disable_notification, timeout=timeout, thumbnail=thumbnail,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters,
+                receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
         )
 
     def send_paid_media(
@@ -3951,7 +4061,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send point on the map. On success, the sent Message is returned.
 
@@ -4023,6 +4135,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4054,7 +4174,7 @@ class TeleBot:
                 heading=heading, proximity_alert_radius=proximity_alert_radius, protect_content=protect_content,
                 message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
-                suggested_post_parameters=suggested_post_parameters)
+                suggested_post_parameters=suggested_post_parameters, receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
             )
 
 
@@ -4188,7 +4308,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send information about a venue. On success, the sent Message is returned.
 
@@ -4267,6 +4389,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4298,7 +4428,7 @@ class TeleBot:
                 timeout=timeout, google_place_id=google_place_id, google_place_type=google_place_type,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters, business_connection_id=business_connection_id,
                 message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast, direct_messages_topic_id=direct_messages_topic_id,
-                suggested_post_parameters=suggested_post_parameters)
+                suggested_post_parameters=suggested_post_parameters, receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
             )
 
 
@@ -4317,7 +4447,9 @@ class TeleBot:
             message_effect_id: Optional[str]=None,
             allow_paid_broadcast: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
-            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None) -> types.Message:
+            suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
+            receiver_user_id: Optional[int]=None,
+            callback_query_id: Optional[str]=None) -> types.Message:
         """
         Use this method to send phone contacts. On success, the sent Message is returned.
 
@@ -4383,6 +4515,14 @@ class TeleBot:
             is automatically declined.
         :type suggested_post_parameters: :class:`telebot.types.SuggestedPostParameters`
 
+        :param receiver_user_id: For outgoing ephemeral messages, unique identifier of the user who will receive the message;
+            for group and supergroup chats only. It is not guaranteed that the user will receive the message, especially
+            if they are offline. See ephemeral message sending for more details.
+        :type receiver_user_id: :obj:`int`
+
+        :param callback_query_id: For outgoing ephemeral messages, identifier of the callback query which triggered the message if any
+        :type callback_query_id: :obj:`str`
+
         :return: On success, the sent Message is returned.
         :rtype: :class:`telebot.types.Message`
         """
@@ -4413,7 +4553,7 @@ class TeleBot:
                 disable_notification=disable_notification, reply_markup=reply_markup, timeout=timeout,
                 protect_content=protect_content, message_thread_id=message_thread_id, reply_parameters=reply_parameters,
                 business_connection_id=business_connection_id, message_effect_id=message_effect_id, allow_paid_broadcast=allow_paid_broadcast,
-                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters)
+                direct_messages_topic_id=direct_messages_topic_id, suggested_post_parameters=suggested_post_parameters, receiver_user_id=receiver_user_id, callback_query_id=callback_query_id)
             )
     
 
@@ -6707,6 +6847,176 @@ class TeleBot:
         return types.Poll.de_json(
             apihelper.stop_poll(self.token, chat_id, message_id, reply_markup=reply_markup, business_connection_id=business_connection_id)
         )
+    
+    def delete_ephemeral_message(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int) -> bool:
+        """
+        Use this method to delete an ephemeral message. Note that it is not guaranteed that the
+        user will receive the message deletion event, especially if they are offline. Returns True on success
+
+        Telegram documentation: https://core.telegram.org/bots/api#deleteephemeralmessage
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to delete
+        :type ephemeral_message_id: :obj:`int`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.delete_ephemeral_message(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id)
+
+    
+    def edit_ephemeral_message_text(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int, text: str,
+            parse_mode: Optional[str]=None, entities: Optional[List[types.MessageEntity]]=None,
+            link_preview_options: Optional[types.LinkPreviewOptions]=None, reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit an ephemeral text message. Note that it is not guaranteed that the
+        user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagetext
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param text: New text of the message, 1-4096 characters after entity parsing
+        :type text: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message text. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param entities: A JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+        :type entities: :obj:`list` of :obj:`MessageEntity`
+
+        :param link_preview_options: Link preview generation options for the message
+        :type link_preview_options: :obj:`LinkPreviewOptions`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
+        return apihelper.edit_ephemeral_message_text(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, text,
+            parse_mode=parse_mode, entities=entities,
+            link_preview_options=link_preview_options, reply_markup=reply_markup)
+
+    def edit_ephemeral_message_media(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int, media: types.InputMedia,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit the media of an ephemeral message. Note that it is not guaranteed
+        that the user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagemedia
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param media: A JSON-serialized object for the new media content of the message. A new file can't be uploaded; use a previously uploaded file via its file_id or specify a URL.
+        :type media: :obj:`InputMedia`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.edit_ephemeral_message_media(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, media,
+            reply_markup=reply_markup)
+
+
+    def edit_ephemeral_message_caption(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int, caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit the caption of an ephemeral message. Note that it is not guaranteed
+        that the user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagecaption
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param caption: New caption of the message, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the message caption. See formatting options for more details.
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :obj:`MessageEntity`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+
+        return apihelper.edit_ephemeral_message_caption(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, caption,
+            parse_mode=parse_mode, caption_entities=caption_entities,
+            reply_markup=reply_markup)
+
+    
+    def edit_ephemeral_message_reply_markup(
+            self, chat_id: Union[int, str], receiver_user_id: int, ephemeral_message_id: int,
+            reply_markup: Optional[types.InlineKeyboardMarkup]=None) -> bool:
+        """
+        Use this method to edit only the reply markup of an ephemeral message. Note that it is
+        not guaranteed that the user will receive the message edit event, especially if they are offline. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editephemeralmessagereplymarkup
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` | :obj:`str`
+
+        :param receiver_user_id: Identifier of the user who received the message
+        :type receiver_user_id: :obj:`int`
+
+        :param ephemeral_message_id: Identifier of the ephemeral message to edit
+        :type ephemeral_message_id: :obj:`int`
+
+        :param reply_markup: A JSON-serialized object for an inline keyboard
+        :type reply_markup: :obj:`InlineKeyboardMarkup`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.edit_ephemeral_message_reply_markup(
+            self.token, chat_id, receiver_user_id, ephemeral_message_id, reply_markup=reply_markup)
 
 
     def answer_shipping_query(
@@ -10940,6 +11250,54 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_guest_message_handler(handler_dict)
+
+    def subscription_handler(self, func=None, **kwargs):
+        """
+        User payment subscription has changed.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_subscription_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_subscription_handler(self, handler_dict):
+        """
+        Adds a subscription handler.
+        Note that you should use register_subscription_handler to add subscription_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.subscription_handlers.append(handler_dict)
+
+    def register_subscription_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers subscription handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_subscription_handler(handler_dict)
 
 
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):
