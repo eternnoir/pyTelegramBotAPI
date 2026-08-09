@@ -14679,7 +14679,7 @@ class BotAccessSettings(JsonDeserializable):
         return cls(**obj)
 
 
-class RichText(JsonDeserializable):
+class RichText(JsonDeserializable, Dictionaryable):
     """
     This object represents a rich formatted text. Currently, it can be either a String for plain text,
     an Array of :class:`RichText`, or any of the following types:
@@ -14721,9 +14721,12 @@ class RichText(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         if isinstance(json_string, str):
+            # "...can be either a String for plain text..."
             return json_string
         if isinstance(json_string, list):
+            # "...an Array of :class:`RichText`..."
             return [RichText.de_json(item) for item in json_string]
+        # "...or any of the following types..."
         obj = cls.check_json(json_string)
         type = obj.pop('type', None)
         if type == 'bold':
@@ -14777,7 +14780,24 @@ class RichText(JsonDeserializable):
         elif type == 'reference_link':
             return RichTextReferenceLink.de_json(obj)
         return None
-    
+
+    def to_dict(self):
+        data = {
+            'type': self.type
+        }
+        return data
+
+    @staticmethod
+    def richtext_to_dict(richtext: Union[str, List[RichText], RichText]):
+        if isinstance(richtext, str):
+            return richtext
+        elif isinstance(richtext, list):
+            return [RichText.richtext_to_dict(item) for item in richtext]
+        elif isinstance(richtext, RichText):
+            return richtext.to_dict()
+        return None
+
+
 class RichTextBold(RichText):
     """
     A bold text.
@@ -14803,6 +14823,12 @@ class RichTextBold(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
 
 class RichTextItalic(RichText):
     """
@@ -14830,6 +14856,12 @@ class RichTextItalic(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
+
 class RichTextUnderline(RichText):
     """
     An underlined text.
@@ -14855,6 +14887,12 @@ class RichTextUnderline(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
 
 class RichTextStrikethrough(RichText):
     """
@@ -14882,6 +14920,12 @@ class RichTextStrikethrough(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
+
 class RichTextSpoiler(RichText):
     """
     A text covered by a spoiler.
@@ -14907,6 +14951,12 @@ class RichTextSpoiler(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
 
 class RichTextDateTime(RichText):
     """
@@ -14942,6 +14992,14 @@ class RichTextDateTime(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['unix_time'] = self.unix_time
+        data['date_time_format'] = self.date_time_format
+        return data
+
+
 class RichTextTextMention(RichText):
     """
     A mention of a Telegram user by their identifier.
@@ -14973,6 +15031,12 @@ class RichTextTextMention(RichText):
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['user'] = self.user.to_dict()
+        return data
+
 
 class RichTextSubscript(RichText):
     """
@@ -15000,6 +15064,12 @@ class RichTextSubscript(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
+
 class RichTextSuperscript(RichText):
     """
     A superscript text.
@@ -15025,6 +15095,12 @@ class RichTextSuperscript(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
 
 class RichTextMarked(RichText):
     """
@@ -15052,6 +15128,12 @@ class RichTextMarked(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
+
 class RichTextCode(RichText):
     """
     A monowidth text.
@@ -15077,6 +15159,12 @@ class RichTextCode(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        return data
+
 
 class RichTextCustomEmoji(RichText):
     """
@@ -15107,6 +15195,13 @@ class RichTextCustomEmoji(RichText):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['custom_emoji_id'] = self.custom_emoji_id
+        data['alternative_text'] = self.alternative_text
+        return data
+
+
 class RichTextMathematicalExpression(RichText):
     """
     A mathematical expression.
@@ -15131,6 +15226,12 @@ class RichTextMathematicalExpression(RichText):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['expression'] = self.expression
+        return data
+
 
 class RichTextUrl(RichText):
     """
@@ -15162,6 +15263,13 @@ class RichTextUrl(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['url'] = self.url
+        return data
+
+
 class RichTextEmailAddress(RichText):
     """
     A text with an email address.
@@ -15191,6 +15299,13 @@ class RichTextEmailAddress(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['email_address'] = self.email_address
+        return data
+
 
 class RichTextPhoneNumber(RichText):
     """
@@ -15222,6 +15337,13 @@ class RichTextPhoneNumber(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['phone_number'] = self.phone_number
+        return data
+
+
 class RichTextBankCardNumber(RichText):
     """
     A text with a bank card number.
@@ -15252,6 +15374,13 @@ class RichTextBankCardNumber(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['bank_card_number'] = self.bank_card_number
+        return data
+
+
 class RichTextMention(RichText):
     """
     A mention by a username.
@@ -15270,7 +15399,6 @@ class RichTextMention(RichText):
     :return: Instance of the class
     :rtype: :class:`RichTextMention`
     """
-
     def __init__(self, text: RichText, username: str, **kwargs):
         super().__init__(type='mention', **kwargs)
         self.text: RichText = text
@@ -15282,6 +15410,12 @@ class RichTextMention(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['username'] = self.username
+        return data
 
 
 class RichTextHashtag(RichText):
@@ -15314,6 +15448,12 @@ class RichTextHashtag(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['hashtag'] = self.hashtag
+        return data
+
 
 class RichTextCashtag(RichText):
     """
@@ -15344,6 +15484,12 @@ class RichTextCashtag(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['cashtag'] = self.cashtag
+        return data
 
 
 class RichTextBotCommand(RichText):
@@ -15376,6 +15522,12 @@ class RichTextBotCommand(RichText):
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
 
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['bot_command'] = self.bot_command
+        return data
+
 
 class RichTextAnchor(RichText):
     """
@@ -15401,6 +15553,11 @@ class RichTextAnchor(RichText):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['name'] = self.name
+        return data
 
 
 class RichTextAnchorLink(RichText):
@@ -15432,7 +15589,13 @@ class RichTextAnchorLink(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
-    
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['anchor_name'] = self.anchor_name
+        return data
+
     
 class RichTextReference(RichText):
     """
@@ -15452,7 +15615,6 @@ class RichTextReference(RichText):
     :return: Instance of the class
     :rtype: :class:`RichTextReference`
     """
-
     def __init__(self, text: RichText, name: str, **kwargs):
         super().__init__(type='reference', **kwargs)
         self.text: RichText = text
@@ -15464,7 +15626,13 @@ class RichTextReference(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
-    
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['name'] = self.name
+        return data
+
     
 class RichTextReferenceLink(RichText):
     """
@@ -15483,9 +15651,7 @@ class RichTextReferenceLink(RichText):
 
     :return: Instance of the class
     :rtype: :class:`RichTextReferenceLink`
-
     """
-
     def __init__(self, text: RichText, reference_name: str, **kwargs):
         super().__init__(type='reference_link', **kwargs)
         self.text: RichText = text
@@ -15497,6 +15663,12 @@ class RichTextReferenceLink(RichText):
         obj = cls.check_json(json_string)
         obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['reference_name'] = self.reference_name
+        return data
 
 
 class RichBlockCaption(JsonDeserializable):
@@ -16664,7 +16836,7 @@ class InputRichBlockParagraph(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['text'] = self.text.to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
         return data
     
 
@@ -16693,7 +16865,7 @@ class InputRichBlockSectionHeading(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['text'] = self.text.to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
         data['size'] = self.size
         return data
 
@@ -16723,7 +16895,7 @@ class InputRichBlockPreformatted(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['text'] = self.text.to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
         if self.language is not None:
             data['language'] = self.language
         return data
@@ -16750,7 +16922,7 @@ class InputRichBlockFooter(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['text'] = self.text.to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
         return data
 
 
@@ -16873,7 +17045,7 @@ class InputRichBlockBlockQuotation(InputRichBlock):
         data = super().to_dict()
         data['blocks'] = [block.to_dict() for block in self.blocks]
         if self.credit is not None:
-            data['credit'] = self.credit.to_dict()
+            data['credit'] = RichText.richtext_to_dict(self.credit)
         return data
 
 
@@ -16902,9 +17074,9 @@ class InputRichBlockPullQuotation(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['text'] = self.text.to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
         if self.credit is not None:
-            data['credit'] = self.credit.to_dict()
+            data['credit'] = RichText.richtext_to_dict(self.credit)
         return data
 
 
@@ -17016,7 +17188,7 @@ class InputRichBlockTable(InputRichBlock):
         if self.is_striped is not None:
             data['is_striped'] = self.is_striped
         if self.caption is not None:
-            data['caption'] = self.caption.to_dict()
+            data['caption'] = RichText.richtext_to_dict(self.caption)
         return data
 
 
@@ -17055,7 +17227,7 @@ class InputRichBlockDetails(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['summary'] = self.summary.to_dict()
+        data['summary'] = RichText.richtext_to_dict(self.summary)
         data['blocks'] = [block.to_dict() for block in self.blocks]
         if self.is_open is not None:
             data['is_open'] = self.is_open
@@ -17292,7 +17464,7 @@ class InputRichBlockThinking(InputRichBlock):
 
     def to_dict(self) -> dict:
         data = super().to_dict()
-        data['text'] = self.text.to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
         return data
     
 
