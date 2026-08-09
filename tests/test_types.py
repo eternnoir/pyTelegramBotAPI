@@ -387,3 +387,46 @@ def test_chat_administrator_rights_can_manage_tags():
         can_manage_tags=True,
     )
     assert rights.to_dict()['can_manage_tags'] is True
+
+
+def test_rich_text_plain_string_serialization():
+    # RichText as a plain string serialized through InputRichMessage/InputRichBlock
+    block = types.InputRichBlockParagraph(text='plain text')
+    msg = types.InputRichMessage(blocks=[block])
+    d = msg.to_dict()
+    assert d['blocks'][0]['type'] == 'paragraph'
+    assert d['blocks'][0]['text'] == 'plain text'
+
+
+def test_rich_text_nested_list_serialization():
+    # RichText as a nested list serialized through InputRichMessage/InputRichBlock
+    block = types.InputRichBlockParagraph(text=['hello ', types.RichTextBold(text='world')])
+    msg = types.InputRichMessage(blocks=[block])
+    d = msg.to_dict()
+    assert d['blocks'][0]['type'] == 'paragraph'
+    text_list = d['blocks'][0]['text']
+    assert isinstance(text_list, list)
+    assert text_list[0] == 'hello '
+    assert text_list[1] == {'type': 'bold', 'text': 'world'}
+
+
+def test_rich_text_nested_richtext_serialization():
+    # RichText as a nested RichText object serialized through InputRichMessage/InputRichBlock
+    bold = types.RichTextBold(text='bold text')
+    block = types.InputRichBlockParagraph(text=bold)
+    msg = types.InputRichMessage(blocks=[block])
+    d = msg.to_dict()
+    assert d['blocks'][0]['type'] == 'paragraph'
+    assert d['blocks'][0]['text'] == {'type': 'bold', 'text': 'bold text'}
+
+
+def test_rich_text_datetime_serialization():
+    # RichTextDateTime must include all required fields (unix_time, date_time_format)
+    dt = types.RichTextDateTime(text='Jan 1', unix_time=1740000000, date_time_format='short')
+    block = types.InputRichBlockParagraph(text=dt)
+    msg = types.InputRichMessage(blocks=[block])
+    d = msg.to_dict()
+    text_dict = d['blocks'][0]['text']
+    assert text_dict['type'] == 'date_time'
+    assert text_dict['unix_time'] == 1740000000
+    assert text_dict['date_time_format'] == 'short'
