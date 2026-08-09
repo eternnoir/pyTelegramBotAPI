@@ -15710,7 +15710,7 @@ class RichBlockCaption(JsonDeserializable, Dictionaryable):
         return data
 
 
-class RichBlockTableCell(JsonDeserializable):
+class RichBlockTableCell(JsonDeserializable, Dictionaryable):
     """
     This object represents a cell of a table.
 
@@ -15753,7 +15753,21 @@ class RichBlockTableCell(JsonDeserializable):
         if 'text' in obj:
             obj['text'] = RichText.de_json(obj['text'])
         return cls(**obj)
-    
+
+    def to_dict(self):
+        data = {
+            'text': RichText.richtext_to_dict(self.text),
+            'align': self.align,
+            'valign': self.valign,
+        }
+        if self.is_header is not None:
+            data['is_header'] = self.is_header
+        if self.colspan is not None:
+            data['colspan'] = self.colspan
+        if self.rowspan is not None:
+            data['rowspan'] = self.rowspan
+        return data
+
     
 class RichBlockListItem(JsonDeserializable):
     """
@@ -16697,9 +16711,9 @@ class InputMediaVoiceNote(InputMedia):
         if self.duration is not None:
             data['duration'] = self.duration
         return data
-    
 
-class InputRichMessageMedia(Dictionaryable):
+
+class InputRichMessageMedia(Dictionaryable, JsonSerializable):
     """
     This object represents a media element embedded in an outgoing rich message.
 
@@ -16725,12 +16739,12 @@ class InputRichMessageMedia(Dictionaryable):
             'media': self.media.to_dict()
         }
         return data
-    
+
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
-    
 
-class InputRichBlockListItem(Dictionaryable):
+
+class InputRichBlockListItem(Dictionaryable, JsonSerializable):
     """
     An item of a list to be sent.
 
@@ -16779,6 +16793,7 @@ class InputRichBlockListItem(Dictionaryable):
     
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
+
 
 class InputRichBlock(Dictionaryable, JsonSerializable):
     """
