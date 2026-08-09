@@ -2526,14 +2526,19 @@ class Location(JsonDeserializable, JsonSerializable, Dictionaryable):
         return json.dumps(self.to_dict())
 
     def to_dict(self):
-        return {
+        data = {
             "longitude": self.longitude,
             "latitude": self.latitude,
-            "horizontal_accuracy": self.horizontal_accuracy,
-            "live_period": self.live_period,
-            "heading": self.heading,
-            "proximity_alert_radius": self.proximity_alert_radius,
         }
+        if self.horizontal_accuracy is not None:
+            data["horizontal_accuracy"] = self.horizontal_accuracy
+        if self.live_period is not None:
+            data["live_period"] = self.live_period
+        if self.heading is not None:
+            data["heading"] = self.heading
+        if self.proximity_alert_radius is not None:
+            data["proximity_alert_radius"] = self.proximity_alert_radius
+        return data
 
 
 class Venue(JsonDeserializable):
@@ -4454,14 +4459,17 @@ class InputLocationMessageContent(Dictionaryable):
         self.proximity_alert_radius: Optional[int] = proximity_alert_radius
 
     def to_dict(self):
-        json_dict = {'latitude': self.latitude, 'longitude': self.longitude}
-        if self.horizontal_accuracy:
+        json_dict = {
+            'latitude': self.latitude,
+            'longitude': self.longitude
+        }
+        if self.horizontal_accuracy is not None:
             json_dict['horizontal_accuracy'] = self.horizontal_accuracy
-        if self.live_period:
+        if self.live_period is not None:
             json_dict['live_period'] = self.live_period
-        if self.heading:
+        if self.heading is not None:
             json_dict['heading'] = self.heading
-        if self.proximity_alert_radius:
+        if self.proximity_alert_radius is not None:
             json_dict['proximity_alert_radius'] = self.proximity_alert_radius
         return json_dict
 
@@ -5665,19 +5673,19 @@ class InlineQueryResultLocation(InlineQueryResultBase):
         json_dict = super().to_dict()
         json_dict['latitude'] = self.latitude
         json_dict['longitude'] = self.longitude
-        if self.horizontal_accuracy:
+        if self.horizontal_accuracy is not None:
             json_dict['horizontal_accuracy'] = self.horizontal_accuracy
-        if self.live_period:
+        if self.live_period is not None:
             json_dict['live_period'] = self.live_period
-        if self.heading:
+        if self.heading is not None:
             json_dict['heading'] = self.heading
-        if self.proximity_alert_radius:
+        if self.proximity_alert_radius is not None:
             json_dict['proximity_alert_radius'] = self.proximity_alert_radius
         if self.thumbnail_url:
             json_dict['thumbnail_url'] = self.thumbnail_url
-        if self.thumbnail_width:
+        if self.thumbnail_width is not None:
             json_dict['thumbnail_width'] = self.thumbnail_width
-        if self.thumbnail_height:
+        if self.thumbnail_height is not None:
             json_dict['thumbnail_height'] = self.thumbnail_height
         return json_dict
 
