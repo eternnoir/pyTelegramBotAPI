@@ -14995,6 +14995,8 @@ class RichTextDateTime(RichText):
     def to_dict(self):
         data = super().to_dict()
         data['text'] = RichText.richtext_to_dict(self.text)
+        data['unix_time'] = self.unix_time
+        data['date_time_format'] = self.date_time_format
         return data
 
 
