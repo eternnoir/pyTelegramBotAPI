@@ -15756,10 +15756,11 @@ class RichBlockTableCell(JsonDeserializable, Dictionaryable):
 
     def to_dict(self):
         data = {
-            'text': RichText.richtext_to_dict(self.text),
             'align': self.align,
             'valign': self.valign,
         }
+        if self.text is not None:
+            data['text'] = RichText.richtext_to_dict(self.text)
         if self.is_header is not None:
             data['is_header'] = self.is_header
         if self.colspan is not None:
