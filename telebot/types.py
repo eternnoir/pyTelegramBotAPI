@@ -15671,7 +15671,7 @@ class RichTextReferenceLink(RichText):
         return data
 
 
-class RichBlockCaption(JsonDeserializable):
+class RichBlockCaption(JsonDeserializable, Dictionaryable):
     """
     This object represents the caption of a rich formatted block.
 
@@ -15700,6 +15700,14 @@ class RichBlockCaption(JsonDeserializable):
         if 'credit' in obj:
             obj['credit'] = RichText.de_json(obj['credit'])
         return cls(**obj)
+
+    def to_dict(self):
+        data = {
+            'text': RichText.richtext_to_dict(self.text),
+        }
+        if self.credit is not None:
+            data['credit'] = RichText.richtext_to_dict(self.credit)
+        return data
 
 
 class RichBlockTableCell(JsonDeserializable):
