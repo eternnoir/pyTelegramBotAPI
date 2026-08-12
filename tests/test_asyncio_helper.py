@@ -7,7 +7,6 @@ network I/O.
 import asyncio
 
 import aiohttp
-import pytest
 
 from telebot import asyncio_helper
 
