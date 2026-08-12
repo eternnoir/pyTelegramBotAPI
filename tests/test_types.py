@@ -341,6 +341,85 @@ def test_message_entity_date_time():
     assert entity.to_dict()['date_time_format'] == 'short'
 
 
+def test_input_rich_message_serializes_plain_string_block_text():
+    message = types.InputRichMessage(
+        blocks=[types.InputRichBlockParagraph(text='Plain text')]
+    )
+
+    assert message.to_dict() == {
+        'blocks': [
+            {
+                'type': 'paragraph',
+                'text': 'Plain text',
+            }
+        ]
+    }
+
+
+def test_input_rich_message_serializes_nested_richtext_list():
+    message = types.InputRichMessage(
+        blocks=[
+            types.InputRichBlockParagraph(
+                text=[
+                    'Prefix ',
+                    [
+                        types.RichTextBold('bold'),
+                        types.RichTextItalic('italic'),
+                    ],
+                ]
+            )
+        ]
+    )
+
+    assert message.to_dict() == {
+        'blocks': [
+            {
+                'type': 'paragraph',
+                'text': [
+                    'Prefix ',
+                    [
+                        {'type': 'bold', 'text': 'bold'},
+                        {'type': 'italic', 'text': 'italic'},
+                    ],
+                ],
+            }
+        ]
+    }
+
+
+def test_input_rich_message_serializes_nested_richtext_datetime():
+    message = types.InputRichMessage(
+        blocks=[
+            types.InputRichBlockParagraph(
+                text=types.RichTextBold(
+                    types.RichTextDateTime(
+                        text='Mar 1',
+                        unix_time=1740787200,
+                        date_time_format='short',
+                    )
+                )
+            )
+        ]
+    )
+
+    assert message.to_dict() == {
+        'blocks': [
+            {
+                'type': 'paragraph',
+                'text': {
+                    'type': 'bold',
+                    'text': {
+                        'type': 'date_time',
+                        'text': 'Mar 1',
+                        'unix_time': 1740787200,
+                        'date_time_format': 'short',
+                    },
+                },
+            }
+        ]
+    }
+
+
 def test_message_sender_tag():
     jsonstring = r'{"message_id":1,"from":{"id":1,"first_name":"A","is_bot":false},"chat":{"id":1,"first_name":"A","type":"private"},"date":1435296025,"text":"hi","sender_tag":"blue"}'
     msg = types.Message.de_json(jsonstring)
