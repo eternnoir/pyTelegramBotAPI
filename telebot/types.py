@@ -14736,12 +14736,15 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
         if json_string is None: return None
         if isinstance(json_string, str):
             # "...can be either a String for plain text..."
-            try:
-                # Check if string is valid json. If so, assume it's json, not plain string
-                json.loads(json_string)
-                # If it's valid json, continue to json processing below
-            except (ValueError, TypeError, json.JSONDecodeError):
-                # If it's not valid json, return the string as is
+            if (json_string.startswith('{') and json_string.endswith('}')) or (json_string.startswith('[') and json_string.endswith(']')):
+                try:
+                    # Check if string is valid json. If so, assume it's json, not plain string
+                    json.loads(json_string)
+                    # If it's valid json, continue to json processing below
+                except (ValueError, TypeError, json.JSONDecodeError):
+                    # If it's not valid json, return the string as is
+                    return json_string
+            else:
                 return json_string
         elif isinstance(json_string, list):
             # "...an Array of :class:`RichText`..."
