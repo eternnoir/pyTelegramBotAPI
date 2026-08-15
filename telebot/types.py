@@ -13993,6 +13993,13 @@ class GiftBackground(JsonDeserializable):
         self.edge_color: int = edge_color
         self.text_color: int = text_color
 
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+    
+
 class SuggestedPostApprovalFailed(JsonDeserializable):
     """
     Describes a service message about the failed approval of a suggested post.
