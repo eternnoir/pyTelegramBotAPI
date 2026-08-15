@@ -13998,7 +13998,6 @@ class GiftBackground(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
-    
 
 class SuggestedPostApprovalFailed(JsonDeserializable):
     """
