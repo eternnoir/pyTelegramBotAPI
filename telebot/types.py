@@ -14693,7 +14693,7 @@ class BotAccessSettings(JsonDeserializable):
         return cls(**obj)
 
 
-class RichText(JsonDeserializable, Dictionaryable):
+class RichText(JsonDeserializable, Dictionaryable, ABC):
     """
     This object represents a rich formatted text. Currently, it can be either a String for plain text,
     an Array of :class:`RichText`, or any of the following types:
@@ -14736,8 +14736,17 @@ class RichText(JsonDeserializable, Dictionaryable):
         if json_string is None: return None
         if isinstance(json_string, str):
             # "...can be either a String for plain text..."
-            return json_string
-        if isinstance(json_string, list):
+            if (json_string.startswith('{') and json_string.endswith('}')) or (json_string.startswith('[') and json_string.endswith(']')):
+                try:
+                    # Check if string is valid json. If so, assume it's json, not plain string
+                    json.loads(json_string)
+                    # If it's valid json, continue to json processing below
+                except (ValueError, TypeError, json.JSONDecodeError):
+                    # If it's not valid json, return the string as is
+                    return json_string
+            else:
+                return json_string
+        elif isinstance(json_string, list):
             # "...an Array of :class:`RichText`..."
             return [RichText.de_json(item) for item in json_string]
         # "...or any of the following types..."
@@ -15827,7 +15836,7 @@ class RichBlockListItem(JsonDeserializable):
         return cls(**obj)
 
 
-class RichBlock(JsonDeserializable):
+class RichBlock(JsonDeserializable, ABC):
     """
     This object represents a block in a rich formatted message. Currently, it can be any of the following types:
 
