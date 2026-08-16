@@ -974,7 +974,7 @@ class MessageID(MessageId):
     Deprecated. Use `MessageId` instead.
     """
     def __init__(self, message_id, **kwargs):
-        log_deprecation_warning("The class 'MessageId' is deprecated. Use 'MessageId' instead.")
+        log_deprecation_warning("The class 'MessageID' is deprecated. Use 'MessageId' instead.")
         super().__init__(message_id, **kwargs)
 
 
