@@ -951,9 +951,18 @@ class MessageID(JsonDeserializable, ABC):
     """
     Deprecated. Use `MessageId` instead.
     """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string, dict_copy=False)
+        return cls(**obj)
+
+    def __init__(self, message_id, **kwargs):
+        self.message_id: int = message_id
+        log_deprecation_warning('The class "MessageID" is deprecated, use "MessageId" instead')
 
 
-class MessageId(MessageID):
+class MessageId(JsonDeserializable, ABC):
     """
     This object represents a unique message identifier.
 
@@ -4933,7 +4942,7 @@ class InlineQueryResultArticle(InlineQueryResult):
     :type url: :obj:`str`
 
     :param hide_url: deprecated. Use empty url instead
-    :type hide_url: :obj:`str`
+    :type hide_url: :obj:`bool`
 
     :param description: Optional. Short description of the result
     :type description: :obj:`str`
@@ -6248,9 +6257,8 @@ class InlineQueryResultCachedAudio(InlineQueryResult):
     def __init__(self, id: str, audio_file_id: str, caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None):
-        super().__init__('audio', id, title = title, caption = caption,
-                         input_message_content = input_message_content, reply_markup = reply_markup,
-                         parse_mode = parse_mode, caption_entities = caption_entities)
+        super().__init__('audio', id, caption = caption, input_message_content = input_message_content,
+                         reply_markup = reply_markup, parse_mode = parse_mode, caption_entities = caption_entities)
         self.audio_file_id: str = audio_file_id
 
     def to_dict(self):
