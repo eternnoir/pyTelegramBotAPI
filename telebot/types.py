@@ -947,7 +947,7 @@ class Chat(ChatFullInfo):
     pass
 
 
-class MessageID(ABS, JsonDeserializable):
+class MessageID(ABC, JsonDeserializable):
     """
     Deprecated. Use `MessageId` instead.
     """
