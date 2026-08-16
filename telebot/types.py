@@ -947,7 +947,7 @@ class Chat(ChatFullInfo):
     pass
 
 
-class MessageID(ABC, JsonDeserializable):
+class MessageID(JsonDeserializable, ABC):
     """
     Deprecated. Use `MessageId` instead.
     """
@@ -4817,20 +4817,20 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
         return json_dict
 
 
-class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
+class InlineQueryResultBase(Dictionaryable, JsonSerializable, ABC):
     """
     Deprecated. Use `InlineQueryResult` instead.
     """
 
 
-class InlineQueryResultCachedBase(ABC, InlineQueryResultBase):
+class InlineQueryResultCachedBase(InlineQueryResultBase, ABC):
     """
     Deprecated. Use `InlineQueryResult` instead.
     """
 
 
 # noinspection PyShadowingBuiltins
-class InlineQueryResult(ABC, InlineQueryResultCachedBase):
+class InlineQueryResult(InlineQueryResultCachedBase, ABC):
     """
     This object represents one result of an inline query. Telegram clients currently support results of the following 20 types:
 
