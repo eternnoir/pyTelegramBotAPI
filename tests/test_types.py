@@ -2688,3 +2688,157 @@ def test_json_webhookinfo():
     assert result.has_custom_certificate == False
     assert result.pending_update_count == 1
     assert isinstance(result, types.WebhookInfo)
+
+
+def test_message_entity_html_conversion():
+    """Test converting MessageEntity to HTML text for various entity types."""
+    
+    # Variant 1: simple bold at start
+    json1 = r'{"message_id":1,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"bold text","entities":[{"offset":0,"length":4,"type":"bold"}]}'
+    msg1 = types.Message.de_json(json1)
+    assert msg1.html_text == '<b>bold</b> text'
+    
+    # Variant 2: italic
+    json2 = r'{"message_id":2,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"italic text","entities":[{"offset":0,"length":6,"type":"italic"}]}'
+    msg2 = types.Message.de_json(json2)
+    assert msg2.html_text == '<i>italic</i> text'
+    
+    # Variant 3: underline
+    json3 = r'{"message_id":3,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"under text","entities":[{"offset":0,"length":6,"type":"underline"}]}'
+    msg3 = types.Message.de_json(json3)
+    assert msg3.html_text == '<u>under </u>text'
+    
+    # Variant 4: code
+    json4 = r'{"message_id":4,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"code text","entities":[{"offset":0,"length":4,"type":"code"}]}'
+    msg4 = types.Message.de_json(json4)
+    assert msg4.html_text == '<code>code</code> text'
+    
+    # Variant 5: spoiler
+    json5 = r'{"message_id":5,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"spoiler text","entities":[{"offset":0,"length":7,"type":"spoiler"}]}'
+    msg5 = types.Message.de_json(json5)
+    assert msg5.html_text == '<span class="tg-spoiler">spoiler</span> text'
+    
+    # Variant 6: mention
+    json6 = r'{"message_id":6,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@mention text","entities":[{"offset":0,"length":8,"type":"mention"}]}'
+    msg6 = types.Message.de_json(json6)
+    assert msg6.html_text == '@mention text'
+    
+    # Variant 7: url
+    json7 = r'{"message_id":7,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"https://example.com text","entities":[{"offset":0,"length":19,"type":"url"}]}'
+    msg7 = types.Message.de_json(json7)
+    assert msg7.html_text == 'https://example.com text'
+    
+    # Variant 8: bold + italic (separate sections)
+    json8 = r'{"message_id":8,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"bold italic text","entities":[{"offset":0,"length":4,"type":"bold"},{"offset":5,"length":6,"type":"italic"}]}'
+    msg8 = types.Message.de_json(json8)
+    assert msg8.html_text == '<b>bold</b> <i>italic</i> text'
+    
+    # Variant 9: pre (code block)
+    json9 = r'{"message_id":9,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"code block","entities":[{"offset":0,"length":10,"type":"pre"}]}'
+    msg9 = types.Message.de_json(json9)
+    assert msg9.html_text == '<pre>code block</pre>'
+    
+    # Variant 10: nested bold + italic
+    json10 = r'{"message_id":10,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"nested text","entities":[{"offset":0,"length":6,"type":"bold"},{"offset":0,"length":6,"type":"italic"}]}'
+    msg10 = types.Message.de_json(json10)
+    assert msg10.html_text == '<b><i>nested</i></b> text'
+
+    # Variant 11: 3 consecutive entities (bold, italic, underline)
+    json11 = r'{"message_id":11,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"abc text","entities":[{"offset":0,"length":1,"type":"bold"},{"offset":1,"length":1,"type":"italic"},{"offset":2,"length":1,"type":"underline"}]}'
+    msg11 = types.Message.de_json(json11)
+    assert msg11.html_text == '<b>a</b><i>b</i><u>c</u> text'
+
+    # Variant 12: 3-level nesting (bold > italic > code)
+    json12 = r'{"message_id":12,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"nested","entities":[{"offset":0,"length":6,"type":"bold"},{"offset":0,"length":6,"type":"italic"},{"offset":0,"length":6,"type":"code"}]}'
+    msg12 = types.Message.de_json(json12)
+    assert msg12.html_text == '<b><i><code>nested</code></i></b>'
+
+    # Variant 13: overlap (bold covers italic)
+    json13 = r'{"message_id":13,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"bolditalic","entities":[{"offset":0,"length":10,"type":"bold"},{"offset":0,"length":5,"type":"italic"}]}'
+    msg13 = types.Message.de_json(json13)
+    assert msg13.html_text == '<b><i>boldi</i>talic</b>'
+
+    # Variant 14: hashtag + url in one text
+    json14 = r'{"message_id":14,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"#hashtag text https://example.com end","entities":[{"offset":0,"length":8,"type":"hashtag"},{"offset":14,"length":19,"type":"url"}]}'
+    msg14 = types.Message.de_json(json14)
+    assert msg14.html_text == '#hashtag text https://example.com end'
+
+    # Variant 15: mention + bold
+    json15 = r'{"message_id":15,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@user bold text here","entities":[{"offset":0,"length":5,"type":"mention"},{"offset":6,"length":4,"type":"bold"}]}'
+    msg15 = types.Message.de_json(json15)
+    assert msg15.html_text == '@user <b>bold</b> text here'
+
+    # Variant 16: text_mention (without @, with user link)
+    json16 = r'{"message_id":16,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"Hello Admin here","entities":[{"offset":6,"length":5,"type":"text_mention","user":{"id":123,"is_bot":false,"first_name":"Admin"}}]}'
+    msg16 = types.Message.de_json(json16)
+    assert msg16.html_text == 'Hello <a href="tg://user?id=123">Admin</a> here'
+
+    # Variant 17: custom_emoji
+    json17 = r'{"message_id":17,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"cool 😋 nice","entities":[{"offset":5,"length":3,"type":"custom_emoji","custom_emoji_id":"5368324170671202286"}]}'
+    msg17 = types.Message.de_json(json17)
+    assert msg17.html_text == 'cool <tg-emoji emoji-id="5368324170671202286">😋 </tg-emoji>nice'
+
+    # Variant 18: spoiler + bold (non-overlapping)
+    json18 = r'{"message_id":18,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"secret hidden text","entities":[{"offset":0,"length":6,"type":"spoiler"},{"offset":7,"length":6,"type":"bold"}]}'
+    msg18 = types.Message.de_json(json18)
+    assert msg18.html_text == '<span class="tg-spoiler">secret</span> <b>hidden</b> text'
+
+    # Variant 19: text_link + bold
+    json19 = r'{"message_id":19,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"click bold text","entities":[{"offset":0,"length":5,"type":"text_link","url":"https://example.com"},{"offset":6,"length":4,"type":"bold"}]}'
+    msg19 = types.Message.de_json(json19)
+    assert msg19.html_text == '<a href="https://example.com">click</a> <b>bold</b> text'
+
+    # Variant 20: email + strikethrough
+    json20 = r'{"message_id":20,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"email@x.com deleted","entities":[{"offset":0,"length":11,"type":"email"},{"offset":12,"length":7,"type":"strikethrough"}]}'
+    msg20 = types.Message.de_json(json20)
+    assert msg20.html_text == 'email@x.com <s>deleted</s>'
+
+    # Variant 21: cashtag
+    json21 = r'{"message_id":21,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"$TSLA went up","entities":[{"offset":0,"length":4,"type":"cashtag"}]}'
+    msg21 = types.Message.de_json(json21)
+    assert msg21.html_text == '$TSLA went up'
+
+    # Variant 22: bold + code (separate sections)
+    json22 = r'{"message_id":22,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"bold code text","entities":[{"offset":0,"length":4,"type":"bold"},{"offset":5,"length":4,"type":"code"}]}'
+    msg22 = types.Message.de_json(json22)
+    assert msg22.html_text == '<b>bold</b> <code>code</code> text'
+
+    # Variant 23: 4 consecutive entities (bold, italic, underline, strikethrough)
+    json23 = r'{"message_id":23,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"abcd text","entities":[{"offset":0,"length":1,"type":"bold"},{"offset":1,"length":1,"type":"italic"},{"offset":2,"length":1,"type":"underline"},{"offset":3,"length":1,"type":"strikethrough"}]}'
+    msg23 = types.Message.de_json(json23)
+    assert msg23.html_text == '<b>a</b><i>b</i><u>c</u><s>d</s> text'
+
+    # Variant 24: long mention + bold
+    json24 = r'{"message_id":24,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@username bold text","entities":[{"offset":0,"length":9,"type":"mention"},{"offset":10,"length":4,"type":"bold"}]}'
+    msg24 = types.Message.de_json(json24)
+    assert msg24.html_text == '@username <b>bold</b> text'
+
+    # Variant 25: url in the middle of text
+    json25 = r'{"message_id":25,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"see https://example.com link","entities":[{"offset":3,"length":19,"type":"url"}]}'
+    msg25 = types.Message.de_json(json25)
+    assert msg25.html_text == 'see https://example.com link'
+
+    # Variant 26: spoiler + underline (non-overlapping)
+    json26 = r'{"message_id":26,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"hidden marked text","entities":[{"offset":0,"length":7,"type":"spoiler"},{"offset":8,"length":6,"type":"underline"}]}'
+    msg26 = types.Message.de_json(json26)
+    assert msg26.html_text == '<span class="tg-spoiler">hidden </span>m<u>arked </u>text'
+
+    # Variant 27: text_link + bold overlap
+    json27 = r'{"message_id":27,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"link bold text","entities":[{"offset":0,"length":4,"type":"text_link","url":"https://example.com"},{"offset":0,"length":9,"type":"bold"}]}'
+    msg27 = types.Message.de_json(json27)
+    assert msg27.html_text == '<b><a href="https://example.com">link</a> bold</b> text'
+
+    # Variant 28: bot_command
+    json28 = r'{"message_id":28,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"/start command","entities":[{"offset":0,"length":6,"type":"bot_command"}]}'
+    msg28 = types.Message.de_json(json28)
+    assert msg28.html_text == '/start command'
+
+    # Variant 29: pre + code overlap
+    json29 = r'{"message_id":29,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"code here","entities":[{"offset":0,"length":9,"type":"pre"},{"offset":0,"length":9,"type":"code"}]}'
+    msg29 = types.Message.de_json(json29)
+    assert msg29.html_text == '<pre><code>code here</code></pre>'
+
+    # Variant 30: mention + email + url (three different entities)
+    json30 = r'{"message_id":30,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@user mail@x.com https://x.com end","entities":[{"offset":0,"length":5,"type":"mention"},{"offset":6,"length":10,"type":"email"},{"offset":17,"length":14,"type":"url"}]}'
+    msg30 = types.Message.de_json(json30)
+    assert msg30.html_text == '@user mail@x.com https://x.com end'
