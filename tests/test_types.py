@@ -962,35 +962,41 @@ def test_json_communitychatadded():
 
 
 def test_json_communitychatremoved():
-    result = types.CommunityChatRemoved.de_json({})
-    assert isinstance(result, types.CommunityChatRemoved) or result is None
+    json_str = r'{}'
+    result = types.CommunityChatRemoved.de_json(json_str)
+    assert isinstance(result, types.CommunityChatRemoved)
 
 
 def test_json_forumtopicclosed():
-    result = types.ForumTopicClosed.de_json({})
-    assert isinstance(result, types.ForumTopicClosed) or result is None
+    json_str = r'{}'
+    result = types.ForumTopicClosed.de_json(json_str)
+    assert isinstance(result, types.ForumTopicClosed)
 
 
 def test_json_forumtopicedited():
-    result = types.ForumTopicEdited.de_json({'name': 'New Name', 'icon_custom_emoji_id': 'custom_emoji'})
+    json_str = r'{"name": "New Name", "icon_custom_emoji_id": "custom_emoji"}'
+    result = types.ForumTopicEdited.de_json(json_str)
     assert result.name == 'New Name'
     assert result.icon_custom_emoji_id == 'custom_emoji'
     assert isinstance(result, types.ForumTopicEdited)
 
 
 def test_json_forumtopicreopened():
-    result = types.ForumTopicReopened.de_json({})
-    assert isinstance(result, types.ForumTopicReopened) or result is None
+    json_str = r'{}'
+    result = types.ForumTopicReopened.de_json(json_str)
+    assert isinstance(result, types.ForumTopicReopened)
 
 
 def test_json_generalforumtopichidden():
-    result = types.GeneralForumTopicHidden.de_json({})
-    assert isinstance(result, types.GeneralForumTopicHidden) or result is None
+    json_str = r'{}'
+    result = types.GeneralForumTopicHidden.de_json(json_str)
+    assert isinstance(result, types.GeneralForumTopicHidden)
 
 
 def test_json_generalforumtopicunhidden():
-    result = types.GeneralForumTopicUnhidden.de_json({})
-    assert isinstance(result, types.GeneralForumTopicUnhidden) or result is None
+    json_str = r'{}'
+    result = types.GeneralForumTopicUnhidden.de_json(json_str)
+    assert isinstance(result, types.GeneralForumTopicUnhidden)
 
 
 def test_json_giveawaycreated():
@@ -1018,7 +1024,7 @@ def test_json_orderinfo():
     assert result.phone_number == '+1234567890'
     assert result.email == 'john@example.com'
     assert isinstance(result.shipping_address, types.ShippingAddress)
-    assert isinstance(result, types.OrderInfo) or result is None
+    assert isinstance(result, types.OrderInfo)
     assert hasattr(result, 'name')
     assert hasattr(result, 'phone_number')
     assert hasattr(result, 'email')
@@ -1073,22 +1079,26 @@ def test_json_switchinlinequerychosenchat():
 
 
 def test_json_transactionpartnertelegramads():
-    result = types.TransactionPartnerTelegramAds.de_json(None)
-    assert isinstance(result, types.TransactionPartnerTelegramAds) or result is None
+    result = types.TransactionPartnerTelegramAds(type='telegram_ads')
+    assert result.type == 'telegram_ads'
+    assert isinstance(result, types.TransactionPartnerTelegramAds)
 
 
 def test_json_videochatstarted():
-    result = types.VideoChatStarted.de_json({})
-    assert isinstance(result, types.VideoChatStarted) or result is None
+    json_str = r'{}'
+    result = types.VideoChatStarted.de_json(json_str)
+    assert isinstance(result, types.VideoChatStarted)
 
 
 def test_json_voicechatstarted():
-    result = types.VoiceChatStarted.de_json({})
-    assert isinstance(result, types.VoiceChatStarted) or result is None
+    json_str = r'{}'
+    result = types.VoiceChatStarted.de_json(json_str)
+    assert isinstance(result, types.VoiceChatStarted)
 
 
 def test_json_writeaccessallowed():
-    result = types.WriteAccessAllowed.de_json({'from_request': True, 'web_app_name': 'TestApp', 'from_attachment_menu': False})
+    json_str = r'{"from_request": true, "web_app_name": "TestApp", "from_attachment_menu": false}'
+    result = types.WriteAccessAllowed.de_json(json_str)
     assert result.from_request == True
     assert result.web_app_name == 'TestApp'
     assert result.from_attachment_menu == False
