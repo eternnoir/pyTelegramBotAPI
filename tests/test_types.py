@@ -903,21 +903,22 @@ def test_json_reactiontypepaid():
 
 
 def test_json_businessbotrights():
-    result = types.BusinessBotRights.de_json({})
-    assert result.can_reply is None
-    assert result.can_read_messages is None
-    assert result.can_delete_outgoing_messages is None
-    assert result.can_delete_all_messages is None
-    assert result.can_edit_name is None
-    assert result.can_edit_bio is None
-    assert result.can_edit_profile_photo is None
-    assert result.can_edit_username is None
-    assert result.can_change_gift_settings is None
-    assert result.can_view_gifts_and_stars is None
-    assert result.can_convert_gifts_to_stars is None
-    assert result.can_transfer_and_upgrade_gifts is None
-    assert result.can_transfer_stars is None
-    assert result.can_manage_stories is None
+    json_str = r'{"can_reply": true, "can_read_messages": true, "can_delete_outgoing_messages": true, "can_delete_all_messages": false, "can_edit_name": true, "can_edit_bio": false, "can_edit_profile_photo": false, "can_edit_username": false, "can_change_gift_settings": false, "can_view_gifts_and_stars": true, "can_convert_gifts_to_stars": false, "can_transfer_and_upgrade_gifts": false, "can_transfer_stars": false, "can_manage_stories": false}'
+    result = types.BusinessBotRights.de_json(json_str)
+    assert result.can_reply is True
+    assert result.can_read_messages is True
+    assert result.can_delete_outgoing_messages is True
+    assert result.can_delete_all_messages is False
+    assert result.can_edit_name is True
+    assert result.can_edit_bio is False
+    assert result.can_edit_profile_photo is False
+    assert result.can_edit_username is False
+    assert result.can_change_gift_settings is False
+    assert result.can_view_gifts_and_stars is True
+    assert result.can_convert_gifts_to_stars is False
+    assert result.can_transfer_and_upgrade_gifts is False
+    assert result.can_transfer_stars is False
+    assert result.can_manage_stories is False
     assert isinstance(result, types.BusinessBotRights)
 
 
@@ -931,9 +932,13 @@ def test_json_businessintro():
 
 
 def test_json_chatownerleft():
-    result = types.ChatOwnerLeft.de_json({})
-    assert isinstance(result, types.ChatOwnerLeft) or result is None
-    assert result.new_owner is None
+    json_str = r'{"new_owner": {"id": 12345, "is_bot": false, "first_name": "New Owner"}}'
+    result = types.ChatOwnerLeft.de_json(json_str)
+    assert result.new_owner is not None
+    assert result.new_owner.id == 12345
+    assert result.new_owner.is_bot == False
+    assert result.new_owner.first_name == 'New Owner'
+    assert isinstance(result, types.ChatOwnerLeft)
 
 
 def test_json_checklisttasksdone():
@@ -948,9 +953,12 @@ def test_json_checklisttasksdone():
 
 
 def test_json_communitychatadded():
-    result = types.CommunityChatAdded.de_json({})
-    assert isinstance(result, types.CommunityChatAdded) or result is None
-    assert result.community is None
+    json_str = r'{"community": {"id": 12345, "name": "Test Community"}}'
+    result = types.CommunityChatAdded.de_json(json_str)
+    assert result.community is not None
+    assert result.community.id == 12345
+    assert result.community.name == 'Test Community'
+    assert isinstance(result, types.CommunityChatAdded)
 
 
 def test_json_communitychatremoved():
@@ -986,18 +994,20 @@ def test_json_generalforumtopicunhidden():
 
 
 def test_json_giveawaycreated():
-    result = types.GiveawayCreated.de_json({})
-    assert isinstance(result, types.GiveawayCreated) or result is None
-    assert hasattr(result, 'prize_star_count')
+    json_str = r'{"prize_star_count": 100}'
+    result = types.GiveawayCreated.de_json(json_str)
+    assert result.prize_star_count == 100
+    assert isinstance(result, types.GiveawayCreated)
 
 
 def test_json_linkpreviewoptions():
-    result = types.LinkPreviewOptions.de_json({})
-    assert result.is_disabled is None
-    assert result.url is None
-    assert result.prefer_small_media is None
-    assert result.prefer_large_media is None
-    assert result.show_above_text is None
+    json_str = r'{"is_disabled": true, "url": "https://example.com", "prefer_small_media": false, "prefer_large_media": true, "show_above_text": false}'
+    result = types.LinkPreviewOptions.de_json(json_str)
+    assert result.is_disabled == True
+    assert result.url == 'https://example.com'
+    assert result.prefer_small_media == False
+    assert result.prefer_large_media == True
+    assert result.show_above_text == False
     assert isinstance(result, types.LinkPreviewOptions)
 
 
@@ -1037,9 +1047,10 @@ def test_json_richblockdivider():
 
 
 def test_json_sentwebappmessage():
-    result = types.SentWebAppMessage.de_json({})
-    assert isinstance(result, types.SentWebAppMessage) or result is None
-    assert hasattr(result, 'inline_message_id')
+    json_str = r'{"inline_message_id": "test_inline_msg_1"}'
+    result = types.SentWebAppMessage.de_json(json_str)
+    assert result.inline_message_id == 'test_inline_msg_1'
+    assert isinstance(result, types.SentWebAppMessage)
 
 
 def test_json_suggestedpostdeclined():
