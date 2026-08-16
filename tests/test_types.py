@@ -2682,11 +2682,17 @@ def test_json_videoquality():
 
 
 def test_json_webhookinfo():
-    json_str = r'{"url": "https://example.com", "has_custom_certificate": false, "pending_update_count": 1}'
+    json_str = r'{"url": "https://example.com/webhook", "has_custom_certificate": false, "pending_update_count": 1, "ip_address": "127.0.0.1", "last_error_date": 1682189507, "last_error_message": "Test error", "last_synchronization_error_date": 1682100000, "max_connections": 100, "allowed_updates": ["message", "callback_query"]}'
     result = types.WebhookInfo.de_json(json_str)
-    assert result.url == 'https://example.com'
+    assert result.url == 'https://example.com/webhook'
     assert result.has_custom_certificate == False
     assert result.pending_update_count == 1
+    assert result.ip_address == '127.0.0.1'
+    assert result.last_error_date == 1682189507
+    assert result.last_error_message == 'Test error'
+    assert result.last_synchronization_error_date == 1682100000
+    assert result.max_connections == 100
+    assert result.allowed_updates == ['message', 'callback_query']
     assert isinstance(result, types.WebhookInfo)
 
 
@@ -2842,3 +2848,5 @@ def test_message_entity_html_conversion():
     json30 = r'{"message_id":30,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@user mail@x.com https://x.com end","entities":[{"offset":0,"length":5,"type":"mention"},{"offset":6,"length":10,"type":"email"},{"offset":17,"length":14,"type":"url"}]}'
     msg30 = types.Message.de_json(json30)
     assert msg30.html_text == '@user mail@x.com https://x.com end'
+
+
