@@ -947,7 +947,7 @@ class Chat(ChatFullInfo):
     pass
 
 
-class MessageID(JsonDeserializable):
+class MessageId(JsonDeserializable):
     """
     This object represents a unique message identifier.
 
@@ -967,6 +967,15 @@ class MessageID(JsonDeserializable):
 
     def __init__(self, message_id, **kwargs):
         self.message_id: int = message_id
+
+
+class MessageID(MessageId):
+    """
+    Deprecated. Use `MessageId` instead.
+    """
+    def __init__(self, message_id, **kwargs):
+        log_deprecation_warning("The class 'MessageId' is deprecated. Use 'MessageId' instead.")
+        super().__init__(message_id, **kwargs)
 
 
 class WebAppData(JsonDeserializable, Dictionaryable):
@@ -14408,9 +14417,9 @@ class PollOptionAdded(JsonDeserializable):
     :rtype: :class:`PollOptionAdded`
     """
     def __init__(self, option_persistent_id: str, option_text: str,
-                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    poll_message: Optional[MaybeInaccessibleMessage] = None,
                     option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
-        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.poll_message: Optional[MaybeInaccessibleMessage] = poll_message
         self.option_persistent_id: str = option_persistent_id
         self.option_text: str = option_text
         self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
@@ -14453,9 +14462,9 @@ class PollOptionDeleted(JsonDeserializable):
     :rtype: :class:`PollOptionDeleted`
     """
     def __init__(self, option_persistent_id: str, option_text: str,
-                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    poll_message: Optional[MaybeInaccessibleMessage] = None,
                     option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
-        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.poll_message: Optional[MaybeInaccessibleMessage] = poll_message
         self.option_persistent_id: str = option_persistent_id
         self.option_text: str = option_text
         self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
@@ -14607,6 +14616,8 @@ class InputMediaLink(InputMedia):
 
 
 # why not..
+MaybeInaccessibleMessage = Union[InaccessibleMessage, Message]
+
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
 
 InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo, InputMediaLink]

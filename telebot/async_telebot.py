@@ -3697,7 +3697,7 @@ class AsyncTeleBot:
             video_start_timestamp: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
             suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
-            message_effect_id: Optional[str]=None) -> types.MessageID:
+            message_effect_id: Optional[str]=None) -> types.MessageId:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -3774,7 +3774,7 @@ class AsyncTeleBot:
         :type message_effect_id: :obj:`str`
 
         :return: On success, the MessageId of the sent message is returned.
-        :rtype: :class:`telebot.types.MessageID`
+        :rtype: :class:`telebot.types.MessageId`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
@@ -3800,7 +3800,7 @@ class AsyncTeleBot:
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
-        return types.MessageID.de_json(
+        return types.MessageId.de_json(
             await asyncio_helper.copy_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
                                                     caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
                                                     disable_notification=disable_notification, protect_content=protect_content,
@@ -3950,7 +3950,7 @@ class AsyncTeleBot:
 
     async def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
                          message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None,
-                         direct_messages_topic_id: Optional[int]=None) -> List[types.MessageID]:
+                         direct_messages_topic_id: Optional[int]=None) -> List[types.MessageId]:
         """
         Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded,
         they are skipped. Service messages and messages with protected content can't be forwarded.
@@ -3981,19 +3981,19 @@ class AsyncTeleBot:
         :type direct_messages_topic_id: :obj:`int`
 
         :return: On success, the sent Message is returned.
-        :rtype: :class:`telebot.types.MessageID`
+        :rtype: :class:`telebot.types.MessageId`
         """
 
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
         result = await asyncio_helper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id, protect_content,
                                                        direct_messages_topic_id=direct_messages_topic_id)
-        return [types.MessageID.de_json(message_id) for message_id in result]
+        return [types.MessageId.de_json(message_id) for message_id in result]
 
     async def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
                         protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None,
-                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageID]:
+                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageId]:
         """
         Use this method to copy messages of any kind.
         Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
@@ -4028,13 +4028,13 @@ class AsyncTeleBot:
         :type direct_messages_topic_id: :obj:`int`
 
         :return: On success, an array of MessageId of the sent messages is returned.
-        :rtype: :obj:`list` of :class:`telebot.types.MessageID`
+        :rtype: :obj:`list` of :class:`telebot.types.MessageId`
         """
         disable_notification = self.disable_notification if disable_notification is None else disable_notification
         protect_content = self.protect_content if protect_content is None else protect_content
         result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
                                         protect_content, remove_caption, direct_messages_topic_id)
-        return [types.MessageID.de_json(message_id) for message_id in result]
+        return [types.MessageId.de_json(message_id) for message_id in result]
 
     async def send_checklist(
             self, business_connection_id: str, chat_id: Union[int, str],

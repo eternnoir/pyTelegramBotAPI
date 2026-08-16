@@ -1889,8 +1889,8 @@ def test_json_messageautodeletetimerchanged():
 
 def test_json_messageid():
     json_str = r'{"message_id": 1}'
-    result = types.MessageID.de_json(json_str)
-    assert isinstance(result, types.MessageID)
+    result = types.MessageId.de_json(json_str)
+    assert isinstance(result, types.MessageId)
 
 
 def test_json_messageorigin():
@@ -2859,5 +2859,3 @@ def test_message_entity_html_conversion():
     json30 = r'{"message_id":30,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@user mail@x.com https://x.com end","entities":[{"offset":0,"length":5,"type":"mention"},{"offset":6,"length":10,"type":"email"},{"offset":17,"length":14,"type":"url"}]}'
     msg30 = types.Message.de_json(json30)
     assert msg30.html_text == '@user mail@x.com https://x.com end'
-
-
