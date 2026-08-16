@@ -962,7 +962,7 @@ class MessageID(JsonDeserializable, ABC):
         log_deprecation_warning('The class "MessageID" is deprecated, use "MessageId" instead')
 
 
-class MessageId(JsonDeserializable, ABC):
+class MessageId(MessageID):
     """
     This object represents a unique message identifier.
 
