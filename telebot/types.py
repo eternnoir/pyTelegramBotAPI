@@ -4749,8 +4749,6 @@ class InputRichMessageContent(Dictionaryable):
         return json.dumps(self.to_dict())
 
 
-InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent]
-
 class ChosenInlineResult(JsonDeserializable):
     """
     Represents a result of an inline query that was chosen by the user and sent to their chat partner.
@@ -4794,7 +4792,7 @@ class ChosenInlineResult(JsonDeserializable):
 
 
 # noinspection PyShadowingBuiltins
-class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
+class InlineQueryResult(ABC, Dictionaryable, JsonSerializable):
     """
     This object represents one result of an inline query. Telegram clients currently support results of the following 20 types:
 
@@ -4856,6 +4854,18 @@ class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
         return json_dict
 
 
+# noinspection PyShadowingBuiltins
+class InlineQueryResultBase(InlineQueryResult):
+    """
+    Deprecated. Use `InlineQueryResult` instead.
+    """
+    def __init__(self, type: str, id: str, title: Optional[str] = None, caption: Optional[str] = None, input_message_content: Optional[InputMessageContent] = None,
+                    reply_markup: Optional[InlineKeyboardMarkup] = None, caption_entities: Optional[List[MessageEntity]] = None, parse_mode: Optional[str] = None):
+        log_deprecation_warning("The class 'InlineQueryResultBase' is deprecated. Use 'InlineQueryResult' instead.")
+        super().__init__(type, id, title=title, caption=caption, input_message_content=input_message_content,
+                         reply_markup=reply_markup, caption_entities=caption_entities, parse_mode=parse_mode)
+
+
 class SentWebAppMessage(JsonDeserializable, Dictionaryable):
     """
     Describes an inline message sent by a Web App on behalf of a user.
@@ -4886,7 +4896,7 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultArticle(InlineQueryResultBase):
+class InlineQueryResultArticle(InlineQueryResult):
     """
     Represents a link to an article or web page.
 
@@ -4979,7 +4989,7 @@ class InlineQueryResultArticle(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultPhoto(InlineQueryResultBase):
+class InlineQueryResultPhoto(InlineQueryResult):
     """
     Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
@@ -5068,7 +5078,7 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultGif(InlineQueryResultBase):
+class InlineQueryResultGif(InlineQueryResult):
     """
     Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
@@ -5169,7 +5179,7 @@ class InlineQueryResultGif(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
+class InlineQueryResultMpeg4Gif(InlineQueryResult):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
@@ -5269,7 +5279,7 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultVideo(InlineQueryResultBase):
+class InlineQueryResultVideo(InlineQueryResult):
     """
     Represents a link to a page containing an embedded video player or a video file. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
 
@@ -5369,7 +5379,7 @@ class InlineQueryResultVideo(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultAudio(InlineQueryResultBase):
+class InlineQueryResultAudio(InlineQueryResult):
     """
     Represents a link to an MP3 audio file. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
 
@@ -5435,7 +5445,7 @@ class InlineQueryResultAudio(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultVoice(InlineQueryResultBase):
+class InlineQueryResultVoice(InlineQueryResult):
     """
     Represents a link to a voice recording in an .OGG container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the the voice message.
 
@@ -5495,7 +5505,7 @@ class InlineQueryResultVoice(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultDocument(InlineQueryResultBase):
+class InlineQueryResultDocument(InlineQueryResult):
     """
     Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
 
@@ -5595,7 +5605,7 @@ class InlineQueryResultDocument(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultLocation(InlineQueryResultBase):
+class InlineQueryResultLocation(InlineQueryResult):
     """
     Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location.
 
@@ -5700,7 +5710,7 @@ class InlineQueryResultLocation(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultVenue(InlineQueryResultBase):
+class InlineQueryResultVenue(InlineQueryResult):
     """
     Represents a venue. By default, the venue will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the venue.
 
@@ -5811,7 +5821,7 @@ class InlineQueryResultVenue(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultContact(InlineQueryResultBase):
+class InlineQueryResultContact(InlineQueryResult):
     """
     Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the contact.
 
@@ -5901,7 +5911,7 @@ class InlineQueryResultContact(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultGame(InlineQueryResultBase):
+class InlineQueryResultGame(InlineQueryResult):
     """
     Represents a Game.
 
@@ -14617,6 +14627,8 @@ class InputMediaLink(InputMedia):
 
 # why not..
 MaybeInaccessibleMessage = Union[InaccessibleMessage, Message]
+
+InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent]
 
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
 

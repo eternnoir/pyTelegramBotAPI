@@ -2667,13 +2667,13 @@ def delete_sticker_from_set(token, sticker):
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
+def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResult):
     method_url = 'answerWebAppQuery'
     payload = {'web_app_query_id': web_app_query_id, 'result': result.to_json()}
     return _make_request(token, method_url, params=payload, method='post')
 
 
-def save_prepared_inline_message(token, user_id, result: types.InlineQueryResultBase, allow_user_chats=None,
+def save_prepared_inline_message(token, user_id, result: types.InlineQueryResult, allow_user_chats=None,
                                     allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None):
         method_url = 'savePreparedInlineMessage'
         payload = {'user_id': user_id, 'result': result.to_json()}

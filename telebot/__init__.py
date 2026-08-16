@@ -7352,7 +7352,7 @@ class TeleBot:
             self.token, callback_query_id, text=text, show_alert=show_alert, url=url, cache_time=cache_time)
     
 
-    def answer_guest_query(self, guest_query_id: str, result: types.InlineQueryResultBase) -> types.SentGuestMessage:
+    def answer_guest_query(self, guest_query_id: str, result: types.InlineQueryResult) -> types.SentGuestMessage:
         """
         Use this method to reply to a received guest message. On success, a SentGuestMessage object is returned.
 
@@ -8862,7 +8862,7 @@ class TeleBot:
         return apihelper.get_forum_topic_icon_stickers(self.token)
 
 
-    def answer_web_app_query(self, web_app_query_id: str, result: types.InlineQueryResultBase) -> types.SentWebAppMessage:
+    def answer_web_app_query(self, web_app_query_id: str, result: types.InlineQueryResult) -> types.SentWebAppMessage:
         """
         Use this method to set the result of an interaction with a Web App and
         send a corresponding message on behalf of the user to the chat from which
@@ -8875,7 +8875,7 @@ class TeleBot:
         :type web_app_query_id: :obj:`str`
 
         :param result: A JSON-serialized object describing the message to be sent
-        :type result: :class:`telebot.types.InlineQueryResultBase`
+        :type result: :class:`telebot.types.InlineQueryResult`
 
         :return: On success, a SentWebAppMessage object is returned.
         :rtype: :class:`telebot.types.SentWebAppMessage`
@@ -8883,7 +8883,7 @@ class TeleBot:
         return apihelper.answer_web_app_query(self.token, web_app_query_id, result)
 
     def save_prepared_inline_message(
-            self, user_id: int, result: types.InlineQueryResultBase, allow_user_chats: Optional[bool]=None,
+            self, user_id: int, result: types.InlineQueryResult, allow_user_chats: Optional[bool]=None,
             allow_bot_chats: Optional[bool]=None, allow_group_chats: Optional[bool]=None,
             allow_channel_chats: Optional[bool]=None) -> types.PreparedInlineMessage:
         """
@@ -8896,7 +8896,7 @@ class TeleBot:
         :type user_id: :obj:`int`
 
         :param result: A JSON-serialized object describing the message to be sent
-        :type result: :class:`telebot.types.InlineQueryResultBase`
+        :type result: :class:`telebot.types.InlineQueryResult`
 
         :param allow_user_chats: Pass True if the message can be sent to private chats with users
         :type allow_user_chats: :obj:`bool`
