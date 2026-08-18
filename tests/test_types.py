@@ -904,12 +904,12 @@ def test_json_reactiontypepaid():
 
 
 def test_json_businessbotrights():
-    json_str = r'{"can_reply": true, "can_read_messages": true, "can_delete_outgoing_messages": true, "can_delete_all_messages": false, "can_edit_name": true, "can_edit_bio": false, "can_edit_profile_photo": false, "can_edit_username": false, "can_change_gift_settings": false, "can_view_gifts_and_stars": true, "can_convert_gifts_to_stars": false, "can_transfer_and_upgrade_gifts": false, "can_transfer_stars": false, "can_manage_stories": false}'
+    json_str = r'{"can_reply": true, "can_read_messages": true, "can_delete_sent_messages": true, "can_delete_all_messages": false, "can_edit_name": true, "can_edit_bio": false, "can_edit_profile_photo": false, "can_edit_username": false, "can_change_gift_settings": false, "can_view_gifts_and_stars": true, "can_convert_gifts_to_stars": false, "can_transfer_and_upgrade_gifts": false, "can_transfer_stars": false, "can_manage_stories": false}'
     result = types.BusinessBotRights.de_json(json_str)
     assert isinstance(result, types.BusinessBotRights)
     assert result.can_reply is True
     assert result.can_read_messages is True
-    assert result.can_delete_outgoing_messages is True
+    assert result.can_delete_sent_messages is True
     assert result.can_delete_all_messages is False
     assert result.can_edit_name is True
     assert result.can_edit_bio is False
@@ -1336,7 +1336,7 @@ def test_json_botsubscriptionupdated():
 
 
 def test_json_businessconnection():
-    json_str = r'{"id": "1", "user": {"id": 1, "is_bot": false, "first_name": "Test"}, "user_chat_id": 1, "date": 1682189507, "is_enabled": false, "rights": {"can_reply": true, "can_read_messages": true, "can_delete_outgoing_messages": false, "can_delete_all_messages": false, "can_edit_name": true, "can_edit_bio": false, "can_edit_profile_photo": true, "can_edit_username": false, "can_change_gift_settings": true, "can_view_gifts_and_stars": false, "can_convert_gifts_to_stars": true, "can_transfer_and_upgrade_gifts": false, "can_transfer_stars": true, "can_manage_stories": false}}'
+    json_str = r'{"id": "1", "user": {"id": 1, "is_bot": false, "first_name": "Test"}, "user_chat_id": 1, "date": 1682189507, "is_enabled": false, "rights": {"can_reply": true, "can_read_messages": true, "can_delete_sent_messages": false, "can_delete_all_messages": false, "can_edit_name": true, "can_edit_bio": false, "can_edit_profile_photo": true, "can_edit_username": false, "can_change_gift_settings": true, "can_view_gifts_and_stars": false, "can_convert_gifts_to_stars": true, "can_transfer_and_upgrade_gifts": false, "can_transfer_stars": true, "can_manage_stories": false}}'
     result = types.BusinessConnection.de_json(json_str)
     assert isinstance(result, types.BusinessConnection)
     assert result.id == '1'
@@ -1347,7 +1347,7 @@ def test_json_businessconnection():
     assert isinstance(result.rights, types.BusinessBotRights)
     assert result.rights.can_reply == True
     assert result.rights.can_read_messages == True
-    assert result.rights.can_delete_outgoing_messages == False
+    assert result.rights.can_delete_sent_messages == False
     assert result.rights.can_delete_all_messages == False
     assert result.rights.can_edit_name == True
     assert result.rights.can_edit_bio == False
@@ -1889,8 +1889,8 @@ def test_json_messageautodeletetimerchanged():
 
 def test_json_messageid():
     json_str = r'{"message_id": 1}'
-    result = types.MessageID.de_json(json_str)
-    assert isinstance(result, types.MessageID)
+    result = types.MessageId.de_json(json_str)
+    assert isinstance(result, types.MessageId)
 
 
 def test_json_messageorigin():
@@ -2859,5 +2859,3 @@ def test_message_entity_html_conversion():
     json30 = r'{"message_id":30,"date":1682177590,"chat":{"id":1,"type":"private"},"text":"@user mail@x.com https://x.com end","entities":[{"offset":0,"length":5,"type":"mention"},{"offset":6,"length":10,"type":"email"},{"offset":17,"length":14,"type":"url"}]}'
     msg30 = types.Message.de_json(json30)
     assert msg30.html_text == '@user mail@x.com https://x.com end'
-
-

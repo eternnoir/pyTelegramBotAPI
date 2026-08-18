@@ -465,13 +465,13 @@ async def delete_chat_sticker_set(token, chat_id):
     return await _process_request(token, method_url, params=payload)
 
 
-async def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResultBase):
+async def answer_web_app_query(token, web_app_query_id, result: types.InlineQueryResult):
     method_url = 'answerWebAppQuery'
     payload = {'web_app_query_id': web_app_query_id, 'result': result.to_json()}
     return await _process_request(token, method_url, params=payload, method='post')
 
 
-async def save_prepared_inline_message(token, user_id, result: types.InlineQueryResultBase, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None):
+async def save_prepared_inline_message(token, user_id, result: types.InlineQueryResult, allow_user_chats=None, allow_bot_chats=None, allow_group_chats=None, allow_channel_chats=None):
     method_url = r'savePreparedInlineMessage'
     payload = {'user_id': user_id, 'result': result.to_json()}
     if allow_user_chats is not None:

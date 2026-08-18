@@ -3365,7 +3365,7 @@ class AsyncTeleBot:
         result = await asyncio_helper.delete_chat_sticker_set(self.token, chat_id)
         return result
 
-    async def answer_web_app_query(self, web_app_query_id: str, result: types.InlineQueryResultBase) -> types.SentWebAppMessage:
+    async def answer_web_app_query(self, web_app_query_id: str, result: types.InlineQueryResult) -> types.SentWebAppMessage:
         """
         Use this method to set the result of an interaction with a Web App and
         send a corresponding message on behalf of the user to the chat from which
@@ -3378,7 +3378,7 @@ class AsyncTeleBot:
         :type web_app_query_id: :obj:`str`
 
         :param result: A JSON-serialized object describing the message to be sent
-        :type result: :class:`telebot.types.InlineQueryResultBase`
+        :type result: :class:`telebot.types.InlineQueryResult`
 
         :return: On success, a SentWebAppMessage object is returned.
         :rtype: :class:`telebot.types.SentWebAppMessage`
@@ -3386,7 +3386,7 @@ class AsyncTeleBot:
 
         return await asyncio_helper.answer_web_app_query(self.token, web_app_query_id, result)
 
-    async def save_prepared_inline_message(self, user_id: int, result: types.InlineQueryResultBase, allow_user_chats: Optional[bool]=None,
+    async def save_prepared_inline_message(self, user_id: int, result: types.InlineQueryResult, allow_user_chats: Optional[bool]=None,
             allow_bot_chats: Optional[bool]=None, allow_group_chats: Optional[bool]=None, allow_channel_chats: Optional[bool]=None) -> types.PreparedInlineMessage:
         """
         Stores a message that can be sent by a user of a Mini App. Returns a PreparedInlineMessage object.
@@ -3397,7 +3397,7 @@ class AsyncTeleBot:
         :type user_id: :obj:`int`
 
         :param result: A JSON-serialized object describing the message to be sent
-        :type result: :class:`telebot.types.InlineQueryResultBase`
+        :type result: :class:`telebot.types.InlineQueryResult`
 
         :param allow_user_chats: Pass True if the message can be sent to private chats with users
         :type allow_user_chats: :obj:`bool`, optional
@@ -3697,7 +3697,7 @@ class AsyncTeleBot:
             video_start_timestamp: Optional[bool]=None,
             direct_messages_topic_id: Optional[int]=None,
             suggested_post_parameters: Optional[types.SuggestedPostParameters]=None,
-            message_effect_id: Optional[str]=None) -> types.MessageID:
+            message_effect_id: Optional[str]=None) -> types.MessageId:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
@@ -3774,7 +3774,7 @@ class AsyncTeleBot:
         :type message_effect_id: :obj:`str`
 
         :return: On success, the MessageId of the sent message is returned.
-        :rtype: :class:`telebot.types.MessageID`
+        :rtype: :class:`telebot.types.MessageId`
         """
         parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
@@ -3800,7 +3800,7 @@ class AsyncTeleBot:
         if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
             reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
 
-        return types.MessageID.de_json(
+        return types.MessageId.de_json(
             await asyncio_helper.copy_message(self.token, chat_id=chat_id, from_chat_id=from_chat_id, message_id=message_id,
                                                     caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
                                                     disable_notification=disable_notification, protect_content=protect_content,
@@ -3950,7 +3950,7 @@ class AsyncTeleBot:
 
     async def forward_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int], disable_notification: Optional[bool]=None,
                          message_thread_id: Optional[int]=None, protect_content: Optional[bool]=None,
-                         direct_messages_topic_id: Optional[int]=None) -> List[types.MessageID]:
+                         direct_messages_topic_id: Optional[int]=None) -> List[types.MessageId]:
         """
         Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded,
         they are skipped. Service messages and messages with protected content can't be forwarded.
@@ -3981,19 +3981,19 @@ class AsyncTeleBot:
         :type direct_messages_topic_id: :obj:`int`
 
         :return: On success, the sent Message is returned.
-        :rtype: :class:`telebot.types.MessageID`
+        :rtype: :class:`telebot.types.MessageId`
         """
 
         disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
         protect_content = self.protect_content if (protect_content is None) else protect_content
         result = await asyncio_helper.forward_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id, protect_content,
                                                        direct_messages_topic_id=direct_messages_topic_id)
-        return [types.MessageID.de_json(message_id) for message_id in result]
+        return [types.MessageId.de_json(message_id) for message_id in result]
 
     async def copy_messages(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_ids: List[int],
                         disable_notification: Optional[bool] = None, message_thread_id: Optional[int] = None,
                         protect_content: Optional[bool] = None, remove_caption: Optional[bool] = None,
-                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageID]:
+                        direct_messages_topic_id: Optional[int] = None) -> List[types.MessageId]:
         """
         Use this method to copy messages of any kind.
         Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
@@ -4028,13 +4028,13 @@ class AsyncTeleBot:
         :type direct_messages_topic_id: :obj:`int`
 
         :return: On success, an array of MessageId of the sent messages is returned.
-        :rtype: :obj:`list` of :class:`telebot.types.MessageID`
+        :rtype: :obj:`list` of :class:`telebot.types.MessageId`
         """
         disable_notification = self.disable_notification if disable_notification is None else disable_notification
         protect_content = self.protect_content if protect_content is None else protect_content
         result = await asyncio_helper.copy_messages(self.token, chat_id, from_chat_id, message_ids, disable_notification, message_thread_id,
                                         protect_content, remove_caption, direct_messages_topic_id)
-        return [types.MessageID.de_json(message_id) for message_id in result]
+        return [types.MessageId.de_json(message_id) for message_id in result]
 
     async def send_checklist(
             self, business_connection_id: str, chat_id: Union[int, str],
@@ -8976,7 +8976,7 @@ class AsyncTeleBot:
         return await asyncio_helper.answer_callback_query(self.token, callback_query_id, text, show_alert, url, cache_time)
 
 
-    async def answer_guest_query(self, guest_query_id: str, result: types.InlineQueryResultBase) -> types.SentGuestMessage:
+    async def answer_guest_query(self, guest_query_id: str, result: types.InlineQueryResult) -> types.SentGuestMessage:
         """
         Use this method to reply to a received guest message. On success, a SentGuestMessage object is returned.
 

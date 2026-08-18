@@ -947,7 +947,22 @@ class Chat(ChatFullInfo):
     pass
 
 
-class MessageID(JsonDeserializable):
+class MessageID(JsonDeserializable, ABC):
+    """
+    Deprecated. Use `MessageId` instead.
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string, dict_copy=False)
+        return cls(**obj)
+
+    def __init__(self, message_id, **kwargs):
+        self.message_id: int = message_id
+        log_deprecation_warning('The class "MessageID" is deprecated, use "MessageId" instead')
+
+
+class MessageId(MessageID):
     """
     This object represents a unique message identifier.
 
@@ -4740,8 +4755,6 @@ class InputRichMessageContent(Dictionaryable):
         return json.dumps(self.to_dict())
 
 
-InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent]
-
 class ChosenInlineResult(JsonDeserializable):
     """
     Represents a result of an inline query that was chosen by the user and sent to their chat partner.
@@ -4784,69 +4797,6 @@ class ChosenInlineResult(JsonDeserializable):
         self.query: str = query
 
 
-# noinspection PyShadowingBuiltins
-class InlineQueryResultBase(ABC, Dictionaryable, JsonSerializable):
-    """
-    This object represents one result of an inline query. Telegram clients currently support results of the following 20 types:
-
-    * :class:`InlineQueryResultCachedAudio`
-    * :class:`InlineQueryResultCachedDocument`
-    * :class:`InlineQueryResultCachedGif`
-    * :class:`InlineQueryResultCachedMpeg4Gif`
-    * :class:`InlineQueryResultCachedPhoto`
-    * :class:`InlineQueryResultCachedSticker`
-    * :class:`InlineQueryResultCachedVideo`
-    * :class:`InlineQueryResultCachedVoice`
-    * :class:`InlineQueryResultArticle`
-    * :class:`InlineQueryResultAudio`
-    * :class:`InlineQueryResultContact`
-    * :class:`InlineQueryResultGame`
-    * :class:`InlineQueryResultDocument`
-    * :class:`InlineQueryResultGif`
-    * :class:`InlineQueryResultLocation`
-    * :class:`InlineQueryResultMpeg4Gif`
-    * :class:`InlineQueryResultPhoto`
-    * :class:`InlineQueryResultVenue`
-    * :class:`InlineQueryResultVideo`
-    * :class:`InlineQueryResultVoice`
-
-    Telegram Documentation: https://core.telegram.org/bots/api#inlinequeryresult
-    """
-
-    def __init__(self, type: str, id: str, title: Optional[str] = None, caption: Optional[str] = None, input_message_content: Optional[InputMessageContent] = None,
-                    reply_markup: Optional[InlineKeyboardMarkup] = None, caption_entities: Optional[List[MessageEntity]] = None, parse_mode: Optional[str] = None):
-        self.type: str = type
-        self.id: str = id
-        self.title: Optional[str] = title
-        self.caption: Optional[str] = caption
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.parse_mode: Optional[str] = parse_mode
-
-    def to_json(self):
-        return json.dumps(self.to_dict())
-
-    def to_dict(self):
-        json_dict = {
-            'type': self.type,
-            'id': self.id
-        }
-        if self.title:
-            json_dict['title'] = self.title
-        if self.caption:
-            json_dict['caption'] = self.caption
-        if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
-        if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
-        if self.caption_entities:
-            json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
-        if self.parse_mode:
-            json_dict['parse_mode'] = self.parse_mode
-        return json_dict
-
-
 class SentWebAppMessage(JsonDeserializable, Dictionaryable):
     """
     Describes an inline message sent by a Web App on behalf of a user.
@@ -4876,8 +4826,98 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
         return json_dict
 
 
+class InlineQueryResultBase(Dictionaryable, JsonSerializable, ABC):
+    """
+    Deprecated. Use `InlineQueryResult` instead.
+    """
+
+
+class InlineQueryResultCachedBase(InlineQueryResultBase, ABC):
+    """
+    Deprecated. Use `InlineQueryResult` instead.
+    """
+
+
+# noinspection PyShadowingBuiltins
+class InlineQueryResult(InlineQueryResultCachedBase, ABC):
+    """
+    This object represents one result of an inline query. Telegram clients currently support results of the following 20 types:
+
+    * :class:`InlineQueryResultCachedAudio`
+    * :class:`InlineQueryResultCachedDocument`
+    * :class:`InlineQueryResultCachedGif`
+    * :class:`InlineQueryResultCachedMpeg4Gif`
+    * :class:`InlineQueryResultCachedPhoto`
+    * :class:`InlineQueryResultCachedSticker`
+    * :class:`InlineQueryResultCachedVideo`
+    * :class:`InlineQueryResultCachedVoice`
+    * :class:`InlineQueryResultArticle`
+    * :class:`InlineQueryResultAudio`
+    * :class:`InlineQueryResultContact`
+    * :class:`InlineQueryResultGame`
+    * :class:`InlineQueryResultDocument`
+    * :class:`InlineQueryResultGif`
+    * :class:`InlineQueryResultLocation`
+    * :class:`InlineQueryResultMpeg4Gif`
+    * :class:`InlineQueryResultPhoto`
+    * :class:`InlineQueryResultVenue`
+    * :class:`InlineQueryResultVideo`
+    * :class:`InlineQueryResultVoice`
+
+    Telegram Documentation: https://core.telegram.org/bots/api#inlinequeryresult
+    """
+    # Inherited from InlineQueryResultBase for backward compatibility
+    # Inherited from InlineQueryResultCachedBase for backward compatibility
+
+    def __init__(self, type: str, id: str,
+                 title: Optional[str] = None,
+                 caption: Optional[str] = None,
+                 input_message_content: Optional[InputMessageContent] = None,
+                 reply_markup: Optional[InlineKeyboardMarkup] = None,
+                 caption_entities: Optional[List[MessageEntity]] = None,
+                 parse_mode: Optional[str] = None,
+                 description: Optional[str] = None,
+                 show_caption_above_media: Optional[bool] = None):
+        self.type: str = type
+        self.id: str = id
+        self.title: Optional[str] = title
+        self.caption: Optional[str] = caption
+        self.input_message_content: Optional[InputMessageContent] = input_message_content
+        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
+        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
+        self.parse_mode: Optional[str] = parse_mode
+        self.description: Optional[str] = description
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        json_dict = {
+            'type': self.type,
+            'id': self.id
+        }
+        if self.title:
+            json_dict['title'] = self.title
+        if self.caption:
+            json_dict['caption'] = self.caption
+        if self.input_message_content:
+            json_dict['input_message_content'] = self.input_message_content.to_dict()
+        if self.reply_markup:
+            json_dict['reply_markup'] = self.reply_markup.to_dict()
+        if self.caption_entities:
+            json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.description:
+            json_dict['description'] = self.description
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
+        return json_dict
+
+
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultArticle(InlineQueryResultBase):
+class InlineQueryResultArticle(InlineQueryResult):
     """
     Represents a link to an article or web page.
 
@@ -4901,7 +4941,7 @@ class InlineQueryResultArticle(InlineQueryResultBase):
     :param url: Optional. URL of the result
     :type url: :obj:`str`
 
-    :param hide_url: Optional. Pass True, if you don't want the URL to be shown in the message
+    :param hide_url: deprecated. Use empty url instead
     :type hide_url: :obj:`bool`
 
     :param description: Optional. Short description of the result
@@ -4924,10 +4964,9 @@ class InlineQueryResultArticle(InlineQueryResultBase):
                  url: Optional[str] = None, hide_url: Optional[bool] = None, description: Optional[str] = None,
                  thumbnail_url: Optional[str] = None, thumbnail_width: Optional[int] = None, thumbnail_height: Optional[int] = None):
 
-        super().__init__('article', id, title = title, input_message_content = input_message_content, reply_markup = reply_markup)
+        super().__init__('article', id, title = title, input_message_content = input_message_content,
+                         reply_markup = reply_markup, description = description)
         self.url: Optional[str] = url
-        self.hide_url: Optional[bool] = hide_url
-        self.description: Optional[str] = description
         self.thumbnail_url: Optional[str] = thumbnail_url
         self.thumbnail_width: Optional[int] = thumbnail_width
         self.thumbnail_height: Optional[int] = thumbnail_height
@@ -4936,30 +4975,10 @@ class InlineQueryResultArticle(InlineQueryResultBase):
             log_deprecation_warning('The parameter "hide_url" is deprecated. Pass an empty string as url instead.')
             self.url = ''
 
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_width(self) -> int:
-        log_deprecation_warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
-        return self.thumbnail_width
-
-    @property
-    def thumb_height(self) -> int:
-        log_deprecation_warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
-        return self.thumbnail_height
-
     def to_dict(self):
         json_dict = super().to_dict()
         if self.url:
             json_dict['url'] = self.url
-        if self.hide_url:
-            json_dict['hide_url'] = self.hide_url
-        if self.description:
-            json_dict['description'] = self.description
         if self.thumbnail_url:
             json_dict['thumbnail_url'] = self.thumbnail_url
         if self.thumbnail_width:
@@ -4970,7 +4989,7 @@ class InlineQueryResultArticle(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultPhoto(InlineQueryResultBase):
+class InlineQueryResultPhoto(InlineQueryResult):
     """
     Represents a link to a photo. By default, this photo will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
@@ -5029,19 +5048,12 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
                     show_caption_above_media: Optional[bool] = None):
         super().__init__('photo', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
-                         parse_mode = parse_mode, caption_entities = caption_entities)
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description,
+                         show_caption_above_media = show_caption_above_media)
         self.photo_url: str = photo_url
         self.thumbnail_url: str = thumbnail_url
         self.photo_width: Optional[int] = photo_width
         self.photo_height: Optional[int] = photo_height
-        self.description: Optional[str] = description
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
-
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -5051,15 +5063,11 @@ class InlineQueryResultPhoto(InlineQueryResultBase):
             json_dict['photo_width'] = self.photo_width
         if self.photo_height:
             json_dict['photo_height'] = self.photo_height
-        if self.description:
-            json_dict['description'] = self.description
-        if self.show_caption_above_media is not None:
-            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultGif(InlineQueryResultBase):
+class InlineQueryResultGif(InlineQueryResult):
     """
     Represents a link to an animated GIF file. By default, this animated GIF file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
@@ -5123,24 +5131,14 @@ class InlineQueryResultGif(InlineQueryResultBase):
 
         super().__init__('gif', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
-                         parse_mode = parse_mode, caption_entities = caption_entities)
+                         parse_mode = parse_mode, caption_entities = caption_entities,
+                         show_caption_above_media = show_caption_above_media)
         self.gif_url: str = gif_url
         self.thumbnail_url: str = thumbnail_url
         self.gif_width: Optional[int] = gif_width
         self.gif_height: Optional[int] = gif_height
         self.gif_duration: Optional[int] = gif_duration
         self.thumbnail_mime_type: Optional[str] = thumbnail_mime_type
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_mime_type(self) -> str:
-        log_deprecation_warning('The parameter "thumb_mime_type" is deprecated, use "thumbnail_mime_type" instead')
-        return self.thumbnail_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -5154,13 +5152,11 @@ class InlineQueryResultGif(InlineQueryResultBase):
             json_dict['gif_duration'] = self.gif_duration
         if self.thumbnail_mime_type:
             json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
-        if self.show_caption_above_media is not None:
-            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
+class InlineQueryResultMpeg4Gif(InlineQueryResult):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound). By default, this animated MPEG-4 file will be sent by the user with optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
@@ -5223,24 +5219,14 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
 
         super().__init__('mpeg4_gif', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
-                         parse_mode = parse_mode, caption_entities = caption_entities)
+                         parse_mode = parse_mode, caption_entities = caption_entities,
+                         show_caption_above_media = show_caption_above_media)
         self.mpeg4_url: str = mpeg4_url
         self.thumbnail_url: str = thumbnail_url
         self.mpeg4_width: Optional[int] = mpeg4_width
         self.mpeg4_height: Optional[int] = mpeg4_height
         self.mpeg4_duration: Optional[int] = mpeg4_duration
         self.thumbnail_mime_type: Optional[str] = thumbnail_mime_type
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_mime_type(self) -> str:
-        log_deprecation_warning('The parameter "thumb_mime_type" is deprecated, use "thumbnail_mime_type" instead')
-        return self.thumbnail_mime_type
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -5254,13 +5240,11 @@ class InlineQueryResultMpeg4Gif(InlineQueryResultBase):
             json_dict['mpeg4_duration '] = self.mpeg4_duration
         if self.thumbnail_mime_type:
             json_dict['thumbnail_mime_type'] = self.thumbnail_mime_type
-        if self.show_caption_above_media is not None:
-            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultVideo(InlineQueryResultBase):
+class InlineQueryResultVideo(InlineQueryResult):
     """
     Represents a link to a page containing an embedded video player or a video file. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
 
@@ -5328,20 +5312,14 @@ class InlineQueryResultVideo(InlineQueryResultBase):
 
         super().__init__('video', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
-                         parse_mode = parse_mode, caption_entities = caption_entities)
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description,
+                         show_caption_above_media = show_caption_above_media)
         self.video_url: str = video_url
         self.mime_type: str = mime_type
         self.thumbnail_url: str = thumbnail_url
         self.video_width: Optional[int] = video_width
         self.video_height: Optional[int] = video_height
         self.video_duration: Optional[int] = video_duration
-        self.description: Optional[str] = description
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
 
     def to_dict(self):
         json_dict = super().to_dict()
@@ -5352,15 +5330,11 @@ class InlineQueryResultVideo(InlineQueryResultBase):
             json_dict['video_height'] = self.video_height
         if self.video_duration:
             json_dict['video_duration'] = self.video_duration
-        if self.description:
-            json_dict['description'] = self.description
-        if self.show_caption_above_media is not None:
-            json_dict['show_caption_above_media'] = self.show_caption_above_media
         return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultAudio(InlineQueryResultBase):
+class InlineQueryResultAudio(InlineQueryResult):
     """
     Represents a link to an MP3 audio file. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
 
@@ -5426,7 +5400,7 @@ class InlineQueryResultAudio(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultVoice(InlineQueryResultBase):
+class InlineQueryResultVoice(InlineQueryResult):
     """
     Represents a link to a voice recording in an .OGG container encoded with OPUS. By default, this voice recording will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the the voice message.
 
@@ -5486,7 +5460,7 @@ class InlineQueryResultVoice(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultDocument(InlineQueryResultBase):
+class InlineQueryResultDocument(InlineQueryResult):
     """
     Represents a link to a file. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only .PDF and .ZIP files can be sent using this method.
 
@@ -5546,36 +5520,17 @@ class InlineQueryResultDocument(InlineQueryResultBase):
 
         super().__init__('document', id, title = title, caption = caption,
                          input_message_content = input_message_content, reply_markup = reply_markup,
-                         parse_mode = parse_mode, caption_entities = caption_entities)
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description)
         self.document_url: str = document_url
         self.mime_type: str = mime_type
-        self.description: Optional[str] = description
         self.thumbnail_url: Optional[str] = thumbnail_url
         self.thumbnail_width: Optional[int] = thumbnail_width
         self.thumbnail_height: Optional[int] = thumbnail_height
-
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_width(self) -> int:
-        log_deprecation_warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
-        return self.thumbnail_width
-
-    @property
-    def thumb_height(self) -> int:
-        log_deprecation_warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
-        return self.thumbnail_height
 
     def to_dict(self):
         json_dict = super().to_dict()
         json_dict['document_url'] = self.document_url
         json_dict['mime_type'] = self.mime_type
-        if self.description:
-            json_dict['description'] = self.description
         if self.thumbnail_url:
             json_dict['thumbnail_url'] = self.thumbnail_url
         if self.thumbnail_width:
@@ -5586,7 +5541,7 @@ class InlineQueryResultDocument(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultLocation(InlineQueryResultBase):
+class InlineQueryResultLocation(InlineQueryResult):
     """
     Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location.
 
@@ -5654,21 +5609,6 @@ class InlineQueryResultLocation(InlineQueryResultBase):
         self.thumbnail_width: Optional[int] = thumbnail_width
         self.thumbnail_height: Optional[int] = thumbnail_height
 
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_width(self) -> int:
-        log_deprecation_warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
-        return self.thumbnail_width
-
-    @property
-    def thumb_height(self) -> int:
-        log_deprecation_warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
-        return self.thumbnail_height
-
     def to_dict(self):
         json_dict = super().to_dict()
         json_dict['latitude'] = self.latitude
@@ -5691,7 +5631,7 @@ class InlineQueryResultLocation(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultVenue(InlineQueryResultBase):
+class InlineQueryResultVenue(InlineQueryResult):
     """
     Represents a venue. By default, the venue will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the venue.
 
@@ -5764,21 +5704,6 @@ class InlineQueryResultVenue(InlineQueryResultBase):
         self.thumbnail_width: Optional[int] = thumbnail_width
         self.thumbnail_height: Optional[int] = thumbnail_height
 
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_width(self) -> int:
-        log_deprecation_warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
-        return self.thumbnail_width
-
-    @property
-    def thumb_height(self) -> int:
-        log_deprecation_warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
-        return self.thumbnail_height
-
     def to_dict(self):
         json_dict = super().to_dict()
         json_dict['latitude'] = self.latitude
@@ -5802,7 +5727,7 @@ class InlineQueryResultVenue(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultContact(InlineQueryResultBase):
+class InlineQueryResultContact(InlineQueryResult):
     """
     Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the contact.
 
@@ -5858,22 +5783,6 @@ class InlineQueryResultContact(InlineQueryResultBase):
         self.thumbnail_width: Optional[int] = thumbnail_width
         self.thumbnail_height: Optional[int] = thumbnail_height
 
-
-    @property
-    def thumb_url(self) -> str:
-        log_deprecation_warning('The parameter "thumb_url" is deprecated, use "thumbnail_url" instead')
-        return self.thumbnail_url
-
-    @property
-    def thumb_width(self) -> int:
-        log_deprecation_warning('The parameter "thumb_width" is deprecated, use "thumbnail_width" instead')
-        return self.thumbnail_width
-
-    @property
-    def thumb_height(self) -> int:
-        log_deprecation_warning('The parameter "thumb_height" is deprecated, use "thumbnail_height" instead')
-        return self.thumbnail_height
-
     def to_dict(self):
         json_dict = super().to_dict()
         json_dict['phone_number'] = self.phone_number
@@ -5892,7 +5801,7 @@ class InlineQueryResultContact(InlineQueryResultBase):
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultGame(InlineQueryResultBase):
+class InlineQueryResultGame(InlineQueryResult):
     """
     Represents a Game.
 
@@ -5923,48 +5832,8 @@ class InlineQueryResultGame(InlineQueryResultBase):
         return json_dict
 
 
-class InlineQueryResultCachedBase(ABC, JsonSerializable):
-    """
-    Base class of all InlineQueryResultCached* classes.
-    """
-    def __init__(self):
-        self.type: str = ""
-        self.id: str = ""
-        self.title: Optional[str] = None
-        self.description: Optional[str] = None
-        self.caption: Optional[str] = None
-        self.reply_markup: Optional[InlineKeyboardMarkup] = None
-        self.input_message_content: Optional[InputMessageContent] = None
-        self.parse_mode: Optional[str] = None
-        self.caption_entities: Optional[List[MessageEntity]] = None
-        self.payload_dic: Dict[str] = {}
-        self.show_caption_above_media: Optional[bool] = None
-
-    def to_json(self):
-        json_dict = self.payload_dic
-        json_dict['type'] = self.type
-        json_dict['id'] = self.id
-        if self.title:
-            json_dict['title'] = self.title
-        if self.description:
-            json_dict['description'] = self.description
-        if self.caption:
-            json_dict['caption'] = self.caption
-        if self.reply_markup:
-            json_dict['reply_markup'] = self.reply_markup.to_dict()
-        if self.input_message_content:
-            json_dict['input_message_content'] = self.input_message_content.to_dict()
-        if self.parse_mode:
-            json_dict['parse_mode'] = self.parse_mode
-        if self.caption_entities:
-            json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
-        if self.show_caption_above_media is not None:
-            json_dict['show_caption_above_media'] = self.show_caption_above_media
-        return json.dumps(json_dict)
-
-
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
+class InlineQueryResultCachedPhoto(InlineQueryResult):
     """
     Represents a link to a photo stored on the Telegram servers. By default, this photo will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the photo.
 
@@ -6012,25 +5881,20 @@ class InlineQueryResultCachedPhoto(InlineQueryResultCachedBase):
                     caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None, show_caption_above_media: Optional[bool] = None):
-
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'photo'
-        self.id: str = id
+        super().__init__('photo', id, title = title, caption = caption,
+                         input_message_content = input_message_content, reply_markup = reply_markup,
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description,
+                         show_caption_above_media = show_caption_above_media)
         self.photo_file_id: str = photo_file_id
-        self.title: Optional[str] = title
-        self.description: Optional[str] = description
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['photo_file_id'] = photo_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
 
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['photo_file_id'] = self.photo_file_id
+        return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
+class InlineQueryResultCachedGif(InlineQueryResult):
     """
     Represents a link to an animated GIF file stored on the Telegram servers. By default, this animated GIF file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with specified content instead of the animation.
 
@@ -6074,24 +5938,20 @@ class InlineQueryResultCachedGif(InlineQueryResultCachedBase):
                     caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None, show_caption_above_media: Optional[bool] = None):
-
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'gif'
-        self.id: str = id
+        super().__init__('gif', id, title = title, caption = caption,
+                         input_message_content = input_message_content, reply_markup = reply_markup,
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description,
+                         show_caption_above_media = show_caption_above_media)
         self.gif_file_id: str = gif_file_id
-        self.title: Optional[str] = title
-        self.description: Optional[str] = description
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['gif_file_id'] = gif_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['gif_file_id'] = self.gif_file_id
+        return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
+class InlineQueryResultCachedMpeg4Gif(InlineQueryResult):
     """
     Represents a link to a video animation (H.264/MPEG-4 AVC video without sound) stored on the Telegram servers. By default, this animated MPEG-4 file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the animation.
 
@@ -6135,23 +5995,20 @@ class InlineQueryResultCachedMpeg4Gif(InlineQueryResultCachedBase):
                     caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None, show_caption_above_media: Optional[bool] = None):
-
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'mpeg4_gif'
-        self.id: str = id
+        super().__init__('mpeg4_gif', id, title = title, caption = caption,
+                         input_message_content = input_message_content, reply_markup = reply_markup,
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description,
+                         show_caption_above_media = show_caption_above_media)
         self.mpeg4_file_id: str = mpeg4_file_id
-        self.title: Optional[str] = title
-        self.description: Optional[str] = description
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['mpeg4_file_id'] = mpeg4_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['mpeg4_file_id'] = self.mpeg4_file_id
+        return json_dict
+
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
+class InlineQueryResultCachedSticker(InlineQueryResult):
     """
     Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker.
 
@@ -6177,18 +6034,17 @@ class InlineQueryResultCachedSticker(InlineQueryResultCachedBase):
     """
     def __init__(self, id: str, sticker_file_id: str, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None):
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'sticker'
-        self.id: str = id
+        super().__init__('sticker', id, input_message_content = input_message_content, reply_markup = reply_markup)
         self.sticker_file_id: str = sticker_file_id
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.payload_dic['sticker_file_id'] = sticker_file_id
 
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['sticker_file_id'] = self.sticker_file_id
+        return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedDocument(InlineQueryResultCachedBase):
+class InlineQueryResultCachedDocument(InlineQueryResult):
     """
     Represents a link to a file stored on the Telegram servers. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file.
 
@@ -6234,23 +6090,19 @@ class InlineQueryResultCachedDocument(InlineQueryResultCachedBase):
                     caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None):
-
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'document'
-        self.id: str = id
-        self.title: str = title
+        super().__init__('document', id, title = title, caption = caption,
+                         input_message_content = input_message_content, reply_markup = reply_markup,
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description)
         self.document_file_id: str = document_file_id
-        self.description: Optional[str] = description
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['document_file_id'] = document_file_id
+
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['document_file_id'] = self.document_file_id
+        return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
+class InlineQueryResultCachedVideo(InlineQueryResult):
     """
     Represents a link to a video file stored on the Telegram servers. By default, this video file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the video.
 
@@ -6299,24 +6151,20 @@ class InlineQueryResultCachedVideo(InlineQueryResultCachedBase):
                     caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None, show_caption_above_media: Optional[bool] = None):
-
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'video'
-        self.id: str = id
+        super().__init__('video', id, title = title, caption = caption,
+                         input_message_content = input_message_content, reply_markup = reply_markup,
+                         parse_mode = parse_mode, caption_entities = caption_entities, description = description,
+                         show_caption_above_media = show_caption_above_media)
         self.video_file_id: str = video_file_id
-        self.title: str = title
-        self.description: Optional[str] = description
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['video_file_id'] = video_file_id
-        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['video_file_id'] = self.video_file_id
+        return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedVoice(InlineQueryResultCachedBase):
+class InlineQueryResultCachedVoice(InlineQueryResult):
     """
     Represents a link to a voice message stored on the Telegram servers. By default, this voice message will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the voice message.
 
@@ -6358,22 +6206,19 @@ class InlineQueryResultCachedVoice(InlineQueryResultCachedBase):
     def __init__(self, id: str, voice_file_id: str, title: str, caption: Optional[str] = None,
                     caption_entities: Optional[List[MessageEntity]] = None, parse_mode: Optional[str] = None,
                     reply_markup: Optional[InlineKeyboardMarkup] = None, input_message_content: Optional[InputMessageContent] = None):
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'voice'
-        self.id: str = id
+        super().__init__('voice', id, title = title, caption = caption,
+                         input_message_content = input_message_content, reply_markup = reply_markup,
+                         parse_mode = parse_mode, caption_entities = caption_entities)
         self.voice_file_id: str = voice_file_id
-        self.title: str = title
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['voice_file_id'] = voice_file_id
 
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['voice_file_id'] = self.voice_file_id
+        return json_dict
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
-class InlineQueryResultCachedAudio(InlineQueryResultCachedBase):
+class InlineQueryResultCachedAudio(InlineQueryResult):
     """
     Represents a link to an MP3 audio file stored on the Telegram servers. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
 
@@ -6412,19 +6257,15 @@ class InlineQueryResultCachedAudio(InlineQueryResultCachedBase):
     def __init__(self, id: str, audio_file_id: str, caption: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
                     parse_mode: Optional[str] = None, reply_markup: Optional[InlineKeyboardMarkup] = None,
                     input_message_content: Optional[InputMessageContent] = None):
-        InlineQueryResultCachedBase.__init__(self)
-        self.type: str = 'audio'
-        self.id: str = id
+        super().__init__('audio', id, caption = caption, input_message_content = input_message_content,
+                         reply_markup = reply_markup, parse_mode = parse_mode, caption_entities = caption_entities)
         self.audio_file_id: str = audio_file_id
-        self.caption: Optional[str] = caption
-        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
-        self.reply_markup: Optional[InlineKeyboardMarkup] = reply_markup
-        self.input_message_content: Optional[InputMessageContent] = input_message_content
-        self.parse_mode: Optional[str] = parse_mode
-        self.payload_dic['audio_file_id'] = audio_file_id
 
+    def to_dict(self):
+        json_dict = super().to_dict()
+        json_dict['audio_file_id'] = self.audio_file_id
+        return json_dict
 
-# Games
 
 class Game(JsonDeserializable):
     """
@@ -12252,8 +12093,8 @@ class BusinessBotRights(JsonDeserializable):
     :param can_read_messages: Optional. True, if the bot can mark incoming private messages as read
     :type can_read_messages: :obj:`bool`
 
-    :param can_delete_outgoing_messages: Optional. True, if the bot can delete messages sent by the bot
-    :type can_delete_outgoing_messages: :obj:`bool`
+    :param can_delete_sent_messages: Optional. True, if the bot can delete messages sent by the bot
+    :type can_delete_sent_messages: :obj:`bool`
 
     :param can_delete_all_messages: Optional. True, if the bot can delete all private messages in managed chats
     :type can_delete_all_messages: :obj:`bool`
@@ -12291,13 +12132,13 @@ class BusinessBotRights(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`BusinessBotRights`
     """
-    def __init__(self, can_reply=None, can_read_messages=None, can_delete_outgoing_messages=None, can_delete_all_messages=None,
+    def __init__(self, can_reply=None, can_read_messages=None, can_delete_sent_messages=None, can_delete_all_messages=None,
                     can_edit_name=None, can_edit_bio=None, can_edit_profile_photo=None, can_edit_username=None,
                     can_change_gift_settings=None, can_view_gifts_and_stars=None, can_convert_gifts_to_stars=None,
                     can_transfer_and_upgrade_gifts=None, can_transfer_stars=None, can_manage_stories=None, **kwargs):
         self.can_reply: Optional[bool] = can_reply
         self.can_read_messages: Optional[bool] = can_read_messages
-        self.can_delete_outgoing_messages: Optional[bool] = can_delete_outgoing_messages
+        self.can_delete_sent_messages: Optional[bool] = can_delete_sent_messages
         self.can_delete_all_messages: Optional[bool] = can_delete_all_messages
         self.can_edit_name: Optional[bool] = can_edit_name
         self.can_edit_bio: Optional[bool] = can_edit_bio
@@ -12315,6 +12156,12 @@ class BusinessBotRights(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+    @property
+    def can_delete_outgoing_messages(self) -> Optional[int]:
+        """Deprecated. Use can_delete_sent_messages instead."""
+        log_deprecation_warning("can_delete_outgoing_messages is deprecated. Use can_delete_sent_messages instead.")
+        return self.can_delete_sent_messages
 
 
 class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
@@ -14408,9 +14255,9 @@ class PollOptionAdded(JsonDeserializable):
     :rtype: :class:`PollOptionAdded`
     """
     def __init__(self, option_persistent_id: str, option_text: str,
-                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    poll_message: Optional[MaybeInaccessibleMessage] = None,
                     option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
-        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.poll_message: Optional[MaybeInaccessibleMessage] = poll_message
         self.option_persistent_id: str = option_persistent_id
         self.option_text: str = option_text
         self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
@@ -14453,9 +14300,9 @@ class PollOptionDeleted(JsonDeserializable):
     :rtype: :class:`PollOptionDeleted`
     """
     def __init__(self, option_persistent_id: str, option_text: str,
-                    poll_message: Optional[Union[InaccessibleMessage, Message]] = None,
+                    poll_message: Optional[MaybeInaccessibleMessage] = None,
                     option_text_entities: Optional[List[MessageEntity]] = None, **kwargs):
-        self.poll_message: Optional[Union[InaccessibleMessage, Message]] = poll_message
+        self.poll_message: Optional[MaybeInaccessibleMessage] = poll_message
         self.option_persistent_id: str = option_persistent_id
         self.option_text: str = option_text
         self.option_text_entities: Optional[List[MessageEntity]] = option_text_entities
@@ -14607,6 +14454,10 @@ class InputMediaLink(InputMedia):
 
 
 # why not..
+MaybeInaccessibleMessage = Union[InaccessibleMessage, Message]
+
+InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent]
+
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
 
 InputPollOptionMedia = Union[InputMediaAnimation, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaSticker, InputMediaVenue, InputMediaVideo, InputMediaLink]
