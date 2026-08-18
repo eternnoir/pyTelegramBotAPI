@@ -12093,8 +12093,8 @@ class BusinessBotRights(JsonDeserializable):
     :param can_read_messages: Optional. True, if the bot can mark incoming private messages as read
     :type can_read_messages: :obj:`bool`
 
-    :param can_delete_outgoing_messages: Optional. True, if the bot can delete messages sent by the bot
-    :type can_delete_outgoing_messages: :obj:`bool`
+    :param can_delete_sent_messages: Optional. True, if the bot can delete messages sent by the bot
+    :type can_delete_sent_messages: :obj:`bool`
 
     :param can_delete_all_messages: Optional. True, if the bot can delete all private messages in managed chats
     :type can_delete_all_messages: :obj:`bool`
@@ -12132,13 +12132,13 @@ class BusinessBotRights(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`BusinessBotRights`
     """
-    def __init__(self, can_reply=None, can_read_messages=None, can_delete_outgoing_messages=None, can_delete_all_messages=None,
+    def __init__(self, can_reply=None, can_read_messages=None, can_delete_sent_messages=None, can_delete_all_messages=None,
                     can_edit_name=None, can_edit_bio=None, can_edit_profile_photo=None, can_edit_username=None,
                     can_change_gift_settings=None, can_view_gifts_and_stars=None, can_convert_gifts_to_stars=None,
                     can_transfer_and_upgrade_gifts=None, can_transfer_stars=None, can_manage_stories=None, **kwargs):
         self.can_reply: Optional[bool] = can_reply
         self.can_read_messages: Optional[bool] = can_read_messages
-        self.can_delete_outgoing_messages: Optional[bool] = can_delete_outgoing_messages
+        self.can_delete_sent_messages: Optional[bool] = can_delete_sent_messages
         self.can_delete_all_messages: Optional[bool] = can_delete_all_messages
         self.can_edit_name: Optional[bool] = can_edit_name
         self.can_edit_bio: Optional[bool] = can_edit_bio
@@ -12156,6 +12156,13 @@ class BusinessBotRights(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         return cls(**obj)
+
+    @property
+    def can_delete_outgoing_messages(self) -> Optional[int]:
+        """Deprecated. Use can_delete_sent_messages instead."""
+        log_deprecation_warning("can_delete_outgoing_messages is deprecated. Use can_delete_sent_messages instead.")
+        return self.can_delete_sent_messages
+
 
 
 class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
