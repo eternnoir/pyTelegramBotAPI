@@ -12164,7 +12164,6 @@ class BusinessBotRights(JsonDeserializable):
         return self.can_delete_sent_messages
 
 
-
 class AcceptedGiftTypes(JsonDeserializable, JsonSerializable):
     """
     This object describes the types of gifts that can be gifted to a user or a chat.
