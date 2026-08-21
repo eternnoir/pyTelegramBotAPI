@@ -3093,7 +3093,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
         # and a back button below
 
-    :param inline_keyboard: Array of arrays, each representing an inline keyboard row with one or more buttons
+    :param inline_keyboard: Array of button rows, each represented by an Array of InlineKeyboardButton objects
     :type inline_keyboard: :obj:`list` of :obj:`list` of :class:`telebot.types.InlineKeyboardButton`
 
     :param keyboard: Deprecated. Use inline_keyboard instead.
@@ -3209,31 +3209,31 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
     :param style: Optional. Style of the button. Must be one of “danger” (red), “success” (green) or “primary” (blue). If omitted, then an app-specific style is used.
     :type style: :obj:`str`
 
-    :param url: Optional. HTTP or tg:// URL to be opened when the button is pressed. Links tg://user?id=<user_id> can be used to mention a user by their ID without using a username, if this is allowed by their privacy settings.
+    :param url: Optional. HTTP or tg:// URL to be opened when the button is pressed. Links tg://user?id=<user_id> can be used to mention a user by their identifier without using a username, if this is allowed by their privacy settings.
     :type url: :obj:`str`
 
-    :param callback_data: Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes
+    :param callback_data: Optional. Data to be sent in a callback query to the bot when the button is pressed, 1-64 bytes
     :type callback_data: :obj:`str`
 
-    :param web_app: Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot.
+    :param web_app: Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. Not supported for messages sent on behalf of a business account.
     :type web_app: :class:`telebot.types.WebAppInfo`
 
     :param login_url: Optional. An HTTPS URL used to automatically authorize the user. Can be used as a replacement for the Telegram Login Widget.
     :type login_url: :class:`telebot.types.LoginUrl`
 
-    :param switch_inline_query: Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted. Note: This offers an easy way for users to start using your bot in inline mode when they are currently in a private chat with it. Especially useful when combined with switch_pm… actions - in this case the user will be automatically returned to the chat they switched from, skipping the chat selection screen.
+    :param switch_inline_query: Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. May be empty, in which case just the bot's username will be inserted. Not supported for messages sent in channel direct messages chats and on behalf of a business account.
     :type switch_inline_query: :obj:`str`
 
     :param switch_inline_query_current_chat: Optional. If set, pressing the button will insert the bot's username and the specified inline query in the current chat's input field. May be empty, in which case only the bot's username will be inserted. This offers a quick way for the user to open your bot in inline mode in the same chat - good for selecting something from multiple options. Not supported in channels and for messages sent in channel direct messages chats and on behalf of a business account.
     :type switch_inline_query_current_chat: :obj:`str`
 
-    :param switch_inline_query_chosen_chat: Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field
+    :param switch_inline_query_chosen_chat: Optional. If set, pressing the button will prompt the user to select one of their chats of the specified type, open that chat and insert the bot's username and the specified inline query in the input field. Not supported for messages sent in channel direct messages chats and on behalf of a business account.
     :type switch_inline_query_chosen_chat: :class:`telebot.types.SwitchInlineQueryChosenChat`
 
     :param callback_game: Optional. Description of the game that will be launched when the user presses the button. NOTE: This type of button must always be the first button in the first row.
     :type callback_game: :class:`telebot.types.CallbackGame`
 
-    :param pay: Optional. Specify True, to send a Pay button. Substrings "⭐" and "XTR" in the button's text will be replaced with a Telegram Star icon. NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
+    :param pay: Optional. Specify True, to send a Pay button. Substrings “ ⭐ ” and “XTR” in the buttons's text will be replaced with a Telegram Star icon. NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
     :type pay: :obj:`bool`
 
     :param copy_text: Optional. Description of the button that copies the specified text to the clipboard.
@@ -6875,10 +6875,10 @@ class InputMediaPhoto(InputMedia):
     :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param has_spoiler: Optional. True, if the uploaded photo is a spoiler
+    :param has_spoiler: Optional. Pass True if the photo needs to be covered with a spoiler animation
     :type has_spoiler: :obj:`bool`
 
-    :param show_caption_above_media: Optional. True, if the caption should be shown above the photo
+    :param show_caption_above_media: Optional. Pass True if the caption must be shown above the message media
     :type show_caption_above_media: :obj:`bool`
 
     :return: Instance of the class
@@ -6920,10 +6920,10 @@ class InputMediaVideo(InputMedia):
     :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     :type thumbnail: InputFile or :obj:`str`
 
-    :param cover: Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
+    :param cover: Optional. Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type cover: :obj:`str` or :class:`telebot.types.InputFile`
 
-    :param start_timestamp: Start timestamp for the video in the message
+    :param start_timestamp: Optional. Start timestamp for the video in the message
     :type start_timestamp: :obj:`int`
 
     :param caption: Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
@@ -6944,13 +6944,13 @@ class InputMediaVideo(InputMedia):
     :param duration: Optional. Video duration in seconds
     :type duration: :obj:`int`
 
-    :param supports_streaming: Optional. Pass True, if the uploaded video is suitable for streaming
+    :param supports_streaming: Optional. Pass True if the uploaded video is suitable for streaming
     :type supports_streaming: :obj:`bool`
 
-    :param has_spoiler: Optional. True, if the uploaded video is a spoiler
+    :param has_spoiler: Optional. Pass True if the video needs to be covered with a spoiler animation
     :type has_spoiler: :obj:`bool`
 
-    :param show_caption_above_media: Optional. True, if the caption should be shown above the video
+    :param show_caption_above_media: Optional. Pass True if the caption must be shown above the message media
     :type show_caption_above_media: :obj:`bool`
 
     :return: Instance of the class
@@ -7006,7 +7006,7 @@ class InputMediaAnimation(InputMedia):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputmediaanimation
 
-    :param type: Optional. Type
+    :param type: Type of the media, must be animation
     :type type: :obj:`typing.Any`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
@@ -7033,10 +7033,10 @@ class InputMediaAnimation(InputMedia):
     :param duration: Optional. Animation duration in seconds
     :type duration: :obj:`int`
 
-    :param has_spoiler: Optional. True, if the uploaded animation is a spoiler
+    :param has_spoiler: Optional. Pass True if the animation needs to be covered with a spoiler animation
     :type has_spoiler: :obj:`bool`
 
-    :param show_caption_above_media: Optional. True, if the caption should be shown above the animation
+    :param show_caption_above_media: Optional. Pass True if the caption must be shown above the message media
     :type show_caption_above_media: :obj:`bool`
 
     :return: Instance of the class
@@ -7083,7 +7083,7 @@ class InputMediaAudio(InputMedia):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputmediaaudio
 
-    :param type: Type of the Audio.
+    :param type: Type of the media, must be audio
     :type type: :class:`InputMedia`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
@@ -7145,7 +7145,7 @@ class InputMediaDocument(InputMedia):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputmediadocument
 
-    :param type: Type of the Document.
+    :param type: Type of the media, must be document
     :type type: :class:`InputMedia`
 
     :param media: File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
@@ -7195,7 +7195,7 @@ class InputMediaLivePhoto(InputMedia):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputmedialivephoto
 
-    :param type: Type of the LivePhoto.
+    :param type: Type of the media, must be live_photo
     :type type: :class:`InputMedia`
 
     :param media: Video of the live photo to send. Pass a file_id to send a file that exists on the Telegram servers (recommended) or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files ». Sending live photos by a URL is currently unsupported.
@@ -7213,7 +7213,7 @@ class InputMediaLivePhoto(InputMedia):
     :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param show_caption_above_media: Optional. Pass True, if the caption must be shown above the message media
+    :param show_caption_above_media: Optional. Pass True if the caption must be shown above the message media
     :type show_caption_above_media: :obj:`bool`
 
     :param has_spoiler: Optional. Pass True if the live photo needs to be covered with a spoiler animation
@@ -7257,7 +7257,7 @@ class InputMediaLocation(InputMedia):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputmedialocation
 
-    :param type: Type of the Location.
+    :param type: Type of the media, must be location
     :type type: :class:`InputMedia`
 
     :param latitude: Latitude of the location
@@ -9538,7 +9538,7 @@ class GiveawayWinners(JsonDeserializable):
     :param chat: The chat that created the giveaway
     :type chat: :class:`Chat`
 
-    :param giveaway_message_id: Identifier of the messsage with the giveaway in the chat
+    :param giveaway_message_id: Identifier of the message with the giveaway in the chat
     :type giveaway_message_id: :obj:`int`
 
     :param winners_selection_date: Point in time (Unix timestamp) when winners of the giveaway were selected
@@ -9568,7 +9568,7 @@ class GiveawayWinners(JsonDeserializable):
     :param prize_description: Optional. Description of additional giveaway prize
     :type prize_description: :obj:`str`
 
-    :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+    :param prize_star_count: Optional. The number of Telegram Stars that were split between giveaway winners; for Telegram Star giveaways only
     :type prize_star_count: :obj:`int`
 
     :return: Instance of the class
@@ -9646,14 +9646,12 @@ class GiveawayCreated(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#giveawaycreated
 
-    :prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
-    :type prize_star_count: :obj:`int`
+    :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
+    :type prize_star_count: :obj:`typing.Any`
 
     :return: Instance of the class
-    
-
-    :param prize_star_count: Optional. Prize Star Count
-    :type prize_star_count: :obj:`typing.Any`"""
+    :rtype: :class:`GiveawayCreated`
+    """
 
     @classmethod
     def de_json(cls, json_string):
@@ -11483,10 +11481,10 @@ class InputPaidMediaVideo(InputPaidMedia):
     :param thumbnail: Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     :type thumbnail: :class:`InputFile`
 
-    :param cover: Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
+    :param cover: Optional. Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files »
     :type cover: :obj:`str` or :class:`telebot.types.InputFile`
 
-    :param start_timestamp: Start timestamp for the video in the message
+    :param start_timestamp: Optional. Start timestamp for the video in the message
     :type start_timestamp: :obj:`int`
 
     :param width: Optional. Video width
@@ -12468,10 +12466,10 @@ class InputStoryContentPhoto(InputStoryContent):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputstorycontentphoto
 
-    :param type: Type of the media, must be photo
+    :param type: Type of the content, must be photo
     :type type: :class:`InputMedia`
 
-    :param photo: The photo to post as a story. The photo must be of the size 1080x1920 and must not exceed 10 MB. The photo can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :param photo: The photo to post as a story. The photo must be of the size 1080x1920 and must not exceed 10 MB. The photo can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     :type photo: :class:`telebot.types.InputFile`
 
     :return: Instance of the class
@@ -13051,7 +13049,7 @@ class InputProfilePhotoStatic(InputProfilePhoto):
     :param type: Type of the profile photo, must be static
     :type type: :obj:`str`
 
-    :param photo: The static profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :param photo: The static profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     :type photo: :obj:`str`
 
     :return: Instance of the class
@@ -13087,7 +13085,7 @@ class InputProfilePhotoAnimated(InputProfilePhoto):
     :param type: Type of the profile photo, must be animated
     :type type: :obj:`str`
 
-    :param animation: The animated profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files
+    :param animation: The animated profile photo. Profile photos can't be reused and can only be uploaded as a new file, so you can pass “attach://<file_attach_name>” if the photo was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files »
     :type animation: :obj:`str`
 
     :param main_frame_timestamp: Optional. Timestamp in seconds of the frame that will be used as the static profile photo. Defaults to 0.0.
@@ -14232,7 +14230,7 @@ class InputMediaLink(InputMedia):
 
     Telegram documentation: https://core.telegram.org/bots/api#inputmedialink
 
-    :param type: Type of the Link.
+    :param type: Type of the media, must be link
     :type type: :class:`InputMedia`
 
     :param url: HTTP URL of the link
