@@ -39,6 +39,7 @@ class JsonSerializable(object):
     Subclasses of this class are guaranteed to be able to be converted to JSON format.
     All subclasses of this class must override to_json.
     """
+
     def to_json(self):
         """
         Returns a JSON string representation of this class.
@@ -46,7 +47,6 @@ class JsonSerializable(object):
         :meta private:
 
         This function must be overridden by subclasses.
-
         :return: a JSON formatted string.
         """
         raise NotImplementedError
@@ -57,6 +57,7 @@ class Dictionaryable(object):
     Subclasses of this class are guaranteed to be able to be converted to dictionary.
     All subclasses of this class must override to_dict.
     """
+
     def to_dict(self):
         """
         Returns a DICT with class field values
@@ -64,7 +65,6 @@ class Dictionaryable(object):
         :meta private:
 
         This function must be overridden by subclasses.
-        
         :return: a DICT
         """
         raise NotImplementedError
@@ -75,6 +75,7 @@ class JsonDeserializable(object):
     Subclasses of this class are guaranteed to be able to be created from a json-style dict or json formatted string.
     All subclasses of this class must override de_json.
     """
+
     @classmethod
     def de_json(cls, json_string):
         """
@@ -83,7 +84,6 @@ class JsonDeserializable(object):
         :meta private:
 
         This function must be overridden by subclasses.
-
         :return: an instance of this class created from the given json dict or string.
         """
         raise NotImplementedError
@@ -99,7 +99,6 @@ class JsonDeserializable(object):
         :param json_type: input json or parsed dict
 
         :param dict_copy: if dict is passed and it is changed outside - should be True!
-
         :return: Dictionary parsed from json or original dict
         """
         if service_utils.is_dict(json_type):
@@ -2716,7 +2715,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
     :param is_persistent: Optional. Requests clients to always show the keyboard when the regular keyboard is hidden. Defaults to False, in which case the custom keyboard can be hidden and opened with a keyboard icon.
     :type is_persistent: :obj:`bool`
 
-    :param row_width: The width of the row in the keyboard
+    :param row_width: Non-API. The width of the row in the keyboard when adding keys using "add" method. Defaults to 3. Maximum value is 12.
     :type row_width: :obj:`int`
 
     :rtype: :class:`telebot.types.ReplyKeyboardMarkup`
@@ -2725,7 +2724,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
 
     def __init__(self, resize_keyboard: Optional[bool]=None, one_time_keyboard: Optional[bool]=None,
             selective: Optional[bool]=None, row_width: int=3, input_field_placeholder: Optional[str]=None,
-            is_persistent: Optional[bool]=None):
+            is_persistent: Optional[bool]=None, keyboard: Optional[List[List[KeyboardButton]]]=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             if not DISABLE_KEYLEN_ERROR:
@@ -2737,7 +2736,7 @@ class ReplyKeyboardMarkup(JsonSerializable):
         self.selective: Optional[bool] = selective
         self.row_width: Optional[int] = row_width
         self.input_field_placeholder: Optional[str] = input_field_placeholder
-        self.keyboard: List[List[KeyboardButton]] = []
+        self.keyboard: List[List[KeyboardButton]] = keyboard or []
         self.is_persistent: Optional[bool] = is_persistent
 
 
@@ -3094,10 +3093,13 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         # returns an InlineKeyboardMarkup with two buttons in a row, one leading to Twitter, the other to facebook
         # and a back button below
 
-    :param keyboard: Array of arrays, each representing an inline keyboard row with one or more buttons
+    :param inline_keyboard: Array of arrays, each representing an inline keyboard row with one or more buttons
+    :type inline_keyboard: :obj:`list` of :obj:`list` of :class:`telebot.types.InlineKeyboardButton`
+
+    :param keyboard: Deprecated. Use inline_keyboard instead.
     :type keyboard: :obj:`list` of :obj:`list` of :class:`telebot.types.InlineKeyboardButton`
 
-    :param row_width: Integer. The width of the user's custom keyboard; for custom keyboards with predefined width, this is ignored
+    :param row_width: Non-API. The width of the row in the keyboard when adding keys using "add" method. Defaults to 3. Maximum value is 8.
     :type row_width: :obj:`int`
 
     :return: Instance of the class
@@ -3109,27 +3111,31 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string, dict_copy=False)
-        keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
-        return cls(keyboard = keyboard)
+        inline_keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
+        return cls(inline_keyboard=inline_keyboard)
 
-    def __init__(self, keyboard=None, row_width=3):
+    def __init__(self, inline_keyboard=None, row_width=3, keyboard=None):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             logger.error('Telegram does not support inline keyboard row width over %d.' % self.max_row_keys)
             row_width = self.max_row_keys
 
         self.row_width: int = row_width
-        self.keyboard: List[List[InlineKeyboardButton]] = keyboard or []
+        self.inline_keyboard: List[List[InlineKeyboardButton]] = inline_keyboard or []
+        if keyboard is not None:
+            logger.warning('The "keyboard" parameter is deprecated. Use "inline_keyboard" instead.')
+            if not self.inline_keyboard:
+                self.inline_keyboard = keyboard
 
     def add(self, *args, row_width=None) -> 'InlineKeyboardMarkup':
         """
         This method adds buttons to the keyboard without exceeding row_width.
 
         E.g. InlineKeyboardMarkup.add("A", "B", "C") yields the json result:
-        {keyboard: [["A"], ["B"], ["C"]]}
+        {inline_keyboard: [["A"], ["B"], ["C"]]}
         when row_width is set to 1.
         When row_width is set to 2, the result:
-        {keyboard: [["A", "B"], ["C"]]}
+        {inline_keyboard: [["A", "B"], ["C"]]}
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
 
         :param args: Array of InlineKeyboardButton to append to the keyboard
@@ -3151,7 +3157,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
 
         for row in service_utils.chunks(args, row_width):
             button_array = [button for button in row]
-            self.keyboard.append(button_array)
+            self.inline_keyboard.append(button_array)
 
         return self
 
@@ -3161,7 +3167,8 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         This method does not consider row_width.
 
         InlineKeyboardMarkup.row("A").row("B", "C").to_json() outputs:
-        '{keyboard: [["A"], ["B", "C"]]}'
+        '{inline_keyboard: [["A"], ["B", "C"]]}'
+
         See https://core.telegram.org/bots/api#inlinekeyboardmarkup
 
         :param args: Array of InlineKeyboardButton to append to the keyboard
@@ -3178,8 +3185,13 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
 
     def to_dict(self):
         json_dict = dict()
-        json_dict['inline_keyboard'] = [[button.to_dict() for button in row] for row in self.keyboard]
+        json_dict['inline_keyboard'] = [[button.to_dict() for button in row] for row in self.inline_keyboard]
         return json_dict
+
+    @property
+    def keyboard(self):
+        logger.warning('The "keyboard" property is deprecated. Use "inline_keyboard" instead.')
+        return self.inline_keyboard
 
 
 class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable):
@@ -7557,7 +7569,6 @@ class Poll(JsonDeserializable):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['poll_id'] = obj.pop('id')
         options = []
         for opt in obj['options']:
             options.append(PollOption.de_json(opt))
@@ -7578,14 +7589,14 @@ class Poll(JsonDeserializable):
     def __init__(
             self,
             question: str, options: List[PollOption],
-            poll_id: str = None, total_voter_count: int = None, is_closed: bool = None, is_anonymous: bool = None,
+            id: str = None, total_voter_count: int = None, is_closed: bool = None, is_anonymous: bool = None,
             type: str = None, allows_multiple_answers: bool = None,
             explanation: str = None, explanation_entities: List[MessageEntity] = None, open_period: int = None,
             close_date: int = None, poll_type: str = None, question_entities: List[MessageEntity] = None,
             correct_option_ids: List[int] = None, allows_revoting: bool = None,
             description: str = None, description_entities: List[MessageEntity] = None,
             media: PollMedia = None, members_only: bool = None, country_codes: List[str] = None, explanation_media: PollMedia = None, **kwargs):
-        self.id: str = poll_id
+        self.id: str = id
         self.question: str = question
         self.options: List[PollOption] = options
         self.total_voter_count: int = total_voter_count
@@ -7628,6 +7639,11 @@ class Poll(JsonDeserializable):
             self.options.append(option)
         else:
             self.options.append(PollOption(option, persistent_id))
+
+    @property
+    def poll_id(self) -> str:
+        log_deprecation_warning("Poll: poll_id parameter is deprecated. Use id instead.")
+        return self.id
 
 
 class PollAnswer(JsonSerializable, JsonDeserializable, Dictionaryable):
