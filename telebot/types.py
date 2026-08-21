@@ -615,7 +615,7 @@ class ChatFullInfo(JsonDeserializable):
     :param id: Unique identifier for this chat. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this identifier.
     :type id: :obj:`int`
 
-    :param type: Type of chat, can be either “private”, “group”, “supergroup” or “channel”
+    :param type: Type of the chat, can be either “private”, “group”, “supergroup” or “channel”
     :type type: :obj:`str`
 
     :param title: Optional. Title, for supergroups, channels and group chats
@@ -636,79 +636,79 @@ class ChatFullInfo(JsonDeserializable):
     :param is_direct_messages: Optional. True, if the chat is the direct messages chat of a channel
     :type is_direct_messages: :obj:`bool`
 
-    :param max_reaction_count: Optional. The maximum number of reactions that can be set on a message in the chat
+    :param max_reaction_count: The maximum number of reactions that can be set on a message in the chat
     :type max_reaction_count: :obj:`int`
 
-    :param photo: Optional. Chat photo. Returned only in getChat.
+    :param photo: Optional. Chat photo
     :type photo: :class:`telebot.types.ChatPhoto`
 
-    :param active_usernames: Optional. If non-empty, the list of all active chat usernames; for private chats, supergroups and channels. Returned only in getChat.
+    :param active_usernames: Optional. If non-empty, the list of all active chat usernames ; for private chats, supergroups and channels
     :type active_usernames: :obj:`list` of :obj:`str`
 
-    :param birthdate: Optional. Birthdate of the other party in a private chat. Returned only in getChat.
+    :param birthdate: Optional. For private chats, the date of birth of the user
     :type birthdate: :obj:`str`
 
-    :param business_intro: Optional. Business intro for the chat. Returned only in getChat.
+    :param business_intro: Optional. For private chats with business accounts, the intro of the business
     :type business_intro: :class:`telebot.types.BusinessIntro`
 
-    :param business_location: Optional. Business location for the chat. Returned only in getChat.
+    :param business_location: Optional. For private chats with business accounts, the location of the business
     :type business_location: :class:`telebot.types.BusinessLocation`
 
-    :param business_opening_hours: Optional. Business opening hours for the chat. Returned only in getChat.
+    :param business_opening_hours: Optional. For private chats with business accounts, the opening hours of the business
     :type business_opening_hours: :class:`telebot.types.BusinessHours`
 
-    :param personal_chat: Optional. For private chats, the personal channel of the user. Returned only in getChat.
+    :param personal_chat: Optional. For private chats, the personal channel of the user
     :type personal_chat: :class:`telebot.types.Chat`
 
     :param parent_chat: Optional. Information about the corresponding channel chat; for direct messages chats only
     :type parent_chat: :class:`telebot.types.Chat`
 
-    :param available_reactions: Optional. List of available chat reactions; for private chats, supergroups and channels. Returned only in getChat.
+    :param available_reactions: Optional. List of available reactions allowed in the chat. If omitted, then all emoji reactions are allowed.
     :type available_reactions: :obj:`list` of :class:`telebot.types.ReactionType`
 
-    :param accent_color_id: Optional. Optional. Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See accent colors for more details. Returned only in getChat. Always returned in getChat.
+    :param accent_color_id: Identifier of the accent color for the chat name and backgrounds of the chat photo, reply header, and link preview. See accent colors for more details.
     :type accent_color_id: :obj:`int`
 
-    :param background_custom_emoji_id: Optional. Custom emoji identifier of emoji chosen by the chat for the reply header and link preview background. Returned only in getChat.
+    :param background_custom_emoji_id: Optional. Custom emoji identifier of the emoji chosen by the chat for the reply header and link preview background
     :type background_custom_emoji_id: :obj:`str`
 
-    :param profile_accent_color_id: Optional. Identifier of the accent color for the chat's profile background. See profile accent colors for more details. Returned only in getChat.
+    :param profile_accent_color_id: Optional. Identifier of the accent color for the chat's profile background. See profile accent colors for more details.
     :type profile_accent_color_id: :obj:`int`
 
-    :param profile_background_custom_emoji_id: Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background. Returned only in getChat.
+    :param profile_background_custom_emoji_id: Optional. Custom emoji identifier of the emoji chosen by the chat for its profile background
     :type profile_background_custom_emoji_id: :obj:`str`
 
-    :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of emoji status of the other party in a private chat. Returned only in getChat.
+    :param emoji_status_custom_emoji_id: Optional. Custom emoji identifier of the emoji status of the chat or the other party in a private chat
     :type emoji_status_custom_emoji_id: :obj:`str`
 
-    :param emoji_status_expiration_date: Optional. Expiration date of the emoji status of the other party in a private chat, if any. Returned only in getChat.
+    :param emoji_status_expiration_date: Optional. Expiration date of the emoji status of the chat or the other party in a private chat, in Unix time, if any
     :type emoji_status_expiration_date: :obj:`int`
 
-    :param bio: Optional. Bio of the other party in a private chat. Returned only in getChat.
+    :param bio: Optional. Bio of the other party in a private chat
     :type bio: :obj:`str`
 
-    :param has_private_forwards: Optional. True, if privacy settings of the other party in the private chat allows to use tg://user?id=<user_id> links only in chats with the user. Returned only in getChat.
+    :param has_private_forwards: Optional. True , if privacy settings of the other party in the private chat allows to use tg://user?id=<user_id> links only in chats with the user
     :type has_private_forwards: :obj:`bool`
 
-    :param has_restricted_voice_and_video_messages: Optional. True, if the privacy settings of the other party restrict sending voice and video note messages in the private chat. Returned only in getChat.
+    :param has_restricted_voice_and_video_messages: Optional. True , if the privacy settings of the other party restrict sending voice and video note messages in the private chat
     :type has_restricted_voice_and_video_messages: :obj:`bool`
 
-    :param join_to_send_messages: Optional. True, if users need to join the supergroup before they can send messages. Returned only in getChat.
+    :param join_to_send_messages: Optional. True , if users need to join the supergroup before they can send messages
     :type join_to_send_messages: :obj:`bool`
 
-    :param join_by_request: Optional. True, if all users directly joining the supergroup need to be approved by supergroup administrators. Returned only in getChat.
+    :param join_by_request: Optional. True , if all users directly joining the supergroup without using an invite link need to be approved by supergroup administrators
     :type join_by_request: :obj:`bool`
 
-    :param description: Optional. Description, for groups, supergroups and channel chats. Returned only in getChat.
+    :param description: Optional. Description, for groups, supergroups and channel chats
     :type description: :obj:`str`
 
-    :param invite_link: Optional. Primary invite link, for groups, supergroups and channel chats. Returned only in getChat.
+    :param invite_link: Optional. Primary invite link, for groups, supergroups and channel chats
     :type invite_link: :obj:`str`
 
-    :param pinned_message: Optional. The most recent pinned message (by sending date). Returned only in getChat.
+    :param pinned_message: Optional. The most recent pinned message (by sending date)
     :type pinned_message: :class:`telebot.types.Message`
 
-    :param permissions: Optional. Default chat member permissions, for groups and supergroups. Returned only in getChat.
+    :param permissions: Optional. Default chat member permissions, for groups and supergroups
     :type permissions: :class:`telebot.types.ChatPermissions`
 
     :param can_send_gift: Deprecated, use accepted_gift_types instead.
@@ -720,46 +720,46 @@ class ChatFullInfo(JsonDeserializable):
     :param can_send_paid_media: Optional. True, if paid media messages can be sent or forwarded to the channel chat. The field is available only for channel chats.
     :type can_send_paid_media: :obj:`bool`
 
-    :param slow_mode_delay: Optional. For supergroups, the minimum allowed delay between consecutive messages sent by each unpriviledged user; in seconds. Returned only in getChat.
+    :param slow_mode_delay: Optional. For supergroups, the minimum allowed delay between consecutive messages sent by each unprivileged user; in seconds
     :type slow_mode_delay: :obj:`int`
 
-    :param unrestrict_boost_count: Optional. For supergroups, the minimum number of boosts that a non-administrator user needs to add in order to ignore slow mode and chat permissions. Returned only in getChat.
+    :param unrestrict_boost_count: Optional. For supergroups, the minimum number of boosts that a non-administrator user needs to add in order to ignore slow mode and chat permissions
     :type unrestrict_boost_count: :obj:`int`
 
-    :param message_auto_delete_time: Optional. The time after which all messages sent to the chat will be automatically deleted; in seconds. Returned only in getChat.
+    :param message_auto_delete_time: Optional. The time after which all messages sent to the chat will be automatically deleted; in seconds
     :type message_auto_delete_time: :obj:`int`
 
-    :param has_aggressive_anti_spam_enabled: Optional. True, if the chat has enabled aggressive anti-spam protection. Returned only in getChat.
+    :param has_aggressive_anti_spam_enabled: Optional. True , if aggressive anti-spam checks are enabled in the supergroup. The field is only available to chat administrators.
     :type has_aggressive_anti_spam_enabled: :obj:`bool`
 
-    :param has_hidden_members: Optional. True, if the chat has enabled hidden members. Returned only in getChat.
+    :param has_hidden_members: Optional. True , if non-administrators can only get the list of bots and administrators in the chat
     :type has_hidden_members: :obj:`bool`
 
-    :param has_protected_content: Optional. True, if messages from the chat can't be forwarded to other chats. Returned only in getChat.
+    :param has_protected_content: Optional. True , if messages from the chat can't be forwarded to other chats
     :type has_protected_content: :obj:`bool`
 
-    :param has_visible_history: Optional. True, if new chat members will have access to old messages; available only to chat administrators. Returned only in getChat.
+    :param has_visible_history: Optional. True , if new chat members will have access to old messages; available only to chat administrators
     :type has_visible_history: :obj:`bool`
 
-    :param sticker_set_name: Optional. For supergroups, name of group sticker set. Returned only in getChat.
+    :param sticker_set_name: Optional. For supergroups, name of the group sticker set
     :type sticker_set_name: :obj:`str`
 
-    :param can_set_sticker_set: Optional. True, if the bot can change the group sticker set. Returned only in getChat.
+    :param can_set_sticker_set: Optional. True , if the bot can change the group sticker set
     :type can_set_sticker_set: :obj:`bool`
 
     :param custom_emoji_sticker_set_name: Optional. For supergroups, the name of the group's custom emoji sticker set. Custom emoji from this set can be used by all users and bots in the group.
     :type custom_emoji_sticker_set_name: :obj:`str`
 
-    :param linked_chat_id: Optional. Unique identifier for the linked chat, i.e. the discussion group identifier for a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier. Returned only in getChat.
+    :param linked_chat_id: Optional. Unique identifier for the linked chat, i.e. the discussion group identifier for a channel and vice versa; for supergroups and channel chats. This identifier may be greater than 32 bits and some programming languages may have difficulty/silent defects in interpreting it. But it is smaller than 52 bits, so a signed 64 bit integer or double-precision float type are safe for storing this identifier.
     :type linked_chat_id: :obj:`int`
 
-    :param location: Optional. For supergroups, the location to which the supergroup is connected. Returned only in getChat.
+    :param location: Optional. For supergroups, the location to which the supergroup is connected
     :type location: :class:`telebot.types.ChatLocation`
 
     :param rating: Optional. For private chats, the rating of the user if any
     :type rating: :class:`telebot.types.UserRating`
 
-    :param paid_message_star_count: Optional. The number of Telegram Stars a general user have to pay to send a message to the chat
+    :param paid_message_star_count: Optional. The number of Telegram Stars a general user has to pay to send a message to the chat
     :type paid_message_star_count: :obj:`int`
 
     :param first_profile_audio: Optional. For private chats, the first audio added to the profile of the user
@@ -907,10 +907,10 @@ class Chat(ChatFullInfo):
 
     Telegram documentation: https://core.telegram.org/bots/api#chat
 
-    :param id: Unique identifier for this chat.
+    :param id: Unique identifier for this chat. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this identifier.
     :type id: :obj:`int`
 
-    :param type: Type of the chat, can be either “private”, “group”, “supergroup” or “channel”
+    :param type: Type of the chat, can be either "private", "group", "supergroup" or "channel"
     :type type: :obj:`str`
 
     :param title: Optional. Title, for supergroups, channels and group chats
@@ -925,7 +925,7 @@ class Chat(ChatFullInfo):
     :param last_name: Optional. Last name of the other party in a private chat
     :type last_name: :obj:`str`
 
-    :param is_forum: Optional. True, if the supergroup chat is a forum (has_topics_enabled)
+    :param is_forum: Optional. True , if the supergroup chat is a forum (has topics enabled)
     :type is_forum: :obj:`bool`
 
     :param is_direct_messages: Optional. True, if the chat is the direct messages chat of a channel
@@ -2116,19 +2116,19 @@ class Audio(JsonDeserializable):
     :param file_unique_id: Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
     :type file_unique_id: :obj:`str`
 
-    :param duration: Duration of the audio in seconds as defined by sender
+    :param duration: Duration of the audio in seconds as defined by the sender
     :type duration: :obj:`int`
 
-    :param performer: Optional. Performer of the audio as defined by sender or by audio tags
+    :param performer: Optional. Performer of the audio as defined by the sender or by audio tags
     :type performer: :obj:`str`
 
-    :param title: Optional. Title of the audio as defined by sender or by audio tags
+    :param title: Optional. Title of the audio as defined by the sender or by audio tags
     :type title: :obj:`str`
 
-    :param file_name: Optional. Original filename as defined by sender
+    :param file_name: Optional. Original filename as defined by the sender
     :type file_name: :obj:`str`
 
-    :param mime_type: Optional. MIME type of the file as defined by sender
+    :param mime_type: Optional. MIME type of the file as defined by the sender
     :type mime_type: :obj:`str`
 
     :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
@@ -2272,10 +2272,10 @@ class Video(JsonDeserializable):
     :param width: Video width as defined by sender
     :type width: :obj:`int`
 
-    :param height: Video height as defined by sender
+    :param height: Video height as defined by the sender
     :type height: :obj:`int`
 
-    :param duration: Duration of the video in seconds as defined by sender
+    :param duration: Duration of the video in seconds as defined by the sender
     :type duration: :obj:`int`
 
     :param thumbnail: Optional. Video thumbnail
@@ -3538,7 +3538,7 @@ class ChatMemberAdministrator(ChatMember):
     :param is_anonymous: True, if the user's presence in the chat is hidden
     :type is_anonymous: :obj:`bool`
 
-    :param can_manage_chat: True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
+    :param can_manage_chat: True, if the administrator can access the chat event log, get boost list, see hidden supergroup and channel members, report spam messages, ignore slow mode, and send messages to the chat without paying Telegram Stars. Implied by any other administrator privilege
     :type can_manage_chat: :obj:`bool`
 
     :param can_delete_messages: True, if the administrator can delete messages of other users
@@ -3547,10 +3547,10 @@ class ChatMemberAdministrator(ChatMember):
     :param can_manage_video_chats: True, if the administrator can manage video chats
     :type can_manage_video_chats: :obj:`bool`
 
-    :param can_restrict_members: True, if the administrator can restrict, ban or unban chat members
+    :param can_restrict_members: True, if the administrator can restrict, ban or unban chat members, or access supergroup statistics
     :type can_restrict_members: :obj:`bool`
 
-    :param can_promote_members: True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user)
+    :param can_promote_members: True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user)
     :type can_promote_members: :obj:`bool`
 
     :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
@@ -3568,22 +3568,22 @@ class ChatMemberAdministrator(ChatMember):
     :param can_delete_stories: True, if the administrator can delete stories of other users
     :type can_delete_stories: :obj:`bool`
 
-    :param can_post_messages: Optional. True, if the administrator can post in the channel; channels only
+    :param can_post_messages: Optional. True, if the administrator can post messages in the channel, approve suggested posts, or access channel statistics; for channels only
     :type can_post_messages: :obj:`bool`
 
-    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin messages; channels only
+    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin messages; for channels only
     :type can_edit_messages: :obj:`bool`
 
-    :param can_pin_messages: Optional. True, if the user is allowed to pin messages; groups and supergroups only
+    :param can_pin_messages: Optional. True, if the user is allowed to pin messages; for groups and supergroups only
     :type can_pin_messages: :obj:`bool`
 
-    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
+    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; for supergroups only
     :type can_manage_topics: :obj:`bool`
 
     :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
     :type can_manage_direct_messages: :obj:`bool`
 
-    :param can_manage_tags: Optional. True, if the administrator can manage tags in the chat
+    :param can_manage_tags: Optional. True, if the administrator can edit the tags of regular members; for groups and supergroups only. If omitted, defaults to the value of can_pin_messages
     :type can_manage_tags: :obj:`bool`
 
     :param custom_title: Optional. Custom title for this user
@@ -4137,7 +4137,7 @@ class BotCommandScopeChat(BotCommandScope):
     :param type: Scope type, must be chat
     :type type: :obj:`str`
 
-    :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+    :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username. Channel direct messages chats and channel chats aren't supported.
     :type chat_id: :obj:`int` or :obj:`str`
 
     :return: Instance of the class
@@ -4157,7 +4157,7 @@ class BotCommandScopeChatAdministrators(BotCommandScope):
     :param type: Scope type, must be chat_administrators
     :type type: :obj:`str`
 
-    :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+    :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username. Channel direct messages chats and channel chats aren't supported.
     :type chat_id: :obj:`int` or :obj:`str`
 
     :return: Instance of the class
@@ -4177,7 +4177,7 @@ class BotCommandScopeChatMember(BotCommandScope):
     :param type: Scope type, must be chat_member
     :type type: :obj:`str`
 
-    :param chat_id: Unique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
+    :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username. Channel direct messages chats and channel chats aren't supported.
     :type chat_id: :obj:`int` or :obj:`str`
 
     :param user_id: Unique identifier of the target user
@@ -6153,22 +6153,22 @@ class Animation(JsonDeserializable):
     :param file_unique_id: Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
     :type file_unique_id: :obj:`str`
 
-    :param width: Video width as defined by sender
+    :param width: Video width as defined by the sender
     :type width: :obj:`int`
 
-    :param height: Video height as defined by sender
+    :param height: Video height as defined by the sender
     :type height: :obj:`int`
 
-    :param duration: Duration of the video in seconds as defined by sender
+    :param duration: Duration of the video in seconds as defined by the sender
     :type duration: :obj:`int`
 
-    :param thumbnail: Optional. Animation thumbnail as defined by sender
+    :param thumbnail: Optional. Animation thumbnail as defined by the sender
     :type thumbnail: :class:`telebot.types.PhotoSize`
 
-    :param file_name: Optional. Original animation filename as defined by sender
+    :param file_name: Optional. Original animation filename as defined by the sender
     :type file_name: :obj:`str`
 
-    :param mime_type: Optional. MIME type of the file as defined by sender
+    :param mime_type: Optional. MIME type of the file as defined by the sender
     :type mime_type: :obj:`str`
 
     :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
@@ -7745,10 +7745,10 @@ class ChatInviteLink(JsonSerializable, JsonDeserializable, Dictionaryable):
 
     Telegram documentation: https://core.telegram.org/bots/api#chatinvitelink
 
-    :param subscription_price: Subscription Price
+    :param subscription_price: Optional. The amount of Telegram Stars a user must pay initially and after each subsequent subscription period to be a member of the chat using the link
     :type subscription_price: :obj:`typing.Any`
 
-    :param subscription_period: Subscription Period
+    :param subscription_period: Optional. The number of seconds the subscription will be active for before the next payment
     :type subscription_period: :obj:`typing.Any`
 
     :param invite_link: The invite link. If the link was created by another chat administrator, then the second part of the link will be replaced with “…”.
@@ -8119,7 +8119,7 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param is_anonymous: True, if the user's presence in the chat is hidden
     :type is_anonymous: :obj:`bool`
 
-    :param can_manage_chat: True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
+    :param can_manage_chat: True, if the administrator can access the chat event log, get boost list, see hidden supergroup and channel members, report spam messages, ignore slow mode, and send messages to the chat without paying Telegram Stars. Implied by any other administrator privilege
     :type can_manage_chat: :obj:`bool`
 
     :param can_delete_messages: True, if the administrator can delete messages of other users
@@ -8128,10 +8128,10 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_manage_video_chats: True, if the administrator can manage video chats
     :type can_manage_video_chats: :obj:`bool`
 
-    :param can_restrict_members: True, if the administrator can restrict, ban or unban chat members
+    :param can_restrict_members: True, if the administrator can restrict, ban or unban chat members, or access supergroup statistics
     :type can_restrict_members: :obj:`bool`
 
-    :param can_promote_members: True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that he has promoted, directly or indirectly (promoted by administrators that were appointed by the user)
+    :param can_promote_members: True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user)
     :type can_promote_members: :obj:`bool`
 
     :param can_change_info: True, if the user is allowed to change the chat title, photo and other settings
@@ -8140,31 +8140,31 @@ class ChatAdministratorRights(JsonDeserializable, JsonSerializable, Dictionaryab
     :param can_invite_users: True, if the user is allowed to invite new users to the chat
     :type can_invite_users: :obj:`bool`
 
-    :param can_post_messages: Optional. True, if the administrator can post in the channel; channels only
+    :param can_post_messages: Optional. True, if the administrator can post messages in the channel, approve suggested posts, or access channel statistics; for channels only
     :type can_post_messages: :obj:`bool`
 
-    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin messages; channels only
+    :param can_edit_messages: Optional. True, if the administrator can edit messages of other users and can pin messages; for channels only
     :type can_edit_messages: :obj:`bool`
 
-    :param can_pin_messages: Optional. True, if the user is allowed to pin messages; groups and supergroups only
+    :param can_pin_messages: Optional. True, if the user is allowed to pin messages; for groups and supergroups only
     :type can_pin_messages: :obj:`bool`
 
-    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
+    :param can_manage_topics: Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; for supergroups only
     :type can_manage_topics: :obj:`bool`
 
-    :param can_post_stories: Optional. True, if the administrator can post channel stories
+    :param can_post_stories: True, if the administrator can post stories to the chat
     :type can_post_stories: :obj:`bool`
 
-    :param can_edit_stories: Optional. True, if the administrator can edit stories
+    :param can_edit_stories: True, if the administrator can edit stories posted by other users, post stories to the chat page, pin chat stories, and access the chat's story archive
     :type can_edit_stories: :obj:`bool`
 
-    :param can_delete_stories: Optional. True, if the administrator can delete stories of other users
+    :param can_delete_stories: True, if the administrator can delete stories posted by other users
     :type can_delete_stories: :obj:`bool`
 
     :param can_manage_direct_messages: Optional. True, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only
     :type can_manage_direct_messages: :obj:`bool`
 
-    :param can_manage_tags: Optional. True, if the administrator can manage tags in the chat
+    :param can_manage_tags: Optional. True, if the administrator can edit the tags of regular members; for groups and supergroups only. If omitted, defaults to the value of can_pin_messages
     :type can_manage_tags: :obj:`bool`
 
     :return: Instance of the class
@@ -8555,7 +8555,7 @@ class BotDescription(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#botdescription
 
-    :param description: Bot description
+    :param description: The bot's description
     :type description: :obj:`str`
 
     :return: Instance of the class
@@ -8578,7 +8578,7 @@ class BotShortDescription(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#botshortdescription
 
-    :param short_description: Bot short description
+    :param short_description: The bot's short description
     :type short_description: :obj:`str`
 
     :return: Instance of the class
@@ -8734,7 +8734,7 @@ class BotName(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#botname
 
-    :param name: The bot name
+    :param name: The bot's name
     :type name: :obj:`str`
 
     :return: Instance of the class
@@ -9854,7 +9854,7 @@ class ChatBoostUpdated(JsonDeserializable):
     :param chat: Chat which was boosted
     :type chat: :class:`Chat`
 
-    :param boost: Infomation about the chat boost
+    :param boost: Information about the chat boost
     :type boost: :class:`ChatBoost`
 
     :return: Instance of the class
@@ -10008,10 +10008,10 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
     :param giveaway_message_id: Identifier of a message in the chat with the giveaway; the message could have been deleted already. May be 0 if the message isn't sent yet.
     :type giveaway_message_id: :obj:`int`
 
-    :param user: User that won the prize in the giveaway if any
+    :param user: Optional. User that won the prize in the giveaway if any; for Telegram Premium giveaways only
     :type user: :class:`User`
 
-    :param is_unclaimed: True, if the giveaway was completed, but there was no user to win the prize
+    :param is_unclaimed: Optional. True , if the giveaway was completed, but there was no user to win the prize
     :type is_unclaimed: :obj:`bool`
 
     :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
@@ -10051,7 +10051,7 @@ class ChatBoost(JsonDeserializable):
     :param expiration_date: Point in time (Unix timestamp) when the boost will automatically expire, unless the booster's Telegram Premium subscription is prolonged
     :type expiration_date: :obj:`int`
 
-    :param source: Optional. Source of the added boost (made Optional for now due to API error)
+    :param source: Source of the added boost
     :type source: :class:`ChatBoostSource`
 
     :return: Instance of the class
@@ -10202,7 +10202,7 @@ class BusinessConnection(JsonDeserializable):
     :param user: Business account user that created the business connection
     :type user: :class:`User`
 
-    :param user_chat_id: Identifier of a private chat with the user who created the business connection
+    :param user_chat_id: Identifier of a private chat with the user who created the business connection. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier.
     :type user_chat_id: :obj:`int`
 
     :param date: Date the connection was established in Unix time
@@ -10260,7 +10260,7 @@ class BusinessMessagesDeleted(JsonDeserializable):
     :param chat: Information about a chat in the business account. The bot may not have access to the chat or the corresponding user.
     :type chat: :class:`Chat`
 
-    :param message_ids: A JSON-serialized list of identifiers of deleted messages in the chat of the business account
+    :param message_ids: The list of identifiers of deleted messages in the chat of the business account
     :type message_ids: :obj:`list` of :obj:`int`
 
     :return: Instance of the class
@@ -10349,10 +10349,10 @@ class BusinessOpeningHoursInterval(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#businessopeninghoursinterval
 
-    :param opening_minute: The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7 24 60
+    :param opening_minute: The minute's sequence number in a week, starting on Monday, marking the start of the time interval during which the business is open; 0 - 7 * 24 * 60
     :type opening_minute: :obj:`int`
 
-    :param closing_minute: The minute's sequence number in a week, starting on Monday, marking the end of the time interval during which the business is open; 0 - 8 24 60
+    :param closing_minute: The minute's sequence number in a week, starting on Monday, marking the end of the time interval during which the business is open; 0 - 8 * 24 * 60
     :type closing_minute: :obj:`int`
 
     :return: Instance of the class
@@ -10747,7 +10747,7 @@ class BackgroundTypeChatTheme(BackgroundFill):
     :param type: Type of the background, always “chat_theme”
     :type type: :obj:`str`
 
-    :param theme_name: Intensity of the pattern when it is shown above the filled background; 0-100
+    :param theme_name: Name of the chat theme, which is usually an emoji
     :type theme_name: :obj:`str`
 
     :return: Instance of the class
