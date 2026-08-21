@@ -367,7 +367,7 @@ class ChatJoinRequest(JsonDeserializable):
     :param from_user: User that sent the join request
     :type from_user: :class:`telebot.types.User`
 
-    :param user_chat_id: Optional. Identifier of a private chat with the user who sent the join request. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot can use this identifier for 24 hours to send messages until the join request is processed, assuming no other administrator contacted the user.
+    :param user_chat_id: Identifier of a private chat with the user who sent the join request. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot can use this identifier for 5 minutes to send messages until the join request is processed, assuming no other administrator contacted the user.
     :type user_chat_id: :obj:`int`
 
     :param date: Date the request was sent in Unix time
@@ -379,7 +379,7 @@ class ChatJoinRequest(JsonDeserializable):
     :param invite_link: Optional. Chat invite link that was used by the user to send the join request
     :type invite_link: :class:`telebot.types.ChatInviteLink`
 
-    :param query_id: Optional. Identifier of the join request query; for bots assigned to process join request only. If present, then the bot must call sendChatJoinRequestWebApp or directly call answerChatJoinRequestQuery within 10 seconds.
+    :param query_id: Optional. Identifier of the join request query; for bots assigned to process join requests only. If present, then the bot must call sendChatJoinRequestWebApp or directly call answerChatJoinRequestQuery within 10 seconds.
     :type query_id: :obj:`str`
 
     :return: Instance of the class
@@ -2183,7 +2183,7 @@ class Voice(JsonDeserializable):
     :param duration: Duration of the audio in seconds as defined by sender
     :type duration: :obj:`int`
 
-    :param mime_type: Optional. MIME type of the file as defined by sender
+    :param mime_type: Optional. MIME type of the file as defined by the sender
     :type mime_type: :obj:`str`
 
     :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
@@ -2218,13 +2218,13 @@ class Document(JsonDeserializable):
     :param file_unique_id: Unique identifier for this file, which is supposed to be the same over time and for different bots. Can't be used to download or reuse the file.
     :type file_unique_id: :obj:`str`
 
-    :param thumbnail: Optional. Document thumbnail as defined by sender
+    :param thumbnail: Optional. Document thumbnail as defined by the sender
     :type thumbnail: :class:`telebot.types.PhotoSize`
 
-    :param file_name: Optional. Original filename as defined by sender
+    :param file_name: Optional. Original filename as defined by the sender
     :type file_name: :obj:`str`
 
-    :param mime_type: Optional. MIME type of the file as defined by sender
+    :param mime_type: Optional. MIME type of the file as defined by the sender
     :type mime_type: :obj:`str`
 
     :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
@@ -2290,10 +2290,10 @@ class Video(JsonDeserializable):
     :param qualities: Optional. List of available qualities of the video
     :type qualities: :obj:`list` of :class:`telebot.types.VideoQuality`
 
-    :param file_name: Optional. Original filename as defined by sender
+    :param file_name: Optional. Original filename as defined by the sender
     :type file_name: :obj:`str`
 
-    :param mime_type: Optional. MIME type of the file as defined by sender
+    :param mime_type: Optional. MIME type of the file as defined by the sender
     :type mime_type: :obj:`str`
 
     :param file_size: Optional. File size in bytes. It can be bigger than 2^31 and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a signed 64-bit integer or double-precision float type are safe for storing this value.
@@ -3559,13 +3559,13 @@ class ChatMemberAdministrator(ChatMember):
     :param can_invite_users: True, if the user is allowed to invite new users to the chat
     :type can_invite_users: :obj:`bool`
 
-    :param can_post_stories: True, if the administrator can post channel stories
+    :param can_post_stories: True, if the administrator can post stories to the chat
     :type can_post_stories: :obj:`bool`
 
-    :param can_edit_stories: True, if the administrator can edit stories
+    :param can_edit_stories: True, if the administrator can edit stories posted by other users, post stories to the chat page, pin chat stories, and access the chat's story archive
     :type can_edit_stories: :obj:`bool`
 
-    :param can_delete_stories: True, if the administrator can delete stories of other users
+    :param can_delete_stories: True, if the administrator can delete stories posted by other users
     :type can_delete_stories: :obj:`bool`
 
     :param can_post_messages: Optional. True, if the administrator can post messages in the channel, approve suggested posts, or access channel statistics; for channels only
@@ -3637,10 +3637,10 @@ class ChatMemberMember(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
-    :param until_date: Optional. Date when the user's subscription will expire; Unix time. If 0, then the user is a member forever
+    :param until_date: Optional. Date when the user's subscription will expire; Unix time
     :type until_date: :obj:`int`
 
-    :param tag: Optional. User's tag in the chat
+    :param tag: Optional. Tag of the member
     :type tag: :obj:`str`
 
     :return: Instance of the class
@@ -3668,7 +3668,7 @@ class ChatMemberRestricted(ChatMember):
     :param is_member: True, if the user is a member of the chat at the moment of the request
     :type is_member: :obj:`bool`
 
-    :param can_send_messages: True, if the user is allowed to send text messages, contacts, locations and venues
+    :param can_send_messages: True, if the user is allowed to send text messages, rich messages, contacts, giveaways, giveaway winners, invoices, locations and venues
     :type can_send_messages: :obj:`bool`
 
     :param can_send_audios: True, if the user is allowed to send audios
@@ -3689,7 +3689,7 @@ class ChatMemberRestricted(ChatMember):
     :param can_send_voice_notes: True, if the user is allowed to send voice notes
     :type can_send_voice_notes: :obj:`bool`
 
-    :param can_send_polls: True, if the user is allowed to send polls
+    :param can_send_polls: True, if the user is allowed to send polls and checklists
     :type can_send_polls: :obj:`bool`
 
     :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers and use inline bots
@@ -3713,13 +3713,13 @@ class ChatMemberRestricted(ChatMember):
     :param can_manage_topics: True, if the user is allowed to create forum topics
     :type can_manage_topics: :obj:`bool`
 
-    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is restricted forever
+    :param until_date: Date when restrictions will be lifted for this user; Unix time. If 0, then the user is restricted forever.
     :type until_date: :obj:`int`
 
-    :param tag: Optional. User's tag in the chat
+    :param tag: Optional. Tag of the member
     :type tag: :obj:`str`
 
-    :param can_edit_tag: Optional. True, if the user can edit their own tag in the chat
+    :param can_edit_tag: True, if the user is allowed to edit their own tag
     :type can_edit_tag: :obj:`bool`
 
     :return: Instance of the class
@@ -3784,7 +3784,7 @@ class ChatMemberBanned(ChatMember):
     :param user: Information about the user
     :type user: :class:`telebot.types.User`
 
-    :param until_date: Date when restrictions will be lifted for this user; unix time. If 0, then the user is banned forever
+    :param until_date: Date when restrictions will be lifted for this user; Unix time. If 0, then the user is banned forever.
     :type until_date: :obj:`int`
 
     :return: Instance of the class
@@ -3801,7 +3801,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
 
     Telegram documentation: https://core.telegram.org/bots/api#chatpermissions
 
-    :param can_send_messages: Optional. True, if the user is allowed to send text messages, contacts, locations and venues
+    :param can_send_messages: Optional. True, if the user is allowed to send text messages, rich messages, contacts, giveaways, giveaway winners, invoices, locations and venues
     :type can_send_messages: :obj:`bool`
 
     :param can_send_audios: Optional. True, if the user is allowed to send audios
@@ -3822,7 +3822,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     :param can_send_voice_notes: Optional. True, if the user is allowed to send voice notes
     :type can_send_voice_notes: :obj:`bool`
 
-    :param can_send_polls: Optional. True, if the user is allowed to send polls, implies can_send_messages
+    :param can_send_polls: Optional. True, if the user is allowed to send polls and checklists
     :type can_send_polls: :obj:`bool`
 
     :param can_send_other_messages: Optional. True, if the user is allowed to send animations, games, stickers and use inline bots
@@ -3843,10 +3843,10 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     :param can_pin_messages: Optional. True, if the user is allowed to pin messages. Ignored in public supergroups
     :type can_pin_messages: :obj:`bool`
 
-    :param can_manage_topics: Optional. True, if the user is allowed to create forum topics. If omitted defaults to the value of can_pin_messages
+    :param can_manage_topics: Optional. True, if the user is allowed to create forum topics. If omitted, defaults to the value of can_pin_messages.
     :type can_manage_topics: :obj:`bool`
 
-    :param can_edit_tag: Optional. True, if the user is allowed to edit their own tag in the chat
+    :param can_edit_tag: Optional. True, if the user is allowed to edit their own tag. If omitted, defaults to the value of can_pin_messages.
     :type can_edit_tag: :obj:`bool`
 
     :param can_send_media_messages: Deprecated.
@@ -8383,7 +8383,7 @@ class ForumTopicEdited(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#forumtopicedited
 
-    :param name: Optional, Name of the topic(if updated)
+    :param name: Optional. New name of the topic, if it was edited
     :type name: :obj:`str`
 
     :param icon_custom_emoji_id: Optional. New identifier of the custom emoji shown as the topic icon, if it was edited; an empty string if the icon was removed
@@ -8518,16 +8518,16 @@ class ChatShared(JsonDeserializable):
     :param chat_id: Identifier of the shared chat. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier. The bot may not have access to the chat and could be unable to use this identifier, unless the chat is already known to the bot by some other means.
     :type chat_id: :obj:`int`
 
-    :param title: Optional. Title of the shared chat
+    :param title: Optional. Title of the chat, if the title was requested by the bot
     :type title: :obj:`str`
 
     :return: Instance of the class
     :rtype: :class:`telebot.types.WriteAccessAllowed`
 
-    :param photo: Optional. Array of Photosize
+    :param photo: Optional. Available sizes of the chat photo, if the photo was requested by the bot
     :type photo: :obj:`list` of :class:`telebot.types.PhotoSize`
 
-    :param username: Optional. Username of the shared chat
+    :param username: Optional. Username of the chat, if the username was requested by the bot and available
     :type username: :obj:`str`
 
     :return: Instance of the class
@@ -9099,7 +9099,7 @@ class ExternalReplyInfo(JsonDeserializable):
     :param live_photo: Optional. Message is a live photo, information about the live photo
     :type live_photo: :class:`LivePhoto`
 
-    :param paid_media: Optional. Message is a paid media content
+    :param paid_media: Optional. Message contains paid media; information about the paid media
     :type paid_media: :class:`PaidMedia`
 
     :param photo: Optional. Message is a photo, available sizes of the photo
@@ -9494,13 +9494,13 @@ class Giveaway(JsonDeserializable):
     :param prize_description: Optional. Description of additional giveaway prize
     :type prize_description: :obj:`str`
 
-    :param country_codes: Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which eligible users for the giveaway must come. If empty, then all users can participate in the giveaway.
+    :param country_codes: Optional. A list of two-letter ISO 3166-1 alpha-2 country codes indicating the countries from which eligible users for the giveaway must come. If empty, then all users can participate in the giveaway. Users with a phone number that was bought on Fragment can always participate in giveaways.
     :type country_codes: :obj:`list` of :obj:`str`
 
     :param prize_star_count: Optional. The number of Telegram Stars to be split between giveaway winners; for Telegram Star giveaways only
     :type prize_star_count: :obj:`int`
 
-    :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
+    :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for; for Telegram Premium giveaways only
     :type premium_subscription_month_count: :obj:`int`
 
     :return: Instance of the class
@@ -9553,7 +9553,7 @@ class GiveawayWinners(JsonDeserializable):
     :param additional_chat_count: Optional. The number of other chats the user had to join in order to be eligible for the giveaway
     :type additional_chat_count: :obj:`int`
 
-    :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for
+    :param premium_subscription_month_count: Optional. The number of months the Telegram Premium subscription won from the giveaway will be active for; for Telegram Premium giveaways only
     :type premium_subscription_month_count: :obj:`int`
 
     :param unclaimed_prize_count: Optional. Number of undistributed prizes
@@ -9617,7 +9617,7 @@ class GiveawayCompleted(JsonDeserializable):
     :param giveaway_message: Optional. Message with the giveaway that was completed, if it wasn't deleted
     :type giveaway_message: :class:`Message`
 
-    :param is_star_giveaway: Optional. True, if the giveaway was a Telegram Star giveaway
+    :param is_star_giveaway: Optional. True, if the giveaway is a Telegram Star giveaway. Otherwise, currently, the giveaway is a Telegram Premium giveaway.
     :type is_star_giveaway: :obj:`bool`
 
     :return: Instance of the class
@@ -11687,10 +11687,10 @@ class Gift(JsonDeserializable):
     :param has_colors: Optional. True, if the gift can be used (after being upgraded) to customize a user's appearance
     :type has_colors: :obj:`bool`
 
-    :param total_count: Optional. The total number of the gifts of this type that can be sent; for limited gifts only
+    :param total_count: Optional. The total number of gifts of this type that can be sent by all users; for limited gifts only
     :type total_count: :obj:`int`
 
-    :param remaining_count: Optional. The number of remaining gifts of this type that can be sent; for limited gifts only
+    :param remaining_count: Optional. The number of remaining gifts of this type that can be sent by all users; for limited gifts only
     :type remaining_count: :obj:`int`
 
     :param personal_total_count: Optional. The total number of gifts of this type that can be sent by the bot; for limited gifts only
@@ -12895,7 +12895,7 @@ class GiftInfo(JsonDeserializable):
     :param convert_star_count: Optional. Number of Telegram Stars that can be claimed by the receiver by converting the gift; omitted if conversion to Telegram Stars is impossible
     :type convert_star_count: :obj:`int`
 
-    :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were prepaid by the sender for the ability to upgrade the gift
+    :param prepaid_upgrade_star_count: Optional. Number of Telegram Stars that were prepaid for the ability to upgrade the gift
     :type prepaid_upgrade_star_count: :obj:`int`
 
     :param is_upgrade_separate: Optional. True, if the gift's upgrade was purchased after the gift was sent
@@ -13136,7 +13136,7 @@ class ChecklistTask(JsonDeserializable):
     :param text_entities: Optional. Special entities that appear in the task text
     :type text_entities: :obj:`list` of :class:`MessageEntity`
 
-    :param completed_by_user: Optional. User that completed the task; omitted if the task wasn't completed
+    :param completed_by_user: Optional. User that completed the task; omitted if the task wasn't completed by a user
     :type completed_by_user: :class:`User`
 
     :param completed_by_chat: Optional. Chat that completed the task; omitted if the task wasn't completed by a chat
@@ -13190,7 +13190,7 @@ class Checklist(JsonDeserializable):
     :param others_can_add_tasks: Optional. True, if users other than the creator of the list can add tasks to the list
     :type others_can_add_tasks: :obj:`bool`
 
-    :param others_can_mark_tasks_as_done: Optional. True, if users other than the creator of the list can mark tasks as done or not done in the list
+    :param others_can_mark_tasks_as_done: Optional. True, if users other than the creator of the list can mark tasks as done or not done
     :type others_can_mark_tasks_as_done: :obj:`bool`
 
     :return: Instance of the class
@@ -13387,7 +13387,7 @@ class DirectMessagePriceChanged(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#directmessagepricechanged
 
-    :param are_direct_messages_enabled: True, if direct messages are enabled for the channel chat; false otherwise
+    :param are_direct_messages_enabled: True, if direct messages are enabled for the channel chat; False otherwise
     :type are_direct_messages_enabled: :obj:`bool`
 
     :param direct_message_star_count: Optional. The new number of Telegram Stars that must be paid by users for each direct message sent to the channel. Does not apply to users who have been exempted by administrators. Defaults to 0.
@@ -13458,7 +13458,7 @@ class DirectMessagesTopic(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#directmessagestopic
 
-    :param topic_id: Unique identifier of the topic
+    :param topic_id: Unique identifier of the topic. This number may have more than 32 significant bits and some programming languages may have difficulty/silent defects in interpreting it. But it has at most 52 significant bits, so a 64-bit integer or double-precision float type are safe for storing this identifier.
     :type topic_id: :obj:`int`
 
     :param user: Optional. Information about the user that created the topic. Currently, it is always present
@@ -13810,7 +13810,7 @@ class ChatOwnerLeft(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#chatownerleft
 
-    :param new_owner: Optional. The user which will be the new owner of the chat if the previous owner does not return to the chat
+    :param new_owner: Optional. The user who will become the new owner of the chat if the previous owner does not return to the chat
     :type new_owner: :class:`User`
 
     :return: Instance of the class
