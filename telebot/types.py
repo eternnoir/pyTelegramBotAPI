@@ -322,8 +322,9 @@ class ChatMemberUpdated(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
 
-    def __init__(self, chat, from_user, date, old_chat_member, new_chat_member, invite_link=None,
-                 via_join_request=None, via_chat_folder_invite_link=None,
+    def __init__(self, chat: Chat, from_user: User, date: int, old_chat_member: ChatMember, new_chat_member: ChatMember,
+                 invite_link: Optional[ChatInviteLink] = None, via_join_request: Optional[bool] = None,
+                 via_chat_folder_invite_link: Optional[bool] = None,
                  **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
@@ -394,7 +395,9 @@ class ChatJoinRequest(JsonDeserializable):
         obj['invite_link'] = ChatInviteLink.de_json(obj.get('invite_link'))
         return cls(**obj)
 
-    def __init__(self, chat, from_user, user_chat_id, date, bio=None, invite_link=None, query_id=None, **kwargs):
+    def __init__(self, chat: Chat, from_user: User, user_chat_id: int, date: int,
+                 bio: Optional[str] = None, invite_link: Optional[ChatInviteLink] = None,
+                 query_id: Optional[str] = None, **kwargs):
         self.chat: Chat = chat
         self.from_user: User = from_user
         self.date: str = date
@@ -530,11 +533,11 @@ class User(JsonDeserializable, Dictionaryable, JsonSerializable):
         return cls(**obj)
 
     # noinspection PyShadowingBuiltins
-    def __init__(self, id, is_bot, first_name, last_name=None, username=None, language_code=None,
-                 can_join_groups=None, can_read_all_group_messages=None, supports_inline_queries=None, 
-                 is_premium=None, added_to_attachment_menu=None, can_connect_to_business=None, 
-                 has_main_web_app=None, has_topics_enabled=None, allows_users_to_create_topics=None, can_manage_bots=None,
-                 supports_guest_queries=None, supports_join_request_queries=None, **kwargs):
+    def __init__(self, id: int, is_bot: bool, first_name: str, last_name: Optional[str] = None, username: Optional[str] = None, language_code: Optional[str] = None,
+                 is_premium: Optional[bool] = None, added_to_attachment_menu: Optional[bool] = None, can_join_groups: Optional[bool] = None, can_read_all_group_messages: Optional[bool] = None,
+                 supports_guest_queries: Optional[bool] = None, supports_inline_queries: Optional[bool] = None, can_connect_to_business: Optional[bool] = None, has_main_web_app: Optional[bool] = None,
+                 has_topics_enabled: Optional[bool] = None, allows_users_to_create_topics: Optional[bool] = None, can_manage_bots: Optional[bool] = None, supports_join_request_queries: Optional[bool] = None,
+                 **kwargs):
         self.id: int = id
         self.is_bot: bool = is_bot
         self.first_name: str = first_name
@@ -817,22 +820,49 @@ class ChatFullInfo(JsonDeserializable):
             obj['community'] = Community.de_json(obj['community'])
         return cls(**obj)
 
-    def __init__(self, id, type, title=None, username=None, first_name=None,
-                last_name=None, photo=None, bio=None, has_private_forwards=None,
-                description=None, invite_link=None, pinned_message=None,
-                permissions=None, slow_mode_delay=None,
-                message_auto_delete_time=None, has_protected_content=None, sticker_set_name=None,
-                can_set_sticker_set=None, linked_chat_id=None, location=None,
-                join_to_send_messages=None, join_by_request=None, has_restricted_voice_and_video_messages=None,
-                is_forum=None, max_reaction_count=None, active_usernames=None, emoji_status_custom_emoji_id=None,
-                has_hidden_members=None, has_aggressive_anti_spam_enabled=None, emoji_status_expiration_date=None,
-                available_reactions=None, accent_color_id=None, background_custom_emoji_id=None, profile_accent_color_id=None,
-                profile_background_custom_emoji_id=None, has_visible_history=None,
-                unrestrict_boost_count=None, custom_emoji_sticker_set_name=None, business_intro=None, business_location=None,
-                business_opening_hours=None, personal_chat=None, birthdate=None,
-                can_send_paid_media=None,
-                accepted_gift_types=None, is_direct_messages=None, parent_chat=None, rating=None, paid_message_star_count=None,
-                unique_gift_colors=None, first_profile_audio=None, guard_bot=None, community=None, **kwargs):
+    def __init__(self, id: int, type: str,
+                 title: Optional[str] = None, username: Optional[str] = None,
+                 first_name: Optional[str] = None, last_name: Optional[str] = None,
+                 photo: Optional[ChatPhoto] = None, bio: Optional[str] = None,
+                 has_private_forwards: Optional[bool] = None,
+                 description: Optional[str] = None, invite_link: Optional[str] = None,
+                 pinned_message: Optional[Message] = None,
+                 permissions: Optional[ChatPermissions] = None,
+                 slow_mode_delay: Optional[int] = None,
+                 message_auto_delete_time: Optional[int] = None,
+                 has_protected_content: Optional[bool] = None,
+                 sticker_set_name: Optional[str] = None,
+                 can_set_sticker_set: Optional[bool] = None,
+                 linked_chat_id: Optional[int] = None, location: Optional[ChatLocation] = None,
+                 join_to_send_messages: Optional[bool] = None,
+                 join_by_request: Optional[bool] = None,
+                 has_restricted_voice_and_video_messages: Optional[bool] = None,
+                 is_forum: Optional[bool] = None, accent_color_id: int = None,
+                 max_reaction_count: int = None, active_usernames: Optional[List[str]] = None,
+                 emoji_status_custom_emoji_id: Optional[str] = None,
+                 has_hidden_members: Optional[bool] = None,
+                 has_aggressive_anti_spam_enabled: Optional[bool] = None,
+                 emoji_status_expiration_date: Optional[int] = None,
+                 available_reactions: Optional[List[ReactionType]] = None,
+                 background_custom_emoji_id: Optional[str] = None,
+                 profile_accent_color_id: Optional[int] = None,
+                 profile_background_custom_emoji_id: Optional[str] = None,
+                 has_visible_history: Optional[bool] = None,
+                 unrestrict_boost_count: Optional[int] = None,
+                 custom_emoji_sticker_set_name: Optional[str] = None,
+                 business_intro: Optional[BusinessIntro] = None,
+                 business_location: Optional[BusinessLocation] = None,
+                 business_opening_hours: Optional[BusinessOpeningHours] = None,
+                 personal_chat: Optional[Chat] = None, birthdate: Optional[Birthdate] = None,
+                 can_send_paid_media: Optional[bool] = None,
+                 accepted_gift_types: Optional[AcceptedGiftTypes] = None,
+                 is_direct_messages: Optional[bool] = None, parent_chat: Optional[Chat] = None,
+                 rating: Optional[UserRating] = None,
+                 paid_message_star_count: Optional[int] = None,
+                 unique_gift_colors: Optional[UniqueGiftColors] = None,
+                 first_profile_audio: Optional[Audio] = None,
+                 guard_bot: Optional[User] = None, community: Optional[Community] = None,
+                 **kwargs):
         self.id: int = id
         self.type: str = type
         self.title: Optional[str] = title
@@ -970,7 +1000,7 @@ class MessageId(MessageID):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, message_id, **kwargs):
+    def __init__(self, message_id: int, **kwargs):
         self.message_id: int = message_id
 
 
@@ -995,7 +1025,7 @@ class WebAppData(JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, data, button_text, **kwargs):
+    def __init__(self, data: str, button_text: str, **kwargs):
         self.data: str = data
         self.button_text: str = button_text
     def to_dict(self):
@@ -2006,8 +2036,9 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
             obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
-    def __init__(self, type, offset, length, url=None, user=None, language=None, custom_emoji_id=None,
-                 unix_time=None, date_time_format=None, **kwargs):
+    def __init__(self, type: str, offset: int, length: int, url: Optional[str] = None, user: Optional[User] = None,
+                 language: Optional[str] = None, custom_emoji_id: Optional[str] = None, unix_time: Optional[int] = None,
+                 date_time_format: Optional[str] = None, **kwargs):
         self.type: str = type
         self.offset: int = offset
         self.length: int = length
@@ -2054,7 +2085,7 @@ class Dice(JsonSerializable, Dictionaryable, JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, value, emoji, **kwargs):
+    def __init__(self, value: int, emoji: str, **kwargs):
         self.value: int = value
         self.emoji: str = emoji
 
@@ -2096,7 +2127,8 @@ class PhotoSize(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, width, height, file_size=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, width: int, height: int,
+                 file_size: Optional[int] = None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
@@ -2150,8 +2182,11 @@ class Audio(JsonDeserializable):
             obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, duration, performer=None, title=None, file_name=None, mime_type=None,
-                 file_size=None, thumbnail=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, duration: int,
+                 performer: Optional[str] = None, title: Optional[str] = None,
+                 file_name: Optional[str] = None, mime_type: Optional[str] = None,
+                 file_size: Optional[int] = None, thumbnail: Optional[PhotoSize] = None,
+                 **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.duration: int = duration
@@ -2198,7 +2233,8 @@ class Voice(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, duration, mime_type=None, file_size=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, duration: int,
+                 mime_type: Optional[str] = None, file_size: Optional[int] = None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.duration: int = duration
@@ -2243,7 +2279,9 @@ class Document(JsonDeserializable):
             obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, thumbnail=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, thumbnail: Optional[PhotoSize] = None,
+                 file_name: Optional[str] = None, mime_type: Optional[str] = None,
+                 file_size: Optional[int] = None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.thumbnail: Optional[PhotoSize] = thumbnail
@@ -2314,8 +2352,11 @@ class Video(JsonDeserializable):
             obj['qualities'] = [VideoQuality.de_json(q) for q in obj['qualities']]
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, width, height, duration, thumbnail=None, file_name=None, mime_type=None, file_size=None,
-                    cover=None, start_timestamp=None, qualities=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, width: int, height: int, duration: int,
+                 thumbnail: Optional[PhotoSize] = None, cover: Optional[List[PhotoSize]] = None,
+                 start_timestamp: Optional[int] = None, qualities: Optional[List[VideoQuality]] = None,
+                 file_name: Optional[str] = None, mime_type: Optional[str] = None, file_size: Optional[int] = None,
+                 **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: int = width
@@ -2370,7 +2411,8 @@ class VideoNote(JsonDeserializable):
             obj['thumbnail'] = PhotoSize.de_json(obj['thumbnail'])
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, length, duration, thumbnail=None, file_size=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, length: int, duration: int,
+                 thumbnail: Optional[PhotoSize] = None, file_size: Optional[int] = None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.length: int = length
@@ -2414,7 +2456,8 @@ class Contact(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, phone_number, first_name, last_name=None, user_id=None, vcard=None, **kwargs):
+    def __init__(self, phone_number: str, first_name: str, last_name: Optional[str] = None,
+                 user_id: Optional[int] = None, vcard: Optional[str] = None, **kwargs):
         self.phone_number: str = phone_number
         self.first_name: str = first_name
         self.last_name: Optional[str] = last_name
@@ -2455,8 +2498,10 @@ class Location(JsonDeserializable, JsonSerializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, longitude, latitude, horizontal_accuracy=None,
-                 live_period=None, heading=None, proximity_alert_radius=None, **kwargs):
+    def __init__(self, latitude: float, longitude: float,
+                 horizontal_accuracy: Optional[float] = None, live_period: Optional[int] = None,
+                 heading: Optional[int] = None, proximity_alert_radius: Optional[int] = None,
+                 **kwargs):
         self.longitude: float = longitude
         self.latitude: float = latitude
         self.horizontal_accuracy: Optional[float] = horizontal_accuracy
@@ -2520,8 +2565,10 @@ class Venue(JsonDeserializable):
         obj['location'] = Location.de_json(obj['location'])
         return cls(**obj)
 
-    def __init__(self, location, title, address, foursquare_id=None, foursquare_type=None,
-                 google_place_id=None, google_place_type=None, **kwargs):
+    def __init__(self, location: Location, title: str, address: str,
+                 foursquare_id: Optional[str] = None, foursquare_type: Optional[str] = None,
+                 google_place_id: Optional[str] = None, google_place_type: Optional[str] = None,
+                 **kwargs):
         self.location: Location = location
         self.title: str = title
         self.address: str = address
@@ -2555,9 +2602,9 @@ class UserProfilePhotos(JsonDeserializable):
             obj['photos'] = photos
         return cls(**obj)
 
-    def __init__(self, total_count, photos=None, **kwargs):
+    def __init__(self, total_count: int, photos: List[List[PhotoSize]] = None, **kwargs):
         self.total_count: int = total_count
-        self.photos: List[PhotoSize] = photos
+        self.photos: List[List[PhotoSize]] = photos
 
 
 class File(JsonDeserializable):
@@ -2587,7 +2634,8 @@ class File(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, file_size=None, file_path=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, file_size: Optional[int] = None,
+                 file_path: Optional[str] = None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.file_size: Optional[int] = file_size
@@ -2670,7 +2718,7 @@ class WebAppInfo(JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, url, **kwargs):
+    def __init__(self, url: str, **kwargs):
         self.url: str = url
 
     def to_dict(self):
@@ -2822,7 +2870,7 @@ class KeyboardButtonPollType(Dictionaryable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.KeyboardButtonPollType`
     """
-    def __init__(self, type=None):
+    def __init__(self, type: Optional[str] = None):
         self.type: str = type
 
     def to_dict(self):
@@ -3114,7 +3162,7 @@ class InlineKeyboardMarkup(Dictionaryable, JsonSerializable, JsonDeserializable)
         inline_keyboard = [[InlineKeyboardButton.de_json(button) for button in row] for row in obj['inline_keyboard']]
         return cls(inline_keyboard=inline_keyboard)
 
-    def __init__(self, inline_keyboard=None, row_width=3, keyboard=None):
+    def __init__(self, inline_keyboard: List[List[InlineKeyboardButton]] = None, row_width: int = 3, keyboard=None, **kwargs):
         if row_width > self.max_row_keys:
             # Todo: Will be replaced with Exception in future releases
             logger.error('Telegram does not support inline keyboard row width over %d.' % self.max_row_keys)
@@ -3257,10 +3305,13 @@ class InlineKeyboardButton(Dictionaryable, JsonSerializable, JsonDeserializable)
 
         return cls(**obj)
 
-    def __init__(self, text: str, url: Optional[str]=None, callback_data: Optional[str]=None, web_app: Optional[WebAppInfo]=None,
-            switch_inline_query: Optional[str]=None, switch_inline_query_current_chat: Optional[str]=None,
-            switch_inline_query_chosen_chat: Optional[SwitchInlineQueryChosenChat]=None, callback_game=None, pay: Optional[bool]=None,
-            login_url: Optional[LoginUrl]=None, copy_text: Optional[CopyTextButton]=None, icon_custom_emoji_id: Optional[str]=None, style: Optional[str]=None, **kwargs):
+    def __init__(self, text: str, url: Optional[str] = None, callback_data: Optional[str] = None,
+                 web_app: Optional[WebAppInfo] = None, switch_inline_query: Optional[str] = None,
+                 switch_inline_query_current_chat: Optional[str] = None,
+                 switch_inline_query_chosen_chat: Optional[SwitchInlineQueryChosenChat] = None,
+                 callback_game: Optional[CallbackGame] = None, pay: Optional[bool] = None,
+                 login_url: Optional[LoginUrl] = None, copy_text: Optional[CopyTextButton] = None,
+                 icon_custom_emoji_id: Optional[str] = None, style: Optional[str] = None, **kwargs):
         self.text: str = text
         self.url: Optional[str] = url
         self.callback_data: Optional[str] = callback_data
@@ -3405,13 +3456,15 @@ class CallbackQuery(JsonDeserializable):
         return cls(**obj)
 
     def __init__(
-            self, id, from_user, data, chat_instance, json_string, message=None, inline_message_id=None,
-            game_short_name=None, **kwargs):
+        self, id: str, from_user: User, chat_instance: str, json_string: str,
+        data: Optional[str] = None,
+        message: Optional[MaybeInaccessibleMessage] = None, inline_message_id: Optional[str] = None,
+        game_short_name: Optional[str] = None, **kwargs):
         self.id: int = id
         self.from_user: User = from_user
         self.message: Optional[Union[Message, InaccessibleMessage]] = message
         self.inline_message_id: Optional[str] = inline_message_id
-        self.chat_instance: Optional[str] = chat_instance
+        self.chat_instance: str = chat_instance
         self.data: Optional[str] = data
         self.game_short_name: Optional[str] = game_short_name
         self.json = json_string
@@ -3444,7 +3497,8 @@ class ChatPhoto(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, small_file_id, small_file_unique_id, big_file_id, big_file_unique_id, **kwargs):
+    def __init__(self, small_file_id: str, small_file_unique_id: str,
+                 big_file_id: str, big_file_unique_id: str, **kwargs):
         self.small_file_id: str = small_file_id
         self.small_file_unique_id: str = small_file_unique_id
         self.big_file_id: str = big_file_id
@@ -3513,7 +3567,7 @@ class ChatMemberOwner(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberOwner`
     """
-    def __init__(self, user, status, is_anonymous, custom_title=None, **kwargs):
+    def __init__(self, user, status, is_anonymous: bool, custom_title: Optional[str] = None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.is_anonymous: bool = is_anonymous
         self.custom_title: Optional[str] = custom_title
@@ -3592,11 +3646,11 @@ class ChatMemberAdministrator(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberAdministrator`
     """
-    def __init__(self, user, status, can_be_edited, is_anonymous, can_manage_chat, can_delete_messages,
-                 can_manage_video_chats, can_restrict_members, can_promote_members, can_change_info, can_invite_users,
-                 can_post_stories, can_edit_stories, can_delete_stories, can_post_messages=None, can_edit_messages=None,
-                 can_pin_messages=None, can_manage_topics=None, custom_title=None, can_manage_direct_messages=None,
-                 can_manage_tags=None, **kwargs):
+    def __init__(self, user: ChatMember, status: str, can_be_edited: bool, is_anonymous: bool, can_manage_chat: bool, can_delete_messages: bool,
+                 can_manage_video_chats: bool, can_restrict_members: bool, can_promote_members: bool, can_change_info: bool, can_invite_users: bool,
+                 can_post_stories: bool, can_edit_stories: bool, can_delete_stories: bool, can_post_messages: Optional[bool] = None, can_edit_messages: Optional[bool] = None,
+                 can_pin_messages: Optional[bool] = None, can_manage_topics: Optional[bool] = None, custom_title: Optional[str] = None, can_manage_direct_messages: Optional[bool] = None,
+                 can_manage_tags: Optional[bool] = None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.can_be_edited: bool = can_be_edited
         self.is_anonymous: bool = is_anonymous
@@ -3646,7 +3700,7 @@ class ChatMemberMember(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberMember`
     """
-    def __init__(self, user, status, until_date=None, tag=None, **kwargs):
+    def __init__(self, user, status, until_date: Optional[int] = None, tag: Optional[str] = None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.until_date: Optional[int] = until_date
         self.tag: Optional[str] = tag
@@ -3725,11 +3779,11 @@ class ChatMemberRestricted(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberRestricted`
     """
-    def __init__(self, user, status, is_member, can_send_messages, can_send_audios, can_send_documents,
-                 can_send_photos, can_send_videos, can_send_video_notes, can_send_voice_notes, can_send_polls,
-                 can_send_other_messages, can_add_web_page_previews,
-                 can_change_info, can_invite_users, can_pin_messages, can_manage_topics,
-                 until_date=None, tag=None, can_edit_tag=None, can_react_to_messages=None, **kwargs):
+    def __init__(self, user: ChatMember, status: str, is_member: bool, can_send_messages: bool, can_send_audios: bool, can_send_documents: bool,
+                 can_send_photos: bool, can_send_videos: bool, can_send_video_notes: bool, can_send_voice_notes: bool, can_send_polls: bool,
+                 can_send_other_messages: bool, can_add_web_page_previews: bool,
+                 can_change_info: bool, can_invite_users: bool, can_pin_messages: bool, can_manage_topics: bool,
+                 until_date: int = None, tag: Optional[str] = None, can_edit_tag: bool = None, can_react_to_messages: bool = None, **kwargs):
         super().__init__(user, status, **kwargs)
         self.is_member: bool = is_member
         self.can_send_messages: bool = can_send_messages
@@ -3790,7 +3844,7 @@ class ChatMemberBanned(ChatMember):
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatMemberBanned`
     """
-    def __init__(self, user, status, until_date=None, **kwargs):
+    def __init__(self, user, status, until_date: int = 0, **kwargs):
         super().__init__(user, status, **kwargs)
         self.until_date: Optional[int] = until_date
 
@@ -3861,13 +3915,17 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj, de_json = True)
 
-    def __init__(self, can_send_messages=None, can_send_media_messages=None,can_send_audios=None,
-                    can_send_documents=None, can_send_photos=None,
-                    can_send_videos=None, can_send_video_notes=None,
-                    can_send_voice_notes=None, can_send_polls=None, can_send_other_messages=None,
-                    can_add_web_page_previews=None, can_change_info=None,
-                    can_invite_users=None, can_pin_messages=None,
-                    can_manage_topics=None, can_edit_tag=None, can_react_to_messages=None, **kwargs):
+    def __init__(self,
+                 can_send_messages: Optional[bool] = None, can_send_media_messages=None,
+                 can_send_audios: Optional[bool] = None, can_send_documents: Optional[bool] = None,
+                 can_send_photos: Optional[bool] = None,
+                 can_send_videos: Optional[bool] = None, can_send_video_notes: Optional[bool] = None,
+                 can_send_voice_notes: Optional[bool] = None, can_send_polls: Optional[bool] = None,
+                 can_send_other_messages: Optional[bool] = None,
+                 can_add_web_page_previews: Optional[bool] = None, can_change_info: Optional[bool] = None,
+                 can_invite_users: Optional[bool] = None, can_pin_messages: Optional[bool] = None,
+                 can_manage_topics: Optional[bool] = None, can_edit_tag: Optional[bool] = None,
+                 can_react_to_messages: Optional[bool] = None, **kwargs):
         self.can_send_messages: Optional[bool] = can_send_messages
         self.can_send_polls: Optional[bool] = can_send_polls
         self.can_send_other_messages: Optional[bool] = can_send_other_messages
@@ -4651,7 +4709,7 @@ class SentWebAppMessage(JsonDeserializable, Dictionaryable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, inline_message_id=None, **kwargs):
+    def __init__(self, inline_message_id: Optional[str] = None, **kwargs):
         self.inline_message_id: Optional[str] = inline_message_id
 
     def to_dict(self):
@@ -6187,8 +6245,8 @@ class Animation(JsonDeserializable):
             obj['thumbnail'] = None
         return cls(**obj)
 
-    def __init__(self, file_id, file_unique_id, width=None, height=None, duration=None,
-                 thumbnail=None, file_name=None, mime_type=None, file_size=None, **kwargs):
+    def __init__(self, file_id: str, file_unique_id: str, width: int = None, height: int = None, duration: int = None,
+                 thumbnail: Optional[PhotoSize] = None, file_name: Optional[str] = None, mime_type: Optional[str] = None, file_size: Optional[int] = None, **kwargs):
         self.file_id: str = file_id
         self.file_unique_id: str = file_unique_id
         self.width: Optional[int] = width
@@ -7430,7 +7488,10 @@ class PollOption(JsonDeserializable):
             obj['media'] = PollMedia.de_json(obj['media'])
         return cls(**obj)
 
-    def __init__(self, text, persistent_id, voter_count = 0, text_entities=None, added_by_user=None, added_by_chat=None, addition_date=None, media=None, **kwargs):
+    def __init__(self, persistent_id: str, text: str, voter_count: int = 0,
+                 text_entities: Optional[List[MessageEntity]] = None, added_by_user: Optional[User] = None,
+                 added_by_chat: Optional[Chat] = None, addition_date: Optional[int] = None,
+                 media: Optional[PollMedia] = None, **kwargs):
         self.text: str = text
         self.persistent_id: str = persistent_id
         self.voter_count: int = voter_count
@@ -7847,7 +7908,7 @@ class ProximityAlertTriggered(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, traveler, watcher, distance, **kwargs):
+    def __init__(self, traveler: User, watcher: User, distance: int, **kwargs):
         self.traveler: User = traveler
         self.watcher: User = watcher
         self.distance: int = distance
@@ -7895,7 +7956,7 @@ class VideoChatScheduled(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, start_date, **kwargs):
+    def __init__(self, start_date: int, **kwargs):
         self.start_date: int = start_date
 
 
@@ -7926,7 +7987,7 @@ class VideoChatEnded(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, duration, **kwargs):
+    def __init__(self, duration: int, **kwargs):
         self.duration: int = duration
 
 
@@ -7959,7 +8020,7 @@ class VideoChatParticipantsInvited(JsonDeserializable):
         obj['users'] = [User.de_json(u) for u in obj['users']]
         return cls(**obj)
 
-    def __init__(self, users=None, **kwargs):
+    def __init__(self, users: List[User], **kwargs):
         self.users: List[User] = users
 
 
@@ -7990,7 +8051,7 @@ class MessageAutoDeleteTimerChanged(JsonDeserializable):
         obj = cls.check_json(json_string, dict_copy=False)
         return cls(**obj)
 
-    def __init__(self, message_auto_delete_time, **kwargs):
+    def __init__(self, message_auto_delete_time: int, **kwargs):
         self.message_auto_delete_time: int = message_auto_delete_time
 
 
@@ -9659,8 +9720,8 @@ class GiveawayCreated(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, prize_star_count=None, **kwargs) -> None:
-        self.prize_star_count: Optional[str] = prize_star_count
+    def __init__(self, prize_star_count: Optional[int] = None, **kwargs) -> None:
+        self.prize_star_count: Optional[int] = prize_star_count
 
 
 class TextQuote(JsonDeserializable):
@@ -9867,7 +9928,7 @@ class ChatBoostUpdated(JsonDeserializable):
         obj['boost'] = ChatBoost.de_json(obj['boost'])
         return cls(**obj)
 
-    def __init__(self, chat, boost, **kwargs):
+    def __init__(self, chat: Chat, boost: ChatBoost, **kwargs):
         self.chat: Chat = chat
         self.boost: ChatBoost = boost
 
@@ -9902,7 +9963,7 @@ class ChatBoostRemoved(JsonDeserializable):
         obj['source'] = ChatBoostSource.de_json(obj['source'])
         return cls(**obj)
 
-    def __init__(self, chat, boost_id, remove_date, source, **kwargs):
+    def __init__(self, chat: Chat, boost_id: str, remove_date: int, source: ChatBoostSource, **kwargs):
         self.chat: Chat = chat
         self.boost_id: str = boost_id
         self.remove_date: int = remove_date
@@ -9945,7 +10006,7 @@ class ChatBoostSourcePremium(ChatBoostSource):
     :param source: Source of the boost, always “premium”
     :type source: :obj:`str`
 
-    :param user: User that boosted the chat
+    :param user: User who subscribed to Telegram Premium or gifted a subscription
     :type user: :class:`User`
 
     :return: Instance of the class
@@ -9959,7 +10020,7 @@ class ChatBoostSourcePremium(ChatBoostSource):
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
-    def __init__(self, source, user, **kwargs):
+    def __init__(self, source: str, user: User, **kwargs):
         self.source: str = source
         self.user: User = user
 
@@ -9988,7 +10049,7 @@ class ChatBoostSourceGiftCode(ChatBoostSource):
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
-    def __init__(self, source, user, **kwargs):
+    def __init__(self, source: str, user: User, **kwargs):
         self.source: str = source
         self.user: User = user
 
@@ -10026,7 +10087,8 @@ class ChatBoostSourceGiveaway(ChatBoostSource):
         obj['user'] = User.de_json(obj.get('user'))
         return cls(**obj)
 
-    def __init__(self, source, giveaway_message_id, user=None, is_unclaimed=None, prize_star_count=None, **kwargs):
+    def __init__(self, source: str, giveaway_message_id: int, user: Optional[User] = None,
+                 is_unclaimed: Optional[bool] = None, prize_star_count: Optional[int] = None, **kwargs):
         self.source: str = source
         self.giveaway_message_id: int = giveaway_message_id
         self.user: Optional[User] = user
@@ -10076,7 +10138,7 @@ class ChatBoost(JsonDeserializable):
         obj['source'] = ChatBoostSource.de_json(source) if source else None
         return cls(**obj)
 
-    def __init__(self, boost_id, add_date, expiration_date, source, **kwargs):
+    def __init__(self, boost_id: str, add_date: int, expiration_date: int, source: ChatBoostSource, **kwargs):
         self.boost_id: str = boost_id
         self.add_date: int = add_date
         self.expiration_date: int = expiration_date
@@ -10103,7 +10165,7 @@ class UserChatBoosts(JsonDeserializable):
         obj['boosts'] = [ChatBoost.de_json(boost) for boost in obj['boosts']]
         return cls(**obj)
 
-    def __init__(self, boosts, **kwargs):
+    def __init__(self, boosts: List[ChatBoost], **kwargs):
         self.boosts: List[ChatBoost] = boosts
 
 
@@ -10133,7 +10195,7 @@ class InaccessibleMessage(JsonDeserializable):
         obj['chat'] = Chat.de_json(obj['chat'])
         return cls(**obj)
 
-    def __init__(self, chat, message_id, date, **kwargs):
+    def __init__(self, chat: Chat, message_id: int, date: int, **kwargs):
         self.chat: Chat = chat
         self.message_id: int = message_id
         self.date: int = date
@@ -10183,7 +10245,7 @@ class ChatBoostAdded(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, boost_count, **kwargs):
+    def __init__(self, boost_count: int, **kwargs):
         self.boost_count: int = boost_count
 
 
@@ -10227,8 +10289,8 @@ class BusinessConnection(JsonDeserializable):
         obj['rights'] = BusinessBotRights.de_json(obj.get('rights'))
         return cls(**obj)
 
-    def __init__(self, id, user, user_chat_id, date, is_enabled,
-                    rights=None, **kwargs):
+    def __init__(self, id: str, user: User, user_chat_id: int, date: int, is_enabled: bool,
+                 rights: Optional[BusinessBotRights] = None, **kwargs):
         self.id: str = id
         self.user: User = user
         self.user_chat_id: int = user_chat_id
@@ -10273,7 +10335,7 @@ class BusinessMessagesDeleted(JsonDeserializable):
         return cls(**obj)
 
 
-    def __init__(self, business_connection_id, chat, message_ids, **kwargs):
+    def __init__(self, business_connection_id: str, chat: Chat, message_ids: List[int], **kwargs):
         self.business_connection_id: str = business_connection_id
         self.chat: Chat = chat
         self.message_ids: List[int] = message_ids
@@ -10306,7 +10368,8 @@ class BusinessIntro(JsonDeserializable):
             obj['sticker'] = Sticker.de_json(obj['sticker'])
         return cls(**obj)
 
-    def __init__(self, title=None, message=None, sticker=None, **kwargs):
+    def __init__(self, title: Optional[str] = None, message: Optional[str] = None,
+                 sticker: Optional[Sticker] = None, **kwargs):
         self.title: Optional[str] = title
         self.message: Optional[str] = message
         self.sticker: Optional[Sticker] = sticker
@@ -10336,7 +10399,7 @@ class BusinessLocation(JsonDeserializable):
             obj['location'] = Location.de_json(obj['location'])
         return cls(**obj)
 
-    def __init__(self, address, location=None, **kwargs):
+    def __init__(self, address: str, location: Optional[Location] = None, **kwargs):
         self.address: str = address
         self.location: Optional[Location] = location
 
@@ -10363,7 +10426,7 @@ class BusinessOpeningHoursInterval(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, opening_minute, closing_minute, **kwargs):
+    def __init__(self, opening_minute: int, closing_minute: int, **kwargs):
         self.opening_minute: int = opening_minute
         self.closing_minute: int = closing_minute
 
@@ -10392,7 +10455,7 @@ class BusinessOpeningHours(JsonDeserializable):
         obj['opening_hours'] = [BusinessOpeningHoursInterval.de_json(interval) for interval in obj['opening_hours']]
         return cls(**obj)
 
-    def __init__(self, time_zone_name, opening_hours, **kwargs):
+    def __init__(self, time_zone_name: str, opening_hours: List[BusinessOpeningHoursInterval], **kwargs):
         self.time_zone_name: str = time_zone_name
         self.opening_hours: List[BusinessOpeningHoursInterval] = opening_hours
 
@@ -10430,7 +10493,8 @@ class SharedUser(JsonDeserializable):
             obj['photo'] = [PhotoSize.de_json(photo) for photo in obj['photo']]
         return cls(**obj)
 
-    def __init__(self, user_id, first_name=None, last_name=None, username=None, photo=None, **kwargs):
+    def __init__(self, user_id: int, first_name: Optional[str] = None, last_name: Optional[str] = None,
+                 username: Optional[str] = None, photo: Optional[List[PhotoSize]] = None, **kwargs):
         self.user_id: int = user_id
         self.first_name: Optional[str] = first_name
         self.last_name: Optional[str] = last_name
@@ -10463,7 +10527,7 @@ class Birthdate(JsonDeserializable):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, day, month, year=None, **kwargs):
+    def __init__(self, day: int, month: int, year: Optional[int] = None, **kwargs):
         self.day: int = day
         self.month: int = month
         self.year: Optional[int] = year
@@ -10518,7 +10582,7 @@ class BackgroundFillSolid(BackgroundFill):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, type, color, **kwargs):
+    def __init__(self, type: str, color: int, **kwargs):
         self.type: str = type
         self.color: int = color
 
@@ -10552,7 +10616,7 @@ class BackgroundFillGradient(BackgroundFill):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, type, top_color, bottom_color, rotation_angle, **kwargs):
+    def __init__(self, type: str, top_color: int, bottom_color: int, rotation_angle: int, **kwargs):
         self.type: str = type
         self.top_color: int = top_color
         self.bottom_color: int = bottom_color
@@ -10582,7 +10646,7 @@ class BackgroundFillFreeformGradient(BackgroundFill):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, type, colors, **kwargs):
+    def __init__(self, type: str, colors: List[int], **kwargs):
         self.type: str = type
         self.colors: List[int] = colors
 
@@ -10643,7 +10707,7 @@ class BackgroundTypeFill(BackgroundFill):
         obj['fill'] = BackgroundFill.de_json(obj['fill'])
         return cls(**obj)
 
-    def __init__(self, type, fill, dark_theme_dimming, **kwargs):
+    def __init__(self, type: str, fill: BackgroundFill, dark_theme_dimming: int, **kwargs):
         self.type: str = type
         self.fill: BackgroundFill = fill
         self.dark_theme_dimming: int = dark_theme_dimming
@@ -10682,7 +10746,8 @@ class BackgroundTypeWallpaper(BackgroundFill):
         obj['document'] = Document.de_json(obj['document'])
         return cls(**obj)
 
-    def __init__(self, type, document, dark_theme_dimming, is_blurred=None, is_moving=None, **kwargs):
+    def __init__(self, type: str, document: Document, dark_theme_dimming: int,
+                 is_blurred: Optional[bool] = None, is_moving: Optional[bool] = None, **kwargs):
         self.type: str = type
         self.document: Document = document
         self.dark_theme_dimming: int = dark_theme_dimming
@@ -10726,7 +10791,8 @@ class BackgroundTypePattern(BackgroundFill):
         obj['document'] = Document.de_json(obj['document'])
         return cls(**obj)
 
-    def __init__(self, type, document, fill, intensity, is_inverted=None, is_moving=None, **kwargs):
+    def __init__(self, type: str, document: Document, fill: BackgroundFill, intensity: int,
+                 is_inverted: Optional[bool] = None, is_moving: Optional[bool] = None, **kwargs):
         self.type: str = type
         self.document: Document = document
         self.fill: BackgroundFill = fill
@@ -10758,7 +10824,7 @@ class BackgroundTypeChatTheme(BackgroundFill):
         obj = cls.check_json(json_string)
         return cls(**obj)
 
-    def __init__(self, type, theme_name, **kwargs):
+    def __init__(self, type: str, theme_name: str, **kwargs):
         self.type: str = type
         self.theme_name: str = theme_name
 
@@ -10784,7 +10850,7 @@ class ChatBackground(JsonDeserializable):
         obj['type'] = BackgroundType.de_json(obj['type'])
         return cls(**obj)
 
-    def __init__(self, type, **kwargs):
+    def __init__(self, type: BackgroundType, **kwargs):
         self.type: BackgroundType = type
 
 
@@ -11243,7 +11309,8 @@ class PaidMediaPreview(PaidMedia):
     :rtype: :class:`PaidMediaPreview`
     """
 
-    def __init__(self, type, width=None, height=None, duration=None, **kwargs):
+    def __init__(self, type: str, width: Optional[int] = None, height: Optional[int] = None,
+                 duration: Optional[int] = None, **kwargs):
         self.type: str = type
         self.width: Optional[int] = width
         self.height: Optional[int] = height
@@ -11272,7 +11339,7 @@ class PaidMediaLivePhoto(PaidMedia):
     :rtype: :class:`PaidMediaLivePhoto`
     """
 
-    def __init__(self, type, live_photo, **kwargs):
+    def __init__(self, type: str, live_photo: LivePhoto, **kwargs):
         self.type: str = type
         self.live_photo: LivePhoto = live_photo
 
@@ -11302,7 +11369,7 @@ class PaidMediaPhoto(PaidMedia):
 
     """
 
-    def __init__(self, type, photo, **kwargs):
+    def __init__(self, type: str, photo: List[PhotoSize], **kwargs):
         self.type: str = type
         self.photo: List[PhotoSize] = photo
 
@@ -11332,7 +11399,7 @@ class PaidMediaVideo(PaidMedia):
     :rtype: :class:`PaidMediaVideo`
     """
 
-    def __init__(self, type, video, **kwargs):
+    def __init__(self, type: str, video: Video, **kwargs):
         self.type: str = type
         self.video: Video = video
 
@@ -11367,7 +11434,7 @@ class PaidMediaInfo(JsonDeserializable):
         obj['paid_media'] = [PaidMedia.de_json(media) for media in obj['paid_media']]
         return cls(**obj)
 
-    def __init__(self, star_count, paid_media, **kwargs):
+    def __init__(self, star_count: int, paid_media: List[PaidMedia], **kwargs):
         self.star_count: int = star_count
         self.paid_media: List[PaidMedia] = paid_media
 
@@ -11649,7 +11716,7 @@ class PreparedInlineMessage(JsonDeserializable):
     :rtype: :class:`PreparedInlineMessage`
     """
 
-    def __init__(self, id, expiration_date, **kwargs):
+    def __init__(self, id: str, expiration_date: int, **kwargs):
         self.id: str = id
         self.expiration_date: int = expiration_date
 
@@ -11710,9 +11777,12 @@ class Gift(JsonDeserializable):
     :rtype: :class:`Gift`
     """
 
-    def __init__(self, id, sticker, star_count, total_count=None, remaining_count=None, upgrade_star_count=None,
-                 personal_total_count=None, personal_remaining_count=None, is_premium=None, has_colors=None,
-                 background=None, publisher_chat=None, unique_gift_variant_count=None, **kwargs):
+    def __init__(self, id: str, sticker: Sticker, star_count: int, upgrade_star_count: Optional[int] = None,
+                 is_premium: Optional[bool] = None, has_colors: Optional[bool] = None,
+                 total_count: Optional[int] = None, remaining_count: Optional[int] = None,
+                 personal_total_count: Optional[int] = None, personal_remaining_count: Optional[int] = None,
+                 background: Optional[GiftBackground] = None, unique_gift_variant_count: Optional[int] = None,
+                 publisher_chat: Optional[Chat] = None, **kwargs):
         self.id: str = id
         self.sticker: Sticker = sticker
         self.star_count: int = star_count
@@ -11752,7 +11822,7 @@ class Gifts(JsonDeserializable):
     :rtype: :class:`Gifts`
     """
 
-    def __init__(self, gifts, **kwargs):
+    def __init__(self, gifts: List[Gift], **kwargs):
         self.gifts: List[Gift] = gifts
 
     @classmethod
@@ -11927,10 +11997,15 @@ class BusinessBotRights(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`BusinessBotRights`
     """
-    def __init__(self, can_reply=None, can_read_messages=None, can_delete_sent_messages=None, can_delete_all_messages=None,
-                    can_edit_name=None, can_edit_bio=None, can_edit_profile_photo=None, can_edit_username=None,
-                    can_change_gift_settings=None, can_view_gifts_and_stars=None, can_convert_gifts_to_stars=None,
-                    can_transfer_and_upgrade_gifts=None, can_transfer_stars=None, can_manage_stories=None, **kwargs):
+    def __init__(self,
+                 can_reply: Optional[bool] = None, can_read_messages: Optional[bool] = None,
+                 can_delete_sent_messages: Optional[bool] = None, can_delete_all_messages: Optional[bool] = None,
+                 can_edit_name: Optional[bool] = None, can_edit_bio: Optional[bool] = None,
+                 can_edit_profile_photo: Optional[bool] = None, can_edit_username: Optional[bool] = None,
+                 can_change_gift_settings: Optional[bool] = None, can_view_gifts_and_stars: Optional[bool] = None,
+                 can_convert_gifts_to_stars: Optional[bool] = None,
+                 can_transfer_and_upgrade_gifts: Optional[bool] = None, can_transfer_stars: Optional[bool] = None,
+                 can_manage_stories: Optional[bool] = None, **kwargs):
         self.can_reply: Optional[bool] = can_reply
         self.can_read_messages: Optional[bool] = can_read_messages
         self.can_delete_sent_messages: Optional[bool] = can_delete_sent_messages
@@ -12026,7 +12101,7 @@ class StarAmount(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`StarAmount`
     """
-    def __init__(self, amount, nanostar_amount=None, **kwargs):
+    def __init__(self, amount: int, nanostar_amount: Optional[int] = None, **kwargs):
         self.amount: int = amount
         self.nanostar_amount: Optional[int] = nanostar_amount
 
@@ -12118,9 +12193,12 @@ class OwnedGiftRegular(OwnedGift):
     :return: Instance of the class
     :rtype: :class:`OwnedGiftRegular`
     """
-    def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, text=None, entities=None,
-                    is_private=None, is_saved=None, can_be_upgraded=None, was_refunded=None, convert_star_count=None,
-                    prepaid_upgrade_star_count=None, is_upgrade_separate=None, unique_gift_number=None, **kwargs):
+    def __init__(self, type, gift: Gift, owned_gift_id: Optional[str] = None, sender_user: Optional[User] = None,
+                 send_date: int = None, text: Optional[str] = None, entities: Optional[List[MessageEntity]] = None,
+                 is_private: Optional[bool] = None, is_saved: Optional[bool] = None,
+                 can_be_upgraded: Optional[bool] = None, was_refunded: Optional[bool] = None,
+                 convert_star_count: Optional[int] = None, prepaid_upgrade_star_count: Optional[int] = None,
+                 is_upgrade_separate: Optional[bool] = None, unique_gift_number: Optional[int] = None, **kwargs):
         super().__init__(type=type)
         self.gift: Gift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
@@ -12186,8 +12264,9 @@ class OwnedGiftUnique(OwnedGift):
     :return: Instance of the class
     :rtype: :class:`OwnedGiftUnique`
     """
-    def __init__(self, type, gift, owned_gift_id=None, sender_user=None, send_date=None, is_saved=None,
-                    can_be_transferred=None, transfer_star_count=None, next_transfer_date=None, **kwargs):
+    def __init__(self, type, gift: UniqueGift, owned_gift_id: Optional[str] = None, sender_user: Optional[User] = None,
+                 send_date: int = None, is_saved: Optional[bool] = None, can_be_transferred: Optional[bool] = None,
+                 transfer_star_count: Optional[int] = None, next_transfer_date: Optional[int] = None, **kwargs):
         super().__init__(type=type)
         self.gift: UniqueGift = gift
         self.owned_gift_id: Optional[str] = owned_gift_id
@@ -12227,7 +12306,8 @@ class OwnedGifts(JsonDeserializable):
     :rtype: :class:`OwnedGifts`
 
     """
-    def __init__(self, total_count, gifts, next_offset=None, **kwargs):
+    def __init__(self, total_count: int, gifts: List[OwnedGift], next_offset: Optional[str] = None,
+                 limit: Optional[int] = None, **kwargs):
         self.total_count: int = total_count
         self.gifts: List[OwnedGift] = gifts
         self.next_offset: Optional[str] = next_offset
@@ -12285,8 +12365,11 @@ class UniqueGift(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`UniqueGift`
     """
-    def __init__(self, base_name, name, number, model, symbol, backdrop, gift_id, publisher_chat=None, is_from_blockchain=None, is_premium=None, colors=None,
-                    is_burned=None, **kwargs):
+    def __init__(self, base_name: str, name: str, number: int, model: UniqueGiftModel, symbol: UniqueGiftSymbol,
+                 backdrop: UniqueGiftBackdrop, gift_id: str,
+                 is_premium: Optional[bool] = None, is_burned: Optional[bool] = None,
+                 is_from_blockchain: Optional[bool] = None, colors: Optional[UniqueGiftColors] = None,
+                 publisher_chat: Optional[Chat] = None, **kwargs):
         self.base_name: str = base_name
         self.name: str = name
         self.number: int = number
@@ -12336,7 +12419,8 @@ class UniqueGiftModel(JsonDeserializable):
     :rtype: :class:`UniqueGiftModel`
 
     """
-    def __init__(self, name, sticker, rarity_per_mille, rarity=None, **kwargs):
+    def __init__(self, name: str, sticker: Sticker, rarity_per_mille: int,
+                 rarity: Optional[str] = None, **kwargs):
         self.name: str = name
         self.sticker: Sticker = sticker
         self.rarity_per_mille: int = rarity_per_mille
@@ -12369,7 +12453,7 @@ class UniqueGiftSymbol(JsonDeserializable):
     :rtype: :class:`UniqueGiftSymbol`
     """
 
-    def __init__(self, name, sticker, rarity_per_mille, **kwargs):
+    def __init__(self, name: str, sticker: Sticker, rarity_per_mille: int, **kwargs):
         self.name: str = name
         self.sticker: Sticker = sticker
         self.rarity_per_mille: int = rarity_per_mille
@@ -12403,7 +12487,7 @@ class UniqueGiftBackdropColors(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`UniqueGiftBackdropColors`
     """
-    def __init__(self, center_color, edge_color, symbol_color, text_color, **kwargs):
+    def __init__(self, center_color: int, edge_color: int, symbol_color: int, text_color: int, **kwargs):
         self.center_color: int = center_color
         self.edge_color: int = edge_color
         self.symbol_color: int = symbol_color
@@ -12434,7 +12518,7 @@ class UniqueGiftBackdrop(JsonDeserializable):
     :return: Instance of the class
     :rtype: :class:`UniqueGiftBackdrop`
     """
-    def __init__(self, name, colors, rarity_per_mille, **kwargs):
+    def __init__(self, name: str, colors: UniqueGiftBackdropColors, rarity_per_mille: int, **kwargs):
         self.name: str = name
         self.colors: UniqueGiftBackdropColors = colors
         self.rarity_per_mille: int = rarity_per_mille
