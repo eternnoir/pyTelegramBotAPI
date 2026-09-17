@@ -5,8 +5,12 @@ These tests are self-contained (no TOKEN/CHAT_ID required) and stub out all
 network I/O.
 """
 import asyncio
+import logging
+
+import pytest
 
 from telebot import types
+import telebot.async_telebot as async_telebot
 from telebot.async_telebot import AsyncTeleBot
 
 
@@ -17,6 +21,46 @@ def _make_fake_me() -> types.User:
         "first_name": "Test",
         "username": "test_bot",
     })
+
+
+@pytest.mark.parametrize(
+    'logger_level, expected_count, includes_traceback',
+    [
+        (logging.DEBUG, 3, True),
+        (logging.INFO, 2, False),
+        (logging.ERROR, 1, False),
+        (None, 0, False),
+    ],
+)
+def test_infinity_polling_honors_logger_level(
+        monkeypatch, logger_level, expected_count, includes_traceback):
+    class RecordingLogger:
+        def __init__(self):
+            self.messages = []
+
+        def error(self, message, *args):
+            self.messages.append(message % args if args else message)
+
+    bot = AsyncTeleBot('1:fake', validate_token=False)
+    logger = RecordingLogger()
+
+    async def fail_polling(*args, **kwargs):
+        bot._polling = False
+        raise RuntimeError('polling failed')
+
+    async def no_sleep(_seconds):
+        return None
+
+    monkeypatch.setattr(async_telebot, 'logger', logger)
+    monkeypatch.setattr(async_telebot.asyncio, 'sleep', no_sleep)
+    monkeypatch.setattr(bot, '_process_polling', fail_polling)
+
+    asyncio.run(bot.infinity_polling(logger_level=logger_level))
+
+    assert len(logger.messages) == expected_count
+    if logger_level:
+        assert logger.messages[0] == 'Infinity polling exception: polling failed'
+    assert any('Exception traceback:' in message for message in logger.messages) is includes_traceback
 
 
 def test_process_polling_retains_update_processing_tasks():

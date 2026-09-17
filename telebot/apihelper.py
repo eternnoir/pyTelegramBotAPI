@@ -12,12 +12,26 @@ import requests
 from requests.exceptions import HTTPError, ConnectionError, Timeout
 from requests.adapters import HTTPAdapter
 
+
+def _get_multipart_header_formatter(urllib3_fields):
+    """Return urllib3's active multipart-header formatter and its name."""
+    try:
+        return (
+            urllib3_fields.format_multipart_header_param,
+            'format_multipart_header_param',
+        )
+    except AttributeError:
+        return urllib3_fields.format_header_param, 'format_header_param'
+
+
 try:
     # noinspection PyUnresolvedReferences
     from requests.packages.urllib3 import fields
-    format_header_param = fields.format_header_param
-except ImportError:
+    format_header_param, format_header_param_name = _get_multipart_header_formatter(fields)
+except (ImportError, AttributeError):
+    fields = None
     format_header_param = None
+    format_header_param_name = None
 import telebot
 from telebot import types
 from telebot import util
@@ -100,7 +114,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
 
     
     if files and format_header_param:
-        fields.format_header_param = _no_encode(format_header_param)
+        setattr(fields, format_header_param_name, _no_encode(format_header_param))
     if params:
         if 'timeout' in params:
             read_timeout = params.pop('timeout')

@@ -1,4 +1,55 @@
+from types import SimpleNamespace
+
 from telebot import apihelper
+
+
+def test_get_multipart_header_formatter_prefers_current_urllib3_name():
+    def current_formatter(key, value):
+        return 'current={0}'.format(value)
+
+    def legacy_formatter(key, value):
+        return 'legacy={0}'.format(value)
+
+    fields = SimpleNamespace(
+        format_multipart_header_param=current_formatter,
+        format_header_param=legacy_formatter,
+    )
+
+    formatter, name = apihelper._get_multipart_header_formatter(fields)
+
+    assert formatter is current_formatter
+    assert name == 'format_multipart_header_param'
+
+
+def test_get_multipart_header_formatter_supports_legacy_urllib3_name():
+    def legacy_formatter(key, value):
+        return 'legacy={0}'.format(value)
+
+    fields = SimpleNamespace(format_header_param=legacy_formatter)
+
+    formatter, name = apihelper._get_multipart_header_formatter(fields)
+
+    assert formatter is legacy_formatter
+    assert name == 'format_header_param'
+
+
+def test_make_request_patches_selected_multipart_header_formatter(monkeypatch):
+    def formatter(key, value):
+        return '{0}="{1}"'.format(key, value)
+
+    fields = SimpleNamespace(format_multipart_header_param=formatter)
+    monkeypatch.setattr(apihelper, 'fields', fields)
+    monkeypatch.setattr(apihelper, 'format_header_param', formatter)
+    monkeypatch.setattr(apihelper, 'format_header_param_name', 'format_multipart_header_param')
+    response = SimpleNamespace(
+        text='{"ok": true, "result": true}',
+        status_code=200,
+        json=lambda: {'ok': True, 'result': True},
+    )
+    monkeypatch.setattr(apihelper, 'CUSTOM_REQUEST_SENDER', lambda *args, **kwargs: response)
+
+    assert apihelper._make_request('token', 'test', method='post', files={'document': ('test.txt', object())}) is True
+    assert fields.format_multipart_header_param('filename', 'test file.txt') == 'filename=test file.txt'
 
 
 def test_promote_chat_member_can_manage_tags(monkeypatch):

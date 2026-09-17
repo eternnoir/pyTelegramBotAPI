@@ -386,15 +386,15 @@ class AsyncTeleBot:
                 await self._process_polling(non_stop=True, timeout=timeout, request_timeout=request_timeout,
                              allowed_updates=allowed_updates, *args, **kwargs)
             except Exception as e:
-                if logger_level and logger_level >= logging.ERROR:
+                if logger_level and logger_level <= logging.ERROR:
                     logger.error("Infinity polling exception: %s", self.__hide_token(str(e)))
-                if logger_level and logger_level >= logging.DEBUG:
+                if logger_level and logger_level <= logging.DEBUG:
                     logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                 await asyncio.sleep(3)
                 continue
-            if logger_level and logger_level >= logging.INFO:
+            if logger_level and logger_level <= logging.INFO:
                 logger.error("Infinity polling: polling exited")
-        if logger_level and logger_level >= logging.INFO:
+        if logger_level and logger_level <= logging.INFO:
             logger.error("Break infinity polling")
 
     async def _handle_exception(self, exception: Exception) -> bool:

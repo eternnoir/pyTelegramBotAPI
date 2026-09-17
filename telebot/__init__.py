@@ -1171,15 +1171,15 @@ class TeleBot:
                              logger_level=logger_level, allowed_updates=allowed_updates, restart_on_change=False,
                              *args, **kwargs)
             except Exception as e:
-                if logger_level and logger_level >= logging.ERROR:
+                if logger_level and logger_level <= logging.ERROR:
                     logger.error("Infinity polling exception: %s", self.__hide_token(str(e)))
-                if logger_level and logger_level >= logging.DEBUG:
+                if logger_level and logger_level <= logging.DEBUG:
                     logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                 time.sleep(3)
                 continue
-            if logger_level and logger_level >= logging.INFO:
+            if logger_level and logger_level <= logging.INFO:
                 logger.error("Infinity polling: polling exited")
-        if logger_level and logger_level >= logging.INFO:
+        if logger_level and logger_level <= logging.INFO:
             logger.error("Break infinity polling")
 
 
@@ -1274,7 +1274,7 @@ class TeleBot:
             warning = "\n  Warning: this message appearance will be changed. Set logger_level=logging.INFO to continue seeing it."
         else:
             warning = ""
-        #if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+        #if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
         logger.info('Started polling.' + warning)
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -1297,16 +1297,16 @@ class TeleBot:
             except apihelper.ApiException as e:
                 handled = self._handle_exception(e)
                 if not handled:
-                    if logger_level and logger_level >= logging.ERROR:
+                    if logger_level and logger_level <= logging.ERROR:
                         logger.error("Threaded polling exception: %s", self.__hide_token(str(e)))
-                    if logger_level and logger_level >= logging.DEBUG:
+                    if logger_level and logger_level <= logging.DEBUG:
                         logger.error("Exception traceback:\n%s", self.__hide_token(traceback.format_exc()))
                     if not non_stop:
                         self.__stop_polling.set()
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+                        # if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
                         logger.info("Exception occurred. Stopping." + warning)
                     else:
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+                        # if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
                         logger.info("Waiting for {0} seconds until retry".format(error_interval) + warning)
                         time.sleep(error_interval)
                         if error_interval * 2 < 60:
@@ -1320,7 +1320,7 @@ class TeleBot:
                 polling_thread.clear_exceptions()   #*
                 self.worker_pool.clear_exceptions() #*
             except KeyboardInterrupt:
-                # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+                # if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
                 logger.info("KeyboardInterrupt received." + warning)
                 self.__stop_polling.set()
                 break
@@ -1339,7 +1339,7 @@ class TeleBot:
         polling_thread.stop()
         polling_thread.clear_exceptions()
         self.worker_pool.clear_exceptions()
-        #if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+        #if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
         logger.info('Stopped polling.' + warning)
 
 
@@ -1349,7 +1349,7 @@ class TeleBot:
             warning = "\n  Warning: this message appearance will be changed. Set logger_level=logging.INFO to continue seeing it."
         else:
             warning = ""
-        #if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+        #if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
         logger.info('Started polling.' + warning)
         self.__stop_polling.clear()
         error_interval = 0.25
@@ -1361,23 +1361,23 @@ class TeleBot:
             except apihelper.ApiException as e:
                 handled = self._handle_exception(e)
                 if not handled:
-                    if logger_level and logger_level >= logging.ERROR:
+                    if logger_level and logger_level <= logging.ERROR:
                         logger.error("Polling exception: %s", str(e))
-                    if logger_level and logger_level >= logging.DEBUG:
+                    if logger_level and logger_level <= logging.DEBUG:
                         logger.error("Exception traceback:\n%s", traceback.format_exc())
                     if not non_stop:
                         self.__stop_polling.set()
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+                        # if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
                         logger.info("Exception occurred. Stopping." + warning)
                     else:
-                        # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+                        # if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
                         logger.info("Waiting for {0} seconds until retry".format(error_interval) + warning)
                         time.sleep(error_interval)
                         error_interval *= 2
                 else:
                     time.sleep(error_interval)
             except KeyboardInterrupt:
-                # if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+                # if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
                 logger.info("KeyboardInterrupt received." + warning)
                 self.__stop_polling.set()
                 break
@@ -1387,7 +1387,7 @@ class TeleBot:
                     raise e
                 else:
                     time.sleep(error_interval)
-        #if logger_level and logger_level >= logging.INFO:   # enable in future releases. Change output to logger.error
+        #if logger_level and logger_level <= logging.INFO:   # enable in future releases. Change output to logger.error
         logger.info('Stopped polling.' + warning)
 
 

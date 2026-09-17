@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import warnings
+import logging
 
 sys.path.append('../')
 
@@ -33,6 +34,44 @@ def deprecated2_new_function():
 @util.deprecated(alternative=deprecated2_new_function)
 def deprecated2_old_function():
     print("deprecated2_old_function")
+
+
+@pytest.mark.parametrize(
+    'logger_level, expected_count, includes_traceback',
+    [
+        (logging.DEBUG, 3, True),
+        (logging.INFO, 2, False),
+        (logging.ERROR, 1, False),
+        (None, 0, False),
+    ],
+)
+def test_infinity_polling_honors_logger_level(
+        monkeypatch, logger_level, expected_count, includes_traceback):
+    class RecordingLogger:
+        def __init__(self):
+            self.messages = []
+
+        def error(self, message, *args):
+            self.messages.append(message % args if args else message)
+
+    bot = telebot.TeleBot('1:fake', validate_token=False)
+    logger = RecordingLogger()
+
+    def fail_polling(*args, **kwargs):
+        bot._TeleBot__stop_polling.set()
+        raise RuntimeError('polling failed')
+
+    monkeypatch.setattr(telebot, 'logger', logger)
+    monkeypatch.setattr(telebot.time, 'sleep', lambda _seconds: None)
+    monkeypatch.setattr(bot, 'polling', fail_polling)
+
+    bot.infinity_polling(logger_level=logger_level)
+
+    assert len(logger.messages) == expected_count
+    if logger_level:
+        assert logger.messages[0] == 'Infinity polling exception: polling failed'
+    assert any('Exception traceback:' in message for message in logger.messages) is includes_traceback
+
 
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
