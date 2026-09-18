@@ -81,6 +81,50 @@ def _get_req_session(reset=False):
         return util.per_thread('req_session', lambda: session if session else requests.sessions.Session(), reset)
 
 
+def _get_retryable_file_positions(files):
+    """Return upload stream positions, or None when an upload cannot be rewound."""
+    positions = []
+    if not files:
+        return positions
+
+    for value in files.values():
+        if isinstance(value, (tuple, list)):
+            if len(value) < 2:
+                continue
+            value = value[1]
+        if not hasattr(value, 'read'):
+            continue
+
+        try:
+            positions.append((value, value.tell()))
+        except (AttributeError, OSError, ValueError):
+            return None
+
+    return positions
+
+
+def _rewind_file_positions(positions):
+    """
+    Restore upload streams to the positions captured before the first request.
+
+    ``requests`` builds a new multipart body for every call, but it reads each
+    file object while constructing that body. If a request fails after a file
+    has been read, its stream can be positioned at EOF. Retrying without a
+    rewind would then produce an empty or truncated upload.
+
+    ``positions`` is collected before the first request by
+    :func:`_get_retryable_file_positions`. A ``False`` result means that at
+    least one stream cannot safely be rewound. The caller must then stop
+    retrying rather than risk sending a corrupted multipart body.
+    """
+    try:
+        for file, position in positions:
+            file.seek(position)
+    except (AttributeError, OSError, ValueError):
+        return False
+    return True
+
+
 def _make_request(token, method_name, method='get', params=None, files=None):
     """
     Makes a request to the Telegram API.
@@ -137,6 +181,7 @@ def _make_request(token, method_name, method='get', params=None, files=None):
     elif RETRY_ON_ERROR and RETRY_ENGINE == 1:
         got_result = False
         current_try = 0
+        file_positions = _get_retryable_file_positions(files)
         while not got_result and current_try<MAX_RETRIES-1:
             current_try+=1
             try:
@@ -146,12 +191,18 @@ def _make_request(token, method_name, method='get', params=None, files=None):
                 got_result = True
             except HTTPError:
                 logger.debug("HTTP Error on {0} method (Try #{1})".format(method_name, current_try))
+                if file_positions is None or not _rewind_file_positions(file_positions):
+                    raise
                 time.sleep(RETRY_TIMEOUT)
             except ConnectionError:
                 logger.debug("Connection Error on {0} method (Try #{1})".format(method_name, current_try))
+                if file_positions is None or not _rewind_file_positions(file_positions):
+                    raise
                 time.sleep(RETRY_TIMEOUT)
             except Timeout:
                 logger.debug("Timeout Error on {0} method (Try #{1})".format(method_name, current_try))
+                if file_positions is None or not _rewind_file_positions(file_positions):
+                    raise
                 time.sleep(RETRY_TIMEOUT)
         if not got_result:
             result = _get_req_session().request(

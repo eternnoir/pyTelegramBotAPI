@@ -26,6 +26,8 @@ FILE_URL = None
 
 REQUEST_TIMEOUT = 300
 MAX_RETRIES = 3
+RETRY_ON_ERROR = False
+RETRY_TIMEOUT = 2
 
 REQUEST_LIMIT = 50
 
@@ -66,6 +68,54 @@ class SessionManager:
 
 session_manager = SessionManager()
 
+
+def _get_retryable_file_positions(files):
+    """Return upload stream positions, or None when an upload cannot be rewound."""
+    positions = []
+    if not files:
+        return positions
+
+    for value in files.values():
+        if isinstance(value, tuple):
+            if len(value) != 2:
+                continue
+            value = value[1]
+        if isinstance(value, types.InputFile):
+            value = value.file
+        if not hasattr(value, 'read'):
+            continue
+
+        try:
+            positions.append((value, value.tell()))
+        except (AttributeError, OSError, ValueError):
+            return None
+
+    return positions
+
+
+def _rewind_file_positions(positions):
+    """
+    Restore upload streams to the positions captured before the first request.
+
+    aiohttp consumes a ``FormData`` object while building a multipart request.
+    Retrying therefore requires a new ``FormData`` instance, but that alone is
+    insufficient: if the first request failed after its body was read, the
+    underlying file objects can be positioned at EOF. Without rewinding them,
+    a retry could send an empty or truncated upload.
+
+    ``positions`` is collected before the first request by
+    :func:`_get_retryable_file_positions`. A ``False`` result means that at
+    least one stream cannot safely be rewound. The caller must then stop
+    retrying rather than risk sending a corrupted multipart body.
+    """
+    try:
+        for file, position in positions:
+            file.seek(position)
+    except (AttributeError, OSError, ValueError):
+        return False
+    return True
+
+
 async def _process_request(token, url, method='get', params=None, files=None, **kwargs):
     # Let's resolve all timeout parameters.
     # getUpdates parameter may contain 2 parameters: request_timeout & timeout.
@@ -86,32 +136,36 @@ async def _process_request(token, url, method='get', params=None, files=None, **
     request_timeout = REQUEST_TIMEOUT if request_timeout is None else request_timeout
     
 
-    # Preparing data by adding all parameters and files to FormData
-    params = _prepare_data(params, files)
-
     timeout = aiohttp.ClientTimeout(total=request_timeout)
-    got_result = False
-    current_try=0
+    max_attempts = max(1, MAX_RETRIES if RETRY_ON_ERROR else 1)
+    file_positions = _get_retryable_file_positions(files)
+    last_error = None
     session = await session_manager.get_session()
-    while not got_result and current_try<MAX_RETRIES-1:
-        current_try +=1
+    for current_try in range(1, max_attempts + 1):
+        # FormData is consumed when aiohttp builds a multipart request, so it
+        # must be created again for each retry.
+        request_data = _prepare_data(params, files)
         try:
-            async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
-                got_result = True
+            async with session.request(method=method, url=API_URL.format(token, url), data=request_data, timeout=timeout, proxy=proxy) as resp:
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
                 
                 json_result = await _check_result(url, resp)
                 if json_result:
                     return json_result['result']
+                return None
         except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
             raise e
-        except aiohttp.ClientError as e:
-            logger.error('Aiohttp ClientError: {0}'.format(e.__class__.__name__))
-        except Exception as e:
-            logger.error(f'Unknown error: {e.__class__.__name__}')
-        if not got_result:
-            raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
-    return None
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            last_error = e
+            logger.error('Aiohttp request error: {0} (try #{1})'.format(e.__class__.__name__, current_try))
+
+            if current_try == max_attempts:
+                break
+            if file_positions is None or not _rewind_file_positions(file_positions):
+                break
+            await asyncio.sleep(RETRY_TIMEOUT)
+
+    raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try)) from last_error
         
 def _prepare_file(obj):
     """
