@@ -69,53 +69,6 @@ class SessionManager:
 session_manager = SessionManager()
 
 
-def _get_retryable_file_positions(files):
-    """Return upload stream positions, or None when an upload cannot be rewound."""
-    positions = []
-    if not files:
-        return positions
-
-    for value in files.values():
-        if isinstance(value, tuple):
-            if len(value) != 2:
-                continue
-            value = value[1]
-        if isinstance(value, types.InputFile):
-            value = value.file
-        if not hasattr(value, 'read'):
-            continue
-
-        try:
-            positions.append((value, value.tell()))
-        except (AttributeError, OSError, ValueError):
-            return None
-
-    return positions
-
-
-def _rewind_file_positions(positions):
-    """
-    Restore upload streams to the positions captured before the first request.
-
-    aiohttp consumes a ``FormData`` object while building a multipart request.
-    Retrying therefore requires a new ``FormData`` instance, but that alone is
-    insufficient: if the first request failed after its body was read, the
-    underlying file objects can be positioned at EOF. Without rewinding them,
-    a retry could send an empty or truncated upload.
-
-    ``positions`` is collected before the first request by
-    :func:`_get_retryable_file_positions`. A ``False`` result means that at
-    least one stream cannot safely be rewound. The caller must then stop
-    retrying rather than risk sending a corrupted multipart body.
-    """
-    try:
-        for file, position in positions:
-            file.seek(position)
-    except (AttributeError, OSError, ValueError):
-        return False
-    return True
-
-
 async def _process_request(token, url, method='get', params=None, files=None, **kwargs):
     # Let's resolve all timeout parameters.
     # getUpdates parameter may contain 2 parameters: request_timeout & timeout.
@@ -138,7 +91,16 @@ async def _process_request(token, url, method='get', params=None, files=None, **
 
     timeout = aiohttp.ClientTimeout(total=request_timeout)
     max_attempts = max(1, MAX_RETRIES if RETRY_ON_ERROR else 1)
-    file_positions = _get_retryable_file_positions(files)
+    file_streams = []
+    for value in (files or {}).values():
+        if isinstance(value, tuple):
+            if len(value) != 2:
+                continue
+            value = value[1]
+        if isinstance(value, types.InputFile):
+            value = value.file
+        file_streams.append(value)
+    file_positions = util._get_retryable_file_positions(file_streams)
     last_error = None
     session = await session_manager.get_session()
     for current_try in range(1, max_attempts + 1):
@@ -161,7 +123,7 @@ async def _process_request(token, url, method='get', params=None, files=None, **
 
             if current_try == max_attempts:
                 break
-            if file_positions is None or not _rewind_file_positions(file_positions):
+            if file_positions is None or not util._rewind_file_positions(file_positions):
                 break
             await asyncio.sleep(RETRY_TIMEOUT)
 

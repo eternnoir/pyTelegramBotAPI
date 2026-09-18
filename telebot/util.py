@@ -536,6 +536,41 @@ def per_thread(key, construct_value, reset=False):
     return getattr(thread_local, key)
 
 
+def _get_retryable_file_positions(file_streams):
+    """Return stream positions, or ``None`` when one cannot be rewound.
+
+    Multipart encoders consume file streams while preparing a request. A retry
+    must restore every stream to its position before the first attempt;
+    otherwise, it can upload an empty or truncated file. The caller supplies
+    already-extracted file-like objects so this helper remains independent of
+    any HTTP client's multipart value format.
+    """
+    positions = []
+    for file_stream in file_streams:
+        if not hasattr(file_stream, 'read'):
+            continue
+        try:
+            positions.append((file_stream, file_stream.tell()))
+        except (AttributeError, OSError, ValueError):
+            return None
+    return positions
+
+
+def _rewind_file_positions(positions):
+    """Restore streams to positions returned by :func:`_get_retryable_file_positions`.
+
+    A ``False`` result means that at least one stream cannot safely be
+    restored. In that case, the caller must not retry the multipart request,
+    because doing so could send an empty or truncated upload.
+    """
+    try:
+        for file_stream, position in positions:
+            file_stream.seek(position)
+    except (AttributeError, OSError, ValueError):
+        return False
+    return True
+
+
 def deprecated(warn: bool = True, alternative: Optional[Callable] = None, deprecation_text=None):
     """
     Use this decorator to mark functions as deprecated.
