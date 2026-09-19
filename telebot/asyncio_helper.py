@@ -25,6 +25,8 @@ session = None
 FILE_URL = None
 
 REQUEST_TIMEOUT = 300
+RETRY_ON_ERROR = False
+RETRY_TIMEOUT = 2
 MAX_RETRIES = 3
 
 REQUEST_LIMIT = 50
@@ -90,28 +92,28 @@ async def _process_request(token, url, method='get', params=None, files=None, **
     params = _prepare_data(params, files)
 
     timeout = aiohttp.ClientTimeout(total=request_timeout)
-    got_result = False
-    current_try=0
+    max_attempts = max(1, MAX_RETRIES if RETRY_ON_ERROR else 1)
+    last_error = None
     session = await session_manager.get_session()
-    while not got_result and current_try<MAX_RETRIES-1:
-        current_try +=1
+    for current_try in range(1, max_attempts + 1):
         try:
             async with session.request(method=method, url=API_URL.format(token, url), data=params, timeout=timeout, proxy=proxy) as resp:
-                got_result = True
                 logger.debug("Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try).replace(token, token.split(':')[0] + ":{TOKEN}"))
                 
                 json_result = await _check_result(url, resp)
                 if json_result:
                     return json_result['result']
-        except (ApiTelegramException,ApiInvalidJSONException, ApiHTTPException) as e:
-            raise e
-        except aiohttp.ClientError as e:
-            logger.error('Aiohttp ClientError: {0}'.format(e.__class__.__name__))
-        except Exception as e:
-            logger.error(f'Unknown error: {e.__class__.__name__}')
-        if not got_result:
-            raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4}".format(method, url, params, files, request_timeout, current_try))
-    return None
+                return None
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            last_error = e
+            logger.error('Aiohttp request error: {0} (try #{1})'.format(e.__class__.__name__, current_try))
+
+            if current_try == max_attempts:
+                break
+
+            await asyncio.sleep(RETRY_TIMEOUT)
+
+    raise RequestTimeout("Request timeout. Request: method={0} url={1} params={2} files={3} request_timeout={4} current_try={5}".format(method, url, params, files, request_timeout, current_try)) from last_error
         
 def _prepare_file(obj):
     """

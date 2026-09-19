@@ -53,7 +53,7 @@ SESSION_TIME_TO_LIVE = 600  # In seconds. None - live forever, 0 - one-time
 
 RETRY_ON_ERROR = False
 RETRY_TIMEOUT = 2
-MAX_RETRIES = 15
+MAX_RETRIES = 3
 RETRY_ENGINE = 1
 
 CUSTOM_SERIALIZER = None
