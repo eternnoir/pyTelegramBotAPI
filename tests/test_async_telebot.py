@@ -238,3 +238,11 @@ def test_async_antiflood_final_attempt_propagates_after_budget_exhausted():
     assert calls["n"] == budget, (
         f"Expected {budget} total attempts, got {calls['n']}"
     )
+
+
+def test_async_state_middleware_uses_async_context():
+    from telebot.states.asyncio.middleware import StateMiddleware, StateContext
+    from telebot.states.asyncio.context import StateContext as AsyncStateContext
+
+    assert StateContext is AsyncStateContext, "StateMiddleware must use asyncio.context.StateContext"
+
