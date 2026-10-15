@@ -1,6 +1,6 @@
 from telebot.asyncio_handler_backends import BaseMiddleware
 from telebot.async_telebot import AsyncTeleBot
-from telebot.states.sync.context import StateContext
+from telebot.states.asyncio.context import StateContext
 from telebot.util import update_types
 from telebot import types
 
