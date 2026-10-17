@@ -547,6 +547,17 @@ def test_json_richtextbold():
     assert result.text == 'Test'
 
 
+def test_json_richtext_plain_text_that_looks_like_json():
+    # issue #2634: a "[56]" footnote mark is plain text, not a JSON array
+    json_str = r'{"type": "url", "text": {"type": "superscript", "text": "[56]"}, "url": "https://example.com/#cite_note-56"}'
+    result = types.RichText.de_json(json_str)
+    assert isinstance(result, types.RichTextUrl)
+    assert isinstance(result.text, types.RichTextSuperscript)
+    assert result.text.text == '[56]'
+    for text in ['[56]', '[]', '{}x', '123', 'null', '["a", "b"]']:
+        assert types.RichText.de_json(text) == text
+
+
 def test_json_richtextitalic():
     json_str = r'{"type": "italic", "text": "Test"}'
     result = types.RichText.de_json(json_str)
