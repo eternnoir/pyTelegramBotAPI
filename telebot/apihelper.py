@@ -306,7 +306,8 @@ def send_rich_message(
         direct_messages_topic_id=None, suggested_post_parameters=None, allow_paid_broadcast=None,
         message_thread_id=None, ephemeral_message_parameters=None):
     method_url = r'sendRichMessage'
-    payload = {'chat_id': chat_id, 'rich_message': rich_message.to_json()}
+    rich_message_json, files = rich_message.convert_input_rich_message()
+    payload = {'chat_id': chat_id, 'rich_message': rich_message_json}
     if disable_notification is not None:
         payload['disable_notification'] = disable_notification
     if protect_content is not None:
@@ -329,18 +330,19 @@ def send_rich_message(
         payload['message_thread_id'] = message_thread_id
     if ephemeral_message_parameters is not None:
         payload['ephemeral_message_parameters'] = ephemeral_message_parameters.to_json()
-    return _make_request(token, method_url, params=payload, method='post') 
+    return _make_request(token, method_url, params=payload, files=files, method='post')
 
 def send_rich_message_draft(token, chat_id, draft_id, rich_message, message_thread_id=None, can_stop=None, keep_on_stop=None):
     method_url = r'sendRichMessageDraft'
-    payload = {'chat_id': str(chat_id), 'draft_id': draft_id, 'rich_message': rich_message.to_json()}
+    rich_message_json, files = rich_message.convert_input_rich_message()
+    payload = {'chat_id': str(chat_id), 'draft_id': draft_id, 'rich_message': rich_message_json}
     if message_thread_id is not None:
         payload['message_thread_id'] = message_thread_id
     if can_stop is not None:
         payload['can_stop'] = can_stop
     if keep_on_stop is not None:
         payload['keep_on_stop'] = keep_on_stop
-    return _make_request(token, method_url, params=payload, method='post')
+    return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def set_webhook(token, url=None, certificate=None, max_connections=None, allowed_updates=None, ip_address=None,
@@ -1875,9 +1877,10 @@ def edit_message_text(
         payload['business_connection_id'] = business_connection_id
     if timeout:
         payload['timeout'] = timeout
+    files = None
     if rich_message:
-        payload['rich_message'] = rich_message.to_json()
-    return _make_request(token, method_url, params=payload, method='post')
+        payload['rich_message'], files = rich_message.convert_input_rich_message()
+    return _make_request(token, method_url, params=payload, files=files, method='post')
 
 
 def edit_message_caption(
