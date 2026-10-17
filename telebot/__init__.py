@@ -7447,7 +7447,7 @@ class TeleBot:
 
 
     def answer_callback_query(
-            self, callback_query_id: int,
+            self, callback_query_id: str,
             text: Optional[str]=None, show_alert: Optional[bool]=None,
             url: Optional[str]=None, cache_time: Optional[int]=None) -> bool:
         """
@@ -7457,7 +7457,7 @@ class TeleBot:
         Telegram documentation: https://core.telegram.org/bots/api#answercallbackquery
 
         :param callback_query_id: Unique identifier for the query to be answered
-        :type callback_query_id: :obj:`int`
+        :type callback_query_id: :obj:`str`
 
         :param text: Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters
         :type text: :obj:`str`
