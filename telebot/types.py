@@ -16637,6 +16637,28 @@ class InputRichMessage(Dictionaryable):
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
     
+    def convert_input_rich_message(self):
+        """
+        :meta private:
+        """
+        files = {}
+
+        # Media can sit in self.media or in any block, including blocks nested
+        # in lists, collages, slideshows, details and quotations.
+        def collect(value):
+            if isinstance(value, InputMedia):
+                files.update(value.convert_input_media()[1])
+            elif isinstance(value, list):
+                for item in value:
+                    collect(item)
+            elif isinstance(value, (InputRichBlock, InputRichBlockListItem, InputRichMessageMedia)):
+                for item in vars(value).values():
+                    collect(item)
+
+        collect(self.media)
+        collect(self.blocks)
+        return self.to_json(), files
+
 
 class Link(JsonDeserializable):
     """
