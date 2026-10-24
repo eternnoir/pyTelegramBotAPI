@@ -285,3 +285,11 @@ def test_redis_handler_backend_clear_next_step_handler(telegram_bot, private_cha
 
     telegram_bot.process_new_updates([update_type])
     assert update_type.message.text == 'entered start'
+
+
+def test_dump_handlers_without_directory(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    FileHandlerBackend.dump_handlers({1: ['handler']}, 'step.save')
+
+    assert os.path.isfile('step.save')
+    assert not os.path.isdir('step.save')

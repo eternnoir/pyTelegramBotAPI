@@ -99,8 +99,9 @@ class FileHandlerBackend(HandlerBackend):
 
     @staticmethod
     def dump_handlers(handlers, filename, file_mode="wb"):
-        dirs = filename.rsplit('/', maxsplit=1)[0]
-        os.makedirs(dirs, exist_ok=True)
+        dirs = os.path.dirname(filename)
+        if dirs:
+            os.makedirs(dirs, exist_ok=True)
 
         with open(filename + ".tmp", file_mode) as file:
             if apihelper.CUSTOM_SERIALIZER is None:
