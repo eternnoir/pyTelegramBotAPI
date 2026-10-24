@@ -63,8 +63,9 @@ class StatePickleStorage(StateStorageBase):
         """
         Create directory .save-handlers.
         """
-        dirs, filename = os.path.split(self.file_path)
-        os.makedirs(dirs, exist_ok=True)
+        dirs = os.path.dirname(self.file_path)
+        if dirs:
+            os.makedirs(dirs, exist_ok=True)
         if not os.path.isfile(self.file_path):
             with open(self.file_path, "wb") as file:
                 pickle.dump({}, file)
