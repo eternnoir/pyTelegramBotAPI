@@ -1,6 +1,9 @@
+import asyncio
+import io
+import json
 from types import SimpleNamespace
 
-from telebot import apihelper
+from telebot import apihelper, asyncio_helper, types
 
 
 def test_get_multipart_header_formatter_prefers_current_urllib3_name():
@@ -94,3 +97,62 @@ def test_set_chat_member_tag(monkeypatch):
     assert captured['params']['chat_id'] == 1
     assert captured['params']['user_id'] == 2
     assert captured['params']['tag'] == 'member-tag'
+
+
+def _capture(captured):
+    def fake_request(token, method_url, params=None, files=None, method=None, **kwargs):
+        captured.update(method_url=method_url, params=params, files=files, method=method)
+        return {'ok': True}
+    return fake_request
+
+
+def _checklist():
+    return types.InputChecklist(title='Groceries', tasks=[types.InputChecklistTask(id=1, text='Milk')])
+
+
+def test_send_and_edit_checklist_send_checklist_as_json(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(apihelper, '_make_request', _capture(captured))
+
+    apihelper.send_checklist('token', 'bc', 1, _checklist())
+    assert json.loads(captured['params']['checklist'])['title'] == 'Groceries'
+
+    apihelper.edit_message_checklist('token', 'bc', 1, 2, _checklist())
+    assert json.loads(captured['params']['checklist'])['tasks'][0]['text'] == 'Milk'
+
+
+def test_replace_sticker_in_set_uploads_the_sticker_file(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(apihelper, '_make_request', _capture(captured))
+    sticker_file = types.InputFile(io.BytesIO(b'sticker'), file_name='sticker.webp')
+    sticker = types.InputSticker(sticker=sticker_file, emoji_list=['\U0001f642'], format='static')
+
+    apihelper.replace_sticker_in_set('token', 1, 'set_by_bot', 'old_id', sticker)
+
+    attach = json.loads(captured['params']['sticker'])['sticker']
+    assert attach.startswith('attach://')
+    assert captured['files'] == {attach[len('attach://'):]: sticker_file}
+    assert captured['method'] == 'post'
+
+
+def test_async_checklist_and_replace_sticker(monkeypatch):
+    captured = {}
+
+    async def fake_process_request(token, url, method='get', params=None, files=None, **kwargs):
+        captured.update(url=url, params=params, files=files, method=method)
+        return True
+
+    monkeypatch.setattr(asyncio_helper, '_process_request', fake_process_request)
+
+    asyncio.run(asyncio_helper.send_checklist('token', 'bc', 1, _checklist()))
+    assert json.loads(captured['params']['checklist'])['title'] == 'Groceries'
+
+    asyncio.run(asyncio_helper.edit_message_checklist('token', 'bc', 1, 2, _checklist()))
+    assert json.loads(captured['params']['checklist'])['title'] == 'Groceries'
+
+    sticker_file = types.InputFile(io.BytesIO(b'sticker'), file_name='sticker.webp')
+    sticker = types.InputSticker(sticker=sticker_file, emoji_list=['\U0001f642'], format='static')
+    asyncio.run(asyncio_helper.replace_sticker_in_set('token', 1, 'set_by_bot', 'old_id', sticker))
+    attach = json.loads(captured['params']['sticker'])['sticker']
+    assert captured['files'] == {attach[len('attach://'):]: sticker_file}
+    assert captured['method'] == 'post'
