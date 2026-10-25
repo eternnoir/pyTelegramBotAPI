@@ -312,7 +312,7 @@ def hpre(content: str, escape: Optional[bool]=True, language: str="") -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '<pre><code class="{}">{}</code></pre>'.format(language, escape_html(content) if escape else content)
+    return '<pre><code class="{}">{}</code></pre>'.format(escape_html(language), escape_html(content) if escape else content)
 
 
 def hide_link(url: str) -> str:
