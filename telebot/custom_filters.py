@@ -247,6 +247,8 @@ class TextContainsFilter(AdvancedCustomFilter):
         elif isinstance(text, list) or isinstance(text, tuple):
             text = [i for i in text if isinstance(i, str)]
 
+        if message.text is None:
+            return False
         return any([i in message.text for i in text])
 
 
@@ -268,6 +270,8 @@ class TextStartsFilter(AdvancedCustomFilter):
         """
         :meta private:
         """
+        if message.text is None:
+            return False
         return message.text.startswith(text)
 
 
@@ -452,4 +456,6 @@ class IsDigitFilter(SimpleCustomFilter):
         """
         :meta private:
         """
+        if message.text is None:
+            return False
         return message.text.isdigit()
