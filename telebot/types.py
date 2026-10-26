@@ -14688,20 +14688,28 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
         if json_string is None: return None
         if isinstance(json_string, str):
             # "...can be either a String for plain text..."
-            # Only a JSON object is a serialized RichText. Plain text can look
-            # like JSON too, e.g. a "[56]" footnote mark, and stays text.
+            # Only a JSON object that resolves to a known RichText is serialized
+            # RichText. Plain text can look like JSON too, e.g. a "[56]" footnote
+            # mark or a {"foo": "bar"} code sample, and has to stay text.
+            original = json_string
             if not (json_string.startswith('{') and json_string.endswith('}')):
-                return json_string
+                return original
             try:
                 parsed = json.loads(json_string)
             except (ValueError, TypeError):
-                return json_string
+                return original
             if not isinstance(parsed, dict):
-                return json_string
-            json_string = parsed
+                return original
+            result = cls._from_dict(parsed)
+            return original if result is None else result
         elif isinstance(json_string, list):
             # "...an Array of :class:`RichText`..."
             return [RichText.de_json(item) for item in json_string]
+        return cls._from_dict(json_string)
+
+    @classmethod
+    def _from_dict(cls, json_string):
+        """Resolve a parsed RichText dict, or None when its type is unknown."""
         # "...or any of the following types..."
         obj = cls.check_json(json_string)
         type = obj.pop('type', None)
