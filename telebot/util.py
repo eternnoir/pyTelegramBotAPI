@@ -279,6 +279,7 @@ def extract_arguments(text: str) -> Union[str, None]:
     :rtype: :obj:`str` or :obj:`None`
     """
     regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
+    if text is None: return None
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
 
@@ -357,7 +358,7 @@ def smart_split(text: str, chars_per_string: int = MAX_MESSAGE_LENGTH) -> List[s
 
     parts = []
     while True:
-        if len(text) < chars_per_string:
+        if len(text) <= chars_per_string:
             parts.append(text)
             return parts
 
