@@ -2,11 +2,12 @@ import sys
 
 sys.path.append('../')
 
+import asyncio
 import json
 
 import pytest
 
-from telebot import types
+from telebot import asyncio_filters, types
 from telebot.custom_filters import IsDigitFilter, TextContainsFilter, TextStartsFilter
 
 
@@ -50,3 +51,21 @@ def test_text_filters_still_match_text_messages(text_message):
     assert TextContainsFilter().check(text_message, "23") is True
     assert TextStartsFilter().check(text_message, "12") is True
     assert IsDigitFilter().check(text_message) is True
+
+
+def test_async_text_filters_skip_message_without_text(photo_message):
+    assert asyncio.run(asyncio_filters.TextContainsFilter().check(photo_message, "23")) is False
+    assert asyncio.run(asyncio_filters.TextStartsFilter().check(photo_message, "12")) is False
+    assert asyncio.run(asyncio_filters.IsDigitFilter().check(photo_message)) is False
+    assert asyncio.run(asyncio_filters.TextFilter(contains=["23"]).check(photo_message)) is False
+    assert asyncio.run(asyncio_filters.TextFilter(equals="12345", ignore_case=True).check(photo_message)) is False
+
+
+def test_async_text_filters_still_match_text_messages(text_message):
+    assert asyncio.run(asyncio_filters.TextContainsFilter().check(text_message, "23")) is True
+    assert asyncio.run(asyncio_filters.TextStartsFilter().check(text_message, "12")) is True
+    assert asyncio.run(asyncio_filters.IsDigitFilter().check(text_message)) is True
+    captioned = make_message(
+        photo=[{"file_id": "f", "file_unique_id": "u", "width": 1, "height": 1}], caption="12345"
+    )
+    assert asyncio.run(asyncio_filters.TextFilter(contains=["23"]).check(captioned)) is True
