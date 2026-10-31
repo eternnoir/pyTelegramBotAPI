@@ -578,6 +578,44 @@ def test_json_richtext_partial_json_object_does_not_crash():
         assert types.RichText.de_json(text) == text
 
 
+def test_json_richtext_non_text_value_stays_text():
+    # a nested "text" that is a number or a boolean is not RichText. Parsing it
+    # used to raise ValueError out of check_json, or build a RichTextBold with
+    # text=5 that could not be sent back. The whole object stays plain text.
+    for value in ['5', '1.5', 'true', 'false']:
+        text = '{"type": "bold", "text": %s}' % value
+        assert types.RichText.de_json(text) == text
+        block = types.RichBlockPreformatted.de_json({'text': text, 'language': 'json'})
+        assert block.text == text
+
+
+def test_json_richtext_unknown_nested_type_stays_text():
+    # a nested RichText whose own type is unknown does not resolve, so neither
+    # does its parent: the object is text, not a half-built RichTextBold
+    text = '{"type": "bold", "text": {"type": "not_a_richtext"}}'
+    assert types.RichText.de_json(text) == text
+
+
+def test_json_richtext_dict_input_stays_dict_when_unresolved():
+    # same rule for an already-parsed dict: no exception, no mutations
+    payload = {'type': 'bold', 'text': 5}
+    assert types.RichText.de_json(payload) == payload
+
+
+def test_json_richtext_every_type_survives_bad_text():
+    # none of the RichText* subclasses may crash on a non-text "text" value
+    known = ['bold', 'italic', 'underline', 'strikethrough', 'spoiler',
+             'date_time', 'text_mention', 'subscript', 'superscript', 'marked',
+             'code', 'url', 'email_address', 'phone_number', 'bank_card_number',
+             'mention', 'hashtag', 'cashtag', 'bot_command', 'anchor_link',
+             'reference', 'reference_link']
+    for rich_type in known:
+        for value in ['5', 'true', '[]']:
+            text = '{"type": "%s", "text": %s}' % (rich_type, value)
+            result = types.RichText.de_json(text)
+            assert isinstance(result, str), (rich_type, value, result)
+
+
 def test_json_richtextitalic():
     json_str = r'{"type": "italic", "text": "Test"}'
     result = types.RichText.de_json(json_str)
