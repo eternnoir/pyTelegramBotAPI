@@ -571,6 +571,13 @@ def test_json_richtext_plain_json_object_stays_text():
     assert bold.text == 'hi'
 
 
+def test_json_richtext_partial_json_object_does_not_crash():
+    # a JSON object whose "type" matches a RichText but whose shape does not is
+    # still plain text; it used to raise KeyError: 'text'
+    for text in ['{"type": "bold"}', '{"type": "italic"}', '{"type": "code"}']:
+        assert types.RichText.de_json(text) == text
+
+
 def test_json_richtextitalic():
     json_str = r'{"type": "italic", "text": "Test"}'
     result = types.RichText.de_json(json_str)

@@ -14700,7 +14700,12 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
                 return original
             if not isinstance(parsed, dict):
                 return original
-            result = cls._from_dict(parsed)
+            try:
+                result = cls._from_dict(parsed)
+            except (KeyError, TypeError, AttributeError):
+                # A JSON object whose "type" happens to match a RichText but
+                # whose shape does not is still plain text, not a crash.
+                return original
             return original if result is None else result
         elif isinstance(json_string, list):
             # "...an Array of :class:`RichText`..."
