@@ -423,13 +423,15 @@ def apply_html_entities(text: str, entities: Optional[List]=None, custom_subs: O
         #     username = content[1:]  # Remove @ symbol
         #     return f"<a href=\"https://t.me/{username}\">{content}</a>"
         elif entity_type == "text_link" and hasattr(entity, 'url'):
-            return _subs["text_link"].format(url=entity.url, text=content)
+            return _subs["text_link"].format(url=escape_html(entity.url), text=content)
         elif entity_type == "custom_emoji" and hasattr(entity, 'custom_emoji_id'):
             return _subs["custom_emoji"].format(custom_emoji_id=entity.custom_emoji_id, text=content)
         elif entity_type == "date_time" and hasattr(entity, 'unix_time') and hasattr(entity, 'date_time_format'):
-            return _subs["date_time"].format(unix=entity.unix_time, date_time_format=entity.date_time_format, text=content)
+            # Pass both names so custom templates written against the old
+            # {unix} placeholder keep working.
+            return _subs["date_time"].format(unix=entity.unix_time, unix_time=entity.unix_time, date_time_format=entity.date_time_format, text=content)
         elif entity_type == "pre" and hasattr(entity, 'language') and entity.language:
-            return f"<pre><code class=\"language-{entity.language}\">{content}</code></pre>"
+            return f"<pre><code class=\"language-{escape_html(entity.language)}\">{content}</code></pre>"
         elif entity_type in _subs:
             template = _subs[entity_type]
             return template.format(text=content)
