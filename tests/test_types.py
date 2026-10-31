@@ -558,6 +558,26 @@ def test_json_richtext_plain_text_that_looks_like_json():
         assert types.RichText.de_json(text) == text
 
 
+def test_json_richtext_plain_json_object_stays_text():
+    # issue #2646: a preformatted block whose text is a JSON object is still text
+    for text in ['{"foo": "bar"}', '{}', '{"a": [1, 2]}', '{"type": "not_a_richtext"}']:
+        block = types.RichBlockPreformatted.de_json({'text': text, 'language': 'json'})
+        assert block.text == text
+        assert types.RichText.de_json(text) == text
+
+    # a serialized RichText still deserializes
+    bold = types.RichText.de_json('{"type": "bold", "text": "hi"}')
+    assert isinstance(bold, types.RichTextBold)
+    assert bold.text == 'hi'
+
+
+def test_json_richtext_partial_json_object_does_not_crash():
+    # a JSON object whose "type" matches a RichText but whose shape does not is
+    # still plain text; it used to raise KeyError: 'text'
+    for text in ['{"type": "bold"}', '{"type": "italic"}', '{"type": "code"}']:
+        assert types.RichText.de_json(text) == text
+
+
 def test_json_richtextitalic():
     json_str = r'{"type": "italic", "text": "Test"}'
     result = types.RichText.de_json(json_str)
