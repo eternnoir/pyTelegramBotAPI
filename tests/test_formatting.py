@@ -50,6 +50,19 @@ def test_apply_html_entities_date_time():
     )
 
 
+def test_apply_html_entities_date_time_keeps_unix_placeholder():
+    # custom submissions written against the old {unix} placeholder must keep
+    # working now that the default template uses {unix_time}
+    entity = types.MessageEntity(
+        type="date_time", offset=0, length=5,
+        unix_time=1735689600, date_time_format="r"
+    )
+    subs = {"date_time": '<tg-time unix="{unix}">{text}</tg-time>'}
+    assert apply_html_entities("today", [entity], custom_subs=subs) == (
+        '<tg-time unix="1735689600">today</tg-time>'
+    )
+
+
 def test_apply_html_entities_escapes_link_url():
     entity = types.MessageEntity(
         type="text_link", offset=0, length=4, url='https://x.test/?a="b'

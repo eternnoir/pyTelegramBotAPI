@@ -278,8 +278,8 @@ def extract_arguments(text: str) -> Union[str, None]:
     :return: the arguments if `text` is a command (according to is_command), else None.
     :rtype: :obj:`str` or :obj:`None`
     """
-    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     if text is None: return None
+    regexp = re.compile(r"/\w*(@\w*)*\s*([\s\S]*)", re.IGNORECASE)
     result = regexp.match(text)
     return result.group(2) if is_command(text) else None
 
