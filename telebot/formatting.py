@@ -277,7 +277,9 @@ def mcode(content: str, language: str="", escape: Optional[bool]=True) -> str:
     :return: The formatted string.
     :rtype: :obj:`str`
     """
-    return '```{}\n{}```'.format(language, escape_markdown(content) if escape else content)
+    if escape:
+        content = re.sub(r"([`\\])", r"\\\1", content)
+    return '```{}\n{}```'.format(language, content)
 
 
 def hcode(content: str, escape: Optional[bool]=True) -> str:
