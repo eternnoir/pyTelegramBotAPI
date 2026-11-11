@@ -1223,7 +1223,7 @@ class Message(JsonDeserializable):
     :param widget: Optional. Message is an HTML widget, information about the widget
     :type widget: :class:`telebot.types.Widget`
 
-    :param caption: Optional. Caption for the animation, audio, document, paid media, photo, video, voice, or widget
+    :param caption: Optional. Caption for the animation, audio, document, live photo, paid media, photo, video, voice, or widget
     :type caption: :obj:`str`
 
     :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
