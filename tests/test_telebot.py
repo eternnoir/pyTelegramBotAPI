@@ -73,6 +73,32 @@ def test_infinity_polling_honors_logger_level(
     assert any('Exception traceback:' in message for message in logger.messages) is includes_traceback
 
 
+def test_widget_query_handlers():
+    bot = telebot.TeleBot('1:fake', validate_token=False, threaded=False)
+    received = []
+
+    @bot.widget_query_handler()
+    def widget_query(query):
+        received.append(query.id)
+
+    @bot.shared_widget_query_handler(func=lambda query: query.widget_id == 'w1')
+    def shared_widget_query(query):
+        received.append(query.id)
+
+    query_type = {'type': 'data'}
+    user = {'id': 2, 'is_bot': False, 'first_name': 'User'}
+    bot.process_new_updates([
+        types.Update.de_json({'update_id': 1, 'widget_query': {
+            'id': 'q1', 'from': user, 'chat_instance': '1', 'type': query_type, 'data': 'a'}}),
+        types.Update.de_json({'update_id': 2, 'shared_widget_query': {
+            'id': 'q2', 'from': user, 'type': query_type, 'data': 'b', 'widget_id': 'w1'}}),
+        types.Update.de_json({'update_id': 3, 'shared_widget_query': {
+            'id': 'q3', 'from': user, 'type': query_type, 'data': 'c', 'widget_id': 'w2'}}),
+    ])
+
+    assert received == ['q1', 'q2']
+
+
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
     def test_message_listener(self):
@@ -597,7 +623,9 @@ let number = loop {
             managed_bot=None,
             guest_message=None,
             subscription=None,
-            stopped_message_generation=None)
+            stopped_message_generation=None,
+            widget_query=None,
+            shared_widget_query=None)
 
     def test_is_string_unicode(self):
         s1 = u'string'

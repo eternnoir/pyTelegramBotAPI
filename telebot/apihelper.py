@@ -600,6 +600,114 @@ def edit_message_checklist(
         payload['reply_markup'] = _convert_markup(reply_markup)
     return _make_request(token, method_url, params=payload)
 
+def send_widget(
+        token, chat_id, html, message_thread_id=None, width=None, height=None, public_data=None, chat_data=None,
+        caption=None, parse_mode=None, caption_entities=None, show_caption_above_media=None, allow_queries=None,
+        is_shared=None, disable_notification=None, protect_content=None, allow_paid_broadcast=None,
+        message_effect_id=None, reply_parameters=None, reply_markup=None):
+    method_url = r'sendWidget'
+    payload = {'chat_id': chat_id, 'html': html}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if width is not None:
+        payload['width'] = width
+    if height is not None:
+        payload['height'] = height
+    if public_data is not None:
+        payload['public_data'] = public_data
+    if chat_data is not None:
+        payload['chat_data'] = chat_data
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if allow_queries is not None:
+        payload['allow_queries'] = allow_queries
+    if is_shared is not None:
+        payload['is_shared'] = is_shared
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if reply_parameters:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def send_shared_widget(
+        token, chat_id, widget_id, message_thread_id=None, chat_data=None, caption=None, parse_mode=None,
+        caption_entities=None, show_caption_above_media=None, disable_notification=None, protect_content=None,
+        allow_paid_broadcast=None, message_effect_id=None, reply_parameters=None, reply_markup=None):
+    method_url = r'sendSharedWidget'
+    payload = {'chat_id': chat_id, 'widget_id': widget_id}
+    if message_thread_id is not None:
+        payload['message_thread_id'] = message_thread_id
+    if chat_data is not None:
+        payload['chat_data'] = chat_data
+    if caption:
+        payload['caption'] = caption
+    if parse_mode:
+        payload['parse_mode'] = parse_mode
+    if caption_entities:
+        payload['caption_entities'] = json.dumps(types.MessageEntity.to_list_of_dicts(caption_entities))
+    if show_caption_above_media is not None:
+        payload['show_caption_above_media'] = show_caption_above_media
+    if disable_notification is not None:
+        payload['disable_notification'] = disable_notification
+    if protect_content is not None:
+        payload['protect_content'] = protect_content
+    if allow_paid_broadcast is not None:
+        payload['allow_paid_broadcast'] = allow_paid_broadcast
+    if message_effect_id:
+        payload['message_effect_id'] = message_effect_id
+    if reply_parameters:
+        payload['reply_parameters'] = reply_parameters.to_json()
+    if reply_markup:
+        payload['reply_markup'] = _convert_markup(reply_markup)
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def answer_widget_query(token, widget_query_id, data=None):
+    method_url = r'answerWidgetQuery'
+    payload = {'widget_query_id': widget_query_id}
+    if data is not None:
+        payload['data'] = data
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def edit_message_widget_data(token, chat_id=None, message_id=None, inline_message_id=None, public_data=None, chat_data=None):
+    method_url = r'editMessageWidgetData'
+    payload = {}
+    if chat_id:
+        payload['chat_id'] = chat_id
+    if message_id:
+        payload['message_id'] = message_id
+    if inline_message_id:
+        payload['inline_message_id'] = inline_message_id
+    if public_data is not None:
+        payload['public_data'] = public_data
+    if chat_data is not None:
+        payload['chat_data'] = chat_data
+    return _make_request(token, method_url, params=payload, method='post')
+
+
+def edit_shared_widget_data(token, widget_id, public_data, cache_time=None):
+    method_url = r'editSharedWidgetData'
+    payload = {'widget_id': widget_id, 'public_data': public_data}
+    if cache_time is not None:
+        payload['cache_time'] = cache_time
+    return _make_request(token, method_url, params=payload, method='post')
+
 
 def send_dice(
         token, chat_id,

@@ -121,6 +121,22 @@ def test_send_and_edit_checklist_send_checklist_as_json(monkeypatch):
     assert json.loads(captured['params']['checklist'])['tasks'][0]['text'] == 'Milk'
 
 
+def test_widget_methods_send_empty_data(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(apihelper, '_make_request', _capture(captured))
+
+    apihelper.send_widget('token', 1, '<b>hi</b>', public_data='', allow_queries=True)
+    assert captured['method_url'] == 'sendWidget'
+    assert captured['params'] == {'chat_id': 1, 'html': '<b>hi</b>', 'public_data': '', 'allow_queries': True}
+
+    apihelper.edit_message_widget_data('token', chat_id=1, message_id=2, chat_data='')
+    assert captured['method_url'] == 'editMessageWidgetData'
+    assert captured['params'] == {'chat_id': 1, 'message_id': 2, 'chat_data': ''}
+
+    apihelper.edit_shared_widget_data('token', 'w1', '')
+    assert captured['params'] == {'widget_id': 'w1', 'public_data': ''}
+
+
 def test_replace_sticker_in_set_uploads_the_sticker_file(monkeypatch):
     captured = {}
     monkeypatch.setattr(apihelper, '_make_request', _capture(captured))
@@ -155,4 +171,23 @@ def test_async_checklist_and_replace_sticker(monkeypatch):
     asyncio.run(asyncio_helper.replace_sticker_in_set('token', 1, 'set_by_bot', 'old_id', sticker))
     attach = json.loads(captured['params']['sticker'])['sticker']
     assert captured['files'] == {attach[len('attach://'):]: sticker_file}
+    assert captured['method'] == 'post'
+
+
+def test_async_widget_methods(monkeypatch):
+    captured = {}
+
+    async def fake_process_request(token, url, method='get', params=None, files=None, **kwargs):
+        captured.update(url=url, params=params, method=method)
+        return True
+
+    monkeypatch.setattr(asyncio_helper, '_process_request', fake_process_request)
+
+    asyncio.run(asyncio_helper.send_shared_widget('token', 1, 'w1', chat_data=''))
+    assert captured['url'] == 'sendSharedWidget'
+    assert captured['params'] == {'chat_id': 1, 'widget_id': 'w1', 'chat_data': ''}
+
+    asyncio.run(asyncio_helper.answer_widget_query('token', 'q1', data='ok'))
+    assert captured['url'] == 'answerWidgetQuery'
+    assert captured['params'] == {'widget_query_id': 'q1', 'data': 'ok'}
     assert captured['method'] == 'post'

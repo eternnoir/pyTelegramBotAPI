@@ -189,6 +189,8 @@ class AsyncTeleBot:
         self.guest_message_handlers = []
         self.subscription_handlers = []
         self.stopped_message_generation_handlers = []
+        self.widget_query_handlers = []
+        self.shared_widget_query_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -656,6 +658,8 @@ class AsyncTeleBot:
         new_guest_messages = None
         new_subscriptions = None
         new_stopped_message_generations = None
+        new_widget_queries = None
+        new_shared_widget_queries = None
 
 
         for update in updates:
@@ -741,6 +745,12 @@ class AsyncTeleBot:
             if update.stopped_message_generation:
                 if new_stopped_message_generations is None: new_stopped_message_generations = []
                 new_stopped_message_generations.append(update.stopped_message_generation)
+            if update.widget_query:
+                if new_widget_queries is None: new_widget_queries = []
+                new_widget_queries.append(update.widget_query)
+            if update.shared_widget_query:
+                if new_shared_widget_queries is None: new_shared_widget_queries = []
+                new_shared_widget_queries.append(update.shared_widget_query)
 
 
         if new_messages:
@@ -797,6 +807,10 @@ class AsyncTeleBot:
             await self.process_new_subscriptions(new_subscriptions)
         if new_stopped_message_generations:
             await self.process_new_stopped_message_generation(new_stopped_message_generations)
+        if new_widget_queries:
+            await self.process_new_widget_query(new_widget_queries)
+        if new_shared_widget_queries:
+            await self.process_new_shared_widget_query(new_shared_widget_queries)
 
     async def process_new_messages(self, new_messages):
         """
@@ -964,6 +978,18 @@ class AsyncTeleBot:
             new_stopped_message_generations,
             'stopped_message_generation',
         )
+
+    async def process_new_widget_query(self, new_widget_queries):
+        """
+        :meta private:
+        """
+        await self._process_updates(self.widget_query_handlers, new_widget_queries, 'widget_query')
+
+    async def process_new_shared_widget_query(self, new_shared_widget_queries):
+        """
+        :meta private:
+        """
+        await self._process_updates(self.shared_widget_query_handlers, new_shared_widget_queries, 'shared_widget_query')
 
     async def _get_middlewares(self, update_type):
         """
@@ -2904,6 +2930,104 @@ class AsyncTeleBot:
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_stopped_message_generation_handler(handler_dict)
 
+    def widget_query_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming queries from widgets in messages sent by the bot or via the bot.
+        As a parameter to the decorator function, it passes :class:`telebot.types.WidgetQuery` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_widget_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_widget_query_handler(self, handler_dict):
+        """
+        Adds a widget_query handler.
+        Note that you should use register_widget_query_handler to add widget_query_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.widget_query_handlers.append(handler_dict)
+
+    def register_widget_query_handler(self, callback: Callable[[Any], Awaitable], func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers widget_query handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass AsyncTeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_widget_query_handler(handler_dict)
+
+    def shared_widget_query_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming queries from forwarded messages with shared widgets.
+        As a parameter to the decorator function, it passes :class:`telebot.types.SharedWidgetQuery` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_shared_widget_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_shared_widget_query_handler(self, handler_dict):
+        """
+        Adds a shared_widget_query handler.
+        Note that you should use register_shared_widget_query_handler to add shared_widget_query_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.shared_widget_query_handlers.append(handler_dict)
+
+    def register_shared_widget_query_handler(self, callback: Callable[[Any], Awaitable], func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers shared_widget_query handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass AsyncTeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_shared_widget_query_handler(handler_dict)
+
 
     @staticmethod
     def _build_handler_dict(handler, pass_bot=False, **filters):
@@ -4195,6 +4319,279 @@ class AsyncTeleBot:
         return types.Message.de_json(
             await asyncio_helper.edit_message_checklist(
                 self.token, business_connection_id, chat_id, message_id, checklist, reply_markup=reply_markup))
+
+    async def send_widget(
+            self, chat_id: Union[int, str], html: str,
+            message_thread_id: Optional[int]=None,
+            width: Optional[int]=None,
+            height: Optional[int]=None,
+            public_data: Optional[str]=None,
+            chat_data: Optional[str]=None,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            show_caption_above_media: Optional[bool]=None,
+            allow_queries: Optional[bool]=None,
+            is_shared: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_paid_broadcast: Optional[bool]=None,
+            message_effect_id: Optional[str]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send a message with an HTML widget. Currently, in the production environment, widgets can be sent
+        only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded.
+        On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendwidget
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param html: HTML code of the widget, 1-32768 bytes. The code must not exceed 4096 bytes when compressed by zlib
+            with the maximum compression level.
+        :type html: :obj:`str`
+
+        :param message_thread_id: Unique identifier for the target message thread (topic) of a forum; for forum supergroups
+            and private chats of bots with forum topic mode enabled only
+        :type message_thread_id: :obj:`int`
+
+        :param width: Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble.
+            The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
+        :type width: :obj:`int`
+
+        :param height: Height of the widget in logical pixels; omit if the height of the widget isn't fixed.
+            The height is clamped by the app to the range 50-600.
+        :type height: :obj:`int`
+
+        :param public_data: Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown.
+            If the widget is shared, then all messages with it will have the same public data.
+        :type public_data: :obj:`str`
+
+        :param chat_data: Data of the widget, which is specific to the message, 0-1024 bytes
+        :type chat_data: :obj:`str`
+
+        :param caption: Widget caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the widget caption
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param show_caption_above_media: Pass True if the caption must be shown above the widget
+        :type show_caption_above_media: :obj:`bool`
+
+        :param allow_queries: Pass True to allow the widget to send queries to the bot
+        :type allow_queries: :obj:`bool`
+
+        :param is_shared: Pass True to create a shared widget, which can be sent again using the method sendSharedWidget
+        :type is_shared: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
+            of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+        :type allow_paid_broadcast: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param reply_parameters: Description of the message to reply to
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
+            reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
+
+        return types.Message.de_json(
+            await asyncio_helper.send_widget(
+                self.token, chat_id, html, message_thread_id=message_thread_id, width=width, height=height,
+                public_data=public_data, chat_data=chat_data, caption=caption, parse_mode=parse_mode,
+                caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
+                allow_queries=allow_queries, is_shared=is_shared, disable_notification=disable_notification,
+                protect_content=protect_content, allow_paid_broadcast=allow_paid_broadcast,
+                message_effect_id=message_effect_id, reply_parameters=reply_parameters, reply_markup=reply_markup))
+
+    async def send_shared_widget(
+            self, chat_id: Union[int, str], widget_id: str,
+            message_thread_id: Optional[int]=None,
+            chat_data: Optional[str]=None,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            show_caption_above_media: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_paid_broadcast: Optional[bool]=None,
+            message_effect_id: Optional[str]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send again a shared widget created by the bot. Currently, in the production environment, widgets can be sent
+        only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded.
+        On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendsharedwidget
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param widget_id: Unique identifier of the shared widget
+        :type widget_id: :obj:`str`
+
+        :param message_thread_id: Unique identifier for the target message thread (topic) of a forum; for forum supergroups
+            and private chats of bots with forum topic mode enabled only
+        :type message_thread_id: :obj:`int`
+
+        :param chat_data: Data of the widget, which is specific to the message, 0-1024 bytes
+        :type chat_data: :obj:`str`
+
+        :param caption: Widget caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the widget caption
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param show_caption_above_media: Pass True if the caption must be shown above the widget
+        :type show_caption_above_media: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
+            of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+        :type allow_paid_broadcast: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param reply_parameters: Description of the message to reply to
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
+            reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
+
+        return types.Message.de_json(
+            await asyncio_helper.send_shared_widget(
+                self.token, chat_id, widget_id, message_thread_id=message_thread_id, chat_data=chat_data,
+                caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
+                show_caption_above_media=show_caption_above_media, disable_notification=disable_notification,
+                protect_content=protect_content, allow_paid_broadcast=allow_paid_broadcast,
+                message_effect_id=message_effect_id, reply_parameters=reply_parameters, reply_markup=reply_markup))
+
+    async def answer_widget_query(self, widget_query_id: str, data: Optional[str]=None) -> bool:
+        """
+        Use this method to send an answer to a query from a widget. The query must be answered within 15 seconds.
+        The answer is received only by the widget that sent the query and doesn't change data of the widget;
+        use edit_message_widget_data or edit_shared_widget_data to change it. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerwidgetquery
+
+        :param widget_query_id: Unique identifier for the query to be answered
+        :type widget_query_id: :obj:`str`
+
+        :param data: Data to be returned to the widget, 0-1024 bytes
+        :type data: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.answer_widget_query(self.token, widget_query_id, data=data)
+
+    async def edit_message_widget_data(
+            self, chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
+            inline_message_id: Optional[str]=None,
+            public_data: Optional[str]=None,
+            chat_data: Optional[str]=None) -> bool:
+        """
+        Use this method to edit data of a widget in a message sent by the bot or via the bot (for inline bots).
+        Public data of a shared widget can be changed at most once per second. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagewidgetdata
+
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username
+            of the target supergroup in the format @username.
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the message with the widget.
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message.
+        :type inline_message_id: :obj:`str`
+
+        :param public_data: New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data.
+            If omitted, then the public data isn't changed.
+        :type public_data: :obj:`str`
+
+        :param chat_data: New data of the widget, which is specific to the message, 0-1024 bytes; pass an empty string to remove the data.
+            If omitted, then the data isn't changed.
+        :type chat_data: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.edit_message_widget_data(
+            self.token, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
+            public_data=public_data, chat_data=chat_data)
+
+    async def edit_shared_widget_data(self, widget_id: str, public_data: str, cache_time: Optional[int]=None) -> bool:
+        """
+        Use this method to edit public data of a shared widget created by the bot. A shared widget can be edited
+        at most once per second. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editsharedwidgetdata
+
+        :param widget_id: Unique identifier of the shared widget
+        :type widget_id: :obj:`str`
+
+        :param public_data: New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data
+        :type public_data: :obj:`str`
+
+        :param cache_time: The maximum amount of time in seconds that the public data of the widget may be cached client-side; 5-3600.
+            If omitted, then the current value is kept, which is 30 by default.
+        :type cache_time: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.edit_shared_widget_data(self.token, widget_id, public_data, cache_time=cache_time)
 
     async def send_dice(
             self, chat_id: Union[int, str],

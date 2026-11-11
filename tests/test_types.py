@@ -82,6 +82,118 @@ def test_api_103_new_service_objects():
     assert isinstance(message.community_chat_joined, types.CommunityChatJoined)
 
 
+def test_api_104_message_widget():
+    message = types.Message.de_json({
+        'message_id': 1,
+        'date': 1,
+        'chat': {'id': 1, 'type': 'private'},
+        'widget': {'id': 'w1', 'width': 300, 'height': 200, 'html': '<b>hi</b>', 'public_data': 'p', 'chat_data': 'c'},
+        'caption': 'Counter',
+        'external_reply': {
+            'origin': {'type': 'hidden_user', 'date': 1, 'sender_user_name': 'User'},
+            'widget': {'html': '<i>quoted</i>'},
+        },
+    })
+
+    assert message.content_type == 'widget'
+    assert message.widget.id == 'w1'
+    assert message.widget.width == 300
+    assert message.widget.height == 200
+    assert message.widget.html == '<b>hi</b>'
+    assert message.widget.public_data == 'p'
+    assert message.widget.chat_data == 'c'
+    assert message.external_reply.widget.html == '<i>quoted</i>'
+    assert message.external_reply.widget.id is None
+
+
+def test_api_104_widget_query():
+    update = types.Update.de_json({
+        'update_id': 1,
+        'widget_query': {
+            'id': 'q1',
+            'from': {'id': 2, 'is_bot': False, 'first_name': 'User'},
+            'chat': {'id': 2, 'type': 'private'},
+            'message_id': 10,
+            'chat_instance': '-123',
+            'type': {
+                'type': 'data',
+                'wallet_card': {
+                    'address': 'UQA',
+                    'amount': '1000000000',
+                    'stickers': [{
+                        'position': {
+                            'x_percentage': 50.0, 'y_percentage': 50.0, 'width_percentage': 20.0,
+                            'height_percentage': 20.0, 'rotation_angle': 0.0, 'corner_radius_percentage': 0.0,
+                        },
+                        'nft': {
+                            'address': 'EQB', 'index': '7', 'name': 'NFT', 'description': 'An NFT',
+                            'attributes': [{'trait_type': 'Color', 'value': 'Blue'}],
+                        },
+                    }],
+                },
+            },
+            'data': 'click',
+        },
+    })
+
+    query = update.widget_query
+    assert isinstance(query, types.WidgetQuery)
+    assert query.id == 'q1'
+    assert query.from_user.id == 2
+    assert query.chat.id == 2
+    assert query.message_id == 10
+    assert query.chat_instance == '-123'
+    assert query.data == 'click'
+    assert query.inline_message_id is None
+    assert query.widget_id is None
+    assert isinstance(query.type, types.WidgetQueryTypeData)
+    sticker = query.type.wallet_card.stickers[0]
+    assert sticker.position.x_percentage == 50.0
+    assert sticker.nft.attributes[0].value == 'Blue'
+    assert sticker.nft.gift is None
+
+
+def test_api_104_shared_widget_query():
+    update = types.Update.de_json({
+        'update_id': 1,
+        'shared_widget_query': {
+            'id': 'q2',
+            'from': {'id': 2, 'is_bot': False, 'first_name': 'User'},
+            'type': {
+                'type': 'sign_data',
+                'wallet': {'address': 'UQA', 'amount': '5', 'public_key': 'abcd', 'state_init': 'te6c'},
+                'sign_data': '{"type": "text", "text": "hi"}',
+            },
+            'data': 'sign',
+            'widget_id': 'w1',
+        },
+    })
+    sent_transaction = types.WidgetQueryType.de_json({
+        'type': 'sent_transaction',
+        'wallet': {'address': 'UQA', 'amount': '5'},
+        'msg_hash': 'hash',
+    })
+
+    query = update.shared_widget_query
+    assert isinstance(query, types.SharedWidgetQuery)
+    assert query.widget_id == 'w1'
+    assert query.from_user.id == 2
+    assert isinstance(query.type, types.WidgetQueryTypeSignData)
+    assert query.type.wallet.public_key == 'abcd'
+    assert query.type.sign_data == '{"type": "text", "text": "hi"}'
+    assert isinstance(sent_transaction, types.WidgetQueryTypeSentTransaction)
+    assert sent_transaction.msg_hash == 'hash'
+    assert sent_transaction.wallet.public_key is None
+
+
+def test_api_104_input_widget_message_contents():
+    widget = types.InputWidgetMessageContent('<b>hi</b>', width=300, public_data='', allow_queries=True)
+    shared_widget = types.InputSharedWidgetMessageContent('w1', chat_data='c', caption='Counter')
+
+    assert widget.to_dict() == {'html': '<b>hi</b>', 'width': 300, 'public_data': '', 'allow_queries': True}
+    assert shared_widget.to_dict() == {'widget_id': 'w1', 'chat_data': 'c', 'caption': 'Counter'}
+
+
 def test_json_user():
     json_str = r'{"id": 123456789, "is_bot": false, "first_name": "John", "last_name": "Doe", "username": "@johndoe", "language_code": "en", "can_join_groups": true, "can_read_all_group_messages": false, "supports_inline_queries": true, "is_premium": true, "added_to_attachment_menu": false, "can_connect_to_business": true, "has_main_web_app": false, "has_topics_enabled": true, "allows_users_to_create_topics": true, "can_manage_bots": true, "supports_guest_queries": true, "supports_join_request_queries": true}'
     result = types.User.de_json(json_str)
